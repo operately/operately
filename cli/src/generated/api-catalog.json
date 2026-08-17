@@ -22266,9 +22266,9 @@
       ]
     }
   },
-  "endpoint_count": 242,
+  "endpoint_count": 246,
   "query_count": 73,
-  "mutation_count": 169,
+  "mutation_count": 173,
   "endpoints": [
     {
       "name": "create",
@@ -29974,6 +29974,42 @@
       "method": "POST"
     },
     {
+      "name": "archive",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/archive",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.Archive",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/archive",
+      "method": "POST"
+    },
+    {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/create",
@@ -30971,6 +31007,42 @@
       "method": "POST"
     },
     {
+      "name": "delete",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/delete",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/delete",
+      "method": "POST"
+    },
+    {
       "name": "delete_comment",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/delete_comment",
@@ -31203,6 +31275,53 @@
       ],
       "docstring": null,
       "full_name": "project_templates/delete_task",
+      "method": "POST"
+    },
+    {
+      "name": "duplicate",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/duplicate",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.Duplicate",
+      "outputs": [
+        {
+          "default": null,
+          "name": "template",
+          "type": {
+            "name": "project_template",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/duplicate",
       "method": "POST"
     },
     {
@@ -31466,6 +31585,42 @@
       ],
       "docstring": null,
       "full_name": "project_templates/move_resource",
+      "method": "POST"
+    },
+    {
+      "name": "restore",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/restore",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.Restore",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/restore",
       "method": "POST"
     },
     {

@@ -4,10 +4,26 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   alias Operately.Access.Binding
   alias Operately.Groups.Group
-  alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateMaterialization}
+  alias Operately.Operations.{ProjectCreation, ProjectTemplateCreationFromProject, ProjectTemplateDuplication, ProjectTemplateMaterialization}
   alias Operately.ProjectTemplates
   alias Operately.People.Person, as: CompanyPerson
-  alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Permissions, Person, ProjectTemplate, ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode, Task, TaskAssignment}
+
+  alias Operately.ProjectTemplates.{
+    Comment,
+    Discussion,
+    Milestone,
+    Permissions,
+    Person,
+    ProjectTemplate,
+    ResourceDocument,
+    ResourceFile,
+    ResourceFolder,
+    ResourceLink,
+    ResourceNode,
+    Task,
+    TaskAssignment
+  }
+
   alias Operately.Projects.Project
   alias Operately.Repo
   alias OperatelyWeb.Api.Helpers, as: ApiHelpers
@@ -92,6 +108,40 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
         start_date: inputs.start_date,
         project: project_creation_attrs(creator, space, inputs)
       })
+    end)
+  end
+
+  def duplicate_template(multi, name) do
+    Ecto.Multi.run(multi, :duplicated_template, fn _repo, %{template: template, me: creator} ->
+      ProjectTemplateDuplication.run(%ProjectTemplateDuplication{
+        template_id: template.id,
+        creator_id: creator.id,
+        name: name
+      })
+    end)
+  end
+
+  def ensure_template_archived(multi) do
+    Ecto.Multi.run(multi, :template_state, fn _repo, %{template: template} ->
+      if template.archived_at, do: {:ok, :archived}, else: {:error, :template_not_archived}
+    end)
+  end
+
+  def archive_template(multi) do
+    run_step(multi, :archived_template, fn %{template: template} ->
+      template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> persist!()
+    end)
+  end
+
+  def restore_template(multi) do
+    run_step(multi, :restored_template, fn %{template: template} ->
+      template |> ProjectTemplate.changeset(%{archived_at: nil}) |> persist!()
+    end)
+  end
+
+  def delete_template(multi) do
+    run_step(multi, :deleted_template, fn %{template: template} ->
+      delete!(template)
     end)
   end
 
@@ -888,6 +938,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp handle_error({:error, _step, :template_not_found, _changes}), do: {:error, :not_found}
   defp handle_error({:error, _step, :template_scope_mismatch, _changes}), do: {:error, :not_found}
   defp handle_error({:error, _step, :template_not_active, _changes}), do: {:error, :forbidden}
+  defp handle_error({:error, _step, :template_not_archived, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:invalid_template, _reason}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:invalid_child, _type, _changeset}, _changes}), do: {:error, :bad_request}
   defp handle_error({:error, _step, {:invalid_source, _reason}, _changes}), do: {:error, :bad_request}

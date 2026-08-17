@@ -57,7 +57,7 @@ Both pages show searchable template cards with name, description, Space, creator
 - Archive
 - Delete
 
-Archived templates are hidden from project creation but can be restored. Archiving or deleting a template never changes projects already created from it.
+Archived templates are hidden from project creation but can be restored. Archiving or deleting a template never changes the content or lifecycle of projects already created from it; hard deletion only clears their nullable template-provenance link.
 
 ### Creating a template
 
@@ -134,7 +134,7 @@ The initial `project_templates` root contains only the reusable project-level da
 | `duration_days` | Relative replacement for a project timeframe end date |
 | `task_statuses` | Reusable workflow definitions |
 | `milestones_ordering_state`, `tasks_kanban_state` | Reusable ordering and board layout |
-| `archived_at`, `deleted_at` | Template lifecycle state |
+| `archived_at` | Reversible template archival state |
 | `inserted_at`, `updated_at` | Standard timestamps |
 
 Do not copy `goal_id`, `private`, `subscription_list_id`, `last_check_in_id`, `last_check_in_status`, `next_check_in_scheduled_at`, `health`, `status`, `closed_at`, `success_status`, deprecated scheduling fields, or any virtual project fields into `project_templates`.
@@ -234,14 +234,14 @@ This phase establishes the invariant that template data is physically separate f
 
 - [x] Add `project_templates`, `project_template_milestones`, and `project_template_tasks` tables with foreign keys that never point through `projects`.
 - [x] Copy only reusable fields into the template schemas: root description, duration, task statuses and ordering; milestone content, ordering and due offset; and task content, workflow placement, ordering, priority, size, due offset, and due-relative reminders.
-- [x] Add template archival and soft-deletion state, optional source-project provenance, and indexed lookup by company, Space, and archival/deletion state.
+- [x] Add reversible template archival state, hard deletion, optional source-project provenance, and indexed lookup by company, Space, and archival state.
 - [x] Add non-negative database and changeset constraints for project duration, milestone due offset, and task due offset.
 - [x] Add nullable `projects.source_template_id` provenance for generated projects. Deleting a template must nullify or otherwise preserve generated projects without coupling their lifecycle.
 - [x] Do not add a project kind, template query scopes to `Operately.Projects.Project`, or template branches to ordinary project getters and mutations.
 - [x] Preserve template-owned rows and generated-project source-template provenance through company export/import.
 - [x] Cover defaults, constraints, cascading template cleanup, provenance, and physical isolation from ordinary project, milestone, and task queries with focused schema tests.
 
-`deleted_at` continues to represent deletion. Use a separate archival field for the reversible archive/restore lifecycle so archived and deleted templates remain distinguishable.
+Archive and delete are intentionally different operations: archival is reversible through `archived_at`, while deletion physically removes the template and its owned records.
 
 #### PR 1.2 — `feat: Add permission-aware project template APIs`
 
@@ -298,7 +298,7 @@ This phase delivers the first end-to-end vertical slice: a blank core template c
 - [x] Require a start date and materialize project end, milestone due, and task due dates with calendar-day `Date.add/2` semantics.
 - [x] Create normal project access context and baseline bindings from the creation input; never copy a parent goal or Company-members/Space-members baseline from the template.
 - [x] Reset health, completion, closed/reopened state, check-ins, and retrospective. Rebuild the generated Kanban state so every task starts in the first open template status while preserving the copied status definitions and relative board ordering.
-- [x] Persist source-template provenance for measurement only. No later template edit, archive, or deletion may update the generated project.
+- [x] Persist source-template provenance for measurement only. Later template edits and archival do not update generated projects; hard deletion only nullifies their `source_template_id`.
 - [x] Create only the normal new-project activity and runtime subscriptions required by ordinary project creation; do not replay template edit history.
 - [x] Cover zero-day offsets, leap years, month/year boundaries, missing start dates, ordering, reset fields, access baselines, and rollback on any invalid child.
 
@@ -421,11 +421,11 @@ Add Wallaby feature coverage for the product surface shipped through PR 5.6. Do 
 
 #### PR 6.1 — `feat: Add project template lifecycle actions`
 
-- [ ] Implement template duplication through the complete copy service, preserving relative offsets and included reusable content while generating an independent template graph.
-- [ ] When duplicating a template, reuse the same Docs & Files copy rules: copy only published folders/documents/files/links; skip drafts, deleted items, and document version history.
+- [x] Implement template duplication through the complete copy service, preserving relative offsets and included reusable content while generating an independent template graph.
+- [x] When duplicating a template, reuse the same Docs & Files copy rules: copy only published folders/documents/files/links; skip drafts, deleted items, and document version history.
 - [ ] Add archive, restore, and delete operations with Space Edit Access checks and clear confirmation UI.
 - [ ] Hide archived templates from New Project and default library results; allow archived filtering and restoration in both libraries.
-- [ ] Ensure archive or deletion never changes generated projects and that duplicate/archive/delete operations do not create project activities or notifications.
+- [ ] Ensure archive never changes generated projects. Hard deletion must preserve generated projects while nullifying their `source_template_id`; duplicate/archive/delete operations do not create project activities or notifications.
 - [ ] Finish card actions and invalidate company, Space, template-page, and New Project caches consistently.
 - [ ] Add lifecycle tests for permissions, deep-copy independence, archived visibility, restoration, deletion, stale open pages, and generated-project independence.
 - [ ] Add feature tests for duplicate, archive, restore, and delete on both library surfaces, including confirmation UI, archived filtering, permission gating, and generated-project independence.

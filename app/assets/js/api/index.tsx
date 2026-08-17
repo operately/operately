@@ -5206,6 +5206,14 @@ export interface PeopleUpdateThemeResult {
   success: boolean;
 }
 
+export interface ProjectTemplatesArchiveInput {
+  id: Id;
+}
+
+export interface ProjectTemplatesArchiveResult {
+  success: boolean;
+}
+
 export interface ProjectTemplatesCreateInput {
   spaceId: Id;
   name: string;
@@ -5352,6 +5360,14 @@ export interface ProjectTemplatesCreateTaskResult {
   task: ProjectTemplateTask;
 }
 
+export interface ProjectTemplatesDeleteInput {
+  id: Id;
+}
+
+export interface ProjectTemplatesDeleteResult {
+  success: boolean;
+}
+
 export interface ProjectTemplatesDeleteCommentInput {
   templateId: Id;
   commentId: Id;
@@ -5397,6 +5413,15 @@ export interface ProjectTemplatesDeleteTaskResult {
   success: boolean;
 }
 
+export interface ProjectTemplatesDuplicateInput {
+  id: Id;
+  name: string;
+}
+
+export interface ProjectTemplatesDuplicateResult {
+  template: ProjectTemplate;
+}
+
 export interface ProjectTemplatesMoveResourceInput {
   templateId: Id;
   nodeId: Id;
@@ -5404,6 +5429,14 @@ export interface ProjectTemplatesMoveResourceInput {
 }
 
 export interface ProjectTemplatesMoveResourceResult {
+  success: boolean;
+}
+
+export interface ProjectTemplatesRestoreInput {
+  id: Id;
+}
+
+export interface ProjectTemplatesRestoreResult {
   success: boolean;
 }
 
@@ -7113,6 +7146,10 @@ class ApiNamespaceProjectTemplates {
     return this.client.get("/project_templates/list_comments", input);
   }
 
+  async archive(input: ProjectTemplatesArchiveInput): Promise<ProjectTemplatesArchiveResult> {
+    return this.client.post("/project_templates/archive", input);
+  }
+
   async create(input: ProjectTemplatesCreateInput): Promise<ProjectTemplatesCreateResult> {
     return this.client.post("/project_templates/create", input);
   }
@@ -7165,6 +7202,10 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/create_task", input);
   }
 
+  async delete(input: ProjectTemplatesDeleteInput): Promise<ProjectTemplatesDeleteResult> {
+    return this.client.post("/project_templates/delete", input);
+  }
+
   async deleteComment(input: ProjectTemplatesDeleteCommentInput): Promise<ProjectTemplatesDeleteCommentResult> {
     return this.client.post("/project_templates/delete_comment", input);
   }
@@ -7185,8 +7226,16 @@ class ApiNamespaceProjectTemplates {
     return this.client.post("/project_templates/delete_task", input);
   }
 
+  async duplicate(input: ProjectTemplatesDuplicateInput): Promise<ProjectTemplatesDuplicateResult> {
+    return this.client.post("/project_templates/duplicate", input);
+  }
+
   async moveResource(input: ProjectTemplatesMoveResourceInput): Promise<ProjectTemplatesMoveResourceResult> {
     return this.client.post("/project_templates/move_resource", input);
+  }
+
+  async restore(input: ProjectTemplatesRestoreInput): Promise<ProjectTemplatesRestoreResult> {
+    return this.client.post("/project_templates/restore", input);
   }
 
   async update(input: ProjectTemplatesUpdateInput): Promise<ProjectTemplatesUpdateResult> {
@@ -9019,11 +9068,23 @@ export default {
         defaultApiClient.apiNamespaceProjectTemplates.createFiles(input),
       ),
 
+    archive: (input: ProjectTemplatesArchiveInput) => defaultApiClient.apiNamespaceProjectTemplates.archive(input),
+    useArchive: () =>
+      useMutation<ProjectTemplatesArchiveInput, ProjectTemplatesArchiveResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.archive(input),
+      ),
+
     deleteMilestone: (input: ProjectTemplatesDeleteMilestoneInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
     useDeleteMilestone: () =>
       useMutation<ProjectTemplatesDeleteMilestoneInput, ProjectTemplatesDeleteMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
+      ),
+
+    delete: (input: ProjectTemplatesDeleteInput) => defaultApiClient.apiNamespaceProjectTemplates.delete(input),
+    useDelete: () =>
+      useMutation<ProjectTemplatesDeleteInput, ProjectTemplatesDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.delete(input),
       ),
 
     moveResource: (input: ProjectTemplatesMoveResourceInput) =>
@@ -9045,6 +9106,13 @@ export default {
     useCreateMilestone: () =>
       useMutation<ProjectTemplatesCreateMilestoneInput, ProjectTemplatesCreateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
+      ),
+
+    duplicate: (input: ProjectTemplatesDuplicateInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.duplicate(input),
+    useDuplicate: () =>
+      useMutation<ProjectTemplatesDuplicateInput, ProjectTemplatesDuplicateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.duplicate(input),
       ),
 
     deleteResource: (input: ProjectTemplatesDeleteResourceInput) =>
@@ -9073,6 +9141,12 @@ export default {
     useUpdateMilestone: () =>
       useMutation<ProjectTemplatesUpdateMilestoneInput, ProjectTemplatesUpdateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
+      ),
+
+    restore: (input: ProjectTemplatesRestoreInput) => defaultApiClient.apiNamespaceProjectTemplates.restore(input),
+    useRestore: () =>
+      useMutation<ProjectTemplatesRestoreInput, ProjectTemplatesRestoreResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTemplates.restore(input),
       ),
 
     createComment: (input: ProjectTemplatesCreateCommentInput) =>
