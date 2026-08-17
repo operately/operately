@@ -40,6 +40,18 @@ function Page() {
     scope: { type: "space", id: template.space.id },
     transformResult: transformPerson,
   });
+  const templatePersonIds = React.useMemo(
+    () =>
+      (template.people ?? []).flatMap((templatePerson) =>
+        templatePerson.person?.id ? [templatePerson.person.id] : [],
+      ),
+    [template.people],
+  );
+  const contributorPersonSearch = People.usePersonFieldSearch({
+    scope: { type: "space", id: template.space.id },
+    transformResult: transformPerson,
+    ignoredIds: templatePersonIds,
+  });
 
   const mutate: Mutate = async (message, operation) => {
     try {
@@ -163,6 +175,7 @@ function Page() {
       newLinkLink={paths.projectTemplateNewLinkPath(template.id)}
       people={people}
       personSearch={personSearch}
+      contributorPersonSearch={contributorPersonSearch}
       richTextHandlers={richTextHandlers}
       formattedTimePreferences={formattedTimePreferences}
       onTemplateUpdate={onTemplateUpdate}

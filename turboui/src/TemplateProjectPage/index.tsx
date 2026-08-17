@@ -175,6 +175,7 @@ export namespace TemplateProjectPage {
     newLinkLink: string;
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;
+    contributorPersonSearch: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;
     formattedTimePreferences: FormattedTimePreferences;
     onTemplateUpdate: (updates: Partial<Props["template"]>) => void | boolean | Promise<void | boolean>;
