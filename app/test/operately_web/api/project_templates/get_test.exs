@@ -139,9 +139,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert res.template.archived_at
   end
 
-  test "does not return deleted templates", ctx do
-    {:ok, deleted} = ctx.template |> ProjectTemplate.changeset(%{deleted_at: DateTime.utc_now()}) |> Repo.update()
-    ctx = %{ctx | template: deleted}
+  test "returns 404 after a template is deleted", ctx do
+    Repo.delete!(ctx.template)
 
     assert {404, _} = request(ctx)
   end
@@ -167,11 +166,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     end
   end
 
-  test "returns view-only permissions for archived templates", ctx do
+  test "preserves Space permissions for archived templates", ctx do
     {:ok, archived} = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update()
 
     assert {200, res} = request(%{ctx | template: archived})
-    assert res.template.permissions == %{__typename: "project_template_permissions", can_view: true, can_comment: false, can_edit: false, has_full_access: false}
+    assert res.template.permissions == %{__typename: "project_template_permissions", can_view: true, can_comment: true, can_edit: true, has_full_access: true}
   end
 
   test "returns view-only permissions in company read-only mode", ctx do

@@ -35,7 +35,6 @@ defmodule Operately.ProjectTemplates.ProjectTemplateTest do
     assert template.milestones_ordering_state == []
     assert template.tasks_kanban_state == KanbanState.initialize()
     assert template.archived_at == nil
-    assert template.deleted_at == nil
     assert Repo.get(Project, template.id) == nil
     assert Project.get(:system, id: template.id) == {:error, :not_found}
   end

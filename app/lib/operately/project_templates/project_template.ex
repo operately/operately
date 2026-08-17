@@ -40,7 +40,6 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
     field :permissions, :any, virtual: true
 
     timestamps()
-    soft_delete()
     request_info()
   end
 
@@ -58,8 +57,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
       :duration_days,
       :milestones_ordering_state,
       :tasks_kanban_state,
-      :archived_at,
-      :deleted_at
+      :archived_at
     ])
     |> cast_embed(:task_statuses)
     |> put_default_task_statuses()
@@ -70,8 +68,6 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
 
   def set_permissions(template, company_read_only \\ false) do
     permissions = Operately.ProjectTemplates.Permissions.calculate(template.request_info.access_level, company_read_only: company_read_only)
-    permissions = if template.archived_at, do: Operately.Permissions.ReadOnly.view_only(permissions), else: permissions
-
     %{template | permissions: permissions}
   end
 
