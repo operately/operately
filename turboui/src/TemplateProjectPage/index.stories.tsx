@@ -150,6 +150,7 @@ const populatedProps: Types.Props = {
   newLinkLink: "/templates/launch-template/links/new",
   people: [champion, unavailableContributor],
   personSearch: { people: [], onSearch: async () => undefined },
+  contributorPersonSearch: { people: [], onSearch: async () => undefined },
   richTextHandlers: createMockRichEditorHandlers(),
   formattedTimePreferences: defaultFormattedTimePreferences,
   onFolderCreate: async () => true,
@@ -183,6 +184,10 @@ function TemplateStory({ props }: { props: Types.Props }) {
     props.personSearch.people.length > 0
       ? props.personSearch.people
       : people.flatMap((templatePerson) => (templatePerson.person ? [templatePerson.person] : []));
+  const templatePersonIds = new Set(
+    people.flatMap((templatePerson) => (templatePerson.person?.id ? [templatePerson.person.id] : [])),
+  );
+  const contributorSearchablePeople = searchablePeople.filter((person) => !templatePersonIds.has(person.id));
 
   const reorderMilestones = (milestoneId: string, destinationIndex: number) => {
     setMilestones((current) => {
@@ -223,6 +228,7 @@ function TemplateStory({ props }: { props: Types.Props }) {
     people,
     resourceNodes,
     personSearch: { people: searchablePeople, onSearch: async () => undefined },
+    contributorPersonSearch: { people: contributorSearchablePeople, onSearch: async () => undefined },
     onResourceDelete: async (nodeId) => {
       setResourceNodes((current) => current.filter((node) => node.id !== nodeId));
       return true;

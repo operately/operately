@@ -70,7 +70,7 @@ export function TemplatePeople({ props, canEdit }: { props: TemplateProjectPage.
       {editing && (
         <ContributorModal
           templatePerson={editing === "new" ? null : editing}
-          searchData={props.personSearch}
+          searchData={props.contributorPersonSearch}
           onClose={() => setEditing(null)}
           onCreate={props.onPersonCreate}
           onUpdate={props.onPersonUpdate}
