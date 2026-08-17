@@ -183,7 +183,7 @@ function Page() {
   );
 }
 
-export function createProjectTemplateEditorLifecycleHandlers({
+function createProjectTemplateEditorLifecycleHandlers({
   navigate,
   refresh,
   paths,

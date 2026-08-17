@@ -75,7 +75,7 @@ function Page() {
   );
 }
 
-export function createProjectTemplateLifecycleHandlers({
+function createProjectTemplateLifecycleHandlers({
   navigate,
   paths,
 }: {
