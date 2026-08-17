@@ -20,8 +20,8 @@ defmodule Operately.ProjectTemplates.Graph.Validator do
     end
   end
 
-  defp validate_active(%ProjectTemplate{archived_at: archived_at, deleted_at: deleted_at}, true)
-       when not is_nil(archived_at) or not is_nil(deleted_at),
+  defp validate_active(%ProjectTemplate{archived_at: archived_at}, true)
+       when not is_nil(archived_at),
        do: {:error, :template_not_active}
 
   defp validate_active(_template, _require_active), do: :ok

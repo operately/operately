@@ -128,8 +128,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
     refute inspect(res) =~ "Customer rollout"
   end
 
-  test "omits deleted templates", ctx do
-    {:ok, _deleted} = ctx.launch |> ProjectTemplate.changeset(%{deleted_at: DateTime.utc_now()}) |> Repo.update()
+  test "omits a deleted template", ctx do
+    Repo.delete!(ctx.launch)
 
     assert {200, res} = query(ctx.conn, [:project_templates, :list], %{archive_status: :all})
     assert Enum.map(res.templates, & &1.name) == ["Onboarding"]
