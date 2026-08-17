@@ -10,7 +10,7 @@ defmodule Operately.Repo.RequestInfo do
       schema "my_schema" do
         ...
 
-        requester_info()
+        request_info()
       end
     end
 
@@ -21,9 +21,9 @@ defmodule Operately.Repo.RequestInfo do
     MySchema.get(:system, id: "123")
 
   The `get/2` function returns a {:ok, resource} tuple if the resource was found
-  and fills the requester_info field with information about the requester. It
+  and fills the request_info field with information about the requester. It
   contains information about the requester. This field is virtual and is not
-  stored in the database. The `requester_info` field contains the following
+  stored in the database. The `request_info` field contains the following
   fields:
 
     - `requester`: The requester who requested the resource

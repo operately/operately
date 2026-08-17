@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Spaces.List do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
+  alias Operately.Access.Binding
   alias Operately.Groups.Group
 
   inputs do
@@ -27,17 +28,17 @@ defmodule OperatelyWeb.Api.Spaces.List do
   end
 
   defp load_spaces(me, inputs, company_read_only) do
-    search_spaces(me, inputs)
-    |> Repo.preload([:company, :members])
+    Group.list(me,
+      company_id: me.company_id,
+      opts: [
+        required_access_level: Binding.from_atom(inputs[:access_level] || :view_access),
+        preload: [:company, :members],
+        order_by: [asc: :name]
+      ]
+    )
     |> load_permissions(inputs[:include_permissions], company_read_only)
     |> load_access_levels(inputs[:include_access_levels])
   end
-
-  defp search_spaces(me, %{include_permissions: true} = inputs) do
-    Group.search_with_request_info(me, "", inputs[:access_level])
-  end
-
-  defp search_spaces(me, inputs), do: Group.search(me, "", inputs[:access_level])
 
   defp load_permissions(spaces, true, company_read_only) do
     Enum.map(spaces, &Group.preload_permissions(&1, company_read_only))
