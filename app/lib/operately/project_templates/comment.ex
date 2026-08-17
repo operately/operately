@@ -8,7 +8,7 @@ defmodule Operately.ProjectTemplates.Comment do
   use Operately.Schema
 
   alias Operately.ProjectTemplates.ProjectTemplate
-  alias Operately.ProjectTemplates.Comments.{Materialization, ReverseCopy}
+  alias Operately.ProjectTemplates.Comments.{Duplication, Materialization, ReverseCopy}
 
   @parent_types [:discussion, :document, :file, :link]
 
@@ -37,5 +37,6 @@ defmodule Operately.ProjectTemplates.Comment do
   def parent_types, do: @parent_types
 
   def copy_from_project(repo, project_id, template, parent_ids), do: ReverseCopy.run(repo, project_id, template, parent_ids)
+  def duplicate(repo, comments, template, parent_ids), do: Duplication.run(repo, comments, template, parent_ids)
   def materialize(repo, comments, parent_ids, company_id, creator_id), do: Materialization.run(repo, comments, parent_ids, company_id, creator_id)
 end

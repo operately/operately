@@ -72,7 +72,8 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
   defmodule CopyPlanner do
     alias Operately.ContextualDates.ContextualDate
-    alias Operately.ProjectTemplates.{Copy, ProjectTemplate}
+    alias Operately.ProjectTemplates.Graph.{Copy, Kanban}
+    alias Operately.ProjectTemplates.ProjectTemplate
     alias Operately.Operations.ProjectTemplateMaterialization.PeoplePlanner
     alias Operately.Projects.Milestone, as: ProjectMilestone
     alias Operately.Tasks.Task, as: ProjectTask
@@ -145,7 +146,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     end
 
     defp map_kanban(state, tasks, statuses) do
-      Copy.reset_kanban(state, tasks, statuses, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
+      Kanban.reset(state, tasks, statuses, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
     end
 
     defp timeframe(start_date, end_date) do
@@ -726,32 +727,15 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
   defmodule Validator do
     alias Operately.Operations.ProjectCreation
-    alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Person, ProjectTemplate, Task, TaskAssignment}
-    alias Operately.ProjectTemplates.Resources
+    alias Operately.ProjectTemplates.Graph
+    alias Operately.ProjectTemplates.ProjectTemplate
 
     def validate(%ProjectTemplate{} = template, %ProjectCreation{} = project) do
-      with :ok <- validate_active(template),
-           :ok <- validate_scope(template, project),
-           :ok <- validate_changeset(template, :template, &ProjectTemplate.changeset(&1, %{})),
-           :ok <- validate_changesets(template.milestones, :milestone, &Milestone.changeset(&1, %{})),
-           :ok <- validate_changesets(template.tasks, :task, &Task.changeset(&1, %{})),
-           :ok <- validate_changesets(template.discussions, :discussion, &Discussion.changeset(&1, %{})),
-           :ok <- validate_changesets(template.comments, :comment, &Comment.changeset(&1, %{})),
-           :ok <- validate_changesets(template.people, :person, &Person.changeset(&1, %{})),
-           :ok <- validate_changesets(template.task_assignments, :task_assignment, &TaskAssignment.changeset(&1, %{})),
-           :ok <- validate_task_containers(template),
-           :ok <- validate_task_status_references(template),
-           :ok <- validate_assignment_references(template),
-           :ok <- Resources.validate(template.resource_nodes) do
+      with :ok <- Graph.Validator.validate(template),
+           :ok <- validate_scope(template, project) do
         :ok
       end
     end
-
-    defp validate_active(%ProjectTemplate{archived_at: archived_at, deleted_at: deleted_at})
-         when not is_nil(archived_at) or not is_nil(deleted_at),
-         do: {:error, :template_not_active}
-
-    defp validate_active(_template), do: :ok
 
     defp validate_scope(template, project) do
       if template.company_id == project.company_id and template.space_id == project.group_id do
@@ -760,67 +744,5 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
         {:error, :template_scope_mismatch}
       end
     end
-
-    defp validate_changesets(resources, type, changeset_fun) do
-      Enum.reduce_while(resources, :ok, fn resource, :ok ->
-        case validate_changeset(resource, type, changeset_fun) do
-          :ok -> {:cont, :ok}
-          error -> {:halt, error}
-        end
-      end)
-    end
-
-    defp validate_changeset(resource, type, changeset_fun) do
-      changeset = changeset_fun.(resource)
-      if changeset.valid?, do: :ok, else: invalid_child(type, changeset)
-    end
-
-    defp validate_task_containers(template) do
-      milestone_ids = MapSet.new(template.milestones, & &1.id)
-
-      if Enum.all?(template.tasks, &valid_task_container?(&1, milestone_ids)) do
-        :ok
-      else
-        {:error, {:invalid_template, :foreign_milestone}}
-      end
-    end
-
-    defp valid_task_container?(%Task{project_template_milestone_id: nil}, _milestone_ids), do: true
-    defp valid_task_container?(task, milestone_ids), do: MapSet.member?(milestone_ids, task.project_template_milestone_id)
-
-    defp validate_task_status_references(template) do
-      status_ids = MapSet.new(template.task_statuses, & &1.id)
-
-      if Enum.all?(template.tasks, &(&1.task_status && MapSet.member?(status_ids, &1.task_status.id))) do
-        :ok
-      else
-        {:error, {:invalid_template, :unknown_task_status}}
-      end
-    end
-
-    defp validate_assignment_references(template) do
-      task_ids = MapSet.new(template.tasks, & &1.id)
-      person_ids = MapSet.new(template.people, & &1.id)
-      assignment_keys = Enum.map(template.task_assignments, &{&1.project_template_task_id, &1.project_template_person_id})
-
-      cond do
-        not Enum.all?(template.task_assignments, &valid_assignment_reference?(&1, template.id, task_ids, person_ids)) ->
-          {:error, {:invalid_template, :foreign_assignment_reference}}
-
-        MapSet.size(MapSet.new(assignment_keys)) != length(assignment_keys) ->
-          {:error, {:invalid_template, :duplicate_assignment}}
-
-        true ->
-          :ok
-      end
-    end
-
-    defp valid_assignment_reference?(assignment, template_id, task_ids, person_ids) do
-      assignment.project_template_id == template_id and
-        MapSet.member?(task_ids, assignment.project_template_task_id) and
-        MapSet.member?(person_ids, assignment.project_template_person_id)
-    end
-
-    defp invalid_child(type, changeset), do: {:error, {:invalid_child, type, changeset}}
   end
 end
