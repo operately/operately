@@ -89,6 +89,9 @@ function resourceNode(
 }
 
 function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
+  const defaultPersonSearch = { people: [], onSearch: async () => undefined };
+  const personSearch = overrides.personSearch ?? defaultPersonSearch;
+
   return {
     template: {
       id: "template-1",
@@ -133,7 +136,6 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     newDiscussionLink: "/templates/template-1/discussions/new",
     newDocumentLink: "/templates/template-1/documents/new",
     newLinkLink: "/templates/template-1/links/new",
-    personSearch: { people: [], onSearch: async () => undefined },
     richTextHandlers: createMockRichEditorHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,
     onTemplateUpdate: jest.fn(),
@@ -148,6 +150,8 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     onRestore: jest.fn().mockResolvedValue({ success: true }),
     onDelete: jest.fn().mockResolvedValue({ success: true }),
     ...overrides,
+    personSearch,
+    contributorPersonSearch: overrides.contributorPersonSearch ?? personSearch,
   };
 }
 
@@ -1368,7 +1372,58 @@ describe("TemplateProjectPage", () => {
   it("keeps people controls read-only for View and Comment Access", () => {
     renderPage(createProps({ permissions: { canView: true, canComment: true }, people: [] }));
 
-    expect(screen.queryByText("Add contributor")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add contributor" })).not.toBeInTheDocument();
+  });
+
+  it("excludes template people from Add contributor search", () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const champion: Types.TemplatePerson = {
+      id: "template-person-champion",
+      person: { id: "person-champion", fullName: "Ada Lovelace", avatarUrl: null },
+      role: "champion",
+      responsibility: null,
+      accessLevel: 100,
+      active: true,
+    };
+    const candidate = { id: "person-new", fullName: "Grace Hopper", avatarUrl: null };
+    const personSearch = { people: [champion.person!, candidate], onSearch: async () => undefined };
+    const contributorPersonSearch = { people: [candidate], onSearch: async () => undefined };
+
+    renderPage(
+      createProps({
+        people: [champion],
+        personSearch,
+        contributorPersonSearch,
+      }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add contributor" }));
+    fireEvent.click(screen.getByText("Select person"));
+
+    expect(document.querySelector('[data-test-id="person-field-search-result-grace-hopper"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="person-field-search-result-ada-lovelace"]')).not.toBeInTheDocument();
+  });
+
+  it("filters contributors by the name typed in the person field", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const onSearch = jest.fn().mockResolvedValue(undefined);
+    renderPage(
+      createProps({
+        people: [],
+        contributorPersonSearch: {
+          people: [{ id: "person-1", fullName: "Grace Hopper", avatarUrl: null }],
+          onSearch,
+        },
+      }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add contributor" }));
+    fireEvent.click(screen.getByText("Select person"));
+    fireEvent.change(screen.getByPlaceholderText("Search..."), { target: { value: "Grace" } });
+
+    await waitFor(() => expect(onSearch).toHaveBeenLastCalledWith("Grace"));
   });
 
   it("allows Edit Access to add contributors", async () => {
@@ -1384,7 +1439,7 @@ describe("TemplateProjectPage", () => {
       }),
     );
 
-    fireEvent.click(screen.getByText("Add contributor"));
+    fireEvent.click(screen.getByRole("button", { name: "Add contributor" }));
     expect(screen.getByRole("heading", { name: "Add contributor" })).toBeInTheDocument();
     expect(screen.getByText("Access level")).toBeInTheDocument();
 
