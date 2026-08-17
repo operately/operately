@@ -104,7 +104,7 @@ defmodule Operately.ProjectTemplates.Graph.Validator do
   defp resource_ids(nodes, type) do
     nodes
     |> Enum.filter(&(&1.type == type))
-    |> MapSet.new(&(resource(&1, type) && resource(&1, type).id))
+    |> MapSet.new(fn node -> resource(node, type).id end)
   end
 
   defp resource(%ResourceNode{} = node, type), do: Map.get(node, type)
