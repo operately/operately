@@ -7,9 +7,11 @@ import { WarningCallout } from "../Callouts";
 import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
+import { RelativeDayField } from "../RelativeDayField";
 import { durationHumanized, isOverdue } from "../utils/time";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../Toasts";
+import { variantFeatures } from "./variantFeatures";
 
 export function Sidebar(props: TaskPage.ContentState) {
   return (
@@ -37,7 +39,7 @@ export function MobileSidebar(props: TaskPage.ContentState) {
           <AssigneeMobile {...props} />
         </div>
       </div>
-      {hasReminderRecipients(props) && (
+      {hasReminderRecipients(props) && variantFeatures(props.variant).showReminders && (
         <div className="mt-4">
           <Reminders {...props} />
         </div>
@@ -50,18 +52,32 @@ export function MobileSidebar(props: TaskPage.ContentState) {
 }
 
 function DueDate(props: TaskPage.ContentState) {
+  const isRelativeDue = variantFeatures(props.variant).showRelativeDueDate;
+
   return (
-    <SidebarSection title="Due date">
-      <DateField
-        date={props.dueDate ?? null}
-        onDateSelect={props.onDueDateChange}
-        readonly={!props.canEdit}
-        showOverdueWarning={!props.status?.closed}
-        placeholder="Set due date"
-        testId="task-due-date"
-        calendarOnly
-      />
-      <OverdueWarning {...props} />
+    <SidebarSection title={isRelativeDue ? "Relative due date" : "Due date"}>
+      {isRelativeDue ? (
+        <RelativeDayField
+          value={props.dueOffsetDays ?? null}
+          onChange={props.onDueOffsetDaysChange}
+          readonly={!props.canEdit}
+          placeholder="Set relative date"
+          testId="task-due-offset"
+        />
+      ) : (
+        <>
+          <DateField
+            date={props.dueDate ?? null}
+            onDateSelect={props.onDueDateChange}
+            readonly={!props.canEdit}
+            showOverdueWarning={!props.status?.closed}
+            placeholder="Set due date"
+            testId="task-due-date"
+            calendarOnly
+          />
+          <OverdueWarning {...props} />
+        </>
+      )}
     </SidebarSection>
   );
 }
@@ -69,6 +85,7 @@ function DueDate(props: TaskPage.ContentState) {
 function Reminders(props: TaskPage.ContentState) {
   const reminderKeys = React.useRef<string[]>([]);
 
+  if (!variantFeatures(props.variant).showReminders) return null;
   if (!hasReminderRecipients(props)) return null;
 
   const reminders = normalizeReminders(props.reminders ?? [], props.dueDate);
@@ -290,17 +307,28 @@ function Assignees(props: TaskPage.ContentState) {
 }
 
 function DueDateMobile(props: TaskPage.ContentState) {
+  const isRelativeDue = variantFeatures(props.variant).showRelativeDueDate;
+
   return (
-    <SidebarSection title="Due date">
-      <DateField
-        date={props.dueDate ?? null}
-        onDateSelect={props.onDueDateChange}
-        readonly={!props.canEdit}
-        showOverdueWarning={!props.status?.closed}
-        placeholder="Set due date"
-        calendarOnly
-        size="small"
-      />
+    <SidebarSection title={isRelativeDue ? "Relative due date" : "Due date"}>
+      {isRelativeDue ? (
+        <RelativeDayField
+          value={props.dueOffsetDays ?? null}
+          onChange={props.onDueOffsetDaysChange}
+          readonly={!props.canEdit}
+          placeholder="Set relative date"
+        />
+      ) : (
+        <DateField
+          date={props.dueDate ?? null}
+          onDateSelect={props.onDueDateChange}
+          readonly={!props.canEdit}
+          showOverdueWarning={!props.status?.closed}
+          placeholder="Set due date"
+          calendarOnly
+          size="small"
+        />
+      )}
     </SidebarSection>
   );
 }
@@ -323,10 +351,10 @@ function AssigneeMobile(props: TaskPage.ContentState) {
 }
 
 function Milestone(props: TaskPage.ContentState) {
-  if (props.hideMilestone) return null;
+  if (!variantFeatures(props.variant).showMilestone) return null;
 
   return (
-    <SidebarSection title="Milestone">
+    <SidebarSection title="Milestone" testId="task-milestone">
       <MilestoneField
         milestone={props.milestone}
         setMilestone={props.onMilestoneChange}
@@ -358,10 +386,14 @@ function CreatedBy(props: TaskPage.ContentState) {
 }
 
 function Subscription(props: TaskPage.ContentState) {
+  if (!variantFeatures(props.variant).showSubscriptions) return null;
+
   return <SidebarNotificationSection {...props.subscriptions} />;
 }
 
 function Actions(props: TaskPage.ContentState) {
+  const { showMoveAndArchive } = variantFeatures(props.variant);
+
   const handleCopyURL = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -382,14 +414,14 @@ function Actions(props: TaskPage.ContentState) {
       label: "Move task",
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      show: Boolean(props.canEdit && props.onMoveTask && props.projectSearch && props.spaceSearch),
+      show: Boolean(showMoveAndArchive && props.canEdit && props.onMoveTask && props.projectSearch && props.spaceSearch),
       testId: "move-task",
     },
     {
       label: "Archive",
       onClick: props.onArchive,
       icon: IconArchive,
-      show: !!props.onArchive,
+      show: Boolean(showMoveAndArchive && props.onArchive),
     },
     {
       label: "Delete",
