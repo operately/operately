@@ -67,6 +67,7 @@ export function useMockTaskBoardActions(opts: {
   onTaskNameChange: (taskId: string, name: string) => void;
   onTaskAssigneeChange: (taskId: string, assignees: TaskBoard.Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskRemindersChange: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean>;
   onTaskStatusChange: (taskId: string, status: TaskBoard.Status | null) => void;
   onTaskDelete: (taskId: string) => Promise<{ success: boolean }>;
   onTaskDescriptionChange: (taskId: string, description: any) => Promise<boolean>;
@@ -121,6 +122,14 @@ export function useMockTaskBoardActions(opts: {
   const onTaskDueDateChange = React.useCallback(
     (taskId: string, dueDate: DateField.ContextualDate | null) => {
       setTasks((prev) => updateTask(prev, taskId, (t) => ({ ...t, dueDate })));
+    },
+    [setTasks],
+  );
+
+  const onTaskRemindersChange = React.useCallback(
+    async (taskId: string, reminders: TaskPage.Reminder[]) => {
+      setTasks((prev) => updateTask(prev, taskId, (t) => ({ ...t, reminders })));
+      return true;
     },
     [setTasks],
   );
@@ -246,6 +255,7 @@ export function useMockTaskBoardActions(opts: {
     onTaskNameChange,
     onTaskAssigneeChange,
     onTaskDueDateChange,
+    onTaskRemindersChange,
     onTaskStatusChange,
     onTaskDelete,
     onTaskDescriptionChange,

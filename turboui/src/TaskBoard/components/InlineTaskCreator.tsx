@@ -1,10 +1,8 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import * as Types from "../types";
 import { PrimaryButton } from "../../Button";
 
 export interface InlineTaskCreatorProps {
-  milestone: Types.Milestone | null;
-  onCreate: (task: Types.NewTaskPayload) => void;
+  onCreate: (name: string) => void;
   onRequestAdvanced?: () => void;
   onCancel?: () => void;
   placeholder?: string;
@@ -17,8 +15,8 @@ export interface InlineTaskCreatorHandle {
 }
 
 export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskCreatorProps>(
-  ({ milestone, onCreate, onRequestAdvanced, onCancel, placeholder = "Task name", testId, autoFocus }, ref) => {
-    const [title, setTitle] = useState("");
+  ({ onCreate, onRequestAdvanced, onCancel, placeholder = "Task name", testId, autoFocus }, ref) => {
+    const [name, setName] = useState("");
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     useImperativeHandle(ref, () => ({
@@ -39,32 +37,27 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
     }, [autoFocus]);
 
     const submit = () => {
-      const trimmed = title.trim();
+      const trimmed = name.trim();
       if (!trimmed) return;
 
-      const payload: Types.NewTaskPayload = {
-        title: trimmed,
-        milestone,
-        dueDate: null,
-        assignees: [],
-      };
-
-      onCreate(payload);
+      onCreate(trimmed);
       // Clear and keep focus for rapid entry
-      setTitle("");
+      setName("");
       inputRef.current?.focus();
     };
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
-        if (e.shiftKey) {
-          onRequestAdvanced?.();
-        } else {
+        if (e.shiftKey && onRequestAdvanced) {
           e.preventDefault();
-          submit();
+          onRequestAdvanced();
+          return;
         }
+
+        e.preventDefault();
+        submit();
       } else if (e.key === "Escape") {
-        setTitle("");
+        setName("");
         (e.target as HTMLInputElement)?.blur();
         onCancel?.();
       }
@@ -75,8 +68,8 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <input
             ref={inputRef}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
             aria-label="Add task"
@@ -85,14 +78,14 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
           />
 
           <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
-            <PrimaryButton size="xs" disabled={!title.trim()} onClick={submit} className="w-full sm:w-auto">
+            <PrimaryButton size="xs" disabled={!name.trim()} onClick={submit} className="w-full sm:w-auto">
               Add
             </PrimaryButton>
             <button
               type="button"
               className="w-full rounded-md px-2.5 py-1 text-sm font-semibold text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:w-auto"
               onClick={() => {
-                setTitle("");
+                setName("");
                 onCancel?.();
               }}
             >

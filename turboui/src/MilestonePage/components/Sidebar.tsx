@@ -1,66 +1,85 @@
 import React from "react";
-import * as Types from "../../TaskBoard/types";
 import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
 import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
+import { RelativeDayField } from "../../RelativeDayField";
 import FormattedTime, { type FormattedTimePreferences } from "../../FormattedTime";
-import { MilestonePage } from "..";
+import type { MilestonePage } from "../types";
+import { isProjectMilestoneState, isTemplateMilestoneState } from "../types";
+import { variantFeatures } from "../variantFeatures";
 import { SidebarSection, SidebarNotificationSection } from "../../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../../Toasts";
 import { launchConfetti } from "../../utils/confetti";
 
-export function MilestoneSidebar({
-  milestone,
-  status,
-  onDueDateChange,
-  onStatusChange,
-  createdBy,
-  createdAt,
-  subscriptions,
-  openDeleteModal,
-  permissions,
-  formattedTimePreferences,
-}: MilestonePage.State) {
+export function Sidebar(props: MilestonePage.State) {
+  const features = variantFeatures(props.variant);
+  const canEdit = props.permissions.canEdit || false;
+
   return (
     <div className="sm:col-span-4 hidden sm:block sm:pl-8">
-      <div className="space-y-6 mt-4" data-test-id="sidebar">
-        <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={permissions.canEdit || false} />
-        <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={permissions.canEdit || false} />
-        {milestone.completedAt && milestone.status === "done" && (
-          <SidebarCompletedOn completedAt={milestone.completedAt} formattedTimePreferences={formattedTimePreferences} />
+      <div className="space-y-6 mt-4" data-test-id={features.sidebarTestId}>
+        <DueDate {...props} />
+        {features.showStatus && isProjectMilestoneState(props) && (
+          <SidebarStatus status={props.status} onStatusChange={props.onStatusChange} canEdit={canEdit} />
         )}
-        {createdBy && (
-          <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} formattedTimePreferences={formattedTimePreferences} />
+        {features.showCompletedOn &&
+          isProjectMilestoneState(props) &&
+          props.milestone.completedAt &&
+          props.milestone.status === "done" && (
+            <SidebarCompletedOn completedAt={props.milestone.completedAt} formattedTimePreferences={props.formattedTimePreferences} />
+          )}
+        {features.showCreatedBy && isProjectMilestoneState(props) && props.createdBy && (
+          <SidebarCreatedBy
+            createdBy={props.createdBy}
+            createdAt={props.createdAt}
+            formattedTimePreferences={props.formattedTimePreferences}
+          />
         )}
-        <SidebarNotificationSection {...subscriptions} />
-        <SidebarActions onDelete={openDeleteModal} canEdit={permissions.canEdit || false} />
+        {features.showInsertedAt && isTemplateMilestoneState(props) && props.insertedAt && (
+          <SidebarSection title="Created">
+            <div className="flex items-center gap-1.5 text-sm text-content-dimmed">
+              <IconCalendar size={14} />
+              <FormattedTime {...props.formattedTimePreferences} time={props.insertedAt} format="short-date" />
+            </div>
+          </SidebarSection>
+        )}
+        {features.showSubscriptions && isProjectMilestoneState(props) && <SidebarNotificationSection {...props.subscriptions} />}
+        <SidebarActions onDelete={props.openDeleteModal} canEdit={canEdit} />
       </div>
     </div>
   );
 }
 
-function SidebarDueDate({
-  milestone,
-  onDueDateChange,
-  canEdit,
-}: {
-  milestone: Types.Milestone;
-  onDueDateChange?: (dueDate: DateField.ContextualDate | null) => void;
-  canEdit: boolean;
-}) {
-  // Don't show overdue warning if milestone is completed
-  const showOverdueWarning = milestone.status !== "done";
-  
+function DueDate(props: MilestonePage.State) {
+  const features = variantFeatures(props.variant);
+  const canEdit = props.permissions.canEdit || false;
+
+  if (features.showRelativeDueDate && isTemplateMilestoneState(props)) {
+    return (
+      <SidebarSection title="Relative due date">
+        <RelativeDayField
+          value={props.dueOffsetDays}
+          onChange={props.onDueOffsetDaysChange}
+          readonly={!canEdit}
+          placeholder="Set relative date"
+          testId="template-milestone-due-offset"
+        />
+      </SidebarSection>
+    );
+  }
+
+  if (!features.showCalendarDueDate || !isProjectMilestoneState(props)) {
+    return null;
+  }
+
+  const showOverdueWarning = props.milestone.status !== "done";
+
   return (
     <SidebarSection title="Due Date">
       <DateField
-        date={milestone.dueDate || null}
-        onDateSelect={(date) => {
-          if (onDueDateChange) {
-            onDueDateChange(date);
-          }
-        }}
+        date={props.milestone.dueDate || null}
+        onDateSelect={props.onDueDateChange}
         readonly={!canEdit}
         showOverdueWarning={showOverdueWarning}
         placeholder="Set due date"
@@ -179,7 +198,6 @@ function SidebarCreatedBy({
     </SidebarSection>
   );
 }
-
 
 function SidebarActions({ onDelete, canEdit }: { onDelete?: () => void; canEdit: boolean }) {
   const handleCopyURL = async () => {

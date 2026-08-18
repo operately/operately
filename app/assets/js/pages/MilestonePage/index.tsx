@@ -275,6 +275,7 @@ function Page() {
   );
 
   const props: MilestonePage.Props = {
+    variant: "project",
     ...spaceProps,
     childrenCount,
     permissions: milestone.permissions,
