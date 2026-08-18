@@ -9,6 +9,7 @@ import { createContextualDate } from "../DateField/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
+import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { generatePermissions } from "../utils/storybook/permissions";
 import {
   createSampleTemplateTasks,
@@ -165,6 +166,16 @@ const createSampleTasks = (): Types.Task[] => [
   },
 ];
 
+function reorderTasks(tasks: Types.Task[], taskId: string, destinationIndex: number) {
+  const task = tasks.find((item) => item.id === taskId);
+  if (!task) return tasks;
+
+  const remainingTasks = tasks.filter((item) => item.id !== taskId);
+  const boundedIndex = Math.max(0, Math.min(destinationIndex, remainingTasks.length));
+  remainingTasks.splice(boundedIndex, 0, task);
+  return remainingTasks;
+}
+
 
 
 /**
@@ -173,69 +184,34 @@ const createSampleTasks = (): Types.Task[] => [
 export const Default: Story = {
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
-    
-    // State for tasks and milestone
     const [tasks, setTasks] = useState<Types.Task[]>(createSampleTasks());
     const [milestone, setMilestone] = useState<Types.Milestone>(sampleMilestone);
-
     const subscriptions = useMockSubscriptions({ entityType: "milestone" });
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses: DEFAULT_STATUS_OPTIONS,
+      subscriptions,
+    });
+    const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
+    const [description, setDescription] = useState(mockDescription);
+    const [isDeleted, setIsDeleted] = useState(false);
 
-    // Handler for creating a new task
-    const handleTaskCreate = (newTaskData: Types.NewTaskPayload) => {
-      // Generate a fake ID
-      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-      // Create the new task with the generated ID
-      const newTask: Types.Task = {
-        id: taskId,
-        status: PENDING_STATUS,
-        link: "#",
-        type: "project",
-        ...newTaskData,
-        description: newTaskData.description ? JSON.stringify(newTaskData.description) : "",
-      };
-
-      // Add the new task to the list
-      setTasks([...tasks, newTask]);
-    };
-
-    // Handler for reordering tasks
-    const handleTaskReorder = (taskId: string, milestoneId: string | null, index: number) => {
-      console.log("Task reordered:", { taskId, milestoneId, index });
-
-      // Find the task to move
-      const taskToMove = tasks.find(t => t.id === taskId);
-      if (!taskToMove) return;
-
-      // Remove the task from its current position
-      const newTasks = tasks.filter(t => t.id !== taskId);
-      
-      // Insert the task at the new position
-      newTasks.splice(index, 0, taskToMove);
-      
-      setTasks(newTasks);
-    };
-
-
-    // Handler for due date changes
     const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
-      console.log("Due date changed:", { dueDate });
-      // If dueDate is null, we're clearing the date
       if (dueDate === null) {
         const { dueDate, ...restOfMilestone } = milestone;
         setMilestone(restOfMilestone);
       } else {
-        // Otherwise set the new date
         setMilestone({ ...milestone, dueDate });
       }
     };
 
-    // Handler for milestone name changes
     const handleMilestoneNameChange = async (newName: string) => {
-      console.log("Milestone name changed:", newName);
       setMilestone(prev => ({ ...prev, name: newName }));
       return true;
     };
+
+    if (isDeleted) return <div className="p-6 text-content-subtle">Milestone deleted.</div>;
 
     return (
       <MilestonePage
@@ -257,22 +233,25 @@ export const Default: Story = {
         updateProjectName={() => Promise.resolve(true)}
         milestone={milestone}
         tasks={tasks}
-        onTaskCreate={handleTaskCreate}
-        onTaskReorder={handleTaskReorder}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskReorder={(taskId, _milestoneId, index) => setTasks((prev) => reorderTasks(prev, taskId, index))}
         status={milestone.status}
-        onStatusChange={(status) => {
-          console.log("Milestone status changed:", status);
-        }}
+        onStatusChange={(status) => setMilestone((prev) => ({ ...prev, status }))}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
-        onTaskAssigneeChange={() => {}}
-        onTaskDueDateChange={() => {}}
-        onTaskStatusChange={() => {}}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskRemindersChange={taskActions.onTaskRemindersChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        getTaskPageProps={taskActions.getTaskPageProps}
         onMilestoneTitleChange={handleMilestoneNameChange}
         title={milestone.name}
         assigneePersonSearch={assigneePersonSearch}
-        filters={[]}
-        onFiltersChange={(filters) => console.log("Filters changed:", filters)}
+        filters={filters}
+        onFiltersChange={setFilters}
         timelineItems={createMockTimelineItems()}
         currentUser={mockPeople[0]!}
         permissions={generatePermissions(true)}
@@ -284,10 +263,10 @@ export const Default: Story = {
         createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
         subscriptions={subscriptions}
-        onDelete={() => console.log("Milestone deleted")}
-        description={mockDescription}
+        onDelete={() => setIsDeleted(true)}
+        description={description}
         onDescriptionChange={async (newDescription) => {
-          console.log("Description changed:", newDescription);
+          setDescription(newDescription);
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
@@ -305,8 +284,6 @@ export const EmptyMilestone: Story = {
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
     const subscriptions = useMockSubscriptions({ entityType: "milestone" });
-    
-    // Use state to manage the milestone with its due date
     const [milestone, setMilestone] = useState<Types.Milestone>({
       id: "milestone-empty",
       name: "New Initiative Planning",
@@ -316,16 +293,21 @@ export const EmptyMilestone: Story = {
       link: "#",
       kanbanLink: "#",
     });
+    const [tasks, setTasks] = useState<Types.Task[]>([]);
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses: DEFAULT_STATUS_OPTIONS,
+      subscriptions,
+    });
+    const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
+    const [isDeleted, setIsDeleted] = useState(false);
 
-    // Handler for due date changes
     const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
-      console.log("Due date changed:", { dueDate });
-      // If dueDate is null, we're clearing the date
       if (dueDate === null) {
         const { dueDate, ...restOfMilestone } = milestone;
         setMilestone(restOfMilestone);
       } else {
-        // Otherwise set the new date
         setMilestone({ ...milestone, dueDate });
       }
     };
@@ -344,16 +326,18 @@ export const EmptyMilestone: Story = {
       },
     ];
 
+    if (isDeleted) return <div className="p-6 text-content-subtle">Milestone deleted.</div>;
+
     return (
       <MilestonePage
         variant="project"
         projectName="New Initiative"
         projectLink="#"
         milestone={milestone}
-        tasks={[]}
+        tasks={tasks}
         workmapLink="#"
         childrenCount={{
-          tasksCount: 0,
+          tasksCount: tasks.length,
           discussionsCount: 0,
           checkInsCount: 0,
           docsAndFilesCount: 0,
@@ -365,25 +349,27 @@ export const EmptyMilestone: Story = {
         }}
         updateProjectName={() => Promise.resolve(true)}
         status={milestone.status}
-        onStatusChange={(status) => {
-          console.log("Milestone status changed:", status);
-          setMilestone(prev => ({ ...prev, status: status as "pending" | "done" }));
-        }}
-        onTaskCreate={(taskData: Types.NewTaskPayload) => console.log("Task created:", taskData)}
+        onStatusChange={(status) => setMilestone((prev) => ({ ...prev, status }))}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskReorder={(taskId, _milestoneId, index) => setTasks((prev) => reorderTasks(prev, taskId, index))}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
-        onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee updated:", taskId, assignee)}
-        onTaskDueDateChange={(taskId, dueDate) => console.log("Task due date updated:", taskId, dueDate)}
-        onTaskStatusChange={(taskId, status) => console.log("Task status updated:", taskId, status)}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskRemindersChange={taskActions.onTaskRemindersChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        getTaskPageProps={taskActions.getTaskPageProps}
         title={milestone.name}
         onMilestoneTitleChange={async (newName) => {
-          console.log("Milestone name changed:", newName);
           setMilestone(prev => ({ ...prev, name: newName }));
           return true;
         }}
         assigneePersonSearch={assigneePersonSearch}
-        filters={[]}
-        onFiltersChange={(filters) => console.log("Filters changed:", filters)}
+        filters={filters}
+        onFiltersChange={setFilters}
         timelineItems={emptyMilestoneTimeline}
         currentUser={mockPeople[0]!}
         permissions={generatePermissions(true)}
@@ -395,12 +381,9 @@ export const EmptyMilestone: Story = {
         createdBy={mockPeople[1] || null}
         createdAt={new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)} // 3 days ago
         subscriptions={subscriptions}
-        onDelete={() => console.log("Milestone deleted")}
+        onDelete={() => setIsDeleted(true)}
         description={null}
-        onDescriptionChange={async (newDescription) => {
-          console.log("Description changed:", newDescription);
-          return true;
-        }}
+        onDescriptionChange={async () => true}
         richTextHandlers={createMockRichEditorHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
@@ -416,8 +399,6 @@ export const CompletedMilestone: Story = {
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
     const subscriptions = useMockSubscriptions({ entityType: "milestone" });
-    
-    // Create a completed milestone
     const [milestone, setMilestone] = useState<Types.Milestone>({
       id: "milestone-completed",
       name: "Q1 Feature Release",
@@ -431,8 +412,7 @@ export const CompletedMilestone: Story = {
       completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
     });
 
-    // Create completed tasks for the milestone
-    const [tasks] = useState<Types.Task[]>([
+    const [tasks, setTasks] = useState<Types.Task[]>([
       {
         id: "task-completed-1",
         title: "Implement OAuth integration",
@@ -495,6 +475,15 @@ export const CompletedMilestone: Story = {
         type: "project"
       },
     ]);
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses: DEFAULT_STATUS_OPTIONS,
+      subscriptions,
+    });
+    const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
+    const [description, setDescription] = useState(mockDescription);
+    const [isDeleted, setIsDeleted] = useState(false);
 
     // Create timeline items showing the completion process
     const completedMilestoneTimeline = [
@@ -556,18 +545,16 @@ export const CompletedMilestone: Story = {
       },
     ];
 
-    // Handler for due date changes (should be disabled for completed milestones)
     const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
-      console.log("Due date change attempted on completed milestone:", { dueDate });
-      // In a real app, you might want to prevent changes to completed milestones
+      setMilestone((prev) => ({ ...prev, dueDate }));
     };
 
-    // Handler for milestone name changes (should be disabled for completed milestones)
     const handleMilestoneNameChange = async (newName: string) => {
-      console.log("Name change attempted on completed milestone:", newName);
-      // In a real app, you might want to prevent changes to completed milestones
-      return false; // Return false to indicate the change was not allowed
+      setMilestone((prev) => ({ ...prev, name: newName }));
+      return true;
     };
+
+    if (isDeleted) return <div className="p-6 text-content-subtle">Milestone deleted.</div>;
 
     return (
       <MilestonePage
@@ -589,23 +576,25 @@ export const CompletedMilestone: Story = {
         updateProjectName={() => Promise.resolve(true)}
         milestone={milestone}
         tasks={tasks}
-        onTaskCreate={(taskData: Types.NewTaskPayload) => console.log("Task creation attempted on completed milestone:", taskData)}
-        onTaskReorder={(taskId, milestoneId, index) => console.log("Task reorder attempted:", { taskId, milestoneId, index })}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskReorder={(taskId, _milestoneId, index) => setTasks((prev) => reorderTasks(prev, taskId, index))}
         status={milestone.status}
-        onStatusChange={(status) => {
-          console.log("Milestone status change:", status);
-          setMilestone(prev => ({ ...prev, status: status as "pending" | "done" }));
-        }}
+        onStatusChange={(status) => setMilestone((prev) => ({ ...prev, status }))}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
-        onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee change attempted:", taskId, assignee)}
-        onTaskDueDateChange={(taskId, dueDate) => console.log("Task due date change attempted:", taskId, dueDate)}
-        onTaskStatusChange={(taskId, status) => console.log("Task status change attempted:", taskId, status)}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskRemindersChange={taskActions.onTaskRemindersChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        getTaskPageProps={taskActions.getTaskPageProps}
         onMilestoneTitleChange={handleMilestoneNameChange}
         title={milestone.name}
         assigneePersonSearch={assigneePersonSearch}
-        filters={[]}
-        onFiltersChange={(filters) => console.log("Filters changed:", filters)}
+        filters={filters}
+        onFiltersChange={setFilters}
         timelineItems={completedMilestoneTimeline}
         currentUser={mockPeople[0]!}
         permissions={generatePermissions(true)}
@@ -617,10 +606,10 @@ export const CompletedMilestone: Story = {
         createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)} // 21 days ago
         subscriptions={subscriptions}
-        onDelete={() => console.log("Milestone delete attempted")}
-        description={mockDescription}
+        onDelete={() => setIsDeleted(true)}
+        description={description}
         onDescriptionChange={async (newDescription) => {
-          console.log("Description change attempted on completed milestone:", newDescription);
+          setDescription(newDescription);
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
@@ -652,6 +641,7 @@ function TemplateMilestoneStory({
   const [offsetDays, setOffsetDays] = useState<number | null>(
     dueOffsetDays === undefined ? milestone.dueOffsetDays : dueOffsetDays,
   );
+  const [isDeleted, setIsDeleted] = useState(false);
   const { tasks, onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder, getTemplateTaskPageProps } =
     useMockTemplateMilestoneTaskActions({
       milestoneId,
@@ -662,10 +652,13 @@ function TemplateMilestoneStory({
       richTextHandlers,
     });
 
+  if (isDeleted) return <div className="p-6 text-content-subtle">Milestone deleted.</div>;
+
   const props: MilestonePage.TemplateProps = {
     variant: "project-template",
     ...templateStoryContext,
     template: { ...templateStoryContext.template, archived },
+    tasksCount: tasks.length,
     milestoneId,
     title,
     onMilestoneTitleChange: async (nextTitle) => {
@@ -690,7 +683,7 @@ function TemplateMilestoneStory({
     personSearch,
     getTemplateTaskPageProps,
     permissions: generatePermissions(!archived),
-    onDelete: () => console.log("Delete template milestone"),
+    onDelete: () => setIsDeleted(true),
     richTextHandlers,
     formattedTimePreferences: defaultFormattedTimePreferences,
     localDraftKeyBase: `template-milestone:${milestoneId}`,
