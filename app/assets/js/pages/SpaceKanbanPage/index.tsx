@@ -139,7 +139,7 @@ function Page() {
     onRefresh: pageData.refresh,
     canEdit: Boolean(space.permissions?.canEdit),
     canComment: Boolean(space.permissions?.canComment),
-    hideMilestone: true,
+    variant: "space-task",
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,

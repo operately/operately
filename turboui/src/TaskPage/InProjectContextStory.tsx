@@ -51,6 +51,7 @@ export function InProjectContextStory() {
 
   return (
     <TaskPage
+      variant="project-task"
       // Navigation
       projectName="Mobile App V2"
       projectStatus="on_track"

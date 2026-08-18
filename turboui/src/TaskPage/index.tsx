@@ -1,211 +1,30 @@
 import React from "react";
-import { Status } from "../TaskBoard/types";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
-import { PersonField } from "../PersonField";
-import { TimelineItem, TimelineFilters } from "../Timeline/types";
-import { Person as TimelinePerson } from "../CommentSection/types";
-import { DateField } from "../DateField";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
-import { SidebarNotificationSection } from "../SidebarSection";
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
 import { Sidebar, MobileSidebar } from "./Sidebar";
 import { DeleteModal } from "./DeleteModal";
-import { ProjectPermissions } from "../ProjectPage/types";
 import { MoveModal } from "./MoveModal";
-import { SpaceField } from "../SpaceField";
-import { ProjectField } from "../ProjectField";
-import type { FormattedTimePreferences } from "../FormattedTime";
+import type { TaskPage as TaskPageTypes } from "./types";
 
 export namespace TaskPage {
-  export type MoveDestinationType = "project" | "space";
-
-  export interface MoveTaskInput {
-    destinationType: MoveDestinationType;
-    destinationId: string;
-  }
-
-  export interface Space {
-    id: string;
-    name: string;
-    link: string;
-  }
-
-  export type SpaceProps =
-    | {
-        workmapLink: string;
-        space: Space;
-      }
-    | {
-        homeLink: string;
-      };
-
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl: string | null;
-    profileLink: string;
-  }
-
-  export interface Milestone {
-    id: string;
-    name: string;
-    dueDate: DateField.ContextualDate | null;
-    status: "pending" | "done";
-    link?: string;
-  }
-
-  export type ReminderType = "before_due" | "due_day" | "overdue" | "on_date";
-
-  export interface Reminder {
-    type: ReminderType;
-    days?: number | null;
-    date?: string | null;
-  }
-
-  export type TimelineItemType = TimelineItem;
-
-  export type Props = SpaceProps & {
-    // Navigation/Hierarchy
-    projectName: string;
-    projectLink: string;
-    projectStatus: string;
-
-    childrenCount: ProjectPageLayout.ChildrenCount;
-
-    // Milestone selection
-    milestone: Milestone | null;
-    onMilestoneChange: (milestone: Milestone | null) => void;
-    milestones: Milestone[];
-    onMilestoneSearch: (query: string) => Promise<void>;
-    hideMilestone?: boolean;
-
-    // Core task data
-    name: string;
-    onNameChange: (newName: string) => Promise<boolean>;
-
-    description: any;
-    onDescriptionChange: (newDescription: any) => Promise<boolean>;
-
-    status: Status | null;
-    onStatusChange: (newStatus: Status) => void;
-
-    statusOptions: Status[];
-
-    dueDate?: DateField.ContextualDate;
-    onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
-    reminders: Reminder[];
-    onRemindersChange: (reminders: Reminder[]) => void | boolean | Promise<boolean>;
-
-    assignees: Person[];
-    onAssigneesChange: (newAssignees: Person[]) => void;
-
-    // Metadata (read-only)
-    createdAt: Date;
-    createdBy: Person | null;
-    closedAt: Date | null;
-
-    // Subscriptions
-    subscriptions: SidebarNotificationSection.Props;
-
-    // Actions
-    onDelete: () => Promise<void>;
-    onDuplicate?: () => void;
-    onArchive?: () => void;
-    onMoveTask?: (input: MoveTaskInput) => Promise<boolean>;
-    spaceSearch?: SpaceField.SearchSpaceFn;
-    projectSearch?: ProjectField.SearchProjectFn;
-
-    // Assignee selection
-    assigneePersonSearch: PersonField.SearchData;
-    richTextHandlers: RichEditorHandlers;
-    localDraftKeyBase?: string;
-
-    // Permissions
-    permissions: ProjectPermissions;
-    canEdit: boolean;
-    canComment?: boolean;
-
-    updateProjectName: (name: string) => Promise<boolean>;
-
-    // Timeline/Activity feed
-    timelineItems?: TimelineItem[];
-    timelineIsLoading?: boolean;
-    currentUser?: TimelinePerson;
-    onAddComment: (content: any) => void;
-    onEditComment: (id: string, content: any) => void;
-    onDeleteComment: (id: string) => void;
-    onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
-    onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
-    timelineFilters?: TimelineFilters;
-    formattedTimePreferences: FormattedTimePreferences;
-  };
-
-  export type ContentProps = Pick<
-    Props,
-    | "milestone"
-    | "onMilestoneChange"
-    | "milestones"
-    | "onMilestoneSearch"
-    | "hideMilestone"
-    | "name"
-    | "onNameChange"
-    | "description"
-    | "onDescriptionChange"
-    | "status"
-    | "onStatusChange"
-    | "statusOptions"
-    | "dueDate"
-    | "onDueDateChange"
-    | "reminders"
-    | "onRemindersChange"
-    | "assignees"
-    | "onAssigneesChange"
-    | "createdAt"
-    | "createdBy"
-    | "subscriptions"
-    | "onDelete"
-    | "onArchive"
-    | "onMoveTask"
-    | "spaceSearch"
-    | "projectSearch"
-    | "assigneePersonSearch"
-    | "richTextHandlers"
-    | "localDraftKeyBase"
-    | "canEdit"
-    | "timelineItems"
-    | "timelineIsLoading"
-    | "currentUser"
-    | "canComment"
-    | "onAddComment"
-    | "onEditComment"
-    | "onDeleteComment"
-    | "onAddReaction"
-    | "onRemoveReaction"
-    | "timelineFilters"
-    | "formattedTimePreferences"
-  >;
-
-  export interface ContentState extends ContentProps {
-    isDeleteModalOpen: boolean;
-    openDeleteModal: () => void;
-    closeDeleteModal: () => void;
-    isMoveModalOpen: boolean;
-    openMoveModal: () => void;
-    closeMoveModal: () => void;
-    useMinimalistDelete?: boolean;
-  }
-
-  export type State = Props & {
-    isDeleteModalOpen: boolean;
-    openDeleteModal: () => void;
-    closeDeleteModal: () => void;
-    isMoveModalOpen: boolean;
-    openMoveModal: () => void;
-    closeMoveModal: () => void;
-  };
+  export type MoveDestinationType = TaskPageTypes.MoveDestinationType;
+  export type Variant = TaskPageTypes.Variant;
+  export type VariantFeatures = TaskPageTypes.VariantFeatures;
+  export type MoveTaskInput = TaskPageTypes.MoveTaskInput;
+  export type Space = TaskPageTypes.Space;
+  export type SpaceProps = TaskPageTypes.SpaceProps;
+  export type Person = TaskPageTypes.Person;
+  export type Milestone = TaskPageTypes.Milestone;
+  export type ReminderType = TaskPageTypes.ReminderType;
+  export type Reminder = TaskPageTypes.Reminder;
+  export type TimelineItemType = TaskPageTypes.TimelineItemType;
+  export type Props = TaskPageTypes.Props;
+  export type ContentProps = TaskPageTypes.ContentProps;
+  export type ContentState = TaskPageTypes.ContentState;
+  export type State = TaskPageTypes.State;
 }
 
 function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
@@ -224,7 +43,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     closeMoveModal: () => setIsMoveModalOpen(false),
   };
 
-  return {
+  const contentProps = {
     milestone: props.milestone,
     onMilestoneChange: props.onMilestoneChange,
     milestones: props.milestones,
@@ -265,7 +84,22 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     onRemoveReaction: props.onRemoveReaction,
     timelineFilters: props.timelineFilters,
     formattedTimePreferences: props.formattedTimePreferences,
+  };
 
+  if (props.variant === "template") {
+    return {
+      ...contentProps,
+      variant: "template",
+      dueOffsetDays: props.dueOffsetDays,
+      onDueOffsetDaysChange: props.onDueOffsetDaysChange,
+      ...deleteModalState,
+      ...moveModalState,
+    };
+  }
+
+  return {
+    ...contentProps,
+    variant: props.variant,
     ...deleteModalState,
     ...moveModalState,
   };
