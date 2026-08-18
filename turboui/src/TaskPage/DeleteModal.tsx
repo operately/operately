@@ -1,5 +1,5 @@
 import React from "react";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
 import { DangerButton, SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import Modal from "../Modal";

@@ -1,6 +1,6 @@
 import { IconArchive, IconCalendar, IconCircleArrowRight, IconLink, IconPlus, IconTrash } from "../icons";
 import React from "react";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
 import { AvatarWithName } from "../Avatar";
 import { AssigneesField } from "../AssigneesField";
 import { WarningCallout } from "../Callouts";
@@ -52,11 +52,9 @@ export function MobileSidebar(props: TaskPage.ContentState) {
 }
 
 function DueDate(props: TaskPage.ContentState) {
-  const isRelativeDue = variantFeatures(props.variant).showRelativeDueDate;
-
-  return (
-    <SidebarSection title={isRelativeDue ? "Relative due date" : "Due date"}>
-      {isRelativeDue ? (
+  if (props.variant === "template") {
+    return (
+      <SidebarSection title="Relative due date">
         <RelativeDayField
           value={props.dueOffsetDays ?? null}
           onChange={props.onDueOffsetDaysChange}
@@ -64,20 +62,22 @@ function DueDate(props: TaskPage.ContentState) {
           placeholder="Set relative date"
           testId="task-due-offset"
         />
-      ) : (
-        <>
-          <DateField
-            date={props.dueDate ?? null}
-            onDateSelect={props.onDueDateChange}
-            readonly={!props.canEdit}
-            showOverdueWarning={!props.status?.closed}
-            placeholder="Set due date"
-            testId="task-due-date"
-            calendarOnly
-          />
-          <OverdueWarning {...props} />
-        </>
-      )}
+      </SidebarSection>
+    );
+  }
+
+  return (
+    <SidebarSection title="Due date">
+      <DateField
+        date={props.dueDate ?? null}
+        onDateSelect={props.onDueDateChange}
+        readonly={!props.canEdit}
+        showOverdueWarning={!props.status?.closed}
+        placeholder="Set due date"
+        testId="task-due-date"
+        calendarOnly
+      />
+      <OverdueWarning {...props} />
     </SidebarSection>
   );
 }
@@ -307,28 +307,30 @@ function Assignees(props: TaskPage.ContentState) {
 }
 
 function DueDateMobile(props: TaskPage.ContentState) {
-  const isRelativeDue = variantFeatures(props.variant).showRelativeDueDate;
-
-  return (
-    <SidebarSection title={isRelativeDue ? "Relative due date" : "Due date"}>
-      {isRelativeDue ? (
+  if (props.variant === "template") {
+    return (
+      <SidebarSection title="Relative due date">
         <RelativeDayField
           value={props.dueOffsetDays ?? null}
           onChange={props.onDueOffsetDaysChange}
           readonly={!props.canEdit}
           placeholder="Set relative date"
         />
-      ) : (
-        <DateField
-          date={props.dueDate ?? null}
-          onDateSelect={props.onDueDateChange}
-          readonly={!props.canEdit}
-          showOverdueWarning={!props.status?.closed}
-          placeholder="Set due date"
-          calendarOnly
-          size="small"
-        />
-      )}
+      </SidebarSection>
+    );
+  }
+
+  return (
+    <SidebarSection title="Due date">
+      <DateField
+        date={props.dueDate ?? null}
+        onDateSelect={props.onDueDateChange}
+        readonly={!props.canEdit}
+        showOverdueWarning={!props.status?.closed}
+        placeholder="Set due date"
+        calendarOnly
+        size="small"
+      />
     </SidebarSection>
   );
 }

@@ -1,5 +1,5 @@
 import { IconCopy, IconTrash, IconCopy as IconDuplicate, IconArchive } from "../icons";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
 
 export function pageOptions(props: TaskPage.State) {
   return [

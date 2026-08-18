@@ -1,5 +1,5 @@
 import React from "react";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
 import { variantFeatures } from "./variantFeatures";
 import { Timeline } from "../Timeline";
 import { PageDescription } from "../PageDescription";
