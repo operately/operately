@@ -7,6 +7,25 @@ import { moduleAnalyzerPlugin, resumeStdinPlugin } from "./assets/custom-vite-pl
 
 const isProd = process.env.NODE_ENV === "production";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const devHost = process.env.OPERATELY_DEV_HOST;
+const portOffset = Number.parseInt(process.env.PORT_OFFSET || "4000", 10);
+const phoenixPort = portOffset;
+const viteClientPort = portOffset + 5;
+
+const remoteDevServer = devHost
+  ? {
+      hmr: {
+        host: devHost,
+        clientPort: viteClientPort,
+      },
+      cors: {
+        origin: [`http://${devHost}:${phoenixPort}`, `http://localhost:${phoenixPort}`, `http://127.0.0.1:${phoenixPort}`],
+      },
+      allowedHosts: [devHost, "localhost", "127.0.0.1"],
+    }
+  : {
+      hmr: true,
+    };
 
 // Plugin to copy static assets from assets/static to build output
 const copyStaticAssetsPlugin = () => ({
@@ -63,7 +82,7 @@ export default defineConfig({
       usePolling: false,
       ignored: ["**/node_modules/**", "**/.git/**", "!../turboui/src/**"],
     },
-    hmr: true,
+    ...remoteDevServer,
     port: 4005,
     host: "0.0.0.0",
   },
