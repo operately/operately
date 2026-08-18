@@ -159,6 +159,7 @@ dev.seed.env:
 	@grep "OPERATELY_BLOB_TOKEN_SECRET_KEY" .env >/dev/null || echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=$$(openssl rand -base64 32)" >> .env
 	@grep "ALLOW_LOGIN_WITH_EMAIL" .env >/dev/null || printf "\nALLOW_LOGIN_WITH_EMAIL=yes\n" >> .env
 	@grep "ALLOW_SIGNUP_WITH_EMAIL" .env >/dev/null || echo "ALLOW_SIGNUP_WITH_EMAIL=yes" >> .env
+	@grep "^# Remote dev from another machine" .env >/dev/null || printf "\n# Remote dev from another machine (optional):\n# OPERATELY_DEV_HOST=100.x.x.x\n# DEV_BIND_HOST=0.0.0.0\n" >> .env
 
 dev.mix.deps.clean:
 	./devenv bash -c "cd app && mix deps.clean --unlock --unused"

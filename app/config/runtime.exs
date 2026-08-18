@@ -70,9 +70,10 @@ config :operately, Operately.CompanyTransfers.Package.Limits,
 
 if config_env() == :dev do
   public_port = String.to_integer(System.get_env("PORT_OFFSET") || "4000")
+  public_host = System.get_env("OPERATELY_DEV_HOST") || "localhost"
 
   config :operately, OperatelyWeb.Endpoint,
-    url: [host: "localhost", port: public_port, scheme: "http"]
+    url: [host: public_host, port: public_port, scheme: "http"]
 end
 
 if config_env() == :prod do
