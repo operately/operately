@@ -334,6 +334,7 @@ function Page() {
     onRefresh: refresh,
     canEdit: Boolean(project.permissions?.canEdit),
     canComment: Boolean(project.permissions?.canComment),
+    variant: "project-task",
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,

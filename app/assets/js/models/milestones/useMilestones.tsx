@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import Api from "@/api";
-import { parseMilestonesForTurboUi } from "./index";
+import { parseMilestonesForTurboUi, type ParsedMilestoneForTurboUi } from "./index";
 import { usePaths } from "@/routes/paths";
-import { TaskPage } from "turboui";
 
 interface UseMilestonesResult {
-  milestones: TaskPage.Milestone[];
+  milestones: ParsedMilestoneForTurboUi[];
   search: (query: string) => Promise<void>;
 }
 
 export function useMilestones(projectId: string): UseMilestonesResult {
   const paths = usePaths();
-  const [milestones, setMilestones] = useState<TaskPage.Milestone[]>([]);
+  const [milestones, setMilestones] = useState<ParsedMilestoneForTurboUi[]>([]);
 
   const search = useCallback(
     async (query: string) => {

@@ -22,6 +22,8 @@ import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
 import { generatePermissions } from "../utils/storybook/permissions";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
+import { sampleTemplateMilestones, templateStatuses } from "../MilestonePage/templateMockData";
+import { TaskSlideIn } from "../TaskBoard/KanbanView/TaskSlideIn";
 
 const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -29,6 +31,10 @@ const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
   { id: "blocked", value: "blocked", label: "Blocked", color: "red", icon: "circleX", index: 2 },
   { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
 ];
+
+const PENDING_STATUS = DEFAULT_STATUS_OPTIONS[0]!;
+const IN_PROGRESS_STATUS = DEFAULT_STATUS_OPTIONS[1]!;
+const DONE_STATUS = DEFAULT_STATUS_OPTIONS[3]!;
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -40,23 +46,19 @@ const meta: Meta<typeof TaskPage> = {
 } satisfies Meta<typeof TaskPage>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, "args"> & {
+  args?: Partial<TaskPage.Props>;
+};
 
 function Component(props: Partial<TaskPage.Props>) {
   const [name, setName] = React.useState(props.name || "");
   const [description, setDescription] = React.useState(props.description || null);
 
-  // Normalize incoming status prop (which the stories provide as a string)
-  // into a full StatusSelector.StatusOption for TaskPage/StatusSelector.
   const initialStatusOption = React.useMemo(() => {
     const baseOptions = props.statusOptions ?? DEFAULT_STATUS_OPTIONS;
+    if (!props.status) return baseOptions[0];
 
-    if (props.status && typeof (props.status as any) === "object") {
-      return props.status as any;
-    }
-
-    const key = (props.status as any) || "pending";
-    return baseOptions.find((s) => s.value === key || s.id === key) ?? baseOptions[0];
+    return baseOptions.find((option) => option.value === props.status?.value || option.id === props.status?.id) ?? props.status;
   }, [props.status, props.statusOptions]);
 
   const [status, setStatus] = React.useState<typeof initialStatusOption | null>(initialStatusOption);
@@ -85,6 +87,7 @@ function Component(props: Partial<TaskPage.Props>) {
 
   const defaults: TaskPage.Props = {
     ...restProps,
+    variant: props.variant ?? "project-task",
 
     // Navigation
     projectName: props.projectName ?? "Mobile App V2",
@@ -126,10 +129,10 @@ function Component(props: Partial<TaskPage.Props>) {
       return true;
     },
 
-    status: status as any,
+    status: status ?? null,
     onStatusChange: (newStatus) => {
       console.log("Updating task status:", newStatus);
-      setStatus(newStatus as any);
+      setStatus(newStatus);
     },
 
     dueDate: dueDate,
@@ -229,7 +232,7 @@ export const Default: Story = {
         "Two-factor authentication",
       ],
     ),
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
     assignees: [mockTaskPeople[0]!],
     milestone: mockMilestones[1], // Beta Release
@@ -244,7 +247,7 @@ export const MinimalTask: Story = {
   args: {
     name: "Review API documentation",
     description: null,
-    status: "pending",
+    status: PENDING_STATUS,
     milestone: undefined,
     dueDate: undefined,
     assignees: [],
@@ -267,7 +270,7 @@ export const CompletedTask: Story = {
         "Production deployment with approval",
       ],
     ),
-    status: "done",
+    status: DONE_STATUS,
     dueDate: createContextualDate(new Date(2024, 0, 10), "day"),
     assignees: [mockTaskPeople[3]!],
     milestone: mockMilestones[0], // MVP Launch (completed)
@@ -282,7 +285,7 @@ export const OverdueTask: Story = {
   args: {
     name: "Fix critical security vulnerability",
     description: asRichText("Critical security issue found in authentication module. Needs immediate attention. 🚨"),
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     dueDate: createContextualDate(new Date(2024, 0, 5), "day"),
     assignees: [mockTaskPeople[0]!],
     timelineItems: createOverdueTaskTimeline(),
@@ -306,7 +309,7 @@ export const LongContent: Story = {
         "Yet another comprehensive bullet point with thorough documentation",
       ],
     ),
-    status: "pending",
+    status: PENDING_STATUS,
     dueDate: createContextualDate(new Date(2024, 3, 1), "day"),
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
@@ -322,4 +325,90 @@ export const InProjectContext: Story = {
   parameters: {
     layout: "fullscreen",
   },
+};
+
+function TemplateTaskContentStory({
+  canEdit = true,
+  description = null,
+}: {
+  canEdit?: boolean;
+  description?: any;
+}) {
+  const personSearch = usePersonFieldSearch(mockTaskPeople);
+  const [name, setName] = React.useState("Publish announcement");
+  const [taskDescription, setTaskDescription] = React.useState(description);
+  const [status, setStatus] = React.useState(templateStatuses[0]!);
+  const [dueOffsetDays, setDueOffsetDays] = React.useState<number | null>(21);
+  const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>({
+    id: "launch",
+    name: "Public launch",
+    dueDate: null,
+    status: "pending",
+  });
+  const [assignees, setAssignees] = React.useState<TaskPage.Person[]>([
+    { id: "ada", fullName: "Ada Lovelace", avatarUrl: null, profileLink: "#" },
+  ]);
+
+  const contentProps: TaskPage.ContentProps = {
+    variant: "template",
+    name,
+    onNameChange: async (nextName) => {
+      setName(nextName);
+      return true;
+    },
+    description: taskDescription,
+    onDescriptionChange: async (nextDescription) => {
+      setTaskDescription(nextDescription);
+      return true;
+    },
+    status,
+    onStatusChange: setStatus,
+    statusOptions: templateStatuses,
+    dueDate: undefined,
+    onDueDateChange: () => undefined,
+    dueOffsetDays,
+    onDueOffsetDaysChange: setDueOffsetDays,
+    reminders: [],
+    onRemindersChange: async () => true,
+    milestone,
+    onMilestoneChange: setMilestone,
+    milestones: sampleTemplateMilestones.map((item) => ({
+      id: item.id,
+      name: item.title,
+      dueDate: null,
+      status: "pending",
+    })),
+    onMilestoneSearch: async () => undefined,
+    assignees,
+    onAssigneesChange: setAssignees,
+    createdAt: new Date(),
+    createdBy: null,
+    subscriptions: {
+      isSubscribed: false,
+      hidden: true,
+      entityType: "project_task",
+      subscribedPeople: [],
+      onToggle: () => undefined,
+    },
+    onDelete: async () => undefined,
+    assigneePersonSearch: personSearch,
+    richTextHandlers: createMockRichEditorHandlers(),
+    canEdit,
+    onAddComment: () => undefined,
+    onEditComment: () => undefined,
+    onDeleteComment: () => undefined,
+    formattedTimePreferences: defaultFormattedTimePreferences,
+  };
+
+  return <TaskSlideIn isOpen onClose={() => undefined} taskPageProps={contentProps} />;
+}
+
+export const TemplateTask: Story = {
+  render: () => <TemplateTaskContentStory />,
+  parameters: { layout: "fullscreen" },
+};
+
+export const TemplateTaskReadonly: Story = {
+  render: () => <TemplateTaskContentStory canEdit={false} description={asRichText("Finalize launch messaging.")} />,
+  parameters: { layout: "fullscreen" },
 };

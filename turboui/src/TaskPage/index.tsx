@@ -18,9 +18,13 @@ import { MoveModal } from "./MoveModal";
 import { SpaceField } from "../SpaceField";
 import { ProjectField } from "../ProjectField";
 import type { FormattedTimePreferences } from "../FormattedTime";
+import type { Variant as TaskVariant, VariantFeatures as TaskVariantFeatures } from "./variantFeatures";
+import type { Milestone as MilestoneFieldMilestone } from "../MilestoneField";
 
 export namespace TaskPage {
   export type MoveDestinationType = "project" | "space";
+  export type Variant = TaskVariant;
+  export type VariantFeatures = TaskVariantFeatures;
 
   export interface MoveTaskInput {
     destinationType: MoveDestinationType;
@@ -42,20 +46,8 @@ export namespace TaskPage {
         homeLink: string;
       };
 
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl: string | null;
-    profileLink: string;
-  }
-
-  export interface Milestone {
-    id: string;
-    name: string;
-    dueDate: DateField.ContextualDate | null;
-    status: "pending" | "done";
-    link?: string;
-  }
+  export type Person = PersonField.Person;
+  export type Milestone = MilestoneFieldMilestone;
 
   export type ReminderType = "before_due" | "due_day" | "overdue" | "on_date";
 
@@ -68,6 +60,8 @@ export namespace TaskPage {
   export type TimelineItemType = TimelineItem;
 
   export type Props = SpaceProps & {
+    variant: Variant;
+
     // Navigation/Hierarchy
     projectName: string;
     projectLink: string;
@@ -80,7 +74,6 @@ export namespace TaskPage {
     onMilestoneChange: (milestone: Milestone | null) => void;
     milestones: Milestone[];
     onMilestoneSearch: (query: string) => Promise<void>;
-    hideMilestone?: boolean;
 
     // Core task data
     name: string;
@@ -145,11 +138,11 @@ export namespace TaskPage {
 
   export type ContentProps = Pick<
     Props,
+    | "variant"
     | "milestone"
     | "onMilestoneChange"
     | "milestones"
     | "onMilestoneSearch"
-    | "hideMilestone"
     | "name"
     | "onNameChange"
     | "description"
@@ -186,7 +179,10 @@ export namespace TaskPage {
     | "onRemoveReaction"
     | "timelineFilters"
     | "formattedTimePreferences"
-  >;
+  > & {
+    dueOffsetDays?: number | null;
+    onDueOffsetDaysChange?: (value: number | null) => void;
+  };
 
   export interface ContentState extends ContentProps {
     isDeleteModalOpen: boolean;
@@ -225,6 +221,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
   };
 
   return {
+    variant: props.variant,
     milestone: props.milestone,
     onMilestoneChange: props.onMilestoneChange,
     milestones: props.milestones,

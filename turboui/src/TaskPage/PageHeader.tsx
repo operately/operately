@@ -1,5 +1,6 @@
 import React from "react";
 import { TaskPage } from ".";
+import { variantFeatures } from "./variantFeatures";
 import { StatusSelector } from "../StatusSelector";
 import { TextField } from "../TextField";
 import { TaskCheckbox } from "./TaskCheckbox";
@@ -14,7 +15,7 @@ export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
     <div className="mt-4">
       <div className="flex-1">
         <div className="flex items-start gap-3" data-test-id="task-header">
-          {completedStatus && (
+          {completedStatus && variantFeatures(props.variant).showCompleteCheckbox && (
             <TaskCheckbox
               status={props.status}
               canEdit={props.canEdit}
