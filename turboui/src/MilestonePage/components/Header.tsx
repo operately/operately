@@ -3,15 +3,19 @@ import React from "react";
 import { IconFlag, IconFlagFilled } from "../../icons";
 import { StatusBadge } from "../../StatusBadge";
 import { TextField } from "../../TextField";
+import type { MilestonePage } from "../types";
+import { variantFeatures } from "../variantFeatures";
 
 interface Props {
+  variant: MilestonePage.Variant;
   title: string;
   canEdit: boolean;
-  status: string;
+  status?: MilestonePage.Status;
   onMilestoneTitleChange: (title: string) => void;
 }
 
-export function Header({ title, canEdit, status, onMilestoneTitleChange }: Props) {
+export function Header({ variant, title, canEdit, status = "pending", onMilestoneTitleChange }: Props) {
+  const showStatus = variantFeatures(variant).showStatus;
   const isCompleted = status === "done";
 
   return (
@@ -20,10 +24,10 @@ export function Header({ title, canEdit, status, onMilestoneTitleChange }: Props
       data-test-id="milestone-header"
     >
       <div className="flex items-center gap-2 flex-wrap">
-        {isCompleted ? (
+        {showStatus && isCompleted ? (
           <IconFlagFilled size={20} className="text-accent-1" />
         ) : (
-          <IconFlag size={20} className="text-blue-500" />
+          <IconFlag size={20} className={showStatus ? "text-blue-500" : "text-content-subtle"} />
         )}
         <TextField
           className="font-semibold leading-tight text-xl sm:text-2xl break-words min-w-0"
@@ -33,12 +37,14 @@ export function Header({ title, canEdit, status, onMilestoneTitleChange }: Props
           trimBeforeSave
           testId="milestone-name-input"
         />
-        <StatusBadge
-          status={isCompleted ? "completed" : "in_progress"}
-          customLabel={isCompleted ? undefined : "Active"}
-          hideIcon={true}
-          className="hidden sm:inline-flex sm:ml-2"
-        />
+        {showStatus && (
+          <StatusBadge
+            status={isCompleted ? "completed" : "in_progress"}
+            customLabel={isCompleted ? undefined : "Active"}
+            hideIcon={true}
+            className="hidden sm:inline-flex sm:ml-2"
+          />
+        )}
       </div>
     </div>
   );

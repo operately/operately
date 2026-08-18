@@ -278,17 +278,19 @@ export function TaskBoard({
 
   return (
     <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto pb-8">
-      <TaskCreationModal
-        isOpen={isTaskModalOpen}
-        onClose={closeTaskModal}
-        onCreateTask={onTaskCreate}
-        milestones={searchableMilestones}
-        currentMilestoneId={activeTaskMilestoneId}
-        assigneePersonSearch={assigneePersonSearch}
-        onMilestoneSearch={onMilestoneSearch}
-        richTextHandlers={richTextHandlers}
-        formattedTimePreferences={formattedTimePreferences}
-      />
+      {richTextHandlers && (
+        <TaskCreationModal
+          isOpen={isTaskModalOpen}
+          onClose={closeTaskModal}
+          onCreateTask={onTaskCreate}
+          milestones={searchableMilestones}
+          currentMilestoneId={activeTaskMilestoneId}
+          assigneePersonSearch={assigneePersonSearch}
+          onMilestoneSearch={onMilestoneSearch}
+          richTextHandlers={richTextHandlers}
+          formattedTimePreferences={formattedTimePreferences}
+        />
+      )}
 
       <MilestoneCreationModal
         isOpen={isMilestoneModalOpen}
@@ -412,8 +414,7 @@ export function TaskBoard({
                       noMilestoneCreatorOpen ? (
                         <InlineTaskCreator
                           ref={noMilestoneCreatorRef}
-                          milestone={null}
-                          onCreate={onTaskCreate}
+                          onCreate={(title) => onTaskCreate({ title, milestone: null, dueDate: null, assignees: [] })}
                           onRequestAdvanced={() => {
                             setActiveTaskMilestoneId("no-milestone");
                           }}

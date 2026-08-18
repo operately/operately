@@ -10,6 +10,13 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { generatePermissions } from "../utils/storybook/permissions";
+import {
+  createSampleTemplateTasks,
+  sampleTemplateMilestones,
+  templateStatuses,
+  templateStoryContext,
+} from "./templateMockData";
+import { useMockTemplateMilestoneTaskActions } from "../utils/storybook/templateTasks";
 
 /**
  * MilestonePage displays a standalone page for a single milestone and its tasks.
@@ -25,7 +32,9 @@ const meta: Meta<typeof MilestonePage> = {
 } satisfies Meta<typeof MilestonePage>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = Omit<StoryObj<typeof meta>, "args"> & {
+  args?: Partial<MilestonePage.Props>;
+};
 
 const DEFAULT_STATUS_OPTIONS: Types.Status[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -230,6 +239,7 @@ export const Default: Story = {
 
     return (
       <MilestonePage
+        variant="project"
         projectName="Demo Project"
         projectLink="#"
         workmapLink="#"
@@ -336,6 +346,7 @@ export const EmptyMilestone: Story = {
 
     return (
       <MilestonePage
+        variant="project"
         projectName="New Initiative"
         projectLink="#"
         milestone={milestone}
@@ -358,7 +369,7 @@ export const EmptyMilestone: Story = {
           console.log("Milestone status changed:", status);
           setMilestone(prev => ({ ...prev, status: status as "pending" | "done" }));
         }}
-        onTaskCreate={(taskData) => console.log("Task created:", taskData)}
+        onTaskCreate={(taskData: Types.NewTaskPayload) => console.log("Task created:", taskData)}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee updated:", taskId, assignee)}
@@ -560,6 +571,7 @@ export const CompletedMilestone: Story = {
 
     return (
       <MilestonePage
+        variant="project"
         projectName="Product Development"
         projectLink="#"
         workmapLink="#"
@@ -577,7 +589,7 @@ export const CompletedMilestone: Story = {
         updateProjectName={() => Promise.resolve(true)}
         milestone={milestone}
         tasks={tasks}
-        onTaskCreate={(taskData) => console.log("Task creation attempted on completed milestone:", taskData)}
+        onTaskCreate={(taskData: Types.NewTaskPayload) => console.log("Task creation attempted on completed milestone:", taskData)}
         onTaskReorder={(taskId, milestoneId, index) => console.log("Task reorder attempted:", { taskId, milestoneId, index })}
         status={milestone.status}
         onStatusChange={(status) => {
@@ -617,4 +629,90 @@ export const CompletedMilestone: Story = {
       />
     );
   },
+};
+
+function TemplateMilestoneStory({
+  milestoneId,
+  archived = false,
+  dueOffsetDays,
+  description,
+  emptyTasks = false,
+}: {
+  milestoneId: string;
+  archived?: boolean;
+  dueOffsetDays?: number | null;
+  description?: any;
+  emptyTasks?: boolean;
+}) {
+  const milestone = sampleTemplateMilestones.find((item) => item.id === milestoneId)!;
+  const personSearch = usePersonFieldSearch(mockPeople);
+  const richTextHandlers = createMockRichEditorHandlers();
+  const [title, setTitle] = useState(milestone.title);
+  const [milestoneDescription, setMilestoneDescription] = useState(description ?? milestone.description);
+  const [offsetDays, setOffsetDays] = useState<number | null>(
+    dueOffsetDays === undefined ? milestone.dueOffsetDays : dueOffsetDays,
+  );
+  const { tasks, onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder, getTemplateTaskPageProps } =
+    useMockTemplateMilestoneTaskActions({
+      milestoneId,
+      milestones: sampleTemplateMilestones,
+      initialTasks: emptyTasks ? [] : createSampleTemplateTasks(milestoneId),
+      statuses: templateStatuses,
+      personSearch,
+      richTextHandlers,
+    });
+
+  const props: MilestonePage.TemplateProps = {
+    variant: "project-template",
+    ...templateStoryContext,
+    template: { ...templateStoryContext.template, archived },
+    milestoneId,
+    title,
+    onMilestoneTitleChange: async (nextTitle) => {
+      setTitle(nextTitle);
+      return true;
+    },
+    description: milestoneDescription,
+    onDescriptionChange: async (nextDescription) => {
+      setMilestoneDescription(nextDescription);
+      return true;
+    },
+    dueOffsetDays: offsetDays,
+    onDueOffsetDaysChange: setOffsetDays,
+    insertedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    tasks,
+    statuses: templateStatuses,
+    milestones: sampleTemplateMilestones,
+    onTaskCreate,
+    onTaskUpdate,
+    onTaskDelete,
+    onTaskReorder,
+    personSearch,
+    getTemplateTaskPageProps,
+    permissions: generatePermissions(!archived),
+    onDelete: () => console.log("Delete template milestone"),
+    richTextHandlers,
+    formattedTimePreferences: defaultFormattedTimePreferences,
+    localDraftKeyBase: `template-milestone:${milestoneId}`,
+    updateTemplateName: async (name) => {
+      console.log("Template renamed:", name);
+      return true;
+    },
+  };
+
+  return <MilestonePage {...props} />;
+}
+
+export const TemplateMilestone: Story = {
+  render: () => <TemplateMilestoneStory milestoneId="beta" />,
+};
+
+export const TemplateEmptyMilestone: Story = {
+  render: () => (
+    <TemplateMilestoneStory milestoneId="launch" dueOffsetDays={21} description={null} emptyTasks />
+  ),
+};
+
+export const TemplateArchivedMilestone: Story = {
+  render: () => <TemplateMilestoneStory milestoneId="beta" archived />,
 };
