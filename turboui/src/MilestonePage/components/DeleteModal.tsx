@@ -1,10 +1,12 @@
 import React from "react";
-import { MilestonePage } from "..";
+import type { MilestonePage } from "../types";
 import { DangerButton, SecondaryButton } from "../../Button";
 import { WarningCallout } from "../../Callouts";
 import Modal from "../../Modal";
 
-export function DeleteModal(props: MilestonePage.State) {
+export function DeleteModal(
+  props: Pick<MilestonePage.State, "isDeleteModalOpen" | "closeDeleteModal" | "onDelete">,
+) {
   const title = "Delete Milestone";
 
   return (
@@ -14,7 +16,7 @@ export function DeleteModal(props: MilestonePage.State) {
   );
 }
 
-function DeleteForm(props: MilestonePage.State) {
+function DeleteForm(props: Pick<MilestonePage.State, "onDelete" | "closeDeleteModal">) {
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

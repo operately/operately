@@ -3,6 +3,8 @@ import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import type { TaskPage } from "../../TaskPage";
+import type { TemplateProjectPage } from "../../TemplateProjectPage";
+import type { PersonField } from "../../PersonField";
 import type { ProjectField } from "../../ProjectField";
 import type { SpaceField } from "../../SpaceField";
 
@@ -11,6 +13,28 @@ export type KanbanStatus = string;
 export type KanbanState = Record<KanbanStatus, string[]>;
 
 export type GetTaskPageProps = (taskId: string, ctx: TaskSlideInContext) => TaskPage.ContentProps | null;
+
+export type GetTemplateTaskPageProps = (
+  taskId: string,
+  ctx: TemplateTaskSlideInContext,
+) => TaskPage.ContentProps | null;
+
+export interface TemplateTaskSlideInContext {
+  milestoneId: string;
+  tasks: TemplateProjectPage.Task[];
+  milestones: TemplateProjectPage.Milestone[];
+  statuses: StatusSelector.StatusOption[];
+  onTaskCreate?: (task: Omit<TemplateProjectPage.Task, "id">) => void;
+  onTaskUpdate?: (taskId: string, updates: Partial<TemplateProjectPage.Task>) => void | boolean | Promise<void | boolean>;
+  onTaskDelete?: (taskId: string) => void | Promise<void>;
+  onTaskReorder?: (
+    taskId: string,
+    milestoneId: string | null,
+    destinationIndex: number,
+  ) => void | boolean | Promise<void | boolean>;
+  personSearch?: PersonField.SearchData;
+  richTextHandlers?: RichEditorHandlers;
+}
 
 export interface TaskSlideInContext {
   milestone?: TaskBoard.Milestone;

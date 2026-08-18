@@ -4,138 +4,47 @@ import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 import * as Types from "../TaskBoard/types";
 import { Timeline } from "../Timeline";
 import { IconCheck, IconFlag, IconFlagFilled } from "../icons";
+import { IconClipboardText, IconListCheck, IconMessageCircle, IconPaperclip } from "../icons";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
-import { MilestoneSidebar } from "./components/Sidebar";
+import { Sidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
-import { PersonField } from "../PersonField";
-import { TimelineItem } from "../Timeline/types";
 import { Header } from "./components/Header";
 import { TasksSection } from "./components/TasksSection";
 import { SidebarSection } from "../SidebarSection";
 import { GhostButton, SecondaryButton } from "../Button";
 import { launchConfetti } from "../utils/confetti";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { PageDescription } from "../PageDescription";
-import { SidebarNotificationSection } from "../SidebarSection";
-import { ProjectPermissions } from "../ProjectPage/types";
-import type { FormattedTimePreferences } from "../FormattedTime";
+import { RelativeDayField } from "../RelativeDayField";
+import { useTabs } from "../Tabs";
+import type { MilestonePage as MilestonePageTypes } from "./types";
+import { isProjectMilestoneState, isTemplateMilestoneProps, isTemplateMilestoneState } from "./types";
+import { variantFeatures } from "./variantFeatures";
 
 export namespace MilestonePage {
-  export type Milestone = Types.Milestone;
-
-  export type TimelineItemType = TimelineItem;
-
-  interface Space {
-    id: string;
-    name: string;
-    link: string;
-  }
-
-  export type SpaceProps =
-    | {
-        workmapLink: string;
-        space: Space;
-      }
-    | {
-        homeLink: string;
-      };
-
-  export type Person = {
-    id: string;
-    fullName: string;
-    avatarUrl: string | null;
-    profileLink: string;
-  };
-
-  export type Status = "pending" | "done";
-
-  export type Props = SpaceProps & {
-    childrenCount: ProjectPageLayout.ChildrenCount;
-    permissions: ProjectPermissions;
-
-    // Project
-    projectName: string;
-    projectLink: string;
-    projectStatus?: string;
-    updateProjectName: (name: string) => Promise<boolean>;
-
-    // Milestone
-    milestone: Milestone;
-    title: string;
-    onMilestoneTitleChange: (name: string) => Promise<boolean>;
-    dueDate: DateField.ContextualDate | null;
-    onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
-    status: Status;
-    onStatusChange: (status: Status) => void;
-    description: any;
-    onDescriptionChange: (newDescription: any) => Promise<boolean>;
-
-    onDelete?: () => void;
-
-    // Tasks for this milestone
-    tasks: Types.Task[];
-    statusOptions: Types.Status[];
-
-    // Optional callbacks
-    onTaskCreate?: (task: Types.NewTaskPayload) => void;
-    onTaskReorder?: (taskId: string, milestoneId: string | null, index: number) => void;
-    onTaskMilestoneChange?: (taskId: string, milestone: Types.Milestone | null) => void;
-    onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
-    onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-    onTaskRemindersChange?: Types.TaskBoardProps["onTaskRemindersChange"];
-    onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
-    onTaskNameChange?: (taskId: string, name: string) => void;
-    onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
-    onTaskDelete?: (taskId: string) => void | Promise<unknown>;
-    milestones?: Types.Milestone[];
-    onMilestoneSearch?: (query: string) => Promise<void>;
-    getTaskPageProps?: Types.TaskBoardProps["getTaskPageProps"];
-
-    assigneePersonSearch: PersonField.SearchData;
-
-    // Filtering
-    filters?: Types.FilterCondition[];
-    onFiltersChange?: (filters: Types.FilterCondition[]) => void;
-
-    // Timeline data
-    timelineItems: TimelineItemType[];
-    currentUser: Person;
-    onAddComment: (comment: string) => void;
-    onEditComment: (commentId: string, content: string) => void;
-    onDeleteComment: (commentId: string) => void;
-    onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
-    onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
-
-    // Milestone metadata
-    createdBy: Person | null;
-    createdAt: Date;
-
-    // Subscriptions
-    subscriptions: SidebarNotificationSection.Props;
-
-    // Rich editor support for description and comments
-    richTextHandlers: RichEditorHandlers;
-    localDraftKeyBase?: string;
-    formattedTimePreferences: FormattedTimePreferences;
-  };
-
-  export type State = Props & {
-    isTaskModalOpen: boolean;
-    setIsTaskModalOpen: (open: boolean) => void;
-    isDeleteModalOpen: boolean;
-    openDeleteModal: () => void;
-    closeDeleteModal: () => void;
-  };
+  export type Variant = MilestonePageTypes.Variant;
+  export type VariantFeatures = MilestonePageTypes.VariantFeatures;
+  export type Milestone = MilestonePageTypes.Milestone;
+  export type TimelineItemType = MilestonePageTypes.TimelineItemType;
+  export type SpaceProps = MilestonePageTypes.SpaceProps;
+  export type Person = MilestonePageTypes.Person;
+  export type Status = MilestonePageTypes.Status;
+  export type ProjectProps = MilestonePageTypes.ProjectProps;
+  export type TemplateProps = MilestonePageTypes.TemplateProps;
+  export type Props = MilestonePageTypes.Props;
+  export type ProjectState = MilestonePageTypes.ProjectState;
+  export type TemplateState = MilestonePageTypes.TemplateState;
+  export type State = MilestonePageTypes.State;
+  export type ContentState = MilestonePageTypes.State;
 }
 
-function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State {
-  // State
+type ModalState = ReturnType<typeof useMilestonePageModalState>;
+
+function useMilestonePageModalState() {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   return {
-    ...props,
     isTaskModalOpen,
     setIsTaskModalOpen,
     isDeleteModalOpen,
@@ -144,114 +53,191 @@ function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State 
   };
 }
 
-export function MilestonePage(props: MilestonePage.Props) {
-  const state = useMilestonePageState(props);
-  const {
-    milestone,
-    childrenCount,
-    onTaskCreate,
-    title,
-    onMilestoneTitleChange,
-    status,
-    assigneePersonSearch,
-    projectName,
-    projectLink,
-    projectStatus = "active",
-    isTaskModalOpen,
-    setIsTaskModalOpen,
-    permissions,
-  } = state;
-  const handleCreateTask = (newTask: Types.NewTaskPayload) => {
-    if (onTaskCreate) {
-      // Add the milestone to the task
-      onTaskCreate({
-        ...newTask,
-        milestone: milestone,
-      });
-    }
-  };
+function useMilestonePageState(props: MilestonePage.Props, modalState: ModalState): MilestonePage.ContentState {
+  if (isTemplateMilestoneProps(props)) {
+    const canEdit = !props.template.archived && Boolean(props.permissions.canEdit || props.permissions.hasFullAccess);
 
+    return {
+      ...props,
+      ...modalState,
+      permissions: { ...props.permissions, canEdit },
+    };
+  }
+
+  return {
+    ...props,
+    ...modalState,
+  };
+}
+
+export function MilestonePage(props: MilestonePage.Props) {
+  const modalState = useMilestonePageModalState();
+  const state = useMilestonePageState(props, modalState);
+
+  if (isTemplateMilestoneState(state)) {
+    return <TemplateMilestoneLayout state={state} />;
+  }
+
+  return <ProjectMilestoneLayout state={state} />;
+}
+
+function ProjectMilestoneLayout({ state }: { state: MilestonePage.ProjectState }) {
   const tabs = useProjectPageTabs({
     defaultTab: "tasks",
-    childrenCount,
+    childrenCount: state.childrenCount,
     showDocsAndFiles: true,
-    urlPath: projectLink,
+    urlPath: state.projectLink,
   });
 
   const spaceProps =
     "space" in state ? { space: state.space, workmapLink: state.workmapLink } : { homeLink: state.homeLink };
 
-  // Prepare props for ProjectPageLayout
-  const layoutProps = {
-    projectName: projectName,
-    projectLink: projectLink,
-    projectStatus: projectStatus,
-    title: [projectName],
-    testId: "milestone-page",
-    tabs: tabs,
-    status: projectStatus,
-    updateProjectName: props.updateProjectName,
-    closedAt: null,
-    permissions,
-    ...spaceProps,
+  const handleCreateTask = (newTask: Types.NewTaskPayload) => {
+    state.onTaskCreate?.({
+      ...newTask,
+      milestone: state.milestone,
+    });
   };
 
   return (
-    <ProjectPageLayout {...layoutProps}>
+    <ProjectPageLayout
+      projectName={state.projectName}
+      title={[state.projectName]}
+      testId="milestone-page"
+      tabs={tabs}
+      status={state.projectStatus ?? "active"}
+      updateProjectName={state.updateProjectName}
+      closedAt={null}
+      permissions={state.permissions}
+      {...spaceProps}
+    >
       <MainContainer>
-        <Header
-          title={title}
-          canEdit={permissions.canEdit || false}
-          status={status}
-          onMilestoneTitleChange={onMilestoneTitleChange}
-        />
-
-        <MobileMeta {...state} />
-
-        <div className="sm:grid sm:grid-cols-12">
-          {/* Main content - left column (8 columns) */}
-          <div className="sm:col-span-8 sm:px-4 space-y-4">
-            <PageDescription
-              {...state}
-              canEdit={permissions.canEdit}
-              label="Notes"
-              placeholder="Describe the milestone..."
-              zeroStatePlaceholder="Add details about this milestone..."
-              emptyTestId="description-section-empty"
-              localDraftKey={state.localDraftKeyBase ? `${state.localDraftKeyBase}:description` : undefined}
-            />
-
-            <TasksSection {...state} />
-
-            <TimelineSection {...state} />
-          </div>
-
-          <MilestoneSidebar {...state} />
-        </div>
+        <MilestoneContent {...state} />
       </MainContainer>
 
       <TaskCreationModal
-        isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
+        isOpen={state.isTaskModalOpen}
+        onClose={() => state.setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
-        assigneePersonSearch={assigneePersonSearch}
-        currentMilestoneId={milestone.id}
-        milestones={[milestone]}
-        onMilestoneSearch={async () => {}} // No-op: milestone is read-only
+        assigneePersonSearch={state.assigneePersonSearch}
+        currentMilestoneId={state.milestone.id}
+        milestones={[state.milestone]}
+        onMilestoneSearch={async () => {}}
         milestoneReadOnly={true}
         richTextHandlers={state.richTextHandlers}
         formattedTimePreferences={state.formattedTimePreferences}
       />
-      <DeleteModal {...state} />
     </ProjectPageLayout>
   );
 }
 
-function MobileMeta(props: MilestonePage.State) {
-  const { status, onStatusChange, permissions, dueDate, onDueDateChange, milestone } = props;
+function TemplateMilestoneLayout({ state }: { state: MilestonePage.TemplateState }) {
+  const tabs = useTabs(
+    "tasks",
+    [
+      { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
+      { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} />, count: state.tasksCount },
+      { id: "discussions", label: "Discussions", icon: <IconMessageCircle size={14} />, count: state.discussionsCount },
+      {
+        id: "docs-and-files",
+        label: "Docs & Files",
+        icon: <IconPaperclip size={14} />,
+        count: state.docsAndFilesCount,
+      },
+    ],
+    { urlPath: state.templateLink },
+  );
+
+  return (
+    <ProjectPageLayout
+      mode="template"
+      title={[state.template.name]}
+      testId="template-milestone-page"
+      projectName={state.template.name}
+      updateProjectName={state.updateTemplateName}
+      permissions={state.permissions}
+      space={state.space}
+      workmapLink={state.projectTemplatesLink}
+      projectTemplatesLink={state.projectTemplatesLink}
+      tabs={tabs}
+      archived={state.template.archived}
+    >
+      <MainContainer>
+        <MilestoneContent {...state} />
+      </MainContainer>
+    </ProjectPageLayout>
+  );
+}
+
+export function MilestoneContent(props: MilestonePage.ContentState) {
+  const features = variantFeatures(props.variant);
+  const canEdit = props.permissions.canEdit || false;
+
+  return (
+    <>
+      <Header
+        variant={props.variant}
+        title={props.title}
+        canEdit={canEdit}
+        status={features.showStatus && isProjectMilestoneState(props) ? props.status : undefined}
+        onMilestoneTitleChange={props.onMilestoneTitleChange}
+      />
+
+      <MobileMeta {...props} />
+
+      <div className="sm:grid sm:grid-cols-12">
+        <div className="space-y-4 sm:col-span-8 sm:px-4">
+          <PageDescription
+            description={props.description}
+            onDescriptionChange={props.onDescriptionChange}
+            richTextHandlers={props.richTextHandlers}
+            canEdit={canEdit}
+            label="Notes"
+            placeholder="Describe the milestone..."
+            zeroStatePlaceholder="Add details about this milestone..."
+            emptyTestId="description-section-empty"
+            localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
+          />
+
+          <TasksSection {...props} />
+
+          {isProjectMilestoneState(props) && <TimelineSection {...props} />}
+        </div>
+
+        <Sidebar {...props} />
+      </div>
+
+      <DeleteModal {...props} />
+    </>
+  );
+}
+
+function MobileMeta(props: MilestonePage.ContentState) {
+  const features = variantFeatures(props.variant);
+  const canEdit = props.permissions.canEdit || false;
+
+  if (features.showRelativeDueDate && isTemplateMilestoneState(props)) {
+    return (
+      <div className="mb-6 mt-4 sm:hidden" data-test-id={features.mobileMetaTestId}>
+        <SidebarSection title="Relative due date">
+          <RelativeDayField
+            value={props.dueOffsetDays}
+            onChange={props.onDueOffsetDaysChange}
+            readonly={!canEdit}
+            placeholder="Set relative date"
+          />
+        </SidebarSection>
+      </div>
+    );
+  }
+
+  if (!features.showCalendarDueDate || !isProjectMilestoneState(props)) {
+    return null;
+  }
+
+  const { status, onStatusChange, dueDate, onDueDateChange, milestone } = props;
   const isCompleted = status === "done";
   const showOverdueWarning = !isCompleted;
-  const { canEdit } = permissions;
 
   const handleStatusToggle = () => {
     if (!canEdit) return;
@@ -265,47 +251,51 @@ function MobileMeta(props: MilestonePage.State) {
   };
 
   return (
-    <div className="sm:hidden mt-4 mb-6" data-test-id="milestone-mobile-meta">
+    <div className="mb-6 mt-4 sm:hidden" data-test-id={features.mobileMetaTestId}>
       <div className="flex flex-wrap gap-4">
-        <SidebarSection title="Due date" className="flex-1 min-w-[160px]">
-          <DateField
-            date={dueDate ?? milestone.dueDate ?? null}
-            onDateSelect={onDueDateChange}
-            readonly={!canEdit}
-            showOverdueWarning={showOverdueWarning}
-            placeholder="Set due date"
-            size="small"
-          />
-        </SidebarSection>
+        {features.showCalendarDueDate && (
+          <SidebarSection title="Due date" className="min-w-[160px] flex-1">
+            <DateField
+              date={dueDate ?? milestone.dueDate ?? null}
+              onDateSelect={onDueDateChange}
+              readonly={!canEdit}
+              showOverdueWarning={showOverdueWarning}
+              placeholder="Set due date"
+              size="small"
+            />
+          </SidebarSection>
+        )}
 
-        <SidebarSection title="Milestone status" className="flex-1 min-w-[160px]">
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              {isCompleted ? (
-                <>
-                  <IconFlagFilled size={16} className="text-accent-1" />
-                  <span className="font-medium text-accent-1">Completed</span>
-                </>
-              ) : (
-                <>
-                  <IconFlag size={16} className="text-content-dimmed" />
-                  <span className="text-content-base">Active</span>
-                </>
-              )}
+        {features.showStatus && (
+          <SidebarSection title="Milestone status" className="min-w-[160px] flex-1">
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <div className="flex items-center gap-2">
+                {isCompleted ? (
+                  <>
+                    <IconFlagFilled size={16} className="text-accent-1" />
+                    <span className="font-medium text-accent-1">Completed</span>
+                  </>
+                ) : (
+                  <>
+                    <IconFlag size={16} className="text-content-dimmed" />
+                    <span className="text-content-base">Active</span>
+                  </>
+                )}
+              </div>
+
+              {canEdit &&
+                (isCompleted ? (
+                  <SecondaryButton size="xs" onClick={handleStatusToggle}>
+                    Reopen
+                  </SecondaryButton>
+                ) : (
+                  <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
+                    Mark complete
+                  </GhostButton>
+                ))}
             </div>
-
-            {canEdit &&
-              (isCompleted ? (
-                <SecondaryButton size="xs" onClick={handleStatusToggle}>
-                  Reopen
-                </SecondaryButton>
-              ) : (
-                <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
-                  Mark complete
-                </GhostButton>
-              ))}
-          </div>
-        </SidebarSection>
+          </SidebarSection>
+        )}
       </div>
     </div>
   );
@@ -315,16 +305,18 @@ function MainContainer({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex-1 overflow-auto">
       <div className="flex-1 overflow-auto">
-        <div className="p-4 max-w-6xl mx-auto">{children}</div>
+        <div className="mx-auto max-w-6xl p-4">{children}</div>
       </div>
     </div>
   );
 }
 
-function TimelineSection(props: MilestonePage.State) {
+function TimelineSection(props: MilestonePage.ProjectState) {
+  if (!variantFeatures(props.variant).showActivity) return null;
+
   return (
     <div className="pt-8" data-test-id="timeline-section">
-      <h3 className="font-bold mb-4">Comments & Activity</h3>
+      <h3 className="mb-4 font-bold">Comments & Activity</h3>
       <Timeline
         items={props.timelineItems}
         currentUser={props.currentUser}

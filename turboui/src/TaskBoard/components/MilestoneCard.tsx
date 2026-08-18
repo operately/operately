@@ -107,6 +107,10 @@ export function MilestoneCard({
     // (the modal handles this internally)
   };
 
+  const handleInlineTaskCreate = (title: string) => {
+    handleCreateTask({ title, milestone, dueDate: null, assignees: [] });
+  };
+
   const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
     if (onMilestoneUpdate) {
       onMilestoneUpdate(milestone.id, { name: milestone.name, dueDate: newDueDate || null });
@@ -250,8 +254,7 @@ export function MilestoneCard({
               creatorOpen ? (
                 <InlineTaskCreator
                   ref={creatorRef}
-                  milestone={milestone}
-                  onCreate={handleCreateTask}
+                  onCreate={handleInlineTaskCreate}
                   onRequestAdvanced={() => setIsTaskModalOpen(true)}
                   onCancel={closeCreator}
                   autoFocus
@@ -271,8 +274,7 @@ export function MilestoneCard({
               <>
                 <InlineTaskCreator
                   ref={creatorRef}
-                  milestone={milestone}
-                  onCreate={handleCreateTask}
+                  onCreate={handleInlineTaskCreate}
                   onRequestAdvanced={() => setIsTaskModalOpen(true)}
                   onCancel={closeCreator}
                   autoFocus
@@ -292,17 +294,19 @@ export function MilestoneCard({
         )}
       </li>
 
-      <TaskCreationModal
-        assigneePersonSearch={assigneePersonSearch}
-        isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        onCreateTask={handleCreateTask}
-        milestones={availableMilestones.length > 0 ? availableMilestones : [milestone]}
-        onMilestoneSearch={async () => {}} // No-op: milestones list is static in this context
-        currentMilestoneId={milestone.id}
-        richTextHandlers={richTextHandlers}
-        formattedTimePreferences={formattedTimePreferences}
-      />
+      {richTextHandlers && (
+        <TaskCreationModal
+          assigneePersonSearch={assigneePersonSearch}
+          isOpen={isTaskModalOpen}
+          onClose={() => setIsTaskModalOpen(false)}
+          onCreateTask={handleCreateTask}
+          milestones={availableMilestones.length > 0 ? availableMilestones : [milestone]}
+          onMilestoneSearch={async () => {}} // No-op: milestones list is static in this context
+          currentMilestoneId={milestone.id}
+          richTextHandlers={richTextHandlers}
+          formattedTimePreferences={formattedTimePreferences}
+        />
+      )}
     </>
   );
 }
