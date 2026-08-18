@@ -6,8 +6,12 @@ defmodule OperatelyWeb.PageController do
 
     conn
     |> assign(:app_config, config)
-    |> assign(:vite_url, vite_url())
+    |> assign(:vite_url, vite_dev_url())
     |> render(:page)
+  end
+
+  def vite_dev_url do
+    "http://#{dev_host()}:#{vite_port()}"
   end
 
   def development_mode?(opts \\ []) do
@@ -53,8 +57,8 @@ defmodule OperatelyWeb.PageController do
     end
   end
 
-  defp vite_url do
-    "http://localhost:#{vite_port()}"
+  defp dev_host do
+    System.get_env("OPERATELY_DEV_HOST") || "localhost"
   end
 
   defp vite_port do

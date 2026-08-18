@@ -103,6 +103,26 @@ export PORT_ACME_DEV=$((PORT_OFFSET + 9))
 export PORT_ACME_TEST=$((PORT_OFFSET + 10))
 
 #
+# REMOTE DEV (optional):
+#
+# OPERATELY_DEV_HOST sets the hostname clients use to reach the dev server (e.g. a
+# VPN/LAN IP or hostname). DEV_BIND_HOST controls which host interface Docker
+# publishes ports on (127.0.0.1 by default; use 0.0.0.0 for remote access).
+#
+DEV_BIND_HOST=
+OPERATELY_DEV_HOST=
+if [ -f .env ]; then
+  DEV_BIND_HOST=$(grep '^DEV_BIND_HOST=' .env | cut -d '=' -f2-)
+  OPERATELY_DEV_HOST=$(grep '^OPERATELY_DEV_HOST=' .env | cut -d '=' -f2-)
+fi
+
+if [ -z "$DEV_BIND_HOST" ] && [ -n "$OPERATELY_DEV_HOST" ]; then
+  DEV_BIND_HOST=0.0.0.0
+fi
+
+export DEV_BIND_HOST=${DEV_BIND_HOST:-127.0.0.1}
+
+#
 # Main entry point
 #
 # - devenv shell - start a shell in the app container
