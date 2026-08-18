@@ -25,7 +25,7 @@ export function useTaskSlideInProps(opts: {
 
   canEdit: boolean;
   canComment: boolean;
-  hideMilestone?: boolean;
+  variant: Extract<TaskPage.Variant, "space-task" | "project-task">;
 
   onTaskNameChange: (taskId: string, newName: string) => Promise<boolean> | boolean;
   onTaskAssigneeChange: (taskId: string, assignees: TaskBoard.Person[]) => Promise<boolean> | boolean;
@@ -37,7 +37,7 @@ export function useTaskSlideInProps(opts: {
   projectSearch: TaskPage.ContentProps["projectSearch"];
   spaceSearch: TaskPage.ContentProps["spaceSearch"];
 }) {
-  const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone, commentEntityType } = opts;
+  const { backendTasks, paths, currentUser, tasks, canEdit, canComment, variant, commentEntityType } = opts;
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
@@ -328,9 +328,10 @@ export function useTaskSlideInProps(opts: {
         activeTaskId === taskId ? sortTaskTimelineItems([...fetchedTimelineItems, ...appended]) : [];
       const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
 
-      const milestoneProps = buildMilestoneProps({ hideMilestone, taskId, ctx, taskMilestone: task.milestone });
+      const milestoneProps = buildMilestoneProps({ variant, taskId, ctx, taskMilestone: task.milestone });
 
       return {
+        variant,
         ...milestoneProps,
 
         name: task.title,
@@ -429,7 +430,7 @@ export function useTaskSlideInProps(opts: {
       addReaction,
       deleteComment,
       editComment,
-      hideMilestone,
+      variant,
       isTimelineLoading,
       removeReaction,
       parsedCurrentUser,
@@ -477,22 +478,21 @@ function toTimelinePerson(paths: Paths, person: TaskBoard.Person): TimelinePerso
 
 type MilestoneProps = Pick<
   TaskPage.ContentProps,
-  "milestone" | "onMilestoneChange" | "milestones" | "onMilestoneSearch" | "hideMilestone"
+  "milestone" | "onMilestoneChange" | "milestones" | "onMilestoneSearch"
 >;
 
 function buildMilestoneProps(opts: {
-  hideMilestone?: boolean;
+  variant: Extract<TaskPage.Variant, "space-task" | "project-task">;
   taskId: string;
   ctx: any;
   taskMilestone: TaskBoard.Milestone | null;
 }): MilestoneProps {
-  if (opts.hideMilestone) {
+  if (opts.variant === "space-task") {
     return {
       milestone: null,
       onMilestoneChange: () => {},
       milestones: [],
       onMilestoneSearch: async () => {},
-      hideMilestone: true,
     };
   }
 
@@ -501,7 +501,6 @@ function buildMilestoneProps(opts: {
     onMilestoneChange: (m) => opts.ctx.onTaskMilestoneChange?.(opts.taskId, m),
     milestones: (opts.ctx.milestones ?? []).map((m: any) => ({ ...m, dueDate: m.dueDate ?? null })),
     onMilestoneSearch: opts.ctx.onMilestoneSearch,
-    hideMilestone: false,
   };
 }
 

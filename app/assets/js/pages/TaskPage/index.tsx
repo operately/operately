@@ -235,6 +235,7 @@ function Page() {
   );
 
   const props: TaskPage.Props = {
+    variant: "project-task",
     projectName,
     projectLink: paths.projectPath(task.project.id),
     projectStatus: task.project.status,

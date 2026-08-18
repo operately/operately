@@ -119,7 +119,7 @@ const buildTaskPageProps = (
     },
     milestones: (ctx.milestones ?? []).map(toTaskPageMilestone),
     onMilestoneSearch: ctx.onMilestoneSearch ?? (async () => {}),
-    hideMilestone: true,
+    variant: "space-task",
 
     name: task.title,
     onNameChange: async (newName) => {

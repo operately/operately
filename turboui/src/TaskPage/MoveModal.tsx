@@ -6,7 +6,7 @@ import { ProjectField } from "../ProjectField";
 import { SpaceField } from "../SpaceField";
 import { Dropdown } from "../FormElements/Dropdown";
 import { showErrorToast } from "../Toasts";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
 
 const DESTINATION_TYPES = [
   { id: "project", name: "Project", testId: "move-task-destination-project" },

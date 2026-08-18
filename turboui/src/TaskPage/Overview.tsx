@@ -1,5 +1,6 @@
 import React from "react";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
+import { variantFeatures } from "./variantFeatures";
 import { Timeline } from "../Timeline";
 import { PageDescription } from "../PageDescription";
 
@@ -19,6 +20,8 @@ export function Overview(props: TaskPage.ContentState) {
 }
 
 function ActivitySection(props: TaskPage.ContentState) {
+  if (!variantFeatures(props.variant).showActivity) return null;
+
   if (props.timelineItems && props.currentUser) {
     return (
       <div data-test-id="task-activity-section">

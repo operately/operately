@@ -1,20 +1,21 @@
 import React from "react";
-import { TaskPage } from ".";
+import { TaskPage } from "./types";
+import { variantFeatures } from "./variantFeatures";
 import { StatusSelector } from "../StatusSelector";
 import { TextField } from "../TextField";
 import { TaskCheckbox } from "./TaskCheckbox";
 import { findCompletedStatus } from "../TaskBoard/utils/status";
 import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 
-export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
-  const completedStatus = findCompletedStatus(statusOptions || []);
+export function PageHeader(props: TaskPage.ContentState) {
+  const completedStatus = findCompletedStatus(props.statusOptions || []);
   const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
   return (
     <div className="mt-4">
       <div className="flex-1">
         <div className="flex items-start gap-3" data-test-id="task-header">
-          {completedStatus && (
+          {completedStatus && variantFeatures(props.variant).showCompleteCheckbox && (
             <TaskCheckbox
               status={props.status}
               canEdit={props.canEdit}
@@ -32,11 +33,11 @@ export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
             multiline
           />
 
-          {statusOptions?.length > 0 && (
+          {props.statusOptions?.length > 0 && (
             <div className="shrink-0 sm:mt-1">
               <StatusSelector
-                statusOptions={statusOptions}
-                status={props.status ?? statusOptions[0]!}
+                statusOptions={props.statusOptions}
+                status={props.status ?? props.statusOptions[0]!}
                 onChange={(nextStatus) => props.onStatusChange(nextStatus)}
                 size={isLargeScreen ? "md" : "sm"}
                 readonly={!props.canEdit}

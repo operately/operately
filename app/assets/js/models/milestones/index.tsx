@@ -14,6 +14,8 @@ interface ParsedMilestonesForTurboUi {
 
 export type { Milestone, MilestoneComment };
 
+export type ParsedMilestoneForTurboUi = ReturnType<typeof parseMilestoneForTurboUi>;
+
 export const getMilestone = Api.projects.getMilestone;
 export const usePostMilestoneComment = Api.projects.useCreateMilestoneComment;
 
@@ -55,7 +57,7 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     id: milestone.id,
     name: milestone.title,
     status: milestone.status,
-    dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
+    dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate) ?? null,
     link: paths.projectMilestonePath(milestone.id),
     kanbanLink: milestone.project ? paths.projectPath(milestone.project.id, { milestoneId: milestone.id }) : undefined,
     tasksOrderingState: milestone.tasksOrderingState ?? [],

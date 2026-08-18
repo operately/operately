@@ -174,6 +174,7 @@ function Page() {
     onRefresh: refresh,
     canEdit: milestone.permissions.canEdit,
     canComment: milestone.permissions.canComment,
+    variant: "project-task",
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
