@@ -269,7 +269,7 @@ export async function performTemplatePersonUpdate({
   );
 }
 
-export async function performTemplatePersonDelete({
+async function performTemplatePersonDelete({
   graph,
   templateId,
   mutate,
