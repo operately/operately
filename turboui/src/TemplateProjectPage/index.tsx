@@ -186,12 +186,12 @@ export namespace TemplateProjectPage {
       deletedStatusReplacements: Record<string, string>;
     }) => void;
     onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">) => void;
-    onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void | Promise<void>;
-    onMilestoneDelete?: (milestoneId: string) => void | Promise<void>;
-    onMilestoneReorder?: (milestoneId: string, destinationIndex: number) => void | Promise<void>;
+    onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void | boolean | Promise<void | boolean>;
+    onMilestoneDelete?: (milestoneId: string) => void | boolean | Promise<void | boolean>;
+    onMilestoneReorder?: (milestoneId: string, destinationIndex: number) => void | boolean | Promise<void | boolean>;
     onTaskCreate?: (task: Omit<Task, "id">) => void;
     onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void | boolean | Promise<void | boolean>;
-    onTaskDelete?: (taskId: string) => void | Promise<void>;
+    onTaskDelete?: (taskId: string) => void | boolean | Promise<void | boolean>;
     onTaskReorder?: (
       taskId: string,
       milestoneId: string | null,

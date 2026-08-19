@@ -1,11 +1,15 @@
-import Api, { type AccessOptionsInt } from "@/api";
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import {
   content,
+  persistAndRefreshTemplate,
+  persistPersonCreate,
+  persistPersonDelete,
+  persistPersonUpdate,
+  persistTemplateChange,
   serializeContent,
   serializeJson,
   type Mutate,
@@ -47,44 +51,46 @@ function Page() {
     scope: { type: "space", id: template.space.id },
     transformResult: transformPerson,
   });
-  const templatePersonIds = React.useMemo(
-    () =>
-      (template.people ?? []).flatMap((templatePerson) =>
-        templatePerson.person?.id ? [templatePerson.person.id] : [],
-      ),
-    [template.people],
-  );
-  const contributorPersonSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: template.space.id },
-    transformResult: transformPerson,
-    ignoredIds: templatePersonIds,
-  });
 
-  const mutate: Mutate = async (message, operation) => {
-    try {
-      await operation();
-      await refresh();
-      return true;
-    } catch (_error) {
-      showErrorToast(message, "Your last confirmed template is still displayed. Try again.");
-      return false;
-    }
-  };
+  const mutate: Mutate = (message, operation) => persistAndRefreshTemplate(refresh, message, operation);
+  const [overview, setOverview] = React.useState(() => templateOverview(template));
+  React.useEffect(() => {
+    setOverview(templateOverview(template));
+  }, [template]);
+
   const {
     people,
     tasks,
     milestones,
+    milestonesOrderingState,
     tasksKanbanState,
     statuses,
     onTaskCreate,
     onTaskUpdate,
     onTaskDelete,
     onTaskReorder,
+    onMilestoneCreate,
+    onMilestoneUpdate,
+    onMilestoneDelete,
+    onMilestoneReorder,
+    onPersonCreate,
+    onPersonUpdate,
+    onPersonDelete,
+    onStatusesChange,
   } = useTemplateTasksForTurboUi({
     template,
     profilePath,
     milestoneLink,
-    mutate,
+    mutate: persistTemplateChange,
+  });
+  const templatePersonIds = React.useMemo(
+    () => people.flatMap((templatePerson) => (templatePerson.person?.id ? [templatePerson.person.id] : [])),
+    [people],
+  );
+  const contributorPersonSearch = People.usePersonFieldSearch({
+    scope: { type: "space", id: template.space.id },
+    transformResult: transformPerson,
+    ignoredIds: templatePersonIds,
   });
 
   const discussions = (template.discussions ?? []).map((discussion) => ({
@@ -100,7 +106,13 @@ function Page() {
   );
 
   async function onTemplateUpdate(updates: Partial<TemplateProjectPage.Props["template"]>) {
-    return mutate("Template not updated", () =>
+    const snapshot = overview;
+    setOverview({
+      name: updates.name ?? overview.name,
+      description: updates.description !== undefined ? updates.description : overview.description,
+      durationDays: updates.durationDays !== undefined ? updates.durationDays : overview.durationDays,
+    });
+    const saved = await persistTemplateChange("Template not updated", () =>
       Api.project_templates.update({
         id: template.id,
         name: updates.name,
@@ -110,36 +122,10 @@ function Page() {
         tasksKanbanState: serializeJson(updates.tasksKanbanState),
       }),
     );
+    if (!saved) setOverview(snapshot);
+    return saved;
   }
 
-  function onStatusesChange({
-    nextStatuses,
-    deletedStatusReplacements,
-  }: {
-    nextStatuses: TemplateProjectPage.Props["statuses"];
-    deletedStatusReplacements: Record<string, string>;
-  }) {
-    return mutate("Workflow not updated", () =>
-      Api.project_templates.update({
-        id: template.id,
-        taskStatuses: Tasks.serializeTaskStatuses(nextStatuses),
-        deletedStatusReplacements: Object.entries(deletedStatusReplacements).map(
-          ([deletedStatusId, replacementStatusId]) => ({ deletedStatusId, replacementStatusId }),
-        ),
-      }),
-    );
-  }
-
-  const { onMilestoneCreate, onMilestoneUpdate, onMilestoneDelete, onMilestoneReorder } = useMilestoneOperations({
-    templateId: template.id,
-    milestonesOrderingState: template.milestonesOrderingState ?? milestones.map((item) => item.id),
-    mutate,
-  });
-
-  const { onPersonCreate, onPersonUpdate, onPersonDelete } = createPeopleOperations({
-    templateId: template.id,
-    mutate,
-  });
   const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
   const onFolderRename = createFolderRenameOperation({ templateId: template.id, mutate });
   const onResourceDelete = createResourceDeleteOperation({ templateId: template.id, mutate });
@@ -156,10 +142,10 @@ function Page() {
     <TemplateProjectPage
       template={{
         id: template.id,
-        name: template.name,
-        description: content(template.description),
-        durationDays: template.durationDays ?? null,
-        milestonesOrderingState: template.milestonesOrderingState ?? [],
+        name: overview.name,
+        description: overview.description,
+        durationDays: overview.durationDays,
+        milestonesOrderingState,
         tasksKanbanState,
         archived: Boolean(template.archivedAt),
       }}
@@ -258,96 +244,23 @@ function createProjectTemplateEditorLifecycleHandlers({
   };
 }
 
-function useMilestoneOperations({
-  templateId,
-  milestonesOrderingState,
-  mutate,
-}: {
-  templateId: string;
-  milestonesOrderingState: string[];
-  mutate: Mutate;
-}) {
-  function onMilestoneCreate(
-    milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">,
-  ) {
-    void mutate("Milestone not created", () =>
-      Api.project_templates.createMilestone({
-        templateId,
-        title: milestone.title,
-        description: serializeContent(milestone.description),
-        dueOffsetDays: milestone.dueOffsetDays,
-      }),
-    );
-  }
-
-  function onMilestoneUpdate(milestoneId: string, updates: Partial<TemplateProjectPage.Milestone>) {
-    return mutate("Milestone not updated", () =>
-      Api.project_templates.updateMilestone({
-        templateId,
-        milestoneId,
-        title: updates.title,
-        description: serializeContent(updates.description),
-        dueOffsetDays: updates.dueOffsetDays,
-        tasksOrderingState: updates.tasksOrderingState,
-        tasksKanbanState: serializeJson(updates.tasksKanbanState),
-      }),
-    ).then(() => undefined);
-  }
-
-  function onMilestoneDelete(milestoneId: string) {
-    return mutate("Milestone not deleted", () =>
-      Api.project_templates.deleteMilestone({ templateId, milestoneId }),
-    ).then(() => undefined);
-  }
-
-  function onMilestoneReorder(milestoneId: string, destinationIndex: number) {
-    return mutate("Milestones not reordered", () =>
-      Api.project_templates.update({
-        id: templateId,
-        milestonesOrderingState: reorder(milestonesOrderingState, milestoneId, destinationIndex),
-      }),
-    ).then(() => undefined);
-  }
-
-  return { onMilestoneCreate, onMilestoneUpdate, onMilestoneDelete, onMilestoneReorder };
-}
-
 export function createPeopleOperations({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
   function onPersonCreate(person: Omit<TemplateProjectPage.TemplatePerson, "id" | "active">) {
     const selectedPerson = person.person;
     if (!selectedPerson) return false;
 
-    return mutate("Contributor not added", () =>
-      Api.project_templates.createPerson({
-        templateId,
-        personId: selectedPerson.id,
-        role: person.role,
-        responsibility: person.responsibility,
-        accessLevel: person.accessLevel as AccessOptionsInt,
-      }),
-    );
+    return mutate("Contributor not added", () => persistPersonCreate(templateId, person));
   }
 
   function onPersonUpdate(
     templatePersonId: string,
     updates: Partial<Omit<TemplateProjectPage.TemplatePerson, "id" | "active">>,
   ) {
-    return mutate("Contributor not updated", () =>
-      Api.project_templates.updatePerson({
-        templateId,
-        templatePersonId,
-        personId: updates.person?.id,
-        role: updates.role,
-        responsibility: updates.responsibility,
-        accessLevel: updates.accessLevel as AccessOptionsInt | undefined,
-      }),
-    );
+    return mutate("Contributor not updated", () => persistPersonUpdate(templateId, templatePersonId, updates));
   }
 
   function onPersonDelete(templatePersonId: string) {
-    return mutate("Contributor not removed", () =>
-      Api.project_templates.deletePerson({ templateId, templatePersonId }),
-    );
+    return mutate("Contributor not removed", () => persistPersonDelete(templateId, templatePersonId));
   }
 
   return { onPersonCreate, onPersonUpdate, onPersonDelete };
@@ -458,8 +371,10 @@ function fileKind(contentType: string | null): TemplateProjectPage.ResourceNode[
   return "default";
 }
 
-function reorder(ids: string[], id: string, destination: number) {
-  const next = ids.filter((item) => item !== id);
-  next.splice(Math.max(0, Math.min(destination, next.length)), 0, id);
-  return next;
+function templateOverview(template: LoadedData["template"]) {
+  return {
+    name: template.name,
+    description: content(template.description),
+    durationDays: template.durationDays ?? null,
+  };
 }
