@@ -27,6 +27,8 @@ export namespace TaskCreationModal {
     variant: "project-template";
     onCreateTask: (task: Omit<TemplateProjectPage.Task, "id">) => void;
     milestones: Pick<TemplateProjectPage.Milestone, "id" | "title">[];
+    currentMilestoneId?: string;
+    milestoneReadOnly?: boolean;
     statuses: StatusSelector.StatusOption[];
     personSearch?: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;

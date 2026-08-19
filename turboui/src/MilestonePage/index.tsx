@@ -166,6 +166,19 @@ function TemplateMilestoneLayout({ state }: { state: MilestonePage.TemplateState
       <MainContainer>
         <MilestoneContent {...state} />
       </MainContainer>
+
+      <TaskCreationModal
+        variant="project-template"
+        isOpen={state.isTaskModalOpen}
+        onClose={() => state.setIsTaskModalOpen(false)}
+        onCreateTask={(task) => state.onTaskCreate?.(task)}
+        milestones={state.milestones}
+        currentMilestoneId={state.milestoneId}
+        milestoneReadOnly
+        statuses={state.statuses}
+        personSearch={state.personSearch}
+        richTextHandlers={state.richTextHandlers}
+      />
     </ProjectPageLayout>
   );
 }

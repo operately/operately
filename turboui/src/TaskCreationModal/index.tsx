@@ -206,6 +206,8 @@ function TemplateTaskCreationForm({
   onClose,
   onCreateTask,
   milestones,
+  currentMilestoneId,
+  milestoneReadOnly,
   statuses,
   personSearch,
   richTextHandlers,
@@ -229,7 +231,7 @@ function TemplateTaskCreationForm({
   const resetForm = () => {
     setName("");
     setDueOffsetDays(null);
-    setMilestoneId(null);
+    setMilestoneId(currentMilestoneId ?? null);
     setStatusId(statuses[0]?.id ?? "");
     setDescription(null);
     setAssignees([]);
@@ -318,6 +320,7 @@ function TemplateTaskCreationForm({
             milestones={milestoneOptions}
             onSearch={async () => undefined}
             emptyStateMessage="No milestone"
+            readonly={milestoneReadOnly}
             testId="template-task-milestone"
           />
         </div>

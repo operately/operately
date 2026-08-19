@@ -24,10 +24,24 @@ jest.mock("../../TaskBoard/components/TaskList", () => ({
 
 jest.mock("../../TaskBoard/components/InlineTaskCreator", () => ({
   InlineTaskCreator: React.forwardRef(
-    ({ onCreate, testId }: { onCreate: (name: string) => void; testId: string }, _ref) => (
-      <button type="button" data-test-id={testId} onClick={() => onCreate("New template task")}>
-        Create task
-      </button>
+    (
+      {
+        onCreate,
+        onRequestAdvanced,
+        testId,
+      }: { onCreate: (name: string) => void; onRequestAdvanced?: () => void; testId: string },
+      _ref,
+    ) => (
+      <div>
+        <button type="button" data-test-id={testId} onClick={() => onCreate("New template task")}>
+          Create task
+        </button>
+        {onRequestAdvanced && (
+          <button type="button" data-test-id={`${testId}-advanced`} onClick={onRequestAdvanced}>
+            Open advanced
+          </button>
+        )}
+      </div>
     ),
   ),
 }));
@@ -237,6 +251,16 @@ describe("TasksSection", () => {
         status,
       }),
     );
+  });
+
+  it("opens the task creation modal from the inline creator", () => {
+    const setIsTaskModalOpen = jest.fn();
+    renderTasksSection(templateState({ tasks: [], setIsTaskModalOpen }));
+
+    fireEvent.click(getByDataTestId("template-tasks-section-add-task"));
+    fireEvent.click(getByDataTestId("inline-template-task-creator-milestonepage-advanced"));
+
+    expect(setIsTaskModalOpen).toHaveBeenCalledWith(true);
   });
 
   it("keeps project-only controls in the project adapter", () => {
