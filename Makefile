@@ -353,9 +353,9 @@ test.js.fmt.check:
 	./devenv bash -c "./scripts/prettier-check.sh"
 
 test.seed.env:
-	touch .env
-	echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
-	echo 'CI=$(CI)' >> .env
+	@touch .env
+	@grep "OPERATELY_BLOB_TOKEN_SECRET_KEY" .env >/dev/null || echo 'OPERATELY_BLOB_TOKEN_SECRET_KEY="lPEuB9ITpbHP1GTf98TPWcHb/CrdeNLzqLcm0zF5mfo="' >> .env
+	@grep "^CI=" .env >/dev/null || echo 'CI=$(CI)' >> .env
 
 test.elixir.warnings:
 	./devenv bash -c "cd app && MIX_ENV=test mix compile --warnings-as-errors --all-warnings"
