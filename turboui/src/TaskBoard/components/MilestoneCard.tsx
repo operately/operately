@@ -7,7 +7,7 @@ import { Tooltip } from "../../Tooltip";
 import * as Types from "../types";
 import { PersonField } from "../../PersonField";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
-import TaskCreationModal from "./TaskCreationModal";
+import { TaskCreationModal } from "../../TaskCreationModal";
 import { TaskList } from "./TaskList";
 import { sortTasks } from "../utils/sortTasks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
@@ -296,6 +296,7 @@ export function MilestoneCard({
 
       {richTextHandlers && (
         <TaskCreationModal
+          variant="project"
           assigneePersonSearch={assigneePersonSearch}
           isOpen={isTaskModalOpen}
           onClose={() => setIsTaskModalOpen(false)}

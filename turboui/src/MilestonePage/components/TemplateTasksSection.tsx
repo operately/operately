@@ -26,6 +26,7 @@ export function TemplateTasksSection({
   personSearch,
   taskSlideIn,
   onTaskOpen,
+  setIsTaskModalOpen,
 }: MilestonePage.TemplateState & Props) {
   const canEdit = permissions.canEdit || false;
   const orderedTasks = React.useMemo(() => {
@@ -66,6 +67,7 @@ export function TemplateTasksSection({
       <InlineTaskCreator
         ref={creatorRef}
         onCreate={handleCreateTask}
+        onRequestAdvanced={() => setIsTaskModalOpen(true)}
         onCancel={closeCreator}
         autoFocus
         testId="inline-template-task-creator-milestonepage"
