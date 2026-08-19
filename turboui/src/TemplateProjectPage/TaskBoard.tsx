@@ -16,20 +16,27 @@ import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
 import { AssigneesField } from "../AssigneesField";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
-import type { BoardLocation } from "../utils/PragmaticDragAndDrop";
+import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
 import { BlackLink } from "../Link";
-import { ROOT_TASKS_CONTAINER_ID, useOptimisticTemplateTaskReorder } from "./useOptimisticTemplateTaskReorder";
+
+const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
   const [taskBeingEdited, setTaskBeingEdited] = React.useState<TemplateProjectPage.Task | null>(null);
-  const { tasks, handleTaskMove, isDraggingEnabled } = useOptimisticTemplateTaskReorder({
-    tasks: props.tasks,
-    statuses: props.statuses,
-    onTaskReorder: props.onTaskReorder,
-    enabled: canEdit,
-  });
+  const isDraggingEnabled = canEdit && Boolean(props.onTaskReorder);
+  const handleTaskMove = React.useCallback(
+    (move: BoardMove) => {
+      if (!isDraggingEnabled) return;
+
+      const milestoneId =
+        move.destination.containerId === ROOT_TASKS_CONTAINER_ID ? null : move.destination.containerId;
+      props.onTaskReorder?.(move.itemId, milestoneId, move.destination.index);
+    },
+    [isDraggingEnabled, props.onTaskReorder],
+  );
+  const tasks = props.tasks;
   const orderedMilestones: Array<TemplateProjectPage.Milestone | null> = [null, ...props.milestones];
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
   const activeDraggedItemId = isDraggingEnabled ? draggedItemId : null;

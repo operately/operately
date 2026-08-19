@@ -11,7 +11,8 @@ import * as Signals from "@/signals";
 
 import { DateField, showErrorToast, TaskBoard, TaskPage } from "turboui";
 import { serializeTaskDescription } from "./descriptionSerialization";
-import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
+import { applyTaskMove } from "./listOrdering";
+import { isTaskVisible, normalizeMilestonesOrderingState } from "./milestoneOrdering";
 
 interface TasksSnapshot {
   tasks: TaskBoard.Task[];
@@ -372,48 +373,49 @@ export function useProjectTasksForTurboUi({
         return false;
       }
 
-      const milestonesOrderingState = buildMilestonesOrderingState(
-        tasks,
-        milestones,
-        taskToMove,
+      const moved = applyTaskMove(
+        {
+          tasks: tasks.map((task) => ({ id: task.id, milestoneId: task.milestone?.id ?? null })),
+          milestones: milestones.map((milestone) => ({
+            id: milestone.id,
+            tasksOrderingState: milestone.tasksOrderingState ?? [],
+          })),
+        },
+        taskId,
         normalizedMilestoneId,
         indexInMilestone,
+        {
+          include: (listed) => {
+            const task = tasks.find((item) => compareIds(item.id, listed.id));
+            return Boolean(task && isTaskVisible(task));
+          },
+        },
       );
 
-      // Optimistic update - update task milestone
-      setTasks((prev) => {
-        const foundMilestone = milestones.find((m) => compareIds(m.id, normalizedMilestoneId)) || null;
-        return prev.map((t) => {
-          if (compareIds(t.id, taskId)) {
-            return { ...t, milestone: foundMilestone as any };
-          }
-          return t;
-        });
-      });
+      setTasks((prev) =>
+        prev.map((task) => {
+          const next = moved.tasks.find((item) => compareIds(item.id, task.id));
+          if (!next) return task;
+          if (compareIds(next.milestoneId, task.milestone?.id ?? null)) return task;
 
-      // Optimistic update - update milestones ordering
-      if (setMilestones && milestonesOrderingState.length > 0) {
-        setMilestones((prevMilestones) => {
-          return prevMilestones.map((milestone) => {
-            const orderingUpdate = milestonesOrderingState.find((update) =>
-              compareIds(update.milestoneId, milestone.id),
-            );
+          const foundMilestone = milestones.find((milestone) => compareIds(milestone.id, next.milestoneId)) || null;
+          return { ...task, milestone: foundMilestone };
+        }),
+      );
 
-            if (orderingUpdate) {
-              return {
-                ...milestone,
-                tasksOrderingState: orderingUpdate.orderingState,
-              };
-            }
-            return milestone;
-          });
-        });
+      if (setMilestones) {
+        setMilestones((prev) =>
+          prev.map((milestone) => {
+            const next = moved.milestones.find((item) => compareIds(item.id, milestone.id));
+            return next ? { ...milestone, tasksOrderingState: next.tasksOrderingState } : milestone;
+          }),
+        );
       }
 
       const res = await Api.tasks.updateMilestoneAndOrdering({
         taskId,
         milestoneId: normalizedMilestoneId,
-        milestonesOrderingState,
+        index: indexInMilestone,
       });
 
       updateMilestonesFromServer(null, res.updatedMilestones);

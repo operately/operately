@@ -11,6 +11,24 @@ defmodule Operately.Tasks.OrderingState do
     []
   end
 
+  @doc """
+  Moves `id` to `index` in an already-encoded ID list.
+
+  The id is removed if present, then inserted at `index`, clamped to the end of
+  the remaining list. Used by project and template list-reorder operations; the
+  client sends `{task_id, milestone_id, index}` and the server applies this to
+  `tasks_ordering_state`.
+
+  Returns `{:ok, ids}` or `{:error, {:validation, message}}` when `index` is negative.
+  """
+  def move_id(ids, id, index) when is_list(ids) and is_binary(id) and is_integer(index) and index >= 0 do
+    remaining_ids = Enum.reject(ids, &(&1 == id))
+    destination_index = min(index, length(remaining_ids))
+    {:ok, List.insert_at(remaining_ids, destination_index, id)}
+  end
+
+  def move_id(_ids, _id, _index), do: {:error, {:validation, "Task index must be zero or greater"}}
+
   def add_task(ordering_state, task, index \\ nil) do
     task_short_id = OperatelyWeb.Paths.task_id(task)
 

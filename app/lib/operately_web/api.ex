@@ -138,6 +138,7 @@ defmodule OperatelyWeb.Api do
         mutation(:delete_milestone, OperatelyWeb.Api.ProjectTemplates.DeleteMilestone)
         mutation(:create_task, OperatelyWeb.Api.ProjectTemplates.CreateTask)
         mutation(:update_task, OperatelyWeb.Api.ProjectTemplates.UpdateTask)
+        mutation(:update_milestone_and_ordering, OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrdering)
         mutation(:delete_task, OperatelyWeb.Api.ProjectTemplates.DeleteTask)
         mutation(:create_person, OperatelyWeb.Api.ProjectTemplates.CreatePerson)
         mutation(:update_person, OperatelyWeb.Api.ProjectTemplates.UpdatePerson)
