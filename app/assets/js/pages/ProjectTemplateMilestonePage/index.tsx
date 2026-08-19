@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as People from "@/models/people";
-import { content, serializeContent, type Mutate } from "@/models/projectTemplates";
+import { persistTemplateChange } from "@/models/projectTemplates";
 import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
 import * as Time from "@/utils/time";
@@ -11,14 +11,13 @@ import { compareIds, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import React from "react";
 import { useNavigate } from "react-router";
-import { MilestonePage, showErrorToast } from "turboui";
+import { MilestonePage } from "turboui";
 import { loader, type LoadedData } from "./loader";
 
 export default { name: "ProjectTemplateMilestonePage", loader, Page } as PageModule;
 
 function Page() {
   const { template, milestone } = Pages.useLoadedData<LoadedData>();
-  const refresh = Pages.useRefresh();
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
@@ -43,16 +42,6 @@ function Page() {
     transformResult: transformPerson,
   });
 
-  const mutate: Mutate = async (message, operation) => {
-    try {
-      await operation();
-      await refresh();
-      return true;
-    } catch (_error) {
-      showErrorToast(message, "Your last confirmed template is still displayed. Try again.");
-      return false;
-    }
-  };
   const {
     tasks: templateTasks,
     milestones,
@@ -61,58 +50,30 @@ function Page() {
     onTaskUpdate,
     onTaskDelete,
     onTaskReorder,
+    onMilestoneUpdate,
+    onMilestoneDelete,
   } = useTemplateTasksForTurboUi({
     template,
     profilePath,
     milestoneLink,
-    mutate,
+    mutate: persistTemplateChange,
   });
+  const currentMilestone = milestones.find((item) => compareIds(item.id, milestone.id));
   const tasks = templateTasks.filter((task) => compareIds(task.milestoneId, milestone.id));
   const slideInModel = useTemplateTaskSlideInProps({
     canEdit: !Boolean(template.archivedAt) && Boolean(permissions.canEdit || permissions.hasFullAccess),
     formattedTimePreferences,
   });
 
-  const handleTitleChange = (title: string) =>
-    mutate("Milestone not updated", () =>
-      Api.project_templates.updateMilestone({
-        templateId: template.id,
-        milestoneId: milestone.id,
-        title,
-      }),
-    );
-
-  const handleDescriptionChange = (description: unknown) =>
-    mutate("Milestone not updated", () =>
-      Api.project_templates.updateMilestone({
-        templateId: template.id,
-        milestoneId: milestone.id,
-        description: serializeContent(description),
-      }),
-    );
-
-  const handleDueOffsetDaysChange = (dueOffsetDays: number | null) => {
-    void mutate("Milestone not updated", () =>
-      Api.project_templates.updateMilestone({
-        templateId: template.id,
-        milestoneId: milestone.id,
-        dueOffsetDays,
-      }),
-    );
-  };
-
   const handleDelete = async () => {
-    const deleted = await mutate("Milestone not deleted", () =>
-      Api.project_templates.deleteMilestone({ templateId: template.id, milestoneId: milestone.id }),
-    );
-
+    const deleted = await onMilestoneDelete(milestone.id);
     if (deleted) {
       navigate(paths.projectTemplatePath(template.id, { tab: "tasks" }));
     }
   };
 
   const updateTemplateName = (name: string) =>
-    mutate("Template not updated", () => Api.project_templates.update({ id: template.id, name }));
+    persistTemplateChange("Template not updated", () => Api.project_templates.update({ id: template.id, name }));
 
   return (
     <MilestonePage
@@ -127,16 +88,18 @@ function Page() {
       templateLink={paths.projectTemplatePath(template.id)}
       updateTemplateName={updateTemplateName}
       permissions={permissions}
-      tasksCount={(template.tasks ?? []).length}
+      tasksCount={templateTasks.length}
       discussionsCount={(template.discussions ?? []).length}
       docsAndFilesCount={(template.resourceNodes ?? []).length}
       milestoneId={milestone.id}
-      title={milestone.title}
-      onMilestoneTitleChange={handleTitleChange}
-      description={content(milestone.description)}
-      onDescriptionChange={handleDescriptionChange}
-      dueOffsetDays={milestone.dueOffsetDays ?? null}
-      onDueOffsetDaysChange={handleDueOffsetDaysChange}
+      title={currentMilestone?.title ?? milestone.title}
+      onMilestoneTitleChange={(title) => onMilestoneUpdate(milestone.id, { title })}
+      description={currentMilestone?.description}
+      onDescriptionChange={(description) => onMilestoneUpdate(milestone.id, { description })}
+      dueOffsetDays={currentMilestone?.dueOffsetDays ?? null}
+      onDueOffsetDaysChange={(dueOffsetDays) => {
+        void onMilestoneUpdate(milestone.id, { dueOffsetDays });
+      }}
       insertedAt={Time.parseDate(milestone.insertedAt) ?? undefined}
       onDelete={handleDelete}
       tasks={tasks}
