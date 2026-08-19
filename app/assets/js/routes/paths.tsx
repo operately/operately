@@ -414,6 +414,10 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "project-templates"]);
   }
 
+  projectTemplateMilestonePath(templateId: string, milestoneId: string) {
+    return this.createCompanyPath(["project-templates", templateId, "milestones", milestoneId]);
+  }
+
   projectTemplatePath(
     templateId: string,
     attrs?: { tab?: "overview" | "tasks" | "discussions" | "docs-and-files"; folderId?: string },

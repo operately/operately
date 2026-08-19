@@ -178,6 +178,10 @@ defmodule OperatelyWeb.Paths do
     project_template_path(company, template) <> "?tab=#{tab}"
   end
 
+  def project_template_milestone_path(company = %Company{}, template, milestone) do
+    create_path([company_id(company), "project-templates", project_template_id(template), "milestones", project_template_milestone_id(milestone)])
+  end
+
   def project_template_discussion_path(company = %Company{}, template, discussion) do
     create_path([company_id(company), "project-templates", project_template_id(template), "discussions", project_template_discussion_id(discussion)])
   end
