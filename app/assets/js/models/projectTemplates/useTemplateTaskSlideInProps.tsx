@@ -46,15 +46,9 @@ export function buildTemplateTaskPageProps(
   return {
     variant: "template",
     name: task.name,
-    onNameChange: async (name) => {
-      await ctx.onTaskUpdate?.(taskId, { name });
-      return true;
-    },
+    onNameChange: (name) => persistTaskUpdate(ctx.onTaskUpdate?.(taskId, { name })),
     description: task.description,
-    onDescriptionChange: async (description) => {
-      await ctx.onTaskUpdate?.(taskId, { description });
-      return true;
-    },
+    onDescriptionChange: (description) => persistTaskUpdate(ctx.onTaskUpdate?.(taskId, { description })),
     status: task.status,
     onStatusChange: (status) => {
       void ctx.onTaskUpdate?.(taskId, { status });
@@ -93,6 +87,10 @@ export function buildTemplateTaskPageProps(
     formattedTimePreferences: opts.formattedTimePreferences,
     localDraftKeyBase: `template-task:${taskId}`,
   };
+}
+
+function persistTaskUpdate(result: void | boolean | Promise<void | boolean> | undefined) {
+  return Promise.resolve(result).then((saved) => saved === true);
 }
 
 function toTaskPageMilestone(milestone: TemplateProjectPage.Milestone): TaskPage.Milestone {

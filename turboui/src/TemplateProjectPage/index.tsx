@@ -13,6 +13,7 @@ import type { PersonField } from "../PersonField";
 import type { AddFileWidgetProps } from "../ResourceHub/AddFileWidget";
 import { IconClipboardText, IconListCheck, IconMessageCircle, IconPaperclip } from "../icons";
 import { useTabs } from "../Tabs";
+import { orderByIds } from "../utils/orderByIds";
 import { Overview } from "./Overview";
 import { TaskBoard } from "./TaskBoard";
 import { Discussions } from "./Discussions";
@@ -228,16 +229,6 @@ function orderTemplateGraph(props: TemplateProjectPage.Props): TemplateProjectPa
     const index = ids.indexOf(task.id);
     return index === -1 ? Number.MAX_SAFE_INTEGER : index;
   }
-}
-
-function orderByIds<T extends { id: string }>(items: T[], ids: string[]): T[] {
-  const positions = new Map(ids.map((id, index) => [id, index]));
-  return items
-    .slice()
-    .sort(
-      (left, right) =>
-        (positions.get(left.id) ?? Number.MAX_SAFE_INTEGER) - (positions.get(right.id) ?? Number.MAX_SAFE_INTEGER),
-    );
 }
 
 function flattenKanban(state: unknown, statusIds: string[]): string[] {

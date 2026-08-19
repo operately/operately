@@ -70,6 +70,15 @@ test("builds template task page props from the slide-in context", async () => {
     }),
   );
 
-  await props?.onNameChange("Workshop agenda");
+  await expect(props?.onNameChange("Workshop agenda")).resolves.toBe(true);
   expect(onTaskUpdate).toHaveBeenCalledWith("task-1", { name: "Workshop agenda" });
+});
+
+test("returns false when a task name or description update fails", async () => {
+  const onTaskUpdate = jest.fn().mockResolvedValue(false);
+  const props = buildTemplateTaskPageProps("task-1", context({ onTaskUpdate }), opts);
+  const description = { type: "doc", content: [] };
+
+  await expect(props?.onNameChange("Workshop agenda")).resolves.toBe(false);
+  await expect(props?.onDescriptionChange(description)).resolves.toBe(false);
 });

@@ -95,6 +95,22 @@ function queryByDataTestId(testId: string) {
   return document.querySelector<HTMLElement>(`[data-test-id="${testId}"]`);
 }
 
+function templateTask(overrides: Partial<MilestonePage.TemplateState["tasks"][number]> = {}) {
+  return {
+    id: "template-task-1",
+    name: "Prepare launch",
+    description: null,
+    milestoneId: "milestone-1",
+    priority: null,
+    size: null,
+    dueOffsetDays: 3,
+    status,
+    reminders: [],
+    assignees: [],
+    ...overrides,
+  };
+}
+
 function templateState(overrides: Partial<MilestonePage.TemplateState> = {}): MilestonePage.TemplateState {
   const onTaskCreate = jest.fn();
 
@@ -116,20 +132,7 @@ function templateState(overrides: Partial<MilestonePage.TemplateState> = {}): Mi
     onDescriptionChange: async () => true,
     dueOffsetDays: null,
     onDueOffsetDaysChange: () => undefined,
-    tasks: [
-      {
-        id: "template-task-1",
-        name: "Prepare launch",
-        description: null,
-        milestoneId: "milestone-1",
-        priority: null,
-        size: null,
-        dueOffsetDays: 3,
-        status,
-        reminders: [],
-        assignees: [],
-      },
-    ],
+    tasks: [templateTask()],
     statuses: [status],
     milestones: [],
     onTaskCreate,
@@ -192,6 +195,31 @@ describe("TasksSection", () => {
 
     fireEvent.click(getByDataTestId("template-task-Prepare launch"));
     expect(getByDataTestId("task-slide-in")).toHaveTextContent("template");
+  });
+
+  it("renders template tasks in the milestone ordering state", () => {
+    renderTasksSection(
+      templateState({
+        tasks: [
+          templateTask({ id: "task-1", name: "First" }),
+          templateTask({ id: "task-2", name: "Second" }),
+        ],
+        milestones: [
+          {
+            id: "milestone-1",
+            title: "Launch",
+            description: null,
+            dueOffsetDays: null,
+            tasksOrderingState: ["task-2", "task-1"],
+            tasksKanbanState: {},
+            link: "/templates/template-1/milestones/milestone-1",
+          },
+        ],
+      }),
+    );
+
+    const names = [...document.querySelectorAll("[data-test-id^='template-task-']")].map((node) => node.textContent);
+    expect(names).toEqual(["Second", "First"]);
   });
 
   it("creates a template task through its native handler", () => {

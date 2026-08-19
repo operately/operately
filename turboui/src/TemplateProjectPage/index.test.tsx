@@ -1310,7 +1310,9 @@ describe("TemplateProjectPage", () => {
     renderPage(createProps({ onMilestoneUpdate }));
 
     fireEvent.click(document.querySelector('[data-test-id="edit-btn-release"]')!);
-    fireEvent.change(screen.getByDisplayValue("Release"), { target: { value: "Kickoff" } });
+    fireEvent.change(document.querySelector('[data-test-id="edit-title-release-input"]')!, {
+      target: { value: "Kickoff" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(onMilestoneUpdate).toHaveBeenCalledWith("milestone-1", {

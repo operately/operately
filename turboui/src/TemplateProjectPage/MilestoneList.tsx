@@ -4,6 +4,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import { RelativeDayField } from "../RelativeDayField";
 import { IconFlag, IconGripVertical } from "../icons";
 import { Link } from "../Link";
+import { TextField } from "../TextField";
 import { createTestId } from "../TestableElement";
 import {
   projectItemsWithPlaceholder,
@@ -129,7 +130,7 @@ function MilestoneItem({ milestone, index, isLast, canEdit, isDraggable, onUpdat
 
   const handleSave = () => {
     onUpdate?.(milestone.id, {
-      title: editTitle,
+      title: editTitle.trim(),
       dueOffsetDays: editDueOffsetDays,
     });
     setIsEditing(false);
@@ -156,13 +157,15 @@ function MilestoneItem({ milestone, index, isLast, canEdit, isDraggable, onUpdat
         <div className="min-w-0 flex-1 pb-6">
           <div className="rounded-lg border border-stroke-base bg-surface-dimmed p-4">
             <div className="space-y-3">
-              <input
-                type="text"
-                value={editTitle}
-                onChange={(event) => setEditTitle(event.target.value)}
-                className="w-full rounded-md border border-stroke-base bg-surface-base px-3 py-2 focus:border-accent-base focus:ring-2 focus:ring-accent-base"
-                autoFocus
-                data-test-id={nameTestId}
+              <TextField
+                variant="form-field"
+                text={editTitle}
+                onChange={setEditTitle}
+                placeholder="Enter milestone title"
+                autofocus
+                onChangeOnType
+                trimBeforeSave
+                testId={nameTestId}
               />
               <RelativeDayField
                 value={editDueOffsetDays}
