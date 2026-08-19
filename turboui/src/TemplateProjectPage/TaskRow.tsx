@@ -22,7 +22,7 @@ export function TaskRow({
   task: TemplateProjectPage.Task;
   props: TemplateProjectPage.Props;
   canEdit: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   index: number;
   containerId: string;
   isDraggable: boolean;
@@ -105,14 +105,18 @@ export function TaskRow({
           />
         </div>
         <div className="min-w-0 flex-1" onMouseDown={stopDragFromInteractive}>
-          <button
-            type="button"
-            className="w-full truncate text-left text-sm font-medium"
-            onClick={onClick}
-            disabled={!canEdit}
-          >
-            {task.name}
-          </button>
+          {onClick ? (
+            <button
+              type="button"
+              className="w-full truncate text-left text-sm font-medium"
+              onClick={onClick}
+              disabled={!canEdit}
+            >
+              {task.name}
+            </button>
+          ) : (
+            <div className="truncate text-sm font-medium">{task.name}</div>
+          )}
         </div>
         <div
           className="flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1"

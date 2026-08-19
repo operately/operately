@@ -1187,22 +1187,13 @@ describe("TemplateProjectPage", () => {
     expect(onTaskReorder).not.toHaveBeenCalled();
   });
 
-  it("edits a task in the task form modal", () => {
-    const onTaskUpdate = jest.fn();
-    renderPage(createProps({ onTaskUpdate }), "/templates/template-1?tab=tasks");
+  it("does not open a task update modal from the task board", () => {
+    renderPage(createProps(), "/templates/template-1?tab=tasks");
 
     fireEvent.click(screen.getByText("Publish announcement"));
 
-    expect(screen.getByRole("heading", { name: "Update Task" })).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Publish announcement")).toBeInTheDocument();
-    expect(screen.queryByText("Create more")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Update task" }));
-
-    expect(onTaskUpdate).toHaveBeenCalledWith(
-      "task-1",
-      expect.objectContaining({ name: "Publish announcement", dueOffsetDays: 12 }),
-    );
+    expect(screen.queryByRole("heading", { name: "Update Task" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Update task" })).not.toBeInTheDocument();
   });
 
   it("opens the template milestone creation modal", () => {
@@ -1296,14 +1287,14 @@ describe("TemplateProjectPage", () => {
     expect(onTaskUpdate).toHaveBeenCalledWith("task-1", { dueOffsetDays: 18 });
   });
 
-  it("shows template-specific task fields without assignees", () => {
+  it("shows assignees on the template task creation modal", () => {
     renderPage(createProps(), "/templates/template-1?tab=tasks");
 
-    fireEvent.click(screen.getByText("Publish announcement"));
+    fireEvent.click(screen.getByText("New task"));
 
     expect(screen.getByText("Relative due date")).toBeInTheDocument();
     expect(screen.getByText("Milestone")).toBeInTheDocument();
-    expect(screen.queryByText("Assignees")).not.toBeInTheDocument();
+    expect(screen.getByText("Assignees")).toBeInTheDocument();
   });
 
   it("shows copied people and task assignees read-only", () => {
@@ -1643,9 +1634,6 @@ describe("TemplateProjectPage", () => {
     expect(onTaskUpdate).toHaveBeenLastCalledWith("task-1", {
       assignees: [activeAssignee, expect.objectContaining({ person: replacement, active: true })],
     });
-
-    fireEvent.click(screen.getByText("Publish announcement"));
-    expect(screen.queryByText("Assignees")).not.toBeInTheDocument();
   });
 
   it("keeps an optimistic assignee visible while stale props rerender", async () => {

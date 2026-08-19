@@ -1,20 +1,11 @@
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import React, { useEffect } from "react";
-import { RelativeDayField } from "../RelativeDayField";
-import { MilestoneField, type Milestone as MilestoneFieldMilestone } from "../MilestoneField";
-import { StatusSelector } from "../StatusSelector";
-import { TextField } from "../TextField";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import Modal from "../Modal";
-import { SwitchToggle } from "../SwitchToggle";
-import { Editor, useEditor } from "../RichEditor";
-import { isContentEmpty } from "../RichContent";
-import type { RichTextJSON } from "../RichContent";
 import { TasksMenu } from "../TaskBoard";
+import { TaskCreationModal } from "../TaskCreationModal";
 import { TaskRow } from "./TaskRow";
 import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
-import { AssigneesField } from "../AssigneesField";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
 import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
 import { BlackLink } from "../Link";
@@ -24,7 +15,6 @@ const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
-  const [taskBeingEdited, setTaskBeingEdited] = React.useState<TemplateProjectPage.Task | null>(null);
   const isDraggingEnabled = canEdit && Boolean(props.onTaskReorder);
   const handleTaskMove = React.useCallback(
     (move: BoardMove) => {
@@ -63,12 +53,15 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
           </div>
         </div>
       )}
-      <TaskFormModal isOpen={isCreating} onClose={() => setIsCreating(false)} props={props} />
-      <TaskFormModal
-        isOpen={taskBeingEdited !== null}
-        onClose={() => setTaskBeingEdited(null)}
-        props={props}
-        task={taskBeingEdited}
+      <TaskCreationModal
+        variant="project-template"
+        isOpen={isCreating}
+        onClose={() => setIsCreating(false)}
+        onCreateTask={(task) => props.onTaskCreate?.(task)}
+        milestones={props.milestones}
+        statuses={props.statuses}
+        personSearch={props.personSearch}
+        richTextHandlers={props.richTextHandlers}
       />
       <MilestoneFormModal
         isOpen={isCreatingMilestone}
@@ -95,7 +88,6 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
               draggedItemId={activeDraggedItemId}
               destination={activeDestination}
               placeholderHeight={draggedItemDimensions?.height ?? null}
-              onTaskClick={setTaskBeingEdited}
             />
           );
         })}
@@ -120,7 +112,6 @@ function TaskSection({
   draggedItemId,
   destination,
   placeholderHeight,
-  onTaskClick,
 }: {
   title: string;
   link?: string;
@@ -132,7 +123,6 @@ function TaskSection({
   draggedItemId: string | null;
   destination: BoardLocation | null;
   placeholderHeight: number | null;
-  onTaskClick: (task: TemplateProjectPage.Task) => void;
 }) {
   const sectionRef = React.useRef<HTMLElement>(null);
   const { items: projectedTasks, placeholderIndex } = React.useMemo(
@@ -184,7 +174,6 @@ function TaskSection({
             task={task}
             props={props}
             canEdit={canEdit}
-            onClick={() => onTaskClick(task)}
             index={index}
             containerId={containerId}
             isDraggable={isDraggingEnabled}
@@ -199,203 +188,4 @@ function TaskSection({
       )}
     </section>
   );
-}
-
-function TaskFormModal({
-  isOpen,
-  onClose,
-  props,
-  task = null,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  props: TemplateProjectPage.Props;
-  task?: TemplateProjectPage.Task | null;
-}) {
-  const [name, setName] = React.useState("");
-  const [dueOffsetDays, setDueOffsetDays] = React.useState<number | null>(null);
-  const [milestoneId, setMilestoneId] = React.useState<string | null>(null);
-  const [statusId, setStatusId] = React.useState(props.statuses[0]?.id ?? "");
-  const [description, setDescription] = React.useState<RichTextJSON | null>(null);
-  const [descriptionEditorKey, setDescriptionEditorKey] = React.useState(0);
-  const [createMore, setCreateMore] = React.useState(false);
-  const [assignees, setAssignees] = React.useState<AssigneesField.Person[]>([]);
-  const milestoneOptions: MilestoneFieldMilestone[] = props.milestones.map((milestone) => ({
-    id: milestone.id,
-    name: milestone.title,
-  }));
-  const selectedMilestone = milestoneOptions.find((milestone) => milestone.id === milestoneId) ?? null;
-  const selectedStatus = props.statuses.find((status) => status.id === statusId) ?? null;
-  const isUpdating = task !== null;
-
-  const resetForm = () => {
-    setName(task?.name ?? "");
-    setDueOffsetDays(task?.dueOffsetDays ?? null);
-    setMilestoneId(task?.milestoneId ?? null);
-    setStatusId(task?.status.id ?? props.statuses[0]?.id ?? "");
-    setDescription(task?.description ?? null);
-    setAssignees((task?.assignees ?? []).flatMap((assignee) => (assignee.person ? [assignee.person] : [])));
-    setDescriptionEditorKey((key) => key + 1);
-  };
-
-  useEffect(() => {
-    if (isOpen) resetForm();
-  }, [isOpen, task]);
-
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const status = props.statuses.find((item) => item.id === statusId) ?? props.statuses[0];
-    if (!name.trim() || !status) return;
-
-    const taskFields = {
-      name: name.trim(),
-      description: description && !isContentEmpty(description) ? description : null,
-      milestoneId,
-      dueOffsetDays,
-      status,
-    };
-
-    if (task) {
-      props.onTaskUpdate?.(task.id, taskFields);
-      onClose();
-      return;
-    }
-
-    props.onTaskCreate?.({
-      ...taskFields,
-      priority: null,
-      size: null,
-      reminders: [],
-      assignees: assignees.map((person) => ({
-        id: person.id,
-        person,
-        role: "contributor",
-        responsibility: null,
-        accessLevel: 70,
-        active: true,
-      })),
-    });
-
-    if (createMore) {
-      setName("");
-      setDueOffsetDays(null);
-      setDescription(null);
-      setDescriptionEditorKey((key) => key + 1);
-    } else {
-      onClose();
-    }
-  };
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isUpdating ? "Update Task" : "Create Task"} size="medium">
-      <form onSubmit={submit} className="min-w-0 space-y-6 overflow-x-hidden" data-test-id="template-task-form">
-        <TextField
-          variant="form-field"
-          label="Task title"
-          text={name}
-          onChange={setName}
-          placeholder="Enter task title"
-          autofocus
-          onChangeOnType
-          testId="template-task-title"
-        />
-
-        <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
-          <RelativeDayField
-            variant="form-field"
-            label="Relative due date"
-            value={dueOffsetDays}
-            onChange={setDueOffsetDays}
-            placeholder="Set relative date"
-          />
-          <div className="min-w-0">
-            <FieldLabel>Status</FieldLabel>
-            <StatusSelector
-              variant="form-field"
-              statusOptions={props.statuses}
-              status={selectedStatus}
-              onChange={(status) => setStatusId(status.id)}
-              testId="template-task-status"
-            />
-          </div>
-        </div>
-
-        <div className="min-w-0">
-          <FieldLabel>Milestone</FieldLabel>
-          <MilestoneField
-            variant="form-field"
-            milestone={selectedMilestone}
-            setMilestone={(milestone) => setMilestoneId(milestone?.id ?? null)}
-            milestones={milestoneOptions}
-            onSearch={async () => undefined}
-            emptyStateMessage="No milestone"
-            testId="template-task-milestone"
-          />
-        </div>
-
-        <div className="min-w-0 overflow-x-auto">
-          <FieldLabel>Notes</FieldLabel>
-          <TaskNotesField key={descriptionEditorKey} props={props} content={description} onChange={setDescription} />
-        </div>
-
-        {!task && props.personSearch && (
-          <div className="min-w-0">
-            <FieldLabel>Assignees</FieldLabel>
-            <AssigneesField
-              variant="form-field"
-              people={assignees}
-              setPeople={setAssignees}
-              searchData={props.personSearch}
-              emptyStateMessage="Assign people"
-            />
-          </div>
-        )}
-
-        <div className="mt-8 flex items-center">
-          {!isUpdating && (
-            <SwitchToggle
-              value={createMore}
-              setValue={setCreateMore}
-              label="Create more"
-              testId="add-template-task-more-switch"
-            />
-          )}
-          <div className="flex-1" />
-          <div className="flex space-x-3">
-            <SecondaryButton onClick={onClose} type="button">
-              Cancel
-            </SecondaryButton>
-            <PrimaryButton type="submit" disabled={!name.trim() || props.statuses.length === 0}>
-              {isUpdating ? "Update task" : "Create task"}
-            </PrimaryButton>
-          </div>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-function TaskNotesField({
-  props,
-  content,
-  onChange,
-}: {
-  props: TemplateProjectPage.Props;
-  content: RichTextJSON | null;
-  onChange: (description: RichTextJSON) => void;
-}) {
-  const editor = useEditor({
-    content,
-    editable: true,
-    placeholder: "Add notes about this task...",
-    handlers: props.richTextHandlers,
-    onUpdate: ({ json }) => onChange(json as RichTextJSON),
-  });
-
-  return <Editor editor={editor} />;
-}
-
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <label className="mb-1 block text-left text-sm font-bold">{children}</label>;
 }

@@ -15,6 +15,7 @@ interface EditorProps {
   className?: string;
   hideBorder?: boolean;
   hideToolbar?: boolean;
+  compactToolbar?: boolean;
   padding?: string;
 }
 
@@ -49,6 +50,7 @@ function EditorContent(props: EditorProps): JSX.Element {
   };
 
   const className = classNames(
+    "min-w-0",
     {
       "border border-surface-outline rounded-lg": !props.hideBorder,
     },
@@ -58,7 +60,7 @@ function EditorContent(props: EditorProps): JSX.Element {
 
   return (
     <div onClick={handleClick} className={className}>
-      {!props.hideToolbar && <Toolbar />}
+      {!props.hideToolbar && <Toolbar compact={props.compactToolbar} />}
 
       <div onClick={handleFocus} className="ProseMirror cursor-text text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
