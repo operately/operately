@@ -6,6 +6,8 @@ import { AssigneesField } from "../AssigneesField";
 import { AvatarList } from "../Avatar";
 import { Tooltip } from "../Tooltip";
 import { IconAlertTriangleFilled, IconX } from "../icons";
+import { DescriptionIndicator } from "../TaskBoard/components/DescriptionIndicator";
+import { isContentEmpty } from "../RichContent";
 import type { TemplateProjectPage } from ".";
 import { useSortableItem } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
@@ -106,16 +108,13 @@ export function TaskRow({
         </div>
         <div className="min-w-0 flex-1" onMouseDown={stopDragFromInteractive}>
           {onClick ? (
-            <button
-              type="button"
-              className="w-full truncate text-left text-sm font-medium"
-              onClick={onClick}
-              disabled={!canEdit}
-            >
-              {task.name}
+            <button type="button" className="max-w-full text-left text-sm font-medium" onClick={onClick}>
+              <TaskTitleContent task={task} />
             </button>
           ) : (
-            <div className="truncate text-sm font-medium">{task.name}</div>
+            <div className="text-sm font-medium">
+              <TaskTitleContent task={task} />
+            </div>
           )}
         </div>
         <div
@@ -159,6 +158,15 @@ export function TaskRow({
         </div>
       </div>
     </div>
+  );
+}
+
+function TaskTitleContent({ task }: { task: TemplateProjectPage.Task }) {
+  return (
+    <span className="inline-flex h-6 max-w-full items-center gap-1.5 truncate">
+      <span className="truncate">{task.name}</span>
+      <DescriptionIndicator hasDescription={!isContentEmpty(task.description)} iconSize={14} />
+    </span>
   );
 }
 
