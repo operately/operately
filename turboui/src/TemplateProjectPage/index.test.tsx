@@ -1,5 +1,5 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
@@ -1270,10 +1270,10 @@ describe("TemplateProjectPage", () => {
     const header = document.querySelector('[data-test-id="template-task-section-header-milestone-1"]') as HTMLElement;
     const task = document.querySelector('[data-test-id="template-task-task-1"]') as HTMLElement;
 
-    expect(within(header).getByTestId("description-indicator")).toBeInTheDocument();
-    expect(within(header).queryByTestId("comments-indicator")).not.toBeInTheDocument();
-    expect(within(task).getByTestId("description-indicator")).toBeInTheDocument();
-    expect(within(task).queryByTestId("comments-indicator")).not.toBeInTheDocument();
+    expect(header.querySelector('[data-test-id="description-indicator"]')).toBeInTheDocument();
+    expect(header.querySelector('[data-test-id="comments-indicator"]')).not.toBeInTheDocument();
+    expect(task.querySelector('[data-test-id="description-indicator"]')).toBeInTheDocument();
+    expect(task.querySelector('[data-test-id="comments-indicator"]')).not.toBeInTheDocument();
   });
 
   it("opens the template milestone creation modal", () => {
