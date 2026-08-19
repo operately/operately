@@ -2,20 +2,7 @@ import * as React from "react";
 import type { TaskPage } from "../../TaskPage";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import type { GetTemplateTaskPageProps, TemplateTaskSlideInContext } from "../../TaskBoard/KanbanView/types";
-import { defaultFormattedTimePreferences } from "./formattedTime";
-
-const EMPTY_SUBSCRIPTIONS: TaskPage.ContentProps["subscriptions"] = {
-  isSubscribed: false,
-  hidden: true,
-  entityType: "project_task",
-  subscribedPeople: [],
-  onToggle: () => undefined,
-};
-
-const EMPTY_PERSON_SEARCH: TaskPage.ContentProps["assigneePersonSearch"] = {
-  people: [],
-  onSearch: async () => undefined,
-};
+import { defaultFormattedTimePreferences } from "../../FormattedTime/types";
 
 function updateTask(
   tasks: TemplateProjectPage.Task[],
@@ -25,120 +12,88 @@ function updateTask(
   return tasks.map((task) => (task.id === taskId ? updater(task) : task));
 }
 
-function toTaskPageMilestone(milestone: TemplateProjectPage.Milestone): TaskPage.Milestone {
-  return {
-    id: milestone.id,
-    name: milestone.title,
-    dueDate: null,
-    status: "pending",
-  };
+function toMilestone(milestone: TemplateProjectPage.Milestone): TaskPage.Milestone {
+  return { id: milestone.id, name: milestone.title, dueDate: null, status: "pending" };
 }
 
-function toTaskPagePerson(person: NonNullable<TemplateProjectPage.TemplatePerson["person"]>): TaskPage.Person {
-  return {
-    id: person.id,
-    fullName: person.fullName,
-    avatarUrl: person.avatarUrl,
-    profileLink: person.profileLink ?? "#",
-  };
-}
-
-function activeAssignees(assignees: TemplateProjectPage.TemplatePerson[] | undefined): TaskPage.Person[] {
-  return (assignees ?? []).flatMap((assignee) =>
-    assignee.active && assignee.person ? [toTaskPagePerson(assignee.person)] : [],
-  );
-}
-
-function toTemplateAssignees(
-  people: TaskPage.Person[],
-  previous: TemplateProjectPage.TemplatePerson[] | undefined,
-): TemplateProjectPage.TemplatePerson[] {
-  const previousByPersonId = new Map(
-    (previous ?? []).flatMap((assignee) => (assignee.person ? [[assignee.person.id, assignee] as const] : [])),
-  );
-
-  return people.map(
-    (person) =>
-      previousByPersonId.get(person.id) ?? {
-        id: person.id,
-        person: { id: person.id, fullName: person.fullName, avatarUrl: person.avatarUrl },
-        role: "contributor" as const,
-        responsibility: null,
-        accessLevel: 70,
-        active: true,
-      },
-  );
-}
-
-export function templateTaskToContentProps(
-  taskId: string,
-  ctx: TemplateTaskSlideInContext,
-): TaskPage.ContentProps | null {
+function getTemplateTaskPageProps(taskId: string, ctx: TemplateTaskSlideInContext): TaskPage.ContentProps | null {
   const task = ctx.tasks.find((item) => item.id === taskId);
   if (!task || !ctx.richTextHandlers) return null;
 
-  const selectedMilestone = ctx.milestones.find((milestone) => milestone.id === task.milestoneId) ?? null;
+  const patch = (updates: Partial<TemplateProjectPage.Task>) => void ctx.onTaskUpdate?.(taskId, updates);
+  const selectedMilestone = ctx.milestones.find((milestone) => milestone.id === task.milestoneId);
 
   return {
     variant: "template",
     name: task.name,
     onNameChange: async (name) => {
-      await ctx.onTaskUpdate?.(taskId, { name });
+      patch({ name });
       return true;
     },
     description: task.description,
     onDescriptionChange: async (description) => {
-      await ctx.onTaskUpdate?.(taskId, { description });
+      patch({ description });
       return true;
     },
     status: task.status,
-    onStatusChange: (status) => {
-      void ctx.onTaskUpdate?.(taskId, { status });
-    },
+    onStatusChange: (status) => patch({ status }),
     statusOptions: ctx.statuses,
     dueDate: undefined,
     onDueDateChange: () => undefined,
     dueOffsetDays: task.dueOffsetDays,
-    onDueOffsetDaysChange: (dueOffsetDays) => {
-      void ctx.onTaskUpdate?.(taskId, { dueOffsetDays });
-    },
+    onDueOffsetDaysChange: (dueOffsetDays) => patch({ dueOffsetDays }),
     reminders: [],
     onRemindersChange: async () => true,
-    milestone: selectedMilestone ? toTaskPageMilestone(selectedMilestone) : null,
-    onMilestoneChange: (next) => {
-      void ctx.onTaskUpdate?.(taskId, { milestoneId: next?.id ?? null });
-    },
-    milestones: ctx.milestones.map(toTaskPageMilestone),
+    milestone: selectedMilestone ? toMilestone(selectedMilestone) : null,
+    onMilestoneChange: (next) => patch({ milestoneId: next?.id ?? null }),
+    milestones: ctx.milestones.map(toMilestone),
     onMilestoneSearch: async () => undefined,
-    assignees: activeAssignees(task.assignees),
-    onAssigneesChange: (people) => {
-      void ctx.onTaskUpdate?.(taskId, { assignees: toTemplateAssignees(people, task.assignees) });
-    },
+    assignees: (task.assignees ?? []).flatMap((assignee) =>
+      assignee.active && assignee.person
+        ? [
+            {
+              id: assignee.person.id,
+              fullName: assignee.person.fullName,
+              avatarUrl: assignee.person.avatarUrl,
+              profileLink: assignee.person.profileLink ?? "#",
+            },
+          ]
+        : [],
+    ),
+    onAssigneesChange: (people) =>
+      patch({
+        assignees: people.map((person) => ({
+          id: person.id,
+          person: { id: person.id, fullName: person.fullName, avatarUrl: person.avatarUrl },
+          role: "contributor",
+          responsibility: null,
+          accessLevel: 70,
+          active: true,
+        })),
+      }),
     createdAt: new Date(),
     createdBy: null,
-    subscriptions: EMPTY_SUBSCRIPTIONS,
+    subscriptions: {
+      isSubscribed: false,
+      hidden: true,
+      entityType: "project_task",
+      subscribedPeople: [],
+      onToggle: () => undefined,
+    },
     onDelete: async () => {
       await ctx.onTaskDelete?.(taskId);
     },
-    assigneePersonSearch: ctx.personSearch ?? EMPTY_PERSON_SEARCH,
+    assigneePersonSearch: ctx.personSearch ?? { people: [], onSearch: async () => undefined },
     richTextHandlers: ctx.richTextHandlers,
-    canEdit: true,
+    canEdit: ctx.canEdit ?? true,
     onAddComment: () => undefined,
     onEditComment: () => undefined,
     onDeleteComment: () => undefined,
-    formattedTimePreferences: defaultFormattedTimePreferences,
-    localDraftKeyBase: `template-task:${taskId}`,
+    formattedTimePreferences: ctx.formattedTimePreferences ?? defaultFormattedTimePreferences,
   };
 }
 
-export function useMockTemplateTaskSlideIn(opts: {
-  tasks: TemplateProjectPage.Task[];
-  setTasks: React.Dispatch<React.SetStateAction<TemplateProjectPage.Task[]>>;
-  milestones: TemplateProjectPage.Milestone[];
-  statuses: TemplateProjectPage.Props["statuses"];
-  personSearch?: TemplateProjectPage.Props["personSearch"];
-  richTextHandlers: TemplateProjectPage.Props["richTextHandlers"];
-}): {
+export function useMockTemplateTaskSlideIn(setTasks: React.Dispatch<React.SetStateAction<TemplateProjectPage.Task[]>>): {
   onTaskCreate: (task: Omit<TemplateProjectPage.Task, "id">) => void;
   onTaskUpdate: (
     taskId: string,
@@ -152,12 +107,13 @@ export function useMockTemplateTaskSlideIn(opts: {
   ) => boolean | void | Promise<boolean | void>;
   getTemplateTaskPageProps: GetTemplateTaskPageProps;
 } {
-  const { setTasks } = opts;
-
-  const onTaskCreate = React.useCallback((task: Omit<TemplateProjectPage.Task, "id">) => {
-    const id = `template-task-${Math.random().toString(36).slice(2)}`;
-    setTasks((prev) => [...prev, { ...task, id }]);
-  }, [setTasks]);
+  const onTaskCreate = React.useCallback(
+    (task: Omit<TemplateProjectPage.Task, "id">) => {
+      const id = `template-task-${Math.random().toString(36).slice(2)}`;
+      setTasks((prev) => [...prev, { ...task, id }]);
+    },
+    [setTasks],
+  );
 
   const onTaskUpdate = React.useCallback(
     (taskId: string, updates: Partial<TemplateProjectPage.Task>) => {
@@ -200,11 +156,6 @@ export function useMockTemplateTaskSlideIn(opts: {
     [setTasks],
   );
 
-  const getTemplateTaskPageProps = React.useCallback<GetTemplateTaskPageProps>(
-    (taskId, ctx) => templateTaskToContentProps(taskId, ctx),
-    [],
-  );
-
   return {
     onTaskCreate,
     onTaskUpdate,
@@ -216,24 +167,9 @@ export function useMockTemplateTaskSlideIn(opts: {
 
 export function useMockTemplateMilestoneTaskActions(opts: {
   milestoneId: string;
-  milestones: TemplateProjectPage.Milestone[];
   initialTasks: TemplateProjectPage.Task[];
-  statuses: TemplateProjectPage.Props["statuses"];
-  personSearch?: TemplateProjectPage.Props["personSearch"];
-  richTextHandlers: TemplateProjectPage.Props["richTextHandlers"];
 }) {
-  const [tasks, setTasks] = React.useState(
-    opts.initialTasks.filter((task) => task.milestoneId === opts.milestoneId),
-  );
+  const [tasks, setTasks] = React.useState(opts.initialTasks.filter((task) => task.milestoneId === opts.milestoneId));
 
-  const actions = useMockTemplateTaskSlideIn({
-    tasks,
-    setTasks,
-    milestones: opts.milestones,
-    statuses: opts.statuses,
-    personSearch: opts.personSearch,
-    richTextHandlers: opts.richTextHandlers,
-  });
-
-  return { tasks, setTasks, ...actions };
+  return { tasks, setTasks, ...useMockTemplateTaskSlideIn(setTasks) };
 }

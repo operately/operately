@@ -4,11 +4,13 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 import { TaskRow } from "../../TemplateProjectPage/TaskRow";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../../utils/PragmaticDragAndDrop";
-import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
+import {
+  ROOT_TASKS_CONTAINER_ID,
+  useOptimisticTemplateTaskReorder,
+} from "../../TemplateProjectPage/useOptimisticTemplateTaskReorder";
 
 export function TemplateTaskList({
-  tasks,
-  containerId,
+  tasks: confirmedTasks,
   destinationMilestoneId,
   canEdit,
   onTaskReorder,
@@ -17,13 +19,13 @@ export function TemplateTaskList({
   inlineCreateRow,
 }: TemplateTaskListProps) {
   const listRef = React.useRef<HTMLDivElement>(null);
-  const isDraggingEnabled = canEdit && Boolean(onTaskReorder);
-  const handleTaskMove = React.useCallback(
-    (move: BoardMove) => {
-      onTaskReorder?.(move.itemId, destinationMilestoneId, move.destination.index);
-    },
-    [destinationMilestoneId, onTaskReorder],
-  );
+  const dropContainerId = destinationMilestoneId ?? ROOT_TASKS_CONTAINER_ID;
+  const { tasks, handleTaskMove, isDraggingEnabled } = useOptimisticTemplateTaskReorder({
+    tasks: confirmedTasks,
+    statuses: taskRowProps.statuses,
+    onTaskReorder,
+    enabled: canEdit,
+  });
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
   const { items: projectedTasks, placeholderIndex } = React.useMemo(
     () =>
@@ -32,9 +34,9 @@ export function TemplateTaskList({
         getId: (task) => task.id,
         draggedItemId: isDraggingEnabled ? draggedItemId : null,
         targetLocation: isDraggingEnabled ? destination : null,
-        containerId,
+        containerId: dropContainerId,
       }),
-    [containerId, destination, draggedItemId, isDraggingEnabled, tasks],
+    [destination, draggedItemId, dropContainerId, isDraggingEnabled, tasks],
   );
 
   React.useEffect(() => {
@@ -44,9 +46,9 @@ export function TemplateTaskList({
 
     return dropTargetForElements({
       element,
-      getData: () => ({ containerId, index: projectedTasks.length }),
+      getData: () => ({ containerId: dropContainerId, index: projectedTasks.length }),
     });
-  }, [containerId, isDraggingEnabled, projectedTasks.length]);
+  }, [dropContainerId, isDraggingEnabled, projectedTasks.length]);
 
   return (
     <div ref={listRef} className="overflow-hidden rounded-b-lg bg-surface-base">
@@ -54,7 +56,7 @@ export function TemplateTaskList({
         <React.Fragment key={task.id}>
           {placeholderIndex === index && (
             <SubtleDropPlaceholder
-              containerId={containerId}
+              containerId={dropContainerId}
               index={index}
               height={draggedItemDimensions?.height ?? null}
             />
@@ -65,14 +67,14 @@ export function TemplateTaskList({
             canEdit={canEdit}
             onClick={() => onTaskOpen(task.id)}
             index={index}
-            containerId={containerId}
+            containerId={dropContainerId}
             isDraggable={isDraggingEnabled}
           />
         </React.Fragment>
       ))}
       {placeholderIndex !== null && placeholderIndex === projectedTasks.length && (
         <SubtleDropPlaceholder
-          containerId={containerId}
+          containerId={dropContainerId}
           index={projectedTasks.length}
           height={draggedItemDimensions?.height ?? null}
         />
@@ -84,7 +86,6 @@ export function TemplateTaskList({
 
 export interface TemplateTaskListProps {
   tasks: TemplateProjectPage.Task[];
-  containerId: string;
   destinationMilestoneId: string | null;
   canEdit: boolean;
   onTaskReorder?: (

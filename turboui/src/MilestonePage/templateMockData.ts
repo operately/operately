@@ -34,6 +34,7 @@ export const sampleTemplateMilestones: TemplateProjectPage.Milestone[] = [
     dueOffsetDays: 0,
     tasksOrderingState: ["invite"],
     tasksKanbanState: {},
+    link: "/project-templates/launch-template/milestones/beta",
   },
   {
     id: "launch",
@@ -42,6 +43,7 @@ export const sampleTemplateMilestones: TemplateProjectPage.Milestone[] = [
     dueOffsetDays: 21,
     tasksOrderingState: ["announce"],
     tasksKanbanState: {},
+    link: "/project-templates/launch-template/milestones/launch",
   },
 ];
 

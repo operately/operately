@@ -127,6 +127,7 @@ export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
 export { CompanyExportPage } from "./CompanyExportPage";
 export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
 export { MilestonePage } from "./MilestonePage";
+export type { GetTemplateTaskPageProps } from "./TaskBoard/KanbanView/types";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { Modal } from "./Modal";
 export { CompanyMemberOnboardingWizard } from "./OnboardingWizard";

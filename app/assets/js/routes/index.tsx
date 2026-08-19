@@ -144,6 +144,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("project-templates/:templateId/links/:id", pages.ProjectTemplateLinkPage),
         pageRoute("project-templates/:templateId/files/:id/edit", pages.ProjectTemplateEditFilePage),
         pageRoute("project-templates/:templateId/files/:id", pages.ProjectTemplateFilePage),
+        pageRoute("project-templates/:templateId/milestones/:id", pages.ProjectTemplateMilestonePage),
         pageRoute("project-templates/:id", pages.ProjectTemplatePage),
 
         pageRoute("goals/new", pages.GoalAddPage),
