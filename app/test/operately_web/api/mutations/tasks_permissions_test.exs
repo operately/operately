@@ -161,12 +161,7 @@ defmodule OperatelyWeb.Api.Mutations.TasksPermissionsTest do
         assert {code, res} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
           task_id: Paths.task_id(task),
           milestone_id: Paths.milestone_id(milestone),
-          milestones_ordering_state: [
-            %{
-              milestone_id: Paths.milestone_id(milestone),
-              ordering_state: [Paths.task_id(task)]
-            }
-          ]
+          index: 0
         })
         assert code == @test.expected
 

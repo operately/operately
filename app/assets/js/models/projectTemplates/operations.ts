@@ -13,7 +13,7 @@ export function activePersonIds(assignees: TemplateProjectPage.TemplatePerson[] 
   return (assignees ?? []).flatMap((assignee) => (assignee.active && assignee.person ? [assignee.person.id] : []));
 }
 
-export function mapTemplatePeople(
+function mapTemplatePeople(
   template: Pick<ProjectTemplate, "people" | "taskAssignments">,
   profilePath: (personId: string) => string,
 ) {
@@ -47,7 +47,7 @@ export function mapTemplatePeople(
   return { people, assigneesByTaskId };
 }
 
-export function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: string): TemplateProjectPage.Milestone {
+function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: string): TemplateProjectPage.Milestone {
   return {
     id: milestone.id,
     title: milestone.title,
@@ -59,7 +59,32 @@ export function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: s
   };
 }
 
-export function toTask(
+export function mapTemplateTaskGraph(
+  template: Pick<
+    ProjectTemplate,
+    "people" | "taskAssignments" | "tasks" | "milestones" | "tasksKanbanState" | "taskStatuses"
+  >,
+  profilePath: (personId: string) => string,
+  milestoneLink: (milestoneId: string) => string,
+) {
+  const { people, assigneesByTaskId } = mapTemplatePeople(template, profilePath);
+  const tasks = (template.tasks ?? [])
+    .map((task) => toTask(task, assigneesByTaskId.get(task.id) ?? []))
+    .filter((task): task is TemplateProjectPage.Task => task !== null);
+  const milestones = (template.milestones ?? []).map((milestone) =>
+    toTemplateMilestone(milestone, milestoneLink(milestone.id)),
+  );
+
+  return {
+    people,
+    tasks,
+    milestones,
+    tasksKanbanState: parseJson(template.tasksKanbanState),
+    statuses: Tasks.parseTaskStatusesForTurboUi(template.taskStatuses),
+  };
+}
+
+function toTask(
   task: ProjectTemplateTask,
   assignees: TemplateProjectPage.TemplatePerson[],
 ): TemplateProjectPage.Task | null {
@@ -116,7 +141,7 @@ export function createTaskOperations({ templateId, mutate }: { templateId: strin
 export function createTaskMove({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
   return (taskId: string, milestoneId: string | null, destinationIndex: number) =>
     mutate("Tasks not reordered", () =>
-      Api.project_templates.updateTask({
+      Api.project_templates.updateMilestoneAndOrdering({
         templateId,
         taskId,
         milestoneId,
@@ -141,7 +166,7 @@ export function serializeJson(value: unknown) {
   return value === undefined ? undefined : JSON.stringify(value);
 }
 
-export function parseJson(value?: string | null): unknown {
+function parseJson(value?: string | null): unknown {
   try {
     return JSON.parse(value || "{}");
   } catch {

@@ -4,13 +4,12 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 import { TaskRow } from "../../TemplateProjectPage/TaskRow";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../../utils/PragmaticDragAndDrop";
-import {
-  ROOT_TASKS_CONTAINER_ID,
-  useOptimisticTemplateTaskReorder,
-} from "../../TemplateProjectPage/useOptimisticTemplateTaskReorder";
+import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
+
+const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
 export function TemplateTaskList({
-  tasks: confirmedTasks,
+  tasks,
   destinationMilestoneId,
   canEdit,
   onTaskReorder,
@@ -20,12 +19,17 @@ export function TemplateTaskList({
 }: TemplateTaskListProps) {
   const listRef = React.useRef<HTMLDivElement>(null);
   const dropContainerId = destinationMilestoneId ?? ROOT_TASKS_CONTAINER_ID;
-  const { tasks, handleTaskMove, isDraggingEnabled } = useOptimisticTemplateTaskReorder({
-    tasks: confirmedTasks,
-    statuses: taskRowProps.statuses,
-    onTaskReorder,
-    enabled: canEdit,
-  });
+  const isDraggingEnabled = canEdit && Boolean(onTaskReorder);
+  const handleTaskMove = React.useCallback(
+    (move: BoardMove) => {
+      if (!isDraggingEnabled) return;
+
+      const milestoneId =
+        move.destination.containerId === ROOT_TASKS_CONTAINER_ID ? null : move.destination.containerId;
+      onTaskReorder?.(move.itemId, milestoneId, move.destination.index);
+    },
+    [isDraggingEnabled, onTaskReorder],
+  );
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
   const { items: projectedTasks, placeholderIndex } = React.useMemo(
     () =>

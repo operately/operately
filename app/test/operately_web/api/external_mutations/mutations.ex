@@ -139,6 +139,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.ProjectTemplates.DeleteMilestone,
       Mutations.ProjectTemplates.CreateTask,
       Mutations.ProjectTemplates.UpdateTask,
+      Mutations.ProjectTemplates.UpdateMilestoneAndOrdering,
       Mutations.ProjectTemplates.DeleteTask,
       Mutations.ProjectTemplates.CreatePerson,
       Mutations.ProjectTemplates.UpdatePerson,

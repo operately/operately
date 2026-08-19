@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 246
+- Endpoints: 247
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -156,6 +156,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `project_templates update_folder` | `op project_templates update_folder` | `POST` | `/api/external/v1/project_templates/update_folder` |
 | `project_templates update_link` | `op project_templates update_link` | `POST` | `/api/external/v1/project_templates/update_link` |
 | `project_templates update_milestone` | `op project_templates update_milestone` | `POST` | `/api/external/v1/project_templates/update_milestone` |
+| `project_templates update_milestone_and_ordering` | `op project_templates update_milestone_and_ordering` | `POST` | `/api/external/v1/project_templates/update_milestone_and_ordering` |
 | `project_templates update_person` | `op project_templates update_person` | `POST` | `/api/external/v1/project_templates/update_person` |
 | `project_templates update_task` | `op project_templates update_task` | `POST` | `/api/external/v1/project_templates/update_task` |
 | `project_templates update_task_assignees` | `op project_templates update_task_assignees` | `POST` | `/api/external/v1/project_templates/update_task_assignees` |
