@@ -16,7 +16,10 @@ function toMilestone(milestone: TemplateProjectPage.Milestone): TaskPage.Milesto
   return { id: milestone.id, name: milestone.title, dueDate: null, status: "pending" };
 }
 
-function getTemplateTaskPageProps(taskId: string, ctx: TemplateTaskSlideInContext): TaskPage.ContentProps | null {
+export function getTemplateTaskPageProps(
+  taskId: string,
+  ctx: TemplateTaskSlideInContext,
+): TaskPage.ContentProps | null {
   const task = ctx.tasks.find((item) => item.id === taskId);
   if (!task || !ctx.richTextHandlers) return null;
 
@@ -93,7 +96,9 @@ function getTemplateTaskPageProps(taskId: string, ctx: TemplateTaskSlideInContex
   };
 }
 
-export function useMockTemplateTaskSlideIn(setTasks: React.Dispatch<React.SetStateAction<TemplateProjectPage.Task[]>>): {
+export function useMockTemplateTaskSlideIn(
+  setTasks: React.Dispatch<React.SetStateAction<TemplateProjectPage.Task[]>>,
+): {
   onTaskCreate: (task: Omit<TemplateProjectPage.Task, "id">) => void;
   onTaskUpdate: (
     taskId: string,

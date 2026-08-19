@@ -15,6 +15,7 @@ import {
   type Mutate,
 } from "@/models/projectTemplates";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
+import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
 import { findFileSize, uploadFilesWithPreviews } from "@/models/blobs";
 import { usePaths, type Paths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
@@ -52,6 +53,8 @@ function Page() {
     transformResult: transformPerson,
   });
 
+  const canEdit = !template.archivedAt && Boolean(permissions.canEdit || permissions.hasFullAccess);
+  const slideInModel = useTemplateTaskSlideInProps({ canEdit, formattedTimePreferences });
   const mutate: Mutate = (message, operation) => persistAndRefreshTemplate(refresh, message, operation);
   const [overview, setOverview] = React.useState(() => templateOverview(template));
   React.useEffect(() => {
@@ -181,6 +184,7 @@ function Page() {
       onTaskUpdate={onTaskUpdate}
       onTaskDelete={onTaskDelete}
       onTaskReorder={onTaskReorder}
+      getTemplateTaskPageProps={slideInModel.getTemplateTaskPageProps}
       onPersonCreate={onPersonCreate}
       onPersonUpdate={onPersonUpdate}
       onPersonDelete={onPersonDelete}

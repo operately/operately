@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { asRichText } from "../utils/storybook/richContent";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { getTemplateTaskPageProps } from "../utils/storybook/templateTasks";
 import { TemplateProjectPage } from ".";
 import type { TemplateProjectPage as Types } from ".";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
@@ -59,7 +60,7 @@ const populatedProps: Types.Props = {
     {
       id: "launch",
       title: "Public launch",
-      description: null,
+      description: asRichText("Announce the product and support the first week of questions."),
       dueOffsetDays: 21,
       tasksOrderingState: ["announce"],
       tasksKanbanState: {},
@@ -81,7 +82,7 @@ const populatedProps: Types.Props = {
     {
       id: "invite",
       name: "Invite beta customers",
-      description: null,
+      description: asRichText("Send invitations and collect feedback from the first cohort."),
       milestoneId: "beta",
       priority: null,
       size: null,
@@ -169,6 +170,7 @@ const populatedProps: Types.Props = {
   onTaskCreate: () => undefined,
   onTaskUpdate: () => undefined,
   onTaskDelete: () => undefined,
+  getTemplateTaskPageProps,
   onDuplicate: async () => ({ success: true }),
   onArchive: async () => ({ success: true }),
   onRestore: async () => ({ success: true }),
@@ -262,6 +264,24 @@ function TemplateStory({ props }: { props: Types.Props }) {
       ]),
     onTaskUpdate: (id, updates) =>
       setTasks((current) => current.map((item) => (item.id === id ? { ...item, ...updates } : item))),
+    onTaskDelete: (id) => setTasks((current) => current.filter((item) => item.id !== id)),
+    getTemplateTaskPageProps: (taskId, ctx) =>
+      getTemplateTaskPageProps(taskId, {
+        ...ctx,
+        tasks,
+        milestones,
+        statuses,
+        onTaskUpdate: (id, updates) => {
+          setTasks((current) => current.map((item) => (item.id === id ? { ...item, ...updates } : item)));
+          return true;
+        },
+        onTaskDelete: async (id) => {
+          setTasks((current) => current.filter((item) => item.id !== id));
+        },
+        richTextHandlers: props.richTextHandlers,
+        formattedTimePreferences: props.formattedTimePreferences,
+        canEdit: Boolean(props.permissions.canEdit || props.permissions.hasFullAccess),
+      }),
     onPersonCreate: (person) =>
       setPeople((current) => [...current, { ...person, id: crypto.randomUUID(), active: true }]),
     onPersonUpdate: (id, updates) =>
