@@ -5,11 +5,15 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
   alias Operately.Activities
   alias Operately.Projects.Milestone
   alias Operately.Repo
+  alias Operately.Tasks.OrderingState
   alias Operately.Tasks.Task
-  alias OperatelyWeb.Api.Helpers
+  alias OperatelyWeb.Paths
 
-  def run(author, project, task, milestone_id, ordering_states) do
+  def run(author, project, task, milestone_id, index) do
     Multi.new()
+    |> Multi.run(:validate_index, fn _repo, _changes ->
+      validate_index(index)
+    end)
     |> Multi.run(:validate_task_parent, fn _repo, _changes ->
       validate_task_parent(project, task)
     end)
@@ -19,14 +23,14 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
     |> Multi.run(:updated_task, fn _repo, %{validated_milestone: milestone} ->
       update_task_milestone(task, milestone_id, milestone)
     end)
-    |> Multi.run(:validated_ordering_states, fn _repo, _changes ->
-      validate_and_filter_ordering_states(project, ordering_states)
-    end)
-    |> Multi.run(:updated_milestones, fn _repo, %{validated_ordering_states: states} ->
-      update_milestone_orderings(states)
+    |> Multi.run(:updated_milestones, fn _repo, %{updated_task: updated_task} ->
+      apply_list_move(project, task, updated_task, index)
     end)
     |> maybe_save_task_milestone_activity(author, project, task)
   end
+
+  defp validate_index(index) when is_integer(index) and index >= 0, do: {:ok, index}
+  defp validate_index(_index), do: {:error, {:validation, "Task index must be zero or greater"}}
 
   defp validate_task_parent(project, task) do
     if task.project_id == project.id do
@@ -37,6 +41,7 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
   end
 
   defp validate_milestone(_project, nil), do: {:ok, nil}
+
   defp validate_milestone(project, milestone_id) do
     case Repo.get(Milestone, milestone_id) do
       nil ->
@@ -62,107 +67,37 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
     end
   end
 
-  defp validate_and_filter_ordering_states(_project, nil), do: {:ok, []}
-  defp validate_and_filter_ordering_states(project, ordering_states) do
-    ordering_states = ordering_states || []
+  defp apply_list_move(project, original_task, updated_task, index) do
+    source_id = original_task.milestone_id
+    destination_id = updated_task.milestone_id
+    task_id = Paths.task_id(updated_task)
 
-    with {:ok, decoded_states} <- decode_ordering_states(ordering_states),
-         {:ok, milestones_by_id} <- load_milestones(project, Map.keys(decoded_states)) do
-      states =
-        decoded_states
-        |> Enum.map(fn {milestone_id, ordering_state} ->
-          milestone = Map.fetch!(milestones_by_id, milestone_id)
-          filtered_ordering = filter_ordering_state(milestone_id, ordering_state)
+    milestone_ids = Enum.uniq(Enum.reject([source_id, destination_id], &is_nil/1))
+    milestones = load_project_milestones(project, milestone_ids)
 
-          %{milestone: milestone, ordering_state: filtered_ordering}
-        end)
+    Enum.reduce_while(milestone_ids, {:ok, []}, fn milestone_id, {:ok, acc} ->
+      milestone = Map.fetch!(milestones, milestone_id)
+      ordering = visible_ordering(milestone)
 
-      {:ok, states}
-    end
-  end
-
-  defp decode_ordering_states(ordering_states) do
-    Enum.reduce(ordering_states, {:ok, %{}}, fn state, {:ok, acc} ->
-      case Helpers.decode_id(state.milestone_id) do
-        {:ok, milestone_id} ->
-          ordering_state = state.ordering_state || []
-          {:ok, Map.put(acc, milestone_id, ordering_state)}
-
-        _ ->
-          {:error, {:bad_request, "Invalid milestone"}}
-      end
-    end)
-  end
-
-  defp load_milestones(_project, []), do: {:ok, %{}}
-  defp load_milestones(project, milestone_ids) do
-    milestones =
-      from(m in Milestone,
-        where: m.id in ^milestone_ids,
-        where: m.project_id == ^project.id
-      )
-      |> Repo.all()
-
-    if length(milestones) == length(milestone_ids) do
-      {:ok, Map.new(milestones, fn milestone -> {milestone.id, milestone} end)}
-    else
-      {:error, {:bad_request, "Milestone must belong to the same project as the task"}}
-    end
-  end
-
-  defp filter_ordering_state(_milestone_id, nil), do: []
-  defp filter_ordering_state(milestone_id, ordering_state) do
-    {decoded_ids, task_ids} = decode_task_ids(ordering_state)
-
-    tasks =
-      from(t in Task,
-        where: t.id in ^task_ids,
-        where: t.milestone_id == ^milestone_id
-      )
-      |> Repo.all()
-
-    visible_tasks = Enum.filter(tasks, &task_visible?/1)
-    valid_ids = MapSet.new(Enum.map(visible_tasks, & &1.id))
-    encoded_by_id = Map.new(visible_tasks, fn task -> {task.id, OperatelyWeb.Paths.task_id(task)} end)
-
-    {filtered, _seen} =
-      Enum.reduce(decoded_ids, {[], MapSet.new()}, fn task_id, {acc, seen} ->
-        if MapSet.member?(valid_ids, task_id) and not MapSet.member?(seen, task_id) do
-          {[Map.fetch!(encoded_by_id, task_id) | acc], MapSet.put(seen, task_id)}
+      next_ordering =
+        if milestone_id == destination_id and task_visible?(updated_task) do
+          case OrderingState.move_id(ordering, task_id, index) do
+            {:ok, moved} -> moved
+            {:error, error} -> error
+          end
         else
-          {acc, seen}
+          Enum.reject(ordering, &(&1 == task_id))
         end
-      end)
 
-    Enum.reverse(filtered)
-  end
+      case next_ordering do
+        {:validation, _} = error ->
+          {:halt, {:error, error}}
 
-  defp decode_task_ids(ordering_state) do
-    ordering_state = ordering_state || []
-
-    decoded_ids =
-      Enum.reduce(ordering_state, [], fn encoded_id, acc ->
-        case Helpers.decode_id(encoded_id) do
-          {:ok, task_id} -> [task_id | acc]
-          _ -> acc
-        end
-      end)
-      |> Enum.reverse()
-
-    {decoded_ids, Enum.uniq(decoded_ids)}
-  end
-
-  defp task_visible?(%Task{task_status: %{closed: true}}), do: false
-  defp task_visible?(%Task{closed_at: closed_at}) when not is_nil(closed_at), do: false
-  defp task_visible?(%Task{status: status}) when status in ["done", "canceled"], do: false
-  defp task_visible?(_task), do: true
-
-  defp update_milestone_orderings([]), do: {:ok, []}
-  defp update_milestone_orderings(states) do
-    Enum.reduce_while(states, {:ok, []}, fn %{milestone: milestone, ordering_state: ordering_state}, {:ok, acc} ->
-      case Operately.Projects.update_milestone(milestone, %{tasks_ordering_state: ordering_state}) do
-        {:ok, updated_milestone} -> {:cont, {:ok, [updated_milestone | acc]}}
-        {:error, changeset} -> {:halt, {:error, changeset}}
+        ordering_state when is_list(ordering_state) ->
+          case Operately.Projects.update_milestone(milestone, %{tasks_ordering_state: ordering_state}) do
+            {:ok, updated_milestone} -> {:cont, {:ok, [updated_milestone | acc]}}
+            {:error, changeset} -> {:halt, {:error, changeset}}
+          end
       end
     end)
     |> case do
@@ -170,6 +105,31 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
       error -> error
     end
   end
+
+  defp load_project_milestones(_project, []), do: %{}
+
+  defp load_project_milestones(project, milestone_ids) do
+    from(m in Milestone, where: m.id in ^milestone_ids, where: m.project_id == ^project.id)
+    |> Repo.all()
+    |> Map.new(&{&1.id, &1})
+  end
+
+  defp visible_ordering(milestone) do
+    visible_ids =
+      from(t in Task, where: t.milestone_id == ^milestone.id, order_by: [asc: t.inserted_at, asc: t.id])
+      |> Repo.all()
+      |> Enum.filter(&task_visible?/1)
+      |> Enum.map(&Paths.task_id/1)
+
+    ordering = OrderingState.load(milestone.tasks_ordering_state)
+    kept = ordering |> Enum.filter(&(&1 in visible_ids)) |> Enum.uniq()
+    kept ++ (visible_ids -- kept)
+  end
+
+  defp task_visible?(%Task{task_status: %{closed: true}}), do: false
+  defp task_visible?(%Task{closed_at: closed_at}) when not is_nil(closed_at), do: false
+  defp task_visible?(%Task{status: status}) when status in ["done", "canceled"], do: false
+  defp task_visible?(_task), do: true
 
   defp maybe_save_task_milestone_activity(multi, author, project, task) do
     Multi.merge(multi, fn changes ->

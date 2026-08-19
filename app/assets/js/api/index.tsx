@@ -5536,6 +5536,17 @@ export interface ProjectTemplatesUpdateMilestoneResult {
   milestone: ProjectTemplateMilestone;
 }
 
+export interface ProjectTemplatesUpdateMilestoneAndOrderingInput {
+  templateId: Id;
+  taskId: Id;
+  milestoneId: Id | null;
+  index: number;
+}
+
+export interface ProjectTemplatesUpdateMilestoneAndOrderingResult {
+  task: ProjectTemplateTask;
+}
+
 export interface ProjectTemplatesUpdatePersonInput {
   templateId: Id;
   templatePersonId: Id;
@@ -5560,7 +5571,6 @@ export interface ProjectTemplatesUpdateTaskInput {
   dueOffsetDays?: number | null;
   reminders?: TaskReminder[];
   taskStatus?: TaskStatus;
-  index?: number;
 }
 
 export interface ProjectTemplatesUpdateTaskResult {
@@ -6259,7 +6269,7 @@ export interface TasksUpdateMilestoneResult {
 export interface TasksUpdateMilestoneAndOrderingInput {
   taskId: Id;
   milestoneId: Id | null;
-  milestonesOrderingState: EditMilestoneOrderingStateInput[];
+  index: number;
 }
 
 export interface TasksUpdateMilestoneAndOrderingResult {
@@ -7271,6 +7281,12 @@ class ApiNamespaceProjectTemplates {
 
   async updateMilestone(input: ProjectTemplatesUpdateMilestoneInput): Promise<ProjectTemplatesUpdateMilestoneResult> {
     return this.client.post("/project_templates/update_milestone", input);
+  }
+
+  async updateMilestoneAndOrdering(
+    input: ProjectTemplatesUpdateMilestoneAndOrderingInput,
+  ): Promise<ProjectTemplatesUpdateMilestoneAndOrderingResult> {
+    return this.client.post("/project_templates/update_milestone_and_ordering", input);
   }
 
   async updatePerson(input: ProjectTemplatesUpdatePersonInput): Promise<ProjectTemplatesUpdatePersonResult> {
@@ -9231,6 +9247,13 @@ export default {
     useUpdateLink: () =>
       useMutation<ProjectTemplatesUpdateLinkInput, ProjectTemplatesUpdateLinkResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateLink(input),
+      ),
+
+    updateMilestoneAndOrdering: (input: ProjectTemplatesUpdateMilestoneAndOrderingInput) =>
+      defaultApiClient.apiNamespaceProjectTemplates.updateMilestoneAndOrdering(input),
+    useUpdateMilestoneAndOrdering: () =>
+      useMutation<ProjectTemplatesUpdateMilestoneAndOrderingInput, ProjectTemplatesUpdateMilestoneAndOrderingResult>(
+        (input) => defaultApiClient.apiNamespaceProjectTemplates.updateMilestoneAndOrdering(input),
       ),
   },
 

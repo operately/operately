@@ -1038,79 +1038,43 @@ describe("TemplateProjectPage", () => {
     expect(document.querySelector('[data-test-id="relative-day-field-input"]')).toBeInTheDocument();
   });
 
-  it("reorders tasks optimistically and keeps the confirmed order", async () => {
-    let confirmMove: (successful: boolean) => void = () => undefined;
-    const onTaskReorder = jest.fn(() => new Promise<boolean>((resolve) => (confirmMove = resolve)));
+  it("asks the parent to reorder tasks and renders the order from props", async () => {
+    const onTaskReorder = jest.fn().mockResolvedValue(true);
     const first = createProps().tasks[0]!;
     const second = { ...first, id: "task-2", name: "Prepare screenshots" };
-    renderPage(createProps({ tasks: [first, second], onTaskReorder }), "/templates/template-1?tab=tasks");
+    const milestone = { ...createProps().milestones[0]!, tasksOrderingState: ["task-1", "task-2"] };
+    const view = renderPage(
+      createProps({ tasks: [first, second], milestones: [milestone], onTaskReorder }),
+      "/templates/template-1?tab=tasks",
+    );
 
-    let move: unknown;
-    act(() => {
-      move = mockBoardMoveHandler?.({
+    await act(async () => {
+      await mockBoardMoveHandler?.({
         itemId: first.id,
         source: { containerId: "milestone-1", index: 0 },
         destination: { containerId: "milestone-1", index: 2 },
       });
     });
 
-    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
     expect(onTaskReorder).toHaveBeenCalledWith("task-1", "milestone-1", 2);
-
-    await act(async () => {
-      confirmMove(true);
-      await move;
-    });
-
-    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
-  });
-
-  it("keeps the optimistic order while a stale refresh render is replaced by the confirmed order", async () => {
-    let confirmMove: (successful: boolean) => void = () => undefined;
-    const onTaskReorder = jest.fn(() => new Promise<boolean>((resolve) => (confirmMove = resolve)));
-    const first = createProps().tasks[0]!;
-    const second = { ...first, id: "task-2", name: "Prepare screenshots" };
-    const tasks = [first, second];
-    const view = renderPage(createProps({ tasks, onTaskReorder }), "/templates/template-1?tab=tasks");
-
-    let move: unknown;
-    act(() => {
-      move = mockBoardMoveHandler?.({
-        itemId: first.id,
-        source: { containerId: "milestone-1", index: 0 },
-        destination: { containerId: "milestone-1", index: 2 },
-      });
-    });
-
-    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
+    expect(taskIdsIn("milestone-1")).toEqual(["task-1", "task-2"]);
 
     view.rerender(
       <MemoryRouter initialEntries={["/templates/template-1?tab=tasks"]}>
-        <TemplateProjectPage {...createProps({ tasks: [...tasks], onTaskReorder })} />
-      </MemoryRouter>,
-    );
-
-    await act(async () => {
-      confirmMove(true);
-      await move;
-    });
-
-    expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
-
-    const confirmedMilestone = {
-      ...createProps().milestones[0]!,
-      tasksOrderingState: ["task-2", "task-1"],
-    };
-    view.rerender(
-      <MemoryRouter initialEntries={["/templates/template-1?tab=tasks"]}>
-        <TemplateProjectPage {...createProps({ tasks: [...tasks], milestones: [confirmedMilestone], onTaskReorder })} />
+        <TemplateProjectPage
+          {...createProps({
+            tasks: [first, second],
+            milestones: [{ ...milestone, tasksOrderingState: ["task-2", "task-1"] }],
+            onTaskReorder,
+          })}
+        />
       </MemoryRouter>,
     );
 
     expect(taskIdsIn("milestone-1")).toEqual(["task-2", "task-1"]);
   });
 
-  it("moves a task into another milestone optimistically", async () => {
+  it("asks the parent to move a task into another milestone", async () => {
     const onTaskReorder = jest.fn().mockResolvedValue(true);
     const first = createProps().tasks[0]!;
     const secondMilestone: Types.Milestone = {
@@ -1137,12 +1101,12 @@ describe("TemplateProjectPage", () => {
       });
     });
 
-    expect(taskIdsIn("milestone-1")).toEqual([]);
-    expect(taskIdsIn("milestone-2")).toEqual(["task-2", "task-1"]);
     expect(onTaskReorder).toHaveBeenCalledWith("task-1", "milestone-2", 1);
+    expect(taskIdsIn("milestone-1")).toEqual(["task-1"]);
+    expect(taskIdsIn("milestone-2")).toEqual(["task-2"]);
   });
 
-  it("allows dropping a task into an empty milestone", async () => {
+  it("asks the parent to drop a task into an empty milestone", async () => {
     const onTaskReorder = jest.fn().mockResolvedValue(true);
     const emptyMilestone: Types.Milestone = {
       ...createProps().milestones[0]!,
@@ -1163,10 +1127,11 @@ describe("TemplateProjectPage", () => {
       });
     });
 
-    expect(taskIdsIn("milestone-2")).toEqual(["task-1"]);
+    expect(onTaskReorder).toHaveBeenCalledWith("task-1", "milestone-2", 0);
+    expect(taskIdsIn("milestone-2")).toEqual([]);
   });
 
-  it("allows dropping a task into the empty root container", async () => {
+  it("asks the parent to drop a task into the root container", async () => {
     const onTaskReorder = jest.fn().mockResolvedValue(true);
     renderPage(createProps({ onTaskReorder }), "/templates/template-1?tab=tasks");
 
@@ -1178,25 +1143,8 @@ describe("TemplateProjectPage", () => {
       });
     });
 
-    expect(taskIdsIn("no-milestone")).toEqual(["task-1"]);
     expect(onTaskReorder).toHaveBeenCalledWith("task-1", null, 0);
-  });
-
-  it("rolls an optimistic task move back when persistence fails", async () => {
-    const onTaskReorder = jest.fn().mockResolvedValue(false);
-    const first = createProps().tasks[0]!;
-    const second = { ...first, id: "task-2", name: "Prepare screenshots" };
-    renderPage(createProps({ tasks: [first, second], onTaskReorder }), "/templates/template-1?tab=tasks");
-
-    await act(async () => {
-      await mockBoardMoveHandler?.({
-        itemId: first.id,
-        source: { containerId: "milestone-1", index: 0 },
-        destination: { containerId: "milestone-1", index: 2 },
-      });
-    });
-
-    expect(taskIdsIn("milestone-1")).toEqual(["task-1", "task-2"]);
+    expect(taskIdsIn("milestone-1")).toEqual(["task-1"]);
   });
 
   it("projects a placeholder into the active drop container", () => {

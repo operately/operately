@@ -14,12 +14,13 @@ jest.mock("@/api", () => ({
   default: {
     project_templates: {
       updateTask: jest.fn(),
+      updateMilestoneAndOrdering: jest.fn(),
       createTask: jest.fn(),
     },
   },
 }));
 
-const updateTask = Api.project_templates.updateTask as jest.Mock;
+const updateMilestoneAndOrdering = Api.project_templates.updateMilestoneAndOrdering as jest.Mock;
 const createTask = Api.project_templates.createTask as jest.Mock;
 
 beforeEach(() => {
@@ -50,7 +51,7 @@ test("sends only available people when replacing task assignees", () => {
 });
 
 test("moves a task with its destination milestone and index in one request", async () => {
-  updateTask.mockResolvedValue({ task: { id: "task-1" } });
+  updateMilestoneAndOrdering.mockResolvedValue({ task: { id: "task-1" } });
   const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
     await operation();
     return true;
@@ -59,7 +60,7 @@ test("moves a task with its destination milestone and index in one request", asy
 
   await expect(moveTask("task-1", "milestone-2", 3)).resolves.toBe(true);
 
-  expect(updateTask).toHaveBeenCalledWith({
+  expect(updateMilestoneAndOrdering).toHaveBeenCalledWith({
     templateId: "template-1",
     taskId: "task-1",
     milestoneId: "milestone-2",

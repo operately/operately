@@ -108,14 +108,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
     statuses |> status_keys() |> Enum.flat_map(&List.wrap(Map.get(state, &1, [])))
   end
 
-  def move_task_id(task_ids, task_id, index) when is_integer(index) and index >= 0 do
-    remaining_ids = Enum.reject(task_ids, &(&1 == task_id))
-    destination_index = min(index, length(remaining_ids))
-    {:ok, List.insert_at(remaining_ids, destination_index, task_id)}
-  end
-
-  def move_task_id(_task_ids, _task_id, _index), do: {:error, {:validation, "Task index must be zero or greater"}}
-
   def kanban_from_order(task_ids, tasks, statuses) do
     allowed_keys = status_keys(statuses)
     task_statuses = Map.new(tasks, &{Paths.project_template_task_id(&1), status_key(&1.task_status)})

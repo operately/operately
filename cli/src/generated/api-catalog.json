@@ -22266,9 +22266,9 @@
       ]
     }
   },
-  "endpoint_count": 246,
+  "endpoint_count": 247,
   "query_count": 73,
-  "mutation_count": 173,
+  "mutation_count": 174,
   "endpoints": [
     {
       "name": "create",
@@ -32265,6 +32265,75 @@
       "method": "POST"
     },
     {
+      "name": "update_milestone_and_ordering",
+      "type": "mutation",
+      "path": "/api/external/v1/project_templates/update_milestone_and_ordering",
+      "handler": "OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrdering",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task",
+          "type": {
+            "name": "project_template_task",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_templates",
+      "inputs": [
+        {
+          "default": null,
+          "name": "template_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "milestone_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "index",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "project_templates/update_milestone_and_ordering",
+      "method": "POST"
+    },
+    {
       "name": "update_person",
       "type": "mutation",
       "path": "/api/external/v1/project_templates/update_person",
@@ -32482,17 +32551,6 @@
           "name": "task_status",
           "type": {
             "name": "task_status",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "index",
-          "type": {
-            "name": "integer",
             "kind": "named"
           },
           "optional": true,
@@ -36956,6 +37014,17 @@
         },
         {
           "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
           "name": "include_access_levels",
           "type": {
             "name": "boolean",
@@ -38628,13 +38697,10 @@
         },
         {
           "default": null,
-          "name": "milestones_ordering_state",
+          "name": "index",
           "type": {
-            "item": {
-              "name": "edit_milestone_ordering_state_input",
-              "kind": "named"
-            },
-            "kind": "list"
+            "name": "integer",
+            "kind": "named"
           },
           "optional": false,
           "has_default": false,

@@ -388,7 +388,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :task_id, :id, null: false
       field :milestone_id, :id, null: true
-      field :milestones_ordering_state, list_of(:edit_milestone_ordering_state_input), null: false
+      field :index, :integer, null: false
     end
 
     outputs do
@@ -401,7 +401,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
       |> Steps.check_task_permissions(:can_edit)
-      |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.milestones_ordering_state)
+      |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.index)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{
@@ -939,9 +939,9 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    def update_milestone_and_ordering(multi, new_milestone_id, ordering_states) do
+    def update_milestone_and_ordering(multi, new_milestone_id, index) do
       Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
-        Operately.Operations.MilestoneOrderingStateUpdating.run(me, project, task, new_milestone_id, ordering_states)
+        Operately.Operations.MilestoneOrderingStateUpdating.run(me, project, task, new_milestone_id, index)
       end)
     end
 
@@ -1166,6 +1166,9 @@ defmodule OperatelyWeb.Api.Tasks do
           {:error, :forbidden}
 
         {:error, _failed_operation, {:bad_request, message}, _changes} ->
+          {:error, :bad_request, message}
+
+        {:error, _failed_operation, {:validation, message}, _changes} ->
           {:error, :bad_request, message}
 
         {:error, :validate_milestone, message, _changes} ->
