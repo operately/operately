@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DateField } from "../DateField";
-import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
+import { TaskCreationModal } from "../TaskCreationModal";
 import * as Types from "../TaskBoard/types";
 import { Timeline } from "../Timeline";
 import { IconCheck, IconFlag, IconFlagFilled } from "../icons";
@@ -116,6 +116,7 @@ function ProjectMilestoneLayout({ state }: { state: MilestonePage.ProjectState }
       </MainContainer>
 
       <TaskCreationModal
+        variant="project"
         isOpen={state.isTaskModalOpen}
         onClose={() => state.setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}

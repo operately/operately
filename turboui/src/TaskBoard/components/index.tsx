@@ -6,7 +6,7 @@ import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
 import { IconPlus } from "../../icons";
-import TaskCreationModal from "./TaskCreationModal";
+import { TaskCreationModal } from "../../TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
 import { MilestoneCard } from "./MilestoneCard";
@@ -280,6 +280,7 @@ export function TaskBoard({
     <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto pb-8">
       {richTextHandlers && (
         <TaskCreationModal
+          variant="project"
           isOpen={isTaskModalOpen}
           onClose={closeTaskModal}
           onCreateTask={onTaskCreate}

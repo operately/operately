@@ -174,6 +174,7 @@ export { SwitchToggle } from "./SwitchToggle";
 export { SaveProjectAsTemplateModal } from "./SaveProjectAsTemplateModal";
 export { Tabs, useTabs } from "./Tabs";
 export { TaskBoard } from "./TaskBoard";
+export { TaskCreationModal } from "./TaskCreationModal";
 export { StatusSelector } from "./StatusSelector";
 export { TaskPage } from "./TaskPage";
 export { TextField } from "./TextField";
