@@ -21,7 +21,7 @@ export type GetTemplateTaskPageProps = (
 ) => TaskPage.ContentProps | null;
 
 export interface TemplateTaskSlideInContext {
-  milestoneId: string;
+  milestoneId?: string;
   tasks: TemplateProjectPage.Task[];
   milestones: TemplateProjectPage.Milestone[];
   statuses: StatusSelector.StatusOption[];

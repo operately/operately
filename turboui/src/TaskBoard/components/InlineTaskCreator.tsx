@@ -31,7 +31,11 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
       const input = inputRef.current;
       input?.focus();
 
-      if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
+      if (
+        typeof window !== "undefined" &&
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(max-width: 639px)").matches
+      ) {
         input?.scrollIntoView({ block: "center", inline: "nearest" });
       }
     }, [autoFocus]);

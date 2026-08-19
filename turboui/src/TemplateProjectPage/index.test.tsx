@@ -1,5 +1,5 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
@@ -31,6 +31,11 @@ jest.mock("@atlaskit/pragmatic-drag-and-drop/element/adapter", () => ({
   dropTargetForElements: () => () => undefined,
 }));
 
+jest.mock("../TaskBoard/KanbanView/TaskSlideIn", () => ({
+  TaskSlideIn: ({ isOpen, taskPageProps }: { isOpen: boolean; taskPageProps: { name?: string } | null }) =>
+    isOpen ? <div data-test-id="task-slide-in">{taskPageProps?.name}</div> : null,
+}));
+
 jest.mock("../utils/PragmaticDragAndDrop", () => ({
   projectItemsWithPlaceholder: ({
     items,
@@ -56,8 +61,10 @@ jest.mock("../utils/PragmaticDragAndDrop", () => ({
   ),
   DropIndicator: () => null,
   DragHandle: () => null,
-  useBoardDnD: (handler: (move: MockBoardMove) => unknown) => {
-    mockBoardMoveHandler = handler;
+  useBoardDnD: (handler: (move: MockBoardMove) => unknown, options?: { enabled?: boolean }) => {
+    if (options?.enabled !== false) {
+      mockBoardMoveHandler = handler;
+    }
     return mockBoardState;
   },
   useSortableItem: (options: unknown) => mockUseSortableItem(options),
@@ -1194,6 +1201,79 @@ describe("TemplateProjectPage", () => {
 
     expect(screen.queryByRole("heading", { name: "Update Task" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Update task" })).not.toBeInTheDocument();
+  });
+
+  it("creates a task from the milestone inline creator", () => {
+    const onTaskCreate = jest.fn();
+    renderPage(createProps({ onTaskCreate }), "/templates/template-1?tab=tasks");
+
+    fireEvent.click(document.querySelector('[data-test-id="template-task-section-add-milestone-1"]') as HTMLElement);
+    fireEvent.change(screen.getByRole("textbox", { name: "Add task" }), {
+      target: { value: "Write launch notes" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+    expect(onTaskCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "Write launch notes",
+        milestoneId: "milestone-1",
+        dueOffsetDays: null,
+        status: statuses[0],
+      }),
+    );
+  });
+
+  it("opens the task creation modal from the milestone inline creator", () => {
+    renderPage(createProps(), "/templates/template-1?tab=tasks");
+
+    fireEvent.click(document.querySelector('[data-test-id="template-task-section-add-milestone-1"]') as HTMLElement);
+    fireEvent.keyDown(screen.getByRole("textbox", { name: "Add task" }), { key: "Enter", shiftKey: true });
+
+    expect(screen.getByRole("heading", { name: "Create Task" })).toBeInTheDocument();
+  });
+
+  it("opens the task slide-in when a task title is clicked", () => {
+    const getTemplateTaskPageProps = jest.fn(() => ({ variant: "template", name: "Publish announcement" }));
+    renderPage(
+      createProps({ getTemplateTaskPageProps: getTemplateTaskPageProps as never }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    fireEvent.click(screen.getByText("Publish announcement"));
+
+    expect(document.querySelector('[data-test-id="task-slide-in"]')).toHaveTextContent("Publish announcement");
+    expect(getTemplateTaskPageProps).toHaveBeenCalledWith(
+      "task-1",
+      expect.objectContaining({ tasks: expect.any(Array) }),
+    );
+  });
+
+  it("shows description indicators next to milestones and tasks", () => {
+    renderPage(
+      createProps({
+        milestones: [
+          {
+            ...createProps().milestones[0]!,
+            description: asRichText("Ship the launch checklist."),
+          },
+        ],
+        tasks: [
+          {
+            ...createProps().tasks[0]!,
+            description: asRichText("Draft the public announcement."),
+          },
+        ],
+      }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    const header = document.querySelector('[data-test-id="template-task-section-header-milestone-1"]') as HTMLElement;
+    const task = document.querySelector('[data-test-id="template-task-task-1"]') as HTMLElement;
+
+    expect(within(header).getByTestId("description-indicator")).toBeInTheDocument();
+    expect(within(header).queryByTestId("comments-indicator")).not.toBeInTheDocument();
+    expect(within(task).getByTestId("description-indicator")).toBeInTheDocument();
+    expect(within(task).queryByTestId("comments-indicator")).not.toBeInTheDocument();
   });
 
   it("opens the template milestone creation modal", () => {

@@ -11,6 +11,7 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 import type { StatusSelector } from "../StatusSelector";
 import type { PersonField } from "../PersonField";
 import type { AddFileWidgetProps } from "../ResourceHub/AddFileWidget";
+import type { GetTemplateTaskPageProps } from "../TaskBoard/KanbanView/types";
 import { IconClipboardText, IconListCheck, IconMessageCircle, IconPaperclip } from "../icons";
 import { useTabs } from "../Tabs";
 import { orderByIds } from "../utils/orderByIds";
@@ -197,6 +198,7 @@ export namespace TemplateProjectPage {
       milestoneId: string | null,
       destinationIndex: number,
     ) => void | boolean | Promise<void | boolean>;
+    getTemplateTaskPageProps?: GetTemplateTaskPageProps;
     onPersonCreate?: (person: Omit<TemplatePerson, "id" | "active">) => void | boolean | Promise<void | boolean>;
     onPersonUpdate?: (
       templatePersonId: string,

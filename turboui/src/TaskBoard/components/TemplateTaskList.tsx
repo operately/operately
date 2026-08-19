@@ -4,7 +4,7 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 import { TaskRow } from "../../TemplateProjectPage/TaskRow";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../../utils/PragmaticDragAndDrop";
-import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
+import type { BoardLocation, BoardMove } from "../../utils/PragmaticDragAndDrop";
 
 const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
@@ -16,21 +16,29 @@ export function TemplateTaskList({
   taskRowProps,
   onTaskOpen,
   inlineCreateRow,
+  emptyState,
+  dragState,
 }: TemplateTaskListProps) {
   const listRef = React.useRef<HTMLDivElement>(null);
   const dropContainerId = destinationMilestoneId ?? ROOT_TASKS_CONTAINER_ID;
   const isDraggingEnabled = canEdit && Boolean(onTaskReorder);
+  const usesExternalDragState = Boolean(dragState);
   const handleTaskMove = React.useCallback(
     (move: BoardMove) => {
-      if (!isDraggingEnabled) return;
+      if (!isDraggingEnabled || usesExternalDragState) return;
 
       const milestoneId =
         move.destination.containerId === ROOT_TASKS_CONTAINER_ID ? null : move.destination.containerId;
       onTaskReorder?.(move.itemId, milestoneId, move.destination.index);
     },
-    [isDraggingEnabled, onTaskReorder],
+    [isDraggingEnabled, onTaskReorder, usesExternalDragState],
   );
-  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
+  const internalDrag = useBoardDnD(handleTaskMove, { enabled: isDraggingEnabled && !usesExternalDragState });
+  const draggedItemId = dragState ? dragState.draggedItemId : internalDrag.draggedItemId;
+  const destination = dragState ? dragState.destination : internalDrag.destination;
+  const placeholderHeight = dragState
+    ? dragState.placeholderHeight
+    : (internalDrag.draggedItemDimensions?.height ?? null);
   const { items: projectedTasks, placeholderIndex } = React.useMemo(
     () =>
       projectItemsWithPlaceholder({
@@ -44,7 +52,7 @@ export function TemplateTaskList({
   );
 
   React.useEffect(() => {
-    if (!isDraggingEnabled) return;
+    if (!isDraggingEnabled || usesExternalDragState) return;
     const element = listRef.current;
     if (!element) return;
 
@@ -52,24 +60,20 @@ export function TemplateTaskList({
       element,
       getData: () => ({ containerId: dropContainerId, index: projectedTasks.length }),
     });
-  }, [dropContainerId, isDraggingEnabled, projectedTasks.length]);
+  }, [dropContainerId, isDraggingEnabled, projectedTasks.length, usesExternalDragState]);
 
   return (
     <div ref={listRef} className="overflow-hidden rounded-b-lg bg-surface-base">
       {projectedTasks.map((task, index) => (
         <React.Fragment key={task.id}>
           {placeholderIndex === index && (
-            <SubtleDropPlaceholder
-              containerId={dropContainerId}
-              index={index}
-              height={draggedItemDimensions?.height ?? null}
-            />
+            <SubtleDropPlaceholder containerId={dropContainerId} index={index} height={placeholderHeight} />
           )}
           <TaskRow
             task={task}
             props={taskRowProps}
             canEdit={canEdit}
-            onClick={() => onTaskOpen(task.id)}
+            onClick={onTaskOpen ? () => onTaskOpen(task.id) : undefined}
             index={index}
             containerId={dropContainerId}
             isDraggable={isDraggingEnabled}
@@ -77,13 +81,10 @@ export function TemplateTaskList({
         </React.Fragment>
       ))}
       {placeholderIndex !== null && placeholderIndex === projectedTasks.length && (
-        <SubtleDropPlaceholder
-          containerId={dropContainerId}
-          index={projectedTasks.length}
-          height={draggedItemDimensions?.height ?? null}
-        />
+        <SubtleDropPlaceholder containerId={dropContainerId} index={projectedTasks.length} height={placeholderHeight} />
       )}
-      {inlineCreateRow}
+      {tasks.length === 0 && placeholderIndex === null && emptyState}
+      {tasks.length > 0 ? inlineCreateRow : null}
     </div>
   );
 }
@@ -98,6 +99,12 @@ export interface TemplateTaskListProps {
     destinationIndex: number,
   ) => void | boolean | Promise<void | boolean>;
   taskRowProps: TemplateProjectPage.Props;
-  onTaskOpen: (taskId: string | null) => void;
+  onTaskOpen?: (taskId: string | null) => void;
   inlineCreateRow?: React.ReactNode;
+  emptyState?: React.ReactNode;
+  dragState?: {
+    draggedItemId: string | null;
+    destination: BoardLocation | null;
+    placeholderHeight: number | null;
+  };
 }

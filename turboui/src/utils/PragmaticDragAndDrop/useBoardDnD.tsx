@@ -15,7 +15,8 @@ type DestinationInput = {
   isMovingDown: boolean;
 };
 
-export function useBoardDnD(onBoardMove: OnBoardMove) {
+export function useBoardDnD(onBoardMove: OnBoardMove, options?: { enabled?: boolean }) {
+  const enabled = options?.enabled ?? true;
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [sourceLocation, setSourceLocation] = useState<BoardLocation | null>(null);
   const [destination, setDestinationState] = useState<BoardLocation | null>(null);
@@ -47,6 +48,8 @@ export function useBoardDnD(onBoardMove: OnBoardMove) {
   };
 
   useEffect(() => {
+    if (!enabled) return;
+
     return monitorForElements({
       onDragStart: ({ source, location }) => {
         const scope = source.data.scope as string | undefined;
@@ -142,7 +145,7 @@ export function useBoardDnD(onBoardMove: OnBoardMove) {
         });
       },
     });
-  }, [onBoardMove]);
+  }, [enabled, onBoardMove]);
 
   return {
     draggedItemId,
