@@ -81,7 +81,14 @@ test("creates a task with an empty description document when none is provided", 
     return true;
   });
   const { onTaskCreate } = createTaskOperations({ templateId: "template-1", mutate });
-  const status = { id: "todo", value: "todo", label: "To do", color: "gray", icon: "circleDashed", index: 0 };
+  const status = {
+    id: "todo",
+    value: "todo",
+    label: "To do",
+    color: "gray" as const,
+    icon: "circleDashed" as const,
+    index: 0,
+  };
 
   onTaskCreate({
     name: "Prepare agenda",
