@@ -7,6 +7,7 @@ jest.mock("@/models/tasks", () => ({
 
 jest.mock("turboui", () => ({
   parseContent: jest.fn(),
+  showErrorToast: jest.fn(),
 }));
 
 jest.mock("@/api", () => ({
