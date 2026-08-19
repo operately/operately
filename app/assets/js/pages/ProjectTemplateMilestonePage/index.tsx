@@ -3,23 +3,15 @@ import * as Pages from "@/components/Pages";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as People from "@/models/people";
-import {
-  content,
-  createTaskOperations,
-  mapTemplatePeople,
-  serializeContent,
-  toTask,
-  toTemplateMilestone,
-  type Mutate,
-} from "@/models/projectTemplates";
+import { content, serializeContent, type Mutate } from "@/models/projectTemplates";
 import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
-import * as Tasks from "@/models/tasks";
+import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
 import * as Time from "@/utils/time";
 import { compareIds, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import React from "react";
 import { useNavigate } from "react-router";
-import { MilestonePage, showErrorToast, TemplateProjectPage } from "turboui";
+import { MilestonePage, showErrorToast } from "turboui";
 import { loader, type LoadedData } from "./loader";
 
 export default { name: "ProjectTemplateMilestonePage", loader, Page } as PageModule;
@@ -31,8 +23,11 @@ function Page() {
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { assigneesByTaskId } = mapTemplatePeople(template, (personId) => paths.profilePath(personId));
-  const statuses = Tasks.parseTaskStatusesForTurboUi(template.taskStatuses);
+  const profilePath = React.useCallback((personId: string) => paths.profilePath(personId), [paths]);
+  const milestoneLink = React.useCallback(
+    (milestoneId: string) => paths.projectTemplateMilestonePath(template.id, milestoneId),
+    [paths, template.id],
+  );
   const permissions = template.permissions ?? {
     canView: true,
     canComment: false,
@@ -58,19 +53,21 @@ function Page() {
       return false;
     }
   };
-
-  const milestones = (template.milestones ?? []).map((item) =>
-    toTemplateMilestone(item, paths.projectTemplateMilestonePath(template.id, item.id)),
-  );
-  const tasks = (template.tasks ?? [])
-    .map((task) => toTask(task, assigneesByTaskId.get(task.id) ?? []))
-    .filter((task): task is TemplateProjectPage.Task => task !== null)
-    .filter((task) => compareIds(task.milestoneId, milestone.id));
-
-  const { onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder } = createTaskOperations({
-    templateId: template.id,
+  const {
+    tasks: templateTasks,
+    milestones,
+    statuses,
+    onTaskCreate,
+    onTaskUpdate,
+    onTaskDelete,
+    onTaskReorder,
+  } = useTemplateTasksForTurboUi({
+    template,
+    profilePath,
+    milestoneLink,
     mutate,
   });
+  const tasks = templateTasks.filter((task) => compareIds(task.milestoneId, milestone.id));
   const slideInModel = useTemplateTaskSlideInProps({
     canEdit: !Boolean(template.archivedAt) && Boolean(permissions.canEdit || permissions.hasFullAccess),
     formattedTimePreferences,

@@ -59,6 +59,31 @@ export function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: s
   };
 }
 
+export function mapTemplateTaskGraph(
+  template: Pick<
+    ProjectTemplate,
+    "people" | "taskAssignments" | "tasks" | "milestones" | "tasksKanbanState" | "taskStatuses"
+  >,
+  profilePath: (personId: string) => string,
+  milestoneLink: (milestoneId: string) => string,
+) {
+  const { people, assigneesByTaskId } = mapTemplatePeople(template, profilePath);
+  const tasks = (template.tasks ?? [])
+    .map((task) => toTask(task, assigneesByTaskId.get(task.id) ?? []))
+    .filter((task): task is TemplateProjectPage.Task => task !== null);
+  const milestones = (template.milestones ?? []).map((milestone) =>
+    toTemplateMilestone(milestone, milestoneLink(milestone.id)),
+  );
+
+  return {
+    people,
+    tasks,
+    milestones,
+    tasksKanbanState: parseJson(template.tasksKanbanState),
+    statuses: Tasks.parseTaskStatusesForTurboUi(template.taskStatuses),
+  };
+}
+
 export function toTask(
   task: ProjectTemplateTask,
   assignees: TemplateProjectPage.TemplatePerson[],
@@ -116,7 +141,7 @@ export function createTaskOperations({ templateId, mutate }: { templateId: strin
 export function createTaskMove({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
   return (taskId: string, milestoneId: string | null, destinationIndex: number) =>
     mutate("Tasks not reordered", () =>
-      Api.project_templates.updateTask({
+      Api.project_templates.updateMilestoneAndOrdering({
         templateId,
         taskId,
         milestoneId,

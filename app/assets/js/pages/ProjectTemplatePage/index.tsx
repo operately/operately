@@ -6,15 +6,11 @@ import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import {
   content,
-  createTaskOperations,
-  mapTemplatePeople,
-  parseJson,
   serializeContent,
   serializeJson,
-  toTask,
-  toTemplateMilestone,
   type Mutate,
 } from "@/models/projectTemplates";
+import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
 import { findFileSize, uploadFilesWithPreviews } from "@/models/blobs";
 import { usePaths, type Paths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
@@ -32,8 +28,11 @@ function Page() {
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { people, assigneesByTaskId } = useTemplatePeople(template);
-  const statuses = Tasks.parseTaskStatusesForTurboUi(template.taskStatuses);
+  const profilePath = React.useCallback((personId: string) => paths.profilePath(personId), [paths]);
+  const milestoneLink = React.useCallback(
+    (milestoneId: string) => paths.projectTemplateMilestonePath(template.id, milestoneId),
+    [paths, template.id],
+  );
   const permissions = template.permissions ?? {
     canView: true,
     canComment: false,
@@ -71,13 +70,23 @@ function Page() {
       return false;
     }
   };
+  const {
+    people,
+    tasks,
+    milestones,
+    tasksKanbanState,
+    statuses,
+    onTaskCreate,
+    onTaskUpdate,
+    onTaskDelete,
+    onTaskReorder,
+  } = useTemplateTasksForTurboUi({
+    template,
+    profilePath,
+    milestoneLink,
+    mutate,
+  });
 
-  const tasks = (template.tasks ?? [])
-    .map((task) => toTask(task, assigneesByTaskId.get(task.id) ?? []))
-    .filter((task): task is TemplateProjectPage.Task => task !== null);
-  const milestones = (template.milestones ?? []).map((milestone) =>
-    toTemplateMilestone(milestone, paths.projectTemplateMilestonePath(template.id, milestone.id)),
-  );
   const discussions = (template.discussions ?? []).map((discussion) => ({
     id: discussion.id,
     title: discussion.title,
@@ -127,11 +136,6 @@ function Page() {
     mutate,
   });
 
-  const { onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder } = createTaskOperations({
-    templateId: template.id,
-    mutate,
-  });
-
   const { onPersonCreate, onPersonUpdate, onPersonDelete } = createPeopleOperations({
     templateId: template.id,
     mutate,
@@ -156,7 +160,7 @@ function Page() {
         description: content(template.description),
         durationDays: template.durationDays ?? null,
         milestonesOrderingState: template.milestonesOrderingState ?? [],
-        tasksKanbanState: parseJson(template.tasksKanbanState),
+        tasksKanbanState,
         archived: Boolean(template.archivedAt),
       }}
       space={{ id: template.space.id, name: template.space.name, link: paths.spacePath(template.space.id) }}
@@ -252,11 +256,6 @@ function createProjectTemplateEditorLifecycleHandlers({
     onRestore: (id) => onLifecycleChange("Template not restored", () => Api.project_templates.restore({ id })),
     onDelete,
   };
-}
-
-function useTemplatePeople(template: LoadedData["template"]) {
-  const paths = usePaths();
-  return mapTemplatePeople(template, (personId) => paths.profilePath(personId));
 }
 
 function useMilestoneOperations({
