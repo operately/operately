@@ -85,6 +85,7 @@ export namespace TemplateProjectPage {
     dueOffsetDays: number | null;
     tasksOrderingState: string[];
     tasksKanbanState: unknown;
+    link: string;
   }
 
   export interface Reminder {
@@ -183,7 +184,7 @@ export namespace TemplateProjectPage {
       nextStatuses: StatusSelector.StatusOption[];
       deletedStatusReplacements: Record<string, string>;
     }) => void;
-    onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "tasksOrderingState" | "tasksKanbanState">) => void;
+    onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void | Promise<void>;
     onMilestoneDelete?: (milestoneId: string) => void | Promise<void>;
     onMilestoneReorder?: (milestoneId: string, destinationIndex: number) => void | Promise<void>;

@@ -16,68 +16,21 @@ import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
 import { AssigneesField } from "../AssigneesField";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
-import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
-
-const ROOT_TASKS_CONTAINER_ID = "no-milestone";
+import type { BoardLocation } from "../utils/PragmaticDragAndDrop";
+import { BlackLink } from "../Link";
+import { ROOT_TASKS_CONTAINER_ID, useOptimisticTemplateTaskReorder } from "./useOptimisticTemplateTaskReorder";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
   const [taskBeingEdited, setTaskBeingEdited] = React.useState<TemplateProjectPage.Task | null>(null);
-  const [tasks, setTasks] = React.useState(props.tasks);
-  const confirmedTasks = React.useRef(props.tasks);
-  const confirmedLayout = React.useRef(taskLayoutKey(props.tasks));
-  const pendingMove = React.useRef<PendingTaskMove | null>(null);
-  const nextMoveId = React.useRef(0);
-  const isDraggingEnabled = canEdit && Boolean(props.onTaskReorder);
+  const { tasks, handleTaskMove, isDraggingEnabled } = useOptimisticTemplateTaskReorder({
+    tasks: props.tasks,
+    statuses: props.statuses,
+    onTaskReorder: props.onTaskReorder,
+    enabled: canEdit,
+  });
   const orderedMilestones: Array<TemplateProjectPage.Milestone | null> = [null, ...props.milestones];
-
-  React.useLayoutEffect(() => {
-    const incomingLayout = taskLayoutKey(props.tasks);
-
-    confirmedTasks.current = props.tasks;
-    confirmedLayout.current = incomingLayout;
-
-    const pending = pendingMove.current;
-    if (!pending || incomingLayout === pending.optimisticLayout) {
-      setTasks(props.tasks);
-    }
-  }, [props.tasks]);
-
-  const handleTaskMove = React.useCallback(
-    async (move: BoardMove) => {
-      if (!isDraggingEnabled || !props.onTaskReorder) return;
-
-      const milestoneId =
-        move.destination.containerId === ROOT_TASKS_CONTAINER_ID ? null : move.destination.containerId;
-      const moveId = ++nextMoveId.current;
-      const previousLayout = taskLayoutKey(tasks);
-      const optimisticTasks = moveTask(tasks, move.itemId, milestoneId, move.destination.index, props.statuses);
-
-      pendingMove.current = {
-        id: moveId,
-        optimisticLayout: taskLayoutKey(optimisticTasks),
-      };
-      setTasks(optimisticTasks);
-
-      let successful = false;
-      try {
-        successful = (await props.onTaskReorder(move.itemId, milestoneId, move.destination.index)) !== false;
-      } catch (_error) {
-        successful = false;
-      }
-
-      if (pendingMove.current?.id !== moveId) return;
-      pendingMove.current = null;
-
-      if (!successful) {
-        setTasks(confirmedTasks.current);
-      } else if (confirmedLayout.current !== previousLayout) {
-        setTasks(confirmedTasks.current);
-      }
-    },
-    [isDraggingEnabled, props.onTaskReorder, props.statuses, tasks],
-  );
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
   const activeDraggedItemId = isDraggingEnabled ? draggedItemId : null;
   const activeDestination = isDraggingEnabled ? destination : null;
@@ -126,6 +79,7 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
             <TaskSection
               key={milestone?.id ?? "root"}
               title={milestone?.title ?? "No milestone"}
+              link={milestone?.link}
               tasks={milestoneTasks}
               containerId={containerId}
               props={props}
@@ -148,28 +102,9 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
   );
 }
 
-interface PendingTaskMove {
-  id: number;
-  optimisticLayout: string;
-}
-
-function taskLayoutKey(tasks: TemplateProjectPage.Task[]) {
-  const taskIdsByContainer = new Map<string, string[]>();
-
-  for (const task of tasks) {
-    const containerId = task.milestoneId ?? ROOT_TASKS_CONTAINER_ID;
-    const taskIds = taskIdsByContainer.get(containerId) ?? [];
-    taskIdsByContainer.set(containerId, [...taskIds, task.id]);
-  }
-
-  return [...taskIdsByContainer.entries()]
-    .sort(([left], [right]) => left.localeCompare(right))
-    .map(([containerId, taskIds]) => `${containerId}:${taskIds.join(",")}`)
-    .join("|");
-}
-
 function TaskSection({
   title,
+  link,
   tasks,
   containerId,
   props,
@@ -181,6 +116,7 @@ function TaskSection({
   onTaskClick,
 }: {
   title: string;
+  link?: string;
   tasks: TemplateProjectPage.Task[];
   containerId: string;
   props: TemplateProjectPage.Props;
@@ -218,7 +154,20 @@ function TaskSection({
 
   return (
     <section ref={sectionRef} data-test-id={`template-task-section-${containerId}`}>
-      <div className="border-b border-surface-outline bg-surface-dimmed px-4 py-3 text-sm font-semibold">{title}</div>
+      <div className="border-b border-surface-outline bg-surface-dimmed px-4 py-3 text-sm font-semibold">
+        {link ? (
+          <BlackLink
+            to={link}
+            className="min-w-0 text-sm font-semibold text-content-base transition-colors md:hover:text-link-hover"
+            underline="hover"
+            title={title}
+          >
+            {title}
+          </BlackLink>
+        ) : (
+          title
+        )}
+      </div>
       {projectedTasks.map((task, index) => (
         <React.Fragment key={task.id}>
           {placeholderIndex === index && (
@@ -243,50 +192,6 @@ function TaskSection({
       )}
     </section>
   );
-}
-
-function moveTask(
-  tasks: TemplateProjectPage.Task[],
-  taskId: string,
-  milestoneId: string | null,
-  destinationIndex: number,
-  statuses: TemplateProjectPage.Props["statuses"],
-) {
-  const task = tasks.find((candidate) => candidate.id === taskId);
-  if (!task) return tasks;
-
-  const remainingTasks = tasks.filter((candidate) => candidate.id !== taskId);
-  const destinationTasks = remainingTasks.filter((candidate) => candidate.milestoneId === milestoneId);
-  const boundedIndex = Math.max(0, Math.min(destinationIndex, destinationTasks.length));
-  const movedTask = { ...task, milestoneId };
-  const nextDestinationTask = destinationTasks[boundedIndex];
-
-  if (nextDestinationTask) {
-    const insertionIndex = remainingTasks.findIndex((candidate) => candidate.id === nextDestinationTask.id);
-    remainingTasks.splice(insertionIndex, 0, movedTask);
-  } else {
-    const lastDestinationTask = destinationTasks[destinationTasks.length - 1];
-    const insertionIndex = lastDestinationTask
-      ? remainingTasks.findIndex((candidate) => candidate.id === lastDestinationTask.id) + 1
-      : remainingTasks.length;
-    remainingTasks.splice(insertionIndex, 0, movedTask);
-  }
-
-  return milestoneId === null ? normalizeRootTaskOrder(remainingTasks, statuses) : remainingTasks;
-}
-
-function normalizeRootTaskOrder(tasks: TemplateProjectPage.Task[], statuses: TemplateProjectPage.Props["statuses"]) {
-  const statusPositions = new Map(statuses.map((status, index) => [status.value || status.id, index]));
-  const rootTasks = tasks
-    .filter((task) => task.milestoneId === null)
-    .sort(
-      (left, right) =>
-        (statusPositions.get(left.status.value || left.status.id) ?? Number.MAX_SAFE_INTEGER) -
-        (statusPositions.get(right.status.value || right.status.id) ?? Number.MAX_SAFE_INTEGER),
-    );
-  let rootIndex = 0;
-
-  return tasks.map((task) => (task.milestoneId === null ? rootTasks[rootIndex++]! : task));
 }
 
 function TaskFormModal({

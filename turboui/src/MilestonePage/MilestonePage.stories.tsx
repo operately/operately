@@ -645,11 +645,7 @@ function TemplateMilestoneStory({
   const { tasks, onTaskCreate, onTaskUpdate, onTaskDelete, onTaskReorder, getTemplateTaskPageProps } =
     useMockTemplateMilestoneTaskActions({
       milestoneId,
-      milestones: sampleTemplateMilestones,
       initialTasks: emptyTasks ? [] : createSampleTemplateTasks(milestoneId),
-      statuses: templateStatuses,
-      personSearch,
-      richTextHandlers,
     });
 
   if (isDeleted) return <div className="p-6 text-content-subtle">Milestone deleted.</div>;

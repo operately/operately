@@ -7,6 +7,7 @@ import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import type { PersonField } from "../../PersonField";
 import type { ProjectField } from "../../ProjectField";
 import type { SpaceField } from "../../SpaceField";
+import type { FormattedTimePreferences } from "../../FormattedTime";
 
 export type KanbanStatus = string;
 
@@ -25,7 +26,10 @@ export interface TemplateTaskSlideInContext {
   milestones: TemplateProjectPage.Milestone[];
   statuses: StatusSelector.StatusOption[];
   onTaskCreate?: (task: Omit<TemplateProjectPage.Task, "id">) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<TemplateProjectPage.Task>) => void | boolean | Promise<void | boolean>;
+  onTaskUpdate?: (
+    taskId: string,
+    updates: Partial<TemplateProjectPage.Task>,
+  ) => void | boolean | Promise<void | boolean>;
   onTaskDelete?: (taskId: string) => void | Promise<void>;
   onTaskReorder?: (
     taskId: string,
@@ -34,6 +38,8 @@ export interface TemplateTaskSlideInContext {
   ) => void | boolean | Promise<void | boolean>;
   personSearch?: PersonField.SearchData;
   richTextHandlers?: RichEditorHandlers;
+  canEdit?: boolean;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
 export interface TaskSlideInContext {

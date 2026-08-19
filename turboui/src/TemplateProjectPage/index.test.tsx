@@ -114,6 +114,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
         dueOffsetDays: 14,
         tasksOrderingState: ["task-1"],
         tasksKanbanState: {},
+        link: "/templates/template-1/milestones/milestone-1",
       },
     ],
     tasks: [
@@ -1295,21 +1296,42 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
   });
 
-  it("confirms milestone deletion before calling the delete handler", async () => {
-    const onMilestoneDelete = jest.fn();
-    renderPage(createProps({ onMilestoneDelete }));
+  it("links overview milestone titles to the milestone page", () => {
+    renderPage(createProps());
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete Release" }));
+    expect(screen.getByRole("link", { name: "Release" })).toHaveAttribute(
+      "href",
+      "/templates/template-1/milestones/milestone-1",
+    );
+  });
 
-    expect(screen.getByRole("heading", { name: "Delete Release" })).toBeInTheDocument();
-    expect(onMilestoneDelete).not.toHaveBeenCalled();
+  it("opens an edit form from the overview edit button", async () => {
+    const onMilestoneUpdate = jest.fn();
+    renderPage(createProps({ onMilestoneUpdate }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete Forever" }));
+    fireEvent.click(document.querySelector('[data-test-id="edit-btn-release"]')!);
+    fireEvent.change(screen.getByDisplayValue("Release"), { target: { value: "Kickoff" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() => {
-      expect(onMilestoneDelete).toHaveBeenCalledWith("milestone-1");
-      expect(screen.queryByRole("heading", { name: "Delete Release" })).not.toBeInTheDocument();
+    expect(onMilestoneUpdate).toHaveBeenCalledWith("milestone-1", {
+      title: "Kickoff",
+      dueOffsetDays: 14,
     });
+  });
+
+  it("does not show a list-level delete button for milestones", () => {
+    renderPage(createProps({ onMilestoneDelete: jest.fn() }));
+
+    expect(screen.queryByRole("button", { name: "Delete Release" })).not.toBeInTheDocument();
+  });
+
+  it("links task board milestone headers to the milestone page", () => {
+    renderPage(createProps(), "/templates/template-1?tab=tasks");
+
+    expect(screen.getByRole("link", { name: "Release" })).toHaveAttribute(
+      "href",
+      "/templates/template-1/milestones/milestone-1",
+    );
   });
 
   it("preserves task IDs and relative offsets in update callbacks", () => {

@@ -12,13 +12,10 @@ export function useTaskSlideIn(props: MilestonePage.State) {
   const isTemplate = isTemplateMilestoneState(props);
   const enabled = isTemplate ? Boolean(props.getTemplateTaskPageProps) : Boolean(props.getTaskPageProps);
   const { selectedTaskId, setSelectedTaskId } = useTaskSlideInSelection({ tasks: props.tasks, enabled });
+  const closeSlideIn = React.useCallback(() => setSelectedTaskId(null), [setSelectedTaskId]);
   const taskPageProps = getTaskPageProps(props, selectedTaskId);
   const taskSlideIn = (
-    <TaskSlideIn
-      isOpen={Boolean(selectedTaskId)}
-      onClose={() => setSelectedTaskId(null)}
-      taskPageProps={taskPageProps}
-    />
+    <TaskSlideIn isOpen={Boolean(selectedTaskId)} onClose={closeSlideIn} taskPageProps={taskPageProps} />
   );
 
   return { selectedTaskId, setSelectedTaskId, taskSlideIn };
@@ -30,6 +27,10 @@ function useTaskSlideInSelection({ tasks, enabled }: { tasks: { id: string }[]; 
     const value = searchParams.get("taskId");
     return value && value.length > 0 ? value : null;
   }, [searchParams]);
+  const urlTaskIsPresent = React.useMemo(
+    () => Boolean(taskIdFromUrl && tasks.some((task) => compareIds(task.id, taskIdFromUrl))),
+    [taskIdFromUrl, tasks],
+  );
   const [selectedTaskId, setSelectedTaskIdState] = React.useState<string | null>(null);
 
   React.useLayoutEffect(() => {
@@ -40,7 +41,7 @@ function useTaskSlideInSelection({ tasks, enabled }: { tasks: { id: string }[]; 
       return;
     }
 
-    if (tasks.some((task) => compareIds(task.id, taskIdFromUrl))) {
+    if (urlTaskIsPresent) {
       setSelectedTaskIdState(taskIdFromUrl);
       return;
     }
@@ -54,7 +55,7 @@ function useTaskSlideInSelection({ tasks, enabled }: { tasks: { id: string }[]; 
       { replace: true },
     );
     setSelectedTaskIdState(null);
-  }, [enabled, setSearchParams, taskIdFromUrl, tasks]);
+  }, [enabled, setSearchParams, taskIdFromUrl, urlTaskIsPresent]);
 
   const setSelectedTaskId = React.useCallback(
     (taskId: string | null) => {
@@ -92,6 +93,8 @@ function getTaskPageProps(props: MilestonePage.State, taskId: string | null) {
       onTaskReorder: props.onTaskReorder,
       personSearch: props.personSearch,
       richTextHandlers: props.richTextHandlers,
+      canEdit: Boolean(props.permissions.canEdit),
+      formattedTimePreferences: props.formattedTimePreferences,
     };
 
     return props.getTemplateTaskPageProps?.(taskId, context) ?? null;
