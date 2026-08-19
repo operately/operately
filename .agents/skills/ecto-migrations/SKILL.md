@@ -118,7 +118,7 @@ end
 `change_080_create_subscriptions_list_for_tasks.ex`,
 `change_110_baseline_document_versions.ex`.
 
-(Same rule is summarized in root `AGENTS.md` under Data Migration Guidelines.)
+(Root `AGENTS.md`'s Data Migration Guidelines section points here for the full rule and example.)
 
 ### Idempotency and tests
 
