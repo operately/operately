@@ -97,21 +97,16 @@ export function TemplateTasksSection({
         ) : null
       }
     >
-      {orderedTasks.length === 0 ? (
-        <div className="overflow-hidden rounded-b-lg bg-surface-base">
-          <TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />
-        </div>
-      ) : (
-        <TemplateTaskList
-          tasks={orderedTasks}
-          destinationMilestoneId={milestoneId}
-          canEdit={canEdit}
-          onTaskReorder={onTaskReorder}
-          taskRowProps={taskRowProps}
-          onTaskOpen={onTaskOpen}
-          inlineCreateRow={inlineCreator}
-        />
-      )}
+      <TemplateTaskList
+        tasks={orderedTasks}
+        destinationMilestoneId={milestoneId}
+        canEdit={canEdit}
+        onTaskReorder={onTaskReorder}
+        taskRowProps={taskRowProps}
+        onTaskOpen={onTaskOpen}
+        inlineCreateRow={inlineCreator}
+        emptyState={<TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />}
+      />
     </TaskSectionLayout>
   );
 }
