@@ -12,8 +12,6 @@ import type { MilestonePage } from "../types";
 import { TaskSectionEmptyState } from "./TaskSectionEmptyState";
 import { TaskSectionLayout } from "./TaskSectionLayout";
 
-const TASKS_CONTAINER_ID = "template-milestone-tasks";
-
 export function TemplateTasksSection({
   tasks,
   statuses,
@@ -96,7 +94,6 @@ export function TemplateTasksSection({
       ) : (
         <TemplateTaskList
           tasks={tasks}
-          containerId={TASKS_CONTAINER_ID}
           destinationMilestoneId={milestoneId}
           canEdit={canEdit}
           onTaskReorder={onTaskReorder}

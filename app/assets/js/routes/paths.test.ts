@@ -40,6 +40,9 @@ describe("project template paths", () => {
     expect(paths.projectTemplatesPath()).toBe("/acme/project-templates");
     expect(paths.spaceProjectTemplatesPath("growth")).toBe("/acme/spaces/growth/project-templates");
     expect(paths.projectTemplatePath("launch")).toBe("/acme/project-templates/launch");
+    expect(paths.projectTemplateMilestonePath("launch", "kickoff")).toBe(
+      "/acme/project-templates/launch/milestones/kickoff",
+    );
     expect(paths.projectTemplatePath("launch", { tab: "docs-and-files" })).toBe(
       "/acme/project-templates/launch?tab=docs-and-files",
     );

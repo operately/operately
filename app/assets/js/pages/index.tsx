@@ -90,6 +90,7 @@ import ProjectTemplateEditFilePage from "./ProjectTemplateEditFilePage";
 import ProjectTemplateEditLinkPage from "./ProjectTemplateEditLinkPage";
 import ProjectTemplateFilePage from "./ProjectTemplateFilePage";
 import ProjectTemplateLinkPage from "./ProjectTemplateLinkPage";
+import ProjectTemplateMilestonePage from "./ProjectTemplateMilestonePage";
 import ProjectTemplateNewDocumentPage from "./ProjectTemplateNewDocumentPage";
 import ProjectTemplateNewLinkPage from "./ProjectTemplateNewLinkPage";
 import ProjectTemplatePage from "./ProjectTemplatePage";
@@ -218,6 +219,7 @@ export default {
   ProjectTemplateEditLinkPage,
   ProjectTemplateFilePage,
   ProjectTemplateLinkPage,
+  ProjectTemplateMilestonePage,
   ProjectTemplateNewDocumentPage,
   ProjectTemplateNewLinkPage,
   ProjectTemplatePage,
