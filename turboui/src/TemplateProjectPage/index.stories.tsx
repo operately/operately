@@ -54,6 +54,7 @@ const populatedProps: Types.Props = {
       dueOffsetDays: 0,
       tasksOrderingState: ["invite"],
       tasksKanbanState: {},
+      link: "/project-templates/launch-template/milestones/beta",
     },
     {
       id: "launch",
@@ -62,6 +63,7 @@ const populatedProps: Types.Props = {
       dueOffsetDays: 21,
       tasksOrderingState: ["announce"],
       tasksKanbanState: {},
+      link: "/project-templates/launch-template/milestones/launch",
     },
   ],
   tasks: [
@@ -208,11 +210,13 @@ function TemplateStory({ props }: { props: Types.Props }) {
   };
 
   const createMilestone: Types.Props["onMilestoneCreate"] = (milestone) => {
+    const id = crypto.randomUUID();
     setMilestones((current) => [
       ...current,
       {
         ...milestone,
-        id: crypto.randomUUID(),
+        id,
+        link: `/project-templates/${props.template.id}/milestones/${id}`,
         tasksOrderingState: [],
         tasksKanbanState: {},
       },

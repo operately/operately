@@ -8,16 +8,17 @@ import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator"
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
 import * as Types from "../../TaskBoard/types";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
+import { compareIds } from "../../utils/ids";
+import { orderByIds } from "../../utils/orderByIds";
 import type { MilestonePage } from "../types";
 import { TaskSectionEmptyState } from "./TaskSectionEmptyState";
 import { TaskSectionLayout } from "./TaskSectionLayout";
-
-const TASKS_CONTAINER_ID = "template-milestone-tasks";
 
 export function TemplateTasksSection({
   tasks,
   statuses,
   milestoneId,
+  milestones,
   permissions,
   onTaskCreate,
   onTaskUpdate,
@@ -27,6 +28,11 @@ export function TemplateTasksSection({
   onTaskOpen,
 }: MilestonePage.TemplateState & Props) {
   const canEdit = permissions.canEdit || false;
+  const orderedTasks = React.useMemo(() => {
+    const orderingState =
+      milestones.find((milestone) => compareIds(milestone.id, milestoneId))?.tasksOrderingState ?? [];
+    return orderByIds(tasks, orderingState);
+  }, [milestoneId, milestones, tasks]);
   const defaultStatus = statuses[0];
   const {
     open: creatorOpen,
@@ -35,7 +41,7 @@ export function TemplateTasksSection({
     creatorRef,
     hoverBind,
   } = useInlineTaskCreator({ requireHover: false });
-  const stats = calculateMilestoneStats(templateTasksAsBoardTasks(tasks));
+  const stats = calculateMilestoneStats(templateTasksAsBoardTasks(orderedTasks));
   const completionPercentage = calculateCompletionPercentage(stats);
   const handleCreateTask = React.useCallback(
     (name: string) => {
@@ -89,14 +95,13 @@ export function TemplateTasksSection({
         ) : null
       }
     >
-      {tasks.length === 0 ? (
+      {orderedTasks.length === 0 ? (
         <div className="overflow-hidden rounded-b-lg bg-surface-base">
           <TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />
         </div>
       ) : (
         <TemplateTaskList
-          tasks={tasks}
-          containerId={TASKS_CONTAINER_ID}
+          tasks={orderedTasks}
           destinationMilestoneId={milestoneId}
           canEdit={canEdit}
           onTaskReorder={onTaskReorder}

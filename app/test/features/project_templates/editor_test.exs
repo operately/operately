@@ -29,4 +29,17 @@ defmodule Operately.Features.ProjectTemplates.EditorTest do
     |> Steps.open_template_discussion()
     |> Steps.refute_comment_composer_visible()
   end
+
+  feature "open a template milestone from overview and tasks, then edit it", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.visit_template_page()
+    |> Steps.open_template_milestone("Kickoff")
+    |> Steps.assert_template_milestone_page()
+    |> Steps.rename_template_milestone("Kickoff workshop")
+    |> Steps.add_template_milestone_task("Prepare agenda")
+    |> Steps.visit_template_tasks_tab()
+    |> Steps.open_template_milestone("Kickoff workshop")
+    |> Steps.assert_template_milestone_page()
+  end
 end

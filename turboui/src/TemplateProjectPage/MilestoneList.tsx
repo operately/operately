@@ -1,10 +1,11 @@
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import React, { useEffect, useRef } from "react";
-import { DangerButton, SecondaryButton } from "../Button";
+import React, { useEffect, useRef, useState } from "react";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { RelativeDayField } from "../RelativeDayField";
+import { IconFlag, IconGripVertical } from "../icons";
+import { Link } from "../Link";
 import { TextField } from "../TextField";
-import { WarningCallout } from "../Callouts";
-import { IconFlag, IconGripVertical, IconTrash } from "../icons";
+import { createTestId } from "../TestableElement";
 import {
   projectItemsWithPlaceholder,
   SubtleDropPlaceholder,
@@ -13,13 +14,11 @@ import {
 } from "../utils/PragmaticDragAndDrop";
 import type { BoardMove } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
-import Modal from "../Modal";
 import type { TemplateProjectPage } from ".";
 import { MilestoneFormModal } from "./MilestoneFormModal";
 
 export function MilestoneList({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
   const [isCreating, setIsCreating] = React.useState(false);
-  const [milestoneToDelete, setMilestoneToDelete] = React.useState<TemplateProjectPage.Milestone | null>(null);
 
   const isDraggingEnabled = canEdit && !!props.onMilestoneReorder;
   const containerId = "template-milestone-list";
@@ -82,10 +81,9 @@ export function MilestoneList({ props, canEdit }: { props: TemplateProjectPage.P
               milestone={milestone}
               index={index}
               isLast={index === projectedMilestones.length - 1}
-              props={props}
               canEdit={canEdit}
               isDraggable={isDraggingEnabled}
-              onDelete={setMilestoneToDelete}
+              onUpdate={props.onMilestoneUpdate}
             />
           </React.Fragment>
         ))}
@@ -100,70 +98,8 @@ export function MilestoneList({ props, canEdit }: { props: TemplateProjectPage.P
           <p className="py-6 text-center text-sm text-content-dimmed">No milestones yet</p>
         )}
       </div>
-      <DeleteMilestoneModal
-        milestone={milestoneToDelete}
-        onClose={() => setMilestoneToDelete(null)}
-        onDelete={(milestoneId) => props.onMilestoneDelete?.(milestoneId)}
-      />
       <MilestoneFormModal isOpen={isCreating} onClose={() => setIsCreating(false)} onCreate={props.onMilestoneCreate} />
     </section>
-  );
-}
-
-function DeleteMilestoneModal({
-  milestone,
-  onClose,
-  onDelete,
-}: {
-  milestone: TemplateProjectPage.Milestone | null;
-  onClose: () => void;
-  onDelete: (milestoneId: string) => void | Promise<void>;
-}) {
-  const [isDeleting, setIsDeleting] = React.useState(false);
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!milestone) return;
-
-    setIsDeleting(true);
-
-    try {
-      await onDelete(milestone.id);
-      onClose();
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  return (
-    <Modal
-      isOpen={milestone !== null}
-      onClose={onClose}
-      size="large"
-      title={`Delete ${milestone?.title ?? "milestone"}`}
-    >
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <WarningCallout
-          message="This action cannot be undone"
-          description={`Deleting the ${milestone?.title ?? "selected"} milestone is permanent and cannot be undone.`}
-        />
-
-        <div className="flex items-center gap-2">
-          <DangerButton
-            size="sm"
-            type="submit"
-            loading={isDeleting}
-            disabled={isDeleting}
-            testId="delete-template-milestone"
-          >
-            Delete Forever
-          </DangerButton>
-          <SecondaryButton size="sm" onClick={onClose} testId="cancel-delete-template-milestone">
-            Cancel
-          </SecondaryButton>
-        </div>
-      </form>
-    </Modal>
   );
 }
 
@@ -171,19 +107,86 @@ interface MilestoneItemProps {
   milestone: TemplateProjectPage.Milestone;
   index: number;
   isLast: boolean;
-  props: TemplateProjectPage.Props;
   canEdit: boolean;
   isDraggable: boolean;
-  onDelete: (milestone: TemplateProjectPage.Milestone) => void;
+  onUpdate?: TemplateProjectPage.Props["onMilestoneUpdate"];
 }
 
-function MilestoneItem({ milestone, index, isLast, props, canEdit, isDraggable, onDelete }: MilestoneItemProps) {
+function MilestoneItem({ milestone, index, isLast, canEdit, isDraggable, onUpdate }: MilestoneItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(milestone.title);
+  const [editDueOffsetDays, setEditDueOffsetDays] = useState<number | null>(milestone.dueOffsetDays);
   const { ref: draggableRef, isDragging } = useSortableItem<HTMLDivElement>({
     itemId: milestone.id,
     index,
     containerId: "template-milestone-list",
     disabled: !isDraggable,
   });
+  const milestoneTestId = createTestId("milestone", milestone.title);
+  const editBtnTestId = createTestId("edit-btn", milestone.title);
+  const editFormTestId = createTestId("edit-form", milestone.title);
+  const nameTestId = createTestId("edit-title", milestone.title);
+  const dueOffsetTestId = createTestId("edit-due-offset", milestone.title);
+
+  const handleSave = () => {
+    onUpdate?.(milestone.id, {
+      title: editTitle.trim(),
+      dueOffsetDays: editDueOffsetDays,
+    });
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditTitle(milestone.title);
+    setEditDueOffsetDays(milestone.dueOffsetDays);
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex items-start gap-3" data-test-id={editFormTestId}>
+        <div className="mt-1 flex flex-col items-center">
+          <IconFlag
+            size={20}
+            className={
+              milestone.dueOffsetDays === null ? "shrink-0 text-content-subtle" : "shrink-0 text-content-dimmed"
+            }
+          />
+          {!isLast && <div className="mt-1 h-8 w-px bg-stroke-base" />}
+        </div>
+        <div className="min-w-0 flex-1 pb-6">
+          <div className="rounded-lg border border-stroke-base bg-surface-dimmed p-4">
+            <div className="space-y-3">
+              <TextField
+                variant="form-field"
+                text={editTitle}
+                onChange={setEditTitle}
+                placeholder="Enter milestone title"
+                autofocus
+                onChangeOnType
+                trimBeforeSave
+                testId={nameTestId}
+              />
+              <RelativeDayField
+                value={editDueOffsetDays}
+                onChange={setEditDueOffsetDays}
+                placeholder="Set relative date"
+                testId={dueOffsetTestId}
+              />
+              <div className="flex gap-2">
+                <PrimaryButton size="sm" onClick={handleSave} disabled={!editTitle.trim()}>
+                  Save
+                </PrimaryButton>
+                <SecondaryButton size="sm" onClick={handleCancel}>
+                  Cancel
+                </SecondaryButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -193,6 +196,7 @@ function MilestoneItem({ milestone, index, isLast, props, canEdit, isDraggable, 
         isDragging && "opacity-50",
         isDraggable && "cursor-grab active:cursor-grabbing",
       )}
+      data-test-id={milestoneTestId}
     >
       {isDraggable && (
         <div className="mt-1 flex items-center opacity-0 transition-opacity md:group-hover:opacity-100">
@@ -206,33 +210,31 @@ function MilestoneItem({ milestone, index, isLast, props, canEdit, isDraggable, 
         />
         {!isLast && <div className="mt-1 h-8 w-px bg-stroke-base" />}
       </div>
-      <div className="relative min-w-0 flex-1 pb-2 pr-8">
-        <TextField
-          text={milestone.title}
-          onChange={(title) => void props.onMilestoneUpdate?.(milestone.id, { title })}
-          readonly={!canEdit}
-          className="font-medium"
-          testId={`template-milestone-${milestone.id}-title`}
-        />
-        {canEdit && props.onMilestoneDelete && (
-          <div className="absolute top-0 right-0 md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
-            <button
-              type="button"
-              className="block rounded-full p-1.5 text-content-dimmed hover:bg-surface-dimmed hover:text-content-error"
-              onClick={() => onDelete(milestone)}
-              aria-label={`Delete ${milestone.title}`}
-              data-test-id={`delete-template-milestone-${milestone.id}`}
-            >
-              <IconTrash size={16} />
-            </button>
+      <div className="min-w-0 flex-1 pb-2">
+        <div className="flex items-center gap-2">
+          <Link
+            to={milestone.link}
+            className="flex items-center gap-2 font-medium text-content-strong transition-colors hover:text-accent-base"
+          >
+            {milestone.title}
+          </Link>
+          {canEdit && (
+            <div className="opacity-0 transition-opacity md:group-hover:opacity-100">
+              <SecondaryButton testId={editBtnTestId} size="xxs" onClick={() => setIsEditing(true)}>
+                Edit
+              </SecondaryButton>
+            </div>
+          )}
+        </div>
+        {milestone.dueOffsetDays !== null && (
+          <div className="mt-1">
+            <RelativeDayField
+              value={milestone.dueOffsetDays}
+              readonly
+              testId={`template-milestone-${milestone.id}-due-offset`}
+            />
           </div>
         )}
-        <RelativeDayField
-          value={milestone.dueOffsetDays}
-          onChange={(dueOffsetDays) => props.onMilestoneUpdate?.(milestone.id, { dueOffsetDays })}
-          readonly={!canEdit}
-          testId={`template-milestone-${milestone.id}-due-offset`}
-        />
       </div>
     </div>
   );

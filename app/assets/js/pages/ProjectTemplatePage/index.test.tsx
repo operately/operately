@@ -2,7 +2,6 @@ import Api, { type ProjectTemplateResourceNode } from "@/api";
 import { uploadFilesWithPreviews } from "@/models/blobs";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
-import { activePersonIds } from "./people";
 import {
   createFilesUploadOperation,
   createFolderOperation,
@@ -10,7 +9,6 @@ import {
   createPeopleOperations,
   createResourceDeleteOperation,
   createResourceMoveOperation,
-  createTaskMove,
   toResourceNode,
 } from ".";
 import type { AddFileUploadItem } from "turboui";
@@ -38,7 +36,6 @@ jest.mock("@/api", () => ({
   default: {
     project_templates: {
       get: jest.fn(),
-      updateTask: jest.fn(),
       createPerson: jest.fn(),
       updatePerson: jest.fn(),
       deletePerson: jest.fn(),
@@ -54,7 +51,6 @@ jest.mock("@/api", () => ({
 jest.mock("@/routes/redirectUtils", () => ({ redirectIfFeatureNotEnabled: jest.fn() }));
 
 const getTemplate = Api.project_templates.get as jest.Mock;
-const updateTask = Api.project_templates.updateTask as jest.Mock;
 const createPerson = Api.project_templates.createPerson as jest.Mock;
 const updatePerson = Api.project_templates.updatePerson as jest.Mock;
 const deletePerson = Api.project_templates.deletePerson as jest.Mock;
@@ -89,54 +85,6 @@ test("redirects home before loading the template when the feature is disabled", 
   await expect(loader({ params: { companyId: "acme", id: "template-1" } } as any)).rejects.toThrow("redirect");
 
   expect(getTemplate).not.toHaveBeenCalled();
-});
-
-test("sends only available people when replacing task assignees", () => {
-  expect(
-    activePersonIds([
-      {
-        id: "template-person-1",
-        person: { id: "person-1", fullName: "Ada", avatarUrl: null },
-        role: "contributor",
-        responsibility: null,
-        accessLevel: 70,
-        active: true,
-      },
-      {
-        id: "template-person-2",
-        person: { id: "person-2", fullName: "Bob", avatarUrl: null },
-        role: "contributor",
-        responsibility: null,
-        accessLevel: 70,
-        active: false,
-      },
-    ]),
-  ).toEqual(["person-1"]);
-});
-
-test("moves a task with its destination milestone and index in one request", async () => {
-  updateTask.mockResolvedValue({ task: { id: "task-1" } });
-  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
-    await operation();
-    return true;
-  });
-  const moveTask = createTaskMove({ templateId: "template-1", mutate });
-
-  await expect(moveTask("task-1", "milestone-2", 3)).resolves.toBe(true);
-
-  expect(updateTask).toHaveBeenCalledWith({
-    templateId: "template-1",
-    taskId: "task-1",
-    milestoneId: "milestone-2",
-    index: 3,
-  });
-});
-
-test("returns false when a task move fails", async () => {
-  const mutate = jest.fn().mockResolvedValue(false);
-  const moveTask = createTaskMove({ templateId: "template-1", mutate });
-
-  await expect(moveTask("task-1", null, 0)).resolves.toBe(false);
 });
 
 test("deletes a template resource by node id", async () => {

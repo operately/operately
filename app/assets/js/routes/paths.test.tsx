@@ -15,4 +15,12 @@ describe("Paths", () => {
       "/nexus-dynamics/search?q=customer+evidence+%26+plans",
     );
   });
+
+  test("builds a project template milestone path", () => {
+    const paths = new Paths({ companyId: "nexus-dynamics" });
+
+    expect(paths.projectTemplateMilestonePath("template-1", "milestone-1")).toEqual(
+      "/nexus-dynamics/project-templates/template-1/milestones/milestone-1",
+    );
+  });
 });

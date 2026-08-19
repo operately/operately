@@ -388,6 +388,35 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     UI.visit(ctx, Paths.project_template_discussion_path(ctx.company, ctx.template, ctx.discussion))
   end
 
+  step :open_template_milestone, ctx, title do
+    ctx
+    |> UI.click_link(title)
+    |> UI.assert_has(testid: "template-milestone-page")
+  end
+
+  step :assert_template_milestone_page, ctx do
+    UI.assert_has(ctx, testid: "template-milestone-page")
+  end
+
+  step :rename_template_milestone, ctx, name do
+    ctx
+    |> UI.fill_text_field(testid: "milestone-name-input", with: name, submit: true)
+    |> UI.assert_text(name)
+  end
+
+  step :add_template_milestone_task, ctx, name do
+    ctx
+    |> UI.click(testid: "template-tasks-section-add-task")
+    |> UI.fill(Wallaby.Query.css("[data-test-id^=\"inline-template-task-creator-milestonepage\"]"), with: name)
+    |> UI.press_enter()
+    |> UI.click_button("Cancel")
+    |> UI.assert_text(name)
+  end
+
+  step :visit_template_tasks_tab, ctx do
+    visit_template_tab(ctx, "tasks")
+  end
+
   step :assert_comment_composer_visible, ctx do
     UI.assert_text(ctx, "Write a comment here...")
   end
