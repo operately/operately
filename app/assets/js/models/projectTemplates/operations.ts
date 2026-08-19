@@ -13,7 +13,7 @@ export function activePersonIds(assignees: TemplateProjectPage.TemplatePerson[] 
   return (assignees ?? []).flatMap((assignee) => (assignee.active && assignee.person ? [assignee.person.id] : []));
 }
 
-export function mapTemplatePeople(
+function mapTemplatePeople(
   template: Pick<ProjectTemplate, "people" | "taskAssignments">,
   profilePath: (personId: string) => string,
 ) {
@@ -47,7 +47,7 @@ export function mapTemplatePeople(
   return { people, assigneesByTaskId };
 }
 
-export function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: string): TemplateProjectPage.Milestone {
+function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: string): TemplateProjectPage.Milestone {
   return {
     id: milestone.id,
     title: milestone.title,
@@ -84,7 +84,7 @@ export function mapTemplateTaskGraph(
   };
 }
 
-export function toTask(
+function toTask(
   task: ProjectTemplateTask,
   assignees: TemplateProjectPage.TemplatePerson[],
 ): TemplateProjectPage.Task | null {
@@ -166,7 +166,7 @@ export function serializeJson(value: unknown) {
   return value === undefined ? undefined : JSON.stringify(value);
 }
 
-export function parseJson(value?: string | null): unknown {
+function parseJson(value?: string | null): unknown {
   try {
     return JSON.parse(value || "{}");
   } catch {

@@ -34,7 +34,7 @@ const taskStatus = {
   __typename: "task_status" as const,
   id: "todo",
   label: "To do",
-  color: "gray",
+  color: "gray" as const,
   index: 0,
   value: "todo",
   closed: false,
@@ -62,7 +62,7 @@ function apiMilestone(
   return {
     __typename: "project_template_milestone",
     projectTemplateId: "template-1",
-    tasksKanbanState: {},
+    tasksKanbanState: "{}",
     tasksOrderingState: ["task-1", "task-2"],
     insertedAt: "2026-08-18T00:00:00Z",
     updatedAt: "2026-08-18T00:00:00Z",
@@ -78,7 +78,7 @@ function template(
     taskAssignments: [],
     tasks: [apiTask({ id: "task-1", name: "First" }), apiTask({ id: "task-2", name: "Second" })],
     milestones: [apiMilestone({ id: "milestone-1", title: "Kickoff" })],
-    tasksKanbanState: {},
+    tasksKanbanState: "{}",
     taskStatuses: [taskStatus],
     ...overrides,
   };

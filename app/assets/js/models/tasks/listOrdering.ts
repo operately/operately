@@ -1,16 +1,16 @@
 import { compareIds } from "@/routes/paths";
 
-export interface ListedTask {
+interface ListedTask {
   id: string;
   milestoneId: string | null;
 }
 
-export interface ListedMilestone {
+interface ListedMilestone {
   id: string;
   tasksOrderingState: string[];
 }
 
-export interface TaskListGraph {
+interface TaskListGraph {
   tasks: ListedTask[];
   milestones: ListedMilestone[];
 }
