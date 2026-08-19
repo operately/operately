@@ -30,7 +30,7 @@ export interface TemplateTaskSlideInContext {
     taskId: string,
     updates: Partial<TemplateProjectPage.Task>,
   ) => void | boolean | Promise<void | boolean>;
-  onTaskDelete?: (taskId: string) => void | Promise<void>;
+  onTaskDelete?: (taskId: string) => void | boolean | Promise<void | boolean>;
   onTaskReorder?: (
     taskId: string,
     milestoneId: string | null,
