@@ -21,16 +21,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Tasks.UpdateMilestoneAndO
     %{
       task_id: Paths.task_id(ctx.task),
       milestone_id: Paths.milestone_id(ctx.target_milestone),
-      milestones_ordering_state: [
-        %{
-          milestone_id: Paths.milestone_id(ctx.milestone),
-          ordering_state: []
-        },
-        %{
-          milestone_id: Paths.milestone_id(ctx.target_milestone),
-          ordering_state: [Paths.task_id(ctx.task)]
-        }
-      ]
+      index: 0
     }
   end
 
