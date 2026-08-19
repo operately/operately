@@ -22,10 +22,10 @@ import { CodeBlockButton } from "./CodeBlockButton";
 import { ColorPicker } from "./ColorPicker";
 import { DividerButton } from "./DividerButton";
 
-export function Toolbar(): JSX.Element {
+export function Toolbar({ compact }: { compact?: boolean } = {}): JSX.Element {
   const size = useWindowSizeBreakpoints();
 
-  if (size == "xs") {
+  if (compact || size == "xs") {
     return <MobileToolbar />;
   } else {
     return <DesktopToolbar />;

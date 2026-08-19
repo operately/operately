@@ -183,7 +183,7 @@ function ProjectTaskCreationForm({
         </div>
 
         {richTextHandlers && (
-          <div>
+          <div className="min-w-0">
             <label className="block text-sm font-medium text-content-base mb-1">Notes</label>
             <TaskNotesField key={descriptionEditorKey} richTextHandlers={richTextHandlers} onChange={setDescription} />
           </div>
@@ -325,7 +325,7 @@ function TemplateTaskCreationForm({
           />
         </div>
 
-        <div className="min-w-0 overflow-x-auto">
+        <div className="min-w-0">
           <FieldLabel>Notes</FieldLabel>
           <TaskNotesField key={descriptionEditorKey} richTextHandlers={richTextHandlers} onChange={setDescription} />
         </div>
@@ -399,7 +399,7 @@ function TaskNotesField({
     onUpdate: ({ json }) => onChange(json as RichTextJSON),
   });
 
-  return <Editor editor={editor} />;
+  return <Editor editor={editor} compactToolbar className="min-w-0" />;
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
