@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import type { Subscriber as ApiSubscriber } from "../ApiTypes";
 import { Avatar } from "../Avatar";
 import { RadioGroup, Radio } from "./components/RadioGroup";
 import { SubscribersSelectorModal } from "./components/SubscribersSelectorModal";
@@ -140,19 +141,7 @@ function SelectedPeople({
 }
 
 export namespace SubscribersSelector {
-  export interface Person {
-    id: string;
-    fullName: string;
-    avatarUrl?: string | null;
-    title?: string | null;
-  }
-
-  export interface Subscriber {
-    role?: string | null;
-    priority?: boolean | null;
-    isSubscribed?: boolean | null;
-    person?: Person | null;
-  }
+  export type Subscriber = ApiSubscriber;
 
   export enum SubscriptionOption {
     ALL = "all",

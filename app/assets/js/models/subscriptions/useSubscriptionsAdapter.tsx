@@ -16,15 +16,8 @@ type UseSubscriptionsAdapterOpts = {
   sendNotificationsToEveryone?: boolean;
 } & LabelContext;
 
-interface SubscriptionsAdapterState {
-  subscribers: Subscriber[];
-  selectedSubscribers: Subscriber[];
-  onSelectedSubscribersChange: (subscribers: Subscriber[]) => void;
-  subscriptionType: SubscribersSelector.SubscriptionOption;
-  onSubscriptionTypeChange: (type: SubscribersSelector.SubscriptionOption) => void;
-  alwaysNotify: Subscriber[];
+interface SubscriptionsAdapterState extends SubscribersSelector.Props {
   currentSubscribersList: string[];
-  allSubscribersLabel: string;
   notifyEveryone: boolean;
 }
 

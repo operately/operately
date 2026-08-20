@@ -19,6 +19,7 @@ import { SubscribersSelector } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber } from "../utils/storybook/genSubscribers";
 
 import type { SharedListPageProps } from "./SharedListPage";
 
@@ -380,8 +381,8 @@ function useMockNewFileModals() {
 function useMockSubscribers(): SubscribersSelector.Props {
   const availableSubscribers = React.useMemo<SubscribersSelector.Subscriber[]>(
     () => [
-      { person: subscriber ?? { id: "person-3", fullName: "Jordan Example", avatarUrl: null }, isSubscribed: false },
-      { person: reviewer ?? { id: "person-2", fullName: "Riley Example", avatarUrl: null }, isSubscribed: false },
+      asSubscriber(subscriber ?? { id: "person-3", fullName: "Jordan Example", title: "Member", avatarUrl: null, profileLink: "#" }),
+      asSubscriber(reviewer ?? { id: "person-2", fullName: "Riley Example", title: "Member", avatarUrl: null, profileLink: "#" }),
     ],
     [],
   );

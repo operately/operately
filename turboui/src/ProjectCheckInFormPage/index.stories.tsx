@@ -5,7 +5,7 @@ import { ProjectCheckInFormPage } from "./index";
 import { SubscribersSelector } from "../Subscriptions";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { genPeople } from "../utils/storybook/genPeople";
+import { genSubscribers } from "../utils/storybook/genSubscribers";
 import { createMockCheckIn, mockReviewer, navigation } from "./mockData";
 
 const meta = {
@@ -23,15 +23,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockPeople = genPeople(4);
+const mockSubscribers = genSubscribers(4);
 const richTextHandlers = createMockRichEditorHandlers();
-
-const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => ({
-  person,
-  isSubscribed: false,
-  priority: false,
-  role: null,
-}));
 
 function useInteractiveSubscriptions(): SubscribersSelector.Props {
   const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(
@@ -144,6 +137,42 @@ export const EditLockedStatus: Story = {
   ),
 };
 
+export const EditDraft: Story = {
+  args: {} as ProjectCheckInFormPage.Props,
+  parameters: {
+    reactRouter: {
+      path: "/projects/project-1/check-ins/check-in-1/edit",
+      routePath: "/projects/:projectId/check-ins/:id/edit",
+    },
+  },
+  render: () => {
+    const subscriptions = useInteractiveSubscriptions();
+
+    return (
+      <ProjectCheckInFormPage
+        mode="edit"
+        pageTitle={["Edit Project Check-In", "Apollo"]}
+        navigation={navigation}
+        cancelLink="/projects/project-1/check-ins/check-in-1"
+        richTextHandlers={richTextHandlers}
+        mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+        reviewer={mockReviewer}
+        checkIn={createMockCheckIn({
+          state: "draft",
+          publishedAt: null,
+        })}
+        allowFullEdit
+        subscriptions={subscriptions}
+        onSubmit={async (values, meta) => {
+          console.log("Edit draft submit", values, meta);
+          return true;
+        }}
+      />
+    );
+  },
+};
+
 export const EditScheduledDraft: Story = {
   args: {} as ProjectCheckInFormPage.Props,
   parameters: {
@@ -152,26 +181,31 @@ export const EditScheduledDraft: Story = {
       routePath: "/projects/:projectId/check-ins/:id/edit",
     },
   },
-  render: () => (
-    <ProjectCheckInFormPage
-      mode="edit"
-      pageTitle={["Edit Project Check-In", "Apollo"]}
-      navigation={navigation}
-      cancelLink="/projects/project-1/check-ins/check-in-1"
-      richTextHandlers={richTextHandlers}
-      mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-      formattedTimePreferences={defaultFormattedTimePreferences}
-      reviewer={mockReviewer}
-      checkIn={createMockCheckIn({
-        state: "scheduled",
-        scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        publishedAt: null,
-      })}
-      allowFullEdit
-      onSubmit={async (values, meta) => {
-        console.log("Edit scheduled submit", values, meta);
-        return true;
-      }}
-    />
-  ),
+  render: () => {
+    const subscriptions = useInteractiveSubscriptions();
+
+    return (
+      <ProjectCheckInFormPage
+        mode="edit"
+        pageTitle={["Edit Project Check-In", "Apollo"]}
+        navigation={navigation}
+        cancelLink="/projects/project-1/check-ins/check-in-1"
+        richTextHandlers={richTextHandlers}
+        mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+        reviewer={mockReviewer}
+        checkIn={createMockCheckIn({
+          state: "scheduled",
+          scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          publishedAt: null,
+        })}
+        allowFullEdit
+        subscriptions={subscriptions}
+        onSubmit={async (values, meta) => {
+          console.log("Edit scheduled submit", values, meta);
+          return true;
+        }}
+      />
+    );
+  },
 };
