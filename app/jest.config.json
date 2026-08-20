@@ -8,6 +8,16 @@
   "modulePaths": [
     "<rootDir>/node_modules"
   ],
+  "reporters": [
+    "default",
+    [
+      "jest-junit",
+      {
+        "outputDirectory": "testreports",
+        "outputName": "junit-jest.xml"
+      }
+    ]
+  ],
   "moduleNameMapper": {
     "^turboui$": "<rootDir>/../turboui/src",
     "^turboui/(.*)$": "<rootDir>/../turboui/src/$1",
