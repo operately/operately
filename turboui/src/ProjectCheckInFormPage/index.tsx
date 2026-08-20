@@ -68,6 +68,7 @@ export namespace ProjectCheckInFormPage {
     mode: "edit";
     checkIn: ProjectCheckIn;
     allowFullEdit: boolean;
+    subscriptions?: SubscribersSelector.Props;
   }
 
   export type Props = CreateProps | EditProps;
@@ -153,7 +154,9 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
 
           <Spacer size={4} />
 
-          {props.mode === "create" && <SubscribersSelector {...props.subscriptions} />}
+          {(props.mode === "create" || (props.mode === "edit" && props.subscriptions)) && (
+            <SubscribersSelector {...props.subscriptions!} />
+          )}
 
           <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
 
