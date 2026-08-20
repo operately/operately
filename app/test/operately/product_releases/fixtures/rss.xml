@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Operately Releases</title>
+    <item>
+      <title>Docs &amp; Files, Draft Check-ins, and more</title>
+      <link>https://operately.com/releases/v170/</link>
+      <guid>v1.7</guid>
+      <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
+      <description>Operately v1.7 is here.</description>
+    </item>
+    <item>
+      <title>MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more</title>
+      <link>https://operately.com/releases/v180/</link>
+      <guid>v1.8</guid>
+      <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
+      <description>Bring AI into your work, prepare updates ahead of time, and review goal and project outcomes.</description>
+    </item>
+  </channel>
+</rss>

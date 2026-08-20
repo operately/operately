@@ -389,6 +389,11 @@ defmodule OperatelyWeb.Api do
         query(:list_active, OperatelyWeb.Api.SiteMessages.ListActive)
       end
 
+      namespace(:product_releases) do
+        query(:get_latest, OperatelyWeb.Api.ProductReleases.GetLatest)
+        mutation(:dismiss, OperatelyWeb.Api.ProductReleases.Dismiss)
+      end
+
       namespace(:spaces) do
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
       end

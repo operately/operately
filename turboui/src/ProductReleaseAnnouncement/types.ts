@@ -1,8 +1,8 @@
+export const PRODUCT_RELEASES_PAGE_URL = "https://operately.com/releases/";
+
 export interface ProductRelease {
   id: string;
   title: string;
-  url: string;
   publishedAt: string;
-  paragraphs: string[];
   teaser?: string;
 }

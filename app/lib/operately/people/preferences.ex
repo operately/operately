@@ -3,6 +3,7 @@ defmodule Operately.People.Preferences do
 
   @primary_key false
   @time_format_values [:automatic, :hour_12, :hour_24]
+  @max_dismissed_product_release_id_length 512
 
   defmodule Notifications do
     use Operately.Schema
@@ -63,12 +64,17 @@ defmodule Operately.People.Preferences do
   embedded_schema do
     field :time_format, Ecto.Enum, values: @time_format_values, default: :automatic
     embeds_one :notifications, Notifications, on_replace: :update, defaults_to_struct: true
+
+    # Id of the release this person dismissed.
+    # The toast is shown when the latest feed item exists and its id does not equal this value.
+    field :dismissed_product_release_id, :string
   end
 
   def changeset(preferences, attrs) do
     preferences
-    |> cast(attrs, [:time_format])
+    |> cast(attrs, [:time_format, :dismissed_product_release_id], empty_values: [])
     |> validate_inclusion(:time_format, @time_format_values)
+    |> validate_length(:dismissed_product_release_id, min: 1, max: @max_dismissed_product_release_id_length)
     |> cast_embed(:notifications, with: &Notifications.changeset/2)
   end
 

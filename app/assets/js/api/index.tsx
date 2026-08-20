@@ -1862,11 +1862,20 @@ export interface Person {
   inviteLink?: InviteLink | null;
   showDevBar?: boolean | null;
   permissions?: PersonPermissions | null;
+  dismissedProductReleaseId?: string | null;
 }
 
 export interface PersonPermissions {
   __typename: "person_permissions";
   canEditProfile: boolean | null;
+}
+
+export interface ProductRelease {
+  __typename: "product_release";
+  id: string;
+  title: string;
+  publishedAt: string;
+  teaser?: string | null;
 }
 
 export interface Project {
@@ -3625,6 +3634,12 @@ export interface PeopleSearchResult {
   people: Person[];
 }
 
+export interface ProductReleasesGetLatestInput {}
+
+export interface ProductReleasesGetLatestResult {
+  productRelease?: ProductRelease | null;
+}
+
 export interface ProjectTemplatesGetInput {
   id: Id;
 }
@@ -5207,6 +5222,14 @@ export interface PeopleUpdateThemeResult {
   success: boolean;
 }
 
+export interface ProductReleasesDismissInput {
+  id: string;
+}
+
+export interface ProductReleasesDismissResult {
+  success: boolean;
+}
+
 export interface ProjectTemplatesArchiveInput {
   id: Id;
 }
@@ -6486,6 +6509,18 @@ class ApiNamespaceInvitations {
   }
 }
 
+class ApiNamespaceProductReleases {
+  constructor(private client: ApiClient) {}
+
+  async getLatest(input: ProductReleasesGetLatestInput): Promise<ProductReleasesGetLatestResult> {
+    return this.client.get("/product_releases/get_latest", input);
+  }
+
+  async dismiss(input: ProductReleasesDismissInput): Promise<ProductReleasesDismissResult> {
+    return this.client.post("/product_releases/dismiss", input);
+  }
+}
+
 class ApiNamespaceSiteMessages {
   constructor(private client: ApiClient) {}
 
@@ -7734,6 +7769,7 @@ export class ApiClient {
   public apiNamespaceMcpGrants: ApiNamespaceMcpGrants;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
+  public apiNamespaceProductReleases: ApiNamespaceProductReleases;
   public apiNamespaceSiteMessages: ApiNamespaceSiteMessages;
   public apiNamespaceBilling: ApiNamespaceBilling;
   public apiNamespaceRoot: ApiNamespaceRoot;
@@ -7759,6 +7795,7 @@ export class ApiClient {
     this.apiNamespaceMcpGrants = new ApiNamespaceMcpGrants(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
+    this.apiNamespaceProductReleases = new ApiNamespaceProductReleases(this);
     this.apiNamespaceSiteMessages = new ApiNamespaceSiteMessages(this);
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
@@ -8287,6 +8324,18 @@ export default {
     useJoinCompanyViaInviteLink: () =>
       useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
+      ),
+  },
+
+  product_releases: {
+    getLatest: (input: ProductReleasesGetLatestInput) => defaultApiClient.apiNamespaceProductReleases.getLatest(input),
+    useGetLatest: (input: ProductReleasesGetLatestInput) =>
+      useQuery<ProductReleasesGetLatestResult>(() => defaultApiClient.apiNamespaceProductReleases.getLatest(input)),
+
+    dismiss: (input: ProductReleasesDismissInput) => defaultApiClient.apiNamespaceProductReleases.dismiss(input),
+    useDismiss: () =>
+      useMutation<ProductReleasesDismissInput, ProductReleasesDismissResult>((input) =>
+        defaultApiClient.apiNamespaceProductReleases.dismiss(input),
       ),
   },
 
