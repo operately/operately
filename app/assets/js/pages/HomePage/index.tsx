@@ -15,7 +15,7 @@ export default { name: "HomePage", loader, Page } as PageModule;
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
-import { GhostButton, PrimaryButton, showErrorToast, SpaceCard, SpaceCardGrid } from "turboui";
+import { GhostButton, PageSection, PrimaryButton, showErrorToast, SpaceCard, SpaceCardGrid } from "turboui";
 import { Navigate } from "react-router";
 import { canDeleteFeedItems } from "./feedPermissions";
 import { shouldOpenCompanyWorkMap } from "./firstRun";
@@ -88,7 +88,7 @@ function SpacesSection() {
 
   return (
     <div className="mt-8">
-      <Paper.Section
+      <PageSection
         title="Your Operately Spaces"
         subtitle="Manage projects, track goals, and organize your team's work."
         actions={
@@ -99,7 +99,7 @@ function SpacesSection() {
         }
       >
         {isEmpty ? <SpacesZeroState /> : <SpaceGrid spaces={spaces} />}
-      </Paper.Section>
+      </PageSection>
     </div>
   );
 }
@@ -107,11 +107,11 @@ function SpacesSection() {
 function FeedSection() {
   return (
     <div className="mt-8">
-      <Paper.Section title="What's new?" subtitle="Stay up to date with your team's progress.">
+      <PageSection title="What's new?" subtitle="Stay up to date with your team's progress.">
         <div className="bg-surface-base shadow rounded-2xl">
           <ActivityFeed />
         </div>
-      </Paper.Section>
+      </PageSection>
     </div>
   );
 }

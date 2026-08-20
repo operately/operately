@@ -15,6 +15,7 @@ import {
   BorderedRow,
   Menu,
   MenuActionItem,
+  PageSection,
   PrimaryButton,
   SecondaryButton,
   SubMenu,
@@ -85,7 +86,7 @@ function GeneralAccess() {
   assertPresent(space.permissions, "Space permissions must be present");
 
   return (
-    <Paper.Section title="General Access">
+    <PageSection title="General Access">
       <BorderedRow>
         <AccessLevelSummary
           resourceType="space"
@@ -100,7 +101,7 @@ function GeneralAccess() {
           </SecondaryButton>
         )}
       </BorderedRow>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -115,11 +116,11 @@ function SpaceManagers() {
   if (managers.length === 0) return null;
 
   return (
-    <Paper.Section title="Space Managers" subtitle={subtitle}>
+    <PageSection title="Space Managers" subtitle={subtitle}>
       {managers.map((contrib) => (
         <Member member={contrib} key={contrib.id} />
       ))}
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -133,11 +134,11 @@ function SpaceMembers() {
   if (members.length === 0) return null;
 
   return (
-    <Paper.Section title="Members">
+    <PageSection title="Members">
       {members.map((contrib) => (
         <Member member={contrib} key={contrib.id} />
       ))}
-    </Paper.Section>
+    </PageSection>
   );
 }
 

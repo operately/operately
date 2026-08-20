@@ -11,8 +11,7 @@ import { useFrom } from "./useForm";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
-import { Avatar, BlackLink, SecondaryButton, Page as TurboUIPage } from "turboui";
-import classNames from "classnames";
+import { Avatar, BlackLink, PageSection, SecondaryButton, Page as TurboUIPage } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -33,55 +32,23 @@ export function Page() {
           <div className="mt-2">Add/Remove people who are in charge of the company and its operations</div>
         </div>
 
-        <Section
+        <PageSection
           title="Administrators"
           subtitle="Company administrators can add/remove people from the company, manage their profiles, update company settings, and more."
           actions={<AddAdminsModal form={form} />}
         >
           <PeopleList type="admins" people={admins} />
-        </Section>
+        </PageSection>
 
-        <Section
+        <PageSection
           title="Account Owners"
           subtitle="Owners have the highest level of access and can manage all aspects of the company, including billing, and have access to all resources."
           actions={<AddOwnersModal form={form} />}
         >
           <PeopleList type="owners" people={owners} />
-        </Section>
+        </PageSection>
       </div>
     </TurboUIPage>
-  );
-}
-
-function Section({
-  title,
-  subtitle,
-  actions,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  const className = classNames("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0", {
-    "mb-6": subtitle,
-    "mb-2": !subtitle,
-  });
-
-  return (
-    <div className="mt-10" data-test-id={createTestId(title, "section")}>
-      <div className={className}>
-        <div>
-          <h2 className="font-bold">{title}</h2>
-          {subtitle && <p className="text-sm max-w-xl">{subtitle}</p>}
-        </div>
-
-        {actions && <div className="w-full sm:w-auto">{actions}</div>}
-      </div>
-
-      {children}
-    </div>
   );
 }
 

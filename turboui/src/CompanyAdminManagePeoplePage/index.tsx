@@ -3,7 +3,7 @@ import React from "react";
 import { PrimaryButton } from "../Button";
 import { Navigation } from "../Page/Navigation";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
-import classNames from "../utils/classnames";
+import { PageSection } from "../PageSection";
 import { ConvertToGuestModal } from "./components/ConvertToGuestModal";
 import { PeopleList } from "./components/PeopleList";
 import { ReissueInvitationModal } from "./components/ReissueInvitationModal";
@@ -159,7 +159,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
           />
 
           {props.invitedPeople.length > 0 && (
-            <Section title="Invitations Awaiting Response">
+            <PageSection title="Invitations Awaiting Response">
               <PeopleList
                 people={props.invitedPeople}
                 testId="invited-people-list"
@@ -173,11 +173,11 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 showConvertToGuest
                 showAccessLevelOptions
               />
-            </Section>
+            </PageSection>
           )}
 
           {props.currentMembers.length > 0 && (
-            <Section title="Current Team Members">
+            <PageSection title="Current Team Members">
               <PeopleList
                 people={props.currentMembers}
                 testId="current-members-list"
@@ -191,11 +191,11 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 showConvertToGuest
                 showAccessLevelOptions
               />
-            </Section>
+            </PageSection>
           )}
 
           {showOutsideCollaborators && (
-            <Section title="Outside collaborators">
+            <PageSection title="Outside collaborators">
               <PeopleList
                 people={outsideCollaborators}
                 testId="outside-collaborators-list"
@@ -207,7 +207,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
               />
-            </Section>
+            </PageSection>
           )}
         </div>
       </div>
@@ -250,38 +250,6 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
         onClose={closeModal}
         inviteUrl={renewState.inviteUrl}
       />
-    </div>
-  );
-}
-
-function Section({
-  title,
-  subtitle,
-  actions,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  const className = classNames("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0", {
-    "mb-6": subtitle,
-    "mb-2": !subtitle,
-  });
-
-  return (
-    <div className="mt-10">
-      <div className={className}>
-        <div>
-          <h2 className="font-bold">{title}</h2>
-          {subtitle && <p className="text-sm max-w-xl">{subtitle}</p>}
-        </div>
-
-        {actions && <div className="w-full sm:w-auto">{actions}</div>}
-      </div>
-
-      {children}
     </div>
   );
 }

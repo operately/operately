@@ -1,11 +1,9 @@
 import * as React from "react";
 import * as People from "@/models/people";
-import * as Paper from "@/components/PaperContainer";
 
 import { PermissionLevels } from "@/features/Permissions";
-import { ActionLink } from "turboui";
+import { ActionLink, Avatar, PageSection } from "turboui";
 
-import { Avatar } from "turboui";
 import { match } from "ts-pattern";
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { useBindedPeopleList } from "./loader";
@@ -29,7 +27,7 @@ function Expanded({ people }: { people: People.Person[] }) {
   const groups = groupPeopleByAccessLevel(people!);
 
   return (
-    <Paper.Section
+    <PageSection
       title="Other People with Access"
       subtitle="People who have access to the space via their company membeship."
       testId="other-people-list"
@@ -37,7 +35,7 @@ function Expanded({ people }: { people: People.Person[] }) {
       {groups.map((group) => (
         <OtherPeopleGroup accessLevel={group.accessLevel} people={group.people} key={group.accessLevel} />
       ))}
-    </Paper.Section>
+    </PageSection>
   );
 }
 
