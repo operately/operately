@@ -249,7 +249,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       |> UI.hover(testid: UI.testid(["milestone", name]))
       |> UI.click_button("Edit")
     end)
-    |> UI.fill(testid: UI.testid(["edit-title", name]), with: new_name)
+    |> UI.fill(testid: UI.testid(["edit-title", name, "input"]), with: new_name)
     |> UI.select_day_in_date_field(testid: UI.testid(["edit-due-date", name]), date: due_date)
     |> UI.click_button("Save")
     |> UI.refute_has(testid: UI.testid(["edit-form", name]))

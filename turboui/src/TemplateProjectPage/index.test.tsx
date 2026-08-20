@@ -1286,27 +1286,29 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Create more")).toBeInTheDocument();
   });
 
-  it("enables Create milestone as soon as the name is no longer empty", () => {
+  it("enables Add milestone as soon as the name is no longer empty", () => {
     renderPage(createProps());
 
-    fireEvent.click(screen.getByText("Add milestone"));
+    fireEvent.click(document.querySelector('[data-test-id="add-template-milestone-overview"]')!);
 
-    const createButton = screen.getByRole("button", { name: "Create milestone" });
+    const form = document.querySelector('[data-test-id="add-milestone-form"]') as HTMLElement;
+    const createButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
     expect(createButton).toBeDisabled();
 
-    fireEvent.change(document.querySelector('[data-test-id="template-milestone-name-input"]') as HTMLInputElement, {
+    fireEvent.change(document.querySelector('[data-test-id="milestone-name-input"]') as HTMLInputElement, {
       target: { value: "Kickoff" },
     });
 
     expect(createButton).toBeEnabled();
   });
 
-  it("opens the milestone creation modal from the overview", () => {
+  it("opens the inline milestone creation form from the overview", () => {
     renderPage(createProps());
 
-    fireEvent.click(screen.getByText("Add milestone"));
+    fireEvent.click(document.querySelector('[data-test-id="add-template-milestone-overview"]')!);
 
-    expect(screen.getByRole("heading", { name: "Create Milestone" })).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="add-milestone-form"]')).toBeInTheDocument();
+    expect(screen.getByText("Create more")).toBeInTheDocument();
   });
 
   it("shows status management in the task header", () => {
