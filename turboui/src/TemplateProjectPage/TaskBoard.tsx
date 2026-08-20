@@ -18,6 +18,7 @@ import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
 import { useBoardDnD } from "../utils/PragmaticDragAndDrop";
 import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
+import classNames from "../utils/classnames";
 
 const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
@@ -242,10 +243,23 @@ function TaskSection({
     });
   }, [containerId, isDraggingEnabled, tasks.length]);
 
+  const isRootDropTarget = milestoneId === null && destination?.containerId === containerId;
+
   return (
-    <section ref={sectionRef} data-test-id={`template-task-section-${containerId}`} {...hoverBind}>
+    <section
+      ref={sectionRef}
+      data-test-id={`template-task-section-${containerId}`}
+      data-drop-target={isRootDropTarget ? "true" : undefined}
+      className={classNames(
+        isRootDropTarget && "bg-surface-highlight/50 ring-2 ring-inset ring-surface-accent/50 transition-colors",
+      )}
+      {...hoverBind}
+    >
       <div
-        className="flex items-center justify-between border-b border-surface-outline bg-surface-dimmed px-4 py-3"
+        className={classNames(
+          "flex items-center justify-between border-b border-surface-outline px-4 py-3",
+          isRootDropTarget ? "bg-surface-highlight/70" : "bg-surface-dimmed",
+        )}
         data-test-id={`template-task-section-header-${containerId}`}
       >
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -288,6 +302,7 @@ function TaskSection({
         inlineCreateRow={inlineCreator}
         emptyState={<TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />}
         dragState={{ draggedItemId, destination, placeholderHeight }}
+        highlighted={isRootDropTarget}
       />
     </section>
   );

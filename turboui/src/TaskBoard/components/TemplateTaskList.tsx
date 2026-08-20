@@ -5,6 +5,7 @@ import { TaskRow } from "../../TemplateProjectPage/TaskRow";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation, BoardMove } from "../../utils/PragmaticDragAndDrop";
+import classNames from "../../utils/classnames";
 
 const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
@@ -18,9 +19,14 @@ export function TemplateTaskList({
   inlineCreateRow,
   emptyState,
   dragState,
+  highlighted = false,
 }: TemplateTaskListProps) {
   const listRef = React.useRef<HTMLDivElement>(null);
   const dropContainerId = destinationMilestoneId ?? ROOT_TASKS_CONTAINER_ID;
+
+  // Root tasks have no persisted order; skip between-task drop placeholders.
+  const isRootSection = destinationMilestoneId === null;
+
   const isDraggingEnabled = canEdit && Boolean(onTaskReorder);
   const usesExternalDragState = Boolean(dragState);
   const handleTaskMove = React.useCallback(
@@ -45,10 +51,11 @@ export function TemplateTaskList({
         items: tasks,
         getId: (task) => task.id,
         draggedItemId: isDraggingEnabled ? draggedItemId : null,
-        targetLocation: isDraggingEnabled ? destination : null,
+        // Root section highlights as a whole in TaskBoard; do not project indexed gaps.
+        targetLocation: isDraggingEnabled && !isRootSection ? destination : null,
         containerId: dropContainerId,
       }),
-    [destination, draggedItemId, dropContainerId, isDraggingEnabled, tasks],
+    [destination, draggedItemId, dropContainerId, isDraggingEnabled, isRootSection, tasks],
   );
 
   React.useEffect(() => {
@@ -63,12 +70,15 @@ export function TemplateTaskList({
   }, [dropContainerId, isDraggingEnabled, projectedTasks.length, usesExternalDragState]);
 
   return (
-    <div ref={listRef} className="overflow-hidden rounded-b-lg bg-surface-base">
+    <div
+      ref={listRef}
+      className={classNames("overflow-hidden rounded-b-lg", highlighted ? "bg-transparent" : "bg-surface-base")}
+    >
       {projectedTasks.map((task, index) => (
         <React.Fragment key={task.id}>
-          {placeholderIndex === index && (
+          {placeholderIndex === index ? (
             <SubtleDropPlaceholder containerId={dropContainerId} index={index} height={placeholderHeight} />
-          )}
+          ) : null}
           <TaskRow
             task={task}
             props={taskRowProps}
@@ -80,9 +90,9 @@ export function TemplateTaskList({
           />
         </React.Fragment>
       ))}
-      {placeholderIndex !== null && placeholderIndex === projectedTasks.length && (
+      {placeholderIndex !== null && placeholderIndex === projectedTasks.length ? (
         <SubtleDropPlaceholder containerId={dropContainerId} index={projectedTasks.length} height={placeholderHeight} />
-      )}
+      ) : null}
       {tasks.length === 0 && placeholderIndex === null && emptyState}
       {tasks.length > 0 ? inlineCreateRow : null}
     </div>
@@ -107,4 +117,5 @@ export interface TemplateTaskListProps {
     destination: BoardLocation | null;
     placeholderHeight: number | null;
   };
+  highlighted?: boolean;
 }
