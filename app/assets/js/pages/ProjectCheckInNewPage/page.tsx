@@ -31,7 +31,7 @@ export function Page() {
     ? { checkIn: project.lastCheckIn, link: paths.projectCheckInPath(project.lastCheckIn.id!) }
     : null;
 
-  const subscriptions = {
+  const subscriptions: SubscribersSelector.Props = {
     subscribers: subscriptionsState.subscribers,
     selectedSubscribers: subscriptionsState.selectedSubscribers,
     onSelectedSubscribersChange: subscriptionsState.onSelectedSubscribersChange,
@@ -39,7 +39,7 @@ export function Page() {
     onSubscriptionTypeChange: subscriptionsState.onSubscriptionTypeChange,
     alwaysNotify: subscriptionsState.alwaysNotify,
     allSubscribersLabel: subscriptionsState.allSubscribersLabel,
-  } as unknown as SubscribersSelector.Props;
+  };
 
   async function handleSubmit(
     values: ProjectCheckInFormPage.Values,

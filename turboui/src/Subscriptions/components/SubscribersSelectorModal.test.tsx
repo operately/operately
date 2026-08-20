@@ -3,17 +3,20 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { SubscribersSelectorModal } from "./SubscribersSelectorModal";
-import type { SubscribersSelector } from "../SubscribersSelector";
+import { asSubscriber } from "../../utils/storybook/genSubscribers";
 
 jest.mock("../../icons", () => ({
   IconSearch: () => <span />,
   IconX: () => <span />,
 }));
 
-const subscribers: SubscribersSelector.Subscriber[] = [
-  { person: { id: "person-1", fullName: "Ada Lovelace" }, role: "Champion" },
-  { person: { id: "person-2", fullName: "Grace Hopper" }, role: "Reviewer" },
-  { person: { id: "person-3", fullName: "Katherine Johnson" }, role: "Contributor" },
+const subscribers = [
+  asSubscriber({ id: "person-1", fullName: "Ada Lovelace", title: "Champion", avatarUrl: null, profileLink: "#" }, { role: "Champion" }),
+  asSubscriber({ id: "person-2", fullName: "Grace Hopper", title: "Reviewer", avatarUrl: null, profileLink: "#" }, { role: "Reviewer" }),
+  asSubscriber(
+    { id: "person-3", fullName: "Katherine Johnson", title: "Contributor", avatarUrl: null, profileLink: "#" },
+    { role: "Contributor" },
+  ),
 ];
 
 describe("SubscribersSelectorModal", () => {
