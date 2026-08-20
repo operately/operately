@@ -8,6 +8,7 @@ defmodule Operately.ProductReleases.Fetcher do
   @feed_url "https://operately.com/releases/rss.xml"
   @fetch_timeout_ms 5_000
   @max_response_bytes 512_000
+  @request_headers [{"x-operately-client", "product-release-fetcher"}]
 
   def fetch do
     with {:ok, body} <- http_get(@feed_url) do
@@ -17,6 +18,7 @@ defmodule Operately.ProductReleases.Fetcher do
 
   defp http_get(url) do
     case Req.get(url,
+           headers: @request_headers,
            redirect: false,
            decode_body: false,
            retry: false,

@@ -14,7 +14,8 @@ defmodule Operately.ProductReleases.FetcherTest do
     body = fixture("operately.xml")
 
     with_mock Req, [],
-      get: fn @feed_url, _opts ->
+      get: fn @feed_url, opts ->
+        assert Keyword.get(opts, :headers) == [{"x-operately-client", "product-release-fetcher"}]
         {:ok, %{status: 200, body: body}}
       end do
       assert {:ok, release} = Fetcher.fetch()
