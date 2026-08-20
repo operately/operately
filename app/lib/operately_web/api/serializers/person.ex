@@ -68,7 +68,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       notify_on_mention: Operately.People.Person.notify_on_mention?(data),
       notify_about_assignments: Operately.People.Person.notify_about_assignments?(data),
       description: encode_description(data.description),
-      show_dev_bar: Application.get_env(:operately, :app_env) == :dev
+      show_dev_bar: Application.get_env(:operately, :app_env) == :dev,
+      dismissed_product_release_id: Operately.People.Person.dismissed_product_release_id(data)
     }
   end
 

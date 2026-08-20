@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
-import { ProductReleaseAnnouncement } from "./index";
+import { ProductReleaseAnnouncement, PRODUCT_RELEASES_PAGE_URL } from "./index";
 import { v18ProductRelease } from "./mockData";
 
 function renderAnnouncement(props: Partial<ProductReleaseAnnouncement.Props> = {}) {
@@ -21,12 +21,12 @@ function renderAnnouncement(props: Partial<ProductReleaseAnnouncement.Props> = {
 }
 
 describe("ProductReleaseAnnouncement", () => {
-  it("links Read more to the release post", () => {
+  it("links View release to the public releases page", () => {
     renderAnnouncement();
 
-    const link = screen.getByRole("link", { name: "Read more" });
+    const link = screen.getByRole("link", { name: "View release" });
 
-    expect(link).toHaveAttribute("href", v18ProductRelease.url);
+    expect(link).toHaveAttribute("href", PRODUCT_RELEASES_PAGE_URL);
     expect(link).toHaveAttribute("target", "_blank");
   });
 

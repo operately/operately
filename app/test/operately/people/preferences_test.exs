@@ -18,6 +18,65 @@ defmodule Operately.People.PreferencesTest do
       refute person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
       assert person.preferences.time_format == :automatic
+      assert person.preferences.dismissed_product_release_id == nil
+    end
+
+    test "stores a dismissed product release id" do
+      changeset =
+        Person.changeset(%Person{}, %{
+          preferences: %{
+            dismissed_product_release_id: "v1.8"
+          }
+        })
+
+      person = Ecto.Changeset.apply_changes(changeset)
+
+      assert person.preferences.dismissed_product_release_id == "v1.8"
+    end
+
+    test "rejects a blank dismissed product release id" do
+      changeset =
+        Person.changeset(%Person{}, %{
+          preferences: %{
+            dismissed_product_release_id: ""
+          }
+        })
+
+      refute changeset.valid?
+      assert preferences_error?(changeset, :dismissed_product_release_id)
+    end
+
+    test "rejects an oversized dismissed product release id" do
+      changeset =
+        Person.changeset(%Person{}, %{
+          preferences: %{
+            dismissed_product_release_id: String.duplicate("a", 513)
+          }
+        })
+
+      refute changeset.valid?
+      assert Enum.any?(changeset.changes.preferences.errors, fn {field, _} -> field == :dismissed_product_release_id end)
+    end
+
+    test "keeps a missing dismissed product release id as not dismissed on update" do
+      person = %Person{
+        id: Ecto.UUID.generate(),
+        preferences: %Preferences{
+          time_format: :hour_24
+        }
+      }
+
+      changeset =
+        Person.changeset(person, %{
+          preferences: %{
+            time_format: "hour_12"
+          }
+        })
+
+      updated_person = Ecto.Changeset.apply_changes(changeset)
+
+      assert updated_person.preferences.time_format == :hour_12
+      assert updated_person.preferences.dismissed_product_release_id == nil
     end
 
     test "updates time format preference" do
@@ -154,6 +213,7 @@ defmodule Operately.People.PreferencesTest do
       refute Person.send_daily_summary?(%Person{})
       assert Person.daily_summary_delivery_time(%Person{}) == "18:00"
       assert Person.time_format(%Person{}) == :automatic
+      assert Person.dismissed_product_release_id(%Person{}) == nil
     end
 
     test "use embedded notification settings when present" do
@@ -188,6 +248,16 @@ defmodule Operately.People.PreferencesTest do
       assert Person.time_format(person) == :hour_24
     end
 
+    test "returns the dismissed product release id when present" do
+      person = %Person{
+        preferences: %Preferences{
+          dismissed_product_release_id: "v1.8"
+        }
+      }
+
+      assert Person.dismissed_product_release_id(person) == "v1.8"
+    end
+
     test "falls back to default daily summary delivery time when value is nil" do
       person = %Person{
         preferences: %Preferences{
@@ -198,6 +268,13 @@ defmodule Operately.People.PreferencesTest do
       }
 
       assert Person.daily_summary_delivery_time(person) == "18:00"
+    end
+  end
+
+  defp preferences_error?(%Ecto.Changeset{} = changeset, field) do
+    case changeset.changes[:preferences] do
+      %Ecto.Changeset{errors: errors} -> Enum.any?(errors, fn {error_field, _} -> error_field == field end)
+      _ -> false
     end
   end
 end

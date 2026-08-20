@@ -84,6 +84,9 @@ defmodule Operately.People.Person do
   def time_format(%__MODULE__{preferences: %Preferences{time_format: time_format}}) when not is_nil(time_format), do: time_format
   def time_format(_), do: Preferences.default_time_format()
 
+  def dismissed_product_release_id(%__MODULE__{preferences: %Preferences{dismissed_product_release_id: id}}), do: id
+  def dismissed_product_release_id(_), do: nil
+
   def short_name(person) do
     parts = String.split(person.full_name, " ")
 
