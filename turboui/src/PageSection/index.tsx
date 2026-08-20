@@ -1,33 +1,37 @@
-import { TestableElement, createTestId } from "@/utils/testid";
-import classNames from "classnames";
 import React from "react";
 
-interface Props extends TestableElement {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
+import { TestableElement, createTestId } from "../TestableElement";
+import classNames from "../utils/classnames";
+
+export namespace PageSection {
+  export interface Props extends TestableElement {
+    title: string;
+    subtitle?: string;
+    actions?: React.ReactNode;
+    children: React.ReactNode;
+  }
 }
 
-export function Section({ title, subtitle, testId, actions, children }: Props) {
-  testId = testId ?? createTestId(title, "section");
+export function PageSection({ title, subtitle, testId, actions, children }: PageSection.Props) {
+  const resolvedTestId = testId ?? createTestId(title, "section");
 
   return (
-    <div className="mt-10" data-test-id={testId}>
+    <div className="mt-10" data-test-id={resolvedTestId}>
       <SectionTitle title={title} subtitle={subtitle} actions={actions} />
-
       {children}
     </div>
   );
 }
 
-interface SectionTitleProps {
+function SectionTitle({
+  title,
+  subtitle,
+  actions,
+}: {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
-}
-
-function SectionTitle({ title, subtitle, actions }: SectionTitleProps) {
+}) {
   const className = classNames("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0", {
     "mb-6": subtitle,
     "mb-2": !subtitle,
