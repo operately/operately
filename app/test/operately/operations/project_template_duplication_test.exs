@@ -130,9 +130,7 @@ defmodule Operately.Operations.ProjectTemplateDuplicationTest do
     assert copied_root_task.task_status.value == in_progress.value
     assert copied_milestone_task.task_status.value == not_started.value
     assert duplicate.milestones_ordering_state == [Paths.project_template_milestone_id(copied_milestone)]
-    assert duplicate.tasks_kanban_state[in_progress.value] == [Paths.project_template_task_id(copied_root_task)]
     assert copied_milestone.tasks_ordering_state == [Paths.project_template_task_id(copied_milestone_task)]
-    assert copied_milestone.tasks_kanban_state[not_started.value] == [Paths.project_template_task_id(copied_milestone_task)]
 
     assert_resource_graph_copied(ctx, duplicate)
     assert_comments_copied(ctx, duplicate, copied_discussion)
@@ -161,10 +159,10 @@ defmodule Operately.Operations.ProjectTemplateDuplicationTest do
 
     assert {:error, :template_not_active} = duplicate(%{ctx | template: archived})
 
-    active = archived |> ProjectTemplate.changeset(%{archived_at: nil, tasks_kanban_state: %{"pending" => ["foreign-id"]}}) |> Repo.update!()
+    active = archived |> ProjectTemplate.changeset(%{archived_at: nil, milestones_ordering_state: ["foreign-milestone"]}) |> Repo.update!()
     count_before = Repo.aggregate(ProjectTemplate, :count)
 
-    assert {:error, {:invalid_template, :foreign_kanban_task}} = duplicate(%{ctx | template: active})
+    assert {:error, {:invalid_template, :foreign_ordering_id}} = duplicate(%{ctx | template: active})
     assert Repo.aggregate(ProjectTemplate, :count) == count_before
   end
 
@@ -176,20 +174,18 @@ defmodule Operately.Operations.ProjectTemplateDuplicationTest do
     })
   end
 
-  defp put_ordering_and_kanban(ctx, root_status, milestone_status) do
+  defp put_ordering_and_kanban(ctx, _root_status, _milestone_status) do
     template =
       ctx.template
       |> ProjectTemplate.changeset(%{
-        milestones_ordering_state: [Paths.project_template_milestone_id(ctx.milestone)],
-        tasks_kanban_state: %{root_status.value => [Paths.project_template_task_id(ctx.root_task)]}
+        milestones_ordering_state: [Paths.project_template_milestone_id(ctx.milestone)]
       })
       |> Repo.update!()
 
     milestone =
       ctx.milestone
       |> Milestone.changeset(%{
-        tasks_ordering_state: [Paths.project_template_task_id(ctx.milestone_task)],
-        tasks_kanban_state: %{milestone_status.value => [Paths.project_template_task_id(ctx.milestone_task)]}
+        tasks_ordering_state: [Paths.project_template_task_id(ctx.milestone_task)]
       })
       |> Repo.update!()
 

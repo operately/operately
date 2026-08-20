@@ -16,8 +16,7 @@ defmodule Operately.Support.Factory.ProjectTemplates do
         description: Keyword.get(opts, :description, %{}),
         duration_days: Keyword.get(opts, :duration_days),
         task_statuses: Keyword.get(opts, :task_statuses),
-        milestones_ordering_state: Keyword.get(opts, :milestones_ordering_state),
-        tasks_kanban_state: Keyword.get(opts, :tasks_kanban_state)
+        milestones_ordering_state: Keyword.get(opts, :milestones_ordering_state)
       }
       |> Enum.reject(fn {_key, value} -> is_nil(value) end)
       |> Map.new()
@@ -33,8 +32,7 @@ defmodule Operately.Support.Factory.ProjectTemplates do
         title: Keyword.get(opts, :title, Utils.testid_to_name(testid)),
         description: Keyword.get(opts, :description, %{}),
         due_offset_days: Keyword.get(opts, :due_offset_days),
-        tasks_ordering_state: Keyword.get(opts, :tasks_ordering_state),
-        tasks_kanban_state: Keyword.get(opts, :tasks_kanban_state)
+        tasks_ordering_state: Keyword.get(opts, :tasks_ordering_state)
       }
       |> Enum.reject(fn {_key, value} -> is_nil(value) end)
       |> Map.new()

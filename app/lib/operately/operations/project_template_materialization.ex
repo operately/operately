@@ -72,7 +72,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
 
   defmodule CopyPlanner do
     alias Operately.ContextualDates.ContextualDate
-    alias Operately.ProjectTemplates.Graph.{Copy, Kanban}
+    alias Operately.ProjectTemplates.Graph.Copy
     alias Operately.ProjectTemplates.ProjectTemplate
     alias Operately.Operations.ProjectTemplateMaterialization.PeoplePlanner
     alias Operately.Projects.Milestone, as: ProjectMilestone
@@ -107,7 +107,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       task_ids = Map.new(tasks, &{&1.source.id, &1.target.id})
 
       with {:ok, milestone_ordering} <- Copy.map_ordering(template.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
-           {:ok, root_kanban} <- map_kanban(template.tasks_kanban_state, root_tasks(tasks), statuses),
+           {:ok, root_kanban} <- synthesize_root_kanban(tasks, statuses),
            {:ok, milestones} <- plan_milestone_states(milestones, tasks, statuses) do
         {:ok,
          %{
@@ -137,7 +137,7 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
         container_tasks = milestone_tasks(tasks, milestone.source.id)
 
         with {:ok, ordering} <- Copy.map_ordering(milestone.source.tasks_ordering_state, container_tasks, &source_task_path/1, &target_task_path/1),
-             {:ok, kanban} <- map_kanban(milestone.source.tasks_kanban_state, container_tasks, statuses) do
+             {:ok, kanban} <- Copy.synthesize_kanban(ordering, statuses) do
           {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban})]}}
         else
           error -> {:halt, error}
@@ -145,10 +145,15 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       end)
     end
 
-    defp map_kanban(state, tasks, statuses) do
-      Kanban.reset(state, tasks, statuses, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
-    end
+    defp synthesize_root_kanban(tasks, statuses) do
+      ordered_paths =
+        tasks
+        |> root_tasks()
+        |> Enum.sort_by(&{NaiveDateTime.to_gregorian_seconds(&1.source.inserted_at), &1.source.id})
+        |> Enum.map(&target_task_path/1)
 
+      Copy.synthesize_kanban(ordered_paths, statuses)
+    end
     defp timeframe(start_date, end_date) do
       %{
         contextual_start_date: contextual_date(start_date),

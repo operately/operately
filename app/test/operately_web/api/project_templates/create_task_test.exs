@@ -65,7 +65,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateTaskTest do
 
   test "rolls back the task and contributors when an assignee is invalid", ctx do
     ctx = Factory.suspend_company_member(ctx, :second_member)
-    original_kanban = ctx.template.tasks_kanban_state
 
     assert {404, _} =
              mutation(ctx.conn, [:project_templates, :create_task], %{
@@ -77,7 +76,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateTaskTest do
     refute Repo.get_by(Task, project_template_id: ctx.template.id, name: "Rolled back task")
     refute Repo.get_by(Person, project_template_id: ctx.template.id, person_id: ctx.first_member.id)
     refute Repo.exists?(from a in TaskAssignment, where: a.project_template_id == ^ctx.template.id)
-    assert Repo.reload!(ctx.template).tasks_kanban_state == original_kanban
   end
 
   test "does not accept a milestone from another template", ctx do

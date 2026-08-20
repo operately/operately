@@ -168,6 +168,41 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
     assert Repo.aggregate(ProjectTemplate, :count) == 0
   end
 
+  test "creates a template when project Kanban lists milestone-owned tasks", ctx do
+    # Release 1.9-shaped source: every task has a milestone, but those same task
+    # IDs still appear in project.tasks_kanban_state. Ordering is seeded from the board.
+    pending = Enum.find(ctx.source.task_statuses, &(&1.value == "pending")) || List.first(ctx.source.task_statuses)
+
+    ctx =
+      ctx
+      |> Factory.add_project_milestone(:launch, :source,
+        title: "Launch",
+        timeframe: %{
+          contextual_start_date: nil,
+          contextual_end_date: ContextualDate.create_day_date(~D[2028-01-15])
+        }
+      )
+      |> Factory.add_project_task(:milestone_task, :launch,
+        name: "Ship feature",
+        task_status: Map.from_struct(pending)
+      )
+
+    source =
+      ctx.source
+      |> Project.changeset(%{
+        milestones_ordering_state: [Paths.milestone_id(ctx.launch)],
+        tasks_kanban_state: %{
+          pending.value => [Paths.task_id(ctx.milestone_task)]
+        }
+      })
+      |> Repo.update!()
+
+    assert {200, response} = request(%{ctx | source: source}, name: "From Release shape")
+    assert response.template != nil
+    assert response.template.name == "From Release shape"
+    assert response.schedule_issues == []
+  end
+
   defp request(ctx, attrs \\ []) do
     mutation(ctx.conn, [:project_templates, :create_from_project], Enum.into(attrs, request_inputs(ctx)))
   end

@@ -52,7 +52,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert res.template.creator.id == Paths.person_id(ctx.creator)
     assert length(res.template.task_statuses) == 4
     assert res.template.milestones_ordering_state == []
-    assert res.template.tasks_kanban_state
 
     assert [milestone] = res.template.milestones
     assert milestone.__typename == "project_template_milestone"

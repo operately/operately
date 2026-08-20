@@ -40,7 +40,6 @@ const populatedProps: Types.Props = {
     description: asRichText("A reusable plan for coordinated product launches across product, marketing, and support."),
     durationDays: 30,
     milestonesOrderingState: ["beta", "launch"],
-    tasksKanbanState: {},
     archived: false,
   },
   space: { id: "product", name: "Product", link: "/spaces/product" },
@@ -54,7 +53,6 @@ const populatedProps: Types.Props = {
       description: null,
       dueOffsetDays: 0,
       tasksOrderingState: ["invite"],
-      tasksKanbanState: {},
       link: "/project-templates/launch-template/milestones/beta",
     },
     {
@@ -63,7 +61,6 @@ const populatedProps: Types.Props = {
       description: asRichText("Announce the product and support the first week of questions."),
       dueOffsetDays: 21,
       tasksOrderingState: ["announce"],
-      tasksKanbanState: {},
       link: "/project-templates/launch-template/milestones/launch",
     },
   ],
@@ -220,7 +217,6 @@ function TemplateStory({ props }: { props: Types.Props }) {
         id,
         link: `/project-templates/${props.template.id}/milestones/${id}`,
         tasksOrderingState: [],
-        tasksKanbanState: {},
       },
     ]);
   };

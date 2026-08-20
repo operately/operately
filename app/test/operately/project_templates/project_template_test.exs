@@ -5,7 +5,6 @@ defmodule Operately.ProjectTemplates.ProjectTemplateTest do
   alias Operately.Notifications.SubscriptionList
   alias Operately.People.Person
   alias Operately.Projects.Project
-  alias Operately.Tasks.KanbanState
 
   setup do
     ctx =
@@ -33,7 +32,6 @@ defmodule Operately.ProjectTemplates.ProjectTemplateTest do
     assert template.duration_days == 0
     assert length(template.task_statuses) == 4
     assert template.milestones_ordering_state == []
-    assert template.tasks_kanban_state == KanbanState.initialize()
     assert template.archived_at == nil
     assert Repo.get(Project, template.id) == nil
     assert Project.get(:system, id: template.id) == {:error, :not_found}

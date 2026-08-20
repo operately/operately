@@ -163,7 +163,7 @@ export async function performTemplateMilestoneCreate({
   milestoneLink,
   commit,
 }: PersistSession & {
-  milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">;
+  milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState">;
   milestoneLink: (milestoneId: string) => string;
 }): Promise<boolean> {
   const tempId = `temp-${Date.now()}`;
@@ -172,7 +172,6 @@ export async function performTemplateMilestoneCreate({
     id: tempId,
     link: milestoneLink(tempId),
     tasksOrderingState: [],
-    tasksKanbanState: {},
   });
   commit(optimistic);
 
@@ -324,7 +323,6 @@ export function useTemplateTasksForTurboUi({
     tasks: graph.tasks,
     milestones: graph.milestones,
     milestonesOrderingState: graph.milestonesOrderingState,
-    tasksKanbanState: graph.tasksKanbanState,
     statuses: graph.statuses,
     onTaskCreate: (task: Omit<TemplateProjectPage.Task, "id">) => {
       void performTemplateTaskCreate({ ...session, task });
@@ -335,7 +333,7 @@ export function useTemplateTasksForTurboUi({
     onTaskReorder: (taskId: string, milestoneId: string | null, index: number) =>
       performTemplateTaskReorder({ ...session, taskId, milestoneId, index }),
     onMilestoneCreate: (
-      milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">,
+      milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState">,
     ) => {
       void performTemplateMilestoneCreate({ ...session, milestone, milestoneLink });
     },
