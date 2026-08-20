@@ -1,5 +1,4 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTemplate do
-  alias Operately.Tasks.KanbanState
   alias OperatelyWeb.Api.Serializer
   alias OperatelyWeb.Paths
 
@@ -27,7 +26,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ProjectTemplates.ProjectTe
     |> Map.merge(%{
       task_statuses: Serializer.serialize(template.task_statuses),
       milestones_ordering_state: template.milestones_ordering_state,
-      tasks_kanban_state: Serializer.serialize(%KanbanState{state: template.tasks_kanban_state}),
       milestones: Serializer.serialize(template.milestones, level: :full),
       tasks: Serializer.serialize(template.tasks, level: :full),
       people: Serializer.serialize(template.people, level: :full),

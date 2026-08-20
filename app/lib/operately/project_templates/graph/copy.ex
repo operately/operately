@@ -94,6 +94,33 @@ defmodule Operately.ProjectTemplates.Graph.Copy do
   @doc "Returns the key used for a status in persisted Kanban state."
   def status_key(status), do: status.value || status.id
 
+  @doc """
+  Builds a Kanban board with every task path in the first open status column.
+
+  Used when materializing templates, which do not store Kanban state.
+  """
+  def synthesize_kanban(ordered_paths, %{copied: copied, first_open: first_open}) when is_list(ordered_paths) do
+    empty = Map.new(copied, &{status_key(&1), []})
+    {:ok, Map.put(empty, status_key(first_open), ordered_paths)}
+  end
+
+  @doc """
+  Flattens a project Kanban board into task path order by workflow status index.
+
+  Used when seeding milestone ordering from a project that keeps milestone tasks
+  on the project board.
+  """
+  def board_task_order(state, %{source: statuses}) when is_map(state) do
+    state = Map.new(state, fn {key, paths} -> {to_string(key), List.wrap(paths)} end)
+
+    statuses
+    |> Enum.sort_by(& &1.index)
+    |> Enum.flat_map(&Map.get(state, to_string(status_key(&1)), []))
+    |> Enum.filter(&is_binary/1)
+  end
+
+  def board_task_order(_state, _workflow), do: []
+
   @doc "Validates that statuses form a usable workflow with unique IDs and keys."
   def validate_workflow([]), do: {:error, :empty_workflow}
 

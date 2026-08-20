@@ -114,9 +114,15 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Enum.all?(project.tasks, &(is_nil(&1.closed_at) and is_nil(&1.reopened_at)))
 
     assert project.milestones_ordering_state == [Paths.milestone_id(milestone)]
-    assert project.tasks_kanban_state[copied_status.value] == [Paths.task_id(root_open_task), Paths.task_id(root_task)]
+
+    expected_root_kanban =
+      [ctx.root_task, ctx.root_open_task]
+      |> Enum.sort_by(&{NaiveDateTime.to_gregorian_seconds(&1.inserted_at), &1.id})
+      |> Enum.map(fn source -> Paths.task_id(Enum.find(project.tasks, &(&1.name == source.name))) end)
+
+    assert project.tasks_kanban_state[copied_status.value] == expected_root_kanban
     assert milestone.tasks_ordering_state == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
-    assert milestone.tasks_kanban_state[copied_status.value] == [Paths.task_id(milestone_open_task), Paths.task_id(milestone_task)]
+    assert milestone.tasks_kanban_state[copied_status.value] == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
   end
 
   test "materializes nil and zero offsets and handles leap and year boundaries", ctx do
@@ -414,7 +420,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert {:error, {:invalid_template, :no_open_task_status}} = materialize(%{ctx | template: active}, ~D[2028-01-01])
   end
 
-  test "rejects cross-Space templates and malformed ordering and Kanban state", ctx do
+  test "rejects cross-Space templates and malformed ordering state", ctx do
     ctx =
       ctx
       |> Factory.add_space(:other_space)
@@ -432,8 +438,8 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
     assert {:error, {:invalid_template, :duplicate_ordering_id}} = materialize(%{ctx | template: template}, ~D[2028-01-01])
 
-    template = template |> ProjectTemplate.changeset(%{milestones_ordering_state: [milestone_id], tasks_kanban_state: %{"unknown" => []}}) |> Repo.update!()
-    assert {:error, {:invalid_template, :unknown_kanban_status}} = materialize(%{ctx | template: template}, ~D[2028-01-01])
+    template = template |> ProjectTemplate.changeset(%{milestones_ordering_state: ["foreign-milestone"]}) |> Repo.update!()
+    assert {:error, {:invalid_template, :foreign_ordering_id}} = materialize(%{ctx | template: template}, ~D[2028-01-01])
   end
 
   test "rejects foreign and duplicate assignment references", ctx do
@@ -535,15 +541,11 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
   defp status_attrs(statuses), do: Enum.map(statuses, &Map.from_struct/1)
 
-  defp put_template_states(ctx, not_started, done) do
+  defp put_template_states(ctx, _not_started, _done) do
     template =
       ctx.template
       |> ProjectTemplate.changeset(%{
-        milestones_ordering_state: [Paths.project_template_milestone_id(ctx.launch)],
-        tasks_kanban_state: %{
-          not_started.value => [Paths.project_template_task_id(ctx.root_open_task)],
-          done.value => [Paths.project_template_task_id(ctx.root_task)]
-        }
+        milestones_ordering_state: [Paths.project_template_milestone_id(ctx.launch)]
       })
       |> Repo.update!()
 
@@ -553,11 +555,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
         tasks_ordering_state: [
           Paths.project_template_task_id(ctx.milestone_task),
           Paths.project_template_task_id(ctx.milestone_open_task)
-        ],
-        tasks_kanban_state: %{
-          not_started.value => [Paths.project_template_task_id(ctx.milestone_open_task)],
-          done.value => [Paths.project_template_task_id(ctx.milestone_task)]
-        }
+        ]
       })
       |> Repo.update!()
 

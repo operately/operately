@@ -3,7 +3,7 @@ defmodule Operately.ProjectTemplates.MilestoneTest do
 
   alias Operately.ProjectTemplates.Milestone
   alias Operately.Projects
-  alias Operately.Tasks.{KanbanState, OrderingState}
+  alias Operately.Tasks.OrderingState
 
   setup do
     ctx =
@@ -29,7 +29,6 @@ defmodule Operately.ProjectTemplates.MilestoneTest do
 
     assert milestone.due_offset_days == 0
     assert milestone.tasks_ordering_state == OrderingState.initialize()
-    assert milestone.tasks_kanban_state == KanbanState.initialize()
     assert Repo.get(Projects.Milestone, milestone.id) == nil
     assert Projects.Milestone.get(:system, id: milestone.id) == {:error, :not_found}
   end

@@ -36,7 +36,6 @@ function context(overrides: Partial<SlideInContext> = {}): SlideInContext {
         description: null,
         dueOffsetDays: 7,
         tasksOrderingState: [],
-        tasksKanbanState: {},
         link: "/templates/template-1/milestones/milestone-1",
       },
     ],

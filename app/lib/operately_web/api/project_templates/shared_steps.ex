@@ -36,8 +36,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   alias OperatelyWeb.Api.ProjectTemplates.Helpers, as: TemplateHelpers
   alias OperatelyWeb.Paths
 
-  @template_state_fields [:milestones_ordering_state, :tasks_kanban_state]
-  @milestone_state_fields [:tasks_ordering_state, :tasks_kanban_state]
+  @template_state_fields [:milestones_ordering_state]
+  @milestone_state_fields [:tasks_ordering_state]
 
   def start_transaction(conn) do
     Ecto.Multi.new()
@@ -561,11 +561,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp update_template_states!(template, attrs) do
     template = Repo.reload!(template)
     milestones = Repo.all(from m in Milestone, where: m.project_template_id == ^template.id)
-    root_tasks = tasks_for(template.id, nil)
 
     changes = %{}
     changes = maybe_put_ordering(changes, attrs, :milestones_ordering_state, milestones, &Paths.project_template_milestone_id/1, "Milestone ordering contains IDs from another template")
-    changes = maybe_put_kanban(changes, attrs, root_tasks, template.task_statuses)
 
     if changes == %{}, do: template, else: persist!(ProjectTemplate.changeset(template, changes))
   end
@@ -575,7 +573,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
     changes = %{}
     changes = maybe_put_ordering(changes, attrs, :tasks_ordering_state, tasks, &Paths.project_template_task_id/1, "Task ordering contains IDs from another template container")
-    changes = maybe_put_kanban(changes, attrs, tasks, template.task_statuses)
 
     if changes == %{}, do: milestone, else: persist!(Milestone.changeset(milestone, changes))
   end
@@ -585,15 +582,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       valid_ids = Enum.map(resources, id_fun)
       ordering = require_ok!(TemplateHelpers.validate_ordering(Map.fetch!(attrs, key), valid_ids, error_message))
       Map.put(changes, key, ordering)
-    else
-      changes
-    end
-  end
-
-  defp maybe_put_kanban(changes, attrs, tasks, statuses) do
-    if Map.has_key?(attrs, :tasks_kanban_state) do
-      kanban = require_ok!(TemplateHelpers.validate_kanban(attrs.tasks_kanban_state, tasks, statuses))
-      Map.put(changes, :tasks_kanban_state, kanban)
     else
       changes
     end
@@ -617,31 +605,16 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
       persist!(Task.changeset(task, %{task_status: TemplateHelpers.status_attrs(status)}))
     end)
 
-    template
-    |> Repo.reload!()
-    |> rebuild_all_kanban!()
+    Repo.reload!(template)
   end
 
-  defp rebuild_all_kanban!(template) do
-    rebuild_container!(template, nil)
-
-    Repo.all(from m in Milestone, where: m.project_template_id == ^template.id)
-    |> Enum.each(&rebuild_container!(template, &1.id))
-  end
-
-  defp rebuild_container!(template, nil) do
-    template = Repo.reload!(template)
-    tasks = tasks_for(template.id, nil)
-    state = TemplateHelpers.normalize_kanban(template.tasks_kanban_state, tasks, template.task_statuses)
-    persist!(ProjectTemplate.changeset(template, %{tasks_kanban_state: state}))
-  end
+  defp rebuild_container!(_template, nil), do: :ok
 
   defp rebuild_container!(template, milestone_id) do
     milestone = Repo.get_by!(Milestone, id: milestone_id, project_template_id: template.id)
     tasks = tasks_for(template.id, milestone_id)
     ordering = TemplateHelpers.normalize_ordering(milestone.tasks_ordering_state, Enum.map(tasks, &Paths.project_template_task_id/1))
-    kanban = TemplateHelpers.normalize_kanban(milestone.tasks_kanban_state, tasks, template.task_statuses)
-    persist!(Milestone.changeset(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban}))
+    persist!(Milestone.changeset(milestone, %{tasks_ordering_state: ordering}))
   end
 
   defp update_task_containers!(template, old_milestone_id, new_milestone_id) do

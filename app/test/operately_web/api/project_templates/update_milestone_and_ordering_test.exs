@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrderingTest do
   use OperatelyWeb.TurboCase
 
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate}
+  alias Operately.ProjectTemplates.Milestone
   alias OperatelyWeb.Paths
 
   @permissions_table [
@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrderingTest do
     |> Factory.log_in_person(:creator)
   end
 
-  test "reorders a task within its milestone without rewriting kanban", ctx do
+  test "reorders a task within its milestone", ctx do
     ctx =
       ctx
       |> Factory.add_project_template_task(:first, :template, milestone: :milestone)
@@ -32,17 +32,15 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrderingTest do
     first_id = Paths.project_template_task_id(ctx.first)
     second_id = Paths.project_template_task_id(ctx.second)
     third_id = Paths.project_template_task_id(ctx.third)
-    original_kanban = kanban([first_id, second_id, third_id])
-    set_milestone_state(ctx.milestone, [first_id, second_id, third_id], original_kanban)
+    set_milestone_state(ctx.milestone, [first_id, second_id, third_id])
 
     assert {200, _} = request(ctx, ctx.first, %{milestone_id: Paths.project_template_milestone_id(ctx.milestone), index: 2})
 
     milestone = Repo.reload!(ctx.milestone)
     assert milestone.tasks_ordering_state == [second_id, third_id, first_id]
-    assert milestone.tasks_kanban_state["pending"] == [first_id, second_id, third_id]
   end
 
-  test "moves a task between milestones without rewriting kanban", ctx do
+  test "moves a task between milestones", ctx do
     ctx =
       ctx
       |> Factory.add_project_template_milestone(:destination, :template)
@@ -53,10 +51,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrderingTest do
     moving_id = Paths.project_template_task_id(ctx.moving)
     source_sibling_id = Paths.project_template_task_id(ctx.source_sibling)
     destination_task_id = Paths.project_template_task_id(ctx.destination_task)
-    source_kanban = kanban([moving_id, source_sibling_id])
-    destination_kanban = kanban([destination_task_id])
-    set_milestone_state(ctx.milestone, [moving_id, source_sibling_id], source_kanban)
-    set_milestone_state(ctx.destination, [destination_task_id], destination_kanban)
+    set_milestone_state(ctx.milestone, [moving_id, source_sibling_id])
+    set_milestone_state(ctx.destination, [destination_task_id])
 
     assert {200, res} =
              request(ctx, ctx.moving, %{
@@ -70,27 +66,16 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrderingTest do
     destination = Repo.reload!(ctx.destination)
     assert source.tasks_ordering_state == [source_sibling_id]
     assert destination.tasks_ordering_state == [moving_id, destination_task_id]
-    assert source.tasks_kanban_state == source_kanban
-    assert destination.tasks_kanban_state == destination_kanban
   end
 
-  test "moves a task to the root container without rewriting kanban", ctx do
+  test "moves a task to the root container", ctx do
     ctx = Factory.add_project_template_task(ctx, :moving, :template, milestone: :milestone)
-    root_id = Paths.project_template_task_id(ctx.task)
     moving_id = Paths.project_template_task_id(ctx.moving)
-    template_kanban = kanban([root_id])
-    milestone_kanban = kanban([moving_id])
-    set_template_kanban(ctx.template, [root_id])
-    set_milestone_state(ctx.milestone, [moving_id], milestone_kanban)
+    set_milestone_state(ctx.milestone, [moving_id])
 
     assert {200, res} = request(ctx, ctx.moving, %{milestone_id: nil, index: 0})
     assert res.task.project_template_milestone_id == nil
-
-    template = Repo.reload!(ctx.template)
-    milestone = Repo.reload!(ctx.milestone)
-    assert template.tasks_kanban_state == template_kanban
-    assert milestone.tasks_kanban_state == milestone_kanban
-    assert milestone.tasks_ordering_state == []
+    assert Repo.reload!(ctx.milestone).tasks_ordering_state == []
   end
 
   test "clamps indexes beyond the destination length", ctx do
@@ -168,22 +153,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneAndOrderingTest do
     )
   end
 
-  defp set_milestone_state(milestone, task_ids, kanban_state \\ nil) do
+  defp set_milestone_state(milestone, task_ids) do
     milestone
-    |> Milestone.changeset(%{
-      tasks_ordering_state: task_ids,
-      tasks_kanban_state: kanban_state || kanban(task_ids)
-    })
+    |> Milestone.changeset(%{tasks_ordering_state: task_ids})
     |> Repo.update!()
-  end
-
-  defp set_template_kanban(template, task_ids) do
-    template
-    |> ProjectTemplate.changeset(%{tasks_kanban_state: kanban(task_ids)})
-    |> Repo.update!()
-  end
-
-  defp kanban(pending_ids) do
-    %{"pending" => pending_ids, "in_progress" => [], "done" => [], "canceled" => []}
   end
 end
