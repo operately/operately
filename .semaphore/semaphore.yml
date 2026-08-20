@@ -114,6 +114,7 @@ blocks:
         always:
           commands:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
+            - "[ -f app/testreports/junit-jest.xml ] && test-results publish app/testreports/junit-jest.xml"
             - ./scripts/publish_retries_report.sh app/testreports/retries.md
 
   - name: Prepare Test Manifests
@@ -213,6 +214,7 @@ blocks:
         always:
           commands:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
+            - "[ -f cli/testreports/junit.xml ] && test-results publish cli/testreports/junit.xml"
             - ./scripts/publish_retries_report.sh app/testreports/retries.md
 
   - name: Docker Build

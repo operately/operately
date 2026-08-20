@@ -10,6 +10,16 @@
   ],
   "testEnvironment": "jsdom",
   "setupFiles": ["<rootDir>/jest.setup.ts"],
+  "reporters": [
+    "default",
+    [
+      "jest-junit",
+      {
+        "outputDirectory": "testreports",
+        "outputName": "junit.xml"
+      }
+    ]
+  ],
   "moduleNameMapper": {
     "\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
     "^@tabler/icons-react/dist/esm/icons/(.+)\\.mjs$": "<rootDir>/src/__mocks__/@tabler/icons-react.js",
