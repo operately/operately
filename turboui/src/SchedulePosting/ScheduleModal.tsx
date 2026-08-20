@@ -93,7 +93,7 @@ export function ScheduleModal({
           <SecondaryButton onClick={handleCancel} size="sm">
             Cancel
           </SecondaryButton>
-          <PrimaryButton onClick={handleSchedule} size="sm" disabled={isInvalid}>
+          <PrimaryButton onClick={handleSchedule} size="sm" disabled={isInvalid} testId="confirm-schedule">
             Schedule
           </PrimaryButton>
         </div>

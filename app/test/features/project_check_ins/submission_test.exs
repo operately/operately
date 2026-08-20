@@ -72,4 +72,11 @@ defmodule Operately.Features.ProjectCheckIns.SubmissionTest do
     |> Steps.edit_check_in(new_values)
     |> Steps.assert_check_in_submitted(new_values)
   end
+
+  feature "status editing is locked after three days", ctx do
+    ctx
+    |> Steps.given_an_old_published_check_in_exists()
+    |> Steps.visit_edit_check_in_page()
+    |> Steps.assert_status_edit_is_locked()
+  end
 end

@@ -14,7 +14,7 @@ export { RichTextArea } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
 export { SelectGoal } from "./SelectGoal";
 export { SelectPerson } from "./SelectPerson";
-export { SelectStatus } from "./SelectStatus";
+export { SelectStatus, StatusDisplay } from "./SelectStatus";
 export { Submit } from "./Submit";
 export { SubmitButton } from "./SubmitButton";
 export { TextInput } from "./TextInput";
