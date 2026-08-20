@@ -54,7 +54,7 @@ export function ScheduleFlowControls({
       ? scheduledPrimaryLabel
       : scheduleFlow.primaryButtonLabel(primaryLabel);
   const buttonOptions = showScheduleOption
-    ? [...options, { label: "Schedule for later", action: scheduleFlow.openScheduleModal }]
+    ? [...options, { label: "Schedule for later", action: scheduleFlow.openScheduleModal, testId: "schedule-for-later" }]
     : options;
 
   return (

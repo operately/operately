@@ -156,16 +156,22 @@ defmodule Operately.Operations.ProjectCheckInEdit do
           where: fragment("args->>'type' = ?", "project_check_in"),
           where: fragment("args->>'id' = ?", ^check_in.id)
       end)
-      |> Multi.run(:insert_oban_job, fn _repo, changes ->
-        if scheduled?(new_state) and not is_nil(new_time) do
-          Operately.AsyncPublishing.Worker.new(
-            %{"type" => "project_check_in", "id" => changes.check_in.id},
-            scheduled_at: new_time
-          )
-          |> Oban.insert()
-        else
-          {:ok, nil}
-        end
+      |> maybe_insert_oban_job(new_state, new_time)
+    else
+      multi
+    end
+  end
+
+  # Use Multi.insert (same as ProjectCheckIn.create) rather than Oban.insert/1 so that
+  # Oban's testing: :inline mode does not execute the publish worker immediately when
+  # re-scheduling a still-scheduled check-in.
+  defp maybe_insert_oban_job(multi, new_state, new_time) do
+    if scheduled?(new_state) and not is_nil(new_time) do
+      Multi.insert(multi, :oban_job, fn changes ->
+        Operately.AsyncPublishing.Worker.new(
+          %{"type" => "project_check_in", "id" => changes.check_in.id},
+          scheduled_at: new_time
+        )
       end)
     else
       multi
