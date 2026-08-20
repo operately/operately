@@ -16,6 +16,7 @@ import {
   BorderedRow,
   Menu,
   MenuActionItem,
+  PageSection,
   PrimaryButton,
   SecondaryButton,
   SubMenu,
@@ -99,7 +100,7 @@ function GeneralAccess() {
   const canEdit = goal.permissions?.canEdit ?? false;
 
   return (
-    <Paper.Section title="General Access">
+    <PageSection title="General Access">
       <BorderedRow>
         <AccessLevelSummary
           resourceType="goal"
@@ -115,7 +116,7 @@ function GeneralAccess() {
           </SecondaryButton>
         )}
       </BorderedRow>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -125,11 +126,11 @@ function AccessMembers() {
   if (accessMembers.length === 0) return null;
 
   return (
-    <Paper.Section title="People with Direct Access">
+    <PageSection title="People with Direct Access">
       {accessMembers.map((member) => (
         <AccessMemberRow key={member.id} member={member} />
       ))}
-    </Paper.Section>
+    </PageSection>
   );
 }
 

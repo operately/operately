@@ -14,6 +14,7 @@ import {
   Menu,
   MenuActionItem,
   MenuLinkItem,
+  PageSection,
   PlaceholderAvatar,
   PrimaryButton,
   SecondaryButton,
@@ -101,7 +102,7 @@ function GeneralAccess() {
   const editPath = paths.projectEditPermissionsPath(project.id);
 
   return (
-    <Paper.Section title="General Access">
+    <PageSection title="General Access">
       <BorderedRow>
         <AccessLevelSummary
           resourceType="project"
@@ -117,7 +118,7 @@ function GeneralAccess() {
           </SecondaryButton>
         )}
       </BorderedRow>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -127,7 +128,7 @@ function Champion() {
   if (!champion) return <ChampionPlaceholder />;
 
   return (
-    <Paper.Section title="Champion">
+    <PageSection title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <ContributorAvatar person={champion.person!} role={champion.role!} />
@@ -139,7 +140,7 @@ function Champion() {
           <ContributorMenu contributor={champion} />
         </div>
       </div>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -149,7 +150,7 @@ function Reviewer() {
   if (!reviewer) return <ReviewerPlaceholder />;
 
   return (
-    <Paper.Section title="Reviewer">
+    <PageSection title="Reviewer">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <ContributorAvatar person={reviewer.person!} role={reviewer.role!} />
@@ -161,7 +162,7 @@ function Reviewer() {
           <ContributorMenu contributor={reviewer} />
         </div>
       </div>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -191,7 +192,7 @@ function ReviewerPlaceholder() {
     : "The project doesn't have a reviewer yet";
 
   return (
-    <Paper.Section title="Reviewer">
+    <PageSection title="Reviewer">
       <BorderedRow>
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
@@ -206,7 +207,7 @@ function ReviewerPlaceholder() {
           )}
         </div>
       </BorderedRow>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -230,7 +231,7 @@ function ChampionPlaceholder() {
     : "The project doesn't have a champion yet";
 
   return (
-    <Paper.Section title="Champion">
+    <PageSection title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
@@ -245,7 +246,7 @@ function ChampionPlaceholder() {
           )}
         </div>
       </div>
-    </Paper.Section>
+    </PageSection>
   );
 }
 
@@ -255,11 +256,11 @@ function Contributors() {
   if (contributors.length === 0) return null;
 
   return (
-    <Paper.Section title="Contributors">
+    <PageSection title="Contributors">
       {contributors.map((contrib) => (
         <Contributor contributor={contrib} key={contrib.id} />
       ))}
-    </Paper.Section>
+    </PageSection>
   );
 }
 

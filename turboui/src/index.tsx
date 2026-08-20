@@ -42,6 +42,8 @@ export * from "./WorkMap";
 
 import RichContent from "./RichContent";
 
+export { ConfirmByTypingModal } from "./ConfirmByTypingModal";
+export { PageSection } from "./PageSection";
 export { AccountPage } from "./AccountPage";
 export { AccountApiTokensPage } from "./AccountApiTokensPage";
 export { AccountMcpConnectionsPage } from "./AccountMcpConnectionsPage";
@@ -124,6 +126,7 @@ export {
   CompanyBillingPlanSelectionPage,
 } from "./CompanyBillingPlanSelectionPage";
 export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
+export { CompanyAdminPage } from "./CompanyAdminPage";
 export { CompanyExportPage } from "./CompanyExportPage";
 export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
 export { MilestoneList } from "./MilestoneList";

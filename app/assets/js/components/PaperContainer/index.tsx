@@ -197,4 +197,3 @@ export * from "./DimmedSection";
 export * from "./Banner";
 export * from "./Header";
 export * from "./Navigation";
-export * from "./Section";

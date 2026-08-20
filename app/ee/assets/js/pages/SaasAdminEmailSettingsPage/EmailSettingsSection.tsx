@@ -1,9 +1,8 @@
 import * as React from "react";
 
-import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
 import classNames from "classnames";
-import { Forms, IconInfoCircle, Spacer, Tooltip } from "turboui";
+import { Forms, IconInfoCircle, PageSection, Spacer, Tooltip } from "turboui";
 import { TestEmailAction } from "./TestEmailModal";
 
 interface Props {
@@ -15,13 +14,13 @@ export function EmailSettingsSection({ initialSettings }: Props) {
 
   return (
     <div className="mt-12">
-      <Paper.Section
+      <PageSection
         title="Email Settings"
         subtitle="Configure the email provider used by all companies. Secrets are never displayed; enter a new value to replace them."
         actions={<TestEmailAction />}
       >
         <EmailSettingsForm emailSettings={emailSettings} onUpdate={setEmailSettings} />
-      </Paper.Section>
+      </PageSection>
     </div>
   );
 }
