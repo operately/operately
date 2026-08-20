@@ -28,7 +28,14 @@ defmodule OperatelyWeb.Api.ProductReleases.GetLatestTest do
     setup ctx do
       ctx
       |> Factory.setup()
+      |> Factory.enable_feature("product_release_announcements")
       |> Factory.log_in_person(:creator)
+    end
+
+    test "returns not found while the experimental feature is disabled", ctx do
+      ctx = Factory.disable_feature(ctx, "product_release_announcements")
+
+      assert {404, _} = query(ctx.conn, [:product_releases, :get_latest], %{})
     end
 
     test "returns null when the cache is empty", ctx do
