@@ -5,7 +5,7 @@ import { ProjectCheckInFormPage } from "./index";
 import { SubscribersSelector } from "../Subscriptions";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { genPeople } from "../utils/storybook/genPeople";
+import { genSubscribers } from "../utils/storybook/genSubscribers";
 import { createMockCheckIn, mockReviewer, navigation } from "./mockData";
 
 const meta = {
@@ -23,15 +23,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockPeople = genPeople(4);
+const mockSubscribers = genSubscribers(4);
 const richTextHandlers = createMockRichEditorHandlers();
-
-const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => ({
-  person,
-  isSubscribed: false,
-  priority: false,
-  role: null,
-}));
 
 function useInteractiveSubscriptions(): SubscribersSelector.Props {
   const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(

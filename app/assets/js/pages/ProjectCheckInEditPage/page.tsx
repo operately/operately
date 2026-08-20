@@ -44,8 +44,8 @@ export function Page() {
     projectName: checkIn.project.name!,
   });
 
-  const subscriptions = isUnpublished
-    ? ({
+  const subscriptions: SubscribersSelector.Props | undefined = isUnpublished
+    ? {
         subscribers: subscriptionsState.subscribers,
         selectedSubscribers: subscriptionsState.selectedSubscribers,
         onSelectedSubscribersChange: subscriptionsState.onSelectedSubscribersChange,
@@ -53,7 +53,7 @@ export function Page() {
         onSubscriptionTypeChange: subscriptionsState.onSubscriptionTypeChange,
         alwaysNotify: subscriptionsState.alwaysNotify,
         allSubscribersLabel: subscriptionsState.allSubscribersLabel,
-      } as unknown as SubscribersSelector.Props)
+      }
     : undefined;
 
   async function handleSubmit(
