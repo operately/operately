@@ -189,6 +189,182 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text("Scheduled project check-in")
   end
 
+  step :save_check_in_as_draft, ctx, %{status: status, description: description} do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.click(testid: "check-in-button")
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{status}")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "save-as-draft")
+    |> UI.sleep(300)
+    |> UI.assert_has(testid: "project-check-in-page")
+    |> then(fn ctx ->
+      check_in = Operately.Projects.CheckIn.get!(:system, project_id: ctx.project.id)
+      assert check_in.state == :draft
+      Map.put(ctx, :check_in, check_in)
+    end)
+  end
+
+  step :assert_check_in_is_draft, ctx, %{description: description} do
+    check_in = wait_for_check_in_state(ctx.check_in.id, :draft)
+    assert check_in.state == :draft
+    assert check_in.scheduled_at == nil
+
+    ctx
+    |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_text("Draft")
+    |> UI.assert_text(description)
+  end
+
+  step :given_a_draft_check_in_exists, ctx do
+    {:ok, check_in} =
+      Operately.Operations.ProjectCheckIn.run(ctx.champion, ctx.project, %{
+        status: "on_track",
+        content: RichText.rich_text("Unpublished check-in content"),
+        post_as_draft: true,
+        send_to_everyone: false,
+        subscription_parent_type: :project_check_in,
+        subscriber_ids: []
+      })
+
+    Map.put(ctx, :check_in, check_in)
+  end
+
+  step :publish_draft_check_in, ctx do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.click(testid: "publish-draft")
+    |> UI.sleep(300)
+  end
+
+  step :assert_draft_check_in_is_published, ctx do
+    check_in = wait_for_check_in_state(ctx.check_in.id, :published)
+    assert check_in.state == :published
+
+    ctx
+    |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_text("Unpublished check-in content")
+    |> UI.refute_text("Draft")
+  end
+
+  step :schedule_check_in_from_new_page, ctx, %{status: status, description: description} do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.click(testid: "check-in-button")
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-#{status}")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "submit-options")
+    |> UI.sleep(100)
+    |> UI.click_text("Schedule for later")
+    |> UI.assert_text("Schedule Check-in")
+    |> select_tomorrow_in_schedule_calendar()
+    |> UI.sleep(100)
+    |> UI.click_button("Schedule")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.sleep(300)
+    |> UI.assert_has(testid: "project-check-in-page")
+    |> then(fn ctx ->
+      check_in = Operately.Projects.CheckIn.get!(:system, project_id: ctx.project.id)
+      assert check_in.state == :scheduled
+      assert check_in.scheduled_at
+      Map.put(ctx, :check_in, check_in)
+    end)
+  end
+
+  step :assert_check_in_is_scheduled, ctx, %{description: description} do
+    check_in = wait_for_check_in_state(ctx.check_in.id, :scheduled)
+    assert check_in.state == :scheduled
+    assert check_in.scheduled_at
+
+    ctx
+    |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_text("Scheduled")
+    |> UI.assert_text("Will be posted on")
+    |> UI.assert_text(description)
+  end
+
+  step :edit_scheduled_check_in_and_save_changes, ctx, %{description: description} do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.assert_text("Editing the Check-In from")
+    |> UI.fill_rich_text(description)
+    |> UI.click(testid: "publish-draft")
+    |> UI.sleep(300)
+  end
+
+  step :assert_scheduled_check_in_changes_saved, ctx, %{description: description} do
+    check_in = wait_for_check_in_state(ctx.check_in.id, :scheduled)
+    assert check_in.state == :scheduled
+    assert check_in.scheduled_at
+
+    ctx
+    |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
+    |> UI.assert_text("Scheduled")
+    |> UI.assert_text(description)
+  end
+
+  step :given_an_old_published_check_in_exists, ctx do
+    {:ok, check_in} =
+      Operately.Operations.ProjectCheckIn.run(ctx.champion, ctx.project, %{
+        status: "on_track",
+        content: RichText.rich_text("Old published check-in"),
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :project_check_in,
+        subscriber_ids: []
+      })
+
+    four_days_ago =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.add(-4 * 24 * 3600, :second)
+      |> NaiveDateTime.truncate(:second)
+
+    {:ok, check_in} =
+      check_in
+      |> Ecto.Changeset.change(published_at: DateTime.from_naive!(four_days_ago, "Etc/UTC"), inserted_at: four_days_ago)
+      |> Operately.Repo.update()
+
+    Map.put(ctx, :check_in, check_in)
+  end
+
+  step :visit_edit_check_in_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+  end
+
+  step :assert_status_edit_is_locked, ctx do
+    ctx
+    |> UI.assert_text("Editing locked after 3 days")
+    |> UI.refute_has(testid: "status-dropdown")
+  end
+
+  defp select_tomorrow_in_schedule_calendar(ctx) do
+    today = Date.utc_today()
+    tomorrow = Date.add(today, 1)
+
+    ctx =
+      if tomorrow.month != today.month or tomorrow.year != today.year do
+        UI.click(ctx, testid: "date-field-next-month")
+      else
+        ctx
+      end
+
+    ctx
+    |> UI.wait_until_has(testid: "date-field-day-#{tomorrow.day}")
+    |> UI.click(testid: "date-field-day-#{tomorrow.day}")
+  end
+
   step :assert_check_in_visible_on_project_page, ctx, %{description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))

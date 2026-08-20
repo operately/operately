@@ -69,6 +69,16 @@ export function SelectStatus({ field, options, reviewer, label }: SelectStatusPr
   );
 }
 
+export function StatusDisplay({
+  status,
+  reviewer,
+}: {
+  status: SelectStatusOption;
+  reviewer?: SelectStatusProps["reviewer"];
+}) {
+  return <StatusOption status={status} reviewer={reviewer} />;
+}
+
 function StatusOrPlaceholder({
   status,
   reviewer,
