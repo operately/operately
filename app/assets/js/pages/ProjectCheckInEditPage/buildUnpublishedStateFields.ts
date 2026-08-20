@@ -1,6 +1,6 @@
 import type { ProjectCheckInFormPage } from "turboui";
 
-export type UnpublishedStateFields = {
+type UnpublishedStateFields = {
   state: "draft" | "scheduled" | "published";
   scheduledAt?: string | null;
 };
