@@ -9,6 +9,7 @@ import { isWithinTimeframe } from "@/utils/time";
 import { useNavigate } from "react-router";
 import { ProjectCheckInFormPage, displayDate, showErrorToast } from "turboui";
 
+import { buildUnpublishedStateFields } from "./buildUnpublishedStateFields";
 import { useLoadedData } from "./loader";
 import { buildProjectCheckInEditNavigation } from "./navigation";
 
@@ -38,25 +39,11 @@ export function Page() {
     if (!values.status || !values.description) return false;
 
     try {
-      const action = meta.action;
-      const shouldSchedule =
-        action === "schedule" || action === "save-changes" || (action === "publish" && meta.scheduledAt !== null);
-
       const res = await edit({
         checkInId: checkIn.id,
         status: values.status,
         description: JSON.stringify(values.description),
-        ...(isUnpublished
-          ? action === "publish-now"
-            ? { state: "published" as const, scheduledAt: null }
-            : action === "save-as-draft"
-              ? { state: "draft" as const, scheduledAt: null }
-              : shouldSchedule
-                ? { state: "scheduled" as const, scheduledAt: meta.scheduledAt }
-                : action === "publish"
-                  ? { state: "published" as const }
-                  : { state: "draft" as const, scheduledAt: null }
-          : {}),
+        ...buildUnpublishedStateFields(isUnpublished, meta, checkIn.scheduledAt),
       });
 
       navigate(paths.projectCheckInPath(res.checkIn.id));

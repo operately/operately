@@ -135,7 +135,7 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
       testId={props.testId ?? (props.mode === "create" ? "project-check-in-new-page" : "project-check-in-edit-page")}
     >
       <main className="px-8 py-6 sm:px-10 sm:py-8">
-        <Forms.Form form={form}>
+        <Forms.Form form={form} preventSubmitOnEnter>
           <Header props={props} />
 
           {props.mode === "edit" && (

@@ -54,8 +54,8 @@ export function OptionsButton({
   );
 
   return (
-    <div className="inline-flex shadow-sm rounded-md" data-test-id={testId}>
-      <button type="button" onClick={onClick} className={btnClass} disabled={loading || disabled}>
+    <div className="inline-flex shadow-sm rounded-md">
+      <button type="button" onClick={onClick} className={btnClass} disabled={loading || disabled} data-test-id={testId}>
         {children}
         {loading && <Spinner loading={true} size={size} color="var(--color-white-1)" />}
       </button>
