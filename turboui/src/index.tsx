@@ -126,6 +126,15 @@ export {
 export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
 export { CompanyExportPage } from "./CompanyExportPage";
 export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
+export { MilestoneList } from "./MilestoneList";
+export type {
+  MilestoneListProps,
+  ProjectMilestoneCreatePayload,
+  ProjectMilestoneUpdatePayload,
+  TemplateMilestone,
+  TemplateMilestoneCreatePayload,
+  TemplateMilestoneUpdatePayload,
+} from "./MilestoneList";
 export { MilestonePage } from "./MilestonePage";
 export type { GetTemplateTaskPageProps } from "./TaskBoard/KanbanView/types";
 export { MiniWorkMap } from "./MiniWorkMap";

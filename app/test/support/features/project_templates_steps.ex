@@ -317,8 +317,10 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   step :add_template_milestone, ctx, title do
     ctx
     |> UI.click(testid: "add-template-milestone-overview")
-    |> UI.fill(testid: "template-milestone-name", with: title)
-    |> UI.click_button("Create milestone")
+    |> UI.fill(testid: "milestone-name-input", with: title)
+    |> UI.find(UI.query(testid: "add-milestone-form"), fn el ->
+      UI.click_button(el, "Add milestone")
+    end)
     |> UI.sleep(400)
     |> UI.assert_text(title)
   end
