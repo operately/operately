@@ -23,4 +23,12 @@ defmodule Operately.Features.ProjectCheckIns.DraftsTest do
     |> Steps.publish_draft_check_in()
     |> Steps.assert_draft_check_in_is_published()
   end
+
+  feature "notification settings are shown when publishing a draft check-in", ctx do
+    ctx
+    |> Steps.given_a_draft_check_in_exists()
+    |> Steps.publish_draft_check_in_with_notify_selection()
+    |> Steps.assert_draft_check_in_is_published()
+    |> Steps.assert_current_subscribers_after_draft_publish()
+  end
 end

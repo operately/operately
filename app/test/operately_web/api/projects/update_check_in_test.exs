@@ -114,6 +114,48 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckInTest do
       assert project.last_check_in_status == check_in.status
     end
 
+    test "updates subscribers when publishing a draft check-in", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:contrib1, :project, :as_person)
+        |> Factory.add_project_contributor(:contrib2, :project, :as_person)
+
+      {:ok, draft} =
+        Ecto.Changeset.change(ctx.check_in, %{
+          state: :draft,
+          published_at: nil
+        })
+        |> Repo.update()
+
+      subscriber_ids = [Paths.person_id(ctx.contrib1), Paths.person_id(ctx.contrib2)]
+
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_check_in], %{
+                 check_in_id: Paths.project_check_in_id(draft),
+                 status: "on_track",
+                 description: RichText.rich_text("Ready to publish with subscribers", :as_string),
+                 state: "published",
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: subscriber_ids
+               })
+
+      {:ok, list} =
+        SubscriptionList.get(:system,
+          parent_id: draft.id,
+          opts: [preload: :subscriptions]
+        )
+
+      refute list.send_to_everyone
+
+      active_person_ids =
+        list.subscriptions
+        |> Enum.reject(& &1.canceled)
+        |> Enum.map(& &1.person_id)
+        |> Enum.sort()
+
+      assert active_person_ids == Enum.sort([ctx.contrib1.id, ctx.contrib2.id])
+    end
+
     test "rejects rescheduling a project check-in for now or earlier", ctx do
       {:ok, draft} =
         Ecto.Changeset.change(ctx.check_in, %{state: :draft, published_at: nil})

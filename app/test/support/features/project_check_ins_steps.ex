@@ -241,6 +241,18 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.sleep(300)
   end
 
+  step :publish_draft_check_in_with_notify_selection, ctx do
+    ctx
+    |> UI.visit(Paths.project_check_in_path(ctx.company, ctx.check_in))
+    |> UI.wait_until_testid(testid: "edit-check-in")
+    |> UI.click(testid: "edit-check-in")
+    |> UI.assert_text("When I post this, notify:")
+    |> UI.assert_has(testid: "subscribe-all")
+    |> UI.click(testid: "subscribe-no-one")
+    |> UI.click(testid: "publish-draft")
+    |> UI.sleep(300)
+  end
+
   step :assert_draft_check_in_is_published, ctx do
     check_in = wait_for_check_in_state(ctx.check_in.id, :published)
     assert check_in.state == :published
@@ -249,6 +261,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_page(Paths.project_check_in_path(ctx.company, check_in))
     |> UI.assert_text("Unpublished check-in content")
     |> UI.refute_text("Draft")
+  end
+
+  step :assert_current_subscribers_after_draft_publish, ctx do
+    # "Notify no one" still keeps priority subscribers (reviewer); author was ignored in the selector.
+    ctx
+    |> UI.wait_until_text("1 person will be notified when someone comments on this check-in.")
   end
 
   step :schedule_check_in_from_new_page, ctx, %{status: status, description: description} do

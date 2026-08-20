@@ -3,11 +3,12 @@ import React from "react";
 import { useEditProjectCheckIn } from "@/models/projectCheckIns";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { compareIds, usePaths } from "@/routes/paths";
 import { isWithinTimeframe } from "@/utils/time";
 import { useNavigate } from "react-router";
-import { ProjectCheckInFormPage, displayDate, showErrorToast } from "turboui";
+import { ProjectCheckInFormPage, displayDate, showErrorToast, SubscribersSelector } from "turboui";
 
 import { buildUnpublishedStateFields } from "./buildUnpublishedStateFields";
 import { useLoadedData } from "./loader";
@@ -31,6 +32,30 @@ export function Page() {
       ? compareIds(checkIn.project.lastCheckIn.id, checkIn.id) && isWithinTimeframe(displayDate(checkIn), 72)
       : false);
 
+  if (isUnpublished) {
+    assertPresent(checkIn.potentialSubscribers, "potentialSubscribers must be present in checkIn");
+    assertPresent(checkIn.subscriptionList, "subscriptionList must be present in checkIn");
+  }
+
+  const subscriptionsState = useSubscriptionsAdapter(checkIn.potentialSubscribers ?? [], {
+    ignoreMe: true,
+    notifyPrioritySubscribers: true,
+    sendNotificationsToEveryone: checkIn.subscriptionList?.sendToEveryone ?? undefined,
+    projectName: checkIn.project.name!,
+  });
+
+  const subscriptions = isUnpublished
+    ? ({
+        subscribers: subscriptionsState.subscribers,
+        selectedSubscribers: subscriptionsState.selectedSubscribers,
+        onSelectedSubscribersChange: subscriptionsState.onSelectedSubscribersChange,
+        subscriptionType: subscriptionsState.subscriptionType,
+        onSubscriptionTypeChange: subscriptionsState.onSubscriptionTypeChange,
+        alwaysNotify: subscriptionsState.alwaysNotify,
+        allSubscribersLabel: subscriptionsState.allSubscribersLabel,
+      } as unknown as SubscribersSelector.Props)
+    : undefined;
+
   async function handleSubmit(
     values: ProjectCheckInFormPage.Values,
     meta: ProjectCheckInFormPage.SubmitMeta,
@@ -44,6 +69,12 @@ export function Page() {
         status: values.status,
         description: JSON.stringify(values.description),
         ...buildUnpublishedStateFields(isUnpublished, meta, checkIn.scheduledAt),
+        ...(isUnpublished
+          ? {
+              sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
+              subscriberIds: subscriptionsState.currentSubscribersList,
+            }
+          : {}),
       });
 
       navigate(paths.projectCheckInPath(res.checkIn.id));
@@ -66,6 +97,7 @@ export function Page() {
       reviewer={checkIn.project.reviewer}
       checkIn={checkIn}
       allowFullEdit={allowFullEdit}
+      subscriptions={subscriptions}
       onSubmit={handleSubmit}
     />
   );
