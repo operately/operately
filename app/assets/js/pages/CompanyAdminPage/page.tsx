@@ -4,6 +4,7 @@ import * as Companies from "@/models/companies";
 import { CompanyAdminPage, showErrorToast } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useCurrentProductRelease } from "@/models/productReleases/currentRelease";
 import { includesId, Paths, usePaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
@@ -12,6 +13,7 @@ export function Page() {
   const { company, adminIds, ownerIds } = useLoadedData();
   const me = useMe();
   const [deleteCompany] = Companies.useDeleteCompany();
+  const currentRelease = useCurrentProductRelease(company);
 
   const isAdmin = includesId(adminIds, me?.id);
   const isOwner = includesId(ownerIds, me?.id);
@@ -47,6 +49,7 @@ export function Page() {
       manageAdminsPath={paths.companyManageAdminsPath()}
       trustedDomainsPath={paths.companyAdminManageTrustedDomainsPath()}
       exportPath={paths.companyExportPath()}
+      currentRelease={currentRelease}
       onDeleteCompany={onDeleteCompany}
     />
   );

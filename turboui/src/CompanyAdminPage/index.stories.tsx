@@ -76,3 +76,13 @@ export const BillingDisabled: Story = {
     billingEnabled: false,
   },
 };
+
+export const WithCurrentRelease: Story = {
+  args: {
+    ...baseProps,
+    currentRelease: {
+      version: "v1.8",
+      title: "MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more",
+    },
+  },
+};
