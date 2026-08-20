@@ -1174,6 +1174,54 @@ describe("TemplateProjectPage", () => {
     expect(screen.queryByTestId("template-task-task-1")).not.toBeInTheDocument();
   });
 
+  it("highlights the No milestone section instead of showing between-task drop placeholders", () => {
+    const rootTasks: Types.Task[] = [
+      {
+        id: "root-1",
+        name: "Root one",
+        description: null,
+        milestoneId: null,
+        priority: null,
+        size: null,
+        dueOffsetDays: null,
+        status: statuses[0]!,
+        reminders: [],
+      },
+      {
+        id: "root-2",
+        name: "Root two",
+        description: null,
+        milestoneId: null,
+        priority: null,
+        size: null,
+        dueOffsetDays: null,
+        status: statuses[0]!,
+        reminders: [],
+      },
+    ];
+
+    mockBoardState = {
+      draggedItemId: "task-1",
+      destination: { containerId: "no-milestone", index: 1 },
+      draggedItemDimensions: { width: 300, height: 44 },
+    };
+
+    renderPage(
+      createProps({
+        tasks: [...createProps().tasks, ...rootTasks],
+        onTaskReorder: jest.fn(),
+      }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    const section = document.querySelector('[data-test-id="template-task-section-no-milestone"]');
+    expect(section).toHaveAttribute("data-drop-target", "true");
+    expect(screen.queryByTestId("drop-placeholder-no-milestone-0")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("drop-placeholder-no-milestone-1")).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="template-task-root-1"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="template-task-root-2"]')).toBeInTheDocument();
+  });
+
   it("keeps task rows non-draggable without edit access and removes move buttons", () => {
     const onTaskReorder = jest.fn();
     renderPage(createProps({ permissions: { canView: true }, onTaskReorder }), "/templates/template-1?tab=tasks");
