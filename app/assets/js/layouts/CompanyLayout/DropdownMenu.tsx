@@ -90,6 +90,7 @@ interface DropdownLinkItemProps {
   testId?: string;
   target?: string;
   hidden?: boolean;
+  hint?: React.ReactNode;
 }
 
 interface DropdownActionItemProps {
@@ -116,13 +117,14 @@ export function DropdownActionItem({ onClick, icon, title, testId, hidden }: Dro
   );
 }
 
-export function DropdownLinkItem({ path, icon, title, testId, target, hidden }: DropdownLinkItemProps) {
+export function DropdownLinkItem({ path, icon, title, testId, target, hidden, hint }: DropdownLinkItemProps) {
   if (hidden) return null;
 
   return (
     <DivLink className={itemClassName} to={path} testId={testId} target={target}>
       {React.createElement(icon, { size: 18, strokeWidth: 2 })}
       <div className="font-medium">{title}</div>
+      {hint && <div className="ml-auto text-xs text-content-dimmed">{hint}</div>}
     </DivLink>
   );
 }

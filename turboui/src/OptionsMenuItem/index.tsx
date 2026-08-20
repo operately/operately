@@ -7,13 +7,26 @@ interface Props {
   icon: any;
   title: string;
   linkTo?: string;
+  linkTarget?: string;
   onClick?: () => void;
   danger?: boolean;
   description?: string;
+  /** Keeps the description on a single line, ending in an ellipsis when it does not fit. */
+  truncateDescription?: boolean;
   hidden?: boolean;
 }
 
-export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, description, hidden }: Props) {
+export function OptionsMenuItem({
+  icon,
+  title,
+  linkTo,
+  linkTarget,
+  onClick,
+  danger,
+  description,
+  truncateDescription,
+  hidden,
+}: Props) {
   const testId = createTestId(title);
 
   const className = classNames(
@@ -32,7 +45,7 @@ export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, descript
         {React.createElement(icon, { size: 18 })}
       </div>
 
-      <div>
+      <div className="flex-1 min-w-0">
         <div
           className={classNames("font-semibold", {
             "group-hover:text-red-900": danger,
@@ -41,7 +54,14 @@ export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, descript
         >
           {title}
         </div>
-        {description && <div className="text-xs text-content-dimmed font-normal mt-0.5">{description}</div>}
+        {description && (
+          <div
+            className={classNames("text-xs text-content-dimmed font-normal mt-0.5", { truncate: truncateDescription })}
+            title={truncateDescription ? description : undefined}
+          >
+            {description}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -60,7 +80,7 @@ export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, descript
 
   return (
     <div className={className}>
-      <BlackLink to={linkTo!} testId={testId} underline="hover" className="w-full">
+      <BlackLink to={linkTo!} target={linkTarget} testId={testId} underline="hover" className="w-full">
         {content}
       </BlackLink>
     </div>
