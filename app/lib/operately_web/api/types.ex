@@ -182,6 +182,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :updated_at, :datetime
   end
 
+  object :product_release, for: Operately.ProductReleases.Release do
+    field :id, :string, null: false
+    field :title, :string, null: false
+    field :published_at, :datetime, null: false
+    field? :teaser, :string, null: true
+  end
+
   object :account do
     field :full_name, :string, null: false
     field :site_admin, :boolean, null: false
@@ -2196,6 +2203,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :invite_link, :invite_link, null: true
     field? :show_dev_bar, :boolean, null: true
     field? :permissions, :person_permissions, null: true
+    field? :dismissed_product_release_id, :string, null: true
   end
 
   object :person_permissions, for: Operately.People.Permissions do

@@ -2,9 +2,10 @@ import React from "react";
 
 import { PrimaryButton } from "../Button";
 import { IconSparkles, IconX } from "../icons";
-import type { ProductRelease } from "./types";
+import { PRODUCT_RELEASES_PAGE_URL, type ProductRelease } from "./types";
 
 export type { ProductRelease } from "./types";
+export { PRODUCT_RELEASES_PAGE_URL } from "./types";
 
 export namespace ProductReleaseAnnouncement {
   export interface Props {
@@ -32,8 +33,8 @@ export function ProductReleaseAnnouncement({ release, onDismiss }: ProductReleas
             <p className="mt-0.5 text-sm font-medium text-content-base line-clamp-3">{release.title}</p>
 
             <div className="mt-3">
-              <PrimaryButton size="sm" linkTo={release.url} linkTarget="_blank" testId="product-release-read-more">
-                Read more
+              <PrimaryButton size="sm" linkTo={PRODUCT_RELEASES_PAGE_URL} linkTarget="_blank" testId="product-release-read-more">
+                View release
               </PrimaryButton>
             </div>
           </div>

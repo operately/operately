@@ -1742,11 +1742,20 @@ export interface Person {
   inviteLink?: InviteLink | null;
   showDevBar?: boolean | null;
   permissions?: PersonPermissions | null;
+  dismissedProductReleaseId?: string | null;
 }
 
 export interface PersonPermissions {
   __typename: "person_permissions";
   canEditProfile: boolean | null;
+}
+
+export interface ProductRelease {
+  __typename: "product_release";
+  id: string;
+  title: string;
+  publishedAt: string;
+  teaser?: string | null;
 }
 
 export interface Project {

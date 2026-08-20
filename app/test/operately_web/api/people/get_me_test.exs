@@ -72,5 +72,25 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
       assert data.time_format == "hour_24"
       assert Operately.People.Person.time_format(person) == :hour_24
     end
+
+    test "it returns a dismissed product release id when set", ctx do
+      {:ok, person} =
+        Operately.People.update_person(ctx.person, %{
+          preferences: %{
+            dismissed_product_release_id: "v1.8"
+          }
+        })
+
+      assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
+
+      assert data.dismissed_product_release_id == "v1.8"
+      assert Operately.People.Person.dismissed_product_release_id(person) == "v1.8"
+    end
+
+    test "it returns null for dismissed product release id when missing", ctx do
+      assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
+
+      assert data.dismissed_product_release_id == nil
+    end
   end
 end

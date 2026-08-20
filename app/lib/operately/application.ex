@@ -11,6 +11,7 @@ defmodule Operately.Application do
       OperatelyWeb.Telemetry,
       Operately.Repo,
       Operately.Mcp.RateLimit,
+      Operately.ProductReleases.Cache,
       OperatelyWeb.Endpoint,
       {Oban, Application.fetch_env!(:operately, Oban)},
       {Finch, name: Operately.Finch},
