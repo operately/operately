@@ -86,7 +86,6 @@ export namespace TemplateProjectPage {
     description: any;
     dueOffsetDays: number | null;
     tasksOrderingState: string[];
-    tasksKanbanState: unknown;
     link: string;
   }
 
@@ -152,7 +151,6 @@ export namespace TemplateProjectPage {
       description: any;
       durationDays: number | null;
       milestonesOrderingState: string[];
-      tasksKanbanState: unknown;
       archived: boolean;
     };
     space: Space;
@@ -186,7 +184,7 @@ export namespace TemplateProjectPage {
       nextStatuses: StatusSelector.StatusOption[];
       deletedStatusReplacements: Record<string, string>;
     }) => void;
-    onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">) => void;
+    onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "link" | "tasksOrderingState">) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void | boolean | Promise<void | boolean>;
     onMilestoneDelete?: (milestoneId: string) => void | boolean | Promise<void | boolean>;
     onMilestoneReorder?: (milestoneId: string, destinationIndex: number) => void | boolean | Promise<void | boolean>;
@@ -215,10 +213,6 @@ export namespace TemplateProjectPage {
 function orderTemplateGraph(props: TemplateProjectPage.Props): TemplateProjectPage.Props {
   const milestones = orderByIds(props.milestones, props.template.milestonesOrderingState);
   const milestoneOrder = new Map(milestones.map((milestone) => [milestone.id, milestone.tasksOrderingState]));
-  const rootOrder = flattenKanban(
-    props.template.tasksKanbanState,
-    props.statuses.map((status) => status.value || status.id),
-  );
 
   return {
     ...props,
@@ -227,17 +221,8 @@ function orderTemplateGraph(props: TemplateProjectPage.Props): TemplateProjectPa
   };
 
   function taskIndex(task: TemplateProjectPage.Task) {
-    const ids = task.milestoneId ? (milestoneOrder.get(task.milestoneId) ?? []) : rootOrder;
-    const index = ids.indexOf(task.id);
+    if (!task.milestoneId) return Number.MAX_SAFE_INTEGER;
+    const index = (milestoneOrder.get(task.milestoneId) ?? []).indexOf(task.id);
     return index === -1 ? Number.MAX_SAFE_INTEGER : index;
   }
-}
-
-function flattenKanban(state: unknown, statusIds: string[]): string[] {
-  if (!state || typeof state !== "object" || Array.isArray(state)) return [];
-  const columns = state as Record<string, unknown>;
-  return statusIds.flatMap((statusId) => {
-    const column = columns[statusId];
-    return Array.isArray(column) ? column.filter((id): id is string => typeof id === "string") : [];
-  });
 }

@@ -2,7 +2,7 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdatingTest do
   use Operately.DataCase
 
   alias Operately.Operations.ProjectTemplateMilestoneOrderingUpdating
-  alias Operately.ProjectTemplates.{Milestone, ProjectTemplate, Task}
+  alias Operately.ProjectTemplates.{Milestone, Task}
   alias Operately.Repo
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
@@ -17,22 +17,20 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdatingTest do
   end
 
   describe "same milestone" do
-    test "moves a task to the requested index without rewriting kanban", ctx do
+    test "moves a task to the requested index", ctx do
       ctx =
         ctx
         |> Factory.add_project_template_task(:first, :template, milestone: :milestone)
         |> Factory.add_project_template_task(:second, :template, milestone: :milestone)
         |> Factory.add_project_template_task(:third, :template, milestone: :milestone)
 
-      kanban = kanban(ctx, [:first, :second, :third])
-      set_list(ctx.milestone, ids(ctx, [:first, :second, :third]), kanban)
+      set_list(ctx.milestone, ids(ctx, [:first, :second, :third]))
 
       assert {:ok, changes} = run(ctx, ctx.first, ctx.milestone.id, 2)
       assert changes.updated_task.project_template_milestone_id == ctx.milestone.id
 
       milestone = Repo.reload!(ctx.milestone)
       assert milestone.tasks_ordering_state == ids(ctx, [:second, :third, :first])
-      assert milestone.tasks_kanban_state == kanban
     end
 
     test "clamps an index past the end of the list", ctx do
@@ -75,7 +73,7 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdatingTest do
   end
 
   describe "changing container" do
-    test "moves a task between milestones at the requested index without rewriting kanban", ctx do
+    test "moves a task between milestones at the requested index", ctx do
       ctx =
         ctx
         |> Factory.add_project_template_milestone(:destination, :template)
@@ -83,10 +81,8 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdatingTest do
         |> Factory.add_project_template_task(:kept, :template, milestone: :milestone)
         |> Factory.add_project_template_task(:already_there, :template, milestone: :destination)
 
-      source_kanban = kanban(ctx, [:moving, :kept])
-      dest_kanban = kanban(ctx, [:already_there])
-      set_list(ctx.milestone, ids(ctx, [:moving, :kept]), source_kanban)
-      set_list(ctx.destination, ids(ctx, [:already_there]), dest_kanban)
+      set_list(ctx.milestone, ids(ctx, [:moving, :kept]))
+      set_list(ctx.destination, ids(ctx, [:already_there]))
 
       assert {:ok, changes} = run(ctx, ctx.moving, ctx.destination.id, 0)
       assert changes.updated_task.project_template_milestone_id == ctx.destination.id
@@ -95,51 +91,33 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdatingTest do
       destination = Repo.reload!(ctx.destination)
       assert source.tasks_ordering_state == ids(ctx, [:kept])
       assert destination.tasks_ordering_state == ids(ctx, [:moving, :already_there])
-      assert source.tasks_kanban_state == source_kanban
-      assert destination.tasks_kanban_state == dest_kanban
     end
 
-    test "moves a task to the root without using the index or rewriting kanban", ctx do
+    test "moves a task to the root without using the index", ctx do
       ctx =
         ctx
         |> Factory.add_project_template_task(:root, :template)
         |> Factory.add_project_template_task(:moving, :template, milestone: :milestone)
         |> Factory.add_project_template_task(:kept, :template, milestone: :milestone)
 
-      template_kanban = kanban(ctx, [:root])
-      milestone_kanban = kanban(ctx, [:moving, :kept])
-      set_template_kanban(ctx.template, template_kanban)
-      set_list(ctx.milestone, ids(ctx, [:moving, :kept]), milestone_kanban)
+      set_list(ctx.milestone, ids(ctx, [:moving, :kept]))
 
       assert {:ok, changes} = run(ctx, ctx.moving, nil, 99)
       assert changes.updated_task.project_template_milestone_id == nil
-
-      template = Repo.reload!(ctx.template)
-      milestone = Repo.reload!(ctx.milestone)
-      assert template.tasks_kanban_state == template_kanban
-      assert milestone.tasks_kanban_state == milestone_kanban
-      assert milestone.tasks_ordering_state == ids(ctx, [:kept])
+      assert Repo.reload!(ctx.milestone).tasks_ordering_state == ids(ctx, [:kept])
     end
 
-    test "moves a root task onto a milestone at the requested index without rewriting kanban", ctx do
+    test "moves a root task onto a milestone at the requested index", ctx do
       ctx =
         ctx
         |> Factory.add_project_template_task(:moving, :template)
         |> Factory.add_project_template_task(:already_there, :template, milestone: :milestone)
 
-      template_kanban = kanban(ctx, [:moving])
-      milestone_kanban = kanban(ctx, [:already_there])
-      set_template_kanban(ctx.template, template_kanban)
-      set_list(ctx.milestone, ids(ctx, [:already_there]), milestone_kanban)
+      set_list(ctx.milestone, ids(ctx, [:already_there]))
 
       assert {:ok, changes} = run(ctx, ctx.moving, ctx.milestone.id, 0)
       assert changes.updated_task.project_template_milestone_id == ctx.milestone.id
-
-      template = Repo.reload!(ctx.template)
-      milestone = Repo.reload!(ctx.milestone)
-      assert template.tasks_kanban_state == template_kanban
-      assert milestone.tasks_kanban_state == milestone_kanban
-      assert milestone.tasks_ordering_state == ids(ctx, [:moving, :already_there])
+      assert Repo.reload!(ctx.milestone).tasks_ordering_state == ids(ctx, [:moving, :already_there])
     end
   end
 
@@ -183,19 +161,12 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdatingTest do
     |> Repo.transaction()
   end
 
-  defp set_list(milestone, task_ids, kanban \\ %{}) do
+  defp set_list(milestone, task_ids) do
     milestone
-    |> Milestone.changeset(%{tasks_ordering_state: task_ids, tasks_kanban_state: kanban})
+    |> Milestone.changeset(%{tasks_ordering_state: task_ids})
     |> Repo.update!()
   end
 
-  defp set_template_kanban(template, kanban) do
-    template
-    |> ProjectTemplate.changeset(%{tasks_kanban_state: kanban})
-    |> Repo.update!()
-  end
-
-  defp kanban(ctx, names), do: %{"pending" => ids(ctx, names)}
   defp ids(ctx, names), do: Enum.map(names, &id(Map.fetch!(ctx, &1)))
   defp id(%Task{} = task), do: Paths.project_template_task_id(task)
 end

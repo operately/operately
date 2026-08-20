@@ -32,24 +32,19 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriterTest do
   test "rewrites project template milestone and task ids" do
     source_milestone_id = Ecto.UUID.generate()
     destination_milestone_id = Ecto.UUID.generate()
-    source_task_id = Ecto.UUID.generate()
-    destination_task_id = Ecto.UUID.generate()
 
     row = %{
-      "milestones_ordering_state" => [encoded_id("Roadmap", source_milestone_id)],
-      "tasks_kanban_state" => %{"pending" => [encoded_id("Prepare", source_task_id)]}
+      "milestones_ordering_state" => [encoded_id("Roadmap", source_milestone_id)]
     }
 
     plan =
       translation_plan(%{
-        "project_template_milestones" => %{source_milestone_id => destination_milestone_id},
-        "project_template_tasks" => %{source_task_id => destination_task_id}
+        "project_template_milestones" => %{source_milestone_id => destination_milestone_id}
       })
 
     assert {:ok, rewritten} = OrderingStateRewriter.rewrite_row_fields(row, "project_templates", plan)
 
     assert rewritten["milestones_ordering_state"] == [encoded_id("Roadmap", destination_milestone_id)]
-    assert rewritten["tasks_kanban_state"] == %{"pending" => [encoded_id("Prepare", destination_task_id)]}
   end
 
   test "rewrites task ids in project template milestone ordering" do
@@ -57,8 +52,7 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriterTest do
     destination_task_id = Ecto.UUID.generate()
 
     row = %{
-      "tasks_ordering_state" => [encoded_id("Prepare", source_task_id)],
-      "tasks_kanban_state" => %{"pending" => [encoded_id("Prepare", source_task_id)]}
+      "tasks_ordering_state" => [encoded_id("Prepare", source_task_id)]
     }
 
     plan = translation_plan(%{"project_template_tasks" => %{source_task_id => destination_task_id}})
@@ -66,7 +60,6 @@ defmodule Operately.CompanyTransfers.Import.OrderingStateRewriterTest do
     assert {:ok, rewritten} = OrderingStateRewriter.rewrite_row_fields(row, "project_template_milestones", plan)
 
     assert rewritten["tasks_ordering_state"] == [encoded_id("Prepare", destination_task_id)]
-    assert rewritten["tasks_kanban_state"] == %{"pending" => [encoded_id("Prepare", destination_task_id)]}
   end
 
   test "rewrites task kanban state ids" do

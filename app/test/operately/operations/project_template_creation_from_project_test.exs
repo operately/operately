@@ -105,9 +105,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert Enum.all?(template.tasks, &(&1.task_status.id == first_open.id))
 
     assert template.milestones_ordering_state == [Paths.project_template_milestone_id(milestone)]
-    assert template.tasks_kanban_state[first_open.value] == [Paths.project_template_task_id(root_task)]
     assert milestone.tasks_ordering_state == [Paths.project_template_task_id(milestone_task)]
-    assert milestone.tasks_kanban_state[first_open.value] == [Paths.project_template_task_id(milestone_task)]
 
     ctx.root_task |> Operately.Tasks.Task.changeset(%{name: "Changed source task"}) |> Repo.update!()
     persisted_template = template |> Repo.reload!() |> Repo.preload(:tasks)
@@ -497,7 +495,51 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert Repo.aggregate(Task, :count) == 0
   end
 
-  test "rejects workflows without an open status and mismatched Kanban columns", ctx do
+  test "seeds milestone ordering from the project board when milestone lists are empty", ctx do
+    # Release 1.9-shaped source: milestone-owned tasks live on the project board
+    # while milestone.tasks_ordering_state is empty. create_from_project should
+    # succeed and seed template milestone ordering from the project board.
+    [queued, done] = statuses()
+
+    source =
+      ctx.source
+      |> Project.changeset(%{
+        timeframe: timeframe(~D[2028-01-01], ~D[2028-01-31]),
+        task_statuses: status_attrs([queued, done])
+      })
+      |> Repo.update!()
+
+    ctx =
+      ctx
+      |> Map.put(:source, source)
+      |> Factory.add_project_milestone(:launch, :source, title: "Launch", timeframe: timeframe(nil, ~D[2028-01-20]))
+      |> Factory.add_project_task(:first_task, :launch, name: "First", due_date: nil, task_status: Map.from_struct(done))
+      |> Factory.add_project_task(:second_task, :launch, name: "Second", due_date: nil, task_status: Map.from_struct(queued))
+
+    source =
+      source
+      |> Project.changeset(%{
+        milestones_ordering_state: [Paths.milestone_id(ctx.launch)],
+        tasks_kanban_state: %{
+          queued.value => [Paths.task_id(ctx.second_task)],
+          done.value => [Paths.task_id(ctx.first_task)]
+        }
+      })
+      |> Repo.update!()
+
+    assert {:ok, template} = create_template(%{ctx | source: source}, name: "From board order")
+    template = Repo.preload(template, [:milestones, :tasks])
+    [milestone] = template.milestones
+    first = Enum.find(template.tasks, &(&1.name == "First"))
+    second = Enum.find(template.tasks, &(&1.name == "Second"))
+
+    assert milestone.tasks_ordering_state == [
+             Paths.project_template_task_id(second),
+             Paths.project_template_task_id(first)
+           ]
+  end
+
+  test "rejects workflows without an open status", ctx do
     [queued, done] = statuses()
 
     all_closed =
@@ -509,21 +551,6 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       |> Repo.update!()
 
     assert {:error, {:invalid_source, :no_open_task_status}} = create_template(%{ctx | source: all_closed})
-
-    source = all_closed |> Project.changeset(%{task_statuses: status_attrs([queued, done])}) |> Repo.update!()
-
-    ctx =
-      ctx
-      |> Map.put(:source, source)
-      |> Factory.add_project_task(:task, nil,
-        project_id: source.id,
-        due_date: nil,
-        task_status: Map.from_struct(done)
-      )
-
-    source = source |> Project.changeset(%{tasks_kanban_state: %{queued.value => [Paths.task_id(ctx.task)], done.value => []}}) |> Repo.update!()
-
-    assert {:error, {:invalid_source, :mismatched_kanban_status}} = create_template(%{ctx | source: source})
     assert Repo.aggregate(ProjectTemplate, :count) == 0
   end
 
