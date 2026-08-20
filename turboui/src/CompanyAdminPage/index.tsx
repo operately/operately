@@ -12,13 +12,19 @@ import {
   IconUser,
   IconUsers,
 } from "../icons";
-import { Link } from "../Link";
+import { DivLink, Link } from "../Link";
 import { OptionsMenuItem } from "../OptionsMenuItem";
 import { Page } from "../Page";
 import { PageSection } from "../PageSection";
+import { PRODUCT_RELEASES_PAGE_URL } from "../ProductReleaseAnnouncement/types";
 
 export namespace CompanyAdminPage {
   export type Person = AvatarPerson;
+
+  export interface CurrentRelease {
+    version: string;
+    title?: string;
+  }
 
   export interface Props {
     companyName: string;
@@ -41,6 +47,9 @@ export namespace CompanyAdminPage {
     manageAdminsPath: string;
     trustedDomainsPath: string;
     exportPath: string;
+
+    /** Latest published release, when the company should see release announcements. */
+    currentRelease?: CurrentRelease | null;
 
     onDeleteCompany: () => Promise<void>;
   }
@@ -91,6 +100,8 @@ export function CompanyAdminPage(props: CompanyAdminPage.Props) {
           companyName={props.companyName}
           onDeleteCompany={props.onDeleteCompany}
         />
+
+        <CurrentReleaseFooter release={props.currentRelease} />
       </div>
     </Page>
   );
@@ -149,6 +160,23 @@ function OwnersMenu(props: CompanyAdminPage.Props) {
         <OptionsMenuItem linkTo={props.exportPath} icon={IconFileExport} title="Export company data" />
       </div>
     </PageSection>
+  );
+}
+
+function CurrentReleaseFooter({ release }: { release?: CompanyAdminPage.CurrentRelease | null }) {
+  if (!release) return null;
+
+  return (
+    <div className="mt-12" data-test-id="company-admin-current-release">
+      <DivLink
+        to={PRODUCT_RELEASES_PAGE_URL}
+        target="_blank"
+        className="block truncate text-xs text-content-dimmed hover:underline"
+      >
+        <span className="font-bold">Operately {release.version}</span>
+        {release.title ? ` · ${release.title}` : null}
+      </DivLink>
+    </div>
   );
 }
 

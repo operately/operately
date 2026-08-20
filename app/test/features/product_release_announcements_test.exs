@@ -42,4 +42,25 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
     |> Steps.visit_company_home()
     |> Steps.assert_newer_toast_visible()
   end
+
+  feature "shows the latest release in Help and Company Admin", ctx do
+    ctx
+    |> Steps.enable_feature()
+    |> Steps.given_a_cached_release()
+    |> Steps.visit_company_home()
+    |> Steps.open_help_dropdown()
+    |> Steps.assert_help_current_release_visible()
+    |> Steps.visit_company_admin()
+    |> Steps.assert_admin_current_release_visible()
+  end
+
+  feature "hides Help and Admin release info when the feature is disabled", ctx do
+    ctx
+    |> Steps.given_a_cached_release()
+    |> Steps.visit_company_home()
+    |> Steps.open_help_dropdown()
+    |> Steps.refute_help_current_release_visible()
+    |> Steps.visit_company_admin()
+    |> Steps.refute_admin_current_release_visible()
+  end
 end
