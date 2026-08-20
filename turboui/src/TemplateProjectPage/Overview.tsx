@@ -1,11 +1,11 @@
 import React from "react";
 import { ActionList } from "../ActionList";
+import { MilestoneList } from "../MilestoneList";
 import { PageDescription } from "../PageDescription";
 import { RelativeDayField } from "../RelativeDayField";
 import { SidebarSection } from "../SidebarSection";
 import { IconArchive, IconCopy, IconRotate, IconTrash } from "../icons";
 import type { ProjectTemplateLifecycleAction } from "../ProjectTemplateLifecycle";
-import { MilestoneList } from "./MilestoneList";
 import type { TemplateProjectPage } from ".";
 import { TemplatePeople } from "./People";
 
@@ -31,7 +31,16 @@ export function Overview({ props, canEdit, onLifecycleAction }: OverviewProps) {
               zeroStatePlaceholder="Add a template description..."
             />
           </section>
-          <MilestoneList props={props} canEdit={canEdit} />
+          <div className="border-t border-surface-outline pt-8">
+            <MilestoneList
+              variant="project-template"
+              milestones={props.milestones}
+              canEdit={canEdit}
+              onMilestoneCreate={props.onMilestoneCreate}
+              onMilestoneUpdate={props.onMilestoneUpdate}
+              onMilestoneReorder={props.onMilestoneReorder}
+            />
+          </div>
         </div>
         <aside className="space-y-6 md:col-span-4 md:pl-8">
           <section>
