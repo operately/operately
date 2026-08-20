@@ -62,4 +62,35 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
   step :dismiss_toast, ctx do
     UI.click(ctx, testid: "product-release-toast-dismiss")
   end
+
+  step :open_help_dropdown, ctx do
+    UI.click(ctx, testid: "help-dropdown")
+  end
+
+  step :assert_help_current_release_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "help-current-release")
+    |> UI.assert_text("v1.8")
+  end
+
+  step :refute_help_current_release_visible, ctx do
+    UI.refute_has(ctx, testid: "help-current-release")
+  end
+
+  step :visit_company_admin, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+  end
+
+  step :assert_admin_current_release_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "company-admin-current-release")
+    |> UI.assert_text("Operately v1.8")
+    |> UI.assert_text(@v18.title)
+  end
+
+  step :refute_admin_current_release_visible, ctx do
+    UI.refute_has(ctx, testid: "company-admin-current-release")
+  end
 end

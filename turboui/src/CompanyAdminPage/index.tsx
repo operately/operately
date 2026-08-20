@@ -8,6 +8,7 @@ import {
   IconLetterCase,
   IconLock,
   IconShieldLock,
+  IconSpeakerphone,
   IconTrash,
   IconUser,
   IconUsers,
@@ -16,9 +17,15 @@ import { Link } from "../Link";
 import { OptionsMenuItem } from "../OptionsMenuItem";
 import { Page } from "../Page";
 import { PageSection } from "../PageSection";
+import { PRODUCT_RELEASES_PAGE_URL } from "../ProductReleaseAnnouncement/types";
 
 export namespace CompanyAdminPage {
   export type Person = AvatarPerson;
+
+  export interface CurrentRelease {
+    version: string;
+    title?: string;
+  }
 
   export interface Props {
     companyName: string;
@@ -41,6 +48,9 @@ export namespace CompanyAdminPage {
     manageAdminsPath: string;
     trustedDomainsPath: string;
     exportPath: string;
+
+    /** Latest published release, when the company should see release announcements. */
+    currentRelease?: CurrentRelease | null;
 
     onDeleteCompany: () => Promise<void>;
   }
@@ -86,6 +96,7 @@ export function CompanyAdminPage(props: CompanyAdminPage.Props) {
 
         <AdminsMenu {...props} />
         <OwnersMenu {...props} />
+        <CurrentReleaseSection release={props.currentRelease} />
         <DangerZone
           isOwner={props.isOwner}
           companyName={props.companyName}
@@ -148,6 +159,23 @@ function OwnersMenu(props: CompanyAdminPage.Props) {
         />
         <OptionsMenuItem linkTo={props.exportPath} icon={IconFileExport} title="Export company data" />
       </div>
+    </PageSection>
+  );
+}
+
+function CurrentReleaseSection({ release }: { release?: CompanyAdminPage.CurrentRelease | null }) {
+  if (!release) return null;
+
+  return (
+    <PageSection title="Version" testId="company-admin-current-release">
+      <OptionsMenuItem
+        icon={IconSpeakerphone}
+        linkTo={PRODUCT_RELEASES_PAGE_URL}
+        linkTarget="_blank"
+        title={`Operately ${release.version}`}
+        description={release.title}
+        truncateDescription
+      />
     </PageSection>
   );
 }

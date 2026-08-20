@@ -1,12 +1,20 @@
 import * as Companies from "@/models/companies";
 import * as React from "react";
 
+import { useCurrentProductRelease } from "@/models/productReleases/currentRelease";
 import { encodeUrlParams } from "@/routes/paths";
-import { IconBrandDiscordFilled, IconLifebuoy, IconMail, IconMap2, IconQuestionMark, IconSpeakerphone } from "turboui";
+import {
+  IconBrandDiscordFilled,
+  IconLifebuoy,
+  IconMail,
+  IconMap2,
+  IconQuestionMark,
+  IconSpeakerphone,
+  PRODUCT_RELEASES_PAGE_URL,
+} from "turboui";
 import { DropdownActionItem, DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 const supportEmail = "support@operately.com";
-const newsLink = "https://operately.com/releases";
 const roadmap = "https://operately.com/roadmap";
 
 const DiscordIcon = IconBrandDiscordFilled;
@@ -18,6 +26,8 @@ export function HelpDropdown({
   company: Companies.Company;
   onOpenKeyboardShortcuts: () => void;
 }) {
+  const currentRelease = useCurrentProductRelease(company);
+
   return (
     <DropdownMenu
       testId="help-dropdown"
@@ -36,7 +46,13 @@ export function HelpDropdown({
       <DropdownSeparator />
       <DropdownLinkItem path={contactUsLink(company)} icon={IconMail} title="Contact us" />
       <DropdownLinkItem path={window.appConfig!.discordUrl} icon={DiscordIcon} title="Discord chat" target="_blank" />
-      <DropdownLinkItem path={newsLink} icon={IconSpeakerphone} title="What's new" target="_blank" />
+      <DropdownLinkItem
+        path={PRODUCT_RELEASES_PAGE_URL}
+        icon={IconSpeakerphone}
+        title="What's new"
+        target="_blank"
+        hint={currentRelease ? <span data-test-id="help-current-release">{currentRelease.version}</span> : undefined}
+      />
       <DropdownLinkItem path={roadmap} icon={IconMap2} title="Roadmap" target="_blank" />
     </DropdownMenu>
   );
