@@ -40,6 +40,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { BillingDangerBanner } from "./BillingDangerBanner";
+import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
 import { SiteMessageBanner } from "./SiteMessageBanner";
 
 interface NavigationProps {
@@ -247,6 +248,7 @@ export default function CompanyLayout() {
   return (
     <div className="flex flex-col h-screen">
       <SiteMessageBanner />
+      <ProductReleaseAnnouncementBanner />
       <Navigation {...data} onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
       <SupportSessionBanner />
 

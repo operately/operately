@@ -24,6 +24,14 @@ defmodule Operately.ProductReleasesTest do
     :ok
   end
 
+  test "ensure_feature_enabled/1 requires the experimental feature" do
+    enabled = %Operately.Companies.Company{enabled_experimental_features: [ProductReleases.feature_name()]}
+    disabled = %Operately.Companies.Company{enabled_experimental_features: []}
+
+    assert {:ok, :enabled} = ProductReleases.ensure_feature_enabled(enabled)
+    assert {:error, :not_found} = ProductReleases.ensure_feature_enabled(disabled)
+  end
+
   test "fetches on cache miss" do
     with_mock Fetcher, [], fetch: fn -> {:ok, @release} end do
       assert ProductReleases.latest() == @release
