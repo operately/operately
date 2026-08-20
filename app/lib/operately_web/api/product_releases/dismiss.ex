@@ -13,6 +13,8 @@ defmodule OperatelyWeb.Api.ProductReleases.Dismiss do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
+    |> run(:company, fn -> find_company(conn) end)
+    |> run(:feature, fn ctx -> Operately.ProductReleases.ensure_feature_enabled(ctx.company) end)
     |> run(:operation, fn ctx ->
       Operately.People.update_person(ctx.me, %{
         preferences: %{dismissed_product_release_id: inputs.id}
@@ -25,6 +27,8 @@ defmodule OperatelyWeb.Api.ProductReleases.Dismiss do
     case result do
       {:ok, _} -> {:ok, %{success: true}}
       {:error, :me, _} -> {:error, :unauthorized}
+      {:error, :company, _} -> {:error, :not_found}
+      {:error, :feature, _} -> {:error, :not_found}
       {:error, :operation, %{error: %Ecto.Changeset{}}} -> {:error, :bad_request}
       _ -> {:error, :internal_server_error}
     end

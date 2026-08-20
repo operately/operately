@@ -10,7 +10,9 @@ defmodule OperatelyWeb.Api.ProductReleases.GetLatest do
   end
 
   def call(conn, _inputs) do
-    with {:ok, _me} <- find_me(conn) do
+    with {:ok, company} <- find_company(conn),
+         {:ok, _me} <- find_me(conn),
+         {:ok, :enabled} <- Operately.ProductReleases.ensure_feature_enabled(company) do
       {:ok, %{product_release: Serializer.serialize(Operately.ProductReleases.latest())}}
     else
       {:error, :not_found} -> {:error, :not_found}

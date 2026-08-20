@@ -1,4 +1,5 @@
 import Api from "@/api";
+import type { ProductRelease } from "@/api";
 import * as Socket from "@/api/socket";
 import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
@@ -6,12 +7,15 @@ import * as SiteMessages from "@/models/siteMessages";
 
 import { checkAuth } from "@/routes/pageRoute";
 
+export const PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE = "product_release_announcements";
+
 export interface CompanyLoadedData {
   company: Companies.Company;
   billingAccessState: Billing.BillingCompanyAccessState | null;
   canAddProject: boolean;
   canAddGoal: boolean;
   siteMessages: SiteMessages.SiteMessage[];
+  productRelease: ProductRelease | null;
 }
 
 export async function companyLoader({ params }): Promise<CompanyLoadedData> {
@@ -29,17 +33,44 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
         .catch(() => []),
     ]);
 
-    const billingAccessState = await fetchBillingAccessState();
+    const [billingAccessState, productRelease] = await Promise.all([
+      fetchBillingAccessState(),
+      fetchProductRelease(company),
+    ]);
 
-    return { company, billingAccessState, canAddProject: spacesCount > 0, canAddGoal: spacesCount > 0, siteMessages };
+    return {
+      company,
+      billingAccessState,
+      canAddProject: spacesCount > 0,
+      canAddGoal: spacesCount > 0,
+      siteMessages,
+      productRelease,
+    };
   } catch (error) {
     // If the company ID is invalid, the API will return a 400 message, but for the rest of the application, we can treat it as 404.
-    if (error["status"] === 400) {
-      error["status"] = 404;
-      throw error;
-    } else {
-      throw error;
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "status" in error &&
+      (error as { status: unknown }).status === 400
+    ) {
+      (error as { status: number }).status = 404;
     }
+
+    throw error;
+  }
+}
+
+async function fetchProductRelease(company: Companies.Company): Promise<ProductRelease | null> {
+  if (!Companies.hasFeature(company, PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE)) {
+    return null;
+  }
+
+  try {
+    const data = await Api.product_releases.getLatest({});
+    return data.productRelease ?? null;
+  } catch {
+    return null;
   }
 }
 
