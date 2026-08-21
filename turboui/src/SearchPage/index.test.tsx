@@ -36,7 +36,7 @@ function renderPage(props: Partial<React.ComponentProps<typeof SearchPage>> = {}
   };
 
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <SearchPage {...defaultProps} {...props} />
     </MemoryRouter>,
   );
@@ -66,7 +66,7 @@ describe("SearchPage", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Searching…");
 
     rerender(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <SearchPage
           query="evidence"
           status="success"
@@ -79,7 +79,7 @@ describe("SearchPage", () => {
     expect(screen.getByRole("status")).toHaveTextContent("No content found for “evidence”. Try different keywords.");
 
     rerender(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <SearchPage
           query="evidence"
           status="error"

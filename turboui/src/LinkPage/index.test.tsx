@@ -10,7 +10,7 @@ import { defaultFormattedTimePreferences } from "../FormattedTime";
 import type { CurrentSubscriptions } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
-import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
 jest.mock("../RichContent", () => ({
   __esModule: true,
@@ -50,8 +50,8 @@ const author = genPeople(1)[0]!;
 const richTextHandlers = createMockRichEditorHandlers();
 
 const subscriptions: CurrentSubscriptions.Props = {
-  subscribers: [{ person: author, isSubscribed: true, priority: false, role: null }],
-  subscribedPeople: [{ person: author, isSubscribed: true, priority: false, role: null }],
+  subscribers: [asSubscriber(author, { isSubscribed: true })],
+  subscribedPeople: [asSubscriber(author, { isSubscribed: true })],
   isCurrentUserSubscribed: true,
   resourceName: "link",
   onSubscribe: jest.fn(),

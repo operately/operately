@@ -49,7 +49,7 @@ function billingOverviewMock() {
 describe("CompanyBillingPage", () => {
   it("shows the refreshed stale billing warning and omits generic status badge labels", () => {
     render(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <CompanyBillingPage
           title={["Acme", "Billing"]}
           navigation={[{ label: "Company Administration", to: "/acme/admin" }]}

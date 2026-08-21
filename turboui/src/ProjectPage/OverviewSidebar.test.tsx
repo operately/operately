@@ -64,6 +64,8 @@ function SidebarHarness({
     activityFeed: <div />,
     onProjectDelete: () => undefined,
     tasks: [],
+    tasksView: "list",
+    onTasksViewChange: () => undefined,
     milestones: [],
     searchableMilestones: [],
     kanbanState: {} as ProjectPage.State["kanbanState"],
@@ -100,7 +102,7 @@ function SidebarHarness({
   } satisfies ProjectPage.State;
 
   return (
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <OverviewSidebar {...props} />
     </MemoryRouter>
   );

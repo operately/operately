@@ -74,7 +74,9 @@ describe("SearchIndexAdminPage", () => {
     expect(screen.getByText("Backfill · Source scan")).toBeInTheDocument();
     expect(screen.getAllByText("Started:")).toHaveLength(2);
     expect(screen.getByText("Completed:")).toBeInTheDocument();
-    expect(screen.getAllByText("Processed:")[0].parentElement).toHaveTextContent("120");
+    const processed = screen.getAllByText("Processed:")[0]?.parentElement;
+    if (!processed) throw new Error("expected processed count");
+    expect(processed).toHaveTextContent("120");
     expect(screen.getByText("invalid_source")).toBeInTheDocument();
     expect(screen.getByText("Not started")).toBeInTheDocument();
   });
@@ -83,7 +85,9 @@ describe("SearchIndexAdminPage", () => {
     const onStart = jest.fn().mockResolvedValue({ startedSourceTypes: ["project"], alreadyRunningSourceTypes: [] });
     renderPage(onStart);
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Run reconciliation" })[0]);
+    const reconcileButton = screen.getAllByRole("button", { name: "Run reconciliation" })[0];
+    if (!reconcileButton) throw new Error("expected a reconciliation button");
+    fireEvent.click(reconcileButton);
     const title = screen.getByText("Reconcile Projects?");
     expect(title).toBeInTheDocument();
 

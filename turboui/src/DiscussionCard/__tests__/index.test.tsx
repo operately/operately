@@ -10,9 +10,9 @@ import { defaultFormattedTimePreferences } from "../../utils/storybook/formatted
 describe("DiscussionCard", () => {
   it("renders the scheduled label and publication date", () => {
     render(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <DiscussionCard
-          mentionedPersonLookup={() => null}
+          mentionedPersonLookup={async () => null}
           formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",
@@ -35,9 +35,9 @@ describe("DiscussionCard", () => {
 
   it("renders a discussion without an author placeholder", () => {
     render(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <DiscussionCard
-          mentionedPersonLookup={() => null}
+          mentionedPersonLookup={async () => null}
           formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",
