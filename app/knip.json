@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
-  "entry": ["assets/js/app.tsx", "assets/build.js", "assets/codegen.ts"],
+  "entry": ["assets/js/app.tsx", "assets/build.js", "assets/codegen.ts", "vite.config.mjs"],
   "project": [
     "assets/js/**/*.ts",
     "assets/js/**/*.tsx",
@@ -8,16 +8,15 @@
     "ee/assets/js/**/*.ts",
     "ee/assets/js/**/*.tsx"
   ],
+  "vite": { "config": [] },
   "ignore": [
-    "vite.config.mjs",
-
     "assets/js/api/index.tsx",
     "ee/assets/js/admin_api/index.tsx",
     "**/__tests__/**",
     "assets/js/models/companies/hasFeature.tsx",
     "assets/js/routes/redirectUtils.tsx"
   ],
-  "ignoreDependencies": ["@types/jest", "turboui"],
+  "ignoreDependencies": ["turboui"],
 
   "rules": {
     "nsTypes": "off"

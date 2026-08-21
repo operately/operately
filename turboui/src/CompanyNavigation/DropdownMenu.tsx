@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 
-import { DivLink, IconChevronDown } from "turboui";
-
-import classNames from "classnames";
+import { DivLink } from "../Link";
+import { IconChevronDown } from "../icons";
+import classNames from "../utils/classnames";
 
 const contentClassName = classNames(
   "rounded-lg",
