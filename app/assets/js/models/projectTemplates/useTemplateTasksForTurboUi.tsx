@@ -375,8 +375,11 @@ export function useTemplateTasksForTurboUi({
         graph.statuses.find((item) => item.value === event.to.status || item.id === event.to.status) ?? null;
       if (!status) return false;
 
-      const previous = graph;
-      setGraph(applyKanbanBoardPatch(graph, event.updatedKanbanState, event.taskId, status));
+      let previous: TemplateTaskGraph | null = null;
+      setGraph((current) => {
+        previous = current;
+        return applyKanbanBoardPatch(current, event.updatedKanbanState, event.taskId, status);
+      });
 
       const saved = await handleTaskKanbanChange({
         taskId: event.taskId,
@@ -385,10 +388,10 @@ export function useTemplateTasksForTurboUi({
         updatedKanbanState: event.updatedKanbanState,
       });
 
-      if (!saved) setGraph(previous);
+      if (!saved && previous) setGraph(previous);
       return saved;
     },
-    [graph, handleTaskKanbanChange],
+    [graph.statuses, handleTaskKanbanChange],
   );
 
   return {
