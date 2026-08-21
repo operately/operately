@@ -138,17 +138,6 @@ export function applyKanbanBoardPatch(
   };
 }
 
-/** @deprecated Use applyKanbanBoardPatch — board kanban is always on the template root. */
-export function applyKanbanContainerPatch(
-  graph: TemplateTaskGraph,
-  _containerMilestoneId: string | null,
-  tasksKanbanState: TemplateProjectPage.Milestone["tasksKanbanState"],
-  taskId: string,
-  status: TemplateProjectPage.Task["status"],
-): TemplateTaskGraph {
-  return applyKanbanBoardPatch(graph, tasksKanbanState, taskId, status);
-}
-
 function moveId(ids: string[], id: string, destinationIndex: number) {
   const next = ids.filter((item) => item !== id);
   next.splice(Math.max(0, Math.min(destinationIndex, next.length)), 0, id);
