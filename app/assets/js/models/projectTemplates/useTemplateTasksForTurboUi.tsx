@@ -2,7 +2,7 @@ import React from "react";
 import Api, { type ProjectTemplate } from "@/api";
 import { applyTaskMove } from "@/models/tasks/listOrdering";
 import { compareIds } from "@/routes/paths";
-import type { TemplateProjectPage } from "turboui";
+import type { KanbanState, TemplateProjectPage } from "turboui";
 import {
   createTaskMove,
   createTemplateMilestone,
@@ -14,6 +14,7 @@ import {
   persistPersonUpdate,
   persistStatusesChange,
   persistTaskUpdate,
+  serializeJson,
   toTask,
   toTemplateMilestone,
   type Mutate,
@@ -22,6 +23,7 @@ import {
   applyCreatedMilestone,
   applyCreatedPerson,
   applyCreatedTask,
+  applyKanbanContainerPatch,
   applyMilestoneDeleted,
   applyMilestonePatch,
   applyMilestoneReorder,
@@ -46,6 +48,14 @@ type GraphCommit = {
 type PersistSession = GraphCommit & {
   templateId: string;
   mutate: Mutate;
+};
+
+type TaskKanbanChangeEvent = {
+  milestoneId: string | null;
+  taskId: string;
+  from: { status: string; index: number };
+  to: { status: string; index: number };
+  updatedKanbanState: KanbanState;
 };
 
 export async function performTemplateTaskReorder({
@@ -101,6 +111,59 @@ export async function performTemplateTaskUpdate({
 }: PersistSession & { taskId: string; updates: Partial<TemplateProjectPage.Task> }): Promise<boolean> {
   return persistGraphChange({ graph, commit }, applyTaskPatch(graph, taskId, updates), () =>
     mutate("Task not updated", () => persistTaskUpdate(templateId, taskId, updates)),
+  );
+}
+
+export async function performTemplateTaskKanbanChange({
+  graph,
+  templateId,
+  mutate,
+  event,
+  commit,
+}: PersistSession & { event: TaskKanbanChangeEvent }): Promise<boolean> {
+  const task = graph.tasks.find((item) => compareIds(item.id, event.taskId));
+  if (!task) return false;
+
+  const status =
+    graph.statuses.find((item) => item.value === event.to.status || item.id === event.to.status) ?? null;
+  if (!status) return false;
+
+  const containerMilestoneId = task.milestoneId;
+  const statusKeys = graph.statuses.map((item) => item.value || item.id);
+  const containerKanban = sliceKanbanForContainer(event.updatedKanbanState, graph.tasks, containerMilestoneId, statusKeys);
+  const next = applyKanbanContainerPatch(graph, containerMilestoneId, containerKanban, event.taskId, status);
+
+  return persistGraphChange({ graph, commit }, next, () =>
+    mutate("Task not updated", async () => {
+      await persistTaskUpdate(templateId, event.taskId, { status });
+
+      if (containerMilestoneId) {
+        await persistMilestoneUpdate(templateId, containerMilestoneId, { tasksKanbanState: containerKanban });
+      } else {
+        await Api.project_templates.update({
+          id: templateId,
+          tasksKanbanState: serializeJson(containerKanban),
+        });
+      }
+    }),
+  );
+}
+
+function sliceKanbanForContainer(
+  state: KanbanState,
+  tasks: TemplateProjectPage.Task[],
+  containerMilestoneId: string | null,
+  keys: string[],
+): KanbanState {
+  const containerTasks = tasks.filter((item) => compareIds(item.milestoneId, containerMilestoneId));
+
+  return Object.fromEntries(
+    keys.map((key) => [
+      key,
+      (state[key] ?? [])
+        .map((rawId) => containerTasks.find((item) => compareIds(item.id, rawId))?.id)
+        .filter((id): id is string => Boolean(id)),
+    ]),
   );
 }
 
@@ -334,6 +397,7 @@ export function useTemplateTasksForTurboUi({
     onTaskDelete: (taskId: string) => performTemplateTaskDelete({ ...session, taskId }),
     onTaskReorder: (taskId: string, milestoneId: string | null, index: number) =>
       performTemplateTaskReorder({ ...session, taskId, milestoneId, index }),
+    onTaskKanbanChange: (event: TaskKanbanChangeEvent) => performTemplateTaskKanbanChange({ ...session, event }),
     onMilestoneCreate: (
       milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">,
     ) => {

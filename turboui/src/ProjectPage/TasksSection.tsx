@@ -1,12 +1,9 @@
 import React from "react";
-import { useSearchParams } from "react-router";
 
-import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard";
+import { TaskBoard, TasksBoardView, useMilestoneFilter, useTaskDisplayMode } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
-import { compareIds } from "../utils/ids";
 
 import type { ProjectPage } from "./index";
-import { MilestoneViewSelector } from "./MilestoneViewSelector";
 
 export function TasksSection({ state }: { state: ProjectPage.State }) {
   const { selectedMilestone, tasks, onMilestoneFilterChange } = useMilestoneFilter({
@@ -21,7 +18,6 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     onTasksViewChange: state.onTasksViewChange,
   });
 
-  // When creating tasks from the kanban, create them within the selected milestone (if any).
   const onKanbanTaskCreate = React.useCallback(
     (task: TaskBoardTypes.NewTaskPayload) => {
       if (!selectedMilestone) {
@@ -57,51 +53,39 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     [onMilestoneFilterChange, setTaskDisplayMode],
   );
 
+  const canEdit = state.permissions.canEdit || false;
+
   if (taskDisplayMode === "board") {
     return (
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 m-4 px-1 mb-0">
-          <MilestoneViewSelector
-            milestones={state.milestones}
-            selectedMilestone={selectedMilestone}
-            canCreateMilestone={state.permissions.canEdit || false}
-            onChange={onMilestoneFilterChange}
-            onCreateMilestone={state.onMilestoneCreate}
-          />
-          <div className="flex items-center">
-            <TasksMenu
-              statuses={state.statuses}
-              onSaveCustomStatuses={state.onSaveCustomStatuses}
-              canManageStatuses={state.permissions.canEdit || false}
-            />
-            <TaskDisplayMenu mode={taskDisplayMode} onChange={handleDisplayModeChange} />
-          </div>
-        </div>
-
-        <KanbanBoard
-          tasks={tasks}
-          statuses={state.statuses}
-          kanbanState={state.kanbanState}
-          onTaskKanbanChange={state.onTaskKanbanChange}
-          onTaskCreate={onKanbanTaskCreate}
-          onTaskNameChange={state.onTaskNameChange}
-          onTaskAssigneeChange={state.onTaskAssigneeChange}
-          onTaskDueDateChange={state.onTaskDueDateChange}
-          onTaskRemindersChange={state.onTaskRemindersChange}
-          onTaskStatusChange={state.onTaskStatusChange}
-          onTaskMilestoneChange={handleTaskMilestoneChange}
-          onTaskDelete={state.onTaskDelete}
-          milestones={state.milestones}
-          onMilestoneSearch={state.onMilestoneSearch}
-          onTaskDescriptionChange={state.onTaskDescriptionChange}
-          richTextHandlers={state.richTextHandlers}
-          assigneePersonSearch={state.assigneePersonSearch}
-          getTaskPageProps={state.getTaskPageProps}
-          canEdit={state.permissions.canEdit || false}
-          onStatusesChange={state.onSaveCustomStatuses}
-          unstyled
-        />
-      </div>
+      <TasksBoardView
+        displayMode={taskDisplayMode}
+        onDisplayModeChange={handleDisplayModeChange}
+        selectedMilestone={selectedMilestone}
+        onMilestoneFilterChange={onMilestoneFilterChange}
+        canCreateMilestone={canEdit}
+        onCreateMilestone={state.onMilestoneCreate}
+        canManageStatuses={canEdit}
+        tasks={tasks}
+        statuses={state.statuses}
+        kanbanState={state.kanbanState}
+        onTaskKanbanChange={state.onTaskKanbanChange}
+        onTaskCreate={onKanbanTaskCreate}
+        onTaskNameChange={state.onTaskNameChange}
+        onTaskAssigneeChange={state.onTaskAssigneeChange}
+        onTaskDueDateChange={state.onTaskDueDateChange}
+        onTaskRemindersChange={state.onTaskRemindersChange}
+        onTaskStatusChange={state.onTaskStatusChange}
+        onTaskMilestoneChange={handleTaskMilestoneChange}
+        onTaskDelete={state.onTaskDelete}
+        milestones={state.milestones}
+        onMilestoneSearch={state.onMilestoneSearch}
+        onTaskDescriptionChange={state.onTaskDescriptionChange}
+        richTextHandlers={state.richTextHandlers}
+        assigneePersonSearch={state.assigneePersonSearch}
+        getTaskPageProps={state.getTaskPageProps}
+        canEdit={canEdit}
+        onStatusesChange={state.onSaveCustomStatuses}
+      />
     );
   }
 
@@ -130,9 +114,9 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         filters={state.filters}
         onFiltersChange={state.onFiltersChange}
         statuses={state.statuses}
-        canManageStatuses={state.permissions.canEdit || false}
-        canCreateMilestone={state.permissions.canEdit || false}
-        canCreateTask={state.permissions.canEdit || false}
+        canManageStatuses={canEdit}
+        canCreateMilestone={canEdit}
+        canCreateTask={canEdit}
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}
@@ -140,138 +124,4 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
       />
     </div>
   );
-}
-
-const TASK_DISPLAY_MODE_PARAM = "taskDisplay";
-
-function useTaskDisplayMode({
-  tasksView,
-  canPersistTasksView,
-  onTasksViewChange,
-}: {
-  tasksView: TaskBoardTypes.TaskDisplayMode;
-  canPersistTasksView: boolean;
-  onTasksViewChange: (mode: TaskBoardTypes.TaskDisplayMode) => void | Promise<void>;
-}) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [urlOverride, setUrlOverride] = React.useState<TaskBoardTypes.TaskDisplayMode | null>(() =>
-    parseTaskDisplayMode(searchParams.get(TASK_DISPLAY_MODE_PARAM)),
-  );
-  const [localMode, setLocalMode] = React.useState<TaskBoardTypes.TaskDisplayMode | null>(null);
-
-  React.useEffect(() => {
-    setLocalMode(null);
-  }, [tasksView]);
-
-  React.useEffect(() => {
-    const rawUrlValue = searchParams.get(TASK_DISPLAY_MODE_PARAM);
-
-    if (!rawUrlValue) {
-      return;
-    }
-
-    const urlMode = parseTaskDisplayMode(rawUrlValue);
-
-    if (urlMode) {
-      setUrlOverride(urlMode);
-    }
-
-    const next = new URLSearchParams(searchParams);
-    next.delete(TASK_DISPLAY_MODE_PARAM);
-    setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
-
-  const mode = urlOverride ?? localMode ?? tasksView;
-
-  const setMode = React.useCallback(
-    (nextMode: TaskBoardTypes.TaskDisplayMode) => {
-      setUrlOverride(null);
-      setLocalMode(nextMode);
-
-      if (canPersistTasksView) {
-        void onTasksViewChange(nextMode);
-      }
-    },
-    [canPersistTasksView, onTasksViewChange],
-  );
-
-  return [mode, setMode] as const;
-}
-
-const parseTaskDisplayMode = (value: unknown): TaskBoardTypes.TaskDisplayMode | null => {
-  if (value === "list" || value === "board") return value;
-  return null;
-};
-
-function useMilestoneFilter({
-  milestones,
-  tasks,
-}: {
-  milestones: TaskBoardTypes.Milestone[];
-  tasks: TaskBoardTypes.Task[];
-}) {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const milestonesById = React.useMemo(() => {
-    const map = new Map<string, TaskBoardTypes.Milestone>();
-    milestones.forEach((m) => map.set(m.id, m));
-    return map;
-  }, [milestones]);
-
-  const milestoneIdFromUrl = React.useMemo(() => {
-    const value = searchParams.get("milestone");
-    return value && value.length > 0 ? value : null;
-  }, [searchParams]);
-
-  const [selectedMilestoneId, setSelectedMilestoneId] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (!milestoneIdFromUrl) {
-      setSelectedMilestoneId(null);
-      return;
-    }
-
-    if (milestonesById.has(milestoneIdFromUrl)) {
-      setSelectedMilestoneId(milestoneIdFromUrl);
-      return;
-    }
-
-    const next = new URLSearchParams(searchParams);
-    next.delete("milestone");
-    setSearchParams(next, { replace: true });
-    setSelectedMilestoneId(null);
-  }, [milestoneIdFromUrl, milestonesById, searchParams, setSearchParams]);
-
-  const selectedMilestone = React.useMemo(() => {
-    if (!selectedMilestoneId) return null;
-    return milestonesById.get(selectedMilestoneId) ?? null;
-  }, [milestonesById, selectedMilestoneId]);
-
-  const filteredTasks = React.useMemo(() => {
-    if (!selectedMilestoneId) return tasks;
-    return tasks.filter((task) => compareIds(task.milestone?.id, selectedMilestoneId));
-  }, [selectedMilestoneId, tasks]);
-
-  const onMilestoneFilterChange = React.useCallback(
-    (nextMilestoneId: string | null) => {
-      const next = new URLSearchParams(searchParams);
-
-      if (nextMilestoneId) {
-        next.set("milestone", nextMilestoneId);
-      } else {
-        next.delete("milestone");
-      }
-
-      setSearchParams(next, { replace: true });
-      setSelectedMilestoneId(nextMilestoneId);
-    },
-    [searchParams, setSearchParams],
-  );
-
-  return {
-    selectedMilestone,
-    selectedMilestoneId,
-    tasks: filteredTasks,
-    onMilestoneFilterChange,
-  };
 }

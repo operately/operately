@@ -123,6 +123,30 @@ export function applyMilestoneReorder(
   };
 }
 
+/**
+ * Updates a task's status and the kanban columns for its container (template root or one milestone).
+ */
+export function applyKanbanContainerPatch(
+  graph: TemplateTaskGraph,
+  containerMilestoneId: string | null,
+  tasksKanbanState: TemplateProjectPage.Milestone["tasksKanbanState"],
+  taskId: string,
+  status: TemplateProjectPage.Task["status"],
+): TemplateTaskGraph {
+  const withTask = applyTaskPatch(graph, taskId, { status });
+
+  if (!containerMilestoneId) {
+    return { ...withTask, tasksKanbanState };
+  }
+
+  return {
+    ...withTask,
+    milestones: withTask.milestones.map((milestone) =>
+      compareIds(milestone.id, containerMilestoneId) ? { ...milestone, tasksKanbanState } : milestone,
+    ),
+  };
+}
+
 function moveId(ids: string[], id: string, destinationIndex: number) {
   const next = ids.filter((item) => item !== id);
   next.splice(Math.max(0, Math.min(destinationIndex, next.length)), 0, id);

@@ -198,6 +198,13 @@ export namespace TemplateProjectPage {
       milestoneId: string | null,
       destinationIndex: number,
     ) => void | boolean | Promise<void | boolean>;
+    onTaskKanbanChange?: (event: {
+      milestoneId: string | null;
+      taskId: string;
+      from: { status: string; index: number };
+      to: { status: string; index: number };
+      updatedKanbanState: KanbanState;
+    }) => void | boolean | Promise<void | boolean>;
     getTemplateTaskPageProps?: GetTemplateTaskPageProps;
     onPersonCreate?: (person: Omit<TemplatePerson, "id" | "active">) => void | boolean | Promise<void | boolean>;
     onPersonUpdate?: (

@@ -6,23 +6,230 @@ import { BlackLink } from "../Link";
 import { isContentEmpty } from "../RichContent";
 import { DescriptionIndicator } from "../TaskBoard/components/DescriptionIndicator";
 import { TaskSectionEmptyState } from "../MilestonePage/components/TaskSectionEmptyState";
-import { TasksMenu } from "../TaskBoard";
+import { TasksBoardView, TasksMenu, TaskDisplayMenu, useMilestoneFilter, useTaskDisplayMode } from "../TaskBoard";
 import { TemplateTaskList } from "../TaskBoard/components/TemplateTaskList";
 import { InlineTaskCreator } from "../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../TaskBoard/hooks/useInlineTaskCreator";
 import { useTaskSlideInSelection } from "../TaskBoard/hooks/useTaskSlideInSelection";
 import { TaskSlideIn } from "../TaskBoard/KanbanView/TaskSlideIn";
-import type { TemplateTaskSlideInContext } from "../TaskBoard/KanbanView/types";
+import type { KanbanState, TemplateTaskSlideInContext } from "../TaskBoard/KanbanView/types";
+import type { Task, TaskDisplayMode } from "../TaskBoard/types";
 import { TaskCreationModal } from "../TaskCreationModal";
 import { MilestoneFormModal } from "./MilestoneFormModal";
 import type { TemplateProjectPage } from ".";
 import { useBoardDnD } from "../utils/PragmaticDragAndDrop";
 import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
+import { compareIds } from "../utils/ids";
+import {
+  fillKanbanFromTasks,
+  mergeKanbanStates,
+  statusKeys,
+  toBoardMilestone,
+  toBoardTask,
+  toTemplateTaskCreatePayload,
+} from "./kanbanAdapters";
 
 const ROOT_TASKS_CONTAINER_ID = "no-milestone";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
+  const [taskDisplayMode, setTaskDisplayMode] = useTaskDisplayMode({
+    tasksView: "list",
+    canPersistTasksView: false,
+  });
+  const boardMilestones = React.useMemo(() => props.milestones.map(toBoardMilestone), [props.milestones]);
+  const allBoardTasks = React.useMemo(
+    () => props.tasks.map((task) => toBoardTask(task, props.milestones)),
+    [props.milestones, props.tasks],
+  );
+  const { selectedMilestone, selectedMilestoneId, tasks: boardTasks, onMilestoneFilterChange } = useMilestoneFilter({
+    milestones: boardMilestones,
+    tasks: allBoardTasks,
+  });
+
+  const handleDisplayModeChange = React.useCallback(
+    (mode: TaskDisplayMode) => {
+      setTaskDisplayMode(mode);
+      if (mode === "list") onMilestoneFilterChange(null);
+    },
+    [onMilestoneFilterChange, setTaskDisplayMode],
+  );
+
+  if (taskDisplayMode === "board") {
+    return (
+      <BoardView
+        props={props}
+        canEdit={canEdit}
+        taskDisplayMode={taskDisplayMode}
+        onDisplayModeChange={handleDisplayModeChange}
+        boardMilestones={boardMilestones}
+        selectedMilestone={selectedMilestone}
+        selectedMilestoneId={selectedMilestoneId}
+        boardTasks={boardTasks}
+        onMilestoneFilterChange={onMilestoneFilterChange}
+      />
+    );
+  }
+
+  return (
+    <ListView
+      props={props}
+      canEdit={canEdit}
+      taskDisplayMode={taskDisplayMode}
+      onDisplayModeChange={handleDisplayModeChange}
+    />
+  );
+}
+
+function BoardView({
+  props,
+  canEdit,
+  taskDisplayMode,
+  onDisplayModeChange,
+  boardMilestones,
+  selectedMilestone,
+  selectedMilestoneId,
+  boardTasks,
+  onMilestoneFilterChange,
+}: {
+  props: TemplateProjectPage.Props;
+  canEdit: boolean;
+  taskDisplayMode: TaskDisplayMode;
+  onDisplayModeChange: (mode: TaskDisplayMode) => void;
+  boardMilestones: ReturnType<typeof toBoardMilestone>[];
+  selectedMilestone: Task["milestone"];
+  selectedMilestoneId: string | null;
+  boardTasks: Task[];
+  onMilestoneFilterChange: (milestoneId: string | null) => void;
+}) {
+  const templateTasks = React.useMemo(() => {
+    if (!selectedMilestoneId) return props.tasks;
+    return props.tasks.filter((task) => compareIds(task.milestoneId, selectedMilestoneId));
+  }, [props.tasks, selectedMilestoneId]);
+
+  const keys = React.useMemo(() => statusKeys(props.statuses), [props.statuses]);
+  const kanbanState = React.useMemo(() => {
+    if (selectedMilestoneId) {
+      const milestone = props.milestones.find((item) => compareIds(item.id, selectedMilestoneId));
+      return fillKanbanFromTasks(milestone?.tasksKanbanState ?? {}, templateTasks, keys);
+    }
+
+    const root = fillKanbanFromTasks(
+      props.template.tasksKanbanState,
+      templateTasks.filter((task) => compareIds(task.milestoneId, null)),
+      keys,
+    );
+    const milestoneStates = props.milestones.map((milestone) =>
+      fillKanbanFromTasks(
+        milestone.tasksKanbanState,
+        templateTasks.filter((task) => compareIds(task.milestoneId, milestone.id)),
+        keys,
+      ),
+    );
+
+    return mergeKanbanStates([root, ...milestoneStates], keys);
+  }, [keys, props.milestones, props.template.tasksKanbanState, selectedMilestoneId, templateTasks]);
+
+  const slideInContext = useTemplateSlideInContext(props, canEdit);
+  const defaultStatus = props.statuses[0];
+
+  const handleStatusChange = React.useCallback(
+    (taskId: string, status: TemplateProjectPage.Task["status"] | null) => {
+      if (!status) return;
+      const statusKey = status.value || status.id;
+      const fromStatus =
+        keys.find((key) => (kanbanState[key] ?? []).some((id) => compareIds(id, taskId))) ?? keys[0] ?? statusKey;
+      const fromIndex = (kanbanState[fromStatus] ?? []).findIndex((id) => compareIds(id, taskId));
+      const withoutTask = Object.fromEntries(
+        keys.map((key) => [key, (kanbanState[key] ?? []).filter((id) => !compareIds(id, taskId))]),
+      ) as KanbanState;
+      const destinationIndex = status.closed ? 0 : (withoutTask[statusKey] ?? []).length;
+      const column = [...(withoutTask[statusKey] ?? [])];
+      column.splice(destinationIndex, 0, taskId);
+      const updatedKanbanState = { ...withoutTask, [statusKey]: column };
+
+      void props.onTaskKanbanChange?.({
+        milestoneId: selectedMilestoneId,
+        taskId,
+        from: { status: fromStatus, index: Math.max(fromIndex, 0) },
+        to: { status: statusKey, index: destinationIndex },
+        updatedKanbanState,
+      });
+    },
+    [kanbanState, keys, props, selectedMilestoneId],
+  );
+
+  return (
+    <TasksBoardView
+      testId="template-task-board"
+      displayMode={taskDisplayMode}
+      onDisplayModeChange={onDisplayModeChange}
+      selectedMilestone={selectedMilestone}
+      onMilestoneFilterChange={onMilestoneFilterChange}
+      canCreateMilestone={canEdit && Boolean(props.onMilestoneCreate)}
+      onCreateMilestone={(milestone) => {
+        props.onMilestoneCreate?.({
+          title: milestone.name,
+          description: null,
+          dueOffsetDays: null,
+        });
+        return { success: true };
+      }}
+      canManageStatuses={canEdit && Boolean(props.onStatusesChange)}
+      tasks={boardTasks}
+      statuses={props.statuses}
+      kanbanState={kanbanState}
+      onTaskKanbanChange={props.onTaskKanbanChange}
+      onTaskCreate={
+        defaultStatus
+          ? (payload) => props.onTaskCreate?.(toTemplateTaskCreatePayload(payload, selectedMilestoneId, defaultStatus))
+          : undefined
+      }
+      onTaskNameChange={(taskId, name) => void props.onTaskUpdate?.(taskId, { name })}
+      onTaskAssigneeChange={(taskId, people) =>
+        void props.onTaskUpdate?.(taskId, {
+          assignees: people.map((person) => ({
+            id: person.id,
+            person,
+            role: "contributor",
+            responsibility: null,
+            accessLevel: 70,
+            active: true,
+          })),
+        })
+      }
+      onTaskStatusChange={handleStatusChange}
+      onTaskMilestoneChange={(taskId, milestone) =>
+        void props.onTaskUpdate?.(taskId, { milestoneId: milestone?.id ?? null })
+      }
+      onTaskDelete={(taskId) => void props.onTaskDelete?.(taskId)}
+      onTaskDescriptionChange={async (taskId, description) => {
+        const result = await props.onTaskUpdate?.(taskId, { description });
+        return result !== false;
+      }}
+      milestones={boardMilestones}
+      assigneePersonSearch={props.personSearch}
+      richTextHandlers={props.richTextHandlers}
+      getTaskPageProps={(taskId) =>
+        props.getTemplateTaskPageProps ? props.getTemplateTaskPageProps(taskId, slideInContext) : null
+      }
+      canEdit={canEdit}
+      onStatusesChange={props.onStatusesChange}
+    />
+  );
+}
+
+function ListView({
+  props,
+  canEdit,
+  taskDisplayMode,
+  onDisplayModeChange,
+}: {
+  props: TemplateProjectPage.Props;
+  canEdit: boolean;
+  taskDisplayMode: TaskDisplayMode;
+  onDisplayModeChange: (mode: TaskDisplayMode) => void;
+}) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [createMilestoneId, setCreateMilestoneId] = React.useState<string | undefined>();
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
@@ -47,34 +254,7 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
   const activeDraggedItemId = isDraggingEnabled ? draggedItemId : null;
   const activeDestination = isDraggingEnabled ? destination : null;
-  const slideInContext = React.useMemo<TemplateTaskSlideInContext>(
-    () => ({
-      tasks: props.tasks,
-      milestones: props.milestones,
-      statuses: props.statuses,
-      onTaskCreate: props.onTaskCreate,
-      onTaskUpdate: props.onTaskUpdate,
-      onTaskDelete: props.onTaskDelete,
-      onTaskReorder: props.onTaskReorder,
-      personSearch: props.personSearch,
-      richTextHandlers: props.richTextHandlers,
-      canEdit,
-      formattedTimePreferences: props.formattedTimePreferences,
-    }),
-    [
-      canEdit,
-      props.formattedTimePreferences,
-      props.milestones,
-      props.onTaskCreate,
-      props.onTaskDelete,
-      props.onTaskReorder,
-      props.onTaskUpdate,
-      props.personSearch,
-      props.richTextHandlers,
-      props.statuses,
-      props.tasks,
-    ],
-  );
+  const slideInContext = useTemplateSlideInContext(props, canEdit);
   const taskPageProps =
     selectedTaskId && props.getTemplateTaskPageProps
       ? props.getTemplateTaskPageProps(selectedTaskId, slideInContext)
@@ -90,25 +270,30 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col pb-8" data-test-id="template-task-board">
-      {canEdit && (
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 bg-surface-base px-4 py-4 sm:items-center sm:py-6 lg:px-0">
-          <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-4">
-            <PrimaryButton size="xs" onClick={() => openCreateModal()} testId="add-template-task">
-              New task
-            </PrimaryButton>
-            <SecondaryButton size="xs" onClick={() => setIsCreatingMilestone(true)} testId="add-template-milestone">
-              New milestone
-            </SecondaryButton>
-          </div>
-          <div className="flex flex-shrink-0 items-center gap-1 sm:-mb-2">
+      <div className="sticky top-0 z-10 flex items-start justify-between gap-3 bg-surface-base px-4 py-4 sm:items-center sm:py-6 lg:px-0">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-4">
+          {canEdit && (
+            <>
+              <PrimaryButton size="xs" onClick={() => openCreateModal()} testId="add-template-task">
+                New task
+              </PrimaryButton>
+              <SecondaryButton size="xs" onClick={() => setIsCreatingMilestone(true)} testId="add-template-milestone">
+                New milestone
+              </SecondaryButton>
+            </>
+          )}
+        </div>
+        <div className="flex flex-shrink-0 items-center gap-1 sm:-mb-2">
+          {canEdit && (
             <TasksMenu
               canManageStatuses={Boolean(props.onStatusesChange)}
               statuses={props.statuses}
               onSaveCustomStatuses={(payload) => props.onStatusesChange?.(payload)}
             />
-          </div>
+          )}
+          <TaskDisplayMenu mode={taskDisplayMode} onChange={onDisplayModeChange} />
         </div>
-      )}
+      </div>
       <TaskCreationModal
         variant="project-template"
         isOpen={isCreating}
@@ -164,6 +349,37 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
         )}
       </div>
     </div>
+  );
+}
+
+function useTemplateSlideInContext(props: TemplateProjectPage.Props, canEdit: boolean): TemplateTaskSlideInContext {
+  return React.useMemo(
+    () => ({
+      tasks: props.tasks,
+      milestones: props.milestones,
+      statuses: props.statuses,
+      onTaskCreate: props.onTaskCreate,
+      onTaskUpdate: props.onTaskUpdate,
+      onTaskDelete: props.onTaskDelete,
+      onTaskReorder: props.onTaskReorder,
+      personSearch: props.personSearch,
+      richTextHandlers: props.richTextHandlers,
+      canEdit,
+      formattedTimePreferences: props.formattedTimePreferences,
+    }),
+    [
+      canEdit,
+      props.formattedTimePreferences,
+      props.milestones,
+      props.onTaskCreate,
+      props.onTaskDelete,
+      props.onTaskReorder,
+      props.onTaskUpdate,
+      props.personSearch,
+      props.richTextHandlers,
+      props.statuses,
+      props.tasks,
+    ],
   );
 }
 
