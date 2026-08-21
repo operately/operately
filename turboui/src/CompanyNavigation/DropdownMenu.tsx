@@ -31,6 +31,8 @@ interface DropdownMenuProps {
   showDropdownIcon?: boolean;
   minWidth?: number;
   triggerClassName?: string;
+  /** Shown on hover when the visible name is truncated. */
+  title?: string;
 }
 
 export function DropdownMenu(props: DropdownMenuProps) {
@@ -65,7 +67,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <div className={triggerClassName} data-test-id={props.testId}>
+        <div className={triggerClassName} data-test-id={props.testId} title={props.title}>
           {React.createElement(props.icon, { size: 16 })}
           <div className="font-semibold">{props.name}</div>
           {props.showDropdownIcon && <IconChevronDown size={16} />}

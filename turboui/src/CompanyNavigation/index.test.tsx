@@ -65,4 +65,13 @@ describe("CompanyNavigation", () => {
 
     expect(onLogOut).toHaveBeenCalled();
   });
+
+  it("truncates long company names in the dropdown trigger", () => {
+    renderNav({ companyName: "Nexus Global Manufacturing Group" });
+
+    const trigger = getByTestId("company-dropdown");
+
+    expect(trigger).toHaveTextContent("Nexus Global Manufactur…");
+    expect(trigger).toHaveAttribute("title", "Nexus Global Manufacturing Group");
+  });
 });

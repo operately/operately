@@ -22,13 +22,21 @@ import { CompanyDropdown } from "./CompanyDropdown";
 import { HelpDropdown } from "./HelpDropdown";
 import { NewDropdown } from "./NewDropdown";
 import { Review } from "./Review";
-import { CompanyNavigationLinks, CompanyNavigationPerson, CompanyNavigationProps } from "./types";
+import {
+  CompanyNavigationLinks,
+  CompanyNavigationPerson,
+  CompanyNavigationProps,
+  CompanyNavigationUpdate,
+} from "./types";
+import { truncateCompanyName } from "./truncateCompanyName";
+import { UpdateBadge } from "./UpdateBadge";
 import { User } from "./User";
 
 export namespace CompanyNavigation {
   export type Person = CompanyNavigationPerson;
   export type Links = CompanyNavigationLinks;
   export type Props = CompanyNavigationProps;
+  export type Update = CompanyNavigationUpdate;
 }
 
 export function CompanyNavigation(props: CompanyNavigation.Props) {
@@ -43,6 +51,7 @@ export function CompanyNavigation(props: CompanyNavigation.Props) {
 
 function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Props) {
   const [open, setOpen] = React.useState(false);
+  const displayName = truncateCompanyName(companyName);
 
   return (
     <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
@@ -51,8 +60,12 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
           <DivLink className="flex items-center gap-2 cursor-pointer" to={links.home}>
             <OperatelyLogo />
           </DivLink>
-          <DivLink className="font-bold cursor-pointer" to={links.home}>
-            {companyName}
+          <DivLink
+            className="font-bold cursor-pointer"
+            to={links.home}
+            title={displayName === companyName ? undefined : companyName}
+          >
+            {displayName}
           </DivLink>
         </div>
 
@@ -153,6 +166,8 @@ function DesktopNavigation(props: CompanyNavigationProps) {
           <DivLink className="flex items-center gap-2 cursor-pointer" to={links.home}>
             <OperatelyLogo />
           </DivLink>
+
+          <UpdateBadge update={props.availableUpdate} />
 
           <div className="border-l border-surface-outline px-2.5 ml-4">
             <CompanyDropdown
