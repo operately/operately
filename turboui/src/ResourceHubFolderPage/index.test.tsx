@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -38,7 +38,15 @@ function ResourceHubFolderPageHarness({
       permissions: createMockPermissions({
         canRenameFolder,
       }),
-      pathToFolder: [{ id: "parent-folder", name: "People Ops", resourceHubId: resourceHub.id, resourceHub }],
+      pathToFolder: [
+        {
+          __typename: "resource_hub_folder",
+          id: "parent-folder",
+          name: "People Ops",
+          resourceHubId: resourceHub.id,
+          resourceHub,
+        },
+      ],
     }),
   );
   const [nodes] = React.useState<React.ComponentProps<typeof ResourceHubFolderPage>["nodesListProps"]["nodes"]>([]);
@@ -49,7 +57,7 @@ function ResourceHubFolderPageHarness({
   });
 
   return (
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <ResourceHubFolderPage
         {...sharedProps}
         title={folder.name ?? "Folder"}

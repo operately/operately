@@ -41,6 +41,8 @@ function TestEditor({ content, onEditorReady }: { content: string; onEditorReady
         setContent: jest.fn(),
         setFocused: jest.fn(),
         getJson: jest.fn(),
+        localDraftRestored: false,
+        clearLocalDraft: jest.fn(),
       }}
     >
       <EditorContent editor={editor} />

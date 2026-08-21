@@ -1,9 +1,34 @@
+import type { Person as ApiPerson, Subscriber as ApiSubscriber } from "../../ApiTypes";
+
 export interface Person {
   id: string;
   fullName: string;
   title: string;
   avatarUrl: string | null;
   profileLink: string;
+}
+
+export function asApiPerson(person: Person): ApiPerson {
+  return {
+    __typename: "person",
+    id: person.id,
+    fullName: person.fullName,
+    title: person.title,
+    avatarUrl: person.avatarUrl,
+    email: `${person.id}@example.com`,
+    type: "member",
+  };
+}
+
+export function asSubscriber(person: Person, extras: Partial<ApiSubscriber> = {}): ApiSubscriber {
+  return {
+    __typename: "subscriber",
+    person: asApiPerson(person),
+    isSubscribed: false,
+    priority: false,
+    role: null,
+    ...extras,
+  };
 }
 
 interface Opts {

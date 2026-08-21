@@ -10,10 +10,10 @@ import { defaultFormattedTimePreferences } from "../../utils/storybook/formatted
 describe("CheckInCard", () => {
   function renderCard(author = null, scheduledAt: string | null = null) {
     return render(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <CheckInCard
           type="goal"
-          mentionedPersonLookup={() => null}
+          mentionedPersonLookup={async () => null}
           formattedTimePreferences={defaultFormattedTimePreferences}
           checkIn={{
             link: "/goals/check-ins/1",

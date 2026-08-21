@@ -125,6 +125,7 @@ describe("GlobalSearch", () => {
     const quickResult = screen.getByRole("option", { name: "Space result" });
     const fullTextAction = screen.getByRole("option", { name: "Search all content for “result”" });
     const scrollableResults = quickResult.closest(".overflow-y-auto");
+    if (!(scrollableResults instanceof HTMLElement)) throw new Error("expected scrollable results");
 
     expect(listbox).toContainElement(scrollableResults);
     expect(scrollableResults).not.toContainElement(fullTextAction);

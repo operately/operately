@@ -16,7 +16,9 @@ import {
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 
 function billingOverviewMock(
-  params: Partial<CompanyBillingPageTypes.BillingOverview> = {},
+  params: Omit<Partial<CompanyBillingPageTypes.BillingOverview>, "account"> & {
+    account?: Partial<CompanyBillingPageTypes.BillingAccount>;
+  } = {},
 ): CompanyBillingPageTypes.BillingOverview {
   const { account, ...rest } = params;
 

@@ -309,7 +309,7 @@ describe("resource hub navigation", () => {
 });
 
 function renderWithRouter(ui: React.ReactElement) {
-  render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>);
+  render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
 function expectNavigationLinks(items: Array<[string, string]>) {

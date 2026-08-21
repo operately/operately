@@ -7,7 +7,7 @@ import { ActionLink, BlackLink, Link } from ".";
 import { Tooltip } from "../Tooltip";
 
 function renderWithRouter(ui: React.ReactElement) {
-  return render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>);
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
 describe("Link", () => {
