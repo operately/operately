@@ -33,6 +33,7 @@ export const sampleTemplateMilestones: TemplateProjectPage.Milestone[] = [
     description: null,
     dueOffsetDays: 0,
     tasksOrderingState: ["invite"],
+    tasksKanbanState: {},
     link: "/project-templates/launch-template/milestones/beta",
   },
   {
@@ -41,6 +42,7 @@ export const sampleTemplateMilestones: TemplateProjectPage.Milestone[] = [
     description: asRichText("Coordinate the public launch activities."),
     dueOffsetDays: 21,
     tasksOrderingState: ["announce"],
+    tasksKanbanState: {},
     link: "/project-templates/launch-template/milestones/launch",
   },
 ];

@@ -4,7 +4,7 @@ defmodule Operately.ProjectTemplates.Milestone do
   use Operately.Schema
 
   alias Operately.ProjectTemplates.{ProjectTemplate, Task}
-  alias Operately.Tasks.OrderingState
+  alias Operately.Tasks.{KanbanState, OrderingState}
 
   schema "project_template_milestones" do
     belongs_to :project_template, ProjectTemplate
@@ -14,6 +14,7 @@ defmodule Operately.ProjectTemplates.Milestone do
     field :description, :map
     field :due_offset_days, :integer
     field :tasks_ordering_state, {:array, :string}, default: OrderingState.initialize()
+    field :tasks_kanban_state, :map, default: KanbanState.initialize()
 
     timestamps()
   end
@@ -27,7 +28,8 @@ defmodule Operately.ProjectTemplates.Milestone do
       :title,
       :description,
       :due_offset_days,
-      :tasks_ordering_state
+      :tasks_ordering_state,
+      :tasks_kanban_state
     ])
     |> validate_required([:project_template_id, :title])
     |> validate_number(:due_offset_days, greater_than_or_equal_to: 0)

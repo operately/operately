@@ -225,6 +225,7 @@ describe("TasksSection", () => {
             description: null,
             dueOffsetDays: null,
             tasksOrderingState: ["task-2", "task-1"],
+            tasksKanbanState: {},
             link: "/templates/template-1/milestones/milestone-1",
           },
         ],

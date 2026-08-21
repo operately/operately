@@ -79,7 +79,7 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
 
   defmodule Planner do
     alias Operately.ProjectTemplates.{Milestone, Person, ProjectTemplate, Task}
-    alias Operately.ProjectTemplates.Graph.Copy
+    alias Operately.ProjectTemplates.Graph.{Copy, Kanban}
     alias OperatelyWeb.Paths
 
     def build(source, creator_id, name) do
@@ -103,6 +103,7 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
              duration_days: source.duration_days,
              task_statuses: Enum.map(workflow.copied, &Copy.status_attrs/1),
              milestones_ordering_state: graph.milestones_ordering_state,
+             tasks_kanban_state: graph.tasks_kanban_state,
              archived_at: nil,
              deleted_at: nil
            }
@@ -119,12 +120,14 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
 
       with {:ok, milestone_ordering} <-
              Copy.map_ordering(source.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
-           {:ok, milestones} <- plan_milestone_states(milestones, tasks) do
+           {:ok, root_kanban} <- plan_kanban(source.tasks_kanban_state, root_tasks(tasks), workflow),
+           {:ok, milestones} <- plan_milestone_states(milestones, tasks, workflow) do
         {:ok,
          %{
            milestones: milestones,
            tasks: tasks,
-           milestones_ordering_state: milestone_ordering
+           milestones_ordering_state: milestone_ordering,
+           tasks_kanban_state: root_kanban
          }}
       end
     end
@@ -140,15 +143,21 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
       }
     end
 
-    defp plan_milestone_states(milestones, tasks) do
+    defp plan_milestone_states(milestones, tasks, workflow) do
       Enum.reduce_while(milestones, {:ok, []}, fn milestone, {:ok, planned} ->
         container_tasks = milestone_tasks(tasks, milestone.source.id)
 
-        case Copy.map_ordering(milestone.source.tasks_ordering_state, container_tasks, &source_task_path/1, &target_task_path/1) do
-          {:ok, ordering} -> {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering})]}}
+        with {:ok, ordering} <- Copy.map_ordering(milestone.source.tasks_ordering_state, container_tasks, &source_task_path/1, &target_task_path/1),
+             {:ok, kanban} <- plan_kanban(milestone.source.tasks_kanban_state, container_tasks, workflow) do
+          {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban})]}}
+        else
           error -> {:halt, error}
         end
       end)
+    end
+
+    defp plan_kanban(state, tasks, workflow) do
+      Kanban.remap(state, tasks, workflow, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
     end
 
     defp plan_people(source, tasks) do
@@ -176,6 +185,7 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
     defp target_milestone_path(planned), do: Paths.project_template_milestone_id(planned.target)
     defp source_task_path(planned), do: Paths.project_template_task_id(planned.source)
     defp target_task_path(planned), do: Paths.project_template_task_id(planned.target)
+    defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.project_template_milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.project_template_milestone_id == milestone_id))
   end
 
@@ -212,7 +222,8 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
             title: planned.source.title,
             description: planned.source.description,
             due_offset_days: planned.source.due_offset_days,
-            tasks_ordering_state: planned.tasks_ordering_state
+            tasks_ordering_state: planned.tasks_ordering_state,
+            tasks_kanban_state: planned.tasks_kanban_state
           })
         end,
         repo,

@@ -95,16 +95,6 @@ defmodule Operately.ProjectTemplates.Graph.Copy do
   def status_key(status), do: status.value || status.id
 
   @doc """
-  Builds a Kanban board with every task path in the first open status column.
-
-  Used when materializing templates, which do not store Kanban state.
-  """
-  def synthesize_kanban(ordered_paths, %{copied: copied, first_open: first_open}) when is_list(ordered_paths) do
-    empty = Map.new(copied, &{status_key(&1), []})
-    {:ok, Map.put(empty, status_key(first_open), ordered_paths)}
-  end
-
-  @doc """
   Flattens a project Kanban board into task path order by workflow status index.
 
   Used when seeding milestone ordering from a project that keeps milestone tasks

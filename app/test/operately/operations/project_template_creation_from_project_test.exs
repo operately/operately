@@ -27,7 +27,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     |> Factory.add_project(:source, :space, name: "Source project")
   end
 
-  test "creates an independent core template graph with relative dates and reset task state", ctx do
+  test "creates an independent core template graph with relative dates and copied task state", ctx do
     [queued, done] = statuses()
     start_date = ~D[2028-02-15]
 
@@ -80,7 +80,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     [milestone] = template.milestones
     root_task = Enum.find(template.tasks, &(&1.name == "Prepare brief"))
     milestone_task = Enum.find(template.tasks, &(&1.name == "Publish"))
-    first_open = Enum.min_by(Enum.reject(template.task_statuses, & &1.closed), & &1.index)
+    copied_queued = Enum.find(template.task_statuses, &(&1.value == queued.value))
+    copied_done = Enum.find(template.task_statuses, &(&1.value == done.value))
 
     assert template.name == "Reusable launch"
     assert template.description == %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
@@ -102,10 +103,13 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     assert [%{type: :before_due, days: 2}] = root_task.reminders
     assert milestone_task.project_template_milestone_id == milestone.id
     assert milestone_task.due_offset_days == 16
-    assert Enum.all?(template.tasks, &(&1.task_status.id == first_open.id))
+    assert root_task.task_status.id == copied_done.id
+    assert milestone_task.task_status.id == copied_queued.id
 
     assert template.milestones_ordering_state == [Paths.project_template_milestone_id(milestone)]
+    assert template.tasks_kanban_state[copied_done.value] == [Paths.project_template_task_id(root_task)]
     assert milestone.tasks_ordering_state == [Paths.project_template_task_id(milestone_task)]
+    assert milestone.tasks_kanban_state[copied_queued.value] == [Paths.project_template_task_id(milestone_task)]
 
     ctx.root_task |> Operately.Tasks.Task.changeset(%{name: "Changed source task"}) |> Repo.update!()
     persisted_template = template |> Repo.reload!() |> Repo.preload(:tasks)
