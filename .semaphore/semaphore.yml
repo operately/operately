@@ -90,6 +90,7 @@ blocks:
             - make test.manifests
             - make test.js.dead.code
             - make test.tsc.lint
+            - make test.tsc.lint.turboui
             - make test.cli.catalog.sync
             - make test.elixir.warnings
             - make test.pr.name
