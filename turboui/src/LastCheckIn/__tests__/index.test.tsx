@@ -9,9 +9,9 @@ import { defaultFormattedTimePreferences } from "../../utils/storybook/formatted
 describe("LastCheckIn", () => {
   function renderCheckIn(author = null) {
     return render(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <LastCheckIn
-          mentionedPersonLookup={() => null}
+          mentionedPersonLookup={async () => null}
           formattedTimePreferences={defaultFormattedTimePreferences}
           checkIns={[
             {

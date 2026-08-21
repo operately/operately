@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router";
 import { NewDocumentPage } from "./index";
 import { SubscribersSelector } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
 jest.mock("../RichEditor", () => ({
   Editor: () => <div data-testid="rich-editor" />,
@@ -33,12 +33,7 @@ jest.mock("../icons", () => {
 
 const mockPeople = genPeople(3);
 
-const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => ({
-  person,
-  isSubscribed: false,
-  priority: false,
-  role: null,
-}));
+const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => asSubscriber(person));
 
 const navigation = [
   { to: "/spaces/space-1", label: "Product" },

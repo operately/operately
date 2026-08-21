@@ -37,7 +37,7 @@ function renderPage(overrides: Partial<SpaceKpisPageNS.Props> = {}) {
   };
 
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <SpaceKpisPage {...props} />
     </MemoryRouter>,
   );

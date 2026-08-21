@@ -23,7 +23,7 @@ function renderNotice(
   },
 ) {
   render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <BillingLimitGuidanceNotice isOpen={true} onClose={jest.fn()} guidance={guidance as any} />
     </MemoryRouter>,
   );

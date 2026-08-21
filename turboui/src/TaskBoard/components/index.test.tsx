@@ -116,7 +116,7 @@ const tasks: Types.Task[] = [
 
 function renderTaskBoard() {
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <TaskBoard
         tasks={tasks}
         milestones={[openMilestone, completedMilestone]}
@@ -165,8 +165,9 @@ describe("TaskBoard completed milestones", () => {
 
     expect(completedSectionToggle).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByText("Completed Milestone")).toBeInTheDocument();
-    expect(within(completedSection!).getByText("1 task")).toBeInTheDocument();
-    expect(within(completedSection!).getByText("Completed Jan 20, 2024")).toBeInTheDocument();
+    if (!(completedSection instanceof HTMLElement)) throw new Error("expected completed milestones section");
+    expect(within(completedSection).getByText("1 task")).toBeInTheDocument();
+    expect(within(completedSection).getByText("Completed Jan 20, 2024")).toBeInTheDocument();
     expect(completedSection?.querySelector('[data-test-id="milestone-add-task"]')).not.toBeInTheDocument();
     expect(screen.queryByText("Closed task in completed milestone")).not.toBeInTheDocument();
     expect(screen.queryByText(/click \+ or press c to add a task/i)).not.toBeInTheDocument();

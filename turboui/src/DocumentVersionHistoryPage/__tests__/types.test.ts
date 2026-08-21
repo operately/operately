@@ -84,7 +84,7 @@ describe("versionPreviewContent", () => {
       content: [{ type: "paragraph", content: [{ type: "text", text: "Example" }] }],
     };
 
-    expect(versionPreviewContent(version({ versionNumber: 1, content: content as DocumentVersion["content"] }))).toEqual(
+    expect(versionPreviewContent(version({ versionNumber: 1, content: content as unknown as DocumentVersion["content"] }))).toEqual(
       content,
     );
   });

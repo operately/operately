@@ -41,10 +41,15 @@ describe("GoalProgressSummary", () => {
   });
 
   it("sorts targets and checklist by index", () => {
-    const unsortedTargets = [mockGoalTargets[1], mockGoalTargets[0]];
-    const unsortedChecklist = [mockGoalChecklist[1], mockGoalChecklist[0]];
+    const laterTarget = mockGoalTargets[1];
+    const earlierTarget = mockGoalTargets[0];
+    const laterCheck = mockGoalChecklist[1];
+    const earlierCheck = mockGoalChecklist[0];
+    if (!laterTarget || !earlierTarget || !laterCheck || !earlierCheck) {
+      throw new Error("expected mock targets and checklist items");
+    }
 
-    render(<GoalProgressSummary targets={unsortedTargets} checklist={unsortedChecklist} />);
+    render(<GoalProgressSummary targets={[laterTarget, earlierTarget]} checklist={[laterCheck, earlierCheck]} />);
 
     const names = screen.getAllByText(/Revenue|Retention|Launch plan|Hire lead/).map((node) => node.textContent);
     expect(names).toEqual(["Revenue", "Retention", "Launch plan", "Hire lead"]);

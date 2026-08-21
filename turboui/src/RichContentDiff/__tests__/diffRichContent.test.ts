@@ -161,8 +161,12 @@ describe("operatelyTokenEncoder", () => {
   });
 
   test("mark order does not affect character tokens", () => {
-    const marksAsc = [schema.marks.bold.create(), schema.marks.italic.create()];
-    const marksDesc = [schema.marks.italic.create(), schema.marks.bold.create()];
+    const bold = schema.marks.bold;
+    const italic = schema.marks.italic;
+    if (!bold || !italic) throw new Error("expected bold and italic marks");
+
+    const marksAsc = [bold.create(), italic.create()];
+    const marksDesc = [italic.create(), bold.create()];
 
     const char = "a".codePointAt(0)!;
     expect(operatelyTokenEncoder.encodeCharacter(char, marksAsc)).toBe(

@@ -25,7 +25,7 @@ function ResourceHubDraftsPageHarness({
   const [resourceHub] = React.useState(() => createMockResourceHub());
 
   return (
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <ResourceHubDraftsPage
         title={["Drafts", resourceHub.name ?? "Resource Hub"]}
         navigation={[

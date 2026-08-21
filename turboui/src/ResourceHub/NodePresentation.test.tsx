@@ -21,10 +21,12 @@ jest.mock("../icons", () => ({
 }));
 
 const documentNode: ResourceHubNode = {
+  __typename: "resource_hub_node",
   id: "node-1",
   type: "document",
   name: "Quarterly Plan",
   document: {
+    __typename: "resource_hub_document",
     id: "doc-1",
     resourceHubId: "hub-1",
     parentFolderId: "folder-1",
@@ -34,15 +36,20 @@ const documentNode: ResourceHubNode = {
       content: [{ type: "paragraph", content: [{ type: "text", text: "Plan summary" }] }],
     }),
     state: "published",
+    insertedAt: "2024-01-01T00:00:00Z",
+    publishedAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
     author: { id: "person-1", fullName: "Alice Example" } as never,
   },
 };
 
 const imageFileNode: ResourceHubNode = {
+  __typename: "resource_hub_node",
   id: "node-2",
   type: "file",
   name: "Roadmap",
   file: {
+    __typename: "resource_hub_file",
     id: "file-1",
     resourceHubId: "hub-1",
     parentFolderId: "folder-1",
@@ -59,10 +66,12 @@ const imageFileNode: ResourceHubNode = {
 };
 
 const quicktimeFileNode: ResourceHubNode = {
+  __typename: "resource_hub_node",
   id: "node-3",
   type: "file",
   name: "Demo Clip",
   file: {
+    __typename: "resource_hub_file",
     id: "file-2",
     resourceHubId: "hub-1",
     parentFolderId: "folder-1",
@@ -101,7 +110,7 @@ const listContext: ResourceHubNodesListContextValue = {
     }),
     compareIds: (a, b) => a === b,
   },
-  permissions: { canEditDocument: true },
+  permissions: { __typename: "resource_hub_permissions", canEditDocument: true },
   paths: {
     editDocumentPath: (id) => `/documents/${id}/edit`,
     editFilePath: (id) => `/files/${id}/edit`,
@@ -149,7 +158,7 @@ describe("resource hub node presentation", () => {
 
   test("renders the menu trigger from a raw document node", () => {
     const { container } = render(
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MemoryRouter>
         <ResourceHubNodesListProvider value={listContext}>
           <NodeMenu node={documentNode} />
         </ResourceHubNodesListProvider>
