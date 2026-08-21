@@ -179,6 +179,7 @@ beforeEach(() => {
   mockBoardMoveHandler = null;
   mockBoardState = { draggedItemId: null, destination: null, draggedItemDimensions: null };
   mockUseSortableItem.mockClear();
+  window.localStorage.removeItem("templateTaskBoard:taskDisplayMode");
 });
 
 describe("TemplateProjectPage", () => {
@@ -1380,6 +1381,24 @@ describe("TemplateProjectPage", () => {
     expect(document.querySelector('[data-test-id="template-kanban-board"]')).toBeInTheDocument();
     expect(document.querySelector('[data-test-id="template-task-section-milestone-1"]')).not.toBeInTheDocument();
     expect(document.querySelector('[data-test-id="display-menu-trigger"]')).toBeInTheDocument();
+  });
+
+  it("remembers board display mode in localStorage across remounts", async () => {
+    const user = userEvent.setup();
+    const props = createProps({ onStatusesChange: jest.fn(), onTaskKanbanChange: jest.fn() });
+    const { unmount } = renderPage(props, "/templates/template-1?tab=tasks");
+
+    await user.click(document.querySelector('[data-test-id="display-menu-trigger"]')!);
+    await user.click(document.querySelector('[data-test-id="display-menu-option-board"]')!);
+
+    expect(document.querySelector('[data-test-id="template-kanban-board"]')).toBeInTheDocument();
+    expect(window.localStorage.getItem("templateTaskBoard:taskDisplayMode")).toBe(JSON.stringify("board"));
+
+    unmount();
+    renderPage(props, "/templates/template-1?tab=tasks");
+
+    expect(document.querySelector('[data-test-id="template-kanban-board"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="template-task-section-milestone-1"]')).not.toBeInTheDocument();
   });
 
   it("links overview milestone titles to the milestone page", () => {
