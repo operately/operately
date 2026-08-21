@@ -1,6 +1,6 @@
 {
   "transform": {
-    "^.+\\.(ts|tsx)$": ["ts-jest", { "tsconfig": "tsconfig.json", "isolatedModules": true }]
+    "^.+\\.(ts|tsx)$": ["ts-jest", { "tsconfig": "tsconfig.test.json", "isolatedModules": true }]
   },
   "testMatch": [
     "**/?(*.)+(test).+(ts|tsx|js)"

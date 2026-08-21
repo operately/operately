@@ -27,6 +27,7 @@
     "noUnusedLocals": true, // Report errors on unused local variables.
     "noUnusedParameters": true, // Report errors on unused parameters in functions
     "jsx": "react",
+    "typeRoots": ["./node_modules/@types"],
 
     // A series of entries which re-map imports to lookup locations relative to the baseUrl
     "paths": {
@@ -40,8 +41,10 @@
   "include": [
     "./assets/js/**/*.ts",
     "./assets/js/**/*.tsx",
+    "./assets/js/**/*.d.ts",
     "./ee/assets/js/**/*.ts",
-    "./ee/assets/js/**/*.tsx"
+    "./ee/assets/js/**/*.tsx",
+    "./ee/assets/js/**/*.d.ts"
   ],
   "exclude": ["node_modules/**/*"],
   "linterOptions": {
