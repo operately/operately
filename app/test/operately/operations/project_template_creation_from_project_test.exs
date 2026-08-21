@@ -108,6 +108,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
 
     assert template.milestones_ordering_state == [Paths.project_template_milestone_id(milestone)]
     assert template.tasks_kanban_state[copied_done.value] == [Paths.project_template_task_id(root_task)]
+    assert template.tasks_kanban_state[copied_queued.value] == [Paths.project_template_task_id(milestone_task)]
     assert milestone.tasks_ordering_state == [Paths.project_template_task_id(milestone_task)]
     assert milestone.tasks_kanban_state[copied_queued.value] == [Paths.project_template_task_id(milestone_task)]
 
@@ -641,7 +642,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
       |> Project.changeset(%{
         milestones_ordering_state: [Paths.milestone_id(ctx.launch)],
         tasks_kanban_state: %{
-          queued.value => [],
+          queued.value => [Paths.task_id(ctx.milestone_task)],
           done.value => [Paths.task_id(ctx.root_task)]
         }
       })
@@ -653,10 +654,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
         status: :done,
         completed_at: ~N[2028-03-03 12:00:00],
         tasks_ordering_state: [Paths.task_id(ctx.milestone_task)],
-        tasks_kanban_state: %{
-          queued.value => [Paths.task_id(ctx.milestone_task)],
-          done.value => []
-        }
+        tasks_kanban_state: %{}
       })
       |> Repo.update!()
 

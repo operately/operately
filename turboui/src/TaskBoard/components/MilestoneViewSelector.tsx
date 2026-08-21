@@ -1,18 +1,31 @@
 import React from "react";
 
-import { Menu, MenuActionItem, MenuSeparator } from "../Menu";
-import { IconCheck, IconChevronDown, IconFlag, IconFlagFilled, IconList, IconPlus } from "../icons";
-import { MilestoneCreationModal } from "../TaskBoard/components/MilestoneCreationModal";
-import type { ProjectPage } from "./index";
+import { Menu, MenuActionItem, MenuSeparator } from "../../Menu";
+import { IconCheck, IconChevronDown, IconFlag, IconFlagFilled, IconList, IconPlus } from "../../icons";
+import { MilestoneCreationModal } from "./MilestoneCreationModal";
+import type { NewMilestonePayload } from "../types";
 
 const ALL_PROJECT_TASKS_LABEL = "All project tasks";
 
+export type MilestoneViewSelectorMilestone = {
+  id: string;
+  name: string;
+  status?: "pending" | "done";
+};
+
+type MilestoneCreationResult = {
+  success?: boolean;
+  milestone?: { id: string };
+};
+
 interface MilestoneViewSelectorProps {
-  milestones: ProjectPage.Milestone[];
-  selectedMilestone: ProjectPage.Milestone | null;
+  milestones: MilestoneViewSelectorMilestone[];
+  selectedMilestone: MilestoneViewSelectorMilestone | null;
   canCreateMilestone: boolean;
   onChange: (milestoneId: string | null) => void;
-  onCreateMilestone: ProjectPage.State["onMilestoneCreate"];
+  onCreateMilestone: (
+    milestone: NewMilestonePayload,
+  ) => void | MilestoneCreationResult | Promise<void | MilestoneCreationResult>;
 }
 
 export function MilestoneViewSelector({
@@ -25,10 +38,10 @@ export function MilestoneViewSelector({
   const [isCreationModalOpen, setIsCreationModalOpen] = React.useState(false);
   const selectedLabel = selectedMilestone?.name ?? ALL_PROJECT_TASKS_LABEL;
 
-  const createMilestone = async (milestone: ProjectPage.NewMilestonePayload) => {
+  const createMilestone = async (milestone: NewMilestonePayload) => {
     const result = await Promise.resolve(onCreateMilestone(milestone));
 
-    if (result?.success && result.milestone) {
+    if (result && "success" in result && result.success && result.milestone) {
       onChange(result.milestone.id);
     }
   };
@@ -94,7 +107,7 @@ function MilestoneOption({
   isSelected,
   onSelect,
 }: {
-  milestone: ProjectPage.Milestone | null;
+  milestone: MilestoneViewSelectorMilestone | null;
   isSelected: boolean;
   onSelect: () => void;
 }) {
@@ -113,7 +126,7 @@ function MilestoneOption({
   );
 }
 
-function MilestoneStatusIcon({ milestone }: { milestone: ProjectPage.Milestone | null }) {
+function MilestoneStatusIcon({ milestone }: { milestone: MilestoneViewSelectorMilestone | null }) {
   if (!milestone) {
     return <IconList size={16} className="flex-shrink-0 text-content-dimmed" />;
   }

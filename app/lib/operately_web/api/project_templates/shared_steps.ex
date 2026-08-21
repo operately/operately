@@ -351,7 +351,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
         |> Task.changeset()
         |> persist!()
 
-      rebuild_container!(template, milestone_id)
+      if milestone_id, do: rebuild_container!(template, milestone_id)
+      rebuild_board_kanban!(template)
       task
     end)
   end
@@ -387,7 +388,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   def delete_task(multi) do
     run_step(multi, :deleted_task, fn %{template: template, task: task} ->
       deleted = delete!(task)
-      rebuild_container!(template, task.project_template_milestone_id)
+      if task.project_template_milestone_id, do: rebuild_container!(template, task.project_template_milestone_id)
+      rebuild_board_kanban!(template)
       deleted
     end)
   end
@@ -561,11 +563,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp update_template_states!(template, attrs) do
     template = Repo.reload!(template)
     milestones = Repo.all(from m in Milestone, where: m.project_template_id == ^template.id)
-    root_tasks = tasks_for(template.id, nil)
+    tasks = all_tasks_for(template.id)
 
     changes = %{}
     changes = maybe_put_ordering(changes, attrs, :milestones_ordering_state, milestones, &Paths.project_template_milestone_id/1, "Milestone ordering contains IDs from another template")
-    changes = maybe_put_kanban(changes, attrs, root_tasks, template.task_statuses)
+    changes = maybe_put_kanban(changes, attrs, tasks, template.task_statuses)
 
     if changes == %{}, do: template, else: persist!(ProjectTemplate.changeset(template, changes))
   end
@@ -623,7 +625,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   end
 
   defp rebuild_all_kanban!(template) do
-    rebuild_container!(template, nil)
+    rebuild_board_kanban!(template)
 
     Repo.all(from m in Milestone, where: m.project_template_id == ^template.id)
     |> Enum.each(&rebuild_container!(template, &1.id))
@@ -631,12 +633,14 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     template
   end
 
-  defp rebuild_container!(template, nil) do
+  defp rebuild_board_kanban!(template) do
     template = Repo.reload!(template)
-    tasks = tasks_for(template.id, nil)
+    tasks = all_tasks_for(template.id)
     state = TemplateHelpers.normalize_kanban(template.tasks_kanban_state, tasks, template.task_statuses)
     persist!(ProjectTemplate.changeset(template, %{tasks_kanban_state: state}))
   end
+
+  defp rebuild_container!(template, nil), do: rebuild_board_kanban!(template)
 
   defp rebuild_container!(template, milestone_id) do
     milestone = Repo.get_by!(Milestone, id: milestone_id, project_template_id: template.id)
@@ -648,8 +652,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   defp update_task_containers!(template, old_milestone_id, new_milestone_id) do
     [old_milestone_id, new_milestone_id]
+    |> Enum.reject(&is_nil/1)
     |> Enum.uniq()
     |> Enum.each(&rebuild_container!(template, &1))
+
+    rebuild_board_kanban!(template)
   end
 
   defp validate_milestone!(_template, nil), do: :ok
@@ -673,6 +680,10 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   defp tasks_for(template_id, milestone_id) do
     Repo.all(from t in Task, where: t.project_template_id == ^template_id and t.project_template_milestone_id == ^milestone_id, order_by: [asc: t.inserted_at, asc: t.id])
+  end
+
+  defp all_tasks_for(template_id) do
+    Repo.all(from t in Task, where: t.project_template_id == ^template_id, order_by: [asc: t.inserted_at, asc: t.id])
   end
 
   defp persist!(changeset) do
