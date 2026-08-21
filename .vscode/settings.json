@@ -6,5 +6,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "elixirLS.projectDir": "app",
+  "typescript.tsdk": "app/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "chatgpt.commentCodeLensEnabled": false
 }
