@@ -12,6 +12,7 @@ import {
   writeLocalDraft,
 } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
+import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
   id: string;
@@ -86,9 +87,9 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
-  const baseContent = React.useRef(props.content);
+  const baseContent = React.useRef(normalizeRichTextContent(props.content));
   const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
-  const initialContent = restoredDraft ?? props.content;
+  const initialContent = normalizeRichTextContent(restoredDraft ?? baseContent.current);
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const extensions = React.useMemo(
@@ -167,7 +168,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(content, { emitUpdate: false });
+      editor.commands.setContent(normalizeRichTextContent(content), { emitUpdate: false });
     },
     [editor],
   );
