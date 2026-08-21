@@ -7,6 +7,15 @@ export interface CompanyNavigationPerson {
   avatarUrl?: string | null;
 }
 
+export interface CompanyNavigationUpdate {
+  /** Version to update to, formatted for display (e.g. "v1.8"). */
+  version: string;
+  /** Where the badge points. Defaults to the public releases page. */
+  link?: string;
+  /** Prototype: which phrasing to show. Defaults to "Update to v1.8". */
+  phrasing?: "update-to" | "available";
+}
+
 export interface CompanyNavigationLinks {
   home: string;
   workMap: string;
@@ -40,6 +49,8 @@ export interface CompanyNavigationProps {
   canInvitePeople: boolean;
   unreadNotificationCount: number;
   reviewCount: number;
+  /** Prototype: set when this instance is running behind the latest release. */
+  availableUpdate?: CompanyNavigationUpdate | null;
   discordUrl: string;
   contactUsHref: string;
   onOpenKeyboardShortcuts: () => void;
