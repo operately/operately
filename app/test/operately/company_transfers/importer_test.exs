@@ -123,14 +123,16 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     template =
       ctx.template
       |> change(%{
-        milestones_ordering_state: [WebPaths.milestone_id(ctx.milestone)]
+        milestones_ordering_state: [WebPaths.milestone_id(ctx.milestone)],
+        tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.root_task), WebPaths.task_id(ctx.milestone_task)]}
       })
       |> Repo.update!()
 
     milestone =
       ctx.milestone
       |> change(%{
-        tasks_ordering_state: [WebPaths.task_id(ctx.milestone_task)]
+        tasks_ordering_state: [WebPaths.task_id(ctx.milestone_task)],
+        tasks_kanban_state: %{"pending" => [WebPaths.task_id(ctx.milestone_task)]}
       })
       |> Repo.update!()
 
@@ -185,7 +187,13 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert [%{type: :before_due, days: 2}] = imported_root_task.reminders
 
     assert imported_template.milestones_ordering_state == [WebPaths.milestone_id(imported_milestone)]
+
+    assert imported_template.tasks_kanban_state == %{
+             "pending" => [WebPaths.task_id(imported_root_task), WebPaths.task_id(imported_milestone_task)]
+           }
+
     assert imported_milestone.tasks_ordering_state == [WebPaths.task_id(imported_milestone_task)]
+    assert imported_milestone.tasks_kanban_state == %{"pending" => [WebPaths.task_id(imported_milestone_task)]}
   end
 
   test "run/1 round-trips a project template resource tree and its blob payloads", ctx do

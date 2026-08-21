@@ -108,21 +108,21 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert [%{type: :before_due, days: 2}] = root_task.reminders
     assert milestone_task.due_date.date == ~D[2028-03-02]
 
-    copied_status = Enum.find(project.task_statuses, &(&1.value == not_started.value))
-    refute copied_status.id in Enum.map(ctx.template.task_statuses, & &1.id)
-    assert Enum.all?(project.tasks, &(&1.task_status.id == copied_status.id))
+    copied_not_started = Enum.find(project.task_statuses, &(&1.value == not_started.value))
+    copied_done = Enum.find(project.task_statuses, &(&1.value == done.value))
+    refute copied_not_started.id in Enum.map(ctx.template.task_statuses, & &1.id)
+    assert root_task.task_status.id == copied_done.id
+    assert root_open_task.task_status.id == copied_not_started.id
+    assert milestone_task.task_status.id == copied_done.id
+    assert milestone_open_task.task_status.id == copied_not_started.id
     assert Enum.all?(project.tasks, &(is_nil(&1.closed_at) and is_nil(&1.reopened_at)))
 
     assert project.milestones_ordering_state == [Paths.milestone_id(milestone)]
-
-    expected_root_kanban =
-      [ctx.root_task, ctx.root_open_task]
-      |> Enum.sort_by(&{NaiveDateTime.to_gregorian_seconds(&1.inserted_at), &1.id})
-      |> Enum.map(fn source -> Paths.task_id(Enum.find(project.tasks, &(&1.name == source.name))) end)
-
-    assert project.tasks_kanban_state[copied_status.value] == expected_root_kanban
+    assert project.tasks_kanban_state[copied_not_started.value] == [Paths.task_id(root_open_task)]
+    assert project.tasks_kanban_state[copied_done.value] == [Paths.task_id(root_task)]
     assert milestone.tasks_ordering_state == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
-    assert milestone.tasks_kanban_state[copied_status.value] == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
+    assert milestone.tasks_kanban_state[copied_not_started.value] == [Paths.task_id(milestone_open_task)]
+    assert milestone.tasks_kanban_state[copied_done.value] == [Paths.task_id(milestone_task)]
   end
 
   test "materializes nil and zero offsets and handles leap and year boundaries", ctx do
@@ -541,11 +541,15 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
 
   defp status_attrs(statuses), do: Enum.map(statuses, &Map.from_struct/1)
 
-  defp put_template_states(ctx, _not_started, _done) do
+  defp put_template_states(ctx, not_started, done) do
     template =
       ctx.template
       |> ProjectTemplate.changeset(%{
-        milestones_ordering_state: [Paths.project_template_milestone_id(ctx.launch)]
+        milestones_ordering_state: [Paths.project_template_milestone_id(ctx.launch)],
+        tasks_kanban_state: %{
+          not_started.value => [Paths.project_template_task_id(ctx.root_open_task)],
+          done.value => [Paths.project_template_task_id(ctx.root_task)]
+        }
       })
       |> Repo.update!()
 
@@ -555,7 +559,11 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
         tasks_ordering_state: [
           Paths.project_template_task_id(ctx.milestone_task),
           Paths.project_template_task_id(ctx.milestone_open_task)
-        ]
+        ],
+        tasks_kanban_state: %{
+          not_started.value => [Paths.project_template_task_id(ctx.milestone_open_task)],
+          done.value => [Paths.project_template_task_id(ctx.milestone_task)]
+        }
       })
       |> Repo.update!()
 

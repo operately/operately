@@ -6,7 +6,7 @@ import Api, {
   type TaskReminder,
 } from "@/api";
 import * as Tasks from "@/models/tasks";
-import { parseContent, showErrorToast, TemplateProjectPage } from "turboui";
+import { parseContent, showErrorToast, TemplateProjectPage, type KanbanState } from "turboui";
 
 export type Mutate = (message: string, operation: () => Promise<unknown>) => Promise<boolean>;
 
@@ -77,6 +77,7 @@ export function toTemplateMilestone(milestone: ProjectTemplateMilestone, link: s
     description: content(milestone.description),
     dueOffsetDays: milestone.dueOffsetDays ?? null,
     tasksOrderingState: milestone.tasksOrderingState,
+    tasksKanbanState: parseKanbanJson(milestone.tasksKanbanState),
     link,
   };
 }
@@ -86,6 +87,7 @@ export type TemplateTaskGraph = {
   tasks: TemplateProjectPage.Task[];
   milestones: TemplateProjectPage.Milestone[];
   milestonesOrderingState: string[];
+  tasksKanbanState: KanbanState;
   statuses: TemplateProjectPage.Props["statuses"];
 };
 
@@ -97,6 +99,7 @@ export function mapTemplateTaskGraph(
     | "tasks"
     | "milestones"
     | "milestonesOrderingState"
+    | "tasksKanbanState"
     | "taskStatuses"
   >,
   profilePath: (personId: string) => string,
@@ -115,6 +118,7 @@ export function mapTemplateTaskGraph(
     tasks,
     milestones,
     milestonesOrderingState: template.milestonesOrderingState ?? milestones.map((milestone) => milestone.id),
+    tasksKanbanState: parseKanbanJson(template.tasksKanbanState),
     statuses: Tasks.parseTaskStatusesForTurboUi(template.taskStatuses),
   };
 }
@@ -145,7 +149,7 @@ export function createTemplateTask(templateId: string, task: Omit<TemplateProjec
 
 export function createTemplateMilestone(
   templateId: string,
-  milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState">,
+  milestone: Omit<TemplateProjectPage.Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">,
 ) {
   return Api.project_templates.createMilestone({
     templateId,
@@ -167,6 +171,7 @@ export function persistMilestoneUpdate(
     description: serializeContent(updates.description),
     dueOffsetDays: updates.dueOffsetDays,
     tasksOrderingState: updates.tasksOrderingState,
+    tasksKanbanState: serializeJson(updates.tasksKanbanState),
   });
 }
 
@@ -281,6 +286,26 @@ export function content(value?: string | null) {
 
 export function serializeContent(value: unknown) {
   return value === undefined ? undefined : value === null ? null : JSON.stringify(value);
+}
+
+export function serializeJson(value: unknown) {
+  return value === undefined ? undefined : JSON.stringify(value);
+}
+
+function parseJson(value?: string | null | object): unknown {
+  if (value && typeof value === "object") return value;
+
+  try {
+    return JSON.parse((value as string) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function parseKanbanJson(value?: string | null | object): KanbanState {
+  const parsed = parseJson(value);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  return parsed as KanbanState;
 }
 
 function taskInput(templateId: string, task: Omit<TemplateProjectPage.Task, "id">) {

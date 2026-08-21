@@ -733,6 +733,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inactive_people_summary, :project_template_inactive_people_summary, null: false
     field? :task_statuses, list_of(:task_status), null: true
     field? :milestones_ordering_state, list_of(:string), null: true
+    field? :tasks_kanban_state, :json, null: true
     field? :milestones, list_of(:project_template_milestone), null: true
     field? :tasks, list_of(:project_template_task), null: true
     field? :people, list_of(:project_template_person), null: true
@@ -867,6 +868,7 @@ defmodule OperatelyWeb.Api.Types do
     field :title, :string, null: false
     field? :description, :string, null: true
     field? :due_offset_days, :integer, null: true
+    field :tasks_kanban_state, :json, null: false
     field :tasks_ordering_state, list_of(:string), null: false
     field :inserted_at, :datetime, null: false
     field :updated_at, :datetime, null: false

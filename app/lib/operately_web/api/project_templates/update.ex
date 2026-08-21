@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Update do
     field? :task_statuses, list_of(:task_status), null: false
     field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: false
     field? :milestones_ordering_state, list_of(:string), null: false
+    field? :tasks_kanban_state, :json, null: false
   end
 
   outputs do

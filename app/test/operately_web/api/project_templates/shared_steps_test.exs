@@ -32,6 +32,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
     assert template.duration_days == 14
     assert length(template.task_statuses) == 4
     assert template.milestones_ordering_state == []
+    assert Enum.all?(template.tasks_kanban_state, fn {_status, task_ids} -> task_ids == [] end)
     assert Repo.aggregate(ProjectTemplate, :count) == 2
     assert runtime_counts() == before_counts
   end
@@ -68,7 +69,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
              update_template(template, %{task_statuses: [%{first | value: second.value}, second | rest]})
   end
 
-  test "creates, updates, moves, and deletes milestones and tasks while keeping ordering synchronized", ctx do
+  test "creates, updates, moves, and deletes milestones and tasks while keeping state synchronized", ctx do
     status = hd(ctx.template.task_statuses)
 
     assert {:ok, milestone} = create_milestone(ctx.template, %{title: "Ship", due_offset_days: 0})
@@ -76,11 +77,16 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
     assert template.milestones_ordering_state == [Paths.project_template_milestone_id(milestone)]
 
     assert {:ok, root_task} = create_task(template, %{name: "Root", description: %{}, task_status: Map.from_struct(status)})
+    template = Repo.reload!(template)
+    assert template.tasks_kanban_state[status.value] == [Paths.project_template_task_id(root_task)]
 
     assert {:ok, moved_task} = update_task(template, root_task, %{project_template_milestone_id: milestone.id, due_offset_days: 7})
+    template = Repo.reload!(template)
     milestone = Repo.reload!(milestone)
     assert moved_task.project_template_milestone_id == milestone.id
+    assert template.tasks_kanban_state[status.value] == []
     assert milestone.tasks_ordering_state == [Paths.project_template_task_id(moved_task)]
+    assert milestone.tasks_kanban_state[status.value] == [Paths.project_template_task_id(moved_task)]
 
     assert {:ok, updated_milestone} = update_milestone(template, milestone, %{title: "Launch", due_offset_days: 14})
     assert updated_milestone.title == "Launch"
@@ -89,6 +95,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
     assert {:ok, _task} = delete_task(template, moved_task)
     milestone = Repo.reload!(milestone)
     assert milestone.tasks_ordering_state == []
+    assert milestone.tasks_kanban_state[status.value] == []
 
     assert {:ok, child} = create_task(template, %{name: "Child", description: %{}, project_template_milestone_id: milestone.id})
     assert {:ok, _milestone} = delete_milestone(template, milestone)
@@ -114,14 +121,14 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
              })
   end
 
-  test "replaces deleted statuses across tasks", ctx do
+  test "replaces deleted statuses across tasks and rebuilds Kanban state", ctx do
     [old_status, replacement | _] = ctx.template.task_statuses
 
     assert {:ok, task} = create_task(ctx.template, %{name: "Task", description: %{}, task_status: Map.from_struct(old_status)})
 
     statuses = Enum.reject(ctx.template.task_statuses, &(&1.id == old_status.id))
 
-    assert {:ok, _template} =
+    assert {:ok, template} =
              update_template(Repo.reload!(ctx.template), %{
                task_statuses: Enum.map(statuses, &Map.from_struct/1),
                deleted_status_replacements: [%{deleted_status_id: old_status.id, replacement_status_id: replacement.id}]
@@ -129,6 +136,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
 
     task = Repo.reload!(task)
     assert task.task_status.id == replacement.id
+    assert template.tasks_kanban_state[replacement.value] == [Paths.project_template_task_id(task)]
+    refute Map.has_key?(template.tasks_kanban_state, old_status.value)
   end
 
   test "rolls back the workflow update when a deleted status has no replacement", ctx do
@@ -150,7 +159,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
     assert Repo.reload!(task).task_status.id == deleted_status.id
   end
 
-  test "rejects foreign ordering state", ctx do
+  test "rejects foreign ordering and malformed Kanban state", ctx do
     ctx =
       ctx
       |> Factory.add_project_template(:other_template, :space)
@@ -160,6 +169,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
              update_template(ctx.template, %{
                milestones_ordering_state: [Paths.project_template_milestone_id(ctx.other_milestone)]
              })
+
+    assert {:error, {:validation, "Kanban state contains an unknown status"}} =
+             update_template(ctx.template, %{tasks_kanban_state: %{"unknown" => []}})
   end
 
   test "does not write to runtime tables while editing", ctx do
