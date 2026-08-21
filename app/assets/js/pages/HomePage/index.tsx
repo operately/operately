@@ -4,7 +4,6 @@ import Api, { Activity } from "@/api";
 import { PageModule } from "@/routes/types";
 
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
@@ -15,11 +14,10 @@ export default { name: "HomePage", loader, Page } as PageModule;
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
-import { GhostButton, PageSection, PrimaryButton, showErrorToast, SpaceCard, SpaceCardGrid } from "turboui";
+import { HomePage, showErrorToast } from "turboui";
 import { Navigate } from "react-router";
 import { canDeleteFeedItems } from "./feedPermissions";
 import { shouldOpenCompanyWorkMap } from "./firstRun";
-import { SpacesZeroState } from "./SpacesZeroState";
 
 interface LoaderData {
   company: Companies.Company;
@@ -58,7 +56,8 @@ function useLoadedData(): LoaderData {
 
 function Page() {
   const paths = usePaths();
-  const { company, hasWorkItems } = useLoadedData();
+  const me = useMe()!;
+  const { company, spaces, hasWorkItems } = useLoadedData();
   const isOwner = useIsOwner();
 
   if (
@@ -71,49 +70,25 @@ function Page() {
     return <Navigate to={paths.workMapPath()} replace />;
   }
 
-  return (
-    <Pages.Page title="Home" testId="company-home">
-      <Paper.Root size="medium" className="px-4 sm:px-0">
-        <Greeting />
-        <SpacesSection />
-        <FeedSection />
-      </Paper.Root>
-    </Pages.Page>
-  );
-}
+  const props: HomePage.Props = {
+    firstName: People.firstName(me),
+    spaces: spaces.map((space) => ({
+      id: space.id!,
+      name: space.name!,
+      mission: space.mission,
+      accessLevels: space.accessLevels,
+      members: space.members ?? [],
+      isCompanySpace: space.isCompanySpace,
+      link: paths.spacePath(space.id!),
+    })),
+    canCreateSpace: company.permissions?.canCreateSpace || false,
+    canInviteMembers: company.permissions?.canInviteMembers || false,
+    newSpacePath: paths.newSpacePath(),
+    invitePeoplePath: paths.invitePeoplePath(),
+    activityFeed: <ActivityFeed />,
+  };
 
-function SpacesSection() {
-  const { spaces } = useLoadedData();
-  const isEmpty = spaces.length === 0;
-
-  return (
-    <div className="mt-8">
-      <PageSection
-        title="Your Operately Spaces"
-        subtitle="Manage projects, track goals, and organize your team's work."
-        actions={
-          <div className="flex flex-wrap gap-2 justify-start sm:justify-end sm:flex-nowrap">
-            <InvitePeopleButton />
-            <AddSpaceButton />
-          </div>
-        }
-      >
-        {isEmpty ? <SpacesZeroState /> : <SpaceGrid spaces={spaces} />}
-      </PageSection>
-    </div>
-  );
-}
-
-function FeedSection() {
-  return (
-    <div className="mt-8">
-      <PageSection title="What's new?" subtitle="Stay up to date with your team's progress.">
-        <div className="bg-surface-base shadow rounded-2xl">
-          <ActivityFeed />
-        </div>
-      </PageSection>
-    </div>
-  );
+  return <HomePage {...props} />;
 }
 
 function ActivityFeed() {
@@ -195,81 +170,6 @@ function ActivityItemSkeleton() {
         <div className="h-3 bg-surface-dimmed rounded animate-pulse w-1/2"></div>
       </div>
     </div>
-  );
-}
-
-function AddSpaceButton() {
-  const { company } = useLoadedData();
-  const paths = usePaths();
-
-  if (!company.permissions?.canCreateSpace) {
-    return null;
-  }
-
-  return (
-    <PrimaryButton linkTo={paths.newSpacePath()} testId="add-space" size="sm">
-      Add Space
-    </PrimaryButton>
-  );
-}
-
-function InvitePeopleButton() {
-  const paths = usePaths();
-  const { company } = useLoadedData();
-
-  if (!company.permissions?.canInviteMembers) {
-    return null;
-  }
-
-  return (
-    <GhostButton linkTo={paths.invitePeoplePath()} testId="invite-people" size="sm">
-      Invite People
-    </GhostButton>
-  );
-}
-
-function Greeting() {
-  const me = useMe();
-
-  let hour = new Date().getHours();
-  let greeting = "";
-
-  if (hour < 12) {
-    greeting = "Good morning";
-  } else if (hour < 18) {
-    greeting = "Good afternoon";
-  } else {
-    greeting = "Good evening";
-  }
-
-  return (
-    <p className="font-bold text-3xl mt-20">
-      {greeting}, {People.firstName(me!)}!
-    </p>
-  );
-}
-
-function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
-  const paths = usePaths();
-  const sorted = [...spaces].sort((a, b) => {
-    if (a.isCompanySpace) return -1;
-
-    return a.name!.localeCompare(b.name!);
-  });
-
-  return (
-    <SpaceCardGrid>
-      {sorted.map((space) => (
-        <SpaceCard
-          key={space.id}
-          name={space.name!}
-          mission={space.mission}
-          accessLevels={space.accessLevels}
-          members={space.members ?? []}
-          linkTo={paths.spacePath(space.id!)}
-        />
-      ))}
-    </SpaceCardGrid>
   );
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Page } from "./index";
+import { Page, PageOpen } from "./index";
 import { PageFooter } from "./PageFooter";
 import { IconPencil, IconTrash } from "../icons";
 
@@ -162,6 +162,16 @@ export const LongNavigation: Story = {
     ],
     children: <Content title="Long navigation" />,
   },
+};
+
+export const OpenLayout: Story = {
+  args: {
+    title: "Open layout",
+    size: "medium",
+    className: "px-4 sm:px-0",
+    children: <Content title="No paper card" />,
+  },
+  render: (args) => <PageOpen {...args} />,
 };
 
 export const PageOptions: Story = {

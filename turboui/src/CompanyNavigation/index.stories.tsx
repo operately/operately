@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
-import { MemoryRouter } from "react-router";
 
+import { HomePage } from "../HomePage";
+import { defaultProps as homePageProps } from "../HomePage/mockData";
 import { CompanyNavigation } from "./index";
 import { defaultProps } from "./mockData";
 
@@ -9,13 +10,6 @@ const meta = {
   title: "Components/CompanyNavigation",
   component: CompanyNavigation,
   parameters: { layout: "fullscreen" },
-  decorators: [
-    (Story) => (
-      <MemoryRouter>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
 } satisfies Meta<typeof CompanyNavigation>;
 
 export default meta;
@@ -42,4 +36,16 @@ export const RestrictedPermissions: Story = {
     canAddSpace: false,
     canInvitePeople: false,
   },
+};
+
+export const WithHomePage: Story = {
+  args: defaultProps,
+  render: () => (
+    <div className="flex flex-col h-screen">
+      <CompanyNavigation {...defaultProps} />
+      <div className="relative flex-1 min-h-0 overflow-y-auto">
+        <HomePage {...homePageProps} />
+      </div>
+    </div>
+  ),
 };
