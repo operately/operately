@@ -2046,6 +2046,7 @@ export interface ProjectTemplate {
   inactivePeopleSummary: ProjectTemplateInactivePeopleSummary;
   taskStatuses?: TaskStatus[] | null;
   milestonesOrderingState?: string[] | null;
+  tasksKanbanState?: Json | null;
   milestones?: ProjectTemplateMilestone[] | null;
   tasks?: ProjectTemplateTask[] | null;
   people?: ProjectTemplatePerson[] | null;
@@ -2093,6 +2094,7 @@ export interface ProjectTemplateMilestone {
   title: string;
   description?: string | null;
   dueOffsetDays?: number | null;
+  tasksKanbanState: Json;
   tasksOrderingState: string[];
   insertedAt: string;
   updatedAt: string;
@@ -5470,6 +5472,7 @@ export interface ProjectTemplatesUpdateInput {
   taskStatuses?: TaskStatus[];
   deletedStatusReplacements?: DeletedStatusReplacement[];
   milestonesOrderingState?: string[];
+  tasksKanbanState?: Json;
 }
 
 export interface ProjectTemplatesUpdateResult {
@@ -5549,6 +5552,7 @@ export interface ProjectTemplatesUpdateMilestoneInput {
   description?: Json | null;
   dueOffsetDays?: number | null;
   tasksOrderingState?: string[];
+  tasksKanbanState?: Json;
 }
 
 export interface ProjectTemplatesUpdateMilestoneResult {

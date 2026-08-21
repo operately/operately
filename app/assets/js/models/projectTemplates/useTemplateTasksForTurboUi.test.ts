@@ -101,6 +101,7 @@ function apiMilestone(
   return {
     __typename: "project_template_milestone",
     projectTemplateId: "template-1",
+    tasksKanbanState: "{}",
     tasksOrderingState: ["task-1", "task-2"],
     insertedAt: "2026-08-18T00:00:00Z",
     updatedAt: "2026-08-18T00:00:00Z",
@@ -117,6 +118,7 @@ function template(
   | "tasks"
   | "milestones"
   | "milestonesOrderingState"
+  | "tasksKanbanState"
   | "taskStatuses"
 > {
   return {
@@ -125,6 +127,7 @@ function template(
     tasks: [apiTask({ id: "task-1", name: "First" }), apiTask({ id: "task-2", name: "Second" })],
     milestones: [apiMilestone({ id: "milestone-1", title: "Kickoff" })],
     milestonesOrderingState: ["milestone-1"],
+    tasksKanbanState: "{}",
     taskStatuses: [taskStatus],
     ...overrides,
   };

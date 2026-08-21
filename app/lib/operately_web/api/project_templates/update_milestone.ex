@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestone do
     field? :description, :json, null: true
     field? :due_offset_days, :integer, null: true
     field? :tasks_ordering_state, list_of(:string), null: false
+    field? :tasks_kanban_state, :json, null: false
   end
 
   outputs do

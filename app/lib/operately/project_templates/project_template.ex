@@ -5,7 +5,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
   use Operately.Repo.Getter
 
   alias Operately.ProjectTemplates.{Comment, Discussion, Milestone, Person, ResourceNode, Task, TaskAssignment}
-  alias Operately.Tasks.Status
+  alias Operately.Tasks.{KanbanState, Status}
 
   schema "project_templates" do
     belongs_to :company, Operately.Companies.Company
@@ -29,6 +29,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
 
     embeds_many :task_statuses, Status, on_replace: :delete
     field :milestones_ordering_state, {:array, :string}, default: Operately.Projects.OrderingState.initialize()
+    field :tasks_kanban_state, :map, default: KanbanState.initialize()
 
     field :archived_at, :utc_datetime_usec
 
@@ -55,6 +56,7 @@ defmodule Operately.ProjectTemplates.ProjectTemplate do
       :description,
       :duration_days,
       :milestones_ordering_state,
+      :tasks_kanban_state,
       :archived_at
     ])
     |> cast_embed(:task_statuses)

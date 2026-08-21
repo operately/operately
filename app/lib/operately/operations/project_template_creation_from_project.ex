@@ -71,7 +71,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
   defmodule CopyPlanner do
     alias Operately.Operations.ProjectTemplateCreationFromProject
     alias Operately.ProjectTemplates.{Milestone, Task}
-    alias Operately.ProjectTemplates.Graph.Copy
+    alias Operately.ProjectTemplates.Graph.{Copy, Kanban}
     alias Operately.Operations.ProjectTemplateCreationFromProject.PeoplePlanner
     alias OperatelyWeb.Api.Helpers
     alias OperatelyWeb.Paths
@@ -95,7 +95,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
            description: params.description,
            duration_days: Copy.offset_from_date(start_date(project), end_date(project)),
            task_statuses: Enum.map(workflow.copied, &Copy.status_attrs/1),
-           milestones_ordering_state: graph.milestones_ordering_state
+           milestones_ordering_state: graph.milestones_ordering_state,
+           tasks_kanban_state: graph.tasks_kanban_state
          })}
       end
     end
@@ -108,12 +109,14 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
 
       with {:ok, milestone_ordering} <-
              Copy.map_ordering(project.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
+           {:ok, root_kanban} <- plan_kanban(project.tasks_kanban_state, root_tasks(tasks), workflow),
            {:ok, milestones} <- plan_milestone_states(milestones, tasks, project, workflow) do
         {:ok,
          %{
            milestones: milestones,
            tasks: tasks,
-           milestones_ordering_state: milestone_ordering
+           milestones_ordering_state: milestone_ordering,
+           tasks_kanban_state: root_kanban
          }}
       else
         {:error, reason} -> {:error, {:invalid_source, reason}}
@@ -131,13 +134,14 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp plan_task(source, milestone_ids, workflow, start_date) do
       target_milestone_id = source.milestone_id && Map.fetch!(milestone_ids, source.milestone_id)
       due_date = task_due_date(source, start_date)
+      target_status = Map.fetch!(workflow.copied_by_source_id, source.task_status.id)
 
       %{
         source: source,
         target: %Task{id: Ecto.UUID.generate(), project_template_milestone_id: target_milestone_id},
         due_offset_days: Copy.offset_from_date(start_date, due_date),
         reminders: if(due_date, do: Copy.due_relative_reminders(source.reminders), else: []),
-        task_status: Copy.status_attrs(workflow.first_open)
+        task_status: Copy.status_attrs(target_status)
       }
     end
 
@@ -148,11 +152,17 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
         container_tasks = milestone_tasks(tasks, milestone.source.id)
         source_ordering = source_task_ordering(milestone.source.tasks_ordering_state, container_tasks, board_order)
 
-        case Copy.map_ordering(source_ordering, container_tasks, &source_task_path/1, &target_task_path/1) do
-          {:ok, ordering} -> {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering})]}}
+        with {:ok, ordering} <- Copy.map_ordering(source_ordering, container_tasks, &source_task_path/1, &target_task_path/1),
+             {:ok, kanban} <- plan_kanban(milestone.source.tasks_kanban_state, container_tasks, workflow) do
+          {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban})]}}
+        else
           {:error, reason} -> {:halt, {:error, reason}}
         end
       end)
+    end
+
+    defp plan_kanban(state, tasks, workflow) do
+      Kanban.remap(state, tasks, workflow, &source_task_path/1, &target_task_path/1, & &1.source.task_status)
     end
 
     defp source_task_ordering(ordering, _container_tasks, _board_order) when is_list(ordering) and ordering != [], do: ordering
@@ -187,6 +197,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp target_milestone_path(planned), do: Paths.project_template_milestone_id(planned.target)
     defp source_task_path(planned), do: Paths.task_id(planned.source)
     defp target_task_path(planned), do: Paths.project_template_task_id(planned.target)
+    defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.milestone_id == milestone_id))
 
     defp plan_discussions(_discussions, false), do: []
@@ -408,7 +419,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
             title: planned.source.title,
             description: planned.source.description,
             due_offset_days: planned.due_offset_days,
-            tasks_ordering_state: planned.tasks_ordering_state
+            tasks_ordering_state: planned.tasks_ordering_state,
+            tasks_kanban_state: planned.tasks_kanban_state
           })
         end,
         repo,

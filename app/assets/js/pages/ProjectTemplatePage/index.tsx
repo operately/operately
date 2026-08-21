@@ -11,6 +11,7 @@ import {
   persistPersonUpdate,
   persistTemplateChange,
   serializeContent,
+  serializeJson,
   type Mutate,
 } from "@/models/projectTemplates";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
@@ -65,6 +66,7 @@ function Page() {
     tasks,
     milestones,
     milestonesOrderingState,
+    tasksKanbanState,
     statuses,
     onTaskCreate,
     onTaskUpdate,
@@ -120,6 +122,7 @@ function Page() {
         description: serializeContent(updates.description),
         durationDays: updates.durationDays,
         milestonesOrderingState: updates.milestonesOrderingState,
+        tasksKanbanState: serializeJson(updates.tasksKanbanState),
       }),
     );
     if (!saved) setOverview(snapshot);
@@ -146,6 +149,7 @@ function Page() {
         description: overview.description,
         durationDays: overview.durationDays,
         milestonesOrderingState,
+        tasksKanbanState,
         archived: Boolean(template.archivedAt),
       }}
       space={{ id: template.space.id, name: template.space.name, link: paths.spacePath(template.space.id) }}

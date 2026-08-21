@@ -11,7 +11,7 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 import type { StatusSelector } from "../StatusSelector";
 import type { PersonField } from "../PersonField";
 import type { AddFileWidgetProps } from "../ResourceHub/AddFileWidget";
-import type { GetTemplateTaskPageProps } from "../TaskBoard/KanbanView/types";
+import type { GetTemplateTaskPageProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { IconClipboardText, IconListCheck, IconMessageCircle, IconPaperclip } from "../icons";
 import { useTabs } from "../Tabs";
 import { orderByIds } from "../utils/orderByIds";
@@ -86,6 +86,7 @@ export namespace TemplateProjectPage {
     description: any;
     dueOffsetDays: number | null;
     tasksOrderingState: string[];
+    tasksKanbanState: KanbanState;
     link: string;
   }
 
@@ -151,6 +152,7 @@ export namespace TemplateProjectPage {
       description: any;
       durationDays: number | null;
       milestonesOrderingState: string[];
+      tasksKanbanState: KanbanState;
       archived: boolean;
     };
     space: Space;
@@ -184,7 +186,7 @@ export namespace TemplateProjectPage {
       nextStatuses: StatusSelector.StatusOption[];
       deletedStatusReplacements: Record<string, string>;
     }) => void;
-    onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "link" | "tasksOrderingState">) => void;
+    onMilestoneCreate?: (milestone: Omit<Milestone, "id" | "link" | "tasksOrderingState" | "tasksKanbanState">) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void | boolean | Promise<void | boolean>;
     onMilestoneDelete?: (milestoneId: string) => void | boolean | Promise<void | boolean>;
     onMilestoneReorder?: (milestoneId: string, destinationIndex: number) => void | boolean | Promise<void | boolean>;
@@ -213,6 +215,10 @@ export namespace TemplateProjectPage {
 function orderTemplateGraph(props: TemplateProjectPage.Props): TemplateProjectPage.Props {
   const milestones = orderByIds(props.milestones, props.template.milestonesOrderingState);
   const milestoneOrder = new Map(milestones.map((milestone) => [milestone.id, milestone.tasksOrderingState]));
+  const rootOrder = flattenKanban(
+    props.template.tasksKanbanState,
+    props.statuses.map((status) => status.value || status.id),
+  );
 
   return {
     ...props,
@@ -221,8 +227,12 @@ function orderTemplateGraph(props: TemplateProjectPage.Props): TemplateProjectPa
   };
 
   function taskIndex(task: TemplateProjectPage.Task) {
-    if (!task.milestoneId) return Number.MAX_SAFE_INTEGER;
-    const index = (milestoneOrder.get(task.milestoneId) ?? []).indexOf(task.id);
+    const ids = task.milestoneId ? (milestoneOrder.get(task.milestoneId) ?? []) : rootOrder;
+    const index = ids.indexOf(task.id);
     return index === -1 ? Number.MAX_SAFE_INTEGER : index;
   }
+}
+
+function flattenKanban(state: KanbanState, statusIds: string[]): string[] {
+  return statusIds.flatMap((statusId) => state[statusId] ?? []);
 }
