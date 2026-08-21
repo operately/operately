@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { CompanyNavigation } from "./index";
+import { HomePage } from "./index";
 import { defaultProps } from "./mockData";
 
 const meta = {
-  title: "Components/CompanyNavigation",
-  component: CompanyNavigation,
+  title: "Pages/HomePage",
+  component: HomePage,
   parameters: { layout: "fullscreen" },
-} satisfies Meta<typeof CompanyNavigation>;
+} satisfies Meta<typeof HomePage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -16,21 +16,24 @@ export const Default: Story = {
   args: defaultProps,
 };
 
-export const ZeroCounts: Story = {
+export const EmptySpaces: Story = {
   args: {
     ...defaultProps,
-    unreadNotificationCount: 0,
-    reviewCount: 0,
+    spaces: [],
   },
 };
 
 export const RestrictedPermissions: Story = {
   args: {
     ...defaultProps,
-    canViewCompanyDirectory: false,
-    canAddGoal: false,
-    canAddProject: false,
-    canAddSpace: false,
-    canInvitePeople: false,
+    canCreateSpace: false,
+    canInviteMembers: false,
+  },
+};
+
+export const EveningGreeting: Story = {
+  args: {
+    ...defaultProps,
+    now: new Date("2026-08-21T20:00:00"),
   },
 };
