@@ -59,6 +59,21 @@ export function Page(props: Page.Props) {
   );
 }
 
+// Constrained width, no paper card (e.g. Home)
+export function PageOpen(props: Page.Props) {
+  useHtmlTitle(props.title);
+
+  const containerClass = classNames("relative sm:my-10", sizeClasses[props.size || "medium"], props.className);
+
+  return (
+    <div className={containerClass} data-test-id={props.testId}>
+      {props.navigation && <Navigation items={props.navigation} testId={props.navigationTestId ?? "navigation"} />}
+      {props.options && <PageOptions options={props.options} testId={props.optionsTestId ?? "options-button"} />}
+      {props.children}
+    </div>
+  );
+}
+
 // New style pages
 export function PageNew(props: Page.Props) {
   useHtmlTitle(props.title);

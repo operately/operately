@@ -68,6 +68,7 @@ export { useFormContext } from "./Forms";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
+export { HomePage } from "./HomePage";
 export { LastCheckIn } from "./LastCheckIn";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { InviteMemberForm } from "./InviteMemberForm";
