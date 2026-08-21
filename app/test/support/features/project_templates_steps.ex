@@ -419,6 +419,56 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     visit_template_tab(ctx, "tasks")
   end
 
+  #
+  # Template tasks board (kanban)
+  #
+
+  step :switch_template_tasks_to_board_view, ctx do
+    ctx
+    |> UI.click(testid: "display-menu-trigger")
+    |> UI.click(testid: "display-menu-option-board")
+    |> UI.assert_has(testid: "kanban-board")
+  end
+
+  step :assert_template_task_in_kanban_column, ctx, opts do
+    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
+    status_value = Keyword.fetch!(opts, :status_value)
+
+    ctx
+    |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
+      UI.assert_has(ctx, testid: UI.testid(["kanban-card", Paths.project_template_task_id(task)]))
+    end)
+  end
+
+  step :open_template_kanban_task_slide_in, ctx, task_key do
+    task = Map.fetch!(ctx, task_key)
+
+    ctx
+    |> UI.click(testid: UI.testid(["kanban-card-title", Paths.project_template_task_id(task)]))
+    |> UI.wait_until_has(testid: "task-slide-in")
+    |> UI.wait_until_has(testid: "task-header")
+    |> UI.sleep(400)
+  end
+
+  step :close_template_kanban_task_slide_in, ctx do
+    ctx
+    |> UI.send_keys([:escape])
+    |> UI.sleep(400)
+    |> UI.refute_has(testid: "task-slide-in")
+  end
+
+  step :change_template_kanban_task_status, ctx, opts do
+    prev_status = Keyword.fetch!(opts, :prev_status)
+    next_status = Keyword.fetch!(opts, :next_status)
+
+    ctx
+    |> UI.wait_until_text(prev_status, testid: "task-status")
+    |> UI.click(testid: "task-status")
+    |> UI.wait_until_has(testid: UI.testid(["status-option", next_status]))
+    |> UI.click(testid: UI.testid(["status-option", next_status]))
+    |> UI.refute_text(prev_status, testid: "task-status")
+  end
+
   step :assert_comment_composer_visible, ctx do
     UI.assert_text(ctx, "Write a comment here...")
   end
