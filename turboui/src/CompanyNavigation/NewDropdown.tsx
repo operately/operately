@@ -1,24 +1,26 @@
-import * as React from "react";
+import React from "react";
 
-import { IconPlus, IconTargetArrow, IconTable, IconTent, IconUser } from "turboui";
+import { IconPlus, IconTable, IconTargetArrow, IconTent, IconUser } from "../icons";
+import { CompanyNavigationLinks } from "./types";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
-import { usePaths } from "@/routes/paths";
-
-interface Props {
+export function NewDropdown({
+  links,
+  canAddGoal,
+  canAddProject,
+  canAddSpace,
+  canInvitePeople,
+}: {
+  links: CompanyNavigationLinks;
   canAddGoal: boolean;
   canAddProject: boolean;
   canAddSpace: boolean;
   canInvitePeople: boolean;
-}
-
-export function NewDropdown({ canAddGoal, canAddProject, canAddSpace, canInvitePeople }: Props) {
-  const paths = usePaths();
-
+}) {
   return (
     <DropdownMenu testId="new-dropdown" name="New" icon={IconPlus} align="end" triggerClassName="hidden lg:flex">
       <DropdownLinkItem
-        path={paths.newGoalPath()}
+        path={links.newGoal}
         icon={IconTargetArrow}
         title="New goal"
         testId="new-dropdown-new-goal"
@@ -26,7 +28,7 @@ export function NewDropdown({ canAddGoal, canAddProject, canAddSpace, canInviteP
       />
 
       <DropdownLinkItem
-        path={paths.newProjectPath()}
+        path={links.newProject}
         icon={IconTable}
         title="New project"
         testId="new-dropdown-new-project"
@@ -36,7 +38,7 @@ export function NewDropdown({ canAddGoal, canAddProject, canAddSpace, canInviteP
       <DropdownSeparator hidden={!canAddSpace} />
 
       <DropdownLinkItem
-        path={paths.newSpacePath()}
+        path={links.newSpace}
         icon={IconTent}
         title="New space"
         testId="new-dropdown-new-space"
@@ -46,7 +48,7 @@ export function NewDropdown({ canAddGoal, canAddProject, canAddSpace, canInviteP
       <DropdownSeparator hidden={!canInvitePeople} />
 
       <DropdownLinkItem
-        path={paths.invitePeoplePath()}
+        path={links.invitePeople}
         icon={IconUser}
         title="Invite people"
         testId="new-dropdown-new-team-member"
