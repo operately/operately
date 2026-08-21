@@ -28,6 +28,7 @@ import {
   CompanyNavigationProps,
   CompanyNavigationUpdate,
 } from "./types";
+import { truncateCompanyName } from "./truncateCompanyName";
 import { UpdateBadge } from "./UpdateBadge";
 import { User } from "./User";
 
@@ -50,6 +51,7 @@ export function CompanyNavigation(props: CompanyNavigation.Props) {
 
 function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Props) {
   const [open, setOpen] = React.useState(false);
+  const displayName = truncateCompanyName(companyName);
 
   return (
     <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
@@ -58,8 +60,12 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
           <DivLink className="flex items-center gap-2 cursor-pointer" to={links.home}>
             <OperatelyLogo />
           </DivLink>
-          <DivLink className="font-bold cursor-pointer" to={links.home}>
-            {companyName}
+          <DivLink
+            className="font-bold cursor-pointer"
+            to={links.home}
+            title={displayName === companyName ? undefined : companyName}
+          >
+            {displayName}
           </DivLink>
         </div>
 
