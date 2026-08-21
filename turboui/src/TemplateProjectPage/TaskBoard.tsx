@@ -6,7 +6,14 @@ import { BlackLink } from "../Link";
 import { isContentEmpty } from "../RichContent";
 import { DescriptionIndicator } from "../TaskBoard/components/DescriptionIndicator";
 import { TaskSectionEmptyState } from "../MilestonePage/components/TaskSectionEmptyState";
-import { TasksBoardView, TasksMenu, TaskDisplayMenu, useMilestoneFilter, useTaskDisplayMode } from "../TaskBoard";
+import {
+  TasksBoardView,
+  TasksMenu,
+  TaskDisplayMenu,
+  parseTaskDisplayMode,
+  useMilestoneFilter,
+  useTaskDisplayMode,
+} from "../TaskBoard";
 import { TemplateTaskList } from "../TaskBoard/components/TemplateTaskList";
 import { InlineTaskCreator } from "../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../TaskBoard/hooks/useInlineTaskCreator";
@@ -21,6 +28,7 @@ import { useBoardDnD } from "../utils/PragmaticDragAndDrop";
 import type { BoardLocation, BoardMove } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
 import { compareIds } from "../utils/ids";
+import { useStateWithLocalStorage } from "../utils/useStateWithLocalStorage";
 import {
   fillKanbanFromTasks,
   statusKeys,
@@ -30,11 +38,22 @@ import {
 } from "./kanbanAdapters";
 
 const ROOT_TASKS_CONTAINER_ID = "no-milestone";
+const TASK_DISPLAY_STORAGE_NAMESPACE = "templateTaskBoard";
+const TASK_DISPLAY_STORAGE_KEY = "taskDisplayMode";
 
 export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
+  const [tasksView, setTasksView] = useStateWithLocalStorage<TaskDisplayMode>(
+    TASK_DISPLAY_STORAGE_NAMESPACE,
+    TASK_DISPLAY_STORAGE_KEY,
+    "list",
+    {
+      deserialize: (value) => parseTaskDisplayMode(JSON.parse(value)) ?? "list",
+    },
+  );
   const [taskDisplayMode, setTaskDisplayMode] = useTaskDisplayMode({
-    tasksView: "list",
-    canPersistTasksView: false,
+    tasksView,
+    canPersistTasksView: true,
+    onTasksViewChange: setTasksView,
   });
   const boardMilestones = React.useMemo(() => props.milestones.map(toBoardMilestone), [props.milestones]);
   const allBoardTasks = React.useMemo(
