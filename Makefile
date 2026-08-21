@@ -341,6 +341,9 @@ test.dialyzer:
 test.tsc.lint:
 	./devenv bash -c "cd app && npx tsc --noEmit -p tsconfig.lint.json"
 
+test.tsc.lint.turboui:
+	./devenv bash -c "cd turboui && npx tsc --noEmit -p tsconfig.json"
+
 test.cli.catalog.sync:
 	./devenv bash -c 'cd app && MIX_ENV=test mix run --no-compile --no-start -e "Mix.Tasks.Operately.Gen.Api.Catalog.run([])"'
 	$(MAKE) cli.node_modules
