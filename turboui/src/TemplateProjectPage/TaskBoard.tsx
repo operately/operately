@@ -23,7 +23,6 @@ import classNames from "../utils/classnames";
 import { compareIds } from "../utils/ids";
 import {
   fillKanbanFromTasks,
-  mergeKanbanStates,
   statusKeys,
   toBoardMilestone,
   toBoardTask,
@@ -102,33 +101,11 @@ function BoardView({
   boardTasks: Task[];
   onMilestoneFilterChange: (milestoneId: string | null) => void;
 }) {
-  const templateTasks = React.useMemo(() => {
-    if (!selectedMilestoneId) return props.tasks;
-    return props.tasks.filter((task) => compareIds(task.milestoneId, selectedMilestoneId));
-  }, [props.tasks, selectedMilestoneId]);
-
   const keys = React.useMemo(() => statusKeys(props.statuses), [props.statuses]);
-  const kanbanState = React.useMemo(() => {
-    if (selectedMilestoneId) {
-      const milestone = props.milestones.find((item) => compareIds(item.id, selectedMilestoneId));
-      return fillKanbanFromTasks(milestone?.tasksKanbanState ?? {}, templateTasks, keys);
-    }
-
-    const root = fillKanbanFromTasks(
-      props.template.tasksKanbanState,
-      templateTasks.filter((task) => compareIds(task.milestoneId, null)),
-      keys,
-    );
-    const milestoneStates = props.milestones.map((milestone) =>
-      fillKanbanFromTasks(
-        milestone.tasksKanbanState,
-        templateTasks.filter((task) => compareIds(task.milestoneId, milestone.id)),
-        keys,
-      ),
-    );
-
-    return mergeKanbanStates([root, ...milestoneStates], keys);
-  }, [keys, props.milestones, props.template.tasksKanbanState, selectedMilestoneId, templateTasks]);
+  const kanbanState = React.useMemo(
+    () => fillKanbanFromTasks(props.template.tasksKanbanState, props.tasks, keys),
+    [keys, props.tasks, props.template.tasksKanbanState],
+  );
 
   const slideInContext = useTemplateSlideInContext(props, canEdit);
   const defaultStatus = props.statuses[0];

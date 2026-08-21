@@ -30,9 +30,20 @@ jest.mock("turboui", () => ({
   showErrorToast: jest.fn(),
 }));
 
-jest.mock("@/routes/paths", () => ({
-  compareIds: (left: string | null | undefined, right: string | null | undefined) => left === right,
-}));
+jest.mock("@/routes/paths", () => {
+  const compareIds = (left: string | null | undefined, right: string | null | undefined) => {
+    if (!left || !right) return false;
+    return left === right;
+  };
+
+  return {
+    compareIds,
+    sameMilestoneId: (left: string | null | undefined, right: string | null | undefined) => {
+      if (left == null && right == null) return true;
+      return compareIds(left, right);
+    },
+  };
+});
 
 jest.mock("@/api", () => ({
   __esModule: true,
@@ -282,9 +293,9 @@ test("restores the task when status persistence fails", async () => {
   expect(updateTask).not.toHaveBeenCalled();
 });
 
-test("persists milestone kanban state and status for a milestone task", async () => {
+test("persists template-root kanban state and status for a milestone task", async () => {
   updateTask.mockResolvedValue({ task: { id: "task-1" } });
-  updateMilestone.mockResolvedValue({ milestone: { id: "milestone-1" } });
+  updateTemplate.mockResolvedValue({ template: { id: "template-1" } });
   const session = graphSession(
     mapTemplateTaskGraph(
       template({ taskStatuses: [taskStatus, doneStatus] }),
@@ -308,7 +319,7 @@ test("persists milestone kanban state and status for a milestone task", async ()
   ).resolves.toBe(true);
 
   expect(session.current.tasks[0]).toEqual(expect.objectContaining({ id: "task-1", status: expect.objectContaining({ id: "done" }) }));
-  expect(session.current.milestones[0]!.tasksKanbanState).toEqual({ todo: ["task-2"], done: ["task-1"] });
+  expect(session.current.tasksKanbanState).toEqual({ todo: ["task-2"], done: ["task-1"] });
   expect(updateTask).toHaveBeenCalledWith(
     expect.objectContaining({
       templateId: "template-1",
@@ -316,14 +327,13 @@ test("persists milestone kanban state and status for a milestone task", async ()
       taskStatus: { id: "done" },
     }),
   );
-  expect(updateMilestone).toHaveBeenCalledWith(
+  expect(updateTemplate).toHaveBeenCalledWith(
     expect.objectContaining({
-      templateId: "template-1",
-      milestoneId: "milestone-1",
+      id: "template-1",
       tasksKanbanState: JSON.stringify({ todo: ["task-2"], done: ["task-1"] }),
     }),
   );
-  expect(updateTemplate).not.toHaveBeenCalled();
+  expect(updateMilestone).not.toHaveBeenCalled();
 });
 
 test("persists root kanban state for a template-root task", async () => {
@@ -360,6 +370,56 @@ test("persists root kanban state for a template-root task", async () => {
     expect.objectContaining({
       id: "template-1",
       tasksKanbanState: JSON.stringify({ todo: [], done: ["root-task"] }),
+    }),
+  );
+  expect(updateMilestone).not.toHaveBeenCalled();
+});
+
+test("persists the full board order on the template root", async () => {
+  updateTask.mockResolvedValue({ task: { id: "root-task" } });
+  updateTemplate.mockResolvedValue({ template: { id: "template-1" } });
+  const session = graphSession(
+    mapTemplateTaskGraph(
+      template({
+        tasks: [
+          apiTask({ id: "root-a", name: "Root A", projectTemplateMilestoneId: null }),
+          apiTask({ id: "root-b", name: "Root B", projectTemplateMilestoneId: null }),
+          apiTask({ id: "task-1", name: "Milestone task" }),
+        ],
+        milestones: [
+          apiMilestone({
+            id: "milestone-1",
+            title: "Kickoff",
+            tasksOrderingState: ["task-1"],
+            tasksKanbanState: JSON.stringify({ todo: ["task-1"], done: [] }),
+          }),
+        ],
+        tasksKanbanState: JSON.stringify({ todo: ["root-a", "task-1", "root-b"], done: [] }),
+        taskStatuses: [taskStatus, doneStatus],
+      }),
+      (personId) => `/people/${personId}`,
+      (milestoneId) => `/milestones/${milestoneId}`,
+    ),
+  );
+
+  await expect(
+    performTemplateTaskKanbanChange({
+      ...session,
+      event: {
+        milestoneId: null,
+        taskId: "root-b",
+        from: { status: "todo", index: 2 },
+        to: { status: "todo", index: 0 },
+        updatedKanbanState: { todo: ["root-b", "task-1", "root-a"], done: [] },
+      },
+    }),
+  ).resolves.toBe(true);
+
+  expect(session.current.tasksKanbanState).toEqual({ todo: ["root-b", "task-1", "root-a"], done: [] });
+  expect(updateTemplate).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: "template-1",
+      tasksKanbanState: JSON.stringify({ todo: ["root-b", "task-1", "root-a"], done: [] }),
     }),
   );
   expect(updateMilestone).not.toHaveBeenCalled();

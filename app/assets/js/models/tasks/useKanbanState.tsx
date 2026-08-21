@@ -37,6 +37,10 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "project";
       projectId: string;
+    })
+  | (BaseKanbanStateOptions & {
+      type: "template";
+      templateId: string;
     });
 
 export function useKanbanState(options: UseKanbanStateOptions) {
@@ -82,6 +86,16 @@ export function useKanbanState(options: UseKanbanStateOptions) {
             taskId: event.taskId,
             status: backendStatus,
             kanbanState: serializeKanbanState(event.updatedKanbanState),
+          });
+        } else if (type === "template") {
+          await Api.project_templates.updateTask({
+            templateId: options.templateId,
+            taskId: event.taskId,
+            taskStatus: backendStatus,
+          });
+          await Api.project_templates.update({
+            id: options.templateId,
+            tasksKanbanState: serializeKanbanState(event.updatedKanbanState),
           });
         } else {
           await Api.spaces.updateKanban({

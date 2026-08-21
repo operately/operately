@@ -118,8 +118,11 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Enum.all?(project.tasks, &(is_nil(&1.closed_at) and is_nil(&1.reopened_at)))
 
     assert project.milestones_ordering_state == [Paths.milestone_id(milestone)]
-    assert project.tasks_kanban_state[copied_not_started.value] == [Paths.task_id(root_open_task)]
-    assert project.tasks_kanban_state[copied_done.value] == [Paths.task_id(root_task)]
+    assert project.tasks_kanban_state[copied_not_started.value] == [
+             Paths.task_id(root_open_task),
+             Paths.task_id(milestone_open_task)
+           ]
+    assert project.tasks_kanban_state[copied_done.value] == [Paths.task_id(root_task), Paths.task_id(milestone_task)]
     assert milestone.tasks_ordering_state == [Paths.task_id(milestone_task), Paths.task_id(milestone_open_task)]
     assert milestone.tasks_kanban_state[copied_not_started.value] == [Paths.task_id(milestone_open_task)]
     assert milestone.tasks_kanban_state[copied_done.value] == [Paths.task_id(milestone_task)]
@@ -547,8 +550,14 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
       |> ProjectTemplate.changeset(%{
         milestones_ordering_state: [Paths.project_template_milestone_id(ctx.launch)],
         tasks_kanban_state: %{
-          not_started.value => [Paths.project_template_task_id(ctx.root_open_task)],
-          done.value => [Paths.project_template_task_id(ctx.root_task)]
+          not_started.value => [
+            Paths.project_template_task_id(ctx.root_open_task),
+            Paths.project_template_task_id(ctx.milestone_open_task)
+          ],
+          done.value => [
+            Paths.project_template_task_id(ctx.root_task),
+            Paths.project_template_task_id(ctx.milestone_task)
+          ]
         }
       })
       |> Repo.update!()
@@ -560,10 +569,7 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
           Paths.project_template_task_id(ctx.milestone_task),
           Paths.project_template_task_id(ctx.milestone_open_task)
         ],
-        tasks_kanban_state: %{
-          not_started.value => [Paths.project_template_task_id(ctx.milestone_open_task)],
-          done.value => [Paths.project_template_task_id(ctx.milestone_task)]
-        }
+        tasks_kanban_state: %{}
       })
       |> Repo.update!()
 

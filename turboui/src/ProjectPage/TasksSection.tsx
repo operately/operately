@@ -18,6 +18,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     onTasksViewChange: state.onTasksViewChange,
   });
 
+  // When creating tasks from the kanban, create them within the selected milestone (if any).
   const onKanbanTaskCreate = React.useCallback(
     (task: TaskBoardTypes.NewTaskPayload) => {
       if (!selectedMilestone) {

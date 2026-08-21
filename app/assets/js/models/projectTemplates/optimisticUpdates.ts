@@ -124,27 +124,29 @@ export function applyMilestoneReorder(
 }
 
 /**
- * Updates a task's status and the kanban columns for its container (template root or one milestone).
+ * Updates a task's status and the template-root board kanban (all tasks), matching projects.
  */
+export function applyKanbanBoardPatch(
+  graph: TemplateTaskGraph,
+  tasksKanbanState: TemplateProjectPage.Props["template"]["tasksKanbanState"],
+  taskId: string,
+  status: TemplateProjectPage.Task["status"],
+): TemplateTaskGraph {
+  return {
+    ...applyTaskPatch(graph, taskId, { status }),
+    tasksKanbanState,
+  };
+}
+
+/** @deprecated Use applyKanbanBoardPatch — board kanban is always on the template root. */
 export function applyKanbanContainerPatch(
   graph: TemplateTaskGraph,
-  containerMilestoneId: string | null,
+  _containerMilestoneId: string | null,
   tasksKanbanState: TemplateProjectPage.Milestone["tasksKanbanState"],
   taskId: string,
   status: TemplateProjectPage.Task["status"],
 ): TemplateTaskGraph {
-  const withTask = applyTaskPatch(graph, taskId, { status });
-
-  if (!containerMilestoneId) {
-    return { ...withTask, tasksKanbanState };
-  }
-
-  return {
-    ...withTask,
-    milestones: withTask.milestones.map((milestone) =>
-      compareIds(milestone.id, containerMilestoneId) ? { ...milestone, tasksKanbanState } : milestone,
-    ),
-  };
+  return applyKanbanBoardPatch(graph, tasksKanbanState, taskId, status);
 }
 
 function moveId(ids: string[], id: string, destinationIndex: number) {

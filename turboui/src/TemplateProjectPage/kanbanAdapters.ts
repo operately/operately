@@ -102,10 +102,6 @@ export function fillKanbanFromTasks(
   return filled;
 }
 
-export function mergeKanbanStates(states: KanbanState[], keys: string[]): KanbanState {
-  return Object.fromEntries(keys.map((key) => [key, states.flatMap((state) => state[key] ?? [])]));
-}
-
 function taskStatusKey(task: TemplateProjectPage.Task): string {
   return task.status.value || task.status.id;
 }

@@ -109,8 +109,8 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
 
       with {:ok, milestone_ordering} <-
              Copy.map_ordering(project.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
-           {:ok, root_kanban} <- plan_kanban(project.tasks_kanban_state, root_tasks(tasks), workflow),
-           {:ok, milestones} <- plan_milestone_states(milestones, tasks, project, workflow) do
+           {:ok, root_kanban} <- plan_kanban(project.tasks_kanban_state, tasks, workflow),
+           {:ok, milestones} <- plan_milestone_states(milestones, tasks, project.tasks_kanban_state, workflow) do
         {:ok,
          %{
            milestones: milestones,
@@ -145,15 +145,15 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
       }
     end
 
-    defp plan_milestone_states(milestones, tasks, project, workflow) do
-      board_order = Copy.board_task_order(project.tasks_kanban_state, workflow)
+    defp plan_milestone_states(milestones, tasks, board_kanban, workflow) do
+      board_order = Copy.board_task_order(board_kanban, workflow)
 
       Enum.reduce_while(milestones, {:ok, []}, fn milestone, {:ok, planned} ->
         container_tasks = milestone_tasks(tasks, milestone.source.id)
         source_ordering = source_task_ordering(milestone.source.tasks_ordering_state, container_tasks, board_order)
 
         with {:ok, ordering} <- Copy.map_ordering(source_ordering, container_tasks, &source_task_path/1, &target_task_path/1),
-             {:ok, kanban} <- plan_kanban(milestone.source.tasks_kanban_state, container_tasks, workflow) do
+             {:ok, kanban} <- plan_kanban(board_kanban, container_tasks, workflow) do
           {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban})]}}
         else
           {:error, reason} -> {:halt, {:error, reason}}
@@ -197,7 +197,6 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProject do
     defp target_milestone_path(planned), do: Paths.project_template_milestone_id(planned.target)
     defp source_task_path(planned), do: Paths.task_id(planned.source)
     defp target_task_path(planned), do: Paths.project_template_task_id(planned.target)
-    defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.milestone_id == milestone_id))
 
     defp plan_discussions(_discussions, false), do: []
