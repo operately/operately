@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest"],
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": [
+    "./assets/js/**/*.test.ts",
+    "./assets/js/**/*.test.tsx",
+    "./assets/js/**/*.d.ts",
+    "./ee/assets/js/**/*.test.ts",
+    "./ee/assets/js/**/*.test.tsx",
+    "./ee/assets/js/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "**/node_modules/*"]
+}
