@@ -22,13 +22,20 @@ import { CompanyDropdown } from "./CompanyDropdown";
 import { HelpDropdown } from "./HelpDropdown";
 import { NewDropdown } from "./NewDropdown";
 import { Review } from "./Review";
-import { CompanyNavigationLinks, CompanyNavigationPerson, CompanyNavigationProps } from "./types";
+import {
+  CompanyNavigationLinks,
+  CompanyNavigationPerson,
+  CompanyNavigationProps,
+  CompanyNavigationUpdate,
+} from "./types";
+import { UpdateBadge } from "./UpdateBadge";
 import { User } from "./User";
 
 export namespace CompanyNavigation {
   export type Person = CompanyNavigationPerson;
   export type Links = CompanyNavigationLinks;
   export type Props = CompanyNavigationProps;
+  export type Update = CompanyNavigationUpdate;
 }
 
 export function CompanyNavigation(props: CompanyNavigation.Props) {
@@ -153,6 +160,8 @@ function DesktopNavigation(props: CompanyNavigationProps) {
           <DivLink className="flex items-center gap-2 cursor-pointer" to={links.home}>
             <OperatelyLogo />
           </DivLink>
+
+          <UpdateBadge update={props.availableUpdate} />
 
           <div className="border-l border-surface-outline px-2.5 ml-4">
             <CompanyDropdown
