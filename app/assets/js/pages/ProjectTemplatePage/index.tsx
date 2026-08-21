@@ -72,6 +72,7 @@ function Page() {
     onTaskUpdate,
     onTaskDelete,
     onTaskReorder,
+    onTaskKanbanChange,
     onMilestoneCreate,
     onMilestoneUpdate,
     onMilestoneDelete,
@@ -184,6 +185,7 @@ function Page() {
       onTaskUpdate={onTaskUpdate}
       onTaskDelete={onTaskDelete}
       onTaskReorder={onTaskReorder}
+      onTaskKanbanChange={onTaskKanbanChange}
       getTemplateTaskPageProps={slideInModel.getTemplateTaskPageProps}
       onPersonCreate={onPersonCreate}
       onPersonUpdate={onPersonUpdate}

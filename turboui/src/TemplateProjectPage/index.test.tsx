@@ -36,6 +36,10 @@ jest.mock("../TaskBoard/KanbanView/TaskSlideIn", () => ({
     isOpen ? <div data-test-id="task-slide-in">{taskPageProps?.name}</div> : null,
 }));
 
+jest.mock("../TaskBoard/KanbanView", () => ({
+  KanbanBoard: () => <div data-test-id="template-kanban-board">Kanban board</div>,
+}));
+
 jest.mock("../utils/PragmaticDragAndDrop", () => ({
   projectItemsWithPlaceholder: ({
     items,
@@ -1363,6 +1367,19 @@ describe("TemplateProjectPage", () => {
     renderPage(createProps({ onStatusesChange: jest.fn() }), "/templates/template-1?tab=tasks");
 
     expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
+  });
+
+  it("switches from list to board display mode", () => {
+    renderPage(
+      createProps({ onStatusesChange: jest.fn(), onTaskKanbanChange: jest.fn() }),
+      "/templates/template-1?tab=tasks&taskDisplay=board",
+    );
+
+    expect(screen.getByText("Viewing tasks for")).toBeInTheDocument();
+    expect(screen.getByText("All project tasks")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="template-kanban-board"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="template-task-section-milestone-1"]')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="display-menu-trigger"]')).toBeInTheDocument();
   });
 
   it("links overview milestone titles to the milestone page", () => {

@@ -10,6 +10,12 @@ export function compareIds(a: ID, b: ID) {
   return idWithoutComments(a) === idWithoutComments(b);
 }
 
+/** Like compareIds, but treats null/undefined as a shared "no milestone" container. */
+export function sameMilestoneId(a: ID, b: ID) {
+  if (a == null && b == null) return true;
+  return compareIds(a, b);
+}
+
 export function includesId(idsList: ID[], id: ID) {
   if (!id) return false;
 

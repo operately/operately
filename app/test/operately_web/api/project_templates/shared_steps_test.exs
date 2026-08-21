@@ -84,7 +84,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
     template = Repo.reload!(template)
     milestone = Repo.reload!(milestone)
     assert moved_task.project_template_milestone_id == milestone.id
-    assert template.tasks_kanban_state[status.value] == []
+    assert template.tasks_kanban_state[status.value] == [Paths.project_template_task_id(moved_task)]
     assert milestone.tasks_ordering_state == [Paths.project_template_task_id(moved_task)]
     assert milestone.tasks_kanban_state[status.value] == [Paths.project_template_task_id(moved_task)]
 
@@ -172,6 +172,28 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedStepsTest do
 
     assert {:error, {:validation, "Kanban state contains an unknown status"}} =
              update_template(ctx.template, %{tasks_kanban_state: %{"unknown" => []}})
+  end
+
+  test "accepts milestone tasks in the template-root board kanban", ctx do
+    assert {:ok, milestone} = create_milestone(ctx.template, %{title: "Ship"})
+    status = hd(ctx.template.task_statuses)
+
+    assert {:ok, milestone_task} =
+             create_task(ctx.template, %{
+               name: "Milestone task",
+               description: %{},
+               project_template_milestone_id: milestone.id,
+               task_status: Map.from_struct(status)
+             })
+
+    task_id = Paths.project_template_task_id(milestone_task)
+
+    assert {:ok, template} =
+             update_template(Repo.reload!(ctx.template), %{
+               tasks_kanban_state: %{status.value => [task_id]}
+             })
+
+    assert template.tasks_kanban_state[status.value] == [task_id]
   end
 
   test "does not write to runtime tables while editing", ctx do
