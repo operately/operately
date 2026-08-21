@@ -46,6 +46,16 @@ export const RestrictedPermissions: Story = {
   },
 };
 
+const longCompanyName = "Nexus Global Manufacturing Group";
+
+/** Company names longer than 24 characters are truncated in the navbar. */
+export const LongCompanyName: Story = {
+  args: {
+    ...defaultProps,
+    companyName: longCompanyName,
+  },
+};
+
 /**
  * Prototype of the "instance is outdated" badge, in the spirit of Chrome's update
  * chip. Deciding whether an instance is behind the latest release is not wired up
@@ -58,18 +68,18 @@ export const UpdateAvailable: Story = {
   },
 };
 
-export const UpdateAvailableLongCompanyName: Story = {
-  args: {
-    ...defaultProps,
-    companyName: "Nexus Global Manufacturing Group",
-    availableUpdate: { version: "v1.10.2" },
-  },
-};
-
 /** Same badge, shorter phrasing: "v1.8 available". */
 export const VersionAvailable: Story = {
   args: {
     ...defaultProps,
     availableUpdate: { version: "v1.8", phrasing: "available" },
+  },
+};
+
+export const UpdateAvailableLongCompanyName: Story = {
+  args: {
+    ...defaultProps,
+    companyName: longCompanyName,
+    availableUpdate: { version: "v1.10.2" },
   },
 };
