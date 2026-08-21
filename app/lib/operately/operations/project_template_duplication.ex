@@ -120,8 +120,8 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
 
       with {:ok, milestone_ordering} <-
              Copy.map_ordering(source.milestones_ordering_state, milestones, &source_milestone_path/1, &target_milestone_path/1),
-           {:ok, root_kanban} <- plan_kanban(source.tasks_kanban_state, root_tasks(tasks), workflow),
-           {:ok, milestones} <- plan_milestone_states(milestones, tasks, workflow) do
+           {:ok, root_kanban} <- plan_kanban(source.tasks_kanban_state, tasks, workflow),
+           {:ok, milestones} <- plan_milestone_states(milestones, tasks, source.tasks_kanban_state, workflow) do
         {:ok,
          %{
            milestones: milestones,
@@ -143,12 +143,12 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
       }
     end
 
-    defp plan_milestone_states(milestones, tasks, workflow) do
+    defp plan_milestone_states(milestones, tasks, board_kanban, workflow) do
       Enum.reduce_while(milestones, {:ok, []}, fn milestone, {:ok, planned} ->
         container_tasks = milestone_tasks(tasks, milestone.source.id)
 
         with {:ok, ordering} <- Copy.map_ordering(milestone.source.tasks_ordering_state, container_tasks, &source_task_path/1, &target_task_path/1),
-             {:ok, kanban} <- plan_kanban(milestone.source.tasks_kanban_state, container_tasks, workflow) do
+             {:ok, kanban} <- plan_kanban(board_kanban, container_tasks, workflow) do
           {:cont, {:ok, planned ++ [Map.merge(milestone, %{tasks_ordering_state: ordering, tasks_kanban_state: kanban})]}}
         else
           error -> {:halt, error}
@@ -185,7 +185,6 @@ defmodule Operately.Operations.ProjectTemplateDuplication do
     defp target_milestone_path(planned), do: Paths.project_template_milestone_id(planned.target)
     defp source_task_path(planned), do: Paths.project_template_task_id(planned.source)
     defp target_task_path(planned), do: Paths.project_template_task_id(planned.target)
-    defp root_tasks(tasks), do: Enum.filter(tasks, &is_nil(&1.source.project_template_milestone_id))
     defp milestone_tasks(tasks, milestone_id), do: Enum.filter(tasks, &(&1.source.project_template_milestone_id == milestone_id))
   end
 

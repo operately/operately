@@ -3,11 +3,11 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
-import { DateField } from "../DateField";
-import type { ProjectPage } from "./index";
+import { DateField } from "../../DateField";
+import type { Milestone } from "../types";
 import { MilestoneViewSelector } from "./MilestoneViewSelector";
 
-jest.mock("../icons", () => {
+jest.mock("../../icons", () => {
   const React = require("react");
 
   return new Proxy(
@@ -25,7 +25,7 @@ const createDate = (value: string): DateField.ContextualDate => ({
   value,
 });
 
-const milestone: ProjectPage.Milestone = {
+const milestone: Milestone = {
   id: "website-launch",
   name: "Website launch",
   status: "pending",
@@ -33,7 +33,7 @@ const milestone: ProjectPage.Milestone = {
   link: "#",
 };
 
-const completedMilestone: ProjectPage.Milestone = {
+const completedMilestone: Milestone = {
   id: "research-complete",
   name: "Research complete",
   status: "done",
@@ -41,7 +41,7 @@ const completedMilestone: ProjectPage.Milestone = {
   link: "#",
 };
 
-const createdMilestone: ProjectPage.Milestone = {
+const createdMilestone: Milestone = {
   id: "customer-onboarding",
   name: "Customer onboarding",
   status: "pending",
@@ -49,12 +49,12 @@ const createdMilestone: ProjectPage.Milestone = {
   link: "#",
 };
 
-function renderSelector({ selectedMilestone = null }: { selectedMilestone?: ProjectPage.Milestone | null } = {}) {
+function renderSelector({ selectedMilestone = null }: { selectedMilestone?: Milestone | null } = {}) {
   const onChange = jest.fn();
   const onCreateMilestone = jest.fn(async () => ({ success: true, milestone: createdMilestone }));
 
   render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <MilestoneViewSelector
         milestones={[milestone, completedMilestone]}
         selectedMilestone={selectedMilestone}

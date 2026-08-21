@@ -131,6 +131,7 @@ defmodule Operately.Operations.ProjectTemplateDuplicationTest do
     assert copied_milestone_task.task_status.value == not_started.value
     assert duplicate.milestones_ordering_state == [Paths.project_template_milestone_id(copied_milestone)]
     assert duplicate.tasks_kanban_state[in_progress.value] == [Paths.project_template_task_id(copied_root_task)]
+    assert duplicate.tasks_kanban_state[not_started.value] == [Paths.project_template_task_id(copied_milestone_task)]
     assert copied_milestone.tasks_ordering_state == [Paths.project_template_task_id(copied_milestone_task)]
     assert copied_milestone.tasks_kanban_state[not_started.value] == [Paths.project_template_task_id(copied_milestone_task)]
 
@@ -181,7 +182,10 @@ defmodule Operately.Operations.ProjectTemplateDuplicationTest do
       ctx.template
       |> ProjectTemplate.changeset(%{
         milestones_ordering_state: [Paths.project_template_milestone_id(ctx.milestone)],
-        tasks_kanban_state: %{root_status.value => [Paths.project_template_task_id(ctx.root_task)]}
+        tasks_kanban_state: %{
+          root_status.value => [Paths.project_template_task_id(ctx.root_task)],
+          milestone_status.value => [Paths.project_template_task_id(ctx.milestone_task)]
+        }
       })
       |> Repo.update!()
 
@@ -189,7 +193,7 @@ defmodule Operately.Operations.ProjectTemplateDuplicationTest do
       ctx.milestone
       |> Milestone.changeset(%{
         tasks_ordering_state: [Paths.project_template_task_id(ctx.milestone_task)],
-        tasks_kanban_state: %{milestone_status.value => [Paths.project_template_task_id(ctx.milestone_task)]}
+        tasks_kanban_state: %{}
       })
       |> Repo.update!()
 
