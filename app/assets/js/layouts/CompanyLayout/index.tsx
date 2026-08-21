@@ -1,243 +1,28 @@
-import * as Api from "@/api";
 import * as React from "react";
 
-import {
-  GlobalSearch,
-  IconBell,
-  IconBriefcase,
-  IconBuildingEstate,
-  IconCircleKey,
-  IconCoffee,
-  IconDoorExit,
-  IconHome2,
-  IconMenu2,
-  IconSwitch,
-  IconUser,
-  IconUserCircle,
-} from "turboui";
+import { CompanyNavigation } from "turboui";
 
 import { logOut } from "@/routes/auth";
 import { Outlet, useNavigate } from "react-router";
 
-import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink } from "turboui";
-import { Bell } from "./Bell";
-import { CompanyDropdown } from "./CompanyDropdown";
-import { HelpDropdown } from "./HelpDropdown";
 import { KeyboardShortcutsModal, useKeyboardShortcutsModal } from "./KeyboardShortcutsModal";
-import { NewDropdown } from "./NewDropdown";
-import { Review } from "./Review";
-import { SupportSessionBanner } from "./SupportSessionBanner";
-import { User } from "./User";
 
-import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useRefresh } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import * as Billing from "@/models/billing";
-import { Paths, usePaths } from "@/routes/paths";
+import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
+import * as Notifications from "@/models/notifications";
+import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { BillingDangerBanner } from "./BillingDangerBanner";
 import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
 import { SiteMessageBanner } from "./SiteMessageBanner";
-
-interface NavigationProps {
-  company: Api.Company;
-  canAddProject: boolean;
-  canAddGoal: boolean;
-  onOpenKeyboardShortcuts: () => void;
-}
-
-function Navigation(props: NavigationProps) {
-  const size = useWindowSizeBreakpoints();
-
-  if (size === "xs") {
-    return <MobileNavigation {...props} />;
-  } else {
-    return <DesktopNavigation {...props} />;
-  }
-}
-
-function MobileNavigation({ company }: NavigationProps) {
-  const me = useMe()!;
-  const paths = usePaths();
-  const [open, setOpen] = React.useState(false);
-
-  const handleLogOut = async () => {
-    const res = await logOut();
-
-    if (res === "success") {
-      window.location.href = "/";
-    }
-  };
-
-  return (
-    <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
-      <div className="flex items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <DivLink className="flex items-center gap-2 cursor-pointer" to={paths.homePath()}>
-            <OperatelyLogo />
-          </DivLink>
-          <DivLink className="font-bold cursor-pointer" to={paths.homePath()}>
-            {company.name}
-          </DivLink>
-        </div>
-
-        <div className="">
-          <IconMenu2 size={24} onClick={() => setOpen(!open)} />
-        </div>
-      </div>
-
-      {open && (
-        <div
-          className="flex flex-col bg-base absolute inset-0 top-10 bg-surface-bg border-t border-surface-outline"
-          onClick={() => setOpen(false)}
-        >
-          <MobileSectionLink to={paths.homePath()} icon={IconHome2}>
-            Home
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.workMapPath()} icon={IconBuildingEstate}>
-            Company
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.profilePath(me.id)} icon={IconBriefcase}>
-            My work
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.reviewPath()} icon={IconCoffee}>
-            Review
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.peoplePath()} icon={IconUserCircle}>
-            People
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.notificationsPath()} icon={IconBell}>
-            Notifications
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.accountPath()} icon={IconUser}>
-            Account
-          </MobileSectionLink>
-
-          <MobileSectionLink to={paths.companyAdminPath()} icon={IconCircleKey}>
-            Company Admin
-          </MobileSectionLink>
-
-          <MobileSectionLink to={Paths.lobbyPath()} icon={IconSwitch}>
-            Switch Company
-          </MobileSectionLink>
-
-          <MobileSectionAction onClick={handleLogOut} icon={IconDoorExit}>
-            Log Out
-          </MobileSectionAction>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function MobileSectionLink({ to, children, icon }) {
-  return (
-    <DivLink
-      to={to}
-      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-4 py-2.5 border-b border-surface-outline first:border-t"
-    >
-      {React.createElement(icon, { size: 16 })}
-      {children}
-    </DivLink>
-  );
-}
-
-function MobileSectionAction({ onClick, children, icon }) {
-  return (
-    <div
-      onClick={onClick}
-      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-4 py-2.5 border-b border-surface-outline first:border-t"
-    >
-      {React.createElement(icon, { size: 16 })}
-      {children}
-    </div>
-  );
-}
-
-function DesktopNavigation({ company, canAddProject, canAddGoal, onOpenKeyboardShortcuts }: NavigationProps) {
-  const me = useMe()!;
-  const paths = usePaths();
-
-  return (
-    <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
-      <div className="flex items-center justify-between px-4">
-        <div className="flex items-center">
-          <DivLink className="flex items-center gap-2 cursor-pointer" to={paths.homePath()}>
-            <OperatelyLogo />
-          </DivLink>
-
-          <div className="border-l border-surface-outline px-2.5 ml-4">
-            <CompanyDropdown company={company} />
-          </div>
-
-          <div className="flex items-center gap-1 lg:gap-2.5 border-l border-surface-outline px-4">
-            <SectionLink to={paths.homePath()} icon={IconHome2}>
-              Home
-            </SectionLink>
-
-            <SectionLink to={paths.workMapPath()} icon={IconBuildingEstate} testId="company-work-map-link">
-              Company
-            </SectionLink>
-
-            <SectionLink to={paths.profilePath(me.id)} icon={IconBriefcase}>
-              My work
-            </SectionLink>
-          </div>
-
-          <div className="border-l border-surface-outline pl-4">
-            <Review />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Search />
-          <NewDropdown
-            canAddGoal={canAddGoal}
-            canAddProject={canAddProject}
-            canAddSpace={company.permissions?.canCreateSpace || false}
-            canInvitePeople={company.permissions?.canInviteMembers || false}
-          />
-          <HelpDropdown company={company} onOpenKeyboardShortcuts={onOpenKeyboardShortcuts} />
-          <Bell />
-          <User />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface SectionLinkProps {
-  to: string;
-  icon: React.ComponentType<{ size?: number }>;
-  children: React.ReactNode;
-  testId?: string;
-}
-
-function SectionLink({ to, children, icon: Icon, testId }: SectionLinkProps) {
-  return (
-    <DivLink
-      to={to}
-      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-1.5 py-0.5 rounded whitespace-nowrap"
-      testId={testId}
-    >
-      <Icon size={16} />
-      {children}
-    </DivLink>
-  );
-}
+import { SupportSessionBanner } from "./SupportSessionBanner";
 
 export default function CompanyLayout() {
-  const data = useCompanyLoaderData();
   const outletDiv = React.useRef<HTMLDivElement>(null);
   const keyboardShortcutsModal = useKeyboardShortcutsModal();
   const refresh = useRefresh();
@@ -249,7 +34,7 @@ export default function CompanyLayout() {
     <div className="flex flex-col h-screen">
       <SiteMessageBanner />
       <ProductReleaseAnnouncementBanner />
-      <Navigation {...data} onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
+      <Navigation onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
       <SupportSessionBanner />
 
       <BillingDangerBanner />
@@ -264,20 +49,77 @@ export default function CompanyLayout() {
   );
 }
 
-function Search() {
-  const navigate = useNavigate();
+function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () => void }) {
+  const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
+  const me = useMe()!;
   const paths = usePaths();
-  const handleGlobalSearch = useGlobalSearchHandler();
+  const navigate = useNavigate();
+  const unreadNotificationCount = Notifications.useUnreadCount();
+  const [reviewCount, refetchReviewCount] = useAssignmentsCount();
+  useReviewRefreshSignal(refetchReviewCount);
+  const search = useGlobalSearchHandler();
   const fullTextSearchPath = companySearchPathBuilder(paths);
 
-  return (
-    <div className="hidden lg:block">
-      <GlobalSearch
-        search={handleGlobalSearch}
-        onNavigate={navigate}
-        fullTextSearchPath={fullTextSearchPath}
-        testId="header-global-search"
-      />
-    </div>
-  );
+  const handleLogOut = async () => {
+    const res = await logOut();
+
+    if (res === "success") {
+      window.location.href = "/";
+    }
+  };
+
+  const props: CompanyNavigation.Props = {
+    companyName: company.name,
+    me: {
+      id: me.id,
+      fullName: me.fullName,
+      email: me.email,
+      avatarUrl: me.avatarUrl,
+    },
+    links: {
+      home: paths.homePath(),
+      workMap: paths.workMapPath(),
+      profile: paths.profilePath(me.id),
+      review: paths.reviewPath(),
+      people: paths.peoplePath(),
+      orgChart: paths.orgChartPath(),
+      notifications: paths.notificationsPath(),
+      account: paths.accountPath(),
+      companyAdmin: paths.companyAdminPath(),
+      lobby: Paths.lobbyPath(),
+      newGoal: paths.newGoalPath(),
+      newProject: paths.newProjectPath(),
+      newSpace: paths.newSpacePath(),
+      invitePeople: paths.invitePeoplePath(),
+      profileEdit: paths.profileEditPath(me.id),
+      accountSettings: paths.accountSettingsPath(),
+      accountSecurity: paths.accountSecurityPath(),
+      accountApiTokens: paths.accountApiTokensPath(),
+      accountMcpConnections: paths.accountMcpConnectionsPath(),
+    },
+    canViewCompanyDirectory: company.permissions?.canView || false,
+    canAddGoal,
+    canAddProject,
+    canAddSpace: company.permissions?.canCreateSpace || false,
+    canInvitePeople: company.permissions?.canInviteMembers || false,
+    unreadNotificationCount,
+    reviewCount,
+    discordUrl: window.appConfig.discordUrl,
+    contactUsHref: contactUsLink(company.name, company.id),
+    onOpenKeyboardShortcuts,
+    onLogOut: handleLogOut,
+    search,
+    onNavigate: navigate,
+    fullTextSearchPath,
+  };
+
+  return <CompanyNavigation {...props} />;
+}
+
+function contactUsLink(companyName: string, companyId: string) {
+  const params = encodeUrlParams({
+    body: "\n\norg name: " + companyName + "\norg id: " + companyId + "\n\n",
+  });
+
+  return `mailto:support@operately.com` + params;
 }
