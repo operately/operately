@@ -39,6 +39,8 @@ defmodule OperatelyWeb.Api.Kpis.GetKpiTest do
       assert Jason.decode!(res.kpi.description) == description
       periods = Enum.map(res.kpi.entries, & &1.period)
       assert periods == ["2026-01-01", "2026-02-01", "2026-03-01"]
+      assert res.kpi.subscription_list
+      assert res.kpi.subscription_list.parent_type == "kpi"
     end
 
     test "a non-space-member cannot get a KPI", ctx do

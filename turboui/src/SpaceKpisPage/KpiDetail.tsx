@@ -5,7 +5,7 @@ import { Menu, MenuActionItem } from "../Menu";
 import { PageDescription } from "../PageDescription";
 import { PersonField } from "../PersonField";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
-import { SidebarSection } from "../SidebarSection";
+import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -18,6 +18,7 @@ interface KpiDetailProps {
   onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
   onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
   richTextHandlers: RichEditorHandlers;
+  subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
@@ -30,6 +31,7 @@ export function KpiDetail({
   onEditKpi,
   onDescriptionChange,
   richTextHandlers,
+  subscriptions,
 }: KpiDetailProps) {
   const [description, setDescription] = React.useState(kpi.description);
 
@@ -69,7 +71,13 @@ export function KpiDetail({
         </div>
       </div>
 
-      <KpiSidebar kpi={kpi} canManage={canManage} championSearch={championSearch} onEditKpi={onEditKpi} />
+      <KpiSidebar
+        kpi={kpi}
+        canManage={canManage}
+        championSearch={championSearch}
+        onEditKpi={onEditKpi}
+        subscriptions={subscriptions}
+      />
     </div>
   );
 }
@@ -79,11 +87,13 @@ function KpiSidebar({
   canManage,
   championSearch,
   onEditKpi,
+  subscriptions,
 }: {
   kpi: SpaceKpisPage.Kpi;
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
   onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
+  subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }) {
   const [champion, setChampion] = React.useState(kpi.champion);
   const [cadence, setCadence] = React.useState(kpi.cadence);
@@ -135,6 +145,8 @@ function KpiSidebar({
       <SidebarSection title="Cadence">
         <CadenceField cadence={cadence} readonly={!canManage} onChange={(next) => save(champion, next)} />
       </SidebarSection>
+
+      {subscriptions && <SidebarNotificationSection {...subscriptions} />}
     </aside>
   );
 }

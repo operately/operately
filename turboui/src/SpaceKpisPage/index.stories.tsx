@@ -3,6 +3,7 @@ import React from "react";
 import { useParams } from "react-router";
 
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
 import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople, mockSpace } from "./mockData";
@@ -63,6 +64,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 function Harness(args: HarnessArgs) {
   const [kpis, setKpis] = React.useState<SpaceKpisPageNS.Kpi[]>(() => (args.emptySpace ? [] : clone(mockKpis)));
   const { kpiId } = useParams();
+  const subscriptions = useMockSubscriptions({ entityType: "kpi", initial: true });
 
   const onCreateKpi = async (input: SpaceKpisPageNS.NewKpiInput): Promise<SpaceKpisPageNS.MutationResult> => {
     console.log("createKpi", input);
@@ -178,6 +180,7 @@ function Harness(args: HarnessArgs) {
       loading={args.loading}
       error={args.error}
       canManage={args.canManage}
+      subscriptions={subscriptions}
     />
   );
 }

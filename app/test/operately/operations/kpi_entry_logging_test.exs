@@ -15,6 +15,7 @@ defmodule Operately.Operations.KpiEntryLoggingTest do
     creator = person_fixture_with_account(%{company_id: company.id})
     champion = person_fixture_with_account(%{company_id: company.id})
     space = group_fixture(creator)
+    {:ok, _} = Operately.Groups.add_members(creator, space.id, [%{id: champion.id, access_level: 70}])
     kpi = kpi_fixture(creator, %{space_id: space.id, champion_id: champion.id})
 
     {:ok, company: company, creator: creator, champion: champion, space: space, kpi: kpi}

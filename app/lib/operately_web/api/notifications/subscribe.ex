@@ -47,6 +47,7 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
       :project_task -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :space_task -> Groups.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
       :milestone -> Projects.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
+      :kpi -> Groups.Permissions.check(access_level, :can_view, company_read_only: company_read_only)
     end
   end
 end

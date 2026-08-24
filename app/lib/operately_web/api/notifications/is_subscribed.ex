@@ -77,6 +77,9 @@ defmodule OperatelyWeb.Api.Notifications.IsSubscribed do
       :space_task ->
         Operately.Tasks.Task.get(ctx.me, id: resource_id)
 
+      :kpi ->
+        Operately.Kpis.Kpi.get(ctx.me, id: resource_id)
+
       _ ->
         {:error, :invalid_resource_type}
     end

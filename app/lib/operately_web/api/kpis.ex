@@ -85,7 +85,7 @@ defmodule OperatelyWeb.Api.Kpis do
         kpi ->
           # Entries are ordered by period so the chart renders history in order.
           entries = Kpis.list_entries(kpi_id) |> Repo.preload(:recorded_by)
-          {:ok, %{Repo.preload(kpi, :champion) | entries: entries}}
+          {:ok, %{Repo.preload(kpi, [:champion, subscription_list: [subscriptions: :person]]) | entries: entries}}
       end
     end
 

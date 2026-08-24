@@ -200,6 +200,30 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
     end
   end
 
+  describe "kpi subscriptions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.log_in_person(:person)
+    end
+
+    test "subscribes to kpi notifications", ctx do
+      kpi = Operately.KpisFixtures.kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
+
+      refute Notifications.is_subscriber?(ctx.person.id, kpi.subscription_list_id)
+
+      assert {200, _} =
+               mutation(ctx.conn, [:notifications, :subscribe], %{
+                 subscription_list_id: Paths.subscription_list_id(%{id: kpi.subscription_list_id}),
+                 type: "kpi"
+               })
+
+      assert Notifications.is_subscriber?(ctx.person.id, kpi.subscription_list_id)
+    end
+  end
+
   #
   # Helpers
   #
