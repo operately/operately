@@ -15,6 +15,7 @@ import {
   mockPeople,
   mockSpace,
 } from "./mockData";
+import { formatShortDate, formatValue } from "./utils";
 
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until
@@ -116,11 +117,45 @@ describe("SpaceKpisPage layout", () => {
     const sidebar = container.querySelector<HTMLElement>('[data-test-id="kpi-sidebar"]')!;
 
     expect(sidebar).toBeInTheDocument();
+    expect(within(sidebar).getByText("Last update")).toBeInTheDocument();
     expect(within(sidebar).getByText("Champion")).toBeInTheDocument();
     expect(within(sidebar).getByText(target.champion!.fullName)).toBeInTheDocument();
     expect(within(sidebar).getByText("Cadence")).toBeInTheDocument();
     expect(within(sidebar).getByText("Monthly")).toBeInTheDocument();
     expect(within(sidebar).queryByText("Unit")).not.toBeInTheDocument();
+  });
+
+  // Mirrors a project's last check-in: the sidebar answers what was recorded,
+  // when, and by whom, which the headline value alone does not say.
+  test("shows the last update in the sidebar with its value, date and who recorded it", () => {
+    const target = mockKpis[0]!;
+    const latest = target.entries[target.entries.length - 1]!;
+    const { container } = renderPage({ selectedKpi: target });
+    const card = container.querySelector<HTMLElement>('[data-test-id="kpi-last-update"]')!;
+
+    expect(card).toBeInTheDocument();
+    expect(within(card).getByText(formatShortDate(latest.recordedAt))).toBeInTheDocument();
+    expect(within(card).getByText(formatValue(latest.value, target.unit))).toBeInTheDocument();
+    expect(within(card).getByText(latest.recordedBy!.fullName.split(" ")[0]!)).toBeInTheDocument();
+  });
+
+  test("prompts editors to log the first value when a KPI has no updates", () => {
+    const target = mockKpis.find((kpi) => kpi.entries.length === 0)!;
+    const { container } = renderPage({ selectedKpi: target });
+
+    expect(container.querySelector('[data-test-id="kpi-last-update"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="kpi-last-update-empty"]')).toHaveTextContent(
+      "Log the first value to start tracking",
+    );
+  });
+
+  test("read-only viewers are not prompted to log a value for a KPI with no updates", () => {
+    const target = mockKpis.find((kpi) => kpi.entries.length === 0)!;
+    const { container } = renderPage({ selectedKpi: target, canManage: false });
+
+    const empty = container.querySelector('[data-test-id="kpi-last-update-empty"]');
+    expect(empty).toBeInTheDocument();
+    expect(empty).not.toHaveTextContent("Log the first value");
   });
 
   test("editors can change the champion from the sidebar", async () => {
