@@ -50,7 +50,11 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   let primaryAction: HeaderAction | null = null;
   if (canManage && contentReady) {
     if (selectedKpi) {
-      primaryAction = { label: "Log update", onClick: () => setLogKpiId(selectedKpi.id), testId: "kpi-detail-log-update" };
+      primaryAction = {
+        label: "Log update",
+        onClick: () => setLogKpiId(selectedKpi.id),
+        testId: "kpi-detail-log-update",
+      };
     } else {
       primaryAction = { label: "New KPI", onClick: () => setIsNewOpen(true), testId: "new-kpi" };
     }
@@ -81,7 +85,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
       />
 
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">
+        <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
           <KpisContent
             {...props}
             canManage={canManage}
@@ -184,9 +188,7 @@ function PageHeader(props: PageHeaderProps) {
       <div className="mt-1 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <IconChartColumn size={20} className="text-content-dimmed" />
-          <h1 className="text-sm font-bold text-content-accent sm:text-base">
-            {props.selectedKpiName ?? "KPIs"}
-          </h1>
+          <h1 className="text-sm font-bold text-content-accent sm:text-base">{props.selectedKpiName ?? "KPIs"}</h1>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -233,7 +235,14 @@ function KpisContent(props: KpisContentProps) {
   }
 
   if (props.selectedKpi) {
-    return <KpiDetail kpi={props.selectedKpi} />;
+    return (
+      <KpiDetail
+        kpi={props.selectedKpi}
+        canManage={props.canManage}
+        championSearch={props.championSearch}
+        onEditKpi={props.onEditKpi}
+      />
+    );
   }
 
   return (

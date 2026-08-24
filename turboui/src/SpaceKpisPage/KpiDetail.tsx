@@ -1,63 +1,190 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
+import { Menu, MenuActionItem } from "../Menu";
+import { PersonField } from "../PersonField";
+import { SidebarSection } from "../SidebarSection";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
-import { formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
+import { CADENCE_OPTIONS, formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
 
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
+  canManage: boolean;
+  championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
+  onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
-// page header (see index.tsx), so the detail body focuses on the metadata,
-// latest value, history chart and the recorded-updates log.
-export function KpiDetail({ kpi }: KpiDetailProps) {
+// page header (see index.tsx), so the detail body focuses on the latest value,
+// history chart, recorded-updates log, and supporting information sidebar.
+export function KpiDetail({ kpi, canManage, championSearch, onEditKpi }: KpiDetailProps) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
   return (
-    <div data-test-id="kpi-detail">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-content-dimmed">
-        <span>
-          Measured in <span className="font-medium text-content-base">{kpi.unit}</span>
-        </span>
-        <span>
-          Cadence <span className="font-medium text-content-base">{formatCadence(kpi.cadence)}</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          Champion
-          {kpi.champion ? (
-            <span className="flex items-center gap-1.5 font-medium text-content-base">
-              <Avatar person={kpi.champion} size="tiny" />
-              {kpi.champion.fullName}
-            </span>
-          ) : (
-            <span className="font-medium text-content-subtle">Unassigned</span>
+    <div className="sm:grid sm:grid-cols-12 sm:gap-8" data-test-id="kpi-detail">
+      <div className="sm:col-span-8">
+        <div className="flex items-end gap-3">
+          <div className="text-4xl font-bold text-content-accent">
+            {latest ? formatValue(latest.value, kpi.unit) : "—"}
+          </div>
+          <div className="pb-1">
+            <TrendIndicator delta={trend} />
+          </div>
+          {latest && (
+            <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
           )}
-        </span>
-      </div>
-
-      <div className="mt-6 flex items-end gap-3">
-        <div className="text-4xl font-bold text-content-accent">
-          {latest ? formatValue(latest.value, kpi.unit) : "—"}
         </div>
-        <div className="pb-1">
-          <TrendIndicator delta={trend} />
+
+        <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
+          <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
+          <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
         </div>
-        {latest && (
-          <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
-        )}
+
+        <EntriesTable entries={kpi.entries} unit={kpi.unit} />
       </div>
 
-      <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
-        <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
-        <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
-      </div>
-
-      <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+      <KpiSidebar kpi={kpi} canManage={canManage} championSearch={championSearch} onEditKpi={onEditKpi} />
     </div>
+  );
+}
+
+function KpiSidebar({
+  kpi,
+  canManage,
+  championSearch,
+  onEditKpi,
+}: {
+  kpi: SpaceKpisPage.Kpi;
+  canManage: boolean;
+  championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
+  onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
+}) {
+  const [champion, setChampion] = React.useState(kpi.champion);
+  const [cadence, setCadence] = React.useState(kpi.cadence);
+  const searchData = useChampionSearch(championSearch);
+
+  React.useEffect(() => {
+    setChampion(kpi.champion);
+    setCadence(kpi.cadence);
+  }, [kpi.champion, kpi.cadence]);
+
+  const save = async (nextChampion: SpaceKpisPage.Person | null, nextCadence: SpaceKpisPage.Cadence) => {
+    const previous = { champion, cadence };
+    setChampion(nextChampion);
+    setCadence(nextCadence);
+
+    const result = await onEditKpi({
+      id: kpi.id,
+      name: kpi.name,
+      unit: kpi.unit,
+      cadence: nextCadence,
+      championId: nextChampion?.id ?? null,
+    });
+
+    if (!result.success) {
+      setChampion(previous.champion);
+      setCadence(previous.cadence);
+    }
+  };
+
+  return (
+    <aside className="mt-8 space-y-6 sm:col-span-4 sm:mt-0 sm:pl-8" data-test-id="kpi-sidebar">
+      <SidebarSection title="Champion">
+        {canManage ? (
+          <PersonField
+            person={champion}
+            setPerson={(person) => save(person, cadence)}
+            searchData={searchData}
+            emptyStateMessage="Set champion"
+            emptyStateReadOnlyMessage="No champion"
+            testId="kpi-champion"
+          />
+        ) : (
+          <PersonField person={champion} readonly emptyStateReadOnlyMessage="No champion" testId="kpi-champion" />
+        )}
+      </SidebarSection>
+
+      <SidebarSection title="Cadence">
+        <CadenceField cadence={cadence} readonly={!canManage} onChange={(next) => save(champion, next)} />
+      </SidebarSection>
+    </aside>
+  );
+}
+
+// PersonField debounces keystrokes but still lets requests overlap, so a slower
+// earlier search could otherwise land last and offer people who don't match what
+// was typed. Keep only the newest request's results, and show none when a search
+// fails rather than leaving names from a previous query on screen.
+function useChampionSearch(search: (query: string) => Promise<SpaceKpisPage.Person[]>): PersonField.SearchData {
+  const [people, setPeople] = React.useState<SpaceKpisPage.Person[]>([]);
+  const newestRequest = React.useRef(0);
+
+  const onSearch = React.useCallback(
+    async (query: string) => {
+      const request = ++newestRequest.current;
+
+      let results: SpaceKpisPage.Person[] = [];
+      try {
+        results = await search(query);
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (request === newestRequest.current) setPeople(results);
+    },
+    [search],
+  );
+
+  return React.useMemo(() => ({ people, onSearch }), [people, onSearch]);
+}
+
+function CadenceField({
+  cadence,
+  readonly,
+  onChange,
+}: {
+  cadence: SpaceKpisPage.Cadence;
+  readonly: boolean;
+  onChange: (cadence: SpaceKpisPage.Cadence) => void;
+}) {
+  const label = formatCadence(cadence);
+
+  if (readonly) {
+    return (
+      <div className="text-sm text-content-base" data-test-id="kpi-cadence">
+        {label}
+      </div>
+    );
+  }
+
+  return (
+    <Menu
+      testId="kpi-cadence"
+      size="tiny"
+      customTrigger={
+        <button
+          type="button"
+          className="flex items-center truncate text-left text-sm font-medium text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded cursor-pointer"
+        >
+          {label}
+        </button>
+      }
+    >
+      {CADENCE_OPTIONS.map((option) => (
+        <MenuActionItem
+          key={option.value}
+          onClick={() => {
+            if (option.value !== cadence) onChange(option.value);
+          }}
+          testId={`kpi-cadence-${option.value}`}
+        >
+          {option.label}
+        </MenuActionItem>
+      ))}
+    </Menu>
   );
 }
 
