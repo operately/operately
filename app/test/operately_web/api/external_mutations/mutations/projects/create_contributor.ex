@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.CreateContributo
 
   @impl true
   def assert(response, _ctx) do
-    assert response.contributor.id
+    assert response.project_contributor.id
     refute Map.has_key?(response, :error)
   end
 end

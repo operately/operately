@@ -185,14 +185,7 @@ export function replacePersonId(
   previousId: string,
   person: TemplateProjectPage.TemplatePerson,
 ): TemplateTaskGraph {
-  return {
-    ...graph,
-    people: graph.people.map((item) => (compareIds(item.id, previousId) ? person : item)),
-    tasks: graph.tasks.map((task) => ({
-      ...task,
-      assignees: (task.assignees ?? []).map((assignee) => (compareIds(assignee.id, previousId) ? person : assignee)),
-    })),
-  };
+  return replaceTemplatePersonReferences(graph, previousId, person);
 }
 
 export function applyPersonPatch(
@@ -203,7 +196,32 @@ export function applyPersonPatch(
   const current = graph.people.find((person) => compareIds(person.id, personId));
   if (!current) return graph;
 
-  const nextPerson = { ...current, ...updates };
+  const nextPerson = mergeTemplatePerson(current, updates);
+  return replaceTemplatePersonReferences(graph, personId, nextPerson);
+}
+
+// Merges patch fields onto a template person. PersonField reads person.title as the
+// subtitle, so responsibility is mirrored there (same as project contributors).
+function mergeTemplatePerson(
+  current: TemplateProjectPage.TemplatePerson,
+  updates: Partial<Omit<TemplateProjectPage.TemplatePerson, "id" | "active">>,
+): TemplateProjectPage.TemplatePerson {
+  const responsibility = updates.responsibility !== undefined ? updates.responsibility : current.responsibility;
+  const person = updates.person !== undefined ? updates.person : current.person;
+
+  return {
+    ...current,
+    ...updates,
+    responsibility: responsibility ?? null,
+    person: person ? { ...person, title: responsibility || "" } : null,
+  };
+}
+
+function replaceTemplatePersonReferences(
+  graph: TemplateTaskGraph,
+  personId: string,
+  nextPerson: TemplateProjectPage.TemplatePerson,
+): TemplateTaskGraph {
   return {
     ...graph,
     people: graph.people.map((person) => (compareIds(person.id, personId) ? nextPerson : person)),

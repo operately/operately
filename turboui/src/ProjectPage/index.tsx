@@ -23,6 +23,7 @@ import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { SaveProjectAsTemplateModal } from "../SaveProjectAsTemplateModal";
+import type { Contributor as ContributorsSectionContributor, ContributorFormValues } from "../ContributorsSection";
 
 export namespace ProjectPage {
   export interface Space {
@@ -32,6 +33,7 @@ export namespace ProjectPage {
   }
 
   export type Person = PersonField.Person;
+  export type Contributor = ContributorsSectionContributor;
 
   export interface CheckIn {
     id: string;
@@ -180,7 +182,18 @@ export namespace ProjectPage {
     tasksView: TaskBoardTypes.TaskDisplayMode;
     onTasksViewChange: (mode: TaskBoardTypes.TaskDisplayMode) => void | Promise<void>;
 
-    contributors: Person[];
+    contributors: Contributor[];
+    canEditContributors?: boolean;
+    contributorPersonSearch?: PersonField.SearchData;
+    onContributorCreate?: (
+      values: ContributorFormValues,
+    ) => void | boolean | Promise<void | boolean>;
+    onContributorUpdate?: (
+      contributorId: string,
+      updates: Partial<ContributorFormValues>,
+    ) => void | boolean | Promise<void | boolean>;
+    onContributorDelete?: (contributorId: string) => void | Promise<void>;
+
     checkIns: CheckIn[];
     discussions: Discussion[];
 

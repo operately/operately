@@ -14,6 +14,7 @@ import {
   IconStack2,
   IconTrash,
 } from "../icons";
+import { ContributorsSection, ContributorModal } from "../ContributorsSection";
 import { LastCheckIn } from "../LastCheckIn";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
@@ -258,20 +259,30 @@ function Privacy(props: ProjectPage.State) {
 }
 
 function Contributors(props: ProjectPage.State) {
-  const contributors = props.contributors.filter((c) => ![props.champion?.id, props.reviewer?.id].includes(c.id));
+  const [editing, setEditing] = React.useState<ProjectPage.Contributor | "new" | null>(null);
 
   return (
-    <SidebarSection title="Contributors">
-      <div className="space-y-3">
-        {contributors.length > 0 ? (
-          contributors.map((person: any) => (
-            <PersonField key={person.id} person={person} readonly={true} showTitle={true} />
-          ))
-        ) : (
-          <div className="text-sm text-content-dimmed">No contributors</div>
-        )}
-      </div>
-    </SidebarSection>
+    <>
+      <ContributorsSection
+        contributors={props.contributors}
+        canEdit={Boolean(props.canEditContributors)}
+        onAdd={() => setEditing("new")}
+        onEdit={(contributor) => setEditing(contributor)}
+        onDelete={props.onContributorDelete}
+      />
+
+      {editing && props.contributorPersonSearch && (
+        <ContributorModal
+          contributor={editing === "new" ? null : editing}
+          searchData={props.contributorPersonSearch}
+          onClose={() => setEditing(null)}
+          onCreate={props.onContributorCreate}
+          onUpdate={props.onContributorUpdate}
+          formTestId="project-contributor-form"
+          accessMenuTestId="project-contributor-access"
+        />
+      )}
+    </>
   );
 }
 

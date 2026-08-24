@@ -363,6 +363,11 @@ function Page() {
       });
   };
 
+  const contributorActions = Projects.useProjectContributorActions({
+    project,
+    cacheKey: pageCacheKey(project.id),
+  });
+
   const exportMarkdown = React.useCallback(() => {
     window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
@@ -449,7 +454,7 @@ function Page() {
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
-    contributors: prepareContributors(paths, project.contributors || []),
+    ...contributorActions,
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
@@ -728,27 +733,6 @@ function useParentGoalSearch(project: Projects.Project): ProjectPage.Props["pare
     const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);
-  };
-}
-
-function prepareContributors(paths: Paths, contributors: Projects.ProjectContributor[]): ProjectPage.Person[] {
-  return contributors.map((c) => prepareContributor(paths, c)).filter(Boolean) as ProjectPage.Person[];
-}
-
-function prepareContributor(
-  paths: Paths,
-  contributor: Projects.ProjectContributor | null | undefined,
-): ProjectPage.Person | null {
-  if (!contributor?.person) {
-    return null;
-  }
-
-  return {
-    id: contributor.person.id,
-    fullName: contributor.person.fullName,
-    avatarUrl: contributor.person.avatarUrl || "",
-    title: contributor.responsibility || "",
-    profileLink: paths.profilePath(contributor.person.id),
   };
 }
 

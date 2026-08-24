@@ -194,6 +194,14 @@ export { StatusSelector } from "./StatusSelector";
 export { TaskPage } from "./TaskPage";
 export { TextField } from "./TextField";
 export { PersonField } from "./PersonField";
+export { ContributorsSection, ContributorModal } from "./ContributorsSection";
+export type {
+  Contributor,
+  ContributorsSectionProps,
+  ContributorFormValues,
+  ContributorModalProps,
+} from "./ContributorsSection";
+
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
 export { Timeline } from "./Timeline";

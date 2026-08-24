@@ -273,7 +273,15 @@ export async function performTemplatePersonCreate({
   if (!person.person) return false;
 
   const tempId = `temp-${Date.now()}`;
-  const optimisticPerson: TemplateProjectPage.TemplatePerson = { ...person, id: tempId, active: true };
+  const optimisticPerson: TemplateProjectPage.TemplatePerson = {
+    ...person,
+    id: tempId,
+    active: true,
+    person: {
+      ...person.person,
+      title: person.responsibility || "",
+    },
+  };
   const optimistic = applyCreatedPerson(graph, optimisticPerson);
   commit(optimistic);
 
