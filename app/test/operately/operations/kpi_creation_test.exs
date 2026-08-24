@@ -19,6 +19,7 @@ defmodule Operately.Operations.KpiCreationTest do
       space_id: space.id,
       champion_id: champion.id,
       name: "Customer satisfaction",
+      description: %{"type" => "doc", "content" => [%{"type" => "paragraph"}]},
       unit: "%",
       cadence: :monthly
     }
@@ -32,6 +33,7 @@ defmodule Operately.Operations.KpiCreationTest do
     assert kpi.space_id == ctx.space.id
     assert kpi.champion_id == ctx.champion.id
     assert kpi.name == "Customer satisfaction"
+    assert kpi.description == ctx.attrs.description
     assert kpi.unit == "%"
     assert kpi.cadence == :monthly
 

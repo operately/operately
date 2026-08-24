@@ -2,7 +2,9 @@ import React from "react";
 
 import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
+import { PageDescription } from "../PageDescription";
 import { PersonField } from "../PersonField";
+import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarSection } from "../SidebarSection";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
@@ -14,21 +16,45 @@ interface KpiDetailProps {
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
   onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
+  onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
+  richTextHandlers: RichEditorHandlers;
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
 // page header (see index.tsx). The latest value is in the sidebar last-update
 // card, so the main column is the history chart and the recorded-updates log.
-export function KpiDetail({ kpi, canManage, championSearch, onEditKpi }: KpiDetailProps) {
+export function KpiDetail({
+  kpi,
+  canManage,
+  championSearch,
+  onEditKpi,
+  onDescriptionChange,
+  richTextHandlers,
+}: KpiDetailProps) {
   return (
     <div className="sm:grid sm:grid-cols-12 sm:gap-8" data-test-id="kpi-detail">
-      <div className="sm:col-span-8">
-        <div className="rounded-lg border border-stroke-base bg-surface-base p-4">
-          <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
-          <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
-        </div>
+      <div className="space-y-12 sm:col-span-8">
+        <PageDescription
+          description={kpi.description}
+          onDescriptionChange={(description) => onDescriptionChange(kpi.id, description)}
+          richTextHandlers={richTextHandlers}
+          label="Description"
+          placeholder="Describe this KPI..."
+          zeroStatePlaceholder="Add a description..."
+          testId="kpi-description"
+          emptyTestId="kpi-description-empty"
+          localDraftKey={`kpi:${kpi.id}:description`}
+          canEdit={canManage}
+        />
 
-        <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+        <div>
+          <div className="rounded-lg border border-stroke-base bg-surface-base p-4">
+            <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
+            <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
+          </div>
+
+          <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+        </div>
       </div>
 
       <KpiSidebar kpi={kpi} canManage={canManage} championSearch={championSearch} onEditKpi={onEditKpi} />

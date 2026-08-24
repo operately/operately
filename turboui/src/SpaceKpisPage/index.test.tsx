@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import { createTestId } from "../TestableElement";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
 import {
@@ -43,8 +44,10 @@ function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPag
     championSearch: mockChampionSearch,
     onCreateKpi: async () => ({ success: true }),
     onEditKpi: async () => ({ success: true }),
+    onDescriptionChange: async () => true,
     onDeleteKpi: async () => ({ success: true }),
     onRecordEntry: async () => ({ success: true }),
+    richTextHandlers: createMockRichEditorHandlers(),
     ...overrides,
   };
 }
@@ -123,6 +126,34 @@ describe("SpaceKpisPage layout", () => {
     expect(within(sidebar).getByText("Cadence")).toBeInTheDocument();
     expect(within(sidebar).getByText("Monthly")).toBeInTheDocument();
     expect(within(sidebar).queryByText("Unit")).not.toBeInTheDocument();
+  });
+
+  test("shows the KPI description above its history", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target });
+
+    expect(container.querySelector('[data-test-id="kpi-description"]')).toHaveTextContent(
+      "Tracks recurring revenue from active subscriptions at the end of each month.",
+    );
+    expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument();
+  });
+
+  test("lets editors add a missing description in place", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis.find((kpi) => kpi.description === null)!;
+    const { container } = renderPage({ selectedKpi: target });
+
+    await user.click(within(container).getByText("Add a description..."));
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  test("does not offer description editing to read-only viewers", () => {
+    const target = mockKpis.find((kpi) => kpi.description === null)!;
+    renderPage({ selectedKpi: target, canManage: false });
+
+    expect(screen.queryByText("Add a description...")).not.toBeInTheDocument();
   });
 
   // Mirrors a project's last check-in: the sidebar answers what was recorded,
@@ -307,6 +338,7 @@ describe("SpaceKpisPage list latest value", () => {
     const kpi: SpaceKpisPageNS.Kpi = {
       id: "kpi-throughput",
       name: "PR Throughput",
+      description: null,
       unit: "USD",
       cadence: "weekly",
       champion: null,

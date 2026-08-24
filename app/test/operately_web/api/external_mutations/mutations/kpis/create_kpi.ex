@@ -18,7 +18,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Kpis.CreateKpi do
       space_id: Paths.space_id(ctx.space),
       name: "Revenue",
       unit: "$",
-      cadence: "monthly"
+      cadence: "monthly",
+      description: Jason.encode!(%{"type" => "doc", "content" => [%{"type" => "paragraph"}]})
     }
   end
 
@@ -26,6 +27,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Kpis.CreateKpi do
   def assert(response, _ctx) do
     assert response.kpi.id
     assert response.kpi.name == "Revenue"
+    assert response.kpi.description
     refute Map.has_key?(response, :error)
   end
 end

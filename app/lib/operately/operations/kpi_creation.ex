@@ -21,7 +21,8 @@ defmodule Operately.Operations.KpiCreation do
         champion_id: attrs[:champion_id],
         name: attrs[:name],
         unit: attrs[:unit],
-        cadence: attrs[:cadence]
+        cadence: attrs[:cadence],
+        description: attrs[:description]
       })
     )
   end
