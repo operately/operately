@@ -33,9 +33,6 @@ export function KpiDetail({ kpi, canManage, championSearch, onEditKpi }: KpiDeta
           <div className="pb-1">
             <TrendIndicator delta={trend} />
           </div>
-          {latest && (
-            <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
-          )}
         </div>
 
         <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
@@ -92,6 +89,8 @@ function KpiSidebar({
 
   return (
     <aside className="mt-8 space-y-6 sm:col-span-4 sm:mt-0 sm:pl-8" data-test-id="kpi-sidebar">
+      <LastUpdate kpi={kpi} canManage={canManage} />
+
       <SidebarSection title="Champion">
         {canManage ? (
           <PersonField
@@ -111,6 +110,44 @@ function KpiSidebar({
         <CadenceField cadence={cadence} readonly={!canManage} onChange={(next) => save(champion, next)} />
       </SidebarSection>
     </aside>
+  );
+}
+
+// The most recent entry, presented like a project's last check-in: what was
+// recorded, when, and by whom. The trend stays with the headline value in the
+// main column so the change is not stated twice.
+function LastUpdate({ kpi, canManage }: { kpi: SpaceKpisPage.Kpi; canManage: boolean }) {
+  const latest = latestEntry(kpi);
+
+  if (!latest) {
+    return (
+      <SidebarSection title="Last update">
+        <p className="text-sm text-content-dimmed" data-test-id="kpi-last-update-empty">
+          {canManage
+            ? "No updates yet. Log the first value to start tracking."
+            : "No updates yet. Values appear here as they are logged."}
+        </p>
+      </SidebarSection>
+    );
+  }
+
+  return (
+    <SidebarSection title="Last update">
+      <div
+        className="flex flex-col gap-1 border-l-4 border-surface-outline bg-zinc-50 py-3 pl-3 pr-4 text-sm dark:bg-zinc-800"
+        data-test-id="kpi-last-update"
+      >
+        <div className="font-semibold">{formatShortDate(latest.recordedAt)}</div>
+        <div className="text-lg font-bold text-content-accent">{formatValue(latest.value, kpi.unit)}</div>
+
+        {latest.recordedBy && (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <Avatar person={latest.recordedBy} size={20} />
+            {latest.recordedBy.fullName.split(" ")[0]}
+          </div>
+        )}
+      </div>
+    </SidebarSection>
   );
 }
 
