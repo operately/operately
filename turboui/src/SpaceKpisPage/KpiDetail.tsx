@@ -17,28 +17,13 @@ interface KpiDetailProps {
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
-// page header (see index.tsx), so the detail body focuses on the latest value,
-// history chart, recorded-updates log, and supporting information sidebar.
+// page header (see index.tsx). The latest value is in the sidebar last-update
+// card, so the main column is the history chart and the recorded-updates log.
 export function KpiDetail({ kpi, canManage, championSearch, onEditKpi }: KpiDetailProps) {
-  const latest = latestEntry(kpi);
-  const trend = latestTrend(kpi);
-
   return (
     <div className="sm:grid sm:grid-cols-12 sm:gap-8" data-test-id="kpi-detail">
       <div className="sm:col-span-8">
-        <div className="flex items-end gap-3">
-          <div className="text-4xl font-bold text-content-accent">
-            {latest ? formatValue(latest.value, kpi.unit) : "—"}
-          </div>
-          <div className="pb-1">
-            <TrendIndicator delta={trend} />
-          </div>
-          {latest && (
-            <div className="pb-1.5 text-xs text-content-dimmed">latest · {formatShortDate(latest.recordedAt)}</div>
-          )}
-        </div>
-
-        <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
+        <div className="rounded-lg border border-stroke-base bg-surface-base p-4">
           <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
           <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
         </div>
@@ -92,6 +77,8 @@ function KpiSidebar({
 
   return (
     <aside className="mt-8 space-y-6 sm:col-span-4 sm:mt-0 sm:pl-8" data-test-id="kpi-sidebar">
+      <LastUpdate kpi={kpi} canManage={canManage} />
+
       <SidebarSection title="Champion">
         {canManage ? (
           <PersonField
@@ -111,6 +98,51 @@ function KpiSidebar({
         <CadenceField cadence={cadence} readonly={!canManage} onChange={(next) => save(champion, next)} />
       </SidebarSection>
     </aside>
+  );
+}
+
+// The KPI's current reading, and the only place the latest value appears on the
+// detail page. The value leads, with the change since the previous entry beside
+// it; when it was recorded and by whom are supporting details underneath.
+function LastUpdate({ kpi, canManage }: { kpi: SpaceKpisPage.Kpi; canManage: boolean }) {
+  const latest = latestEntry(kpi);
+  const trend = latestTrend(kpi);
+
+  if (!latest) {
+    return (
+      <SidebarSection title="Last update">
+        <p className="text-sm text-content-dimmed" data-test-id="kpi-last-update-empty">
+          {canManage
+            ? "No updates yet. Log the first value to start tracking."
+            : "No updates yet. Values appear here as they are logged."}
+        </p>
+      </SidebarSection>
+    );
+  }
+
+  return (
+    <SidebarSection title="Last update">
+      <div data-test-id="kpi-last-update">
+        <div className="flex items-center gap-2">
+          <div className="text-3xl font-bold leading-none text-content-accent">
+            {formatValue(latest.value, kpi.unit)}
+          </div>
+          <TrendIndicator delta={trend} />
+        </div>
+
+        <div className="mt-2 flex items-center gap-1.5 text-xs text-content-dimmed">
+          <span>{formatShortDate(latest.recordedAt)}</span>
+
+          {latest.recordedBy && (
+            <>
+              <span aria-hidden="true">·</span>
+              <Avatar person={latest.recordedBy} size={16} />
+              <span>{latest.recordedBy.fullName.split(" ")[0]}</span>
+            </>
+          )}
+        </div>
+      </div>
+    </SidebarSection>
   );
 }
 
