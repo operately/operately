@@ -9,6 +9,7 @@
 // target/threshold fields.
 //
 import type { Navigation } from "../Page/Navigation";
+import type { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export namespace SpaceKpisPage {
   // Ecto.Enum :weekly | :monthly on the backend.
@@ -39,6 +40,7 @@ export namespace SpaceKpisPage {
   export interface Kpi {
     id: string;
     name: string;
+    description: Record<string, unknown> | null;
     unit: string;
     cadence: Cadence;
     champion: Person | null;
@@ -114,8 +116,10 @@ export namespace SpaceKpisPage {
     // (see models/gql convention).
     onCreateKpi: (input: NewKpiInput) => Promise<MutationResult>;
     onEditKpi: (input: EditKpiInput) => Promise<MutationResult>;
+    onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
+    richTextHandlers: RichEditorHandlers;
 
     // Route-loader driven data states.
     loading?: boolean;

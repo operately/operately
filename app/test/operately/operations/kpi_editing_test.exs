@@ -19,11 +19,14 @@ defmodule Operately.Operations.KpiEditingTest do
   end
 
   test "updates the KPI and records an activity", ctx do
-    {:ok, kpi} = Kpis.edit_kpi(ctx.creator, ctx.kpi, %{name: "New name", unit: "points"})
+    description = %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+    {:ok, kpi} = Kpis.edit_kpi(ctx.creator, ctx.kpi, %{name: "New name", unit: "points", description: description})
 
     assert kpi.name == "New name"
     assert kpi.unit == "points"
+    assert kpi.description == description
     assert Kpis.get_kpi(ctx.kpi.id).name == "New name"
+    assert Kpis.get_kpi(ctx.kpi.id).description == description
 
     activity =
       from(a in Activity, where: a.action == "kpi_edited" and a.content["kpi_id"] == ^kpi.id)

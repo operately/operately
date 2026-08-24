@@ -1051,6 +1051,7 @@ defmodule OperatelyWeb.Api.Types do
     field :unit, :string, null: false
     field :cadence, :string, null: false
     field :space_id, :id, null: false
+    field? :description, :string, null: true
     field? :champion, :person, null: true
     field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true

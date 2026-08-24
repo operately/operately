@@ -1,4 +1,5 @@
 import { genPeople } from "../utils/storybook/genPeople";
+import { asRichText } from "../utils/storybook/richContent";
 import type { SpaceKpisPage } from "./types";
 
 const people = genPeople(6);
@@ -69,6 +70,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
     id: "kpi-mrr",
     name: "Monthly Recurring Revenue",
+    description: asRichText("Tracks recurring revenue from active subscriptions at the end of each month."),
     unit: "USD",
     cadence: "monthly",
     champion: bob!,
@@ -85,6 +87,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
     id: "kpi-nps",
     name: "Net Promoter Score",
+    description: null,
     unit: "NPS",
     cadence: "monthly",
     champion: carol!,
@@ -99,6 +102,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
     id: "kpi-uptime",
     name: "Service Uptime",
+    description: null,
     unit: "%",
     cadence: "weekly",
     champion: dave!,
@@ -114,6 +118,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
     id: "kpi-signups",
     name: "Weekly Sign-ups",
+    description: null,
     unit: "users",
     cadence: "weekly",
     champion: null,
@@ -124,6 +129,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
     id: "kpi-churn",
     name: "Logo Churn",
+    description: null,
     unit: "%",
     cadence: "monthly",
     champion: alice!,

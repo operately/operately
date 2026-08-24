@@ -241,6 +241,8 @@ function KpisContent(props: KpisContentProps) {
         canManage={props.canManage}
         championSearch={props.championSearch}
         onEditKpi={props.onEditKpi}
+        onDescriptionChange={props.onDescriptionChange}
+        richTextHandlers={props.richTextHandlers}
       />
     );
   }
