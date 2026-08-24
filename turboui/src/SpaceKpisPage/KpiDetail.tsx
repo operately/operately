@@ -31,12 +31,24 @@ export function KpiDetail({
   onDescriptionChange,
   richTextHandlers,
 }: KpiDetailProps) {
+  const [description, setDescription] = React.useState(kpi.description);
+
+  React.useEffect(() => {
+    setDescription(kpi.description);
+  }, [kpi.id, kpi.description]);
+
+  const saveDescription = async (nextDescription: Record<string, unknown>) => {
+    const success = await onDescriptionChange(kpi.id, nextDescription);
+    if (success) setDescription(nextDescription);
+    return success;
+  };
+
   return (
     <div className="sm:grid sm:grid-cols-12 sm:gap-8" data-test-id="kpi-detail">
       <div className="space-y-12 sm:col-span-8">
         <PageDescription
-          description={kpi.description}
-          onDescriptionChange={(description) => onDescriptionChange(kpi.id, description)}
+          description={description}
+          onDescriptionChange={saveDescription}
           richTextHandlers={richTextHandlers}
           label="Description"
           placeholder="Describe this KPI..."

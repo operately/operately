@@ -20,7 +20,8 @@ defmodule OperatelyWeb.Api.Kpis.ListKpisTest do
     end
 
     test "a space member can list the KPIs of the space", ctx do
-      k1 = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, name: "Revenue")
+      description = %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+      k1 = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, name: "Revenue", description: description)
       k2 = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, name: "Churn")
 
       ctx = Factory.log_in_person(ctx, :member)
@@ -29,6 +30,9 @@ defmodule OperatelyWeb.Api.Kpis.ListKpisTest do
       ids = Enum.map(res.kpis, & &1.id)
       assert Paths.kpi_id(k1) in ids
       assert Paths.kpi_id(k2) in ids
+
+      listed = Enum.find(res.kpis, &(&1.id == Paths.kpi_id(k1)))
+      assert Jason.decode!(listed.description) == description
     end
 
     test "each KPI carries its latest entry (value + period) without full history", ctx do

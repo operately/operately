@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Navigate, useNavigate } from "react-router";
 
-import { SpaceKpisPage } from "turboui";
+import { showErrorToast, SpaceKpisPage } from "turboui";
 import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/types";
 
 import * as Companies from "@/models/companies";
@@ -76,6 +76,10 @@ export function Page() {
       refresh();
       return kpiId;
     });
+
+    if (!result.success) {
+      showErrorToast("Error", "Failed to update KPI description.");
+    }
 
     return result.success;
   };
