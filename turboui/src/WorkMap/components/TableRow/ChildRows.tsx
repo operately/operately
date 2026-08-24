@@ -1,5 +1,6 @@
 import React from "react";
 import { WorkMap } from "..";
+import type { ProjectTemplateSelection } from "../../../ProjectTemplateSelection";
 import { SpaceField } from "../../../SpaceField";
 import type { FormattedTimePreferences } from "../../../FormattedTime";
 import { TableRow, IsItemExpandedFn, SetItemExpandedFn } from "./index";
@@ -19,6 +20,8 @@ interface Props {
   isExpanded: IsItemExpandedFn;
   setItemExpanded: SetItemExpandedFn;
   formattedTimePreferences: FormattedTimePreferences;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
 export function ChildRows({ item, level, isLast, expanded, isExpanded, setItemExpanded, ...rest }: Props) {

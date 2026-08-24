@@ -475,4 +475,159 @@ defmodule Operately.Support.Features.WorkMapSteps do
   step :assert_space_visible, ctx do
     UI.assert_text(ctx, ctx.visible_space.name)
   end
+
+  #
+  # Project templates in Quick Add
+  #
+
+  step :setup_work_map_project_templates, ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.enable_feature("project_templates")
+      |> Factory.add_space(:product_space, name: "Product Space")
+      |> Factory.add_space(:growth_space, name: "Growth Space")
+
+    general_space = Operately.Companies.get_company_space!(ctx.company.id)
+
+    ctx
+    |> Map.put(:general, general_space)
+    |> Factory.add_project_template(:general_template, :general, name: "General launch kit")
+    |> Factory.add_project_template(:product_template, :product_space, name: "Product launch kit")
+    |> Factory.add_project_template(:growth_template, :growth_space, name: "Growth playbook")
+    |> Factory.add_project_template_milestone(:milestone, :general_template, title: "Kickoff")
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :setup_company_work_map_with_templates, ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.enable_feature("project_templates")
+      |> Factory.add_space(:space1, name: "Space 1")
+      |> Factory.add_space(:growth_space, name: "Growth Space")
+      |> Factory.add_goal(:company_goal1, :space1, name: "Company Goal 1")
+      |> Factory.add_project(:company_root_project1, :space1, name: "Company Root Project 1")
+
+    general_space = Operately.Companies.get_company_space!(ctx.company.id)
+
+    ctx
+    |> Map.put(:general, general_space)
+    |> Factory.add_project_template(:general_template, :general, name: "General launch kit")
+    |> Factory.add_project_template(:growth_template, :growth_space, name: "Growth playbook")
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :setup_empty_space_work_map_with_templates, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.enable_feature("project_templates")
+    |> Factory.add_space(:space, name: "Product Space", company_permissions: Binding.view_access())
+    |> Factory.add_project_template(:template, :space, name: "Launch kit")
+    |> Factory.add_project_template_milestone(:milestone, :template, title: "Kickoff")
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :open_add_new_item_modal, ctx do
+    ctx
+    |> UI.click_text("Add new item")
+    |> UI.assert_has(testid: "add-item-modal")
+  end
+
+  step :select_add_item_type_project, ctx do
+    UI.click(ctx, testid: "type-project")
+  end
+
+  step :select_add_item_type_goal, ctx do
+    UI.click(ctx, testid: "type-goal")
+  end
+
+  step :fill_work_map_item_name, ctx, name do
+    UI.fill_text_field(ctx, testid: "item-name", with: name)
+  end
+
+  step :select_work_map_item_space, ctx, space_name do
+    ctx
+    |> UI.click(testid: "space-field")
+    |> UI.click(testid: UI.testid(["space-field", "search-result", space_name]))
+  end
+
+  step :assert_work_map_template_visible, ctx do
+    UI.assert_has(ctx, testid: "template")
+  end
+
+  step :refute_work_map_template_visible, ctx do
+    UI.refute_has(ctx, testid: "template")
+  end
+
+  step :select_work_map_template, ctx, name do
+    ctx
+    |> UI.click(testid: "template")
+    |> UI.click_text(name)
+  end
+
+  step :refute_work_map_template_option, ctx, name do
+    ctx
+    |> UI.click(testid: "template")
+    |> UI.refute_text(name)
+  end
+
+  step :assert_work_map_template_option, ctx, name do
+    ctx
+    |> UI.click(testid: "template")
+    |> UI.assert_text(name)
+  end
+
+  step :select_work_map_start_date, ctx, date \\ nil do
+    date = date || Date.add(Date.utc_today(), 7)
+    UI.select_day_in_date_field(ctx, testid: "startdate", date: date)
+  end
+
+  step :submit_work_map_item, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.sleep(300)
+  end
+
+  step :submit_work_map_item_without_start_date, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.assert_text("Select a project start date.")
+  end
+
+  step :assert_project_created_from_work_map_template, ctx, opts do
+    name = Keyword.fetch!(opts, :name)
+    milestone = Keyword.get(opts, :milestone)
+
+    ctx
+    |> UI.refute_has(testid: "add-item-modal")
+    |> UI.assert_text(name)
+    |> then(fn ctx ->
+      project = wait_until_project_created(name)
+      Map.put(ctx, :project, project)
+    end)
+    |> then(fn ctx ->
+      if milestone do
+        milestones = Operately.Projects.list_project_milestones(ctx.project)
+        assert Enum.any?(milestones, &(&1.title == milestone))
+      end
+
+      ctx
+    end)
+  end
+
+  defp wait_until_project_created(name, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    case Operately.Repo.get_by(Operately.Projects.Project, name: name) do
+      nil when attempts == [] ->
+        flunk("Timed out waiting for project #{name} to be created")
+
+      nil ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_project_created(name, remaining)
+
+      project ->
+        project
+    end
+  end
 end

@@ -11,12 +11,24 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 export function Page() {
   const paths = usePaths();
 
-  const { workMap, space } = useLoadedData().data;
+  const { workMap, space, projectTemplatesEnabled, templates } = useLoadedData().data;
   const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
   const formattedTimePreferences = useFormattedTimePreferences();
+
+  const projectTemplates = React.useMemo(
+    () =>
+      templates.map((template) => ({
+        id: template.id,
+        name: template.name,
+        spaceId: template.space.id,
+        inactivePeopleSummary: template.inactivePeopleSummary,
+        inactiveDiscussionCount: template.inactiveDiscussionCount,
+      })),
+    [templates],
+  );
 
   return (
     <WorkMapPage
@@ -34,6 +46,8 @@ export function Page() {
         name: space.name,
         link: paths.spacePath(space.id),
       }}
+      projectTemplatesEnabled={projectTemplatesEnabled}
+      projectTemplates={projectTemplates}
     />
   );
 }

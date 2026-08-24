@@ -3,6 +3,7 @@ import Modal from "../../Modal";
 
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { PrivacyField } from "../../PrivacyField";
+import { ProjectTemplateFields, ProjectTemplateSelection } from "../../ProjectTemplateSelection";
 import { SpaceField } from "../../SpaceField";
 import { SwitchToggle } from "../../SwitchToggle";
 import { TextField } from "../../TextField";
@@ -15,6 +16,8 @@ export namespace AddItemModal {
     space: SpaceField.Space;
     parentId: string | null;
     accessLevels: PrivacyField.AccessLevels;
+    templateId?: string;
+    startDate?: string;
   }
 
   export interface Props {
@@ -30,6 +33,8 @@ export namespace AddItemModal {
     hideCreateMore?: boolean;
     keepOpenAfterSave?: boolean;
     onSaved?: (type: ItemType, id: string) => void | Promise<void>;
+    projectTemplatesEnabled?: boolean;
+    templates?: ProjectTemplateSelection.Template[];
   }
 
   export type ItemType = "goal" | "project";
@@ -51,6 +56,8 @@ export namespace AddItemModal {
 
 export function AddItemModal(props: AddItemModal.Props) {
   const state = useAddItemModalState(props);
+  const showTemplates =
+    Boolean(props.projectTemplatesEnabled) && state.itemType === "project" && Boolean(state.space?.id);
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.close} size="large" closeOnBackdropClick={false} testId="add-item-modal">
@@ -115,6 +122,18 @@ export function AddItemModal(props: AddItemModal.Props) {
               error={state.spaceError}
             />
 
+            {showTemplates && (
+              <ProjectTemplateFields
+                spaceId={state.space!.id}
+                templates={props.templates ?? []}
+                templateId={state.templateId}
+                onTemplateIdChange={state.setTemplateId}
+                startDate={state.startDate}
+                onStartDateChange={state.setStartDate}
+                startDateError={state.startDateError}
+              />
+            )}
+
             <PrivacyField
               accessLevels={state.accessLevels}
               setAccessLevels={state.setAccessLevels}
@@ -153,6 +172,9 @@ function useAddItemModalState(props: AddItemModal.Props) {
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
   const [spaceError, setSpaceError] = React.useState<string | undefined>(undefined);
+  const [templateId, setTemplateId] = React.useState("");
+  const [startDate, setStartDate] = React.useState("");
+  const [startDateError, setStartDateError] = React.useState<string | undefined>(undefined);
   const [createMore, setCreateMore] = React.useState(false);
 
   const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>({
@@ -162,9 +184,28 @@ function useAddItemModalState(props: AddItemModal.Props) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
+  const handleSetItemType = React.useCallback((type: "goal" | "project") => {
+    setItemType(type);
+    if (type === "goal") {
+      setTemplateId("");
+      setStartDate("");
+      setStartDateError(undefined);
+    }
+  }, []);
+
+  const handleSetSpace = React.useCallback((nextSpace: SpaceField.Space | null) => {
+    setSpace(nextSpace);
+    setTemplateId("");
+    setStartDate("");
+    setStartDateError(undefined);
+  }, []);
+
   React.useEffect(() => {
     if (props.isOpen) {
       setItemType(props.initialItemType || "goal");
+      setTemplateId("");
+      setStartDate("");
+      setStartDateError(undefined);
 
       if (props.hideCompanyAccess) {
         setAccessLevels((levels) => {
@@ -198,6 +239,13 @@ function useAddItemModalState(props: AddItemModal.Props) {
       setSpaceError(undefined);
     }
 
+    if (itemType === "project" && templateId && !startDate) {
+      setStartDateError("Select a project start date.");
+      ok = false;
+    } else {
+      setStartDateError(undefined);
+    }
+
     return ok;
   };
 
@@ -214,12 +262,18 @@ function useAddItemModalState(props: AddItemModal.Props) {
         space: space!,
         accessLevels: props.hideCompanyAccess ? { ...accessLevels, company: "no_access" } : accessLevels,
         parentId: props.parentGoal ? props.parentGoal.id : null,
+        ...(itemType === "project" && templateId
+          ? { templateId, startDate }
+          : {}),
       });
 
       setName("");
       setSpace(props.space || null);
+      setTemplateId("");
+      setStartDate("");
       setNameError(undefined);
       setSpaceError(undefined);
+      setStartDateError(undefined);
 
       await props.onSaved?.(itemType, result.id);
 
@@ -244,11 +298,16 @@ function useAddItemModalState(props: AddItemModal.Props) {
     name,
     setName,
     itemType,
-    setItemType,
+    setItemType: handleSetItemType,
     space,
-    setSpace,
+    setSpace: handleSetSpace,
     nameError,
     spaceError,
+    templateId,
+    setTemplateId,
+    startDate,
+    setStartDate,
+    startDateError,
     spaceSearch: props.spaceSearch,
     accessLevels,
     setAccessLevels,
