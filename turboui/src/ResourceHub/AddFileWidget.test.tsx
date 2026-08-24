@@ -35,8 +35,8 @@ jest.mock("../icons", () => {
 });
 
 jest.mock("../RichEditor", () => ({
-  Editor: ({ editor }: { editor: { getJSON: () => unknown } }) => (
-    <div data-testid="rich-editor">{plainTextFromRichContent(editor.getJSON())}</div>
+  Editor: ({ editor }: { editor: { editor?: { getJSON?: () => unknown } } }) => (
+    <div data-testid="rich-editor">{plainTextFromRichContent(editor?.editor?.getJSON?.())}</div>
   ),
   useEditor: (props: { content?: unknown; localDraft?: { key?: string; enabled?: boolean } }) => {
     const draftsEnabled = Boolean(props.localDraft?.key) && props.localDraft?.enabled !== false;
