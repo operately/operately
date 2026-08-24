@@ -113,7 +113,7 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_reviewer_as_contributor(multi, params) do
-    if params.reviewer_id do
+    if params.reviewer_id && params.reviewer_id != params.champion_id do
       Multi.insert(multi, :reviewer, fn changes ->
         Contributor.changeset(%{
           project_id: changes.project.id,
@@ -184,7 +184,7 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_binding_for_reviewer(multi, params) do
-    if params.reviewer_id do
+    if params.reviewer_id && params.reviewer_id != params.champion_id do
       group = Access.get_group!(person_id: params.reviewer_id)
       Access.insert_binding(multi, :reviewer_binding, group, Binding.full_access(), :reviewer)
     else

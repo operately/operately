@@ -97,6 +97,38 @@ defmodule OperatelyWeb.Api.Projects.CreateContributorsTest do
       assert_contributor_created(project, person3)
     end
 
+    test "rejects adding a person who is already a contributor", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :full_access, :no_access, :no_access)
+      person = person_fixture(%{company_id: ctx.company.id})
+
+      assert {200, _} =
+               request(ctx.conn, %{
+                 project: project,
+                 contributors: [
+                   %{
+                     person_id: Paths.person_id(person),
+                     responsibility: "software development",
+                     access_level: "edit_access"
+                   }
+                 ]
+               })
+
+      assert {400, res} =
+               request(ctx.conn, %{
+                 project: project,
+                 contributors: [
+                   %{
+                     person_id: Paths.person_id(person),
+                     responsibility: "something else",
+                     access_level: "view_access"
+                   }
+                 ]
+               })
+
+      assert res.message == "This person is already a contributor on this project"
+    end
+
     test "it creates subscriptions for added contributors", ctx do
       space = create_space(ctx)
       project = create_project(ctx, space, :full_access, :no_access, :no_access)

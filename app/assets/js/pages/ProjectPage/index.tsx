@@ -164,7 +164,11 @@ function Page() {
   const currentUser = useMe();
 
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
-  const { spaceProps, champion, reviewer } = useSpaceProps({ project, paths, transformPerson });
+  const { spaceProps, champion, reviewer, updateChampion, updateReviewer } = useSpaceProps({
+    project,
+    paths,
+    transformPerson,
+  });
   const backLink = "workmapLink" in spaceProps ? spaceProps.workmapLink : spaceProps.homeLink;
 
   const [projectName, setProjectName] = usePageField({
@@ -375,9 +379,66 @@ function Page() {
     cacheKey: pageCacheKey(project.id),
   });
 
+  const {
+    includeDemotedContributor,
+    excludePromotedContributor,
+    restoreContributor,
+    ...contributorPageActions
+  } = contributorActions;
+
+  const setChampion = React.useCallback(
+    async (person: ProjectPage.Person | null) => {
+      const previous = champion;
+      let removed: ReturnType<typeof excludePromotedContributor> = null;
+
+      if (!person && previous?.id) {
+        includeDemotedContributor(previous.id);
+      } else if (person?.id) {
+        removed = excludePromotedContributor(person.id);
+      }
+
+      const ok = await updateChampion(person);
+      if (ok) return;
+
+      if (!person && previous?.id) {
+        excludePromotedContributor(previous.id);
+      } else if (removed) {
+        restoreContributor(removed);
+      }
+    },
+    [champion, excludePromotedContributor, includeDemotedContributor, restoreContributor, updateChampion],
+  );
+
+  const setReviewer = React.useCallback(
+    async (person: ProjectPage.Person | null) => {
+      const previous = reviewer;
+      let removed: ReturnType<typeof excludePromotedContributor> = null;
+
+      if (!person && previous?.id) {
+        includeDemotedContributor(previous.id);
+      } else if (person?.id) {
+        removed = excludePromotedContributor(person.id);
+      }
+
+      const ok = await updateReviewer(person);
+      if (ok) return;
+
+      if (!person && previous?.id) {
+        excludePromotedContributor(previous.id);
+      } else if (removed) {
+        restoreContributor(removed);
+      }
+    },
+    [excludePromotedContributor, includeDemotedContributor, restoreContributor, reviewer, updateReviewer],
+  );
+
   const assignedPersonIds = React.useMemo(
-    () => [champion?.id, reviewer?.id, ...contributorActions.contributors.map((contributor) => contributor.person?.id)],
-    [champion?.id, reviewer?.id, contributorActions.contributors],
+    () => [
+      champion?.id,
+      reviewer?.id,
+      ...contributorPageActions.contributors.map((contributor) => contributor.person?.id),
+    ],
+    [champion?.id, reviewer?.id, contributorPageActions.contributors],
   );
 
   const otherPeopleWithAccess = Projects.useProjectOtherPeopleWithAccess({
@@ -410,6 +471,8 @@ function Page() {
     ...spaceProps,
     champion,
     reviewer,
+    ...("setChampion" in spaceProps ? { setChampion } : {}),
+    ...("setReviewer" in spaceProps ? { setReviewer } : {}),
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
@@ -470,7 +533,7 @@ function Page() {
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
-    ...contributorActions,
+    ...contributorPageActions,
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
@@ -659,6 +722,8 @@ function useSpaceProps({
   spaceProps: ProjectPage.SpaceProps;
   champion: ProjectPage.Person | null;
   reviewer: ProjectPage.Person | null | undefined;
+  updateChampion: (person: ProjectPage.Person | null) => Promise<boolean>;
+  updateReviewer: (person: ProjectPage.Person | null) => Promise<boolean>;
 } {
   const [space, setSpace] = usePageField({
     value: (data) => (data.space ? Spaces.parseSpaceForTurboUI(paths, data.space) : null),
@@ -666,13 +731,13 @@ function useSpaceProps({
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
-  const [champion, setChampion] = usePageField<ProjectPage.Person | null>({
+  const [champion, updateChampion] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
     update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
-  const [reviewer, setReviewer] = usePageField<ProjectPage.Person | null>({
+  const [reviewer, updateReviewer] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
     update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
@@ -706,6 +771,8 @@ function useSpaceProps({
       },
       champion,
       reviewer,
+      updateChampion,
+      updateReviewer,
     };
   }
 
@@ -716,14 +783,16 @@ function useSpaceProps({
       setSpace: setSpace as any,
       spaceSearch,
 
-      setChampion,
+      setChampion: updateChampion,
       championSearch,
 
-      setReviewer,
+      setReviewer: updateReviewer,
       reviewerSearch,
     },
     champion,
     reviewer,
+    updateChampion,
+    updateReviewer,
   };
 }
 

@@ -134,7 +134,16 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
     end
 
     test "include_reviewer", ctx do
-      project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, reviewer_id: ctx.person.id, group_id: ctx.company.company_space_id)
+      reviewer = person_fixture(%{company_id: ctx.company.id})
+
+      project_fixture(
+        company_id: ctx.company.id,
+        name: "Project 1",
+        creator_id: ctx.person.id,
+        champion_id: ctx.person.id,
+        reviewer_id: reviewer.id,
+        group_id: ctx.company.company_space_id
+      )
 
       assert {200, res} = query(ctx.conn, [:projects, :list], %{})
 
@@ -144,7 +153,7 @@ defmodule OperatelyWeb.Api.Projects.ListTest do
       assert {200, res} = query(ctx.conn, [:projects, :list], %{include_reviewer: true})
 
       assert length(res.projects) == 1
-      assert hd(res.projects).reviewer == serialize(ctx.person)
+      assert hd(res.projects).reviewer == serialize(reviewer)
     end
 
     test "include_space", ctx do

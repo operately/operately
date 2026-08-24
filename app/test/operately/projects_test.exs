@@ -237,12 +237,15 @@ defmodule Operately.ProjectsTest do
     alias Operately.Projects.Contributor
 
     setup ctx do
-      contributor = contributor_fixture(ctx.champion, %{
-        project_id: ctx.project.id,
-        person_id: ctx.champion.id
-      })
+      person = person_fixture(%{company_id: ctx.company.id})
 
-      {:ok, contributor: contributor}
+      contributor =
+        contributor_fixture(ctx.champion, %{
+          project_id: ctx.project.id,
+          person_id: person.id
+        })
+
+      {:ok, contributor: contributor, contributor_person: person}
     end
 
     test "list_project_contributors/0 returns all project_contributors", ctx do
@@ -254,9 +257,11 @@ defmodule Operately.ProjectsTest do
     end
 
     test "create_contributor/2 with valid data creates a contributor", ctx do
+      person = person_fixture(%{company_id: ctx.company.id})
+
       valid_attrs = %{
         project_id: ctx.project.id,
-        person_id: ctx.champion.id,
+        person_id: person.id,
         responsibility: "some responsibility",
         permissions: Binding.edit_access()
       }
