@@ -3,7 +3,6 @@ defmodule Operately.Operations.ProjectContributorsAddition do
   alias Operately.Repo
   alias Operately.Access
   alias Operately.Activities
-  alias Operately.Access
   alias Operately.Notifications.Subscription
   alias Operately.Projects.Contributor
 
@@ -12,18 +11,26 @@ defmodule Operately.Operations.ProjectContributorsAddition do
     |> add_contributors(project, contributors)
     |> insert_activity(author, project)
     |> Repo.transaction()
-    |> Repo.extract_result(:contributors)
+    |> case do
+      {:ok, %{contributors: contribs}} -> {:ok, contribs}
+      {:error, _step, reason, _} -> {:error, reason}
+    end
   end
 
   def add_contributors(multi, project, contributors) do
     Multi.run(multi, :contributors, fn _, _ ->
       context = Access.get_context!(project_id: project.id)
 
-      contribs = Enum.map(contributors, fn  attrs ->
-        add_contributor(project, context, attrs)
+      Enum.reduce_while(contributors, {:ok, []}, fn attrs, {:ok, acc} ->
+        case add_contributor(project, context, attrs) do
+          {:ok, contrib} -> {:cont, {:ok, [contrib | acc]}}
+          {:error, _} = error -> {:halt, error}
+        end
       end)
-
-      {:ok, contribs}
+      |> case do
+        {:ok, contribs} -> {:ok, Enum.reverse(contribs)}
+        {:error, _} = error -> error
+      end
     end)
   end
 
@@ -35,11 +42,15 @@ defmodule Operately.Operations.ProjectContributorsAddition do
       responsibility: attrs[:responsibility],
     })
 
-    {:ok, contrib} = Operately.Repo.insert(changeset)
-    {:ok, _} = Access.bind(access_context, person_id: attrs.person_id, level: attrs.access_level)
-    {:ok, _} = ensure_subscription(project.subscription_list_id, attrs.person_id)
+    case Operately.Repo.insert(changeset) do
+      {:ok, contrib} ->
+        {:ok, _} = Access.bind(access_context, person_id: attrs.person_id, level: attrs.access_level)
+        {:ok, _} = ensure_subscription(project.subscription_list_id, attrs.person_id)
+        {:ok, contrib}
 
-    contrib
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   defp insert_activity(multi, author, project) do
