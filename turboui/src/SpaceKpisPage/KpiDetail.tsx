@@ -64,19 +64,12 @@ function KpiSidebar({
 }) {
   const [champion, setChampion] = React.useState(kpi.champion);
   const [cadence, setCadence] = React.useState(kpi.cadence);
-  const [people, setPeople] = React.useState<SpaceKpisPage.Person[]>([]);
+  const searchData = useChampionSearch(championSearch);
 
   React.useEffect(() => {
     setChampion(kpi.champion);
     setCadence(kpi.cadence);
   }, [kpi.champion, kpi.cadence]);
-
-  const onSearch = React.useCallback(
-    async (query: string) => {
-      setPeople(await championSearch(query));
-    },
-    [championSearch],
-  );
 
   const save = async (nextChampion: SpaceKpisPage.Person | null, nextCadence: SpaceKpisPage.Cadence) => {
     const previous = { champion, cadence };
@@ -104,7 +97,7 @@ function KpiSidebar({
           <PersonField
             person={champion}
             setPerson={(person) => save(person, cadence)}
-            searchData={{ people, onSearch }}
+            searchData={searchData}
             emptyStateMessage="Set champion"
             emptyStateReadOnlyMessage="No champion"
             testId="kpi-champion"
@@ -119,6 +112,33 @@ function KpiSidebar({
       </SidebarSection>
     </aside>
   );
+}
+
+// PersonField debounces keystrokes but still lets requests overlap, so a slower
+// earlier search could otherwise land last and offer people who don't match what
+// was typed. Keep only the newest request's results, and show none when a search
+// fails rather than leaving names from a previous query on screen.
+function useChampionSearch(search: (query: string) => Promise<SpaceKpisPage.Person[]>): PersonField.SearchData {
+  const [people, setPeople] = React.useState<SpaceKpisPage.Person[]>([]);
+  const newestRequest = React.useRef(0);
+
+  const onSearch = React.useCallback(
+    async (query: string) => {
+      const request = ++newestRequest.current;
+
+      let results: SpaceKpisPage.Person[] = [];
+      try {
+        results = await search(query);
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (request === newestRequest.current) setPeople(results);
+    },
+    [search],
+  );
+
+  return React.useMemo(() => ({ people, onSearch }), [people, onSearch]);
 }
 
 function CadenceField({

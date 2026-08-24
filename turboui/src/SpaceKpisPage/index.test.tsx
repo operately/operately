@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
@@ -140,6 +140,65 @@ describe("SpaceKpisPage layout", () => {
     await waitFor(() =>
       expect(onEditKpi).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, championId: replacement.id })),
     );
+  });
+
+  test("a failed champion search leaves the picker usable and offers no stale names", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const championSearch = jest.fn().mockRejectedValue(new Error("network down"));
+
+    renderPage({ selectedKpi: target, championSearch });
+
+    await user.click(await findByTestId("kpi-champion"));
+    await user.click(await findByTestId("kpi-champion-assign-another"));
+
+    // The rejection has to be caught here rather than escaping as an unhandled
+    // promise, and the picker must offer nothing rather than stale names.
+    await waitFor(() => expect(consoleError).toHaveBeenCalled());
+    expect(document.querySelector('[data-test-id^="kpi-champion-search-result"]')).not.toBeInTheDocument();
+
+    consoleError.mockRestore();
+  });
+
+  // A slow early search must not land last and offer people who don't match what
+  // the user has since typed.
+  test("a slow champion search does not override the results of a newer one", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const [stale, fresh] = mockPeople.filter((person) => person.id !== target.champion?.id);
+
+    let resolveStale: (people: SpaceKpisPageNS.Person[]) => void = () => {};
+    const championSearch = jest
+      .fn()
+      .mockImplementationOnce(() => new Promise<SpaceKpisPageNS.Person[]>((resolve) => (resolveStale = resolve)))
+      .mockResolvedValue([fresh!]);
+
+    renderPage({ selectedKpi: target, championSearch });
+
+    await user.click(await findByTestId("kpi-champion"));
+    await user.click(await findByTestId("kpi-champion-assign-another"));
+
+    const search = screen.getByPlaceholderText("Search...");
+    await user.type(search, "a");
+    await waitFor(() => expect(championSearch).toHaveBeenCalledTimes(1));
+
+    await user.type(search, "b");
+    await waitFor(() => expect(championSearch).toHaveBeenCalledTimes(2));
+    await findByTestId(createTestId("kpi-champion", "search-result", fresh!.fullName));
+
+    await act(async () => {
+      resolveStale([stale!]);
+    });
+
+    expect(
+      document.querySelector(`[data-test-id="${createTestId("kpi-champion", "search-result", stale!.fullName)}"]`),
+    ).not.toBeInTheDocument();
+    expect(await findByTestId(createTestId("kpi-champion", "search-result", fresh!.fullName))).toBeInTheDocument();
   });
 
   test("read-only viewers cannot change the champion from the sidebar", () => {
