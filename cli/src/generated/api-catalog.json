@@ -28782,6 +28782,17 @@
           "optional": true,
           "has_default": false,
           "nullable": true
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
       "docstring": "Creates a KPI in a space. Any space member with edit access may create one.",
@@ -28893,6 +28904,17 @@
           "name": "champion_id",
           "type": {
             "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
             "kind": "named"
           },
           "optional": true,

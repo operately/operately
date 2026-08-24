@@ -24,7 +24,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Kpis.EditKpi do
     %{
       kpi_id: Paths.kpi_id(ctx.kpi),
       name: "Renamed",
-      unit: "%"
+      unit: "%",
+      description: Jason.encode!(%{"type" => "doc", "content" => [%{"type" => "paragraph"}]})
     }
   end
 
@@ -32,6 +33,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Kpis.EditKpi do
   def assert(response, _ctx) do
     assert response.kpi.name == "Renamed"
     assert response.kpi.unit == "%"
+    assert response.kpi.description
     refute Map.has_key?(response, :error)
   end
 end

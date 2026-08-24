@@ -112,6 +112,7 @@ defmodule OperatelyWeb.Api.Kpis do
       field :unit, :string, null: false
       field :cadence, :string, null: false
       field? :champion_id, :id, null: true
+      field? :description, :json, null: true
     end
 
     outputs do
@@ -129,7 +130,8 @@ defmodule OperatelyWeb.Api.Kpis do
           name: inputs.name,
           unit: inputs.unit,
           cadence: inputs.cadence,
-          champion_id: inputs[:champion_id]
+          champion_id: inputs[:champion_id],
+          description: inputs[:description]
         })
       end)
       |> run(:serialized, fn ctx -> {:ok, %{kpi: Serializer.serialize(Repo.preload(ctx.operation, :champion), level: :essential)}} end)
@@ -159,6 +161,7 @@ defmodule OperatelyWeb.Api.Kpis do
       field? :unit, :string, null: true
       field? :cadence, :string, null: true
       field? :champion_id, :id, null: true
+      field? :description, :json, null: true
     end
 
     outputs do
@@ -184,7 +187,7 @@ defmodule OperatelyWeb.Api.Kpis do
     end
 
     defp edit_attrs(inputs) do
-      [:name, :unit, :cadence, :champion_id]
+      [:name, :unit, :cadence, :champion_id, :description]
       |> Enum.filter(&Map.has_key?(inputs, &1))
       |> Map.new(fn key -> {key, inputs[key]} end)
     end

@@ -10,6 +10,7 @@ defmodule Operately.Kpis.Kpi do
     field(:name, :string)
     field(:unit, :string)
     field(:cadence, Ecto.Enum, values: [:weekly, :monthly])
+    field(:description, :map)
 
     # Populated by ListKpis via Kpis.load_latest_entries/1 so the list view can
     # show the most recent value without preloading the full entry history.
@@ -24,7 +25,7 @@ defmodule Operately.Kpis.Kpi do
 
   def changeset(kpi, attrs) do
     kpi
-    |> cast(attrs, [:space_id, :champion_id, :name, :unit, :cadence])
+    |> cast(attrs, [:space_id, :champion_id, :name, :unit, :cadence, :description])
     |> validate_required([:space_id, :name, :unit, :cadence])
   end
 end
