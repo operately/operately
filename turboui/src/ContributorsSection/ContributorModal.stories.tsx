@@ -35,3 +35,14 @@ export const WithoutFullAccess: Story = {
     allowFullAccess: false,
   },
 };
+
+export const FullAccessContributorReadOnly: Story = {
+  args: {
+    allowFullAccess: false,
+    contributor: {
+      id: "contributor-1",
+      person: { id: "1", fullName: "Ada Lovelace", avatarUrl: null, title: "Mathematician" },
+      accessLevel: 100,
+    },
+  },
+};

@@ -59,6 +59,35 @@ describe("ContributorModal access levels", () => {
     expect(screen.queryByText("Full Access")).not.toBeInTheDocument();
   });
 
+  it("shows a read-only Full Access field when the viewer cannot change it", async () => {
+    const user = userEvent.setup();
+    const onUpdate = jest.fn().mockResolvedValue(true);
+    const person = { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null };
+
+    renderModal({
+      allowFullAccess: false,
+      contributor: { id: "contributor-1", person, accessLevel: 100 },
+      onUpdate,
+    });
+
+    await waitFor(() => {
+      expect(document.querySelector('[data-test-id="contributor-access"]')).toHaveTextContent("Full Access");
+    });
+
+    await user.click(document.querySelector('[data-test-id="contributor-access"]') as HTMLElement);
+    expect(document.querySelector('[data-test-id="contributor-access-70"]')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="contributor-access-100"]')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Save contributor" }));
+
+    await waitFor(() => {
+      expect(onUpdate).toHaveBeenCalledWith("contributor-1", {
+        person,
+        responsibility: null,
+      });
+    });
+  });
+
   it("does not persist access until Save contributor is clicked", async () => {
     const user = userEvent.setup();
     const onUpdate = jest.fn().mockResolvedValue(true);

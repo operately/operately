@@ -39,7 +39,7 @@ export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
-  return `v10-ProjectV2Page.project-${id}`;
+  return `v11-ProjectV2Page.project-${id}`;
 }
 
 type ProjectDocsAndFilesData = {
@@ -74,6 +74,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeReviewer: true,
           includePermissions: true,
           includeContributors: true,
+          includeContributorsAccessLevels: true,
           includeMilestones: true,
           includeLastCheckIn: true,
           includePrivacy: true,
