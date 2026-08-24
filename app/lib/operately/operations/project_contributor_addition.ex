@@ -14,7 +14,11 @@ defmodule Operately.Operations.ProjectContributorAddition do
     |> ensure_subscription_step()
     |> insert_activity(author)
     |> Repo.transaction()
-    |> Repo.extract_result(:contributor)
+    |> case do
+      {:ok, %{contributor: contributor}} -> {:ok, contributor}
+      {:error, :contributor, reason, _} -> {:error, reason}
+      {:error, _step, reason, _} -> {:error, reason}
+    end
   end
 
   defp insert_binding(multi, attrs) do
