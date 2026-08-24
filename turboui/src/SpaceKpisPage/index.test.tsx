@@ -19,13 +19,16 @@ async function findByTestId(testId: string): Promise<HTMLElement> {
   });
 }
 
+const kpisLink = `/spaces/${mockSpace.id}/kpis`;
+
 // These tests guard the unified space-tool layout: the KPIs page should present
 // the same page chrome (breadcrumb navigation + tool title + header action) as
 // the other space tools rather than an in-page tab bar.
-function renderPage(overrides: Partial<SpaceKpisPageNS.Props> = {}) {
-  const props: SpaceKpisPageNS.Props = {
+function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPageNS.Props {
+  return {
     space: mockSpace,
     navigation: [{ to: `/spaces/${mockSpace.id}`, label: mockSpace.name }],
+    kpisLink,
     kpis: mockKpis,
     currentUser: mockCurrentUser,
     championSearch: mockChampionSearch,
@@ -35,10 +38,12 @@ function renderPage(overrides: Partial<SpaceKpisPageNS.Props> = {}) {
     onRecordEntry: async () => ({ success: true }),
     ...overrides,
   };
+}
 
+function renderPage(overrides: Partial<SpaceKpisPageNS.Props> = {}) {
   return render(
     <MemoryRouter>
-      <SpaceKpisPage {...props} />
+      <SpaceKpisPage {...pageProps(overrides)} />
     </MemoryRouter>,
   );
 }
@@ -70,25 +75,31 @@ describe("SpaceKpisPage layout", () => {
     expect(container.querySelector('[data-test-id="new-kpi"]')).toBeInTheDocument();
   });
 
+  // Every KPI has its own page, so the list links to it instead of swapping the
+  // content in place. That makes a KPI shareable: the link can be copied,
+  // bookmarked, and opened in a new tab.
+  test("each KPI in the list links to its own page", () => {
+    renderPage();
+
+    mockKpis.forEach((kpi) => {
+      expect(screen.getByText(kpi.name).closest("a")).toHaveAttribute("href", kpi.link);
+    });
+  });
+
   test("opening a KPI moves its name into the header and swaps the primary action to 'Log update'", () => {
     const target = mockKpis[0]!;
-    const { container } = renderPage({ initialSelectedKpiId: target.id });
+    const { container } = renderPage({ selectedKpi: target });
 
     // KPI name becomes the header title...
     expect(screen.getByRole("heading", { name: target.name })).toBeInTheDocument();
 
-    // ...and "KPIs" becomes a breadcrumb back to the list.
+    // ...and "KPIs" becomes a breadcrumb linking back to the list.
     const backCrumb = container.querySelector('[data-test-id="kpis-breadcrumb"]');
-    expect(backCrumb).toBeInTheDocument();
+    expect(backCrumb).toHaveAttribute("href", kpisLink);
 
     // The header action is now "Log update", not "New KPI".
     expect(container.querySelector('[data-test-id="kpi-detail-log-update"]')).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="new-kpi"]')).not.toBeInTheDocument();
-
-    // Clicking the breadcrumb returns to the list.
-    fireEvent.click(backCrumb!);
-    expect(screen.getByRole("heading", { name: "KPIs" })).toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="new-kpi"]')).toBeInTheDocument();
   });
 
   test("read-only viewers see no header action", () => {
@@ -112,6 +123,7 @@ describe("SpaceKpisPage list latest value", () => {
       cadence: "weekly",
       champion: null,
       insertedAt: new Date(),
+      link: `${kpisLink}/kpi-throughput`,
       latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null },
       entries: [],
     };
@@ -171,7 +183,7 @@ describe("SpaceKpisPage edit & delete", () => {
   test("the detail header exposes the same manage menu for the open KPI", async () => {
     const user = userEvent.setup();
     const target = mockKpis[0]!;
-    const { container } = renderPage({ initialSelectedKpiId: target.id });
+    const { container } = renderPage({ selectedKpi: target });
 
     await user.click(container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)!);
 
@@ -188,7 +200,7 @@ describe("SpaceKpisPage edit & delete", () => {
     expect(list.container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)).not.toBeInTheDocument();
     list.unmount();
 
-    const detail = renderPage({ canManage: false, initialSelectedKpiId: target.id });
+    const detail = renderPage({ canManage: false, selectedKpi: target });
     expect(detail.container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)).not.toBeInTheDocument();
   });
 });
@@ -262,21 +274,34 @@ describe("SpaceKpisPage create & log", () => {
     );
   });
 
-  test("logging an entry reloads the detail so the chart reflects the new value", async () => {
+  // The open KPI comes from the route loader, so a logged entry reaches the
+  // chart when the page re-renders with refreshed route data. This harness
+  // stands in for that refresh.
+  test("logging an entry from the detail view updates the chart once the route data refreshes", async () => {
     const user = userEvent.setup();
 
     // Start from a KPI with a single entry (single-point card), then log a
     // second one so the history becomes a multi-point line chart.
     const base = mockKpis.find((kpi) => kpi.id === "kpi-signups")!;
-    let entries = base.entries;
 
-    const onLoadKpi = jest.fn(async () => ({ ...base, entries: [...entries] }));
-    const onRecordEntry = jest.fn(async () => {
-      entries = [...entries, { id: "new-entry", value: 500, recordedAt: new Date(), recordedBy: null }];
-      return { success: true };
-    });
+    function Harness() {
+      const [kpi, setKpi] = React.useState(base);
 
-    const { container } = renderPage({ initialSelectedKpiId: base.id, onLoadKpi, onRecordEntry });
+      const onRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
+        const entry = { id: "new-entry", value: input.value, recordedAt: new Date(), recordedBy: null };
+        setKpi((current) => ({ ...current, entries: [...current.entries, entry] }));
+
+        return { success: true };
+      };
+
+      return <SpaceKpisPage {...pageProps({ selectedKpi: kpi, onRecordEntry })} />;
+    }
+
+    const { container } = render(
+      <MemoryRouter>
+        <Harness />
+      </MemoryRouter>,
+    );
 
     // Single entry → single-value card, no trend line yet.
     await findByTestId("kpi-line-chart-single");
@@ -287,8 +312,7 @@ describe("SpaceKpisPage create & log", () => {
     fireEvent.change(await findByTestId("log-update-period"), { target: { value: "2026-07-30" } });
     await user.click(await findByTestId("submit"));
 
-    // After logging, the detail reloads and the chart now plots a line.
+    // With the refreshed KPI there are two entries, so the chart plots a line.
     await findByTestId("kpi-line-chart");
-    expect(onLoadKpi).toHaveBeenCalledTimes(2);
   });
 });

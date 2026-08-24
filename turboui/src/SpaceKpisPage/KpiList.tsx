@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
+import { BlackLink } from "../Link";
 import { IconChartColumn, IconDots } from "../icons";
 import { KpiActionsMenu } from "./KpiActionsMenu";
 import type { SpaceKpisPage } from "./types";
@@ -10,14 +11,13 @@ import { TrendIndicator } from "./TrendIndicator";
 interface KpiListProps {
   kpis: SpaceKpisPage.Kpi[];
   canManage: boolean;
-  onSelect: (kpiId: string) => void;
   onLogUpdate: (kpiId: string) => void;
   onNewKpi: () => void;
   onEdit: (kpiId: string) => void;
   onDelete: (kpiId: string) => void;
 }
 
-export function KpiList({ kpis, canManage, onSelect, onLogUpdate, onNewKpi, onEdit, onDelete }: KpiListProps) {
+export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi, onEdit, onDelete }: KpiListProps) {
   if (kpis.length === 0) {
     return <EmptyState canManage={canManage} onNewKpi={onNewKpi} />;
   }
@@ -40,7 +40,6 @@ export function KpiList({ kpis, canManage, onSelect, onLogUpdate, onNewKpi, onEd
               key={kpi.id}
               kpi={kpi}
               canManage={canManage}
-              onSelect={() => onSelect(kpi.id)}
               onLogUpdate={() => onLogUpdate(kpi.id)}
               onEdit={() => onEdit(kpi.id)}
               onDelete={() => onDelete(kpi.id)}
@@ -55,14 +54,12 @@ export function KpiList({ kpis, canManage, onSelect, onLogUpdate, onNewKpi, onEd
 function KpiRow({
   kpi,
   canManage,
-  onSelect,
   onLogUpdate,
   onEdit,
   onDelete,
 }: {
   kpi: SpaceKpisPage.Kpi;
   canManage: boolean;
-  onSelect: () => void;
   onLogUpdate: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -72,12 +69,18 @@ function KpiRow({
 
   return (
     <tr
-      className="group cursor-pointer border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight"
-      onClick={onSelect}
+      className="group border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight"
       data-test-id={`kpi-row-${kpi.id}`}
     >
       <td className="px-4 py-3">
-        <div className="font-semibold text-content-accent group-hover:underline">{kpi.name}</div>
+        <BlackLink
+          to={kpi.link}
+          className="font-semibold text-content-accent"
+          underline="hover"
+          testId={`kpi-link-${kpi.id}`}
+        >
+          {kpi.name}
+        </BlackLink>
         <div className="text-xs text-content-dimmed">Measured in {kpi.unit}</div>
       </td>
 
@@ -107,8 +110,7 @@ function KpiRow({
 
       <td className="px-4 py-3 text-right">
         {canManage && (
-          // Stop row-selection navigation when interacting with the actions.
-          <div className="flex items-center justify-end gap-1" onClick={(event) => event.stopPropagation()}>
+          <div className="flex items-center justify-end gap-1">
             <button
               type="button"
               className="rounded-md px-2 py-1 text-xs font-medium text-link-base opacity-0 transition-opacity hover:bg-surface-accent group-hover:opacity-100"

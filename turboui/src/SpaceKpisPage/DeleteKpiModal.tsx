@@ -10,16 +10,12 @@ interface DeleteKpiModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: (kpiId: string) => Promise<SpaceKpisPage.MutationResult>;
-
-  // Called after a successful delete so the page can leave the (now missing)
-  // detail view and return to the list.
-  onDeleted?: () => void;
 }
 
 // Confirmation before deleting a KPI. Deleting removes the KPI and all of its
 // recorded entries, so we guard it behind an explicit destructive confirm —
 // mirroring the project delete flow.
-export function DeleteKpiModal({ kpi, isOpen, onClose, onDelete, onDeleted }: DeleteKpiModalProps) {
+export function DeleteKpiModal({ kpi, isOpen, onClose, onDelete }: DeleteKpiModalProps) {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -34,7 +30,6 @@ export function DeleteKpiModal({ kpi, isOpen, onClose, onDelete, onDeleted }: De
 
       if (result.success) {
         onClose();
-        onDeleted?.();
       } else {
         setError(result.error ?? "Something went wrong. Please try again.");
       }

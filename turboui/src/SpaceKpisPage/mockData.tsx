@@ -54,12 +54,16 @@ function makeEntries(
 
 // Mirrors the backend: the list endpoint provides `latestEntry` alongside the
 // (here fully-populated) history, so stories render latest values consistently.
-function withLatestEntry(kpi: Omit<SpaceKpisPage.Kpi, "latestEntry">): SpaceKpisPage.Kpi {
+// The permalink matches the app's route: /spaces/:spaceId/kpis/:kpiId.
+function withLatestEntryAndLink(kpi: Omit<SpaceKpisPage.Kpi, "latestEntry" | "link">): SpaceKpisPage.Kpi {
   return {
     ...kpi,
+    link: `${mockKpisLink}/${kpi.id}`,
     latestEntry: kpi.entries.length > 0 ? kpi.entries[kpi.entries.length - 1]! : null,
   };
 }
+
+export const mockKpisLink = `/spaces/${mockSpace.id}/kpis`;
 
 export const mockKpis: SpaceKpisPage.Kpi[] = ([
   {
@@ -127,7 +131,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = ([
     // No entries yet — exercises the empty chart / "No data" states.
     entries: [],
   },
-] as Omit<SpaceKpisPage.Kpi, "latestEntry">[]).map(withLatestEntry);
+] as Omit<SpaceKpisPage.Kpi, "latestEntry" | "link">[]).map(withLatestEntryAndLink);
 
 // A trimmed set of KPIs used by the KpiSummaryCard stories to show a mix of
 // trends within a single space: rising (MRR), volatile (NPS), and a brand-new
