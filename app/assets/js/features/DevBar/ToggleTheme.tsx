@@ -1,6 +1,8 @@
 import React from "react";
 
+import { IconDeviceLaptop, IconMoon, IconSun } from "turboui";
 import { DevThemeOverride } from "@/utils/devThemeOverride";
+import { DevPill } from "./DevPill";
 
 interface Props {
   override: DevThemeOverride | null;
@@ -8,34 +10,38 @@ interface Props {
   setOverride: (mode: DevThemeOverride | null) => void;
 }
 
-export function ToggleTheme({ override, colorMode, setOverride }: Props) {
-  const statusColor = override ? "text-green-500" : "text-white-1";
+type Mode = DevThemeOverride | "auto";
 
-  const toggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setOverride(colorMode === "dark" ? "light" : "dark");
-  };
+const ICONS = {
+  auto: IconDeviceLaptop,
+  light: IconSun,
+  dark: IconMoon,
+};
 
-  const reset = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setOverride(null);
-  };
+export function ToggleTheme({ override, setOverride }: Props) {
+  const mode: Mode = override ?? "auto";
+  const next = nextMode(mode);
+  const Icon = ICONS[mode];
 
   return (
-    <div>
-      Theme [
-      <span className={`${statusColor} cursor-pointer`} onClick={toggle}>
-        {colorMode}
-      </span>
-      ]
-      {override && (
-        <>
-          {" "}
-          <span className="cursor-pointer text-white-2" onClick={reset}>
-            reset
-          </span>
-        </>
-      )}
-    </div>
+    <DevPill
+      active={Boolean(override)}
+      onClick={() => setOverride(next === "auto" ? null : next)}
+      title={`Theme: ${mode === "auto" ? "following the account setting" : "overridden"} — click for ${next}`}
+    >
+      <Icon size={12} />
+      {mode}
+    </DevPill>
   );
+}
+
+function nextMode(mode: Mode): Mode {
+  switch (mode) {
+    case "auto":
+      return "light";
+    case "light":
+      return "dark";
+    case "dark":
+      return "auto";
+  }
 }
