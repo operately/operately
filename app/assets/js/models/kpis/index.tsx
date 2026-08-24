@@ -1,6 +1,7 @@
 import Api, { Kpi as ApiKpi, KpiEntry as ApiKpiEntry } from "@/api";
 import { Paths } from "@/routes/paths";
 import { parsePersonForTurboUi } from "@/models/people";
+import * as Time from "@/utils/time";
 import type { SpaceKpisPage } from "turboui/SpaceKpisPage/types";
 
 export type { Kpi } from "@/api";
@@ -32,7 +33,9 @@ function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPag
   return {
     id: entry.id,
     value: entry.value,
-    recordedAt: new Date(entry.period),
+    // `period` is a calendar date ("2026-07-29"), which `new Date` would read as
+    // midnight UTC and render as the previous day for viewers west of UTC.
+    recordedAt: Time.parseDate(entry.period) ?? new Date(),
     recordedBy: parsePersonForTurboUi(paths, entry.recordedBy),
   };
 }
