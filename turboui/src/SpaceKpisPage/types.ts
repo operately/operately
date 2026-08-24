@@ -100,7 +100,8 @@ export namespace SpaceKpisPage {
     kpis: Kpi[];
     currentUser: Person | null;
 
-    // Search backing the champion picker in the "New KPI" form.
+    // Search backing the champion picker in the New/Edit KPI form and the
+    // inline champion field on a KPI's page.
     championSearch: (query: string) => Promise<Person[]>;
 
     // The KPI whose page is being viewed, with its entries loaded for the

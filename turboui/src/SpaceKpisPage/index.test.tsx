@@ -1,12 +1,20 @@
 import * as React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
+import { createTestId } from "../TestableElement";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockLongChampionSearch, mockSpace } from "./mockData";
+import {
+  mockChampionSearch,
+  mockCurrentUser,
+  mockKpis,
+  mockLongChampionSearch,
+  mockPeople,
+  mockSpace,
+} from "./mockData";
 
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until
@@ -100,6 +108,69 @@ describe("SpaceKpisPage layout", () => {
     // The header action is now "Log update", not "New KPI".
     expect(container.querySelector('[data-test-id="kpi-detail-log-update"]')).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="new-kpi"]')).not.toBeInTheDocument();
+  });
+
+  test("shows KPI information in a sidebar beside its value and history", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target });
+    const sidebar = container.querySelector<HTMLElement>('[data-test-id="kpi-sidebar"]')!;
+
+    expect(sidebar).toBeInTheDocument();
+    expect(within(sidebar).getByText("Champion")).toBeInTheDocument();
+    expect(within(sidebar).getByText(target.champion!.fullName)).toBeInTheDocument();
+    expect(within(sidebar).getByText("Cadence")).toBeInTheDocument();
+    expect(within(sidebar).getByText("Monthly")).toBeInTheDocument();
+    expect(within(sidebar).queryByText("Unit")).not.toBeInTheDocument();
+  });
+
+  test("editors can change the champion from the sidebar", async () => {
+    HTMLElement.prototype.scrollIntoView = jest.fn();
+
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const onEditKpi = jest.fn().mockResolvedValue({ success: true, id: target.id });
+    const replacement = mockPeople.find((person) => person.id !== target.champion?.id)!;
+
+    renderPage({ selectedKpi: target, onEditKpi });
+
+    await user.click(await findByTestId("kpi-champion"));
+    await user.click(await findByTestId("kpi-champion-assign-another"));
+    await user.click(await findByTestId(createTestId("kpi-champion", "search-result", replacement.fullName)));
+
+    await waitFor(() =>
+      expect(onEditKpi).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, championId: replacement.id })),
+    );
+  });
+
+  test("read-only viewers cannot change the champion from the sidebar", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target, canManage: false });
+
+    expect(container.querySelector('[data-test-id="kpi-champion"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="kpi-champion"]')?.tagName).toBe("A");
+  });
+
+  test("editors can change the cadence from the sidebar", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const onEditKpi = jest.fn().mockResolvedValue({ success: true, id: target.id });
+
+    renderPage({ selectedKpi: target, onEditKpi });
+
+    await user.click(await findByTestId("kpi-cadence"));
+    await user.click(await findByTestId("kpi-cadence-weekly"));
+
+    await waitFor(() =>
+      expect(onEditKpi).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, cadence: "weekly" })),
+    );
+  });
+
+  test("read-only viewers cannot change the cadence from the sidebar", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target, canManage: false });
+
+    expect(container.querySelector('[data-test-id="kpi-cadence"]')?.tagName).not.toBe("BUTTON");
+    expect(container.querySelector('[data-test-id="kpi-cadence-weekly"]')).not.toBeInTheDocument();
   });
 
   test("read-only viewers see no header action", () => {
