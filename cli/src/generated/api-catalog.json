@@ -3668,6 +3668,17 @@
           },
           {
             "default": null,
+            "name": "tasks_kanban_state",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "tasks_ordering_state",
             "type": {
               "item": {
@@ -6669,6 +6680,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "tasks_kanban_state",
+            "type": {
+              "name": "json",
+              "kind": "named"
             },
             "optional": true,
             "has_default": false,
@@ -31776,6 +31798,17 @@
           "optional": true,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "tasks_kanban_state",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
         }
       ],
       "docstring": null,
@@ -32280,6 +32313,17 @@
               "kind": "named"
             },
             "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "tasks_kanban_state",
+          "type": {
+            "name": "json",
+            "kind": "named"
           },
           "optional": true,
           "has_default": false,

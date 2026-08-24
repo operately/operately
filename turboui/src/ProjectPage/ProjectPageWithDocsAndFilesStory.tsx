@@ -36,7 +36,7 @@ export interface ProjectPageWithDocsAndFilesStoryData {
   defaultSpace: ProjectPage.Space;
   defaultStatuses: TaskBoardTypes.Status[];
   mockCheckIns: ProjectPage.CheckIn[];
-  mockContributors: ProjectPage.Person[];
+  mockContributors: ProjectPage.Contributor[];
   mockDiscussions: ProjectPage.Discussion[];
   mockPeople: TaskBoardTypes.Person[];
   parentGoalSearch: ({ query }: { query: string }) => Promise<ProjectPage.ParentGoal[]>;

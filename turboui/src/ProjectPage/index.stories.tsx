@@ -68,27 +68,42 @@ const mockPeople: TaskBoardTypes.Person[] = [
 ];
 
 // Mock contributors data for project sidebar
-const mockContributors: ProjectPage.Person[] = [
+const mockContributors: ProjectPage.Contributor[] = [
   {
-    id: "1",
-    fullName: "Alice Johnson",
-    avatarUrl: "https://i.pravatar.cc/150?u=alice",
-    profileLink: "/people/alice",
-    title: "Frontend Development & UI/UX",
+    id: "contrib-1",
+    person: {
+      id: "1",
+      fullName: "Alice Johnson",
+      avatarUrl: "https://i.pravatar.cc/150?u=alice",
+      profileLink: "/people/alice",
+      title: "Frontend Development & UI/UX",
+    },
+    responsibility: "Frontend Development & UI/UX",
+    accessLevel: 70,
   },
   {
-    id: "2",
-    fullName: "Bob Smith",
-    avatarUrl: "https://i.pravatar.cc/150?u=bob",
-    profileLink: "/people/bob",
-    title: "Backend Architecture & API Design",
+    id: "contrib-2",
+    person: {
+      id: "2",
+      fullName: "Bob Smith",
+      avatarUrl: "https://i.pravatar.cc/150?u=bob",
+      profileLink: "/people/bob",
+      title: "Backend Architecture & API Design",
+    },
+    responsibility: "Backend Architecture & API Design",
+    accessLevel: 70,
   },
   {
-    id: "3",
-    fullName: "Charlie Brown",
-    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
-    profileLink: "/people/charlie",
-    title: "Quality Assurance & Testing",
+    id: "contrib-3",
+    person: {
+      id: "3",
+      fullName: "Charlie Brown",
+      avatarUrl: "https://i.pravatar.cc/150?u=charlie",
+      profileLink: "/people/charlie",
+      title: "Quality Assurance & Testing",
+    },
+    responsibility: "Quality Assurance & Testing",
+    accessLevel: 40,
   },
 ];
 
