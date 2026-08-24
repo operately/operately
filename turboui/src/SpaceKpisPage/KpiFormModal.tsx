@@ -3,6 +3,7 @@ import React from "react";
 import { Form, SelectBox, SelectPerson, Submit, TextInput, useForm } from "../Forms";
 import { Modal } from "../Modal";
 import type { SpaceKpisPage } from "./types";
+import { CADENCE_OPTIONS } from "./utils";
 
 interface KpiFormModalProps {
   isOpen: boolean;
@@ -16,11 +17,6 @@ interface KpiFormModalProps {
   onCreate: (input: SpaceKpisPage.NewKpiInput) => Promise<SpaceKpisPage.MutationResult>;
   onEdit: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
 }
-
-const CADENCE_OPTIONS = [
-  { label: "Weekly", value: "weekly" },
-  { label: "Monthly", value: "monthly" },
-];
 
 // Create/Edit KPI form → calls the `createKpi` / `updateKpi` mutation via the
 // onCreate / onEdit callbacks. Mirrors the goal add form: presentational form,

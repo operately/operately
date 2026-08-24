@@ -11,6 +11,11 @@ export function formatCadence(cadence: SpaceKpisPage.Cadence): string {
   }
 }
 
+export const CADENCE_OPTIONS: { label: string; value: SpaceKpisPage.Cadence }[] = [
+  { label: "Weekly", value: "weekly" },
+  { label: "Monthly", value: "monthly" },
+];
+
 // Compact, locale-aware number so charts/tables stay readable
 // (e.g. 1500000 -> "1.5M", 87.5 -> "87.5").
 export function formatValue(value: number, unit?: string): string {
