@@ -1,15 +1,10 @@
 import React from "react";
 
+import { IconHash } from "turboui";
+import { DevPill } from "./DevPill";
+
 export function ToggleTestIds() {
   const [show, setShow] = React.useState(false);
-  const status = show ? "ON" : "OFF";
-  const color = show ? "text-green-500" : "text-white-1";
-
-  const toggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShow(!show);
-  };
-  const className = color + " cursor-pointer";
 
   React.useEffect(() => {
     if (!show) return;
@@ -29,19 +24,19 @@ export function ToggleTestIds() {
   }, [show]);
 
   return (
-    <div className="">
-      TestIDs [
-      <span className={className} onClick={toggle}>
-        {status}
-      </span>
-      ]
+    <>
+      <DevPill active={show} onClick={() => setShow(!show)} title="Outline elements that have a data-test-id">
+        <IconHash size={12} />
+        test ids
+      </DevPill>
+
       {show && (
         <style>
           {`
           [data-test-id]:not([data-test-id-annotation]) {
-            outline: ${show ? "1px solid red" : "none"};
+            outline: 1px solid red;
           }
-          
+
           [data-test-id]::before {
             content: attr(data-test-id);
             position: absolute;
@@ -57,6 +52,6 @@ export function ToggleTestIds() {
         `}
         </style>
       )}
-    </div>
+    </>
   );
 }
