@@ -24,6 +24,7 @@ import { ProjectPermissions } from "./types";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { SaveProjectAsTemplateModal } from "../SaveProjectAsTemplateModal";
 import type { Contributor as ContributorsSectionContributor, ContributorFormValues } from "../ContributorsSection";
+import type { OtherPeopleWithAccessPerson } from "../OtherPeopleWithAccess";
 
 export namespace ProjectPage {
   export interface Space {
@@ -130,8 +131,11 @@ export namespace ProjectPage {
     closedAt: Date | null;
     retrospectiveLink?: string;
 
-    manageTeamLink: string;
-    manageAccessLink?: string;
+    otherPeopleWithAccess: {
+      people: OtherPeopleWithAccessPerson[] | undefined;
+      loading: boolean;
+      onRequestLoad: () => void;
+    };
 
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;

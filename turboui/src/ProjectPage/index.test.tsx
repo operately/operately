@@ -252,7 +252,7 @@ function ProjectPageHarness({
         closedAt={null}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-        manageTeamLink="#"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         updateProjectName={async () => true}
         description={asRichText("A concise project summary.")}
         onDescriptionChange={async () => true}

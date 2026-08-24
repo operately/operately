@@ -16,6 +16,8 @@ export interface Contributor {
 export interface ContributorsSectionProps<T extends Contributor = Contributor> {
   contributors: T[];
   canEdit?: boolean;
+  /** When false, contributors with full access cannot be removed. Defaults to true. */
+  hasFullAccess?: boolean;
   onAdd?: () => void;
   onEdit?: (contributor: T) => void;
   onDelete?: (id: string) => void;
@@ -24,9 +26,12 @@ export interface ContributorsSectionProps<T extends Contributor = Contributor> {
   testIdPrefix?: string;
 }
 
+const FULL_ACCESS_LEVEL = 100;
+
 export function ContributorsSection<T extends Contributor>({
   contributors,
   canEdit = false,
+  hasFullAccess = true,
   onAdd,
   onEdit,
   onDelete,
@@ -58,6 +63,9 @@ export function ContributorsSection<T extends Contributor>({
         {contributors.length > 0 ? (
           contributors.map((contributor) => {
             const isActive = contributor.active !== false;
+            const canRemove =
+              Boolean(canEdit && onDelete) &&
+              (hasFullAccess || (contributor.accessLevel ?? 0) < FULL_ACCESS_LEVEL);
             const menuOptions: NonNullable<PersonField.Props["extraDialogMenuOptions"]> = [];
 
             if (canEdit && onEdit) {
@@ -69,11 +77,11 @@ export function ContributorsSection<T extends Contributor>({
               });
             }
 
-            if (canEdit && onDelete) {
+            if (canRemove) {
               menuOptions.push({
                 icon: IconTrash,
                 label: "Remove contributor",
-                onClick: () => onDelete(contributor.id),
+                onClick: () => onDelete?.(contributor.id),
                 testId: `remove-${testIdPrefix}-${contributor.id}`,
                 danger: true,
               });

@@ -14,7 +14,10 @@ const CONTRIBUTOR_ACCESS_LEVELS = [
   { value: 100, label: "Full Access" },
 ];
 
+const FULL_ACCESS_LEVEL = 100;
 const FORM_FIELD_LABEL_CLASS = "mb-1 block text-left text-sm font-bold text-content-base";
+const ACCESS_TRIGGER_CLASS =
+  "flex w-full items-center justify-between rounded-lg border border-surface-outline bg-surface-base px-3 py-1.5 text-left text-content-base";
 
 export interface ContributorFormValues {
   person: PersonField.Person;
@@ -41,6 +44,7 @@ export interface ContributorModalProps {
   ) => void | boolean | Promise<void | boolean>;
   formTestId?: string;
   accessMenuTestId?: string;
+  allowFullAccess?: boolean;
 }
 
 export function ContributorModal({
@@ -51,28 +55,17 @@ export function ContributorModal({
   onUpdate,
   formTestId = "contributor-form",
   accessMenuTestId = "contributor-access",
+  allowFullAccess = true,
 }: ContributorModalProps) {
   const isReplacingUnavailableContributor = Boolean(contributor && contributor.active === false);
-  const [person, setPerson] = React.useState(
-    isReplacingUnavailableContributor ? null : (contributor?.person ?? null),
-  );
+  const [person, setPerson] = React.useState(isReplacingUnavailableContributor ? null : (contributor?.person ?? null));
   const [responsibility, setResponsibility] = React.useState(contributor?.responsibility ?? "");
   const [accessLevel, setAccessLevel] = React.useState(contributor?.accessLevel ?? 70);
-  const accessUpdateId = React.useRef(0);
+  const accessLocked = !allowFullAccess && contributor?.accessLevel === FULL_ACCESS_LEVEL;
+  const accessLevels = allowFullAccess
+    ? CONTRIBUTOR_ACCESS_LEVELS
+    : CONTRIBUTOR_ACCESS_LEVELS.filter((level) => level.value !== FULL_ACCESS_LEVEL);
   const accessLevelLabel = CONTRIBUTOR_ACCESS_LEVELS.find((level) => level.value === accessLevel)?.label;
-
-  const updateAccessLevel = async (nextAccessLevel: number) => {
-    if (nextAccessLevel === accessLevel) return;
-
-    const previousAccessLevel = accessLevel;
-    const updateId = ++accessUpdateId.current;
-    setAccessLevel(nextAccessLevel);
-
-    if (!contributor) return;
-
-    const successful = (await onUpdate?.(contributor.id, { accessLevel: nextAccessLevel })) !== false;
-    if (!successful && updateId === accessUpdateId.current) setAccessLevel(previousAccessLevel);
-  };
 
   const save = async () => {
     if (!person) return;
@@ -84,7 +77,7 @@ export function ContributorModal({
     };
 
     const successful = contributor
-      ? await onUpdate?.(contributor.id, values)
+      ? await onUpdate?.(contributor.id, accessLocked ? { person, responsibility: values.responsibility } : values)
       : await onCreate?.(values);
 
     if (successful !== false) onClose();
@@ -122,27 +115,34 @@ export function ContributorModal({
           text={responsibility}
           onChange={setResponsibility}
           placeholder="What are they responsible for?"
+          testId="contributor-responsibility"
         />
         <div>
           <label className={FORM_FIELD_LABEL_CLASS}>Access level</label>
           <Menu
             testId={accessMenuTestId}
+            readonly={accessLocked}
             customTrigger={
               <button
                 type="button"
-                className="flex w-full items-center justify-between rounded-lg border border-surface-outline bg-surface-base px-3 py-1.5 text-left text-content-base hover:bg-surface-dimmed focus:outline-none focus:ring-2 focus:ring-primary-base"
+                data-test-id={accessMenuTestId}
+                className={`${ACCESS_TRIGGER_CLASS} ${
+                  accessLocked
+                    ? "cursor-default"
+                    : "hover:bg-surface-dimmed focus:outline-none focus:ring-2 focus:ring-primary-base"
+                }`}
               >
                 <span>{accessLevelLabel ?? "Select access level"}</span>
-                <IconChevronDown size={18} className="text-content-dimmed" />
+                {!accessLocked && <IconChevronDown size={18} className="text-content-dimmed" />}
               </button>
             }
             size="small"
           >
-            {CONTRIBUTOR_ACCESS_LEVELS.map((level) => (
+            {accessLevels.map((level) => (
               <MenuActionItem
                 key={level.value}
                 testId={`${accessMenuTestId}-${level.value}`}
-                onClick={() => void updateAccessLevel(level.value)}
+                onClick={() => setAccessLevel(level.value)}
               >
                 {level.label}
               </MenuActionItem>

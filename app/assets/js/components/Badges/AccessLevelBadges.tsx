@@ -9,14 +9,6 @@ import { Tooltip } from "turboui";
 
 // Public interface
 
-export function ProjectAccessLevelBadge({ accessLevel }: { accessLevel: AccessOptionsInt | null }) {
-  const level = accessLevel ?? PermissionLevels.NO_ACCESS;
-  const data = permissionData[level];
-  assertPresent(data, `Invalid access level: ${level}`);
-
-  return <AccessBadge title={data.title} colors={data.colors} description={data.description.project} />;
-}
-
 export function SpaceAccessLevelBadge({ accessLevel }: { accessLevel: AccessOptionsInt | null }) {
   const level = accessLevel ?? PermissionLevels.NO_ACCESS;
   const data = permissionData[level];
