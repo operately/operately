@@ -69,13 +69,9 @@ import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
 import ProjectCheckInNewPage from "./ProjectCheckInNewPage";
 import ProjectCheckInPage from "./ProjectCheckInPage";
 import ProjectClosePage from "./ProjectClosePage";
-import ProjectContributorsAddPage from "./ProjectContributorsAddPage";
-import ProjectContributorsEditPage from "./ProjectContributorsEditPage";
-import ProjectContributorsPage from "./ProjectContributorsPage";
 import ProjectDiscussionEditPage from "./ProjectDiscussionEditPage";
 import ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import ProjectDiscussionPage from "./ProjectDiscussionPage";
-import ProjectEditAccessLevelsPage from "./ProjectEditAccessLevelsPage";
 import ProjectPage from "./ProjectPage";
 import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
@@ -198,13 +194,9 @@ export default {
   ProjectCheckInNewPage,
   ProjectCheckInPage,
   ProjectClosePage,
-  ProjectContributorsAddPage,
-  ProjectContributorsEditPage,
-  ProjectContributorsPage,
   ProjectDiscussionEditPage,
   ProjectDiscussionNewPage,
   ProjectDiscussionPage,
-  ProjectEditAccessLevelsPage,
   ProjectPage,
   ProjectPausePage,
   ProjectResumePage,

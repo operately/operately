@@ -17,6 +17,7 @@ interface MenuProps extends TestableElement {
   onOpenChange?: (open: boolean) => void;
   showArrow?: boolean;
   align?: "start" | "center" | "end";
+  readonly?: boolean;
 }
 
 interface MenuItemProps extends TestableElement {
@@ -45,23 +46,25 @@ interface SubMenuProps {
 export function Menu(props: MenuProps) {
   const hasVisibleChildren = useHasVisibleChildren(props.children);
 
-  if (!hasVisibleChildren) {
+  if (!hasVisibleChildren && !props.readonly) {
     return null;
   }
 
   return (
-    <DropdownMenu.Root onOpenChange={props.onOpenChange} modal={false}>
+    <DropdownMenu.Root onOpenChange={props.onOpenChange} modal={false} open={props.readonly ? false : undefined}>
       <Trigger {...props} />
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)} align={props.align}>
-          {props.showArrow && <DropdownMenu.Arrow className="fill-surface-base" />}
-          {props.headerContent && (
-            <div className="px-3 py-2 border-b border-surface-outline">{props.headerContent}</div>
-          )}
-          {props.children}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
+      {!props.readonly && (
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)} align={props.align}>
+            {props.showArrow && <DropdownMenu.Arrow className="fill-surface-base" />}
+            {props.headerContent && (
+              <div className="px-3 py-2 border-b border-surface-outline">{props.headerContent}</div>
+            )}
+            {props.children}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      )}
     </DropdownMenu.Root>
   );
 }
@@ -69,13 +72,23 @@ export function Menu(props: MenuProps) {
 function Trigger(props: MenuProps) {
   if (props.customTrigger) {
     return (
-      <DropdownMenu.Trigger asChild data-test-id={props.testId}>
+      <DropdownMenu.Trigger
+        asChild
+        data-test-id={props.testId}
+        disabled={props.readonly}
+        aria-readonly={props.readonly || undefined}
+      >
         {props.customTrigger}
       </DropdownMenu.Trigger>
     );
   } else {
     return (
-      <DropdownMenu.Trigger className={menuTriggerClass} data-test-id={props.testId}>
+      <DropdownMenu.Trigger
+        className={menuTriggerClass}
+        data-test-id={props.testId}
+        disabled={props.readonly}
+        aria-readonly={props.readonly || undefined}
+      >
         <IconDots size={20} />
       </DropdownMenu.Trigger>
     );
@@ -98,7 +111,13 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
 
       <DropdownMenu.Portal>
         {isXsScreen ? (
-          <DropdownMenu.Content className={menuContentClass} sideOffset={6} align="start" alignOffset={-75} style={menuContentStyle()}>
+          <DropdownMenu.Content
+            className={menuContentClass}
+            sideOffset={6}
+            align="start"
+            alignOffset={-75}
+            style={menuContentStyle()}
+          >
             {children}
           </DropdownMenu.Content>
         ) : (

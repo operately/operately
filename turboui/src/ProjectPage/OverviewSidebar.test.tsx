@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -31,9 +31,11 @@ import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 function SidebarHarness({
   accessLevels,
   saveAsTemplate,
+  otherPeopleWithAccess,
 }: {
   accessLevels: ProjectPage.State["accessLevels"];
   saveAsTemplate?: ProjectPage.State["saveAsTemplate"];
+  otherPeopleWithAccess?: ProjectPage.State["otherPeopleWithAccess"];
 }) {
   const subscriptions = useMockSubscriptions({ entityType: "project" });
 
@@ -54,8 +56,11 @@ function SidebarHarness({
     status: "on_track" as const,
     state: "active" as const,
     closedAt: null,
-    manageTeamLink: "#",
-    manageAccessLink: "#",
+    otherPeopleWithAccess: otherPeopleWithAccess ?? {
+      people: [],
+      loading: false,
+      onRequestLoad: () => undefined,
+    },
     accessLevels,
     setAccessLevels: () => undefined,
     updateProjectName: async () => true,
@@ -121,6 +126,24 @@ describe("OverviewSidebar privacy", () => {
 
     const privacyField = container.querySelector('[data-test-id="project-privacy-field"]');
     expect(privacyField).toHaveTextContent("Only assigned people have access");
+  });
+
+  it("loads other people with access only when the link is clicked", () => {
+    const onRequestLoad = jest.fn();
+
+    const { container } = render(
+      <SidebarHarness
+        accessLevels={{ company: "no_access", space: "no_access" }}
+        otherPeopleWithAccess={{ people: undefined, loading: false, onRequestLoad }}
+      />,
+    );
+
+    const link = container.querySelector('[data-test-id="other-people-with-access-link"]') as HTMLElement;
+    expect(link).toHaveTextContent("Who else has access?");
+    expect(onRequestLoad).not.toHaveBeenCalled();
+
+    fireEvent.click(link);
+    expect(onRequestLoad).toHaveBeenCalledTimes(1);
   });
 });
 

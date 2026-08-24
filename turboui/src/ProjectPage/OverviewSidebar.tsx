@@ -16,6 +16,8 @@ import {
 } from "../icons";
 import { ContributorsSection, ContributorModal } from "../ContributorsSection";
 import { LastCheckIn } from "../LastCheckIn";
+import { DimmedActionLink } from "../Link";
+import { OtherPeopleWithAccessModal } from "../OtherPeopleWithAccess";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
 import { Tooltip } from "../Tooltip";
@@ -238,6 +240,13 @@ function Reviewer(props: ProjectPage.State) {
 }
 
 function Privacy(props: ProjectPage.State) {
+  const [otherPeopleOpen, setOtherPeopleOpen] = React.useState(false);
+
+  const openOtherPeople = () => {
+    setOtherPeopleOpen(true);
+    props.otherPeopleWithAccess.onRequestLoad();
+  };
+
   return (
     <SidebarSection title="Privacy">
       <PrivacyField
@@ -247,13 +256,22 @@ function Privacy(props: ProjectPage.State) {
         resourceType={"project"}
         readonly={!props.permissions.hasFullAccess}
       />
-      {props.permissions.canEdit && props.manageAccessLink && (
-        <div className="mt-3">
-          <SecondaryButton linkTo={props.manageAccessLink} size="xs" testId="manage-project-access-button">
-            Manage team & access
-          </SecondaryButton>
-        </div>
-      )}
+      <div className="mt-3">
+        <DimmedActionLink
+          onClick={openOtherPeople}
+          testId="other-people-with-access-link"
+          underline="hover"
+          className="text-xs"
+        >
+          Who else has access?
+        </DimmedActionLink>
+      </div>
+      <OtherPeopleWithAccessModal
+        isOpen={otherPeopleOpen}
+        onClose={() => setOtherPeopleOpen(false)}
+        people={props.otherPeopleWithAccess.people}
+        loading={props.otherPeopleWithAccess.loading}
+      />
     </SidebarSection>
   );
 }
@@ -266,6 +284,7 @@ function Contributors(props: ProjectPage.State) {
       <ContributorsSection
         contributors={props.contributors}
         canEdit={Boolean(props.canEditContributors)}
+        hasFullAccess={Boolean(props.permissions.hasFullAccess)}
         onAdd={() => setEditing("new")}
         onEdit={(contributor) => setEditing(contributor)}
         onDelete={props.onContributorDelete}
@@ -280,6 +299,7 @@ function Contributors(props: ProjectPage.State) {
           onUpdate={props.onContributorUpdate}
           formTestId="project-contributor-form"
           accessMenuTestId="project-contributor-access"
+          allowFullAccess={Boolean(props.permissions.hasFullAccess)}
         />
       )}
     </>

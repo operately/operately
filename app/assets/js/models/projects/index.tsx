@@ -7,10 +7,10 @@ import { ProjectField } from "turboui/src/ProjectField";
 export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
 export { useTaskStatuses } from "./useTaskStatuses";
 export { useProjectContributorActions } from "./useProjectContributorActions";
+export { useProjectOtherPeopleWithAccess } from "./useProjectOtherPeopleWithAccess";
 export { createSaveProjectAsTemplateHandler, mapScheduleIssue } from "./saveProjectAsTemplate";
 
 export type Project = api.Project;
-export type ProjectContributor = api.ProjectContributor;
 export type Milestone = api.Milestone;
 export type ProjectRetrospective = api.ProjectRetrospective;
 export type Discussion = api.CommentThread;
@@ -22,7 +22,6 @@ export const getProjectRetrospective = Api.projects.getRetrospective;
 export const useCreateProject = Api.projects.useCreate;
 export const useEditProjectRetrospective = Api.projects.useUpdateRetrospective;
 export const useAcknowledgeProjectRetrospective = Api.projects.useAcknowledgeRetrospective;
-export const useRemoveProjectContributor = Api.projects.useDeleteContributor;
 export const useCloseProject = Api.projects.useClose;
 export const usePauseProject = Api.projects.usePause;
 export const useResumeProject = Api.projects.useResume;
@@ -42,17 +41,6 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timefr
   if (!day) return false;
 
   return !Time.isToday(day) && Time.isPast(day);
-}
-
-export function useContributorSearchFn(project: Project) {
-  return async (query: string) => {
-    const res = await Api.projects.searchPotentialContributors({
-      projectId: project.id!,
-      query,
-    });
-
-    return res.people!.map((p) => p!);
-  };
 }
 
 interface ProjectSearchAttrs {

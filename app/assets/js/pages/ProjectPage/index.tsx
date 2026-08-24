@@ -39,7 +39,7 @@ export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
-  return `v10-ProjectV2Page.project-${id}`;
+  return `v11-ProjectV2Page.project-${id}`;
 }
 
 type ProjectDocsAndFilesData = {
@@ -74,6 +74,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeReviewer: true,
           includePermissions: true,
           includeContributors: true,
+          includeContributorsAccessLevels: true,
           includeMilestones: true,
           includeLastCheckIn: true,
           includePrivacy: true,
@@ -194,7 +195,13 @@ function Page() {
     value: (data) => accessLevelsAsStrings(data.project.accessLevels!),
     update: (v) =>
       Api.projects
-        .updatePermissions({ projectId: project.id, accessLevels: accessLevelsAsNumbers(v) })
+        .updatePermissions({
+          projectId: project.id,
+          accessLevels: {
+            ...accessLevelsAsNumbers(v),
+            public: project.accessLevels?.public ?? 0,
+          },
+        })
         .then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
   });
@@ -368,6 +375,16 @@ function Page() {
     cacheKey: pageCacheKey(project.id),
   });
 
+  const assignedPersonIds = React.useMemo(
+    () => [champion?.id, reviewer?.id, ...contributorActions.contributors.map((contributor) => contributor.person?.id)],
+    [champion?.id, reviewer?.id, contributorActions.contributors],
+  );
+
+  const otherPeopleWithAccess = Projects.useProjectOtherPeopleWithAccess({
+    projectId: project.id,
+    assignedPersonIds,
+  });
+
   const exportMarkdown = React.useCallback(() => {
     window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
@@ -427,8 +444,7 @@ function Page() {
     retrospectiveLink: paths.projectRetrospectivePath(project.id),
 
     permissions: project.permissions || {},
-    manageTeamLink: paths.projectContributorsPath(project.id),
-    manageAccessLink: paths.projectContributorsPath(project.id),
+    otherPeopleWithAccess,
     accessLevels,
     setAccessLevels,
 

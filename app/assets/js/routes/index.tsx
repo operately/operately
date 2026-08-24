@@ -173,16 +173,12 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("projects/:projectID/retrospective", pages.ProjectRetrospectivePage),
         pageRoute("projects/:projectID/retrospective/edit", pages.ProjectRetrospectiveEditPage),
         pageRoute("projects/:projectID/check-ins/new", pages.ProjectCheckInNewPage),
-        pageRoute("projects/:projectID/edit/permissions", pages.ProjectEditAccessLevelsPage),
-        pageRoute("projects/:projectID/contributors", pages.ProjectContributorsPage),
-        pageRoute("projects/:projectID/contributors/add", pages.ProjectContributorsAddPage),
         pageRoute("projects/:projectID/discussions/new", pages.ProjectDiscussionNewPage),
         pageRoute("projects/:id", pages.ProjectPage),
         pageRoute("projects/:id/md", pages.ProjectAsMarkdownPage),
 
         pageRoute("project-check-ins/:id", pages.ProjectCheckInPage),
         pageRoute("project-check-ins/:id/edit", pages.ProjectCheckInEditPage),
-        pageRoute("project-contribs/:id/edit", pages.ProjectContributorsEditPage),
         pageRoute("project-discussions/:id", pages.ProjectDiscussionPage),
         pageRoute("project-discussions/:id/edit", pages.ProjectDiscussionEditPage),
 
