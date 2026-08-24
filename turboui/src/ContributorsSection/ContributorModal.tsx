@@ -58,24 +58,10 @@ export function ContributorModal({
   const [person, setPerson] = React.useState(isReplacingUnavailableContributor ? null : (contributor?.person ?? null));
   const [responsibility, setResponsibility] = React.useState(contributor?.responsibility ?? "");
   const [accessLevel, setAccessLevel] = React.useState(contributor?.accessLevel ?? 70);
-  const accessUpdateId = React.useRef(0);
   const accessLevels = allowFullAccess
     ? CONTRIBUTOR_ACCESS_LEVELS
     : CONTRIBUTOR_ACCESS_LEVELS.filter((level) => level.value !== 100);
   const accessLevelLabel = accessLevels.find((level) => level.value === accessLevel)?.label;
-
-  const updateAccessLevel = async (nextAccessLevel: number) => {
-    if (nextAccessLevel === accessLevel) return;
-
-    const previousAccessLevel = accessLevel;
-    const updateId = ++accessUpdateId.current;
-    setAccessLevel(nextAccessLevel);
-
-    if (!contributor) return;
-
-    const successful = (await onUpdate?.(contributor.id, { accessLevel: nextAccessLevel })) !== false;
-    if (!successful && updateId === accessUpdateId.current) setAccessLevel(previousAccessLevel);
-  };
 
   const save = async () => {
     if (!person) return;
@@ -145,7 +131,7 @@ export function ContributorModal({
               <MenuActionItem
                 key={level.value}
                 testId={`${accessMenuTestId}-${level.value}`}
-                onClick={() => void updateAccessLevel(level.value)}
+                onClick={() => setAccessLevel(level.value)}
               >
                 {level.label}
               </MenuActionItem>

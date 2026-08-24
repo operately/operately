@@ -7,13 +7,22 @@ import { ContributorModal } from "./ContributorModal";
 
 const emptySearch = { people: [], onSearch: async () => undefined };
 
-function renderModal(allowFullAccess?: boolean) {
+function renderModal({
+  allowFullAccess,
+  contributor = null,
+  onUpdate,
+}: {
+  allowFullAccess?: boolean;
+  contributor?: React.ComponentProps<typeof ContributorModal>["contributor"];
+  onUpdate?: React.ComponentProps<typeof ContributorModal>["onUpdate"];
+} = {}) {
   return render(
     <ContributorModal
-      contributor={null}
+      contributor={contributor}
       searchData={emptySearch}
       onClose={() => undefined}
       allowFullAccess={allowFullAccess}
+      onUpdate={onUpdate}
     />,
   );
 }
@@ -39,7 +48,7 @@ describe("ContributorModal access levels", () => {
   });
 
   it("hides Full Access when allowFullAccess is false", async () => {
-    renderModal(false);
+    renderModal({ allowFullAccess: false });
     await openAccessMenu();
 
     await waitFor(() => {
@@ -48,5 +57,33 @@ describe("ContributorModal access levels", () => {
 
     expect(document.querySelector('[data-test-id="contributor-access-100"]')).not.toBeInTheDocument();
     expect(screen.queryByText("Full Access")).not.toBeInTheDocument();
+  });
+
+  it("does not persist access until Save contributor is clicked", async () => {
+    const user = userEvent.setup();
+    const onUpdate = jest.fn().mockResolvedValue(true);
+    const person = { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null };
+    renderModal({
+      contributor: { id: "contributor-1", person, accessLevel: 70 },
+      onUpdate,
+    });
+
+    await openAccessMenu();
+    await waitFor(() => {
+      expect(document.querySelector('[data-test-id="contributor-access-10"]')).toBeInTheDocument();
+    });
+    await user.click(document.querySelector('[data-test-id="contributor-access-10"]') as HTMLElement);
+
+    expect(onUpdate).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Save contributor" }));
+
+    await waitFor(() => {
+      expect(onUpdate).toHaveBeenCalledWith("contributor-1", {
+        person,
+        responsibility: null,
+        accessLevel: 10,
+      });
+    });
   });
 });
