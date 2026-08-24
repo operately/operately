@@ -10,6 +10,7 @@
 //
 import type { Navigation } from "../Page/Navigation";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import { SidebarNotificationSection } from "../SidebarSection";
 
 export namespace SpaceKpisPage {
   // Ecto.Enum :weekly | :monthly on the backend.
@@ -127,5 +128,8 @@ export namespace SpaceKpisPage {
 
     // In the POC any space member can read & write, so this defaults to true.
     canManage?: boolean;
+
+    // Subscribe/unsubscribe for the open KPI, matching tasks and projects.
+    subscriptions?: SidebarNotificationSection.Props;
   }
 }

@@ -243,6 +243,7 @@ function KpisContent(props: KpisContentProps) {
         onEditKpi={props.onEditKpi}
         onDescriptionChange={props.onDescriptionChange}
         richTextHandlers={props.richTextHandlers}
+        subscriptions={props.subscriptions}
       />
     );
   }

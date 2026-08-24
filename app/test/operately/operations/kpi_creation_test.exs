@@ -36,8 +36,37 @@ defmodule Operately.Operations.KpiCreationTest do
     assert kpi.description == ctx.attrs.description
     assert kpi.unit == "%"
     assert kpi.cadence == :monthly
+    assert kpi.subscription_list_id
 
     assert Enum.map(Kpis.list_kpis(ctx.space.id), & &1.id) == [kpi.id]
+  end
+
+  test "subscribes the creator and champion", ctx do
+    {:ok, kpi} = Kpis.create_kpi(ctx.creator, ctx.attrs)
+
+    assert {:ok, subscription_list} =
+             Operately.Notifications.SubscriptionList.get(:system, id: kpi.subscription_list_id)
+
+    assert subscription_list.parent_id == kpi.id
+    assert subscription_list.parent_type == :kpi
+
+    assert {:ok, creator_subscription} =
+             Operately.Notifications.Subscription.get(:system,
+               subscription_list_id: kpi.subscription_list_id,
+               person_id: ctx.creator.id
+             )
+
+    assert creator_subscription.type == :joined
+    refute creator_subscription.canceled
+
+    assert {:ok, champion_subscription} =
+             Operately.Notifications.Subscription.get(:system,
+               subscription_list_id: kpi.subscription_list_id,
+               person_id: ctx.champion.id
+             )
+
+    assert champion_subscription.type == :invited
+    refute champion_subscription.canceled
   end
 
   test "records a kpi_created activity", ctx do

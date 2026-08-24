@@ -7,6 +7,7 @@ import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
+import { useSubscription } from "@/models/subscriptions";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
@@ -31,6 +32,13 @@ export function Page() {
   const kpisLink = paths.spaceKpisPath(space.id!);
   const parsedKpis = React.useMemo(() => kpis.map((k) => Kpis.parseKpiForTurboUi(paths, k)), [kpis, paths]);
   const selectedKpi = React.useMemo(() => (kpi ? Kpis.parseKpiForTurboUi(paths, kpi) : null), [kpi, paths]);
+  const subscriptions = useSubscription({
+    subscriptionList: kpi?.subscriptionList,
+    entityId: kpi?.id ?? "",
+    entityType: "kpi",
+    cacheKey: `v1-SpaceKpisPage-${space.id}-${kpi?.id ?? "list"}`,
+    onRefresh: refresh,
+  });
 
   const championSearch = React.useCallback(
     async (query: string) => People.parsePeopleForTurboUi(paths, await peopleSearch(query)),
@@ -108,6 +116,7 @@ export function Page() {
       selectedKpi={selectedKpi}
       currentUser={null}
       canManage={space.permissions?.canEdit ?? false}
+      subscriptions={subscriptions}
       championSearch={championSearch}
       richTextHandlers={richTextHandlers}
       onCreateKpi={onCreateKpi}
