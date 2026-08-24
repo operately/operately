@@ -1,12 +1,13 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
+import { Menu, MenuActionItem } from "../Menu";
 import { PersonField } from "../PersonField";
 import { SidebarSection } from "../SidebarSection";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
-import { formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
+import { CADENCE_OPTIONS, formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
 
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
@@ -62,11 +63,13 @@ function KpiSidebar({
   onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
 }) {
   const [champion, setChampion] = React.useState(kpi.champion);
+  const [cadence, setCadence] = React.useState(kpi.cadence);
   const [people, setPeople] = React.useState<SpaceKpisPage.Person[]>([]);
 
   React.useEffect(() => {
     setChampion(kpi.champion);
-  }, [kpi.champion]);
+    setCadence(kpi.cadence);
+  }, [kpi.champion, kpi.cadence]);
 
   const onSearch = React.useCallback(
     async (query: string) => {
@@ -75,19 +78,23 @@ function KpiSidebar({
     [championSearch],
   );
 
-  const handleChampionChange = async (person: SpaceKpisPage.Person | null) => {
-    const previous = champion;
-    setChampion(person);
+  const save = async (nextChampion: SpaceKpisPage.Person | null, nextCadence: SpaceKpisPage.Cadence) => {
+    const previous = { champion, cadence };
+    setChampion(nextChampion);
+    setCadence(nextCadence);
 
     const result = await onEditKpi({
       id: kpi.id,
       name: kpi.name,
       unit: kpi.unit,
-      cadence: kpi.cadence,
-      championId: person?.id ?? null,
+      cadence: nextCadence,
+      championId: nextChampion?.id ?? null,
     });
 
-    if (!result.success) setChampion(previous);
+    if (!result.success) {
+      setChampion(previous.champion);
+      setCadence(previous.cadence);
+    }
   };
 
   return (
@@ -96,7 +103,7 @@ function KpiSidebar({
         {canManage ? (
           <PersonField
             person={champion}
-            setPerson={handleChampionChange}
+            setPerson={(person) => save(person, cadence)}
             searchData={{ people, onSearch }}
             emptyStateMessage="Set champion"
             emptyStateReadOnlyMessage="No champion"
@@ -108,9 +115,56 @@ function KpiSidebar({
       </SidebarSection>
 
       <SidebarSection title="Cadence">
-        <div className="text-sm text-content-base">{formatCadence(kpi.cadence)}</div>
+        <CadenceField cadence={cadence} readonly={!canManage} onChange={(next) => save(champion, next)} />
       </SidebarSection>
     </aside>
+  );
+}
+
+function CadenceField({
+  cadence,
+  readonly,
+  onChange,
+}: {
+  cadence: SpaceKpisPage.Cadence;
+  readonly: boolean;
+  onChange: (cadence: SpaceKpisPage.Cadence) => void;
+}) {
+  const label = formatCadence(cadence);
+
+  if (readonly) {
+    return (
+      <div className="text-sm text-content-base" data-test-id="kpi-cadence">
+        {label}
+      </div>
+    );
+  }
+
+  return (
+    <Menu
+      testId="kpi-cadence"
+      size="tiny"
+      customTrigger={
+        <button
+          type="button"
+          className="flex items-center truncate text-left text-sm font-medium text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded cursor-pointer"
+        >
+          {label}
+        </button>
+      }
+    >
+      {CADENCE_OPTIONS.map((option) => (
+        <MenuActionItem
+          key={option.value}
+          onClick={() => {
+            if (option.value !== cadence) onChange(option.value);
+          }}
+          testId={`kpi-cadence-${option.value}`}
+        >
+          {option.label}
+        </MenuActionItem>
+      ))}
+    </Menu>
   );
 }
 
