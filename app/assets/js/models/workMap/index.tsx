@@ -66,6 +66,7 @@ export function useWorkMapItems(
 
   const [saveGoal] = Api.goals.useCreate();
   const [saveProject] = Api.projects.useCreate();
+  const [createFromTemplate] = Api.project_templates.useCreateProject();
 
   // If props change, update the items state
   React.useEffect(() => {
@@ -122,15 +123,28 @@ export function useWorkMapItems(
   };
 
   const addNewProject: WorkMap.AddNewItemFn = async (props) => {
-    const res = await saveProject({
-      name: props.name,
-      spaceId: props.space.id,
-      goalId: props.parentId || null,
-      anonymousAccessLevel: 0,
+    const accessLevels = {
+      anonymousAccessLevel: 0 as const,
       companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
       spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
-      championId: options.projectChampionId,
-    });
+    };
+
+    const res = props.templateId
+      ? await createFromTemplate({
+          name: props.name,
+          spaceId: props.space.id,
+          goalId: props.parentId || null,
+          templateId: props.templateId,
+          startDate: props.startDate!,
+          ...accessLevels,
+        })
+      : await saveProject({
+          name: props.name,
+          spaceId: props.space.id,
+          goalId: props.parentId || null,
+          championId: options.projectChampionId,
+          ...accessLevels,
+        });
 
     const item: WorkMapItem = {
       __typename: "work_map_item",
@@ -160,10 +174,7 @@ export function useWorkMapItems(
       completedOn: null,
       assignedAt: null,
       itemPath: paths.projectPath(res.project!.id!),
-      privacy: calcPrivacyLevel(
-        accessLevelAsNumber(props.accessLevels.company),
-        accessLevelAsNumber(props.accessLevels.space),
-      ),
+      privacy: calcPrivacyLevel(accessLevels.companyAccessLevel, accessLevels.spaceAccessLevel),
     };
 
     inject(item);

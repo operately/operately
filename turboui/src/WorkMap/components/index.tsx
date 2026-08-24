@@ -17,6 +17,7 @@ import { WorkMapTimeline } from "./WorkMapTimeline";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import type { FormattedTimePreferences } from "../../FormattedTime";
+import type { ProjectTemplateSelection } from "../../ProjectTemplateSelection";
 
 export { WorkMapTable };
 
@@ -46,6 +47,8 @@ export function WorkMap({
   emptyStateVariant,
   onItemCreated,
   formattedTimePreferences,
+  projectTemplatesEnabled,
+  projectTemplates,
 }: WorkMap.Props) {
   const location = useLocation();
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
@@ -89,6 +92,8 @@ export function WorkMap({
             emptyStateVariant={emptyStateVariant}
             onItemCreated={onItemCreated}
             formattedTimePreferences={formattedTimePreferences}
+            projectTemplatesEnabled={projectTemplatesEnabled}
+            projectTemplates={projectTemplates}
           />
         )}
       </div>
@@ -236,5 +241,8 @@ export namespace WorkMap {
     emptyStateVariant?: EmptyStateVariant;
     onItemCreated?: ItemCreatedFn;
     formattedTimePreferences: FormattedTimePreferences;
+
+    projectTemplatesEnabled?: boolean;
+    projectTemplates?: ProjectTemplateSelection.Template[];
   }
 }

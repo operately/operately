@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import * as Forms from "../Forms";
-import { ProjectTemplateSelection } from ".";
+import { ProjectTemplateFields, ProjectTemplateSelection } from ".";
 
 jest.mock("react-select", () => {
   return function MockSelect({
@@ -54,6 +54,38 @@ function Harness({ spaceId = "space-1" }: { spaceId?: string }) {
   );
 }
 
+function ControlledHarness({ spaceId = "space-1" }: { spaceId?: string }) {
+  const [templateId, setTemplateId] = React.useState("");
+  const [startDate, setStartDate] = React.useState("");
+  const [startDateError, setStartDateError] = React.useState<string | undefined>();
+
+  return (
+    <div>
+      <ProjectTemplateFields
+        spaceId={spaceId}
+        templates={templates}
+        templateId={templateId}
+        onTemplateIdChange={setTemplateId}
+        startDate={startDate}
+        onStartDateChange={setStartDate}
+        startDateError={startDateError}
+      />
+      <button
+        type="button"
+        onClick={() => {
+          if (templateId && !startDate) {
+            setStartDateError("Select a project start date.");
+          } else {
+            setStartDateError(undefined);
+          }
+        }}
+      >
+        Save
+      </button>
+    </div>
+  );
+}
+
 describe("ProjectTemplateSelection", () => {
   it("shows only templates from the selected Space and requires a date after selection", async () => {
     render(<Harness />);
@@ -101,6 +133,31 @@ describe("ProjectTemplateSelection", () => {
 
     fireEvent.change(screen.getByLabelText("Template"), { target: { value: "discussion-plural" } });
     expect(screen.getByText("2 discussions in this template will be attributed to you because their original authors are no longer active.")).toBeInTheDocument();
+  });
+});
+
+describe("ProjectTemplateFields", () => {
+  it("filters by space and validates start date in controlled mode", async () => {
+    render(<ControlledHarness />);
+
+    expect(screen.getByRole("option", { name: "Campaign" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Launch" })).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "marketing" } });
+    expect(screen.getByLabelText(/Project start date/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Select a project start date.");
+  });
+
+  it("clears selection when space changes in controlled mode", async () => {
+    const { rerender } = render(<ControlledHarness />);
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "marketing" } });
+    selectCurrentDate("Project start date");
+
+    rerender(<ControlledHarness spaceId="space-2" />);
+    await waitFor(() => expect(screen.getByLabelText("Template")).toHaveValue(""));
+    expect(screen.queryByLabelText(/Project start date/)).not.toBeInTheDocument();
   });
 });
 

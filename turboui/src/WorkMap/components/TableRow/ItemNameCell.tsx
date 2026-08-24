@@ -5,6 +5,7 @@ import { SecondaryButton } from "../../../Button";
 import { IconChevronDown, IconChevronRight, IconGoal, IconProject, IconSquare } from "../../../icons";
 import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
+import type { ProjectTemplateSelection } from "../../../ProjectTemplateSelection";
 import { SpaceField } from "../../../SpaceField";
 import { createTestId } from "../../../TestableElement";
 import classNames from "../../../utils/classnames";
@@ -22,6 +23,8 @@ interface Props {
   addItem?: WorkMap.AddNewItemFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
   hideCompanyAccess?: boolean;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
 export function ItemNameCell({
@@ -34,6 +37,8 @@ export function ItemNameCell({
   addItem,
   spaceSearch,
   hideCompanyAccess,
+  projectTemplatesEnabled,
+  projectTemplates,
 }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative" data-test-id={createTestId("work-item", item.name)}>
@@ -45,7 +50,14 @@ export function ItemNameCell({
         <PrivacyIndicatorWrapper item={item} />
 
         {canAddChildren && (
-          <AddButton item={item} addItem={addItem!} spaceSearch={spaceSearch!} hideCompanyAccess={hideCompanyAccess} />
+          <AddButton
+            item={item}
+            addItem={addItem!}
+            spaceSearch={spaceSearch!}
+            hideCompanyAccess={hideCompanyAccess}
+            projectTemplatesEnabled={projectTemplatesEnabled}
+            projectTemplates={projectTemplates}
+          />
         )}
       </div>
     </td>
@@ -170,11 +182,15 @@ function AddButton({
   addItem,
   spaceSearch,
   hideCompanyAccess,
+  projectTemplatesEnabled,
+  projectTemplates,
 }: {
   item: WorkMap.Item;
   addItem: WorkMap.AddNewItemFn;
   spaceSearch: SpaceField.SearchSpaceFn;
   hideCompanyAccess?: boolean;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }) {
   if (item.type !== "goal") return null;
   if (!item.space) return null;
@@ -197,6 +213,8 @@ function AddButton({
         save={addItem}
         space={item.space}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
+        projectTemplatesEnabled={projectTemplatesEnabled}
+        templates={projectTemplates}
       />
     </div>
   );
