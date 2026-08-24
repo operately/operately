@@ -41,9 +41,26 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
       {:error, :project, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :validate_permission_levels, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: %Ecto.Changeset{} = changeset}} -> map_changeset_error(changeset)
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
+  end
+
+  defp map_changeset_error(changeset) do
+    if unique_person_project_error?(changeset) do
+      {:error, :bad_request, "This person is already a contributor on this project"}
+    else
+      {:error, :bad_request}
+    end
+  end
+
+  defp unique_person_project_error?(%Ecto.Changeset{errors: errors}) do
+    Enum.any?(errors, fn
+      {:project_id, {_, opts}} -> opts[:constraint] == :unique
+      {:person_id, {_, opts}} -> opts[:constraint] == :unique
+      _ -> false
+    end)
   end
 
   defp decode_contributors(contribs), do: decode_contributors(contribs, [])

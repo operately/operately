@@ -264,6 +264,34 @@ defmodule OperatelyWeb.Api.Projects.CreateContributorTest do
       assert reactivated.id == subscription.id
       refute reactivated.canceled
     end
+
+    test "rejects adding a person who is already a contributor", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :full_access, :no_access, :no_access)
+      contributor = person_fixture(%{company_id: ctx.company.id})
+
+      assert {200, _} = request(ctx.conn, %{project: project, contributor: contributor})
+      assert {400, res} = request(ctx.conn, %{project: project, contributor: contributor})
+      assert res.message == "This person is already a contributor on this project"
+    end
+
+    test "rejects adding a person who is already the champion", ctx do
+      space = create_space(ctx)
+      champion = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      project =
+        project_fixture(%{
+          company_id: ctx.company.id,
+          creator_id: ctx.creator.id,
+          group_id: space.id,
+          champion_id: champion.id,
+          company_access_level: Binding.full_access(),
+          space_access_level: Binding.no_access()
+        })
+
+      assert {400, res} = request(ctx.conn, %{project: project, contributor: champion})
+      assert res.message == "This person is already a contributor on this project"
+    end
   end
 
   #

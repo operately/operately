@@ -40,6 +40,7 @@ defmodule Operately.Projects.Contributor do
     contributor
     |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
     |> validate_required([:project_id, :person_id])
+    |> unique_constraint([:project_id, :person_id])
   end
 
   def set_permissions(contributor = %__MODULE__{}, company_read_only \\ false) do

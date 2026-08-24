@@ -175,10 +175,56 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
     [cacheKey, deleteContributor],
   );
 
+  const includeDemotedContributor = React.useCallback(
+    (personId: string) => {
+      const source = (project.contributors || []).find((contributor) => contributor.person?.id === personId);
+      const prepared = prepareContributor(paths, source);
+      if (!prepared?.person?.id) return;
+
+      setContributors((prev) => {
+        if (prev.some((contributor) => contributor.person?.id === personId)) return prev;
+        return [...prev, prepared];
+      });
+    },
+    [paths, project.contributors],
+  );
+
+  const excludePromotedContributor = React.useCallback((personId: string): Contributor | null => {
+    let removed: Contributor | null = null;
+
+    setContributors((prev) => {
+      const next: Contributor[] = [];
+
+      for (const contributor of prev) {
+        if (contributor.person?.id === personId) {
+          removed = contributor;
+        } else {
+          next.push(contributor);
+        }
+      }
+
+      return next;
+    });
+
+    return removed;
+  }, []);
+
+  const restoreContributor = React.useCallback((contributor: Contributor) => {
+    setContributors((prev) => {
+      if (prev.some((existing) => existing.id === contributor.id || existing.person?.id === contributor.person?.id)) {
+        return prev;
+      }
+      return [...prev, contributor];
+    });
+  }, []);
+
   return {
     contributors,
     canEditContributors: canEdit,
     contributorPersonSearch,
+    includeDemotedContributor,
+    excludePromotedContributor,
+    restoreContributor,
     onContributorCreate: canEdit ? onContributorCreate : undefined,
     onContributorUpdate: canEdit ? onContributorUpdate : undefined,
     onContributorDelete: canEdit ? onContributorDelete : undefined,

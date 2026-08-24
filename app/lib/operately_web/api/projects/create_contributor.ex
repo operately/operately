@@ -6,8 +6,9 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Projects.{Project, Permissions}
+  alias Operately.Projects.{Contributor, Project, Permissions}
   alias Operately.Access.Binding
+  alias Operately.Repo
 
   inputs do
     field :project_id, :id, null: false
@@ -29,12 +30,15 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
       {:ok, :allowed} <- Permissions.check(project.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)),
       {:ok, attrs} <- parse_inputs(inputs),
       {:ok, :allowed} <- validate_permission_level(project.request_info.access_level, attrs.permissions),
+      {:ok, :allowed} <- ensure_not_already_contributor(attrs.project_id, attrs.person_id),
       {:ok, contributor} <- Operately.Operations.ProjectContributorAddition.run(me, attrs)
     ) do
       {:ok, %{project_contributor: Serializer.serialize(contributor, level: :essential)}}
     else
       {:error, :not_found} -> {:error, :not_found}
       {:error, :forbidden} -> {:error, :forbidden}
+      {:error, :already_contributor} -> {:error, :bad_request, already_contributor_message()}
+      {:error, %Ecto.Changeset{} = changeset} -> map_changeset_error(changeset)
     end
   end
 
@@ -55,4 +59,29 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
       {:error, :forbidden}
     end
   end
+
+  defp ensure_not_already_contributor(project_id, person_id) do
+    case Repo.get_by(Contributor, project_id: project_id, person_id: person_id) do
+      nil -> {:ok, :allowed}
+      _contributor -> {:error, :already_contributor}
+    end
+  end
+
+  defp unique_person_project_error?(%Ecto.Changeset{errors: errors}) do
+    Enum.any?(errors, fn
+      {:project_id, {_, opts}} -> opts[:constraint] == :unique
+      {:person_id, {_, opts}} -> opts[:constraint] == :unique
+      _ -> false
+    end)
+  end
+
+  defp map_changeset_error(changeset) do
+    if unique_person_project_error?(changeset) do
+      {:error, :bad_request, already_contributor_message()}
+    else
+      {:error, :bad_request}
+    end
+  end
+
+  defp already_contributor_message, do: "This person is already a contributor on this project"
 end
