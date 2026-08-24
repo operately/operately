@@ -131,8 +131,75 @@ defmodule Operately.Operations.ProjectContributorsAdditionTest do
     end)
   end
 
+  test "rejects adding a person who is already a contributor", ctx do
+    [attrs | _] = ctx.contributor_attrs
+
+    {:ok, _} = Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, [attrs])
+
+    assert {:error, changeset} = Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, [attrs])
+    assert unique_person_project_error?(changeset)
+
+    contributors = Projects.list_project_contributors(ctx.project)
+    assert Enum.count(contributors, fn c -> c.person_id == attrs.person_id end) == 1
+  end
+
+  test "rejects adding a person who is already the champion", ctx do
+    attrs = %{
+      person_id: ctx.creator.id,
+      responsibility: "Helper",
+      role: :contributor,
+      access_level: Binding.edit_access()
+    }
+
+    assert {:error, changeset} = Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, [attrs])
+    assert unique_person_project_error?(changeset)
+  end
+
+  test "rejects adding the same person twice in one request", ctx do
+    [attrs | _] = ctx.contributor_attrs
+    duplicate_attrs = %{attrs | responsibility: "Something else"}
+
+    assert {:error, changeset} =
+             Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, [attrs, duplicate_attrs])
+
+    assert unique_person_project_error?(changeset)
+
+    contributors = Projects.list_project_contributors(ctx.project)
+    refute Enum.any?(contributors, fn c -> c.person_id == attrs.person_id end)
+  end
+
+  test "rolls back the batch when one person is already a contributor", ctx do
+    [existing_attrs, new_attrs | _] = ctx.contributor_attrs
+
+    {:ok, _} = Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, [existing_attrs])
+    activity_count_before = activity_count(ctx.project.id)
+
+    assert {:error, changeset} =
+             Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, [new_attrs, existing_attrs])
+
+    assert unique_person_project_error?(changeset)
+
+    contributors = Projects.list_project_contributors(ctx.project)
+    assert Enum.find(contributors, fn c -> c.person_id == existing_attrs.person_id end)
+    refute Enum.find(contributors, fn c -> c.person_id == new_attrs.person_id end)
+    assert activity_count(ctx.project.id) == activity_count_before
+  end
+
   defp fetch_activity(project_id) do
     from(a in Activity, where: a.action == "project_contributors_addition" and a.content["project_id"] == ^project_id)
     |> Repo.one()
+  end
+
+  defp activity_count(project_id) do
+    from(a in Activity, where: a.action == "project_contributors_addition" and a.content["project_id"] == ^project_id, select: count(a.id))
+    |> Repo.one()
+  end
+
+  defp unique_person_project_error?(%Ecto.Changeset{errors: errors}) do
+    Enum.any?(errors, fn
+      {:project_id, {_, opts}} -> opts[:constraint] == :unique
+      {:person_id, {_, opts}} -> opts[:constraint] == :unique
+      _ -> false
+    end)
   end
 end

@@ -16,6 +16,9 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate setup_contributors(ctx), to: ProjectSteps
   defdelegate assert_logged_in_contributor_has_edit_access(ctx), to: ProjectSteps
   defdelegate assert_logged_in_contributor_has_comment_access(ctx), to: ProjectSteps
+  defdelegate remove_champion(ctx), to: ProjectSteps
+  defdelegate remove_reviewer(ctx), to: ProjectSteps
+  defdelegate assert_champion_removed(ctx), to: ProjectSteps
 
   step :setup, ctx do
     ctx
@@ -275,6 +278,28 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.assert_has(testid: "edit-contributor-#{public_id}")
     |> UI.assert_has(testid: "remove-contributor-#{public_id}")
     |> UI.click(testid: "contributor-#{public_id}")
+  end
+
+  step :assert_person_listed_as_contributor, ctx, name: name do
+    attempts(ctx, 5, fn ->
+      found = contributor_by_name(ctx, name)
+
+      assert found != nil
+      assert found.role == :contributor
+    end)
+
+    found = contributor_by_name(ctx, name)
+
+    ctx
+    |> UI.assert_has(testid: "contributor-#{Paths.project_contributor_id(found)}")
+    |> UI.assert_text(name)
+  end
+
+  step :assert_person_not_available_to_add_as_contributor, ctx, name: name do
+    ctx
+    |> start_adding_contributor()
+    |> UI.click(testid: "person-field")
+    |> UI.refute_has(testid: UI.testid(["person-field", "search-result", name]))
   end
 
   step :given_company_members_have_access, ctx do
