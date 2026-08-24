@@ -15,7 +15,7 @@ import {
   mockPeople,
   mockSpace,
 } from "./mockData";
-import { formatShortDate, formatValue } from "./utils";
+import { formatNumber, formatShortDate, formatValue } from "./utils";
 
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until
@@ -111,7 +111,7 @@ describe("SpaceKpisPage layout", () => {
     expect(container.querySelector('[data-test-id="new-kpi"]')).not.toBeInTheDocument();
   });
 
-  test("shows KPI information in a sidebar beside its value and history", () => {
+  test("shows KPI information in a sidebar beside its history", () => {
     const target = mockKpis[0]!;
     const { container } = renderPage({ selectedKpi: target });
     const sidebar = container.querySelector<HTMLElement>('[data-test-id="kpi-sidebar"]')!;
@@ -126,7 +126,8 @@ describe("SpaceKpisPage layout", () => {
   });
 
   // Mirrors a project's last check-in: the sidebar answers what was recorded,
-  // when, and by whom, which the headline value alone does not say.
+  // when, and by whom. The main column used to repeat the value as a headline;
+  // it must not, now that the sidebar card is the source of truth.
   test("shows the last update in the sidebar with its value, date and who recorded it", () => {
     const target = mockKpis[0]!;
     const latest = target.entries[target.entries.length - 1]!;
@@ -137,6 +138,28 @@ describe("SpaceKpisPage layout", () => {
     expect(within(card).getByText(formatShortDate(latest.recordedAt))).toBeInTheDocument();
     expect(within(card).getByText(formatValue(latest.value, target.unit))).toBeInTheDocument();
     expect(within(card).getByText(latest.recordedBy!.fullName.split(" ")[0]!)).toBeInTheDocument();
+  });
+
+  // The value alone doesn't say whether the KPI is moving, so the card carries
+  // the signed change against the entry before it.
+  test("shows the change against the previous entry beside the last value", () => {
+    const target = mockKpis[0]!;
+    const entries = target.entries;
+    const delta = entries[entries.length - 1]!.value - entries[entries.length - 2]!.value;
+    const { container } = renderPage({ selectedKpi: target });
+    const card = container.querySelector<HTMLElement>('[data-test-id="kpi-last-update"]')!;
+
+    expect(within(card).getByText(formatNumber(Math.abs(delta)))).toBeInTheDocument();
+    expect(within(card).getByTitle(`+${formatNumber(Math.abs(delta))} vs previous`)).toBeInTheDocument();
+  });
+
+  test("shows no change indicator when a KPI has only one update", () => {
+    const target = mockKpis.find((kpi) => kpi.entries.length === 1)!;
+    const { container } = renderPage({ selectedKpi: target });
+    const card = container.querySelector<HTMLElement>('[data-test-id="kpi-last-update"]')!;
+
+    expect(within(card).getByText(formatValue(target.entries[0]!.value, target.unit))).toBeInTheDocument();
+    expect(card.querySelector("[title$='vs previous']")).not.toBeInTheDocument();
   });
 
   test("prompts editors to log the first value when a KPI has no updates", () => {

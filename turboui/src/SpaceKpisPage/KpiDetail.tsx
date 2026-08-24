@@ -17,25 +17,13 @@ interface KpiDetailProps {
 }
 
 // The KPI name, back navigation and the "Log update" action live in the shared
-// page header (see index.tsx), so the detail body focuses on the latest value,
-// history chart, recorded-updates log, and supporting information sidebar.
+// page header (see index.tsx). The latest value is in the sidebar last-update
+// card, so the main column is the history chart and the recorded-updates log.
 export function KpiDetail({ kpi, canManage, championSearch, onEditKpi }: KpiDetailProps) {
-  const latest = latestEntry(kpi);
-  const trend = latestTrend(kpi);
-
   return (
     <div className="sm:grid sm:grid-cols-12 sm:gap-8" data-test-id="kpi-detail">
       <div className="sm:col-span-8">
-        <div className="flex items-end gap-3">
-          <div className="text-4xl font-bold text-content-accent">
-            {latest ? formatValue(latest.value, kpi.unit) : "—"}
-          </div>
-          <div className="pb-1">
-            <TrendIndicator delta={trend} />
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-lg border border-stroke-base bg-surface-base p-4">
+        <div className="rounded-lg border border-stroke-base bg-surface-base p-4">
           <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
           <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
         </div>
@@ -113,11 +101,12 @@ function KpiSidebar({
   );
 }
 
-// The most recent entry, presented like a project's last check-in: what was
-// recorded, when, and by whom. The trend stays with the headline value in the
-// main column so the change is not stated twice.
+// The KPI's current reading, and the only place the latest value appears on the
+// detail page. The value leads, with the change since the previous entry beside
+// it; when it was recorded and by whom are supporting details underneath.
 function LastUpdate({ kpi, canManage }: { kpi: SpaceKpisPage.Kpi; canManage: boolean }) {
   const latest = latestEntry(kpi);
+  const trend = latestTrend(kpi);
 
   if (!latest) {
     return (
@@ -133,19 +122,25 @@ function LastUpdate({ kpi, canManage }: { kpi: SpaceKpisPage.Kpi; canManage: boo
 
   return (
     <SidebarSection title="Last update">
-      <div
-        className="flex flex-col gap-1 border-l-4 border-surface-outline bg-zinc-50 py-3 pl-3 pr-4 text-sm dark:bg-zinc-800"
-        data-test-id="kpi-last-update"
-      >
-        <div className="font-semibold">{formatShortDate(latest.recordedAt)}</div>
-        <div className="text-lg font-bold text-content-accent">{formatValue(latest.value, kpi.unit)}</div>
-
-        {latest.recordedBy && (
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <Avatar person={latest.recordedBy} size={20} />
-            {latest.recordedBy.fullName.split(" ")[0]}
+      <div data-test-id="kpi-last-update">
+        <div className="flex items-center gap-2">
+          <div className="text-3xl font-bold leading-none text-content-accent">
+            {formatValue(latest.value, kpi.unit)}
           </div>
-        )}
+          <TrendIndicator delta={trend} />
+        </div>
+
+        <div className="mt-2 flex items-center gap-1.5 text-xs text-content-dimmed">
+          <span>{formatShortDate(latest.recordedAt)}</span>
+
+          {latest.recordedBy && (
+            <>
+              <span aria-hidden="true">·</span>
+              <Avatar person={latest.recordedBy} size={16} />
+              <span>{latest.recordedBy.fullName.split(" ")[0]}</span>
+            </>
+          )}
+        </div>
       </div>
     </SidebarSection>
   );
