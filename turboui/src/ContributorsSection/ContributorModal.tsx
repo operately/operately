@@ -119,40 +119,35 @@ export function ContributorModal({
         />
         <div>
           <label className={FORM_FIELD_LABEL_CLASS}>Access level</label>
-          {accessLocked ? (
-            <div
-              className={`${ACCESS_TRIGGER_CLASS} cursor-default`}
-              data-test-id={accessMenuTestId}
-              aria-readonly="true"
-            >
-              <span>{accessLevelLabel}</span>
-            </div>
-          ) : (
-            <Menu
-              testId={accessMenuTestId}
-              customTrigger={
-                <button
-                  type="button"
-                  data-test-id={accessMenuTestId}
-                  className={`${ACCESS_TRIGGER_CLASS} hover:bg-surface-dimmed focus:outline-none focus:ring-2 focus:ring-primary-base`}
-                >
-                  <span>{accessLevelLabel ?? "Select access level"}</span>
-                  <IconChevronDown size={18} className="text-content-dimmed" />
-                </button>
-              }
-              size="small"
-            >
-              {accessLevels.map((level) => (
-                <MenuActionItem
-                  key={level.value}
-                  testId={`${accessMenuTestId}-${level.value}`}
-                  onClick={() => setAccessLevel(level.value)}
-                >
-                  {level.label}
-                </MenuActionItem>
-              ))}
-            </Menu>
-          )}
+          <Menu
+            testId={accessMenuTestId}
+            readonly={accessLocked}
+            customTrigger={
+              <button
+                type="button"
+                data-test-id={accessMenuTestId}
+                className={`${ACCESS_TRIGGER_CLASS} ${
+                  accessLocked
+                    ? "cursor-default"
+                    : "hover:bg-surface-dimmed focus:outline-none focus:ring-2 focus:ring-primary-base"
+                }`}
+              >
+                <span>{accessLevelLabel ?? "Select access level"}</span>
+                {!accessLocked && <IconChevronDown size={18} className="text-content-dimmed" />}
+              </button>
+            }
+            size="small"
+          >
+            {accessLevels.map((level) => (
+              <MenuActionItem
+                key={level.value}
+                testId={`${accessMenuTestId}-${level.value}`}
+                onClick={() => setAccessLevel(level.value)}
+              >
+                {level.label}
+              </MenuActionItem>
+            ))}
+          </Menu>
         </div>
         <div className="flex justify-end gap-2">
           <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
