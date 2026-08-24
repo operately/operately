@@ -39,7 +39,6 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, :already_contributor} -> {:error, :bad_request, already_contributor_message()}
       {:error, %Ecto.Changeset{} = changeset} -> map_changeset_error(changeset)
-      {:error, :contributor, %Ecto.Changeset{} = changeset, _} -> map_changeset_error(changeset)
     end
   end
 
