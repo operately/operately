@@ -18,6 +18,7 @@ export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi): SpaceKpisPage.Kpi
   return {
     id: kpi.id,
     name: kpi.name,
+    description: kpi.description ? JSON.parse(kpi.description) : null,
     unit: kpi.unit,
     cadence: kpi.cadence as SpaceKpisPage.Cadence,
     champion: parsePersonForTurboUi(paths, kpi.champion),

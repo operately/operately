@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Navigate, useNavigate } from "react-router";
 
-import { SpaceKpisPage } from "turboui";
+import { showErrorToast, SpaceKpisPage } from "turboui";
 import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/types";
 
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
 
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
@@ -20,6 +21,7 @@ export function Page() {
   const { space, kpis, kpi } = useLoadedData();
 
   const peopleSearch = People.usePeopleSearch({ type: "space", id: space.id! });
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id! } });
 
   const [createKpi] = Kpis.useCreateKpi();
   const [editKpi] = Kpis.useEditKpi();
@@ -68,6 +70,20 @@ export function Page() {
       return input.id;
     });
 
+  const onDescriptionChange = async (kpiId: string, description: Record<string, unknown>) => {
+    const result = await run(async () => {
+      await editKpi({ kpiId, description: JSON.stringify(description) });
+      refresh();
+      return kpiId;
+    });
+
+    if (!result.success) {
+      showErrorToast("Error", "Failed to update KPI description.");
+    }
+
+    return result.success;
+  };
+
   // Deleting the KPI whose page we are on leaves nothing to show, so we return
   // to the list instead of refreshing into a missing KPI.
   const onDeleteKpi = async (kpiId: string) =>
@@ -93,8 +109,10 @@ export function Page() {
       currentUser={null}
       canManage={space.permissions?.canEdit ?? false}
       championSearch={championSearch}
+      richTextHandlers={richTextHandlers}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
+      onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
     />

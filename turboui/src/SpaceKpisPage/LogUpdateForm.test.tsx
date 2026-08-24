@@ -25,6 +25,7 @@ function today(): string {
 const kpi: SpaceKpisPage.Kpi = {
   id: "kpi-signups",
   name: "Weekly Sign-ups",
+  description: null,
   unit: "users",
   cadence: "weekly",
   champion: null,

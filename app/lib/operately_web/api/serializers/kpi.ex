@@ -7,6 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.Kpi do
       name: kpi.name,
       unit: kpi.unit,
       cadence: Atom.to_string(kpi.cadence),
+      description: kpi.description && Jason.encode!(kpi.description),
       space_id: Operately.ShortUuid.encode!(kpi.space_id),
       champion: Serializer.serialize(kpi.champion),
       latest_entry: serialize_latest_entry(kpi),

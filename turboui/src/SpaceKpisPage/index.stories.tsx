@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { useParams } from "react-router";
 
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
 import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople, mockSpace } from "./mockData";
@@ -76,6 +77,7 @@ function Harness(args: HarnessArgs) {
     const newKpi: SpaceKpisPageNS.Kpi = {
       id,
       name: input.name,
+      description: null,
       unit: input.unit,
       cadence: input.cadence,
       champion,
@@ -108,6 +110,15 @@ function Harness(args: HarnessArgs) {
     );
 
     return { success: true, id: input.id };
+  };
+
+  const onDescriptionChange = async (kpiId: string, description: Record<string, unknown>) => {
+    await delay(400);
+
+    if (args.failMutations) return false;
+
+    setKpis((prev) => prev.map((kpi) => (kpi.id === kpiId ? { ...kpi, description } : kpi)));
+    return true;
   };
 
   const onDeleteKpi = async (kpiId: string): Promise<SpaceKpisPageNS.MutationResult> => {
@@ -158,8 +169,10 @@ function Harness(args: HarnessArgs) {
       selectedKpi={kpis.find((kpi) => kpi.id === kpiId) ?? null}
       currentUser={mockCurrentUser}
       championSearch={mockChampionSearch}
+      richTextHandlers={createMockRichEditorHandlers()}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
+      onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
       loading={args.loading}
