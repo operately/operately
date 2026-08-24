@@ -38,6 +38,19 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {};
 
+export const WithProjectTemplates: Story = {
+  args: {
+    initialItemType: "project",
+    hideTypeSelector: true,
+    space: { id: "space1", name: "Space 1", link: "/spaces/space1" },
+    projectTemplatesEnabled: true,
+    templates: [
+      { id: "tpl-1", name: "Campaign launch", spaceId: "space1" },
+      { id: "tpl-2", name: "Other space template", spaceId: "space2" },
+    ],
+  },
+};
+
 export const HideCompanyAccess: Story = {
   args: {
     hideCompanyAccess: true,

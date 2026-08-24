@@ -14,7 +14,7 @@ export * from "./CopyToClipboard";
 export * from "./ConfirmDialog";
 export * from "./FormattedTime";
 export * as Forms from "./Forms";
-export { ProjectTemplateSelection } from "./ProjectTemplateSelection";
+export { ProjectTemplateFields, ProjectTemplateSelection } from "./ProjectTemplateSelection";
 export * from "./BrandIcons";
 export { BulletDot } from "./BulletDot";
 export * from "./ImageWithPlaceholder";
