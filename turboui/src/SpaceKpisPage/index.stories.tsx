@@ -13,7 +13,7 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople
 //   - a KPIs space tool using the same page chrome (breadcrumb header + tool
 //     title) as the other space tools (Work Map, Tasks)
 //   - a list view: name, unit, cadence, champion, latest value + trend
-//   - a detail view: line chart of history, champion + cadence, "Log update"
+//   - a detail view: line chart of history, last update + champion + cadence, "Log update"
 //   - a "New KPI" form (name, unit, cadence, champion picker)
 //   - an overflow "manage" menu on each KPI (list rows + detail header) to
 //     Edit the KPI or Delete it (with a destructive confirmation)
