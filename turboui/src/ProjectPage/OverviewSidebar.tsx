@@ -298,6 +298,7 @@ function Contributors(props: ProjectPage.State) {
           onUpdate={props.onContributorUpdate}
           formTestId="project-contributor-form"
           accessMenuTestId="project-contributor-access"
+          allowFullAccess={Boolean(props.permissions.hasFullAccess)}
         />
       )}
     </>

@@ -1,8 +1,6 @@
 import * as GoalAddPage from "@/pages/GoalAddPage";
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
-import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
-import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
 import * as React from "react";
 
 import type { ResourceHubLinkType } from "turboui";
@@ -292,22 +290,6 @@ export class Paths {
 
   projectMilestoneKanbanPath(milestoneId: string) {
     return this.createCompanyPath(["milestones", milestoneId, "kanban"]);
-  }
-
-  projectContributorsPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "contributors"]);
-  }
-
-  projectContributorsAddPath(projectId: string, params: ProjectContributorsAddPage.UrlParams) {
-    return this.createCompanyPath(["projects", projectId, "contributors", "add"]) + encodeUrlParams(params);
-  }
-
-  projectContributorsEditPath(contributorId: string, params?: ProjectContributorsEditPage.UrlParams) {
-    return this.createCompanyPath(["project-contribs", contributorId, "edit"]) + encodeUrlParams(params);
-  }
-
-  editProjectAccessLevelsPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "permissions"]);
   }
 
   pauseProjectPath(projectId: string) {
@@ -621,10 +603,6 @@ export class Paths {
     } else {
       return this.createCompanyPath(["people", personId]);
     }
-  }
-
-  projectEditPermissionsPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "permissions"]);
   }
 
   projectClosePath(projectId: string) {

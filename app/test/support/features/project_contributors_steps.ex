@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.People.Person
 
@@ -15,7 +16,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate setup_contributors(ctx), to: ProjectSteps
   defdelegate assert_logged_in_contributor_has_edit_access(ctx), to: ProjectSteps
   defdelegate assert_logged_in_contributor_has_comment_access(ctx), to: ProjectSteps
-  defdelegate assert_logged_in_contributor_has_view_access(ctx), to: ProjectSteps
 
   step :setup, ctx do
     ctx
@@ -27,20 +27,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :setup_default_people, ctx do
     ctx
     |> given_a_person_exists(name: "Michael Scott")
-    |> given_a_person_exists(name: "Dwight Schrute")
-    |> given_a_person_exists(name: "Jim Halpert")
-  end
-
-  step :visit_project_contributors_page, ctx do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.assert_has(testid: "project-contributors-page")
-  end
-
-  step :visit_project_contributors_page, ctx, :direct do
-    ctx
-    |> UI.visit(Paths.project_add_contributor_path(ctx.company, ctx.project))
   end
 
   step :given_a_person_exists, ctx, name: name do
@@ -53,36 +39,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
-  step :given_a_contributor_exists, ctx, name: name do
-    contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
-
-    {:ok, _} = Operately.Projects.create_contributor(contrib, %{
-      person_id: contrib.id,
-      role: "contributor",
-      project_id: ctx.project.id,
-      responsibility: "Lead the backend implementation",
-      permissions: Binding.edit_access(),
-    })
-
-    ctx
-  end
-
-  step :given_project_doesnt_have_champion, ctx do
-    champion = Operately.Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
-
-    {:ok, _} = Operately.Operations.ProjectContributorRemoved.run(ctx.reviewer, champion)
-
-    ctx
-  end
-
-  step :given_project_doesnt_have_reviewer, ctx do
-    reviewer = Operately.Projects.get_contributor!(person_id: ctx.reviewer.id, project_id: ctx.project.id)
-
-    {:ok, _} = Operately.Operations.ProjectContributorRemoved.run(ctx.champion, reviewer)
-
-    ctx
-  end
-
   step :assert_logged_in_champion_has_full_access, ctx do
     {:ok, project} = Operately.Projects.Project.get(ctx.champion, id: ctx.project.id)
 
@@ -91,148 +47,111 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     UI.login_as(ctx, ctx.champion)
   end
 
-  step :start_adding_contributors, ctx do
+  step :start_adding_contributor, ctx do
     ctx
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.click(testid: "add-contributors-button")
+    |> UI.click(testid: "add-contributor")
+    |> UI.assert_has(testid: "project-contributor-form")
   end
 
-  step :add_contributors, ctx, people do
-    ctx
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.click(testid: "add-contributors-button")
-
-    ctx = Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
-      UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
-        ctx
-        |> UI.select_person_in(testid: "contributors-#{index}-personid", name: person.name)
-        |> then(fn ctx ->
-          if person[:access] && person[:access] != "Edit Access" do # Edit Access is the default
-            ctx
-            |> UI.click(testid: "contributors-#{index}-accesslevel")
-            |> UI.click_text(person.access)
-          else
-            ctx
-          end
-        end)
-        |> UI.fill(testid: "contributors-#{index}-responsibility", with: person.responsibility)
-      end)
-
-      if index == length(people) - 1 do
-        ctx
-      else
-        ctx |> UI.click(testid: "add-more")
-      end
-    end)
+  step :add_contributor, ctx, attrs do
+    name = Map.fetch!(attrs, :name)
+    responsibility = Map.fetch!(attrs, :responsibility)
+    access = Map.get(attrs, :access)
 
     ctx
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "project-contributors-page")
+    |> start_adding_contributor()
+    |> UI.click(testid: "person-field")
+    |> UI.click(testid: UI.testid(["person-field", "search-result", name]))
+    |> maybe_choose_access(access)
+    |> UI.fill(testid: "contributor-responsibility-input", with: responsibility)
+    |> UI.click_button("Save contributor")
+    |> UI.sleep(300)
   end
 
-  step :assert_contributors_added, ctx, contribs do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    contributors = Operately.Repo.preload(contributors, :person)
+  step :assert_contributor_added, ctx, attrs do
+    name = Map.fetch!(attrs, :name)
+    responsibility = Map.fetch!(attrs, :responsibility)
 
-    Enum.map(contribs, fn contrib ->
-      ctx
-      |> UI.assert_text(contrib.name)
-      |> UI.assert_text(contrib.responsibility)
+    contributors = list_contributors(ctx)
+    found = Enum.find(contributors, fn c -> c.person.full_name == name end)
 
-      found = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end)
-
-      assert found != nil
-      assert found.responsibility == contrib.responsibility
-    end)
+    assert found != nil
+    assert found.responsibility == responsibility
 
     ctx
+    |> UI.assert_has(testid: "contributor-#{Paths.project_contributor_id(found)}")
+    |> UI.assert_text(name)
+    |> UI.assert_text(responsibility)
   end
 
-  step :assert_access_level_of_added_contributors, ctx, contribs do
-    Enum.map(contribs, fn contrib ->
-      person = Operately.People.get_person_by_name!(ctx.company, contrib.name)
-      access_level = contrib.access |> String.downcase() |> String.replace(" ", "_") |> String.to_atom()
+  step :assert_access_level_of_added_contributor, ctx, attrs do
+    name = Map.fetch!(attrs, :name)
+    access = Map.fetch!(attrs, :access)
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+    access_level = access |> String.downcase() |> String.replace(" ", "_") |> String.to_atom()
+    project = Operately.Projects.Project.get!(person, id: ctx.project.id)
 
-      project = Operately.Projects.Project.get!(person, id: ctx.project.id)
-
-      assert project.request_info.access_level == Binding.from_atom(access_level)
-    end)
+    assert project.request_info.access_level == Binding.from_atom(access_level)
 
     ctx
   end
 
   step :assert_full_access_option_not_available, ctx do
     ctx
-    |> UI.click(testid: "contributors-0-accesslevel")
+    |> UI.click(testid: "project-contributor-access")
     |> UI.assert_text("View Access")
     |> UI.assert_text("Comment Access")
     |> UI.assert_text("Edit Access")
     |> UI.refute_text("Full Access")
   end
 
-  step :assert_contributors_added_feed_item_exists, ctx, contribs do
+  step :assert_contributor_added_feed_item_exists, ctx, name: name do
+    first_name = Person.first_name(Operately.People.get_person_by_name!(ctx.company, name))
+
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "tab-activity")
-    |> UI.assert_feed_item(ctx.champion, "added new contributors to the project")
-
-    Enum.map(contribs, fn c ->
-      ctx
-      |> UI.assert_text(List.first(String.split(c.name, " ")))
-      |> UI.assert_text(c.responsibility)
-    end)
-
-    ctx
+    |> UI.assert_feed_item(ctx.champion, "added #{first_name} to the project")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "added new contributors to the #{ctx.project.name} project")
+    |> UI.assert_feed_item(ctx.champion, "added #{first_name} to the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "added new contributors to the #{ctx.project.name} project")
+    |> UI.assert_feed_item(ctx.champion, "added #{first_name} to the #{ctx.project.name} project")
   end
 
   step :assert_contributor_removed_feed_item_exists, ctx, name: name do
-    name = Person.get_by!(:system, full_name: name) |> Person.first_name()
+    first_name = Person.get_by!(:system, full_name: name) |> Person.first_name()
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "tab-activity")
-    |> UI.assert_feed_item(ctx.champion, "removed #{name} from the project")
+    |> UI.assert_feed_item(ctx.champion, "removed #{first_name} from the project")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "removed #{name} from the #{ctx.project.name} project")
+    |> UI.assert_feed_item(ctx.champion, "removed #{first_name} from the #{ctx.project.name} project")
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "removed #{name} from the #{ctx.project.name} project")
+    |> UI.assert_feed_item(ctx.champion, "removed #{first_name} from the #{ctx.project.name} project")
   end
 
-  step :assert_contributors_added_notification_sent, ctx, contribs do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    contributors = Operately.Repo.preload(contributors, :person)
+  step :assert_contributor_added_notification_sent, ctx, name: name do
+    person = contributor_by_name(ctx, name).person
 
-    Enum.reduce(contribs, ctx, fn contrib, ctx ->
-      person = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end).person
-
-      ctx
-      |> UI.login_as(person)
-      |> NotificationsSteps.assert_activity_notification(%{
-        author: ctx.champion,
-        action: "Added you as a contributor"
-      })
-    end)
+    ctx
+    |> UI.login_as(person)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Added you as a contributor"
+    })
   end
 
-  step :assert_contributors_added_email_sent, ctx, contribs do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    contributors = Operately.Repo.preload(contributors, :person)
+  step :assert_contributor_added_email_sent, ctx, name: name do
+    person = contributor_by_name(ctx, name).person
 
-    Enum.reduce(contribs, ctx, fn contrib, ctx ->
-      person = Enum.find(contributors, fn c -> c.person.full_name == contrib.name end).person
-
-      ctx
-      |> EmailSteps.assert_activity_email_sent(%{
-        where: ctx.project.name,
-        to: person,
-        author: ctx.champion,
-        action: "added you as a contributor"
-      })
-    end)
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: person,
+      author: ctx.champion,
+      action: "added you as a contributor"
+    })
   end
 
   step :given_the_project_has_contributor, ctx, attrs do
@@ -241,335 +160,155 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
     contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
 
-    {:ok, _} = Operately.Projects.create_contributor(contrib, %{
-      person_id: contrib.id,
-      role: "contributor",
-      project_id: ctx.project.id,
-      responsibility: "Lead the backend implementation",
-      permissions: access,
-    })
+    {:ok, _} =
+      Operately.Projects.create_contributor(contrib, %{
+        person_id: contrib.id,
+        role: "contributor",
+        project_id: ctx.project.id,
+        responsibility: "Lead the backend implementation",
+        permissions: access
+      })
 
     ctx
   end
 
   step :start_editing_contributor, ctx, name: name do
+    public_id = contributor_public_id(ctx, name)
+
     ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.click(testid: "edit-contributor")
-    |> UI.sleep(200)
+    |> UI.click(testid: "contributor-#{public_id}")
+    |> UI.click(testid: "edit-contributor-#{public_id}")
+    |> UI.assert_has(testid: "project-contributor-form")
   end
 
   step :edit_contributor, ctx, responsibility: responsibility, access: access do
     ctx
-    |> UI.click(testid: "permissions")
-    |> UI.click_text(access)
-    |> UI.fill(testid: "responsibility", with: responsibility)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "project-contributors-page")
+    |> maybe_choose_access(access)
+    |> UI.fill(testid: "contributor-responsibility-input", with: responsibility)
+    |> UI.click_button("Save contributor")
+    |> UI.sleep(300)
   end
 
   step :assert_contributor_attributes, ctx, attrs do
     name = Keyword.get(attrs, :name)
     responsibility = Keyword.get(attrs, :responsibility)
     access = Keyword.get(attrs, :access)
+    found = contributor_by_name(ctx, name)
 
-    ctx
-    |> UI.find(UI.query(testid: UI.testid(["contributor-row", name])), fn el ->
-      el
-      |> UI.assert_has(Query.text(responsibility))
-      |> UI.assert_has(Query.text(access))
-    end)
-  end
+    assert found != nil
+    if responsibility, do: assert(found.responsibility == responsibility)
 
-  step :assert_can_edit_user, ctx, name: name do
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.assert_has(testid: "edit-contributor")
-  end
+    ctx = ctx |> UI.assert_has(testid: "contributor-#{Paths.project_contributor_id(found)}") |> UI.assert_text(name)
 
-  step :assert_cannot_edit_user, ctx, name: name do
-    UI.refute_has(ctx, testid: UI.testid(["contributor-menu", name]))
-  end
+    ctx =
+      if responsibility do
+        UI.assert_text(ctx, responsibility)
+      else
+        ctx
+      end
 
-  step :assert_cannot_remove_user, ctx, name: name do
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.assert_has(testid: "edit-contributor")
-    |> UI.refute_has(testid: "remove-contributor")
-  end
-
-  step :assert_cannot_convert_reviewer_to_contributor, ctx do
-    ctx
-    |> UI.assert_has(testid: "reviewer-section")
-    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.reviewer.full_name]))
-  end
-
-  step :assert_cannot_convert_champion_to_contributor, ctx do
-    ctx
-    |> UI.assert_has(testid: "champion-section")
-    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.champion.full_name]))
-  end
-
-  step :assert_cannot_edit_champion, ctx do
-    ctx
-    |> UI.assert_has(testid: "champion-section")
-    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.champion.full_name]))
-  end
-
-  step :assert_cannot_edit_reviewer, ctx do
-    ctx
-    |> UI.assert_has(testid: "reviewer-section")
-    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.reviewer.full_name]))
-  end
-
-  step :assert_cannot_promote_contributor_to_champion, ctx, name: name do
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.assert_has(testid: "edit-contributor")
-    |> UI.refute_has(testid: "promote-to-champion")
-  end
-
-  step :assert_cannot_promote_contributor_to_reviewer, ctx, name: name do
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.assert_has(testid: "edit-contributor")
-    |> UI.refute_has(testid: "promote-to-reviewer")
-  end
-
-  step :assert_cannot_add_champion, ctx do
-    ctx
-    |> UI.assert_text("The project doesn't have a champion yet")
-    |> UI.refute_has(testid: "add-champion-button")
-  end
-
-  step :assert_cannot_add_reviewer, ctx do
-    ctx
-    |> UI.assert_text("The project doesn't have a reviewer yet")
-    |> UI.refute_has(testid: "add-reviewer-button")
+    if access do
+      assert_access_level_of_added_contributor(ctx, %{name: name, access: access})
+    else
+      ctx
+    end
   end
 
   step :remove_contributor, ctx, name: name do
+    public_id = contributor_public_id(ctx, name)
+
     ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.click(testid: "remove-contributor")
-    |> UI.sleep(200)
+    |> UI.click(testid: "contributor-#{public_id}")
+    |> UI.click(testid: "remove-contributor-#{public_id}")
+    |> UI.sleep(300)
   end
 
   step :assert_contributor_removed, ctx, name: name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.refute_has(Query.text("Michael Scott"))
+    |> UI.refute_text(name)
 
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    contributors = Operately.Repo.preload(contributors, :person)
-    contrib = Enum.find(contributors, fn c -> c.person.full_name == name end)
-
-    assert contrib == nil
+    refute contributor_by_name(ctx, name)
 
     ctx
   end
 
-  step :assert_reviewer_removed, ctx do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    refute Enum.find(contributors, fn c -> c.role == "reviewer" end)
+  step :assert_cannot_remove_user, ctx, name: name do
+    public_id = contributor_public_id(ctx, name)
 
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.refute_has(Query.text(ctx.reviewer.full_name))
-    |> UI.assert_text("No Reviewer")
-    |> UI.assert_has(testid: "add-reviewer-button")
-  end
-
-  step :convert_reviewer_to_contributor, ctx, params do
-    ctx
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.click(testid: UI.testid(["contributor-menu", params.name]))
-    |> UI.click(testid: "convert-to-contributor")
-    |> UI.fill(testid: "responsibility", with: params.responsibility)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "project-contributors-page")
-  end
-
-  step :convert_champion_to_contributor, ctx, params do
-    ctx
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.click(testid: UI.testid(["contributor-menu", params.name]))
-    |> UI.click(testid: "convert-to-contributor")
-    |> UI.fill(testid: "responsibility", with: params.responsibility)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "project-contributors-page")
-  end
-
-  step :assert_reviewer_converted_to_contributor, ctx, params do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    reviewer = Enum.find(contributors, fn c -> c.role == "reviewer" end)
-
-    assert reviewer == nil
-
-    ctx
-    |> UI.assert_text(params.name)
-    |> UI.assert_text(params.responsibility)
-  end
-
-  step :assert_champion_converted_to_contributor, ctx, params do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    champion = Enum.find(contributors, fn c -> c.role == "champion" end)
-
-    assert champion == nil
-
-    ctx
-    |> UI.assert_text(params.name)
-    |> UI.assert_text(params.responsibility)
-  end
-
-  step :assert_reviewer_converted_to_contributor_feed_item_exists, ctx do
-    name = Person.first_name(ctx.reviewer)
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
-  end
-
-  step :assert_champion_converted_to_contributor_feed_item_exists, ctx do
-    name = Person.first_name(ctx.champion)
-
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
+    |> UI.click(testid: "contributor-#{public_id}")
+    |> UI.assert_has(testid: "edit-contributor-#{public_id}")
+    |> UI.refute_has(testid: "remove-contributor-#{public_id}")
   end
 
   step :given_company_members_have_access, ctx do
-    person = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: "Michael Scott"
-    })
-
+    person =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: "Michael Scott"
+      })
 
     Map.put(ctx, :company_member, person)
   end
 
-  step :expand_show_other_people, ctx do
+  step :open_other_people_with_access, ctx do
     ctx
-    |> UI.click(testid: "show-all-other-people")
-    |> UI.assert_has(testid: "other-people-list")
+    |> UI.click(testid: "other-people-with-access-link")
+    |> UI.assert_has(testid: "other-people-with-access-modal")
   end
 
   step :assert_other_people_listed, ctx do
     UI.find(ctx, UI.query(testid: "other-people-list"), fn ctx ->
-      assert UI.assert_text(ctx, ctx.company_member.full_name)
+      UI.assert_text(ctx, ctx.company_member.full_name)
     end)
   end
 
-  step :choose_new_champion, ctx, name: name do
-    person_fixture_with_account(%{company_id: ctx.company.id, full_name: name})
+  step :change_company_access_to_no_access, ctx do
+    ctx
+    |> UI.click(testid: "project-privacy-field")
+    |> UI.select(testid: "project-privacy-field-company-select", option: "No Access")
+    |> UI.click(testid: "save")
+    |> UI.sleep(300)
+  end
+
+  step :assert_company_access_is_no_access, ctx do
+    attempts(ctx, 3, fn ->
+      context = Access.get_context(project_id: ctx.project.id)
+      company_members = Access.get_group!(company_id: ctx.project.company_id, tag: :standard)
+      company_binding = Access.get_binding(context_id: context.id, group_id: company_members.id)
+
+      assert company_binding.access_level == Binding.no_access()
+    end)
+  end
+
+  defp maybe_choose_access(ctx, nil), do: ctx
+  defp maybe_choose_access(ctx, "Edit Access"), do: ctx
+
+  defp maybe_choose_access(ctx, access) do
+    value = access_level_value(access)
 
     ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", ctx.champion.full_name]))
-    |> UI.click(testid: "choose-new-champion")
-    |> UI.select_person_in(id: "person", name: name)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "project-contributors-page")
+    |> UI.click(testid: "project-contributor-access")
+    |> UI.click(testid: "project-contributor-access-#{value}")
   end
 
-  step :assert_new_champion_is, ctx, name: name do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    champion = Enum.find(contributors, fn c -> c.role == :champion end)
+  defp access_level_value("View Access"), do: 10
+  defp access_level_value("Comment Access"), do: 40
+  defp access_level_value("Edit Access"), do: 70
+  defp access_level_value("Full Access"), do: 100
 
-    assert champion.person.full_name == name
-
-    ctx
+  defp list_contributors(ctx) do
+    ctx.project
+    |> Operately.Projects.list_project_contributors()
+    |> Operately.Repo.preload(:person)
   end
 
-  step :assert_old_champion_is_contributor, ctx do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    champion = Enum.find(contributors, fn c -> c.person_id == ctx.champion.id end)
-
-    assert champion.role == :contributor
-
-    ctx
+  defp contributor_by_name(ctx, name) do
+    Enum.find(list_contributors(ctx), fn c -> c.person.full_name == name end)
   end
 
-  step :assert_new_champion_chosen_feed_item_exists, ctx, name: name do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion")
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion on the #{ctx.project.name} project")
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion on the #{ctx.project.name} project")
+  defp contributor_public_id(ctx, name) do
+    Paths.project_contributor_id(contributor_by_name(ctx, name))
   end
-
-  step :choose_new_reviewer, ctx, name: name do
-    person_fixture_with_account(%{company_id: ctx.company.id, full_name: name})
-
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", ctx.reviewer.full_name]))
-    |> UI.click(testid: "choose-new-reviewer")
-    |> UI.select_person_in(id: "person", name: name)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "project-contributors-page")
-  end
-
-  step :assert_new_reviewer_is, ctx, name: name do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    reviewer = Enum.find(contributors, fn c -> c.role == :reviewer end)
-
-    assert reviewer.person.full_name == name
-
-    ctx
-  end
-
-  step :assert_old_reviewer_is_contributor, ctx do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-    reviewer = Enum.find(contributors, fn c -> c.person_id == ctx.reviewer.id end)
-
-    assert reviewer.role == :contributor
-
-    ctx
-  end
-
-  step :assert_new_reviewer_chosen_feed_item_exists, ctx, name: name do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer")
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer on the #{ctx.project.name} project")
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer on the #{ctx.project.name} project")
-  end
-
-  step :promote_contributor_to_champion, ctx, name: name do
-    promote_to(ctx, name, "champion")
-  end
-
-  step :promote_contributor_to_reviewer, ctx, name: name do
-    promote_to(ctx, name, "reviewer")
-  end
-
-  step :assert_404, ctx do
-    ctx
-    |> UI.assert_text("404")
-    |> UI.assert_text("Page Not Found")
-  end
-
-  #
-  # Helpers
-  #
-
-  defp promote_to(ctx, name, role) do
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.click(testid: "promote-to-#{role}")
-    |> UI.sleep(500)
-  end
-
 end

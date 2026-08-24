@@ -41,6 +41,7 @@ export interface ContributorModalProps {
   ) => void | boolean | Promise<void | boolean>;
   formTestId?: string;
   accessMenuTestId?: string;
+  allowFullAccess?: boolean;
 }
 
 export function ContributorModal({
@@ -51,15 +52,17 @@ export function ContributorModal({
   onUpdate,
   formTestId = "contributor-form",
   accessMenuTestId = "contributor-access",
+  allowFullAccess = true,
 }: ContributorModalProps) {
   const isReplacingUnavailableContributor = Boolean(contributor && contributor.active === false);
-  const [person, setPerson] = React.useState(
-    isReplacingUnavailableContributor ? null : (contributor?.person ?? null),
-  );
+  const [person, setPerson] = React.useState(isReplacingUnavailableContributor ? null : (contributor?.person ?? null));
   const [responsibility, setResponsibility] = React.useState(contributor?.responsibility ?? "");
   const [accessLevel, setAccessLevel] = React.useState(contributor?.accessLevel ?? 70);
   const accessUpdateId = React.useRef(0);
-  const accessLevelLabel = CONTRIBUTOR_ACCESS_LEVELS.find((level) => level.value === accessLevel)?.label;
+  const accessLevels = allowFullAccess
+    ? CONTRIBUTOR_ACCESS_LEVELS
+    : CONTRIBUTOR_ACCESS_LEVELS.filter((level) => level.value !== 100);
+  const accessLevelLabel = accessLevels.find((level) => level.value === accessLevel)?.label;
 
   const updateAccessLevel = async (nextAccessLevel: number) => {
     if (nextAccessLevel === accessLevel) return;
@@ -83,9 +86,7 @@ export function ContributorModal({
       accessLevel,
     };
 
-    const successful = contributor
-      ? await onUpdate?.(contributor.id, values)
-      : await onCreate?.(values);
+    const successful = contributor ? await onUpdate?.(contributor.id, values) : await onCreate?.(values);
 
     if (successful !== false) onClose();
   };
@@ -122,6 +123,7 @@ export function ContributorModal({
           text={responsibility}
           onChange={setResponsibility}
           placeholder="What are they responsible for?"
+          testId="contributor-responsibility"
         />
         <div>
           <label className={FORM_FIELD_LABEL_CLASS}>Access level</label>
@@ -130,6 +132,7 @@ export function ContributorModal({
             customTrigger={
               <button
                 type="button"
+                data-test-id={accessMenuTestId}
                 className="flex w-full items-center justify-between rounded-lg border border-surface-outline bg-surface-base px-3 py-1.5 text-left text-content-base hover:bg-surface-dimmed focus:outline-none focus:ring-2 focus:ring-primary-base"
               >
                 <span>{accessLevelLabel ?? "Select access level"}</span>
@@ -138,7 +141,7 @@ export function ContributorModal({
             }
             size="small"
           >
-            {CONTRIBUTOR_ACCESS_LEVELS.map((level) => (
+            {accessLevels.map((level) => (
               <MenuActionItem
                 key={level.value}
                 testId={`${accessMenuTestId}-${level.value}`}

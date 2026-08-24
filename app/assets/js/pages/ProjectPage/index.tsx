@@ -194,7 +194,13 @@ function Page() {
     value: (data) => accessLevelsAsStrings(data.project.accessLevels!),
     update: (v) =>
       Api.projects
-        .updatePermissions({ projectId: project.id, accessLevels: accessLevelsAsNumbers(v) })
+        .updatePermissions({
+          projectId: project.id,
+          accessLevels: {
+            ...accessLevelsAsNumbers(v),
+            public: project.accessLevels?.public ?? 0,
+          },
+        })
         .then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
   });
@@ -369,11 +375,7 @@ function Page() {
   });
 
   const assignedPersonIds = React.useMemo(
-    () => [
-      champion?.id,
-      reviewer?.id,
-      ...contributorActions.contributors.map((contributor) => contributor.person?.id),
-    ],
+    () => [champion?.id, reviewer?.id, ...contributorActions.contributors.map((contributor) => contributor.person?.id)],
     [champion?.id, reviewer?.id, contributorActions.contributors],
   );
 
