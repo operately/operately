@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { useParams } from "react-router";
 
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockPeople, mockSpace } from "./mockData";
+import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople, mockSpace } from "./mockData";
 
 //
 // Space KPIs — proof of concept (frontend, Storybook only).
@@ -23,14 +24,22 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockPeople, mockSpace } 
 // recordKpiEntry GraphQL mutations) actually update the UI, letting reviewers
 // exercise the happy path.
 //
+// Each KPI has its own page, so the harness reads the open KPI from the route
+// (`/spaces/:spaceId/kpis/:kpiId`) the way the app does. Stories that show the
+// detail view set that route through the `reactRouter` parameter.
+//
 type HarnessArgs = {
   loading?: boolean;
   error?: string | null;
   canManage?: boolean;
   emptySpace?: boolean;
   failMutations?: boolean;
-  initialSelectedKpiId?: string | null;
 };
+
+// Opens a story on a single KPI's page.
+function kpiRoute(kpiId: string) {
+  return { reactRouter: { path: `${mockKpisLink}/${kpiId}`, routePath: `${mockKpisLink}/:kpiId` } };
+}
 
 const meta = {
   title: "Pages/SpaceKpisPage",
@@ -52,6 +61,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function Harness(args: HarnessArgs) {
   const [kpis, setKpis] = React.useState<SpaceKpisPageNS.Kpi[]>(() => (args.emptySpace ? [] : clone(mockKpis)));
+  const { kpiId } = useParams();
 
   const onCreateKpi = async (input: SpaceKpisPageNS.NewKpiInput): Promise<SpaceKpisPageNS.MutationResult> => {
     console.log("createKpi", input);
@@ -62,13 +72,15 @@ function Harness(args: HarnessArgs) {
     }
 
     const champion = mockPeople.find((p) => p.id === input.championId) ?? null;
+    const id = `kpi-${crypto.randomUUID()}`;
     const newKpi: SpaceKpisPageNS.Kpi = {
-      id: `kpi-${crypto.randomUUID()}`,
+      id,
       name: input.name,
       unit: input.unit,
       cadence: input.cadence,
       champion,
       insertedAt: new Date(),
+      link: `${mockKpisLink}/${id}`,
       latestEntry: null,
       entries: [],
     };
@@ -141,7 +153,9 @@ function Harness(args: HarnessArgs) {
     <SpaceKpisPage
       space={mockSpace}
       navigation={[{ to: mockSpace.link, label: mockSpace.name }]}
+      kpisLink={mockKpisLink}
       kpis={kpis}
+      selectedKpi={kpis.find((kpi) => kpi.id === kpiId) ?? null}
       currentUser={mockCurrentUser}
       championSearch={mockChampionSearch}
       onCreateKpi={onCreateKpi}
@@ -151,7 +165,6 @@ function Harness(args: HarnessArgs) {
       loading={args.loading}
       error={args.error}
       canManage={args.canManage}
-      initialSelectedKpiId={args.initialSelectedKpiId}
     />
   );
 }
@@ -161,27 +174,21 @@ export const Default: Story = {
   args: {},
 };
 
-// Detail view opened on a KPI with lots of history — shows the line chart,
-// trend, champion + cadence, and the recorded-updates log.
+// A single KPI's page, opened on one with lots of history — shows the line
+// chart, trend, champion + cadence, and the recorded-updates log.
 export const DetailView: Story = {
-  args: {
-    initialSelectedKpiId: "kpi-mrr",
-  },
+  parameters: kpiRoute("kpi-mrr"),
 };
 
-// Edge case: a KPI with a single entry can't plot a trend line yet, so the
-// detail view shows a single-value card prompting for another update.
+// Edge case: a KPI with a single entry can't plot a trend line yet, so its page
+// shows a single-value card prompting for another update.
 export const SingleEntry: Story = {
-  args: {
-    initialSelectedKpiId: "kpi-signups",
-  },
+  parameters: kpiRoute("kpi-signups"),
 };
 
 // Edge case: a brand-new KPI with no entries — empty chart and "No data" states.
 export const NoDataYet: Story = {
-  args: {
-    initialSelectedKpiId: "kpi-churn",
-  },
+  parameters: kpiRoute("kpi-churn"),
 };
 
 // First-run experience: a space that has not created any KPIs yet.

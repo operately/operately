@@ -11,8 +11,15 @@ jest.mock("@/routes/paths", () => ({
   usePaths: () => ({
     spacePath: (id: string) => `/spaces/${id}`,
     spaceKpisPath: (id: string) => `/spaces/${id}/kpis`,
+    spaceKpiPath: (spaceId: string, kpiId: string) => `/spaces/${spaceId}/kpis/${kpiId}`,
   }),
 }));
+
+const paths: any = {
+  homePath: () => "/acme",
+  spaceKpisPath: (id: string) => `/spaces/${id}/kpis`,
+  spaceKpiPath: (spaceId: string, kpiId: string) => `/spaces/${spaceId}/kpis/${kpiId}`,
+};
 
 describe("kpi_created activities", () => {
   const activity: any = {
@@ -20,6 +27,7 @@ describe("kpi_created activities", () => {
     author: { fullName: "Jo Smith" },
     content: {
       space: { id: "space-1", name: "General" },
+      kpi: { id: "kpi-1" },
       kpiName: "Weekly active users",
     },
   };
@@ -36,18 +44,21 @@ describe("kpi_created activities", () => {
       "Created KPI: Weekly active users",
     );
     expect(renderToStaticMarkup(<>{ActivityHandler.NotificationLocation({ activity })}</>)).toBe("General");
-    expect(ActivityHandler.pagePath({ spaceKpisPath: (id: string) => `/spaces/${id}/kpis` } as any, activity)).toBe(
-      "/spaces/space-1/kpis",
-    );
+  });
+
+  it("links to the KPI's own page", () => {
+    expect(ActivityHandler.pagePath(paths, activity)).toBe("/spaces/space-1/kpis/kpi-1");
+  });
+
+  it("falls back to the space's KPI list when the activity carries no KPI", () => {
+    const activityWithoutKpi = { ...activity, content: { ...activity.content, kpi: null } };
+
+    expect(ActivityHandler.pagePath(paths, activityWithoutKpi)).toBe("/spaces/space-1/kpis");
   });
 
   it("redirects to home when the activity has no space", () => {
     const activityWithoutSpace = { ...activity, content: { kpiName: "Weekly active users" } };
-    const paths = {
-      homePath: () => "/acme",
-      spaceKpisPath: (id: string) => `/spaces/${id}/kpis`,
-    };
 
-    expect(ActivityHandler.pagePath(paths as any, activityWithoutSpace)).toBe("/acme");
+    expect(ActivityHandler.pagePath(paths, activityWithoutSpace)).toBe("/acme");
   });
 });

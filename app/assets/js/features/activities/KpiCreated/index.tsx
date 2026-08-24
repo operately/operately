@@ -12,9 +12,14 @@ const KpiCreated: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity) {
-    const spaceId = content(activity).space?.id;
+    const data = content(activity);
+    const spaceId = data.space?.id;
+    const kpiId = data.kpi?.id;
 
-    return spaceId ? paths.spaceKpisPath(spaceId) : paths.homePath();
+    if (!spaceId) return paths.homePath();
+
+    // Activities recorded before KPIs had their own page carry no KPI id.
+    return kpiId ? paths.spaceKpiPath(spaceId, kpiId) : paths.spaceKpisPath(spaceId);
   },
 
   PageTitle(_props: { activity: Activity }) {

@@ -44,6 +44,9 @@ export namespace SpaceKpisPage {
     champion: Person | null;
     insertedAt: Date;
 
+    // Permalink to this KPI's own page, so lists can link to it.
+    link: string;
+
     // The most recent entry, provided by the list endpoint so the list view can
     // show the latest value without loading the full history. Null when the KPI
     // has no entries yet.
@@ -91,18 +94,18 @@ export namespace SpaceKpisPage {
     // (Work Map, Tasks). Typically a single crumb linking back to the space.
     navigation: Navigation.Item[];
 
+    // Link to the KPI list itself, used by the breadcrumb when a KPI is open.
+    kpisLink: string;
+
     kpis: Kpi[];
     currentUser: Person | null;
 
     // Search backing the champion picker in the "New KPI" form.
     championSearch: (query: string) => Promise<Person[]>;
 
-    // Optional lazy-loader for a single KPI's full record (including its
-    // entries) used by the detail view. The list endpoint omits entries for
-    // performance, so the page fetches them on demand when a KPI is opened.
-    // When omitted (e.g. stories with fully-populated mock data), the KPI from
-    // `kpis` is used as-is.
-    onLoadKpi?: (kpiId: string) => Promise<Kpi | null>;
+    // The KPI whose page is being viewed, with its entries loaded for the
+    // chart. Comes from the route (`.../kpis/:kpiId`); null renders the list.
+    selectedKpi?: Kpi | null;
 
     // Callbacks that stand in for the GraphQL mutations. Resolvers call the
     // Operately.Operations.{KpiCreating,KpiUpdating,KpiDeleting,KpiEntryRecording}
@@ -119,8 +122,5 @@ export namespace SpaceKpisPage {
 
     // In the POC any space member can read & write, so this defaults to true.
     canManage?: boolean;
-
-    // Optional: pre-select a KPI to open straight into the detail view (used by stories).
-    initialSelectedKpiId?: string | null;
   }
 }

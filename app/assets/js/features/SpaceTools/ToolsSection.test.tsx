@@ -26,7 +26,12 @@ jest.mock("./components", () => ({
 // turboui bundles its own React instance, so stub the KPI summary content.
 jest.mock("turboui", () => ({ KpiSummaryCard: () => null }));
 
-jest.mock("@/routes/paths", () => ({ usePaths: () => ({ spaceKpisPath: (id: string) => `/spaces/${id}/kpis` }) }));
+jest.mock("@/routes/paths", () => ({
+  usePaths: () => ({
+    spaceKpisPath: (id: string) => `/spaces/${id}/kpis`,
+    spaceKpiPath: (spaceId: string, kpiId: string) => `/spaces/${spaceId}/kpis/${kpiId}`,
+  }),
+}));
 
 const mockCompany = jest.fn();
 jest.mock("@/routes/useCompanyLoaderData", () => ({

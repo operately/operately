@@ -29,6 +29,7 @@ const kpi: SpaceKpisPage.Kpi = {
   cadence: "weekly",
   champion: null,
   insertedAt: new Date(),
+  link: "/spaces/space-growth/kpis/kpi-signups",
   latestEntry: null,
   entries: [],
 };
