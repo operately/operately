@@ -47,7 +47,7 @@ function mapTemplatePeople(
           id: templatePerson.person.id,
           fullName: templatePerson.person.fullName,
           avatarUrl: templatePerson.person.avatarUrl ?? null,
-          title: templatePerson.person.title ?? undefined,
+          title: templatePerson.responsibility || "",
           profileLink: profilePath(templatePerson.person.id),
         }
       : null,

@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
       {:ok, :allowed} <- validate_permission_level(project.request_info.access_level, attrs.permissions),
       {:ok, contributor} <- Operately.Operations.ProjectContributorAddition.run(me, attrs)
     ) do
-      {:ok, %{contributor: Serializer.serialize(contributor, level: :essential)}}
+      {:ok, %{project_contributor: Serializer.serialize(contributor, level: :essential)}}
     else
       {:error, :not_found} -> {:error, :not_found}
       {:error, :forbidden} -> {:error, :forbidden}
