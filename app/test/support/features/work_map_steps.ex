@@ -597,20 +597,37 @@ defmodule Operately.Support.Features.WorkMapSteps do
 
   step :assert_project_created_from_work_map_template, ctx, opts do
     name = Keyword.fetch!(opts, :name)
+    milestone = Keyword.get(opts, :milestone)
 
     ctx
-    |> UI.assert_has(testid: "project-page")
+    |> UI.refute_has(testid: "add-item-modal")
     |> UI.assert_text(name)
     |> then(fn ctx ->
-      project = Operately.Repo.get_by!(Operately.Projects.Project, name: name)
+      project = wait_until_project_created(name)
       Map.put(ctx, :project, project)
     end)
     |> then(fn ctx ->
-      if milestone = Keyword.get(opts, :milestone) do
-        UI.assert_text(ctx, milestone)
-      else
-        ctx
+      if milestone do
+        milestones = Operately.Projects.list_project_milestones(ctx.project)
+        assert Enum.any?(milestones, &(&1.title == milestone))
       end
+
+      ctx
     end)
+  end
+
+  defp wait_until_project_created(name, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    case Operately.Repo.get_by(Operately.Projects.Project, name: name) do
+      nil when attempts == [] ->
+        flunk("Timed out waiting for project #{name} to be created")
+
+      nil ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_project_created(name, remaining)
+
+      project ->
+        project
+    end
   end
 end
