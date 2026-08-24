@@ -72,11 +72,14 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     name = Map.fetch!(attrs, :name)
     responsibility = Map.fetch!(attrs, :responsibility)
 
-    contributors = list_contributors(ctx)
-    found = Enum.find(contributors, fn c -> c.person.full_name == name end)
+    attempts(ctx, 5, fn ->
+      found = contributor_by_name(ctx, name)
 
-    assert found != nil
-    assert found.responsibility == responsibility
+      assert found != nil
+      assert found.responsibility == responsibility
+    end)
+
+    found = contributor_by_name(ctx, name)
 
     ctx
     |> UI.assert_has(testid: "contributor-#{Paths.project_contributor_id(found)}")
@@ -189,14 +192,36 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.sleep(300)
   end
 
+  step :assert_access_field_is_editable, ctx do
+    ctx
+    |> UI.click(testid: "project-contributor-access")
+    |> UI.assert_text("View Access")
+    |> UI.assert_text("Edit Access")
+    |> UI.click(testid: "project-contributor-access")
+  end
+
+  step :assert_access_field_is_readonly, ctx, label: label do
+    ctx
+    |> UI.assert_text(label)
+    |> UI.click(testid: "project-contributor-access")
+    |> UI.refute_has(testid: "project-contributor-access-10")
+    |> UI.refute_has(testid: "project-contributor-access-70")
+    |> UI.refute_has(testid: "project-contributor-access-100")
+  end
+
   step :assert_contributor_attributes, ctx, attrs do
     name = Keyword.get(attrs, :name)
     responsibility = Keyword.get(attrs, :responsibility)
     access = Keyword.get(attrs, :access)
-    found = contributor_by_name(ctx, name)
 
-    assert found != nil
-    if responsibility, do: assert(found.responsibility == responsibility)
+    attempts(ctx, 5, fn ->
+      found = contributor_by_name(ctx, name)
+
+      assert found != nil
+      if responsibility, do: assert(found.responsibility == responsibility)
+    end)
+
+    found = contributor_by_name(ctx, name)
 
     ctx = ctx |> UI.assert_has(testid: "contributor-#{Paths.project_contributor_id(found)}") |> UI.assert_text(name)
 
@@ -242,6 +267,16 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.refute_has(testid: "remove-contributor-#{public_id}")
   end
 
+  step :assert_can_remove_user, ctx, name: name do
+    public_id = contributor_public_id(ctx, name)
+
+    ctx
+    |> UI.click(testid: "contributor-#{public_id}")
+    |> UI.assert_has(testid: "edit-contributor-#{public_id}")
+    |> UI.assert_has(testid: "remove-contributor-#{public_id}")
+    |> UI.click(testid: "contributor-#{public_id}")
+  end
+
   step :given_company_members_have_access, ctx do
     person =
       person_fixture_with_account(%{
@@ -283,7 +318,6 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   end
 
   defp maybe_choose_access(ctx, nil), do: ctx
-  defp maybe_choose_access(ctx, "Edit Access"), do: ctx
 
   defp maybe_choose_access(ctx, access) do
     value = access_level_value(access)

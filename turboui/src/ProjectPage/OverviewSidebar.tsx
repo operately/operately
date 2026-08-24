@@ -284,6 +284,7 @@ function Contributors(props: ProjectPage.State) {
       <ContributorsSection
         contributors={props.contributors}
         canEdit={Boolean(props.canEditContributors)}
+        hasFullAccess={Boolean(props.permissions.hasFullAccess)}
         onAdd={() => setEditing("new")}
         onEdit={(contributor) => setEditing(contributor)}
         onDelete={props.onContributorDelete}
