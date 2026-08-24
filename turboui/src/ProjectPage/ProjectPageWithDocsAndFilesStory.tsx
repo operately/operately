@@ -214,7 +214,7 @@ export function ProjectPageWithDocsAndFilesStory({
       contributors={storyData.mockContributors}
       accessLevels={defaultProjectAccessLevels}
       setAccessLevels={() => undefined}
-      manageTeamLink="/projects/1/team"
+      otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
       championSearch={championSearch}
       reviewerSearch={reviewerSearch}
       newCheckInLink="#"

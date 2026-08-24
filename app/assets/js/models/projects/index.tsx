@@ -7,6 +7,7 @@ import { ProjectField } from "turboui/src/ProjectField";
 export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
 export { useTaskStatuses } from "./useTaskStatuses";
 export { useProjectContributorActions } from "./useProjectContributorActions";
+export { useProjectOtherPeopleWithAccess } from "./useProjectOtherPeopleWithAccess";
 export { createSaveProjectAsTemplateHandler, mapScheduleIssue } from "./saveProjectAsTemplate";
 
 export type Project = api.Project;

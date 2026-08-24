@@ -88,6 +88,24 @@ export function ActionLink(props: ActionLinkProps) {
   );
 }
 
+export function DimmedActionLink(props: ActionLinkProps) {
+  const className = classNames(
+    baseLinkClass,
+    underlineClass(props.underline),
+    "text-content-dimmed",
+    props.className,
+    {
+      "hover:text-content-base": !props.disableColorHoverEffect,
+    },
+  );
+
+  return (
+    <button type="button" data-test-id={props.testId} className={className} onClick={props.onClick}>
+      {props.children}
+    </button>
+  );
+}
+
 export const DimmedLink = React.forwardRef<HTMLAnchorElement, LinkProps>(function DimmedLink(props, ref) {
   const className = classNames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className, {
     "hover:text-content-base": !props.disableColorHoverEffect,

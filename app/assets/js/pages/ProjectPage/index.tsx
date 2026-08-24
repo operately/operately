@@ -368,6 +368,20 @@ function Page() {
     cacheKey: pageCacheKey(project.id),
   });
 
+  const assignedPersonIds = React.useMemo(
+    () => [
+      champion?.id,
+      reviewer?.id,
+      ...contributorActions.contributors.map((contributor) => contributor.person?.id),
+    ],
+    [champion?.id, reviewer?.id, contributorActions.contributors],
+  );
+
+  const otherPeopleWithAccess = Projects.useProjectOtherPeopleWithAccess({
+    projectId: project.id,
+    assignedPersonIds,
+  });
+
   const exportMarkdown = React.useCallback(() => {
     window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
@@ -427,8 +441,7 @@ function Page() {
     retrospectiveLink: paths.projectRetrospectivePath(project.id),
 
     permissions: project.permissions || {},
-    manageTeamLink: paths.projectContributorsPath(project.id),
-    manageAccessLink: paths.projectContributorsPath(project.id),
+    otherPeopleWithAccess,
     accessLevels,
     setAccessLevels,
 
