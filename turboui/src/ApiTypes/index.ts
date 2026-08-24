@@ -1636,6 +1636,7 @@ export interface Kpi {
   champion?: Person | null;
   latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
+  subscriptionList?: SubscriptionList | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2949,7 +2950,8 @@ export type SubscriptionParentType =
   | "project"
   | "milestone"
   | "project_task"
-  | "space_task";
+  | "space_task"
+  | "kpi";
 
 export type SuccessStatus = "achieved" | "missed";
 

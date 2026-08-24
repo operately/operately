@@ -172,6 +172,12 @@ defmodule Operately.Notifications do
           join: s in assoc(c, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
+      :kpi ->
+        from(k in Operately.Kpis.Kpi,
+          join: g in assoc(k, :space), as: :resource,
+          join: s in assoc(k, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
   end
@@ -243,6 +249,12 @@ defmodule Operately.Notifications do
         from(a in Operately.Activities.Activity, as: :resource,
           join: c in assoc(a, :comment_thread),
           join: s in assoc(c, :subscription_list),
+          where: s.id == ^id
+        )
+      :kpi ->
+        from(k in Operately.Kpis.Kpi,
+          join: g in assoc(k, :space), as: :resource,
+          join: s in assoc(k, :subscription_list),
           where: s.id == ^id
         )
     end

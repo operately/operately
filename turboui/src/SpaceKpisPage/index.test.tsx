@@ -128,6 +128,22 @@ describe("SpaceKpisPage layout", () => {
     expect(within(sidebar).queryByText("Unit")).not.toBeInTheDocument();
   });
 
+  test("shows a subscribe control in the sidebar on a KPI page", () => {
+    const target = mockKpis[0]!;
+    renderPage({
+      selectedKpi: target,
+      subscriptions: {
+        isSubscribed: false,
+        onToggle: () => {},
+        hidden: false,
+        entityType: "kpi",
+      },
+    });
+
+    expect(screen.getByRole("button", { name: "Subscribe" })).toBeInTheDocument();
+    expect(screen.getByText("You're not receiving notifications from this KPI.")).toBeInTheDocument();
+  });
+
   test("shows the KPI description above its history", () => {
     const target = mockKpis[0]!;
     const { container } = renderPage({ selectedKpi: target });

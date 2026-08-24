@@ -1055,6 +1055,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :champion, :person, null: true
     field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true
+    field? :subscription_list, :subscription_list, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
   end
@@ -2699,7 +2700,8 @@ defmodule OperatelyWeb.Api.Types do
       :project,
       :milestone,
       :project_task,
-      :space_task
+      :space_task,
+      :kpi
     ]
   )
 
