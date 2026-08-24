@@ -27,7 +27,6 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
   const [deleteContributor] = Api.projects.useDeleteContributor();
 
   const canEdit = Boolean(project.permissions?.canEdit);
-  const canDelete = Boolean(project.permissions?.hasFullAccess);
 
   const initialContributors = React.useMemo(
     () => prepareContributors(paths, project.contributors || []),
@@ -182,7 +181,7 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
     contributorPersonSearch,
     onContributorCreate: canEdit ? onContributorCreate : undefined,
     onContributorUpdate: canEdit ? onContributorUpdate : undefined,
-    onContributorDelete: canDelete ? onContributorDelete : undefined,
+    onContributorDelete: canEdit ? onContributorDelete : undefined,
   };
 }
 

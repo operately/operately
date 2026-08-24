@@ -130,11 +130,14 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   end
 
   step :assert_creator_is_contributor, ctx, fields do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
+    project = Operately.Repo.preload(project, contributors: :person)
+    contributor = Enum.find(project.contributors, fn c -> c.person_id == fields.creator.id end)
+
     ctx
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.find(UI.query(testid: "contributors-section"), fn el ->
-      UI.assert_text(el, fields.creator.full_name)
-    end)
+    |> UI.visit(Paths.project_path(ctx.company, project))
+    |> UI.assert_has(testid: "contributor-#{Paths.project_contributor_id(contributor)}")
+    |> UI.assert_text(fields.creator.full_name)
   end
 
   step :assert_project_created_email_sent, ctx, fields do
@@ -196,16 +199,17 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   end
 
   step :assert_project_has_reviewer, ctx, fields do
+    project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
+
     ctx
-    |> UI.click(testid: "manage-project-access-button")
-    |> UI.assert_has(testid: "project-contributors-page")
+    |> UI.visit(Paths.project_path(ctx.company, project))
+    |> UI.assert_has(testid: "reviewer-field")
     |> UI.assert_text(ctx.reviewer.full_name)
     |> then(fn ctx ->
-      project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
       project = Operately.Repo.preload(project, [:reviewer])
       assert project.reviewer.id == ctx.reviewer.id
 
-      UI.visit(ctx, Paths.project_path(ctx.company, project))
+      ctx
     end)
     |> UI.refute_has(testid: "no-reviewer-callout")
   end

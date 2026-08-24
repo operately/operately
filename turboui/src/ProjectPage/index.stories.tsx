@@ -427,7 +427,7 @@ export const Default: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -555,7 +555,7 @@ export const OverdueCheckIn: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -666,7 +666,7 @@ export const ReadOnly: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -789,7 +789,7 @@ export const EmptyTasks: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -911,7 +911,7 @@ export const EmptyProject: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -1012,7 +1012,7 @@ export const EmptyProjectReadOnly: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -1157,7 +1157,7 @@ export const PausedProject: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -1273,7 +1273,7 @@ export const ClosedProject: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/1/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
         newCheckInLink="#"
@@ -1445,7 +1445,7 @@ export const ProjectWithoutSpace: Story = {
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
 
-        manageTeamLink="/projects/no-space/team"
+        otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"

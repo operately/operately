@@ -1717,11 +1717,7 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByDisplayValue("Coordinates launch support")).toBeInTheDocument();
   });
 
-  it("optimistically updates contributor access and rolls back failed updates", async () => {
-    let finishUpdate: (successful: boolean) => void = () => undefined;
-    const updateResult = new Promise<boolean>((resolve) => {
-      finishUpdate = resolve;
-    });
+  it("saves contributor access only when Save contributor is clicked", async () => {
     const contributor: Types.TemplatePerson = {
       id: "template-person-1",
       person: { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null },
@@ -1730,7 +1726,7 @@ describe("TemplateProjectPage", () => {
       accessLevel: 70,
       active: true,
     };
-    const onPersonUpdate = jest.fn(() => updateResult);
+    const onPersonUpdate = jest.fn().mockResolvedValue(true);
 
     renderPage(createProps({ people: [contributor], onPersonUpdate }));
 
@@ -1742,10 +1738,18 @@ describe("TemplateProjectPage", () => {
     fireEvent.click(document.querySelector('[data-test-id="template-contributor-access-10"]')!);
 
     expect(screen.getByText("View Access")).toBeInTheDocument();
-    expect(onPersonUpdate).toHaveBeenCalledWith(contributor.id, { accessLevel: 10 });
+    expect(onPersonUpdate).not.toHaveBeenCalled();
 
-    await act(async () => finishUpdate(false));
-    expect(screen.getByText("Edit Access")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Save contributor" }));
+
+    await waitFor(() => {
+      expect(onPersonUpdate).toHaveBeenCalledWith(contributor.id, {
+        person: contributor.person,
+        responsibility: null,
+        accessLevel: 10,
+        role: "contributor",
+      });
+    });
   });
 
   it("keeps unavailable assignees visible while submitting active assignees only", () => {
