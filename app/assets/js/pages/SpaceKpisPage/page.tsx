@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 
 import { SpaceKpisPage } from "turboui";
 import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/types";
@@ -14,9 +14,10 @@ import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const paths = usePaths();
+  const navigate = useNavigate();
   const refresh = useRefresh();
   const { company } = useCompanyLoaderData();
-  const { space, kpis } = useLoadedData();
+  const { space, kpis, kpi } = useLoadedData();
 
   const peopleSearch = People.usePeopleSearch({ type: "space", id: space.id! });
 
@@ -25,7 +26,9 @@ export function Page() {
   const [deleteKpi] = Kpis.useDeleteKpi();
   const [logKpiEntry] = Kpis.useLogKpiEntry();
 
-  const parsedKpis = React.useMemo(() => kpis.map((kpi) => Kpis.parseKpiForTurboUi(paths, kpi)), [kpis, paths]);
+  const kpisLink = paths.spaceKpisPath(space.id!);
+  const parsedKpis = React.useMemo(() => kpis.map((k) => Kpis.parseKpiForTurboUi(paths, k)), [kpis, paths]);
+  const selectedKpi = React.useMemo(() => (kpi ? Kpis.parseKpiForTurboUi(paths, kpi) : null), [kpi, paths]);
 
   const championSearch = React.useCallback(
     async (query: string) => People.parsePeopleForTurboUi(paths, await peopleSearch(query)),
@@ -65,10 +68,13 @@ export function Page() {
       return input.id;
     });
 
+  // Deleting the KPI whose page we are on leaves nothing to show, so we return
+  // to the list instead of refreshing into a missing KPI.
   const onDeleteKpi = async (kpiId: string) =>
     run(async () => {
       await deleteKpi({ kpiId });
-      refresh();
+      if (kpiId === selectedKpi?.id) navigate(kpisLink);
+      else refresh();
     });
 
   const onRecordEntry = async (input: SpaceKpisPageTypes.RecordEntryInput) =>
@@ -77,17 +83,16 @@ export function Page() {
       refresh();
     });
 
-  const onLoadKpi = async (kpiId: string) => Kpis.parseKpiForTurboUi(paths, (await Kpis.getKpi({ kpiId })).kpi);
-
   return (
     <SpaceKpisPage
       space={{ id: space.id!, name: space.name!, link: paths.spacePath(space.id!) }}
       navigation={[{ to: paths.spacePath(space.id!), label: space.name! }]}
+      kpisLink={kpisLink}
       kpis={parsedKpis}
+      selectedKpi={selectedKpi}
       currentUser={null}
       canManage={space.permissions?.canEdit ?? false}
       championSearch={championSearch}
-      onLoadKpi={onLoadKpi}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
       onDeleteKpi={onDeleteKpi}

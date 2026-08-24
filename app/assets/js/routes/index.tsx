@@ -110,6 +110,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("spaces/:id/work-map", pages.SpaceWorkMapPage),
         pageRoute("spaces/:id/kanban", pages.SpaceKanbanPage),
         pageRoute("spaces/:id/kpis", pages.SpaceKpisPage),
+        pageRoute("spaces/:id/kpis/:kpiId", pages.SpaceKpisPage),
         pageRoute("spaces/:id/project-templates", pages.ProjectTemplatesPage),
 
         pageRoute("resource-hubs/:id", pages.ResourceHubPage),

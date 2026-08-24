@@ -22,6 +22,7 @@ export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi): SpaceKpisPage.Kpi
     cadence: kpi.cadence as SpaceKpisPage.Cadence,
     champion: parsePersonForTurboUi(paths, kpi.champion),
     insertedAt: kpi.insertedAt ? new Date(kpi.insertedAt) : new Date(),
+    link: paths.spaceKpiPath(kpi.spaceId, kpi.id),
     latestEntry: kpi.latestEntry ? parseKpiEntryForTurboUi(paths, kpi.latestEntry) : null,
     entries: (kpi.entries ?? []).map((entry) => parseKpiEntryForTurboUi(paths, entry)),
   };

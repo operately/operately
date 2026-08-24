@@ -20,57 +20,28 @@ import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
 export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const canManage = props.canManage ?? true;
 
-  const [selectedKpiId, setSelectedKpiId] = React.useState<string | null>(props.initialSelectedKpiId ?? null);
   const [isNewOpen, setIsNewOpen] = React.useState(false);
   const [logKpiId, setLogKpiId] = React.useState<string | null>(null);
   const [editKpiId, setEditKpiId] = React.useState<string | null>(null);
   const [deleteKpiId, setDeleteKpiId] = React.useState<string | null>(null);
 
-  // The list endpoint omits entries, so the detail view lazily loads the full
-  // KPI (with entries) via `onLoadKpi`. Until it resolves we fall back to the
-  // list row so the header/metadata render immediately.
-  const { onLoadKpi } = props;
-  const [detailKpi, setDetailKpi] = React.useState<SpaceKpisPageNS.Kpi | null>(null);
-  const [detailLoading, setDetailLoading] = React.useState(false);
+  // The KPI on display is decided by the route, not by page state: each KPI has
+  // its own page, so opening one is a navigation and its data (including the
+  // entries the list omits) arrives with the route.
+  const selectedKpi = props.selectedKpi ?? null;
 
-  const loadDetail = React.useCallback(
-    async (kpiId: string) => {
-      if (!onLoadKpi) return;
-      setDetailLoading(true);
-      try {
-        const full = await onLoadKpi(kpiId);
-        setDetailKpi((current) => (full && full.id === kpiId ? full : current));
-      } finally {
-        setDetailLoading(false);
-      }
-    },
-    [onLoadKpi],
-  );
+  // Modals act on KPIs from the list, or on the open KPI when its page is shown
+  // directly (its permalink may be opened before the list is browsed).
+  const findKpi = (kpiId: string | null) => {
+    if (!kpiId) return null;
+    if (selectedKpi?.id === kpiId) return selectedKpi;
 
-  React.useEffect(() => {
-    setDetailKpi(null);
-    if (selectedKpiId && onLoadKpi) loadDetail(selectedKpiId);
-  }, [selectedKpiId, onLoadKpi, loadDetail]);
-
-  const listKpi = props.kpis.find((kpi) => kpi.id === selectedKpiId) ?? null;
-  const selectedKpi = detailKpi && detailKpi.id === selectedKpiId ? detailKpi : listKpi;
-  const logKpi = props.kpis.find((kpi) => kpi.id === logKpiId) ?? null;
-  const editKpi = props.kpis.find((kpi) => kpi.id === editKpiId) ?? null;
-  const deleteKpi = props.kpis.find((kpi) => kpi.id === deleteKpiId) ?? null;
-
-  // After mutating the open KPI, reload its detail so the chart/log reflect the
-  // change without needing a full page reload.
-  const handleRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
-    const result = await props.onRecordEntry(input);
-    if (result.success && input.kpiId === selectedKpiId) await loadDetail(input.kpiId);
-    return result;
+    return props.kpis.find((kpi) => kpi.id === kpiId) ?? null;
   };
 
-  const handleEditKpi = async (input: SpaceKpisPageNS.EditKpiInput) => {
-    const result = await props.onEditKpi(input);
-    if (result.success && input.id === selectedKpiId) await loadDetail(input.id);
-    return result;
-  };
+  const logKpi = findKpi(logKpiId);
+  const editKpi = findKpi(editKpiId);
+  const deleteKpi = findKpi(deleteKpiId);
 
   const contentReady = !props.loading && !props.error;
 
@@ -96,14 +67,17 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         }
       : null;
 
+  // A KPI's own page is bookmarkable, so name it after the KPI.
+  const title = selectedKpi ? [selectedKpi.name, props.space.name] : [props.space.name, "KPIs"];
+
   return (
-    <PageNew title={[props.space.name, "KPIs"]} size="fullwidth" testId="space-kpis-page">
+    <PageNew title={title} size="fullwidth" testId="space-kpis-page">
       <PageHeader
         navigation={props.navigation}
+        kpisLink={props.kpisLink}
         selectedKpiName={selectedKpi?.name ?? null}
         primaryAction={primaryAction}
         kpiActions={headerKpiActions}
-        onBackToList={() => setSelectedKpiId(null)}
       />
 
       <div className="flex-1 overflow-auto">
@@ -112,8 +86,6 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             {...props}
             canManage={canManage}
             selectedKpi={selectedKpi}
-            detailLoading={detailLoading && detailKpi === null}
-            onSelectKpi={setSelectedKpiId}
             onOpenNew={() => setIsNewOpen(true)}
             onOpenLog={setLogKpiId}
             onOpenEdit={setEditKpiId}
@@ -128,7 +100,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         onClose={() => setIsNewOpen(false)}
         championSearch={props.championSearch}
         onCreate={props.onCreateKpi}
-        onEdit={handleEditKpi}
+        onEdit={props.onEditKpi}
       />
 
       {/* Edit KPI — keyed by id so the form re-initialises for each KPI. */}
@@ -139,7 +111,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         championSearch={props.championSearch}
         kpi={editKpi}
         onCreate={props.onCreateKpi}
-        onEdit={handleEditKpi}
+        onEdit={props.onEditKpi}
       />
 
       <DeleteKpiModal
@@ -147,18 +119,13 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         isOpen={deleteKpiId !== null}
         onClose={() => setDeleteKpiId(null)}
         onDelete={props.onDeleteKpi}
-        onDeleted={() => {
-          // If we deleted the KPI currently open in the detail view, fall back
-          // to the list since the detail can no longer be shown.
-          if (selectedKpiId === deleteKpiId) setSelectedKpiId(null);
-        }}
       />
 
       <LogUpdateForm
         kpi={logKpi}
         isOpen={logKpiId !== null}
         onClose={() => setLogKpiId(null)}
-        onRecord={handleRecordEntry}
+        onRecord={props.onRecordEntry}
       />
     </PageNew>
   );
@@ -178,10 +145,10 @@ interface HeaderKpiActions {
 
 interface PageHeaderProps {
   navigation: Navigation.Item[];
+  kpisLink: string;
   selectedKpiName: string | null;
   primaryAction: HeaderAction | null;
   kpiActions: HeaderKpiActions | null;
-  onBackToList: () => void;
 }
 
 // Breadcrumb + title header shared visual language with the Work Map / Tasks
@@ -201,14 +168,14 @@ function PageHeader(props: PageHeaderProps) {
         ))}
 
         {props.selectedKpiName ? (
-          <button
-            type="button"
-            className="text-xs leading-snug text-content-dimmed hover:underline"
-            onClick={props.onBackToList}
-            data-test-id="kpis-breadcrumb"
+          <BlackLink
+            to={props.kpisLink}
+            className="text-xs leading-snug text-content-dimmed"
+            underline="hover"
+            testId="kpis-breadcrumb"
           >
             KPIs
-          </button>
+          </BlackLink>
         ) : (
           <span className="text-xs leading-snug text-content-dimmed">KPIs</span>
         )}
@@ -250,8 +217,6 @@ function PageHeader(props: PageHeaderProps) {
 interface KpisContentProps extends SpaceKpisPageNS.Props {
   canManage: boolean;
   selectedKpi: SpaceKpisPageNS.Kpi | null;
-  detailLoading: boolean;
-  onSelectKpi: (id: string) => void;
   onOpenNew: () => void;
   onOpenLog: (id: string) => void;
   onOpenEdit: (id: string) => void;
@@ -268,14 +233,13 @@ function KpisContent(props: KpisContentProps) {
   }
 
   if (props.selectedKpi) {
-    return <KpiDetail kpi={props.selectedKpi} loadingHistory={props.detailLoading} />;
+    return <KpiDetail kpi={props.selectedKpi} />;
   }
 
   return (
     <KpiList
       kpis={props.kpis}
       canManage={props.canManage}
-      onSelect={props.onSelectKpi}
       onLogUpdate={props.onOpenLog}
       onNewKpi={props.onOpenNew}
       onEdit={props.onOpenEdit}

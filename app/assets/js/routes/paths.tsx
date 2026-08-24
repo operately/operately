@@ -406,6 +406,10 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "kpis"]);
   }
 
+  spaceKpiPath(spaceId: string, kpiId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "kpis", kpiId]);
+  }
+
   projectTemplatesPath() {
     return this.createCompanyPath(["project-templates"]);
   }
