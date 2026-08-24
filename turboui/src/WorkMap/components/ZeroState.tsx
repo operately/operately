@@ -4,6 +4,7 @@ import type { WorkMap } from "..";
 import { PrimaryButton } from "../../Button";
 import * as Forms from "../../Forms";
 import { ActionLink } from "../../Link";
+import { ProjectTemplateSelection } from "../../ProjectTemplateSelection";
 import { SpaceField } from "../../SpaceField";
 import { IconGoal, IconGrowth, IconProject } from "../../icons";
 import { AddItemModal } from "./AddItemModal";
@@ -17,6 +18,8 @@ interface ZeroStateProps {
   zeroStateMessage?: string;
   variant?: WorkMap.EmptyStateVariant;
   onItemCreated?: WorkMap.ItemCreatedFn;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
 export function ZeroState(props: ZeroStateProps) {
@@ -38,7 +41,14 @@ function ZeroStateCannotAdd({ message }: { message?: string }) {
   );
 }
 
-export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace, hideCompanyAccess }: ZeroStateProps) {
+export function ZeroStateCanAdd({
+  spaceSearch,
+  addItem,
+  addItemDefaultSpace,
+  hideCompanyAccess,
+  projectTemplatesEnabled,
+  projectTemplates,
+}: ZeroStateProps) {
   const [modalState, setModalState] = React.useState<{
     isOpen: boolean;
     type: AddItemModal.ItemType;
@@ -90,17 +100,26 @@ export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace, hid
         initialItemType={modalState.type}
         hideTypeSelector={true}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
+        projectTemplatesEnabled={projectTemplatesEnabled}
+        templates={projectTemplates}
       />
     </div>
   );
 }
 
-function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onItemCreated }: ZeroStateProps) {
+function FirstProjectZeroState({
+  spaceSearch,
+  addItem,
+  addItemDefaultSpace,
+  onItemCreated,
+  projectTemplatesEnabled,
+  projectTemplates,
+}: ZeroStateProps) {
   const [navigationPending, setNavigationPending] = React.useState(false);
   const [goalModalOpen, setGoalModalOpen] = React.useState(false);
 
   const form = Forms.useForm({
-    fields: { name: "" },
+    fields: { name: "", template: "", startDate: "" },
     validate: (addError) => {
       if (!form.values.name.trim()) {
         addError("name", "Enter a project name.");
@@ -113,6 +132,9 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
         space: addItemDefaultSpace,
         parentId: null,
         accessLevels: { company: "edit", space: "edit" },
+        ...(form.values.template
+          ? { templateId: form.values.template, startDate: form.values.startDate }
+          : {}),
       });
 
       if (onItemCreated) {
@@ -149,6 +171,12 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
                 placeholder="e.g. Launch the new website"
                 testId="first-project-name"
               />
+              {projectTemplatesEnabled ? (
+                <ProjectTemplateSelection
+                  spaceId={addItemDefaultSpace.id}
+                  templates={projectTemplates ?? []}
+                />
+              ) : null}
             </Forms.FieldGroup>
 
             <PrimaryButton className="w-full" type="submit" loading={submitting} testId="create-first-project">
@@ -183,6 +211,8 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
         hideCreateMore
         keepOpenAfterSave={Boolean(onItemCreated)}
         onSaved={onItemCreated}
+        projectTemplatesEnabled={projectTemplatesEnabled}
+        templates={projectTemplates}
       />
     </div>
   );

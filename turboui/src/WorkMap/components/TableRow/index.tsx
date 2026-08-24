@@ -2,6 +2,7 @@ import React from "react";
 
 import { WorkMap } from "..";
 
+import type { ProjectTemplateSelection } from "../../../ProjectTemplateSelection";
 import { SpaceField } from "../../../SpaceField";
 import { ChildRows } from "./ChildRows";
 import { AssignedDateCell } from "./AssignedDateCell";
@@ -35,6 +36,8 @@ interface Props {
   setItemExpanded: SetItemExpandedFn;
   profileUser?: WorkMap.Person;
   formattedTimePreferences: FormattedTimePreferences;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
 export function TableRow(props: Props) {
@@ -61,6 +64,8 @@ export function TableRow(props: Props) {
           spaceSearch={props.spaceSearch}
           addItem={props.addItem}
           hideCompanyAccess={props.hideCompanyAccessInQuickAdd}
+          projectTemplatesEnabled={props.projectTemplatesEnabled}
+          projectTemplates={props.projectTemplates}
         />
         <StatusCell item={item} hide={columnOptions?.hideStatus} />
         <ProgressCell item={item} hide={tab === "completed" || columnOptions?.hideProgress} />

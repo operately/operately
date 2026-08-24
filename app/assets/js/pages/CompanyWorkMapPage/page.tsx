@@ -20,7 +20,7 @@ export function Page() {
   const navigate = useNavigate();
   const me = useMe();
   const companyLoaderData = useCompanyLoaderData();
-  const { workMap, company, spacesCount } = useLoadedData().data;
+  const { workMap, company, spacesCount, projectTemplatesEnabled, templates } = useLoadedData().data;
 
   const title = `${company.name} Work Map`;
 
@@ -49,6 +49,18 @@ export function Page() {
     [company.id, navigate, paths],
   );
 
+  const projectTemplates = React.useMemo(
+    () =>
+      templates.map((template) => ({
+        id: template.id,
+        name: template.name,
+        spaceId: template.space.id,
+        inactivePeopleSummary: template.inactivePeopleSummary,
+        inactiveDiscussionCount: template.inactiveDiscussionCount,
+      })),
+    [templates],
+  );
+
   return (
     <WorkMapPage
       title={title}
@@ -61,6 +73,8 @@ export function Page() {
       formattedTimePreferences={formattedTimePreferences}
       emptyStateVariant={firstProjectStateVisible ? "first-project" : "standard"}
       onItemCreated={firstProjectStateVisible ? handleItemCreated : undefined}
+      projectTemplatesEnabled={projectTemplatesEnabled}
+      projectTemplates={projectTemplates}
     />
   );
 }

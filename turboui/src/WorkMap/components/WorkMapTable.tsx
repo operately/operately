@@ -1,6 +1,7 @@
 import React from "react";
 
 import { WorkMap } from "..";
+import type { ProjectTemplateSelection } from "../../ProjectTemplateSelection";
 import { SpaceField } from "../../SpaceField";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle, IconPlus } from "../../icons";
@@ -28,6 +29,8 @@ interface Props {
   emptyStateVariant?: WorkMap.EmptyStateVariant;
   onItemCreated?: WorkMap.ItemCreatedFn;
   formattedTimePreferences: FormattedTimePreferences;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
 export function WorkMapTable({
@@ -46,6 +49,8 @@ export function WorkMapTable({
   emptyStateVariant,
   onItemCreated,
   formattedTimePreferences,
+  projectTemplatesEnabled,
+  projectTemplates,
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
@@ -106,6 +111,8 @@ export function WorkMapTable({
           zeroStateMessage={zeroStateMessage}
           variant={emptyStateVariant}
           onItemCreated={onItemCreated}
+          projectTemplatesEnabled={projectTemplatesEnabled}
+          projectTemplates={projectTemplates}
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">
@@ -128,6 +135,8 @@ export function WorkMapTable({
                 setItemExpanded={setItemExpanded}
                 profileUser={profileUser}
                 formattedTimePreferences={formattedTimePreferences}
+                projectTemplatesEnabled={projectTemplatesEnabled}
+                projectTemplates={projectTemplates}
               />
             ))}
 
@@ -138,6 +147,8 @@ export function WorkMapTable({
                 addItem={addItem!}
                 addItemDefaultSpace={addItemDefaultSpace!}
                 hideCompanyAccess={hideCompanyAccessInQuickAdd}
+                projectTemplatesEnabled={projectTemplatesEnabled}
+                projectTemplates={projectTemplates}
               />
             )}
           </tbody>
@@ -245,12 +256,16 @@ function AddNewRow({
   addItem,
   addItemDefaultSpace,
   hideCompanyAccess,
+  projectTemplatesEnabled,
+  projectTemplates,
 }: {
   addingEnabled: boolean;
   spaceSearch: SpaceField.SearchSpaceFn;
   addItem: WorkMap.AddNewItemFn;
   addItemDefaultSpace: SpaceField.Space;
   hideCompanyAccess: boolean;
+  projectTemplatesEnabled?: boolean;
+  projectTemplates?: ProjectTemplateSelection.Template[];
 }) {
   if (!addingEnabled) return null;
 
@@ -278,6 +293,8 @@ function AddNewRow({
           save={addItem}
           space={addItemDefaultSpace}
           hideCompanyAccess={hideCompanyAccess}
+          projectTemplatesEnabled={projectTemplatesEnabled}
+          templates={projectTemplates}
         />
       </td>
     </tr>
