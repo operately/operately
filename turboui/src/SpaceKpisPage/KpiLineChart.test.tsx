@@ -80,4 +80,20 @@ describe("KpiLineChart hover", () => {
 
     expect(container.querySelector('[data-test-id="kpi-chart-tooltip"]')).not.toBeInTheDocument();
   });
+
+  test("keeps a long-unit tooltip inside the SVG viewport", () => {
+    const { container } = render(
+      <KpiLineChart entries={entries} unit={"very-long-kpi-unit-name-that-would-overflow-the-chart".repeat(3)} />,
+    );
+
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-hover-band-0"]')!);
+
+    const box = container.querySelector('[data-test-id="kpi-chart-tooltip"] rect');
+    expect(box).toBeInTheDocument();
+
+    const x = Number(box!.getAttribute("x"));
+    const width = Number(box!.getAttribute("width"));
+    expect(x).toBeGreaterThanOrEqual(0);
+    expect(x + width).toBeLessThanOrEqual(640);
+  });
 });

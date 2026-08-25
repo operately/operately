@@ -184,9 +184,10 @@ function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
     valueLabel.length * TOOLTIP.valueFontSize * 0.6,
     dateLabel.length * TOOLTIP.dateFontSize * 0.55,
   );
-  const width = textWidth + TOOLTIP.paddingX * 2;
-
-  const clampedX = Math.min(Math.max(point.cx - width / 2, 4), VIEW_WIDTH - width - 4);
+  // Cap the box so a long unit/date cannot push clampedX negative and clip
+  // the tooltip outside the SVG viewport.
+  const width = Math.min(textWidth + TOOLTIP.paddingX * 2, VIEW_WIDTH - 8);
+  const clampedX = Math.max(4, Math.min(point.cx - width / 2, VIEW_WIDTH - width - 4));
   const above = point.cy - TOOLTIP.gap - TOOLTIP.height;
   const boxY = above < 0 ? point.cy + TOOLTIP.gap : above;
   const centerX = clampedX + width / 2;
