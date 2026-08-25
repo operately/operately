@@ -54,6 +54,19 @@ function makeEntries(
     .sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime());
 }
 
+function makeAnnotations(
+  samples: { title: string; daysAgo: number; by: SpaceKpisPage.Person | null }[],
+): SpaceKpisPage.KpiAnnotation[] {
+  return samples
+    .map((sample, index) => ({
+      id: `annotation-${index}-${sample.daysAgo}`,
+      title: sample.title,
+      date: daysAgo(sample.daysAgo),
+      createdBy: sample.by,
+    }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
 // Mirrors the backend: the list endpoint provides `latestEntry` alongside the
 // (here fully-populated) history, so stories render latest values consistently.
 // The permalink matches the app's route: /spaces/:spaceId/kpis/:kpiId.
@@ -67,78 +80,88 @@ function withLatestEntryAndLink(kpi: Omit<SpaceKpisPage.Kpi, "latestEntry" | "li
 
 export const mockKpisLink = `/spaces/${mockSpace.id}/kpis`;
 
-export const mockKpis: SpaceKpisPage.Kpi[] = ([
-  {
-    id: "kpi-mrr",
-    name: "Monthly Recurring Revenue",
-    description: asRichText("Tracks recurring revenue from active subscriptions at the end of each month."),
-    unit: "USD",
-    cadence: "monthly",
-    champion: bob!,
-    insertedAt: daysAgo(180),
-    entries: makeEntries([
-      { value: 820000, daysAgo: 150, by: bob! },
-      { value: 910000, daysAgo: 120, by: bob! },
-      { value: 985000, daysAgo: 90, by: bob! },
-      { value: 1120000, daysAgo: 60, by: carol! },
-      { value: 1240000, daysAgo: 30, by: bob! },
-      { value: 1385000, daysAgo: 2, by: bob! },
-    ]),
-  },
-  {
-    id: "kpi-nps",
-    name: "Net Promoter Score",
-    description: null,
-    unit: "NPS",
-    cadence: "monthly",
-    champion: carol!,
-    insertedAt: daysAgo(120),
-    entries: makeEntries([
-      { value: 32, daysAgo: 90, by: carol! },
-      { value: 41, daysAgo: 60, by: carol! },
-      { value: 38, daysAgo: 30, by: dave! },
-      { value: 47, daysAgo: 1, by: carol! },
-    ]),
-  },
-  {
-    id: "kpi-uptime",
-    name: "Service Uptime",
-    description: null,
-    unit: "%",
-    cadence: "weekly",
-    champion: dave!,
-    insertedAt: daysAgo(70),
-    entries: makeEntries([
-      { value: 99.92, daysAgo: 28, by: dave! },
-      { value: 99.97, daysAgo: 21, by: dave! },
-      { value: 99.81, daysAgo: 14, by: dave! },
-      { value: 99.99, daysAgo: 7, by: dave! },
-      { value: 100, daysAgo: 0, by: dave! },
-    ]),
-  },
-  {
-    id: "kpi-signups",
-    name: "Weekly Sign-ups",
-    description: null,
-    unit: "users",
-    cadence: "weekly",
-    champion: null,
-    insertedAt: daysAgo(14),
-    // Single entry — exercises the "not enough data to plot a trend" edge case.
-    entries: makeEntries([{ value: 340, daysAgo: 3, by: alice! }]),
-  },
-  {
-    id: "kpi-churn",
-    name: "Logo Churn",
-    description: null,
-    unit: "%",
-    cadence: "monthly",
-    champion: alice!,
-    insertedAt: daysAgo(5),
-    // No entries yet — exercises the empty chart / "No data" states.
-    entries: [],
-  },
-] as Omit<SpaceKpisPage.Kpi, "latestEntry" | "link">[]).map(withLatestEntryAndLink);
+export const mockKpis: SpaceKpisPage.Kpi[] = (
+  [
+    {
+      id: "kpi-mrr",
+      name: "Monthly Recurring Revenue",
+      description: asRichText("Tracks recurring revenue from active subscriptions at the end of each month."),
+      unit: "USD",
+      cadence: "monthly",
+      champion: bob!,
+      insertedAt: daysAgo(180),
+      entries: makeEntries([
+        { value: 820000, daysAgo: 150, by: bob! },
+        { value: 910000, daysAgo: 120, by: bob! },
+        { value: 985000, daysAgo: 90, by: bob! },
+        { value: 1120000, daysAgo: 60, by: carol! },
+        { value: 1240000, daysAgo: 30, by: bob! },
+        { value: 1385000, daysAgo: 2, by: bob! },
+      ]),
+      annotations: makeAnnotations([
+        { title: "Launched enterprise plan", daysAgo: 90, by: bob! },
+        { title: "Raised starter pricing", daysAgo: 45, by: carol! },
+      ]),
+    },
+    {
+      id: "kpi-nps",
+      name: "Net Promoter Score",
+      description: null,
+      unit: "NPS",
+      cadence: "monthly",
+      champion: carol!,
+      insertedAt: daysAgo(120),
+      annotations: [],
+      entries: makeEntries([
+        { value: 32, daysAgo: 90, by: carol! },
+        { value: 41, daysAgo: 60, by: carol! },
+        { value: 38, daysAgo: 30, by: dave! },
+        { value: 47, daysAgo: 1, by: carol! },
+      ]),
+    },
+    {
+      id: "kpi-uptime",
+      name: "Service Uptime",
+      description: null,
+      unit: "%",
+      cadence: "weekly",
+      champion: dave!,
+      insertedAt: daysAgo(70),
+      annotations: [],
+      entries: makeEntries([
+        { value: 99.92, daysAgo: 28, by: dave! },
+        { value: 99.97, daysAgo: 21, by: dave! },
+        { value: 99.81, daysAgo: 14, by: dave! },
+        { value: 99.99, daysAgo: 7, by: dave! },
+        { value: 100, daysAgo: 0, by: dave! },
+      ]),
+    },
+    {
+      id: "kpi-signups",
+      name: "Weekly Sign-ups",
+      description: null,
+      unit: "users",
+      cadence: "weekly",
+      champion: null,
+      insertedAt: daysAgo(14),
+      annotations: [],
+      // Single entry — exercises the "not enough data to plot a trend" edge case.
+      entries: makeEntries([{ value: 340, daysAgo: 3, by: alice! }]),
+    },
+    {
+      id: "kpi-churn",
+      name: "Logo Churn",
+      description: null,
+      unit: "%",
+      cadence: "monthly",
+      champion: alice!,
+      insertedAt: daysAgo(5),
+      annotations: [],
+      // No entries yet — exercises the empty chart / "No data" states.
+      entries: [],
+    },
+  ] as Omit<SpaceKpisPage.Kpi, "latestEntry" | "link">[]
+).map(withLatestEntryAndLink);
 
 // A trimmed set of KPIs used by the KpiSummaryCard stories to show a mix of
 // trends within a single space: rising (MRR), volatile (NPS), and a brand-new

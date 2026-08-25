@@ -219,6 +219,9 @@ defmodule OperatelyWeb.Api do
         mutation(:edit_kpi, OperatelyWeb.Api.Kpis.EditKpi)
         mutation(:delete_kpi, OperatelyWeb.Api.Kpis.DeleteKpi)
         mutation(:log_kpi_entry, OperatelyWeb.Api.Kpis.LogKpiEntry)
+        mutation(:add_kpi_annotation, OperatelyWeb.Api.Kpis.AddKpiAnnotation)
+        mutation(:edit_kpi_annotation, OperatelyWeb.Api.Kpis.EditKpiAnnotation)
+        mutation(:delete_kpi_annotation, OperatelyWeb.Api.Kpis.DeleteKpiAnnotation)
       end
 
       @doc "Get, list, update and manage user profiles and account settings"

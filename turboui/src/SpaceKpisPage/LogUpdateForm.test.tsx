@@ -60,6 +60,7 @@ const kpi: SpaceKpisPage.Kpi = {
   link: "/spaces/space-growth/kpis/kpi-signups",
   latestEntry: null,
   entries: [],
+  annotations: [],
 };
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof LogUpdateForm>> = {}) {
