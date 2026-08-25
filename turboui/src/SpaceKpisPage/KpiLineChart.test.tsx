@@ -1,9 +1,10 @@
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { KpiLineChart } from "./KpiLineChart";
 import type { SpaceKpisPage } from "./types";
+import { formatShortDate } from "./utils";
 
 function entry(id: string, value: number): SpaceKpisPage.KpiEntry {
   return { id, value, recordedAt: new Date(`2026-01-0${id}`), recordedBy: null };
@@ -36,5 +37,47 @@ describe("KpiLineChart y-axis", () => {
 
     // The top gridline must comfortably clear the largest value (848).
     expect(Math.max(...numericLabels)).toBeGreaterThanOrEqual(848);
+  });
+});
+
+describe("KpiLineChart hover", () => {
+  const entries = [entry("1", 810), entry("2", 848), entry("3", 802)];
+
+  function renderChart() {
+    return render(<KpiLineChart entries={entries} unit="users" />);
+  }
+
+  test("shows no tooltip until a point is hovered", () => {
+    const { container } = renderChart();
+
+    expect(container.querySelector('[data-test-id="kpi-chart-tooltip"]')).not.toBeInTheDocument();
+  });
+
+  test("shows the hovered entry's value and date", () => {
+    const { container } = renderChart();
+
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-hover-band-1"]')!);
+
+    const tooltip = container.querySelector('[data-test-id="kpi-chart-tooltip"]');
+    expect(tooltip).toHaveTextContent("848 users");
+    expect(tooltip).toHaveTextContent(formatShortDate(entries[1]!.recordedAt));
+  });
+
+  test("switches to the next entry when the pointer moves across the chart", () => {
+    const { container } = renderChart();
+
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-hover-band-0"]')!);
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-hover-band-2"]')!);
+
+    expect(container.querySelector('[data-test-id="kpi-chart-tooltip"]')).toHaveTextContent("802 users");
+  });
+
+  test("hides the tooltip when the pointer leaves the chart", () => {
+    const { container } = renderChart();
+
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-hover-band-0"]')!);
+    fireEvent.mouseLeave(container.querySelector("svg")!);
+
+    expect(container.querySelector('[data-test-id="kpi-chart-tooltip"]')).not.toBeInTheDocument();
   });
 });
