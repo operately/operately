@@ -110,7 +110,7 @@ cli.test: cli.test.unit
 
 cli.test.unit:
 	$(MAKE) cli.node_modules
-	./devenv bash -c "cd cli && npm test"
+	cd cli && npm test
 
 cli.test.e2e: test.init
 	./devenv bash -c "cd app && mix test test/cli_e2e"
