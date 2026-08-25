@@ -37,7 +37,7 @@ defmodule Operately.Kpis do
     |> Repo.all()
   end
 
-  # How much history the list view carries per KPI: enough to plot a trend
+  # How much history a list view carries per KPI: enough to plot a trend
   # inline, without the cost of loading the whole series for every KPI.
   @recent_entries_limit 12
 
