@@ -129,13 +129,13 @@ defmodule Operately.Support.Factory.Companies do
 
   def enable_feature(ctx, feature_name) do
     company = Map.fetch!(ctx, :company)
-    {:ok, _} = Operately.Companies.enable_experimental_feature(company, feature_name)
-    ctx
+    {:ok, company} = Operately.Companies.enable_experimental_feature(company, feature_name)
+    Map.put(ctx, :company, company)
   end
 
   def disable_feature(ctx, feature_name) do
     company = Map.fetch!(ctx, :company)
-    {:ok, _} = Operately.Companies.disable_experimental_feature(company, feature_name)
-    ctx
+    {:ok, company} = Operately.Companies.disable_experimental_feature(company, feature_name)
+    Map.put(ctx, :company, company)
   end
 end

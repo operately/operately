@@ -42,6 +42,9 @@ defmodule Operately.Mcp.ToolsTest do
     "list_document_versions",
     "get_document_version",
     "fetch",
+    "list_project_templates",
+    "get_project_template",
+    "get_project_template_discussion",
     "create_comment",
     "create_project_check_in",
     "create_goal_check_in",
@@ -119,7 +122,37 @@ defmodule Operately.Mcp.ToolsTest do
     "delete_file",
     "delete_link",
     "delete_folder",
-    "remove_project_contributor"
+    "remove_project_contributor",
+    "create_project_template",
+    "create_project_template_from_project",
+    "create_project_from_template",
+    "duplicate_project_template",
+    "update_project_template",
+    "archive_project_template",
+    "restore_project_template",
+    "delete_project_template",
+    "create_project_template_milestone",
+    "update_project_template_milestone",
+    "delete_project_template_milestone",
+    "create_project_template_task",
+    "update_project_template_task",
+    "move_project_template_task",
+    "delete_project_template_task",
+    "update_project_template_task_assignees",
+    "add_project_template_contributor",
+    "update_project_template_contributor",
+    "remove_project_template_contributor",
+    "create_project_template_discussion",
+    "update_project_template_discussion",
+    "create_project_template_folder",
+    "update_project_template_folder",
+    "create_project_template_document",
+    "update_project_template_document",
+    "update_project_template_file",
+    "create_project_template_link",
+    "update_project_template_link",
+    "delete_project_template_resource",
+    "move_project_template_resource"
   ]
   @company_modes [:none, :authenticated, :resource_derived]
   @safety_classifications [:read_only, :write, :destructive]
@@ -189,6 +222,8 @@ defmodule Operately.Mcp.ToolsTest do
     assert tools["search"].company_mode == :authenticated
     assert tools["search_full_text"].company_mode == :authenticated
     assert tools["fetch"].company_mode == :resource_derived
+    assert tools["list_project_templates"].company_mode == :authenticated
+    assert tools["get_project_template"].company_mode == :resource_derived
     assert tools["create_comment"].company_mode == :resource_derived
     assert tools["create_project_check_in"].company_mode == :resource_derived
     assert tools["create_goal_check_in"].company_mode == :resource_derived
