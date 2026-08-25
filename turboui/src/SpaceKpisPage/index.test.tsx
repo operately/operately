@@ -462,14 +462,13 @@ describe("SpaceKpisPage edit & delete", () => {
     expect(container.querySelector('[data-test-id="delete-kpi"]')).not.toBeInTheDocument();
   });
 
-  // Managing a KPI belongs on its own page, where its history is on screen to
-  // judge the change by, so rows carry no manage menu of their own.
-  test("KPI rows offer only 'Log update', with no overflow menu", () => {
+  // Managing a KPI belongs on its own page, so list rows carry no actions.
+  test("KPI rows have no 'Log update' action and no overflow menu", () => {
     const target = mockKpis[0]!;
     const { container } = renderPage();
     const row = container.querySelector<HTMLElement>(`[data-test-id="kpi-row-${target.id}"]`)!;
 
-    expect(within(row).getByText("Log update")).toBeInTheDocument();
+    expect(within(row).queryByText("Log update")).not.toBeInTheDocument();
     expect(within(row).queryByLabelText("KPI actions")).not.toBeInTheDocument();
   });
 });
@@ -528,9 +527,9 @@ describe("SpaceKpisPage create & log", () => {
     const user = userEvent.setup();
     const onRecordEntry = jest.fn().mockResolvedValue({ success: true });
     const target = mockKpis[0]!;
-    const { container } = renderPage({ onRecordEntry });
+    const { container } = renderPage({ selectedKpi: target, onRecordEntry });
 
-    await user.click(container.querySelector(`[data-test-id="log-update-${target.id}"]`)!);
+    await user.click(container.querySelector('[data-test-id="kpi-detail-log-update"]')!);
     await findByTestId("log-update-modal");
 
     fireEvent.change(await findByTestId("value"), { target: { value: "123" } });
