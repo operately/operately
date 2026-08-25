@@ -1087,6 +1087,47 @@ describe("Forms", () => {
     expect(submitContainer).toHaveClass("justify-center", "custom-submit-container");
   });
 
+  test("uses a default top margin on the submit container", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Roadmap" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <Submit saveText="Post Discussion" testId="post-discussion" />
+        </Form>
+      );
+    }
+
+    const { container } = render(<Harness />);
+    const submitContainer = container.querySelector('[data-test-id="post-discussion"]')?.parentElement;
+
+    expect(submitContainer).toHaveClass("mt-8");
+  });
+
+  test("lets containerClassName replace the default top margin", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { name: "Roadmap" },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <Submit saveText="Post Discussion" containerClassName="mt-0" testId="post-discussion" />
+        </Form>
+      );
+    }
+
+    const { container } = render(<Harness />);
+    const submitContainer = container.querySelector('[data-test-id="post-discussion"]')?.parentElement;
+
+    expect(submitContainer).toHaveClass("mt-0");
+    expect(submitContainer).not.toHaveClass("mt-8");
+  });
+
   test("uses submit button type when submitOnEnter is enabled", () => {
     function Harness() {
       const form = useForm({
