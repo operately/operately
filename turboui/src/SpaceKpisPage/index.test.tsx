@@ -581,7 +581,13 @@ describe("SpaceKpisPage create & log", () => {
       const [kpi, setKpi] = React.useState(base);
 
       const onRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
-        const entry = { id: "new-entry", value: input.value, recordedAt: new Date(), recordedBy: null, commentsCount: 0 };
+        const entry = {
+          id: "new-entry",
+          value: input.value,
+          recordedAt: new Date(),
+          recordedBy: null,
+          commentsCount: 0,
+        };
         setKpi((current) => ({ ...current, entries: [...current.entries, entry] }));
 
         return { success: true };
@@ -611,7 +617,7 @@ describe("SpaceKpisPage create & log", () => {
 });
 
 describe("SpaceKpisPage KPI update comments", () => {
-  test("opens comments on a recorded update", async () => {
+  test("opens comments on a recorded update in a slide-in", async () => {
     const user = userEvent.setup();
     const target = mockKpis[0]!;
     const entry = target.entries[target.entries.length - 1]!;
@@ -623,6 +629,49 @@ describe("SpaceKpisPage KPI update comments", () => {
     });
 
     await user.click(await findByTestId(`entry-comments-toggle-${entry.id}`));
-    expect(await findByTestId("entry-comments-body")).toHaveTextContent("Write a comment");
+
+    const slideIn = await findByTestId("entry-comments-slide-in");
+    expect(slideIn).toHaveTextContent("Write a comment");
+
+    const row = document.querySelector(`[data-test-id="entry-row-${entry.id}"]`);
+    expect(row).not.toHaveTextContent("Write a comment");
+  });
+
+  // Opening the thread hides the table behind it, so the panel has to say which
+  // update is being discussed: its value, who logged it, and when.
+  test("names the update being commented on, with who logged it and when", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({ selectedKpi: target, canComment: true, renderEntryComments: () => null });
+
+    await user.click(await findByTestId(`entry-comments-toggle-${entry.id}`));
+
+    const header = await findByTestId("entry-comments-header");
+    expect(header).toHaveTextContent(target.name);
+    expect(header).toHaveTextContent(formatValue(entry.value, target.unit));
+    expect(header).toHaveTextContent(entry.recordedBy!.fullName);
+    expect(header).toHaveTextContent(formatShortDate(entry.recordedAt));
+  });
+
+  test("closes the update comments slide-in", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({
+      selectedKpi: target,
+      canComment: true,
+      renderEntryComments: () => <div data-test-id="entry-comments-body">Write a comment</div>,
+    });
+
+    await user.click(await findByTestId(`entry-comments-toggle-${entry.id}`));
+    await findByTestId("entry-comments-slide-in");
+    await user.click(await findByTestId("slide-in-close-button"));
+
+    await waitFor(() => {
+      expect(document.querySelector('[data-test-id="entry-comments-slide-in"]')).not.toBeInTheDocument();
+    });
   });
 });
