@@ -30,9 +30,10 @@ interface KpiDetailProps {
   subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }
 
-// The KPI name, back navigation and the "Log update" action live in the shared
-// page header (see index.tsx). The latest value is in the sidebar last-update
-// card, so the main column is the history chart and the recorded-updates log.
+// The KPI's name leads its page, with the current reading beside it, so the two
+// questions a KPI answers — which metric is this, and where does it stand — are
+// answered before the description, chart and recorded-updates log below.
+// Back navigation and the "Log update" action live in the page header (index.tsx).
 export function KpiDetail({
   kpi,
   fields,
@@ -58,39 +59,43 @@ export function KpiDetail({
   };
 
   return (
-    <div className="sm:grid sm:grid-cols-12 sm:gap-8" data-test-id="kpi-detail">
-      <div className="space-y-12 sm:col-span-8">
-        <PageDescription
-          description={description}
-          onDescriptionChange={saveDescription}
-          richTextHandlers={richTextHandlers}
-          label="Description"
-          placeholder="Describe this KPI..."
-          zeroStatePlaceholder="Add a description..."
-          testId="kpi-description"
-          emptyTestId="kpi-description-empty"
-          localDraftKey={`kpi:${kpi.id}:description`}
-          canEdit={canManage}
-        />
+    <div className="sm:grid sm:grid-cols-12" data-test-id="kpi-detail">
+      <div className="space-y-10 sm:col-span-8 sm:pr-8">
+        <div className="space-y-6">
+          <Heading fields={fields} canManage={canManage} />
 
-        <div>
-          <div className="rounded-lg border border-stroke-base bg-surface-base p-4">
-            <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
-            <KpiLineChart entries={kpi.entries} unit={fields.unit} />
-          </div>
-
-          <EntriesTable
-            entries={kpi.entries}
-            unit={fields.unit}
-            kpiName={fields.name}
-            canComment={canComment}
-            renderEntryComments={renderEntryComments}
+          <PageDescription
+            description={description}
+            onDescriptionChange={saveDescription}
+            richTextHandlers={richTextHandlers}
+            label="Description"
+            placeholder="Describe this KPI..."
+            zeroStatePlaceholder="Add a description..."
+            testId="kpi-description"
+            emptyTestId="kpi-description-empty"
+            localDraftKey={`kpi:${kpi.id}:description`}
+            canEdit={canManage}
           />
         </div>
+
+        <div
+          className="space-y-4 rounded-lg border border-stroke-base bg-surface-base px-5 pb-3 pt-4"
+          data-test-id="kpi-history"
+        >
+          <CurrentValue kpi={kpi} unit={fields.unit} />
+          <KpiLineChart entries={kpi.entries} unit={fields.unit} />
+        </div>
+
+        <EntriesTable
+          entries={kpi.entries}
+          unit={fields.unit}
+          kpiName={fields.name}
+          canComment={canComment}
+          renderEntryComments={renderEntryComments}
+        />
       </div>
 
       <KpiSidebar
-        kpi={kpi}
         fields={fields}
         canManage={canManage}
         championSearch={championSearch}
@@ -101,15 +106,62 @@ export function KpiDetail({
   );
 }
 
+// Section heading matching the description's, so the page reads as one column of
+// evenly weighted sections rather than a stack of differently styled cards.
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h2 className="font-bold">{title}</h2>
+      <div className="mt-2">{children}</div>
+    </div>
+  );
+}
+
+// A KPI is renamed where its name is read, the way a task is renamed on its own
+// page. The editable field cannot live inside a heading element, so the role is
+// set on its container to keep the page's heading.
+function Heading({ fields, canManage }: { fields: KpiFields; canManage: boolean }) {
+  return (
+    <div role="heading" aria-level={1} className="min-w-0" data-test-id="kpi-heading">
+      <TextField
+        className="text-2xl font-bold leading-tight text-content-accent"
+        text={fields.name}
+        onChange={(name) => fields.update({ name })}
+        readonly={!canManage}
+        trimBeforeSave
+        testId="kpi-name"
+      />
+    </div>
+  );
+}
+
+// The KPI's latest reading, leading the chart it is the newest point of, with
+// the change since the entry before it and the date it was recorded. Who
+// recorded it is in the recorded-updates log. With no entries there is no
+// reading to show and the chart says so instead.
+function CurrentValue({ kpi, unit }: { kpi: SpaceKpisPage.Kpi; unit: string }) {
+  const latest = latestEntry(kpi);
+  if (!latest) return null;
+
+  return (
+    <div data-test-id="kpi-current-value">
+      <div className="flex items-baseline gap-2">
+        <span className="text-2xl font-bold leading-none text-content-accent">{formatValue(latest.value, unit)}</span>
+        <TrendIndicator delta={latestTrend(kpi)} variant="badge" />
+      </div>
+
+      <div className="mt-1.5 text-xs leading-none text-content-dimmed">as of {formatShortDate(latest.recordedAt)}</div>
+    </div>
+  );
+}
+
 function KpiSidebar({
-  kpi,
   fields,
   canManage,
   championSearch,
   onDelete,
   subscriptions,
 }: {
-  kpi: SpaceKpisPage.Kpi;
   fields: KpiFields;
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
@@ -120,8 +172,6 @@ function KpiSidebar({
 
   return (
     <aside className="mt-8 space-y-6 sm:col-span-4 sm:mt-0 sm:pl-8" data-test-id="kpi-sidebar">
-      <LastUpdate kpi={kpi} unit={fields.unit} canManage={canManage} />
-
       <SidebarSection title="Champion">
         {canManage ? (
           <PersonField
@@ -202,49 +252,6 @@ function Actions({ canManage, onDelete }: { canManage: boolean; onDelete: () => 
   return (
     <SidebarSection title="Actions">
       <ActionList actions={actions} />
-    </SidebarSection>
-  );
-}
-
-// The KPI's current reading, and the only place the latest value appears on the
-// detail page. The value leads, with the change since the previous entry beside
-// it; when it was recorded and by whom are supporting details underneath.
-function LastUpdate({ kpi, unit, canManage }: { kpi: SpaceKpisPage.Kpi; unit: string; canManage: boolean }) {
-  const latest = latestEntry(kpi);
-  const trend = latestTrend(kpi);
-
-  if (!latest) {
-    return (
-      <SidebarSection title="Last update">
-        <p className="text-sm text-content-dimmed" data-test-id="kpi-last-update-empty">
-          {canManage
-            ? "No updates yet. Log the first value to start tracking."
-            : "No updates yet. Values appear here as they are logged."}
-        </p>
-      </SidebarSection>
-    );
-  }
-
-  return (
-    <SidebarSection title="Last update">
-      <div data-test-id="kpi-last-update">
-        <div className="flex items-center gap-2">
-          <div className="text-3xl font-bold leading-none text-content-accent">{formatValue(latest.value, unit)}</div>
-          <TrendIndicator delta={trend} />
-        </div>
-
-        <div className="mt-2 flex items-center gap-1.5 text-xs text-content-dimmed">
-          <span>{formatShortDate(latest.recordedAt)}</span>
-
-          {latest.recordedBy && (
-            <>
-              <span aria-hidden="true">·</span>
-              <Avatar person={latest.recordedBy} size={16} />
-              <span>{latest.recordedBy.fullName.split(" ")[0]}</span>
-            </>
-          )}
-        </div>
-      </div>
     </SidebarSection>
   );
 }
@@ -350,8 +357,7 @@ function EntriesTable({
   const rows = [...entries].reverse();
 
   return (
-    <div className="mt-6">
-      <h2 className="mb-3 text-sm font-bold text-content-accent">Recorded updates</h2>
+    <Section title="Recorded updates">
       <div className="overflow-hidden rounded-lg border border-stroke-base">
         <table className="w-full text-sm">
           <thead>
@@ -371,11 +377,13 @@ function EntriesTable({
               return (
                 <tr
                   key={entry.id}
-                  className="border-b border-stroke-dimmed last:border-b-0"
+                  className="border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight"
                   data-test-id={`entry-row-${entry.id}`}
                 >
-                  <td className="px-4 py-2 text-content-base">{formatShortDate(entry.recordedAt)}</td>
-                  <td className="px-4 py-2">
+                  <td className="whitespace-nowrap px-4 py-2.5 text-content-base">
+                    {formatShortDate(entry.recordedAt)}
+                  </td>
+                  <td className="px-4 py-2.5">
                     {entry.recordedBy ? (
                       <div className="flex items-center gap-2">
                         <Avatar person={entry.recordedBy} size="tiny" />
@@ -385,10 +393,10 @@ function EntriesTable({
                       <span className="text-content-subtle">Unknown</span>
                     )}
                   </td>
-                  <td className="px-4 py-2 text-right font-medium text-content-accent">
+                  <td className="whitespace-nowrap px-4 py-2.5 text-right font-medium text-content-accent">
                     {formatValue(entry.value, unit)}
                   </td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-2.5 text-right">
                     {canOpenComments ? (
                       <button
                         type="button"
@@ -396,9 +404,10 @@ function EntriesTable({
                         onClick={() => setOpenEntryId(isOpen ? null : entry.id)}
                         data-test-id={`entry-comments-toggle-${entry.id}`}
                         aria-expanded={isOpen}
+                        aria-label={commentsCount > 0 ? `${commentsCount} comments` : "Comment on this update"}
                       >
                         <IconMessage size={14} />
-                        {commentsCount > 0 ? commentsCount : "Comment"}
+                        {commentsCount > 0 ? commentsCount : null}
                       </button>
                     ) : commentsCount > 0 ? (
                       <span className="inline-flex items-center gap-1.5 text-xs text-content-dimmed">
@@ -427,7 +436,7 @@ function EntriesTable({
           </div>
         )}
       </SlideIn>
-    </div>
+    </Section>
   );
 }
 

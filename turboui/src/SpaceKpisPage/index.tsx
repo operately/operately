@@ -4,7 +4,6 @@ import { ErrorCallout } from "../Callouts";
 import { BlackLink } from "../Link";
 import { PageNew } from "../Page";
 import type { Navigation } from "../Page/Navigation";
-import { TextField } from "../TextField";
 import { IconChartColumn, IconChevronRight } from "../icons";
 
 import { DeleteKpiModal } from "./DeleteKpiModal";
@@ -30,8 +29,8 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   // entries the list omits) arrives with the route.
   const selectedKpi = props.selectedKpi ?? null;
 
-  // The open KPI's fields are edited in place — in the page title and the
-  // sidebar — so they are held here and shared by both.
+  // The open KPI's fields are edited in place — its name above the description,
+  // the rest in the sidebar — so they are held here and shared by both.
   const openKpi = useKpiFields(selectedKpi, props.onEditKpi);
 
   // An update is logged from the open KPI's page, whose permalink may be opened
@@ -68,8 +67,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
       <PageHeader
         navigation={props.navigation}
         kpisLink={props.kpisLink}
-        openKpi={openKpi}
-        canManage={canManage}
+        isKpiOpen={openKpi !== null}
         primaryAction={primaryAction}
       />
 
@@ -120,85 +118,90 @@ interface HeaderAction {
 interface PageHeaderProps {
   navigation: Navigation.Item[];
   kpisLink: string;
-  openKpi: KpiFields | null;
-  canManage: boolean;
+  isKpiOpen: boolean;
   primaryAction: HeaderAction | null;
 }
 
 // Breadcrumb + title header shared visual language with the Work Map / Tasks
-// tools. When a KPI is open, the tool title becomes a breadcrumb back to the
-// list and the KPI name is shown as the current crumb.
+// tools. On a KPI's own page the name leads the content instead (see
+// KpiDetail), so the header collapses to the trail back to the list with the
+// page action beside it.
 function PageHeader(props: PageHeaderProps) {
+  if (props.isKpiOpen) {
+    return (
+      <header className="border-b border-surface-outline px-4 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <Breadcrumbs navigation={props.navigation} kpisLink={props.kpisLink} isKpiOpen />
+          <PrimaryAction action={props.primaryAction} />
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="border-b border-surface-outline px-4 py-3">
-      <nav className="mt-1 flex items-center gap-0.5" aria-label="Breadcrumb">
-        {props.navigation.map((item, index) => (
-          <React.Fragment key={index}>
-            <BlackLink to={item.to} className="text-xs leading-snug text-content-dimmed" underline="hover">
-              {item.label}
-            </BlackLink>
-            <IconChevronRight size={10} className="text-content-dimmed" />
-          </React.Fragment>
-        ))}
-
-        {props.openKpi ? (
-          <BlackLink
-            to={props.kpisLink}
-            className="text-xs leading-snug text-content-dimmed"
-            underline="hover"
-            testId="kpis-breadcrumb"
-          >
-            KPIs
-          </BlackLink>
-        ) : (
-          <span className="text-xs leading-snug text-content-dimmed">KPIs</span>
-        )}
-      </nav>
+      <Breadcrumbs navigation={props.navigation} kpisLink={props.kpisLink} isKpiOpen={false} />
 
       <div className="mt-1 flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
           <IconChartColumn size={20} className="shrink-0 text-content-dimmed" />
-          <Title openKpi={props.openKpi} canManage={props.canManage} />
+          <h1 className="text-sm font-bold text-content-accent sm:text-base">KPIs</h1>
         </div>
 
-        <div className="flex items-center gap-1.5">
-          {props.primaryAction && (
-            <button
-              type="button"
-              className="rounded-lg bg-brand-1 px-3 py-1.5 text-sm font-medium text-white-1 hover:bg-blue-600"
-              onClick={props.primaryAction.onClick}
-              data-test-id={props.primaryAction.testId}
-            >
-              {props.primaryAction.label}
-            </button>
-          )}
-        </div>
+        <PrimaryAction action={props.primaryAction} />
       </div>
     </header>
   );
 }
 
-const titleClass = "text-sm font-bold text-content-accent sm:text-base";
+function Breadcrumbs({
+  navigation,
+  kpisLink,
+  isKpiOpen,
+}: {
+  navigation: Navigation.Item[];
+  kpisLink: string;
+  isKpiOpen: boolean;
+}) {
+  return (
+    <nav className="mt-1 flex min-w-0 items-center gap-0.5" aria-label="Breadcrumb">
+      {navigation.map((item, index) => (
+        <React.Fragment key={index}>
+          <BlackLink to={item.to} className="text-xs leading-snug text-content-dimmed" underline="hover">
+            {item.label}
+          </BlackLink>
+          <IconChevronRight size={10} className="text-content-dimmed" />
+        </React.Fragment>
+      ))}
 
-// A KPI is renamed where its name is read — in the page title — the way a task
-// is renamed on its own page. The editable field cannot live inside a heading
-// element, so the role is set on its container to keep the page's heading.
-function Title({ openKpi, canManage }: { openKpi: KpiFields | null; canManage: boolean }) {
-  if (!openKpi) {
-    return <h1 className={titleClass}>KPIs</h1>;
-  }
+      {isKpiOpen ? (
+        <BlackLink
+          to={kpisLink}
+          className="text-xs leading-snug text-content-dimmed"
+          underline="hover"
+          testId="kpis-breadcrumb"
+        >
+          KPIs
+        </BlackLink>
+      ) : (
+        <span className="text-xs leading-snug text-content-dimmed">KPIs</span>
+      )}
+    </nav>
+  );
+}
+
+function PrimaryAction({ action }: { action: HeaderAction | null }) {
+  if (!action) return null;
 
   return (
-    <div role="heading" aria-level={1} className="min-w-0">
-      <TextField
-        className={titleClass}
-        text={openKpi.name}
-        onChange={(name) => openKpi.update({ name })}
-        readonly={!canManage}
-        trimBeforeSave
-        testId="kpi-name"
-      />
-    </div>
+    <button
+      type="button"
+      className="shrink-0 rounded-lg bg-brand-1 px-3 py-1.5 text-sm font-medium text-white-1 hover:bg-blue-600"
+      onClick={action.onClick}
+      data-test-id={action.testId}
+    >
+      {action.label}
+    </button>
   );
 }
 
