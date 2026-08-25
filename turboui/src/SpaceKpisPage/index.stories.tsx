@@ -17,8 +17,9 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople
 //   - a list view: name, unit, cadence, champion, latest value + trend
 //   - a detail view: line chart of history, last update + champion + cadence, "Log update"
 //   - a "New KPI" form (name, unit, cadence, champion picker)
-//   - an overflow "manage" menu on each KPI (list rows + detail header) to
-//     Edit the KPI or Delete it (with a destructive confirmation)
+//   - editing a KPI in place on its own page: its name in the page title, its
+//     unit, cadence and champion in the sidebar, and a sidebar Actions section
+//     offering Copy URL and Delete (with a destructive confirmation)
 //   - single-KPI "Log update" only — NO "update all KPIs at once" batch UI
 //
 // The stories use an in-memory harness so the create/edit/delete/record
