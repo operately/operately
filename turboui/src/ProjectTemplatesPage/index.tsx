@@ -73,9 +73,16 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   );
   const isFiltered =
     search.trim() !== "" || (props.scope === "company" && selectedSpace !== null) || archiveStatus !== "active";
+  const templatesForArchiveStatus = templates.filter((template) => matchesArchiveStatus(template, archiveStatus));
   const visibleTemplates = filterTemplates(templates, search, selectedSpace?.id, archiveStatus);
   const hasTemplates = templates.length > 0;
   const hasArchivedTemplates = templates.some((template) => Boolean(template.archivedAt));
+  const hasMultipleTemplates = templatesForArchiveStatus.length > 1;
+  const hasMultipleSpaces = new Set(templatesForArchiveStatus.map((template) => template.space.id)).size > 1;
+  const showSearch = hasMultipleTemplates || search.trim() !== "";
+  const showSpaceFilter = props.scope === "company" && (hasMultipleSpaces || selectedSpace !== null);
+  const showArchiveStatus = hasArchivedTemplates || archiveStatus === "archived";
+  const showBrowsingControls = showSearch || showSpaceFilter || showArchiveStatus;
 
   const clearFilters = () => {
     setSearch("");
@@ -113,45 +120,58 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
           }
         />
 
-        {hasTemplates && (
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="relative w-full sm:max-w-sm">
-              <IconSearch
-                size={16}
-                className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed"
-              />
-              <Forms.Input
-                type="text"
-                name="project-template-search"
-                role="searchbox"
-                aria-label="Search project templates"
-                placeholder="Search project templates…"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                className="py-2 pl-9 pr-9 text-base sm:text-sm"
-                testId="project-template-search"
-              />
-              {search && (
-                <button
-                  type="button"
-                  aria-label="Clear search"
-                  onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed hover:text-content-accent"
-                >
-                  <IconX size={16} aria-hidden="true" />
-                </button>
-              )}
-            </div>
-            {props.scope === "company" && (
-              <SpaceField
-                space={selectedSpace}
-                setSpace={setSelectedSpace}
-                search={filterSpaceSearch}
-                emptyStateMessage="All Spaces"
-                testId="project-template-space-filter"
-              />
+        {hasTemplates && showBrowsingControls && (
+          <div
+            className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            data-test-id="project-template-toolbar"
+          >
+            {(showSearch || showSpaceFilter) && (
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+                {showSearch && (
+                  <div className="relative w-full sm:max-w-sm">
+                    <IconSearch
+                      size={16}
+                      className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed"
+                    />
+                    <Forms.Input
+                      type="text"
+                      name="project-template-search"
+                      role="searchbox"
+                      aria-label="Search project templates"
+                      placeholder="Search project templates…"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      className="py-2 pl-9 pr-9 text-base sm:text-sm"
+                      testId="project-template-search"
+                    />
+                    {search && (
+                      <button
+                        type="button"
+                        aria-label="Clear search"
+                        onClick={() => setSearch("")}
+                        className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed hover:text-content-accent"
+                      >
+                        <IconX size={16} aria-hidden="true" />
+                      </button>
+                    )}
+                  </div>
+                )}
+                {showSpaceFilter && (
+                  <SpaceField
+                    space={selectedSpace}
+                    setSpace={setSelectedSpace}
+                    search={filterSpaceSearch}
+                    emptyStateMessage="All Spaces"
+                    testId="project-template-space-filter"
+                  />
+                )}
+              </div>
             )}
-            <ArchiveStatusMenu value={archiveStatus} onChange={setArchiveStatus} />
+            {showArchiveStatus && (
+              <div className="sm:ml-auto">
+                <ArchiveStatusMenu value={archiveStatus} onChange={setArchiveStatus} />
+              </div>
+            )}
           </div>
         )}
 
@@ -263,7 +283,7 @@ function TemplateGrid(
   },
 ) {
   return (
-    <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="mt-8 grid gap-4 lg:grid-cols-2" data-test-id="project-template-grid">
       {props.templates.map((template) => (
         <TemplateCard key={template.id} template={template} {...props} />
       ))}
@@ -282,7 +302,7 @@ function ArchiveStatusMenu({ value, onChange }: { value: ArchiveStatus; onChange
       customTrigger={
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-md border border-surface-outline bg-surface-base px-3 py-1.5 text-sm text-content-dimmed transition hover:bg-surface-accent hover:text-content-base"
+          className="inline-flex w-full items-center justify-between gap-2 rounded-md border border-surface-outline bg-surface-base px-3 py-1.5 text-sm text-content-dimmed hover:bg-surface-accent hover:text-content-base sm:w-auto sm:justify-start"
         >
           {label} <IconChevronDown size={16} />
         </button>
@@ -306,10 +326,14 @@ function filterTemplates(
     const searchableText = `${template.name} ${plainDescription(template.description)}`.toLowerCase();
     const matchesSearch = normalizedSearch === "" || searchableText.includes(normalizedSearch);
     const matchesSpace = !spaceId || template.space.id === spaceId;
-    const matchesArchiveStatus = archiveStatus === "archived" ? Boolean(template.archivedAt) : !template.archivedAt;
+    const matchesStatus = matchesArchiveStatus(template, archiveStatus);
 
-    return matchesSearch && matchesSpace && matchesArchiveStatus;
+    return matchesSearch && matchesSpace && matchesStatus;
   });
+}
+
+function matchesArchiveStatus(template: ProjectTemplate, archiveStatus: ArchiveStatus) {
+  return archiveStatus === "archived" ? Boolean(template.archivedAt) : !template.archivedAt;
 }
 
 function CreateTemplateModal({

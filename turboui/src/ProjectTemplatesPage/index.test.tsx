@@ -98,11 +98,13 @@ describe("ProjectTemplatesPage", () => {
     const page = container.querySelector('[data-test-id="project-templates-page"]');
     const title = screen.getByText("Project Templates");
     const newTemplateButton = screen.getByRole("button", { name: "New template" });
+    const header = title.parentElement?.parentElement;
 
     expect(page?.parentElement).toHaveClass("lg:max-w-5xl");
     expect(title).toHaveClass("text-lg", "md:text-2xl", "font-extrabold");
-    expect(title.parentElement).toHaveClass("text-center", "flex-1");
-    expect(newTemplateButton.parentElement).toHaveClass("w-[30%]");
+    expect(title.parentElement).toHaveClass("min-w-0", "text-center");
+    expect(header).toHaveClass("grid", "grid-cols-[auto_minmax(0,1fr)]", "sm:grid-cols-[30%_minmax(0,1fr)_30%]");
+    expect(newTemplateButton.parentElement).toHaveClass("min-w-0");
   });
 
   it("groups company templates by Space and renders card metadata", () => {
@@ -122,7 +124,7 @@ describe("ProjectTemplatesPage", () => {
   });
 
   it("renders a Space-scoped library without company grouping", () => {
-    renderPage({
+    const { container } = renderPage({
       scope: "space",
       navigation: [{ to: "/spaces/space-1", label: "Marketing" }],
       fixedSpace: spaces[0],
@@ -132,6 +134,9 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.getByRole("link", { name: "Marketing" })).toHaveAttribute("href", "/spaces/space-1");
     expect(screen.queryByRole("link", { name: "Product" })).not.toBeInTheDocument();
     expect(screen.queryByTestId("project-template-space-filter")).not.toBeInTheDocument();
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Active" })).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="project-template-grid"]')).toHaveClass("lg:grid-cols-2");
   });
 
   it("filters templates locally by search", () => {
@@ -179,7 +184,7 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Active" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Create template" })).not.toBeInTheDocument();
-    expect(newTemplateButton.parentElement).toHaveClass("w-[30%]");
+    expect(newTemplateButton.parentElement).toHaveClass("min-w-0");
 
     await user.click(newTemplateButton);
     expect(screen.getByRole("heading", { name: "New project template" })).toBeInTheDocument();
@@ -199,7 +204,7 @@ describe("ProjectTemplatesPage", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "missing" } });
 
     expect(screen.getByText("No matching templates.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Active" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Active" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Clear filters" }));
     expect(screen.getByText("Campaign launch")).toBeInTheDocument();
     expect(screen.getByRole("searchbox")).toHaveValue("");
