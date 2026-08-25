@@ -16,6 +16,8 @@ export namespace RelativeDayField {
     testId?: string;
     className?: string;
     hideCalendarIcon?: boolean;
+    isOpen?: boolean;
+    onOpenChange?: (isOpen: boolean) => void;
   }
 }
 
@@ -36,11 +38,20 @@ export function RelativeDayField({
   testId = "relative-day-field",
   className,
   hideCalendarIcon = false,
+  isOpen,
+  onOpenChange,
 }: RelativeDayField.Props) {
-  const [isEditing, setIsEditing] = React.useState(false);
+  const isOpenControlled = isOpen !== undefined;
+  const [internalIsEditing, setInternalIsEditing] = React.useState(false);
+  const isEditing = isOpenControlled ? !!isOpen : internalIsEditing;
   const [inputValue, setInputValue] = React.useState(value === null ? "" : String(value));
   const [error, setError] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const setIsEditing = (next: boolean) => {
+    if (!isOpenControlled) setInternalIsEditing(next);
+    onOpenChange?.(next);
+  };
 
   React.useEffect(() => {
     if (!isEditing) setInputValue(value === null ? "" : String(value));
