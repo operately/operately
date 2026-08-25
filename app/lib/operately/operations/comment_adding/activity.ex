@@ -112,6 +112,20 @@ defmodule Operately.Operations.CommentAdding.Activity do
     end)
   end
 
+  def insert(multi, creator, action = :kpi_entry_commented, entity) do
+    entity = Operately.Repo.preload(entity, :kpi)
+
+    Activities.insert_sync(multi, creator.id, action, fn changes ->
+      %{
+        company_id: creator.company_id,
+        space_id: entity.kpi.space_id,
+        kpi_id: entity.kpi_id,
+        entry_id: entity.id,
+        comment_id: changes.comment.id
+      }
+    end)
+  end
+
   def insert(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
     activity = Operately.Repo.preload(entity, :activity).activity
 

@@ -23,4 +23,14 @@ defmodule OperatelyEmail.DigestParent do
       name: milestone.project.name
     }
   end
+
+  def for_kpi(kpi) do
+    kpi = Operately.Repo.preload(kpi, :space)
+
+    %{
+      id: kpi.space.id,
+      type: :space,
+      name: kpi.space.name
+    }
+  end
 end

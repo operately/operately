@@ -1,7 +1,9 @@
 import React from "react";
 
-import { Form, NumberInput, Submit, useForm } from "../Forms";
+import { Form, NumberInput, RichTextArea, Submit, useForm } from "../Forms";
 import { Modal } from "../Modal";
+import { emptyContent, isContentEmpty } from "../RichContent";
+import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { SpaceKpisPage } from "./types";
 import { formatShortDate, formatValue, latestEntry } from "./utils";
 
@@ -10,6 +12,7 @@ interface LogUpdateFormProps {
   isOpen: boolean;
   onClose: () => void;
   onRecord: (input: SpaceKpisPage.RecordEntryInput) => Promise<SpaceKpisPage.MutationResult>;
+  richTextHandlers: RichEditorHandlers;
 }
 
 // Local `YYYY-MM-DD` for today, used as the default period so logging is a
@@ -31,7 +34,7 @@ function formatPeriodLabel(period: string): string {
 
 // Single-KPI "Log update" form → calls the `logKpiEntry` mutation.
 // This POC intentionally has NO "update all KPIs at once" batch UI — one KPI at a time.
-export function LogUpdateForm({ kpi, isOpen, onClose, onRecord }: LogUpdateFormProps) {
+export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers }: LogUpdateFormProps) {
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   // The date defaults to today and stays a low-prominence affordance; revealing
@@ -41,9 +44,10 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord }: LogUpdateFormP
   const periodInputRef = React.useRef<HTMLInputElement>(null);
 
   // `value` is stored as a string because NumberInput is text-backed; it is
-  // coerced to a number on submit for the mutation.
-  const form = useForm<{ value: string; period: string }>({
-    fields: { value: "", period: today() },
+  // coerced to a number on submit for the mutation. `note` holds rich text and
+  // is posted as the update's first comment when it isn't left blank.
+  const form = useForm<{ value: string; period: string; note: Record<string, unknown> }>({
+    fields: { value: "", period: today(), note: emptyContent() },
     validate: (addError) => {
       if (form.values.value.trim() === "" || Number.isNaN(Number(form.values.value))) {
         addError("value", "Enter a value");
@@ -56,7 +60,13 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord }: LogUpdateFormP
       if (!kpi) return;
       setSubmitError(null);
 
-      const result = await onRecord({ kpiId: kpi.id, value: Number(form.values.value), period: form.values.period });
+      const note = form.values.note;
+      const result = await onRecord({
+        kpiId: kpi.id,
+        value: Number(form.values.value),
+        period: form.values.period,
+        comment: isContentEmpty(note) ? undefined : note,
+      });
 
       if (result.success) {
         form.actions.reset();
@@ -118,12 +128,13 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord }: LogUpdateFormP
                 className="w-full rounded-lg border border-surface-outline bg-surface-base px-3 py-1.5 text-sm text-content-accent"
                 data-test-id="log-update-period"
               />
-              {form.errors["period"] && (
-                <div className="mt-1 text-sm text-content-error">{form.errors["period"]}</div>
-              )}
+              {form.errors["period"] && <div className="mt-1 text-sm text-content-error">{form.errors["period"]}</div>}
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-sm text-content-dimmed" data-test-id="log-update-period-summary">
+            <div
+              className="flex items-center gap-2 text-sm text-content-dimmed"
+              data-test-id="log-update-period-summary"
+            >
               <span>
                 Logging for{" "}
                 <span className="font-medium text-content-base">
@@ -140,6 +151,18 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord }: LogUpdateFormP
               </button>
             </div>
           )}
+        </div>
+
+        <div className="mt-4">
+          <RichTextArea
+            field="note"
+            label="Note (optional)"
+            placeholder="What's behind this number?"
+            richTextHandlers={richTextHandlers}
+            height="min-h-[80px]"
+            hideToolbar
+          />
+          <p className="mt-1 text-xs text-content-dimmed">Posted as the first comment on this update.</p>
         </div>
 
         {submitError && (

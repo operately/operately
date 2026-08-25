@@ -4446,6 +4446,65 @@
           }
         ]
       },
+      "activity_content_kpi_entry_commented": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "entry",
+            "type": {
+              "name": "kpi_entry",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "comment",
+            "type": {
+              "name": "comment",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "activity_content_guest_invited": {
         "fields": [
           {
@@ -9633,6 +9692,17 @@
           },
           {
             "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
             "name": "champion",
             "type": {
               "name": "person",
@@ -9662,6 +9732,17 @@
                 "kind": "named"
               },
               "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "subscription_list",
+            "type": {
+              "name": "subscription_list",
+              "kind": "named"
             },
             "optional": true,
             "has_default": false,
@@ -12845,6 +12926,17 @@
             "name": "recorded_by",
             "type": {
               "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "comments_count",
+            "type": {
+              "name": "integer",
               "kind": "named"
             },
             "optional": true,
@@ -21547,6 +21639,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_kpi_entry_commented",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_goal_archived",
           "kind": "named"
         },
@@ -21994,7 +22090,8 @@
         "resource_hub_link",
         "space_task",
         "project_task",
-        "milestone"
+        "milestone",
+        "kpi_entry"
       ],
       "search_scope_options": [
         "company",
@@ -22083,7 +22180,8 @@
         "project",
         "milestone",
         "project_task",
-        "space_task"
+        "space_task",
+        "kpi"
       ],
       "project_template_schedule_field": [
         "start_date",
@@ -22254,7 +22352,8 @@
         "space_task",
         "resource_hub_document",
         "resource_hub_file",
-        "resource_hub_link"
+        "resource_hub_link",
+        "kpi_entry"
       ],
       "project_template_archive_status": [
         "active",
@@ -28787,7 +28886,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -28914,7 +29013,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,

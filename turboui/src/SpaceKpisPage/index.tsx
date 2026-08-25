@@ -105,6 +105,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         isOpen={logKpiId !== null}
         onClose={() => setLogKpiId(null)}
         onRecord={props.onRecordEntry}
+        richTextHandlers={props.richTextHandlers}
       />
     </PageNew>
   );
@@ -226,18 +227,18 @@ function KpisContent(props: KpisContentProps) {
         kpi={selectedKpi}
         fields={openKpi}
         canManage={props.canManage}
+        canComment={props.canComment}
         championSearch={props.championSearch}
         onDescriptionChange={props.onDescriptionChange}
         onDelete={props.onOpenDelete}
         richTextHandlers={props.richTextHandlers}
+        renderEntryComments={props.renderEntryComments}
         subscriptions={props.subscriptions}
       />
     );
   }
 
-  return (
-    <KpiList kpis={props.kpis} canManage={props.canManage} onNewKpi={props.onOpenNew} />
-  );
+  return <KpiList kpis={props.kpis} canManage={props.canManage} onNewKpi={props.onOpenNew} />;
 }
 
 function LoadingState() {

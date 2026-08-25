@@ -113,7 +113,7 @@ function CommentInputActive({
   return (
     <div className="py-6 not-first:border-t border-stroke-base flex items-start gap-3" data-test-id="new-comment-form">
       <Avatar person={currentUser} size="normal" />
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="border border-surface-outline rounded-lg overflow-hidden">
           <Editor editor={editor} hideBorder padding="p-0" />
 

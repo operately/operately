@@ -73,6 +73,19 @@ defmodule OperatelyWeb.Api.Comments.List do
     |> load_notifications(person, action: "space_task_commented")
   end
 
+  defp load(id, :kpi_entry, person) do
+    from(c in Comment,
+      join: entry in Operately.Kpis.KpiEntry, on: c.entity_id == entry.id,
+      join: kpi in assoc(entry, :kpi),
+      join: space in assoc(kpi, :space), as: :space,
+      where: entry.id == ^id and c.entity_type == :kpi_entry
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :space)
+    |> Repo.all()
+    |> load_notifications(person, action: "kpi_entry_commented")
+  end
+
   defp load(id, :goal_update, person) do
     from(c in Comment, join: u in Operately.Goals.Update, on: c.entity_id == u.id, as: :update, where: u.id == ^id)
     |> preload_resources()

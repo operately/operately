@@ -8,6 +8,7 @@
 // Intentionally simpler than Goals/Targets: raw value + unit only, no
 // target/threshold fields.
 //
+import type { ReactNode } from "react";
 import type { Navigation } from "../Page/Navigation";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection } from "../SidebarSection";
@@ -36,6 +37,7 @@ export namespace SpaceKpisPage {
     value: number;
     recordedAt: Date;
     recordedBy: Person | null;
+    commentsCount: number;
   }
 
   export interface Kpi {
@@ -86,6 +88,10 @@ export namespace SpaceKpisPage {
     kpiId: string;
     value: number;
     period: string;
+
+    // Optional note explaining the value, posted as the update's first comment.
+    // Absent when the author left the note blank.
+    comment?: Record<string, unknown>;
   }
 
   export type MutationResult = { success: boolean; id?: string; error?: string };
@@ -121,6 +127,11 @@ export namespace SpaceKpisPage {
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
     richTextHandlers: RichEditorHandlers;
+
+    // Comments on a recorded update. The app supplies the comment thread so
+    // TurboUI stays free of API calls; opening a row shows it in a slide-in.
+    renderEntryComments?: (entry: KpiEntry) => ReactNode;
+    canComment?: boolean;
 
     // Route-loader driven data states.
     loading?: boolean;

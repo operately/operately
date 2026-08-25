@@ -16,7 +16,8 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Create do
     "file" => :resource_hub_file,
     "link" => :resource_hub_link,
     "project_task" => :project_task,
-    "space_task" => :space_task
+    "space_task" => :space_task,
+    "kpi_update" => :kpi_entry
   }
 
   @impl true
