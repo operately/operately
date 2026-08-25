@@ -92,6 +92,19 @@ function renderPage(overrides: Partial<ProjectTemplatesPage.Props> = {}) {
 }
 
 describe("ProjectTemplatesPage", () => {
+  it("uses the established Space section paper header", () => {
+    const { container } = renderPage();
+
+    const page = container.querySelector('[data-test-id="project-templates-page"]');
+    const title = screen.getByText("Project Templates");
+    const newTemplateButton = screen.getByRole("button", { name: "New template" });
+
+    expect(page?.parentElement).toHaveClass("lg:max-w-5xl");
+    expect(title).toHaveClass("text-lg", "md:text-2xl", "font-extrabold");
+    expect(title.parentElement).toHaveClass("text-center", "flex-1");
+    expect(newTemplateButton.parentElement).toHaveClass("w-[30%]");
+  });
+
   it("groups company templates by Space and renders card metadata", () => {
     const { container } = renderPage();
 
@@ -153,17 +166,54 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
   });
 
-  it("shows the empty and no-results states", async () => {
-    const { rerender, props } = renderPage({ templates: [] });
-    expect(screen.getByText("No project templates yet.")).toBeInTheDocument();
+  it("keeps the creation action in the header when the library is empty", async () => {
+    const user = userEvent.setup();
+    const { container } = renderPage({ templates: [] });
 
-    rerender(
-      <MemoryRouter>
-        <ProjectTemplatesPage {...props} templates={[]} />
-      </MemoryRouter>,
-    );
+    const emptyState = container.querySelector('[data-test-id="empty-template-library"]');
+    const newTemplateButton = screen.getByRole("button", { name: "New template" });
+
+    expect(screen.getByRole("heading", { name: "Create your first project template" })).toBeInTheDocument();
+    expect(screen.getByText("Build a reusable starting point for recurring work.")).toBeInTheDocument();
+    expect(emptyState?.querySelector("svg")).toBeNull();
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Active" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Create template" })).not.toBeInTheDocument();
+    expect(newTemplateButton.parentElement).toHaveClass("w-[30%]");
+
+    await user.click(newTemplateButton);
+    expect(screen.getByRole("heading", { name: "New project template" })).toBeInTheDocument();
+  });
+
+  it("shows a read-only empty state without a creation action", () => {
+    renderPage({ templates: [], canCreate: false, scope: "space", fixedSpace: spaces[0] });
+
+    expect(screen.getByText("No project templates have been created in this space yet.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Create template" })).not.toBeInTheDocument();
+  });
+
+  it("keeps browsing controls available when filters have no matches", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "missing" } });
-    expect(await screen.findByText("No matching templates. Try a different search or Space.")).toBeInTheDocument();
+
+    expect(screen.getByText("No matching templates.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Active" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Clear filters" }));
+    expect(screen.getByText("Campaign launch")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toHaveValue("");
+  });
+
+  it("keeps archived templates reachable when there are no active templates", async () => {
+    const user = userEvent.setup();
+    const archived = template({ id: "archived", name: "Archived launch", archivedAt: "2026-08-01T12:00:00Z" });
+    renderPage({ templates: [archived] });
+
+    expect(screen.getByText("No active templates.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Active" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "View archived" }));
+    expect(screen.getByText("Archived launch")).toBeInTheDocument();
   });
 
   it("hides creation when the requester cannot create templates", () => {
@@ -259,7 +309,9 @@ describe("ProjectTemplatesPage", () => {
     await waitFor(() => expect(onArchive).toHaveBeenCalledWith("template-1"));
     expect(screen.queryByText("Campaign launch")).not.toBeInTheDocument();
     expect(screen.getByText("Product launch")).toBeInTheDocument();
-    expect(screen.queryByText("This template will leave project creation and can be restored later.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("This template will leave project creation and can be restored later."),
+    ).not.toBeInTheDocument();
   });
 
   it("rolls back an optimistic lifecycle update when the mutation fails", async () => {
