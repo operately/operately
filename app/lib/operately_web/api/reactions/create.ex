@@ -98,6 +98,7 @@ defmodule OperatelyWeb.Api.Reactions.Create do
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document, company_read_only: company_read_only)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_file, company_read_only: company_read_only)
       :resource_hub_link -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_link, company_read_only: company_read_only)
+      :kpi_entry -> Groups.Permissions.check(parent.requester_access_level, :can_comment, company_read_only: company_read_only)
     end
   end
 

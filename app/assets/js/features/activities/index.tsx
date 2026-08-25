@@ -65,6 +65,7 @@ export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
   "kpi_created",
+  "kpi_entry_commented",
   "goal_check_toggled",
   "goal_check_removing",
   "goal_check_adding",
@@ -208,6 +209,7 @@ import GoalCheckInCommented from "@/features/activities/GoalCheckInCommented";
 import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import KpiCreated from "@/features/activities/KpiCreated";
+import KpiEntryCommented from "@/features/activities/KpiEntryCommented";
 import GoalDiscussionCreation from "@/features/activities/GoalDiscussionCreation";
 import GoalEditing from "@/features/activities/GoalEditing";
 import GoalReopening from "@/features/activities/GoalReopening";
@@ -324,6 +326,7 @@ function handler(activity: Activity) {
     .with("goal_closing", () => GoalClosing)
     .with("goal_created", () => GoalCreated)
     .with("kpi_created", () => KpiCreated)
+    .with("kpi_entry_commented", () => KpiEntryCommented)
     .with("goal_discussion_creation", () => GoalDiscussionCreation)
     .with("goal_editing", () => GoalEditing)
     .with("goal_reopening", () => GoalReopening)

@@ -43,4 +43,14 @@ describe("findMentionedScope", () => {
       } as any),
     ).toEqual({ type: "resource_hub", id: "hub-1" });
   });
+
+  test("uses the space scope for KPI update comments", () => {
+    expect(
+      findMentionedScope({
+        parentType: "kpi_entry",
+        kpiEntry: { id: "entry-1" },
+        space: { id: "space-1" },
+      } as any),
+    ).toEqual({ type: "space", id: "space-1" });
+  });
 });

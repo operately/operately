@@ -397,6 +397,14 @@ export interface ActivityContentKpiCreated {
   kpiName: string;
 }
 
+export interface ActivityContentKpiEntryCommented {
+  __typename: "activity_content_kpi_entry_commented";
+  space: Space;
+  kpi: Kpi | null;
+  entry: KpiEntry | null;
+  comment: Comment | null;
+}
+
 export interface ActivityContentMessageArchiving {
   __typename: "activity_content_message_archiving";
   companyId?: string | null;
@@ -1647,6 +1655,7 @@ export interface KpiEntry {
   value: number;
   period: string;
   recordedBy?: Person | null;
+  commentsCount?: number | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2656,6 +2665,7 @@ export type ActivityContent =
   | ActivityContentDiscussionEditing
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
+  | ActivityContentKpiEntryCommented
   | ActivityContentGoalArchived
   | ActivityContentGoalCheckIn
   | ActivityContentGoalCheckInAcknowledgement
@@ -2798,7 +2808,8 @@ export type CommentParentType =
   | "resource_hub_link"
   | "space_task"
   | "project_task"
-  | "milestone";
+  | "milestone"
+  | "kpi_entry";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
@@ -2883,7 +2894,8 @@ export type ReactionParentType =
   | "space_task"
   | "resource_hub_document"
   | "resource_hub_file"
-  | "resource_hub_link";
+  | "resource_hub_link"
+  | "kpi_entry";
 
 export type ResourceAccessTypes = "space" | "goal" | "project";
 

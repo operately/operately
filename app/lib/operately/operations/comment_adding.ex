@@ -47,6 +47,7 @@ defmodule Operately.Operations.CommentAdding do
   defp find_action(%Operately.ResourceHubs.Link{}), do: :resource_hub_link_commented
   defp find_action(%Operately.Tasks.Task{project: %Operately.Projects.Project{}}), do: :project_task_commented
   defp find_action(%Operately.Tasks.Task{space: %Operately.Groups.Group{}}), do: :space_task_commented
+  defp find_action(%Operately.Kpis.KpiEntry{}), do: :kpi_entry_commented
   defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
 
   defp ensure_subscription_step(multi, creator) do

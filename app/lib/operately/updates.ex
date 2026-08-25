@@ -73,6 +73,17 @@ defmodule Operately.Updates do
           where: comment.id == ^id
         )
 
+      :kpi_entry ->
+        from(comment in Comment,
+          as: :comment,
+          join: entry in Operately.Kpis.KpiEntry,
+          on: entry.id == comment.entity_id,
+          join: kpi in assoc(entry, :kpi),
+          join: space in assoc(kpi, :space),
+          as: :resource,
+          where: comment.id == ^id
+        )
+
       :comment_thread ->
         from(c in Comment,
           as: :comment,

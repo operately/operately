@@ -609,3 +609,20 @@ describe("SpaceKpisPage create & log", () => {
     await findByTestId("kpi-line-chart");
   });
 });
+
+describe("SpaceKpisPage KPI update comments", () => {
+  test("opens comments on a recorded update", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({
+      selectedKpi: target,
+      canComment: true,
+      renderEntryComments: () => <div data-test-id="entry-comments-body">Write a comment</div>,
+    });
+
+    await user.click(await findByTestId(`entry-comments-toggle-${entry.id}`));
+    expect(await findByTestId("entry-comments-body")).toHaveTextContent("Write a comment");
+  });
+});
