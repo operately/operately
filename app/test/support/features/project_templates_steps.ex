@@ -127,7 +127,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   step :assert_empty_library, ctx do
     ctx
     |> UI.assert_has(testid: "project-templates-page")
-    |> UI.assert_text("No project templates yet.")
+    |> UI.assert_has(testid: "empty-template-library")
   end
 
   step :assert_new_template_visible, ctx do

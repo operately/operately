@@ -88,6 +88,7 @@ make turboui.test.storybook   # Storybook interaction + smoke tests
 ### Visual Consistency
 
 - **Icons**: Use Tabler icons consistently, hide in list contexts to reduce clutter
+- **Purposeful visuals**: Icons and decorative treatments should communicate meaning, not merely fill space; prefer hierarchy through typography, spacing, and placement when an icon adds no information
 - **Colors**: Use existing color classes (content-subtle, content-error, etc.) defined in tailwind config and outlined in turboui/src/Colors
 - **Spacing**: Use consistent gap and padding patterns
 
@@ -123,9 +124,16 @@ make turboui.test.storybook   # Storybook interaction + smoke tests
 ### Empty State Design
 
 - **Always design for empty states**: Every list, collection, or data display needs a thoughtful empty state
-- **Actionable empty states**: Include clear instructions and prominent CTAs that guide users to the next step
+- **Make the next step clear**: Explain what is missing and make the next useful action easy to find; when an established page-level action already exists, reuse it instead of duplicating or moving it into the empty state
 - **Maintain visual structure**: Empty states should preserve the same visual container as populated states
-- **Guide user intent**: Make the primary action obvious and accessible in empty states
+- **Orient rather than promote**: Empty states should help users understand the feature and what to do next, not become mini landing pages
+
+### Cross-State Consistency
+
+- **Design the system, not the isolated screen**: Prefer patterns that remain coherent across related screens and states over locally optimizing one view
+- **Keep controls stable**: Actions with the same meaning should retain their placement across empty, populated, loading, and filtered states
+- **Use one primary action**: Do not duplicate the same primary action in a page header and its empty state
+- **Disclose controls when useful**: Hide search, filtering, sorting, and advanced controls when they cannot affect the current state; preserve controls that are needed to recover from filters or reach other content states
 
 ### Component Layout Principles
 
@@ -171,7 +179,7 @@ make turboui.test.storybook   # Storybook interaction + smoke tests
 
 ### Interactive Design
 
-- **Contextual placement**: Place actions near the content they affect rather than in distant headers or sidebars
+- **Contextual placement**: Follow established placement for the action's scope; page-level creation belongs in a stable page action area, while item-level actions belong near the content they affect
 - **State management**: Ensure interactive elements actually update state in stories and implementations for realistic behavior
 - **Progressive disclosure**: Show advanced controls contextually within their relevant sections rather than globally
 - **Clear affordances**: Make interactive elements obviously clickable and provide clear feedback on state changes

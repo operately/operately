@@ -130,6 +130,8 @@ end
 For writing, organizing, and running tests, use the **writing-tests** skill
 (`.agents/skills/writing-tests/SKILL.md`).
 
+- When testing behavior or page state, assert stable outcomes, semantic state, or `data-test-id` selectors instead of exact UI copy. Assert exact text only when the wording itself is the behavior under test; do not use user-facing prose as a proxy for application state.
+
 ### Feature Test Notes
 
 - Default targeted run: `make test FILE=app/test/features/some_test.exs`.
