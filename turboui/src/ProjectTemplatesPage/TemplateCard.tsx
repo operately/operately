@@ -64,10 +64,10 @@ export function TemplateCard({
           )}
         </div>
         <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || "No description"}</p>
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
-          <div className="flex min-w-0 items-center gap-2">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
+          <div className="flex min-w-32 flex-1 items-center gap-2">
             {template.creator ? <Avatar person={template.creator} size={20} /> : null}
-            <span className="truncate">{template.creator?.fullName ?? "Creator unavailable"}</span>
+            <span className="min-w-0 break-words">{template.creator?.fullName ?? "Creator unavailable"}</span>
           </div>
           <span className="shrink-0">
             Updated{" "}
