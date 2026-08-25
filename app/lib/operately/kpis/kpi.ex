@@ -9,6 +9,7 @@ defmodule Operately.Kpis.Kpi do
 
     has_one(:access_context, through: [:space, :access_context])
     has_many(:entries, Operately.Kpis.KpiEntry)
+    has_many(:annotations, Operately.Kpis.KpiAnnotation)
 
     field(:name, :string)
     field(:unit, :string)
