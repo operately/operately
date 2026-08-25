@@ -1446,11 +1446,61 @@ describe("TemplateProjectPage", () => {
     renderPage(createProps({ onTaskUpdate }), "/templates/template-1?tab=tasks");
 
     fireEvent.click(screen.getByText("12 days after project starts"));
-    const input = screen.getByRole("textbox", { name: "Set relative date" });
+    const input = screen.getByRole("textbox", { name: "Set when due" });
     fireEvent.change(input, { target: { value: "18" } });
     fireEvent.keyDown(input, { key: "Enter" });
 
     expect(onTaskUpdate).toHaveBeenCalledWith("task-1", { dueOffsetDays: 18 });
+  });
+
+  it("hides an empty due date until hover and always shows the assignee, with due date first", () => {
+    const emptyTask = {
+      ...createProps().tasks[0]!,
+      id: "task-empty",
+      name: "Unscheduled task",
+      dueOffsetDays: null,
+      assignees: [],
+    };
+
+    renderPage(createProps({ tasks: [emptyTask] }), "/templates/template-1?tab=tasks");
+
+    const row = document.querySelector('[data-test-id="template-task-task-empty"]');
+    const dueOffset = document.querySelector('[data-test-id="template-task-task-empty-due-offset"]');
+    const dueDateTrigger = dueOffset?.querySelector("button");
+    const assignees = document.querySelector('[data-test-id="template-task-task-empty-assignees"]');
+
+    expect(row).toHaveClass("group/task-row");
+    expect(row?.querySelector(".hover\\:bg-surface-highlight")).toBeInTheDocument();
+    expect(dueDateTrigger).toHaveClass("[&>span]:text-transparent");
+    expect(dueDateTrigger).toHaveClass("sm:group-hover/task-row:[&>span]:text-content-dimmed");
+    expect(assignees).toBeInTheDocument();
+    expect(assignees?.parentElement).not.toHaveClass("opacity-0");
+    expect(screen.getByText("Set when due")).toBeInTheDocument();
+    expect(dueOffset!.compareDocumentPosition(assignees!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("keeps assigned people and due dates visible without hovering", () => {
+    const champion: Types.TemplatePerson = {
+      id: "template-person-1",
+      person: { id: "person-1", fullName: "Ada Lovelace", avatarUrl: null },
+      role: "contributor",
+      responsibility: null,
+      accessLevel: 70,
+      active: true,
+    };
+
+    renderPage(
+      createProps({ tasks: [{ ...createProps().tasks[0]!, assignees: [champion] }] }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    const dueOffset = document.querySelector('[data-test-id="template-task-task-1-due-offset"]');
+    const dueDateTrigger = dueOffset?.querySelector("button");
+    const assignees = document.querySelector('[data-test-id="template-task-task-1-assignees"]');
+
+    expect(screen.getByText("12 days after project starts")).toBeInTheDocument();
+    expect(dueDateTrigger).not.toHaveClass("[&>span]:text-transparent");
+    expect(assignees?.parentElement).not.toHaveClass("opacity-0");
   });
 
   it("shows assignees on the template task creation modal", () => {
