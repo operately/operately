@@ -62,7 +62,11 @@ export default meta;
 type Story = StoryObj<HarnessArgs>;
 
 function clone(kpis: SpaceKpisPageNS.Kpi[]): SpaceKpisPageNS.Kpi[] {
-  return kpis.map((kpi) => ({ ...kpi, entries: kpi.entries.map((e) => ({ ...e })) }));
+  return kpis.map((kpi) => ({
+    ...kpi,
+    entries: kpi.entries.map((e) => ({ ...e })),
+    annotations: kpi.annotations.map((a) => ({ ...a })),
+  }));
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -93,6 +97,7 @@ function Harness(args: HarnessArgs) {
       link: `${mockKpisLink}/${id}`,
       latestEntry: null,
       entries: [],
+      annotations: [],
     };
 
     setKpis((prev) => [newKpi, ...prev]);
@@ -168,6 +173,75 @@ function Harness(args: HarnessArgs) {
     return { success: true };
   };
 
+  const onAddAnnotation = async (input: SpaceKpisPageNS.AnnotationInput): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("addKpiAnnotation", input);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to annotate this KPI." };
+    }
+
+    const annotation: SpaceKpisPageNS.KpiAnnotation = {
+      id: `annotation-${crypto.randomUUID()}`,
+      date: new Date(`${input.date}T12:00:00`),
+      title: input.title,
+      description: input.description ?? null,
+      createdBy: mockCurrentUser,
+    };
+
+    setKpis((prev) =>
+      prev.map((kpi) => (kpi.id === input.kpiId ? { ...kpi, annotations: [...kpi.annotations, annotation] } : kpi)),
+    );
+    return { success: true, id: annotation.id };
+  };
+
+  const onEditAnnotation = async (
+    input: SpaceKpisPageNS.EditAnnotationInput,
+  ): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("editKpiAnnotation", input);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to edit this annotation." };
+    }
+
+    setKpis((prev) =>
+      prev.map((kpi) => ({
+        ...kpi,
+        annotations: kpi.annotations.map((annotation) =>
+          annotation.id === input.id
+            ? {
+                ...annotation,
+                date: new Date(`${input.date}T12:00:00`),
+                title: input.title,
+                description: input.description ?? null,
+              }
+            : annotation,
+        ),
+      })),
+    );
+
+    return { success: true, id: input.id };
+  };
+
+  const onDeleteAnnotation = async (annotationId: string): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("deleteKpiAnnotation", annotationId);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to delete this annotation." };
+    }
+
+    setKpis((prev) =>
+      prev.map((kpi) => ({
+        ...kpi,
+        annotations: kpi.annotations.filter((annotation) => annotation.id !== annotationId),
+      })),
+    );
+
+    return { success: true };
+  };
+
   return (
     <SpaceKpisPage
       space={mockSpace}
@@ -183,6 +257,9 @@ function Harness(args: HarnessArgs) {
       onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      onAddAnnotation={onAddAnnotation}
+      onEditAnnotation={onEditAnnotation}
+      onDeleteAnnotation={onDeleteAnnotation}
       loading={args.loading}
       error={args.error}
       canManage={args.canManage}
