@@ -1453,7 +1453,7 @@ describe("TemplateProjectPage", () => {
     expect(onTaskUpdate).toHaveBeenCalledWith("task-1", { dueOffsetDays: 18 });
   });
 
-  it("reveals empty due date and assignee controls on hover, with due date first", () => {
+  it("hides an empty due date until hover and always shows the assignee, with due date first", () => {
     const emptyTask = {
       ...createProps().tasks[0]!,
       id: "task-empty",
@@ -1466,13 +1466,15 @@ describe("TemplateProjectPage", () => {
 
     const row = document.querySelector('[data-test-id="template-task-task-empty"]');
     const dueOffset = document.querySelector('[data-test-id="template-task-task-empty-due-offset"]');
+    const dueDateTrigger = dueOffset?.querySelector("button");
     const assignees = document.querySelector('[data-test-id="template-task-task-empty-assignees"]');
 
     expect(row).toHaveClass("group/task-row");
-    expect(dueOffset).toHaveClass("[&>button>span]:text-transparent");
-    expect(dueOffset).toHaveClass("sm:group-hover/task-row:[&>button>span]:text-content-dimmed");
-    expect(assignees?.parentElement).toHaveClass("opacity-0");
-    expect(assignees?.parentElement).toHaveClass("group-hover/task-row:opacity-100");
+    expect(row?.querySelector(".hover\\:bg-surface-highlight")).toBeInTheDocument();
+    expect(dueDateTrigger).toHaveClass("[&>span]:text-transparent");
+    expect(dueDateTrigger).toHaveClass("sm:group-hover/task-row:[&>span]:text-content-dimmed");
+    expect(assignees).toBeInTheDocument();
+    expect(assignees?.parentElement).not.toHaveClass("opacity-0");
     expect(screen.getByText("Set when due")).toBeInTheDocument();
     expect(dueOffset!.compareDocumentPosition(assignees!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
@@ -1493,10 +1495,11 @@ describe("TemplateProjectPage", () => {
     );
 
     const dueOffset = document.querySelector('[data-test-id="template-task-task-1-due-offset"]');
+    const dueDateTrigger = dueOffset?.querySelector("button");
     const assignees = document.querySelector('[data-test-id="template-task-task-1-assignees"]');
 
     expect(screen.getByText("12 days after project starts")).toBeInTheDocument();
-    expect(dueOffset).not.toHaveClass("[&>button>span]:text-transparent");
+    expect(dueDateTrigger).not.toHaveClass("[&>span]:text-transparent");
     expect(assignees?.parentElement).not.toHaveClass("opacity-0");
   });
 

@@ -94,10 +94,7 @@ export function RelativeDayField({
   );
 
   return (
-    <div
-      className={classNames(className, isFormField ? "block" : "inline-flex flex-col items-start")}
-      data-test-id={testId}
-    >
+    <div className={isFormField ? "block" : "inline-flex flex-col items-start"} data-test-id={testId}>
       {label && <label className="mb-1 block text-sm font-bold">{label}</label>}
       {isEditing ? (
         <div className={shellClassName}>
@@ -132,14 +129,12 @@ export function RelativeDayField({
           type="button"
           onClick={startEditing}
           disabled={readonly || !onChange}
-          className={classNames(
-            shellClassName,
-            value === null ? "text-content-dimmed" : "text-content-base",
-            (readonly || !onChange) && "cursor-default",
-          )}
+          className={classNames(shellClassName, (readonly || !onChange) && "cursor-default", className)}
         >
           {!hideCalendarIcon && <IconCalendar size={16} className="shrink-0 text-content-dimmed" />}
-          <span className="truncate">{formatRelativeDay(value, placeholder)}</span>
+          <span className={classNames("truncate", value === null ? "text-content-dimmed" : "text-content-base")}>
+            {formatRelativeDay(value, placeholder)}
+          </span>
         </button>
       )}
       {error && <div className="mt-1 text-xs text-red-500">{error}</div>}

@@ -109,4 +109,10 @@ describe("RelativeDayField", () => {
 
     expect(screen.getByRole("button", { name: "Set relative date" }).querySelector("svg")).toBeNull();
   });
+
+  it("applies className to the trigger button", () => {
+    render(<RelativeDayField value={null} onChange={jest.fn()} className="[&>span]:text-transparent" />);
+
+    expect(screen.getByRole("button", { name: "Set relative date" })).toHaveClass("[&>span]:text-transparent");
+  });
 });

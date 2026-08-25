@@ -12,10 +12,9 @@ import type { TemplateProjectPage } from ".";
 import { useSortableItem } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
 
+// Match TaskItem: empty due dates stay in layout but are invisible until the row is hovered.
 const EMPTY_DUE_DATE_REVEAL_CLASS =
-  "[&>button>span]:text-transparent max-sm:[&>button>span]:text-content-dimmed sm:group-hover/task-row:[&>button>span]:text-content-dimmed group-focus-within/task-row:[&>button>span]:text-content-dimmed";
-const EMPTY_ASSIGNEE_REVEAL_CLASS =
-  "opacity-0 max-sm:opacity-100 transition-opacity group-hover/task-row:opacity-100 group-focus-within/task-row:opacity-100 [&:has([data-state=open])]:opacity-100";
+  "[&>span]:text-transparent max-sm:[&>span]:text-content-dimmed sm:group-hover/task-row:[&>span]:text-content-dimmed group-focus-within/task-row:[&>span]:text-content-dimmed";
 
 export function TaskRow({
   task,
@@ -91,19 +90,24 @@ export function TaskRow({
 
   const stopDragFromInteractive = (event: React.MouseEvent) => event.stopPropagation();
   const hasDueDate = task.dueOffsetDays !== null;
-  const hasVisibleAssignees = currentAssignees.length > 0 || unavailableAssignees.length > 0;
 
   return (
     <div
       ref={ref}
-      className={classNames("group/task-row border-b border-surface-outline last:border-b-0", {
+      className={classNames("group/task-row border-b border-surface-outline last:border-b-0 focus-visible:outline-none", {
         "cursor-grab active:cursor-grabbing": isDraggable && !isDragging,
         "cursor-grabbing bg-surface-accent": isDragging,
       })}
       data-test-id={`template-task-${task.id}`}
       data-task-row-id={task.id}
     >
-      <div className="flex items-center gap-3 px-4 py-2.5">
+      <div
+        className={classNames(
+          "flex items-center gap-3 px-4 py-2.5 transition-colors",
+          "bg-surface-base hover:bg-surface-highlight",
+          "group-focus-visible/task-row:bg-[rgba(224,242,254,0.75)] group-focus-visible/task-row:shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:group-focus-visible/task-row:bg-[rgba(37,99,235,0.20)]",
+        )}
+      >
         <div onMouseDown={stopDragFromInteractive}>
           <StatusSelector
             statusOptions={props.statuses}
@@ -138,10 +142,7 @@ export function TaskRow({
           />
         </div>
         <div
-          className={classNames(
-            "flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1",
-            !hasVisibleAssignees && EMPTY_ASSIGNEE_REVEAL_CLASS,
-          )}
+          className="flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1"
           onMouseDown={stopDragFromInteractive}
         >
           <UnavailableTaskAssignees
