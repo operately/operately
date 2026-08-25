@@ -10,14 +10,10 @@ import { TrendIndicator } from "./TrendIndicator";
 interface KpiListProps {
   kpis: SpaceKpisPage.Kpi[];
   canManage: boolean;
-  onLogUpdate: (kpiId: string) => void;
   onNewKpi: () => void;
 }
 
-// Logging an update is the one action a row offers, since it is the only thing
-// worth doing to several KPIs in a row. Renaming, retuning and deleting a KPI
-// happen on its own page, where its history is there to judge them by.
-export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi }: KpiListProps) {
+export function KpiList({ kpis, canManage, onNewKpi }: KpiListProps) {
   if (kpis.length === 0) {
     return <EmptyState canManage={canManage} onNewKpi={onNewKpi} />;
   }
@@ -31,12 +27,11 @@ export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi }: KpiListProps
             <th className="px-4 py-2 font-medium">Cadence</th>
             <th className="px-4 py-2 font-medium">Champion</th>
             <th className="px-4 py-2 text-right font-medium">Latest value</th>
-            <th className="px-4 py-2" />
           </tr>
         </thead>
         <tbody>
           {kpis.map((kpi) => (
-            <KpiRow key={kpi.id} kpi={kpi} canManage={canManage} onLogUpdate={() => onLogUpdate(kpi.id)} />
+            <KpiRow key={kpi.id} kpi={kpi} />
           ))}
         </tbody>
       </table>
@@ -44,21 +39,13 @@ export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi }: KpiListProps
   );
 }
 
-function KpiRow({
-  kpi,
-  canManage,
-  onLogUpdate,
-}: {
-  kpi: SpaceKpisPage.Kpi;
-  canManage: boolean;
-  onLogUpdate: () => void;
-}) {
+function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
   return (
     <tr
-      className="group border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight"
+      className="border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight"
       data-test-id={`kpi-row-${kpi.id}`}
     >
       <td className="px-4 py-3">
@@ -94,19 +81,6 @@ function KpiRow({
           </div>
         ) : (
           <span className="text-content-subtle">No data</span>
-        )}
-      </td>
-
-      <td className="px-4 py-3 text-right">
-        {canManage && (
-          <button
-            type="button"
-            className="rounded-md px-2 py-1 text-xs font-medium text-link-base opacity-0 transition-opacity hover:bg-surface-accent group-hover:opacity-100"
-            onClick={onLogUpdate}
-            data-test-id={`log-update-${kpi.id}`}
-          >
-            Log update
-          </button>
         )}
       </td>
     </tr>
