@@ -12825,7 +12825,7 @@
               "name": "boolean",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": false
           },
@@ -12836,7 +12836,7 @@
               "name": "boolean",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": false
           },
@@ -12847,7 +12847,7 @@
               "name": "boolean",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": false
           },
@@ -12858,7 +12858,7 @@
               "name": "boolean",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": false
           },
@@ -12869,7 +12869,7 @@
               "name": "boolean",
               "kind": "named"
             },
-            "optional": false,
+            "optional": true,
             "has_default": false,
             "nullable": false
           }
@@ -22435,8 +22435,8 @@
       ]
     }
   },
-  "endpoint_count": 247,
-  "query_count": 73,
+  "endpoint_count": 249,
+  "query_count": 75,
   "mutation_count": 174,
   "endpoints": [
     {
@@ -24938,6 +24938,53 @@
       "method": "GET"
     },
     {
+      "name": "get_document_version",
+      "type": "query",
+      "path": "/api/external/v1/documents/get_document_version",
+      "handler": "OperatelyWeb.Api.Documents.GetVersion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "version",
+          "type": {
+            "name": "document_version",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "documents",
+      "inputs": [
+        {
+          "default": null,
+          "name": "document_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "version_number",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "documents/get_document_version",
+      "method": "GET"
+    },
+    {
       "name": "get_file",
       "type": "query",
       "path": "/api/external/v1/documents/get_file",
@@ -25495,6 +25542,45 @@
       "method": "GET"
     },
     {
+      "name": "list_document_versions",
+      "type": "query",
+      "path": "/api/external/v1/documents/list_document_versions",
+      "handler": "OperatelyWeb.Api.Documents.ListVersions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "versions",
+          "type": {
+            "item": {
+              "name": "document_version",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "documents",
+      "inputs": [
+        {
+          "default": null,
+          "name": "document_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "documents/list_document_versions",
+      "method": "GET"
+    },
+    {
       "name": "publish_document",
       "type": "mutation",
       "path": "/api/external/v1/documents/publish_document",
@@ -25625,10 +25711,79 @@
       "method": "POST"
     },
     {
+      "name": "restore_document_version",
+      "type": "mutation",
+      "path": "/api/external/v1/documents/restore_document_version",
+      "handler": "OperatelyWeb.Api.Documents.RestoreVersion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "document",
+          "type": {
+            "name": "resource_hub_document",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "restored_version",
+          "type": {
+            "name": "document_version",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "documents",
+      "inputs": [
+        {
+          "default": null,
+          "name": "document_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "version_number",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "expected_current_version",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": null,
+      "full_name": "documents/restore_document_version",
+      "method": "POST"
+    },
+    {
       "name": "search",
       "type": "query",
       "path": "/api/external/v1/documents/search",
-      "handler": "OperatelyWeb.Api.ResourceHubs.Search",
+      "handler": "OperatelyWeb.Api.Wrappers.DocsAndFiles.Search",
       "outputs": [
         {
           "default": null,
@@ -25649,14 +25804,36 @@
       "inputs": [
         {
           "default": null,
-          "name": "resource_hub_id",
+          "name": "space_id",
           "type": {
             "name": "id",
             "kind": "named"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         },
         {
           "default": null,
@@ -25670,7 +25847,7 @@
           "nullable": false
         }
       ],
-      "docstring": "Searches indexed, visible content inside one resource hub.",
+      "docstring": "Searches Docs & Files by its Space, Project, or Goal scope.",
       "full_name": "documents/search",
       "method": "GET"
     },
@@ -30463,70 +30640,6 @@
       ],
       "docstring": null,
       "full_name": "project_templates/create_document",
-      "method": "POST"
-    },
-    {
-      "name": "create_files",
-      "type": "mutation",
-      "path": "/api/external/v1/project_templates/create_files",
-      "handler": "OperatelyWeb.Api.ProjectTemplates.CreateFiles",
-      "outputs": [
-        {
-          "default": null,
-          "name": "files",
-          "type": {
-            "item": {
-              "name": "project_template_resource_file",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_templates",
-      "inputs": [
-        {
-          "default": null,
-          "name": "template_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "parent_folder_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "files",
-          "type": {
-            "item": {
-              "name": "project_template_uploaded_file",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": null,
-      "full_name": "project_templates/create_files",
       "method": "POST"
     },
     {

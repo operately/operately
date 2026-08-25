@@ -585,6 +585,126 @@ describe("documents/create_file", () => {
   });
 });
 
+describe("project_templates/create_file", () => {
+  it("uploads a local file before creating the template resource", async () => {
+    const calls: Array<{ kind: string; path?: string; inputs?: Record<string, unknown> }> = [];
+
+    const payload = await executeCustomEndpointCommand(
+      buildInput("project_templates/create_file", {
+        template_id: "template-1",
+        parent_folder_id: "folder-1",
+        file: "./report.pdf",
+        name: "Reusable report",
+        description: '{"type":"doc","content":[]}',
+      }),
+      {
+        callExternalMutation: async ({ path, inputs }) => {
+          calls.push({ kind: "mutation", path, inputs });
+
+          if (path === "/create_blob") {
+            return {
+              blobs: [
+                {
+                  id: "blob-1",
+                  signed_upload_url: "https://uploads.example.com/blob-1",
+                  upload_strategy: "direct",
+                },
+              ],
+            };
+          }
+
+          return { files: [{ id: "template-file-1" }] };
+        },
+        uploadToSignedUrl: async ({ signedUploadUrl, contentType, fileBytes }) => {
+          calls.push({
+            kind: "upload",
+            path: signedUploadUrl,
+            inputs: { contentType, size: fileBytes.byteLength },
+          });
+        },
+        readFile: () => Buffer.from("file-bytes"),
+        statFile: () => ({ size: 10 } as Stats),
+        inferMimeType: () => "application/pdf",
+      },
+    );
+
+    assert.deepEqual(payload, { files: [{ id: "template-file-1" }] });
+    assert.deepEqual(calls, [
+      {
+        kind: "mutation",
+        path: "/create_blob",
+        inputs: {
+          files: [{ filename: "report.pdf", size: 10, content_type: "application/pdf" }],
+        },
+      },
+      {
+        kind: "upload",
+        path: "https://uploads.example.com/blob-1",
+        inputs: { contentType: "application/pdf", size: 10 },
+      },
+      {
+        kind: "mutation",
+        path: "/mark_blob_uploaded",
+        inputs: { blob_id: "blob-1" },
+      },
+      {
+        kind: "mutation",
+        path: "/api/external/v1/project_templates/create_files",
+        inputs: {
+          template_id: "template-1",
+          parent_folder_id: "folder-1",
+          files: [
+            {
+              blob_id: "blob-1",
+              preview_blob_id: null,
+              name: "Reusable report.pdf",
+              description: '{"type":"doc","content":[]}',
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  it("does not finalize or create a template resource when upload fails", async () => {
+    const calledPaths: string[] = [];
+
+    await assert.rejects(
+      executeCustomEndpointCommand(
+        buildInput("project_templates/create_file", { template_id: "template-1", file: "./report.pdf" }),
+        {
+          callExternalMutation: async ({ path }) => {
+            calledPaths.push(path);
+
+            if (path === "/create_blob") {
+              return {
+                blobs: [
+                  {
+                    id: "blob-1",
+                    signed_upload_url: "https://uploads.example.com/blob-1",
+                    upload_strategy: "direct",
+                  },
+                ],
+              };
+            }
+
+            return {};
+          },
+          uploadToSignedUrl: async () => {
+            throw new Error("upload failed");
+          },
+          readFile: () => Buffer.from("file-bytes"),
+          statFile: () => ({ size: 10 } as Stats),
+          inferMimeType: () => "application/pdf",
+        },
+      ),
+      /upload failed/,
+    );
+
+    assert.deepEqual(calledPaths, ["/create_blob"]);
+  });
+});
+
 describe("custom endpoint registration", () => {
   it("accepts catalogs where all custom endpoints are implemented", () => {
     assert.doesNotThrow(() =>
