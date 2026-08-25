@@ -2595,11 +2595,11 @@ export interface UpdateContentStatusUpdate {
 }
 
 export interface UpdateSpaceToolsPayload {
-  tasksEnabled: boolean;
-  discussionsEnabled: boolean;
-  resourceHubEnabled: boolean;
-  kpisEnabled: boolean;
-  templatesEnabled: boolean;
+  tasksEnabled?: boolean;
+  discussionsEnabled?: boolean;
+  resourceHubEnabled?: boolean;
+  kpisEnabled?: boolean;
+  templatesEnabled?: boolean;
 }
 
 export interface UpdateTargetInput {
