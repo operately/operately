@@ -98,5 +98,7 @@ function findParent(props: Comments.CommentableResource) {
     case "project_discussion":
     case "goal_discussion":
       return props.thread;
+    case "kpi_entry":
+      return props.kpiEntry;
   }
 }

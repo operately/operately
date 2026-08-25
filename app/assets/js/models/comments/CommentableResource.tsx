@@ -47,6 +47,12 @@ interface ParentCommentThread {
   project?: { id: string };
 }
 
+interface ParentKpiEntry {
+  kpiEntry: { id: string };
+  space: { id: string };
+  parentType: "kpi_entry";
+}
+
 export type CommentableResource =
   | ParentDiscussion
   | ParentProjectCheckIn
@@ -55,4 +61,5 @@ export type CommentableResource =
   | ParentResourceHubFile
   | ParentResourceHubLink
   | ParentGoalUpdate
-  | ParentCommentThread;
+  | ParentCommentThread
+  | ParentKpiEntry;

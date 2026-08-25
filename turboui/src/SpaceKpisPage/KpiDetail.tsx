@@ -9,7 +9,7 @@ import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { showErrorToast, showSuccessToast } from "../Toasts";
-import { IconLink, IconTrash } from "../icons";
+import { IconLink, IconMessage, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -20,10 +20,12 @@ interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
   fields: KpiFields;
   canManage: boolean;
+  canComment?: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
   onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
   onDelete: () => void;
   richTextHandlers: RichEditorHandlers;
+  renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
   subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }
 
@@ -34,10 +36,12 @@ export function KpiDetail({
   kpi,
   fields,
   canManage,
+  canComment = false,
   championSearch,
   onDescriptionChange,
   onDelete,
   richTextHandlers,
+  renderEntryComments,
   subscriptions,
 }: KpiDetailProps) {
   const [description, setDescription] = React.useState(kpi.description);
@@ -74,7 +78,12 @@ export function KpiDetail({
             <KpiLineChart entries={kpi.entries} unit={fields.unit} />
           </div>
 
-          <EntriesTable entries={kpi.entries} unit={fields.unit} />
+          <EntriesTable
+            entries={kpi.entries}
+            unit={fields.unit}
+            canComment={canComment}
+            renderEntryComments={renderEntryComments}
+          />
         </div>
       </div>
 
@@ -312,7 +321,19 @@ function CadenceField({
   );
 }
 
-function EntriesTable({ entries, unit }: { entries: SpaceKpisPage.KpiEntry[]; unit: string }) {
+function EntriesTable({
+  entries,
+  unit,
+  canComment,
+  renderEntryComments,
+}: {
+  entries: SpaceKpisPage.KpiEntry[];
+  unit: string;
+  canComment: boolean;
+  renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
+}) {
+  const [openEntryId, setOpenEntryId] = React.useState<string | null>(null);
+
   if (entries.length === 0) return null;
 
   // Show newest first in the log, even though entries are stored oldest -> newest.
@@ -328,31 +349,60 @@ function EntriesTable({ entries, unit }: { entries: SpaceKpisPage.KpiEntry[]; un
               <th className="px-4 py-2 font-medium">Date</th>
               <th className="px-4 py-2 font-medium">Recorded by</th>
               <th className="px-4 py-2 text-right font-medium">Value</th>
+              <th className="px-4 py-2 text-right font-medium">Comments</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((entry) => (
-              <tr
-                key={entry.id}
-                className="border-b border-stroke-dimmed last:border-b-0"
-                data-test-id={`entry-row-${entry.id}`}
-              >
-                <td className="px-4 py-2 text-content-base">{formatShortDate(entry.recordedAt)}</td>
-                <td className="px-4 py-2">
-                  {entry.recordedBy ? (
-                    <div className="flex items-center gap-2">
-                      <Avatar person={entry.recordedBy} size="tiny" />
-                      <span className="text-content-base">{entry.recordedBy.fullName}</span>
-                    </div>
-                  ) : (
-                    <span className="text-content-subtle">Unknown</span>
+            {rows.map((entry) => {
+              const isOpen = openEntryId === entry.id;
+              const commentsCount = entry.commentsCount ?? 0;
+              const canOpenComments = Boolean(renderEntryComments) && (canComment || commentsCount > 0);
+
+              return (
+                <React.Fragment key={entry.id}>
+                  <tr className="border-b border-stroke-dimmed last:border-b-0" data-test-id={`entry-row-${entry.id}`}>
+                    <td className="px-4 py-2 text-content-base">{formatShortDate(entry.recordedAt)}</td>
+                    <td className="px-4 py-2">
+                      {entry.recordedBy ? (
+                        <div className="flex items-center gap-2">
+                          <Avatar person={entry.recordedBy} size="tiny" />
+                          <span className="text-content-base">{entry.recordedBy.fullName}</span>
+                        </div>
+                      ) : (
+                        <span className="text-content-subtle">Unknown</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-right font-medium text-content-accent">{formatValue(entry.value, unit)}</td>
+                    <td className="px-4 py-2 text-right">
+                      {canOpenComments ? (
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1.5 rounded px-1.5 py-1 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
+                          onClick={() => setOpenEntryId(isOpen ? null : entry.id)}
+                          data-test-id={`entry-comments-toggle-${entry.id}`}
+                          aria-expanded={isOpen}
+                        >
+                          <IconMessage size={14} />
+                          {commentsCount > 0 ? commentsCount : "Comment"}
+                        </button>
+                      ) : commentsCount > 0 ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs text-content-dimmed">
+                          <IconMessage size={14} />
+                          {commentsCount}
+                        </span>
+                      ) : null}
+                    </td>
+                  </tr>
+                  {isOpen && renderEntryComments && (
+                    <tr className="border-b border-stroke-dimmed last:border-b-0 bg-surface-base" data-test-id={`entry-comments-${entry.id}`}>
+                      <td colSpan={4} className="px-4 py-4">
+                        {renderEntryComments(entry)}
+                      </td>
+                    </tr>
                   )}
-                </td>
-                <td className="px-4 py-2 text-right font-medium text-content-accent">
-                  {formatValue(entry.value, unit)}
-                </td>
-              </tr>
-            ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>

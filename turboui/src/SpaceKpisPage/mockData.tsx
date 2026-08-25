@@ -49,6 +49,7 @@ function makeEntries(
       value: sample.value,
       recordedAt: daysAgo(sample.daysAgo),
       recordedBy: sample.by,
+      commentsCount: 0,
     }))
     .sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime());
 }
