@@ -371,7 +371,7 @@ describe("SpaceKpisPage list latest value", () => {
       champion: null,
       insertedAt: new Date(),
       link: `${kpisLink}/kpi-throughput`,
-      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null },
+      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null, commentsCount: 0 },
       entries: [],
     };
 
@@ -581,7 +581,7 @@ describe("SpaceKpisPage create & log", () => {
       const [kpi, setKpi] = React.useState(base);
 
       const onRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
-        const entry = { id: "new-entry", value: input.value, recordedAt: new Date(), recordedBy: null };
+        const entry = { id: "new-entry", value: input.value, recordedAt: new Date(), recordedBy: null, commentsCount: 0 };
         setKpi((current) => ({ ...current, entries: [...current.entries, entry] }));
 
         return { success: true };
@@ -607,5 +607,22 @@ describe("SpaceKpisPage create & log", () => {
 
     // With the refreshed KPI there are two entries, so the chart plots a line.
     await findByTestId("kpi-line-chart");
+  });
+});
+
+describe("SpaceKpisPage KPI update comments", () => {
+  test("opens comments on a recorded update", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({
+      selectedKpi: target,
+      canComment: true,
+      renderEntryComments: () => <div data-test-id="entry-comments-body">Write a comment</div>,
+    });
+
+    await user.click(await findByTestId(`entry-comments-toggle-${entry.id}`));
+    expect(await findByTestId("entry-comments-body")).toHaveTextContent("Write a comment");
   });
 });

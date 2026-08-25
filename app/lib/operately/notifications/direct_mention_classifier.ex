@@ -33,6 +33,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"kpi_entry_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}}},
     {"discussion_posting", %{resource: :message, resource_id: {:content, "discussion_id"}}},
     {"discussion_editing", %{resource: :message, resource_id: {:content, "discussion_id"}}},

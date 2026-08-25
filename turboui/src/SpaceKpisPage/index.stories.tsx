@@ -154,6 +154,7 @@ function Harness(args: HarnessArgs) {
                 value: input.value,
                 recordedAt: new Date(),
                 recordedBy: mockCurrentUser,
+                commentsCount: 0,
               };
               return { ...kpi, latestEntry: entry, entries: [...kpi.entries, entry] };
             })()

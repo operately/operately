@@ -273,7 +273,8 @@ defmodule Operately.Mcp.ToolsTest do
              "file",
              "link",
              "project_task",
-             "space_task"
+             "space_task",
+             "kpi_update"
            ])
 
     assert create_comment["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]

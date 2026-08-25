@@ -7,6 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.KpiEntry do
       value: entry.value,
       period: Serializer.serialize(entry.period),
       recorded_by: Serializer.serialize(entry.recorded_by),
+      comments_count: Map.get(entry, :comments_count) || 0,
       inserted_at: Serializer.serialize(entry.inserted_at),
       updated_at: Serializer.serialize(entry.updated_at)
     }

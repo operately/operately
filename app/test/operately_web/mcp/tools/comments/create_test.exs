@@ -58,10 +58,14 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.CreateTest do
         |> Factory.add_message(:discussion, :board)
         |> Factory.create_space_task(:task, :space)
 
+      kpi = Operately.KpisFixtures.kpi_fixture(ctx.creator, space_id: ctx.space.id)
+      entry = Operately.KpisFixtures.kpi_entry_fixture(ctx.creator, kpi)
+
       conn = ToolConnHelper.conn_with_assigns(ctx.account, ctx.company, ctx.creator, ["mcp:read", "mcp:write"])
 
       assert_created_comment(conn, Paths.message_id(ctx.discussion), "space_discussion", "Comment on space discussion")
       assert_created_comment(conn, Paths.task_id(ctx.task), "space_task", "Comment on space task")
+      assert_created_comment(conn, Paths.kpi_entry_id(entry), "kpi_update", "Comment on KPI update")
     end
 
     test "creates comments for resource hub resources" do
