@@ -31,14 +31,7 @@ defmodule OperatelyWeb.Api.Kpis do
       |> run(:me, fn -> find_me(conn) end)
       |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
       |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view, company_read_only: company_read_only(conn)) end)
-      |> run(:kpis, fn ctx ->
-        kpis =
-          Kpis.list_kpis(ctx.space.id)
-          |> Repo.preload(:champion)
-          |> Kpis.load_recent_entries()
-
-        {:ok, kpis}
-      end)
+      |> run(:kpis, fn ctx -> {:ok, Kpis.list_kpis_with_recent_entries(ctx.space.id)} end)
       |> run(:serialized, fn ctx -> {:ok, %{kpis: Serializer.serialize(ctx.kpis, level: :essential)}} end)
       |> respond()
     end

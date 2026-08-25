@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   alias Operately.Groups.SpaceTools
   alias OperatelyWeb.Api.ProjectTemplates.List, as: ProjectTemplateList
   alias Operately.Access.Filters
-  alias Operately.Kpis.{Kpi, KpiEntry}
+  alias Operately.Kpis
 
   inputs do
     field :space_id, :id, null: false
@@ -198,21 +198,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
   end
 
   defp load_kpis(space_id) do
-    entries_q =
-      from(e in KpiEntry,
-        order_by: e.period,
-        preload: :recorded_by
-      )
-
-    kpis =
-      from(k in Kpi,
-        where: k.space_id == ^space_id,
-        order_by: k.name,
-        preload: [:champion, entries: ^entries_q]
-      )
-      |> Repo.all()
-
-    {:ok, kpis}
+    {:ok, Kpis.list_kpis_with_recent_entries(space_id)}
   end
 
   defp load_templates(space, me) do

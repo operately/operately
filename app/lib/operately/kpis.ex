@@ -18,6 +18,17 @@ defmodule Operately.Kpis do
     |> Repo.all()
   end
 
+  @doc """
+  Lists a space's KPIs ready to be rendered in a list: champion preloaded, and a
+  bounded window of recent history per KPI. Every place that lists KPIs uses this
+  so they all plot the same series.
+  """
+  def list_kpis_with_recent_entries(space_id) do
+    list_kpis(space_id)
+    |> Repo.preload(:champion)
+    |> load_recent_entries()
+  end
+
   def get_kpi(id), do: Repo.get(Kpi, id)
   def get_kpi!(id), do: Repo.get!(Kpi, id)
 
