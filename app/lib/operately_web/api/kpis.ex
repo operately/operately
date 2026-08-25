@@ -78,7 +78,14 @@ defmodule OperatelyWeb.Api.Kpis do
         kpi ->
           # Entries are ordered by period so the chart renders history in order.
           entries = Kpis.list_entries(kpi_id) |> Repo.preload(:recorded_by) |> Operately.Updates.Comment.load_comments_count()
-          {:ok, %{Repo.preload(kpi, [:champion, subscription_list: [subscriptions: :person]]) | entries: entries}}
+          annotations = Kpis.list_annotations(kpi_id) |> Repo.preload(:created_by)
+
+          {:ok,
+           %{
+             Repo.preload(kpi, [:champion, subscription_list: [subscriptions: :person]])
+             | entries: entries,
+               annotations: annotations
+           }}
       end
     end
 
@@ -284,6 +291,160 @@ defmodule OperatelyWeb.Api.Kpis do
         {:error, :space, _} -> {:error, :not_found}
         {:error, :check_permissions, _} -> {:error, :forbidden}
         {:error, :operation, _} -> {:error, :bad_request}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
+  defmodule AddKpiAnnotation do
+    @moduledoc "Marks a date on a KPI chart with a short event title."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :kpi_id, :id, null: false
+      field :date, :date, null: false
+      field :title, :string, null: false
+    end
+
+    outputs do
+      field :annotation, :kpi_annotation, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:kpi, fn -> load_kpi(inputs.kpi_id) end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx ->
+        Kpis.add_annotation(ctx.me, ctx.kpi, %{
+          date: inputs.date,
+          title: inputs.title,
+          created_by_id: ctx.me.id
+        })
+      end)
+      |> run(:serialized, fn ctx -> {:ok, %{annotation: Serializer.serialize(Repo.preload(ctx.operation, :created_by), level: :essential)}} end)
+      |> respond()
+    end
+
+    defp load_kpi(kpi_id) do
+      case Kpis.get_kpi(kpi_id) do
+        nil -> {:error, :not_found}
+        %Kpi{} = kpi -> {:ok, kpi}
+      end
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, ctx} -> {:ok, ctx.serialized}
+        {:error, :kpi, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
+        {:error, :operation, _} -> {:error, :bad_request}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
+  defmodule EditKpiAnnotation do
+    @moduledoc "Edits a KPI chart annotation's date or title."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Kpis.KpiAnnotation
+
+    inputs do
+      field :annotation_id, :id, null: false
+      field? :date, :date, null: true
+      field? :title, :string, null: true
+    end
+
+    outputs do
+      field :annotation, :kpi_annotation, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:annotation, fn -> load_annotation(inputs.annotation_id) end)
+      |> run(:kpi, fn ctx -> {:ok, ctx.annotation.kpi} end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx -> Kpis.edit_annotation(ctx.me, ctx.kpi, ctx.annotation, edit_attrs(inputs)) end)
+      |> run(:serialized, fn ctx -> {:ok, %{annotation: Serializer.serialize(Repo.preload(ctx.operation, :created_by), level: :essential)}} end)
+      |> respond()
+    end
+
+    defp load_annotation(annotation_id) do
+      case Kpis.get_annotation(annotation_id) do
+        nil -> {:error, :not_found}
+        %KpiAnnotation{} = annotation -> {:ok, Repo.preload(annotation, :kpi)}
+      end
+    end
+
+    defp edit_attrs(inputs) do
+      [:date, :title]
+      |> Enum.filter(&Map.has_key?(inputs, &1))
+      |> Map.new(fn key -> {key, inputs[key]} end)
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, ctx} -> {:ok, ctx.serialized}
+        {:error, :annotation, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
+        {:error, :operation, _} -> {:error, :bad_request}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
+  defmodule DeleteKpiAnnotation do
+    @moduledoc "Removes a KPI chart annotation."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Kpis.KpiAnnotation
+
+    inputs do
+      field :annotation_id, :id, null: false
+    end
+
+    outputs do
+      field :annotation, :kpi_annotation, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:annotation, fn -> load_annotation(inputs.annotation_id) end)
+      |> run(:kpi, fn ctx -> {:ok, ctx.annotation.kpi} end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx -> Kpis.delete_annotation(ctx.me, ctx.kpi, ctx.annotation) end)
+      |> run(:serialized, fn ctx -> {:ok, %{annotation: Serializer.serialize(Repo.preload(ctx.operation, :created_by), level: :essential)}} end)
+      |> respond()
+    end
+
+    defp load_annotation(annotation_id) do
+      case Kpis.get_annotation(annotation_id) do
+        nil -> {:error, :not_found}
+        %KpiAnnotation{} = annotation -> {:ok, Repo.preload(annotation, :kpi)}
+      end
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, ctx} -> {:ok, ctx.serialized}
+        {:error, :annotation, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
+        {:error, :operation, _} -> {:error, :internal_server_error}
         _ -> {:error, :internal_server_error}
       end
     end

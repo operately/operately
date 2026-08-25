@@ -388,6 +388,33 @@ export interface ActivityContentGuestInvited {
   person: Person;
 }
 
+export interface ActivityContentKpiAnnotationAdded {
+  __typename: "activity_content_kpi_annotation_added";
+  space: Space;
+  kpi: Kpi | null;
+  annotation?: KpiAnnotation | null;
+  title: string;
+  date: string;
+}
+
+export interface ActivityContentKpiAnnotationDeleted {
+  __typename: "activity_content_kpi_annotation_deleted";
+  space: Space;
+  kpi: Kpi | null;
+  title: string;
+  date: string;
+}
+
+export interface ActivityContentKpiAnnotationEdited {
+  __typename: "activity_content_kpi_annotation_edited";
+  space: Space;
+  kpi: Kpi | null;
+  annotation?: KpiAnnotation | null;
+  oldTitle: string;
+  newTitle: string;
+  date: string;
+}
+
 export interface ActivityContentKpiCreated {
   __typename: "activity_content_kpi_created";
   company: Company;
@@ -1644,7 +1671,18 @@ export interface Kpi {
   champion?: Person | null;
   latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
+  annotations?: KpiAnnotation[] | null;
   subscriptionList?: SubscriptionList | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface KpiAnnotation {
+  __typename: "kpi_annotation";
+  id: Id;
+  date: string;
+  title: string;
+  createdBy?: Person | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2666,6 +2704,9 @@ export type ActivityContent =
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
   | ActivityContentKpiEntryCommented
+  | ActivityContentKpiAnnotationAdded
+  | ActivityContentKpiAnnotationEdited
+  | ActivityContentKpiAnnotationDeleted
   | ActivityContentGoalArchived
   | ActivityContentGoalCheckIn
   | ActivityContentGoalCheckInAcknowledgement
