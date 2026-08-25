@@ -94,5 +94,22 @@ export const SpaceLibrary: Story = {
   ),
 };
 export const Empty: Story = { render: () => <StoryPage templates={[]} /> };
+export const EmptyReadOnly: Story = { render: () => <StoryPage templates={[]} canCreate={false} /> };
+export const ArchivedOnly: Story = {
+  render: () => (
+    <StoryPage
+      templates={[
+        {
+          ...templates[0]!,
+          archivedAt: "2026-08-01T12:00:00Z",
+        },
+      ]}
+    />
+  ),
+};
 export const ReadOnly: Story = { render: () => <StoryPage canCreate={false} /> };
 export const Mobile: Story = { parameters: { viewport: { defaultViewport: "mobile1" } }, render: () => <StoryPage /> };
+export const EmptyMobile: Story = {
+  parameters: { viewport: { defaultViewport: "mobile1" } },
+  render: () => <StoryPage templates={[]} />,
+};

@@ -7,6 +7,7 @@ import { DivLink } from "../Link";
 import Modal from "../Modal";
 import { Menu, MenuActionItem } from "../Menu";
 import { Page } from "../Page";
+import { Header as ResourceHubHeader } from "../ResourceHub";
 import {
   ProjectTemplateLifecycle,
   ProjectTemplateLifecycleAction,
@@ -73,6 +74,14 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   const isFiltered =
     search.trim() !== "" || (props.scope === "company" && selectedSpace !== null) || archiveStatus !== "active";
   const visibleTemplates = filterTemplates(templates, search, selectedSpace?.id, archiveStatus);
+  const hasTemplates = templates.length > 0;
+  const hasArchivedTemplates = templates.some((template) => Boolean(template.archivedAt));
+
+  const clearFilters = () => {
+    setSearch("");
+    setSelectedSpace(props.fixedSpace ?? null);
+    setArchiveStatus("active");
+  };
 
   const runOptimisticLifecycle = React.useCallback(
     async (
@@ -91,65 +100,75 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   );
 
   return (
-    <Page title="Project Templates" size="xxlarge" navigation={props.navigation} testId="project-templates-page">
-      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-8">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Project Templates</h1>
-            <p className="mt-1 text-sm text-content-dimmed">Reuse a proven project structure for recurring work.</p>
-          </div>
-          {props.canCreate && (
-            <PrimaryButton onClick={() => setIsCreating(true)} testId="new-project-template">
-              New template
-            </PrimaryButton>
-          )}
-        </header>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative w-full sm:max-w-sm">
-            <IconSearch
-              size={16}
-              className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed"
-            />
-            <Forms.Input
-              type="text"
-              role="searchbox"
-              aria-label="Search project templates"
-              placeholder="Search project templates…"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              className="py-2 pl-9 pr-9 text-sm"
-              testId="project-template-search"
-            />
-            {search && (
-              <button
-                type="button"
-                aria-label="Clear search"
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed hover:text-content-accent"
-              >
-                <IconX size={16} aria-hidden="true" />
-              </button>
-            )}
-          </div>
-          {props.scope === "company" && (
-            <SpaceField
-              space={selectedSpace}
-              setSpace={setSelectedSpace}
-              search={filterSpaceSearch}
-              emptyStateMessage="All Spaces"
-              testId="project-template-space-filter"
-            />
-          )}
-          <ArchiveStatusMenu value={archiveStatus} onChange={setArchiveStatus} />
-        </div>
-
-        <TemplatesContent
-          {...props}
-          templates={visibleTemplates}
-          isFiltered={isFiltered}
-          onLifecycleAction={(template, action) => setLifecycle({ template, action })}
+    <Page title="Project Templates" size="large" navigation={props.navigation} testId="project-templates-page">
+      <main className="min-h-[75vh] px-4 py-10 sm:px-12">
+        <ResourceHubHeader
+          title="Project Templates"
+          actions={
+            props.canCreate ? (
+              <PrimaryButton onClick={() => setIsCreating(true)} testId="new-project-template">
+                New template
+              </PrimaryButton>
+            ) : undefined
+          }
         />
+
+        {hasTemplates && (
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative w-full sm:max-w-sm">
+              <IconSearch
+                size={16}
+                className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed"
+              />
+              <Forms.Input
+                type="text"
+                name="project-template-search"
+                role="searchbox"
+                aria-label="Search project templates"
+                placeholder="Search project templates…"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                className="py-2 pl-9 pr-9 text-base sm:text-sm"
+                testId="project-template-search"
+              />
+              {search && (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed hover:text-content-accent"
+                >
+                  <IconX size={16} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+            {props.scope === "company" && (
+              <SpaceField
+                space={selectedSpace}
+                setSpace={setSelectedSpace}
+                search={filterSpaceSearch}
+                emptyStateMessage="All Spaces"
+                testId="project-template-space-filter"
+              />
+            )}
+            <ArchiveStatusMenu value={archiveStatus} onChange={setArchiveStatus} />
+          </div>
+        )}
+
+        {hasTemplates ? (
+          <TemplatesContent
+            {...props}
+            templates={visibleTemplates}
+            archiveStatus={archiveStatus}
+            hasArchivedTemplates={hasArchivedTemplates}
+            isFiltered={isFiltered}
+            onClearFilters={clearFilters}
+            onViewArchived={() => setArchiveStatus("archived")}
+            onLifecycleAction={(template, action) => setLifecycle({ template, action })}
+          />
+        ) : (
+          <EmptyTemplateLibrary canCreate={props.canCreate} scope={props.scope} />
+        )}
       </main>
 
       <CreateTemplateModal
@@ -188,13 +207,33 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
 function TemplatesContent(
   props: ProjectTemplatesPage.Props & {
     templates: ProjectTemplate[];
+    archiveStatus: ArchiveStatus;
+    hasArchivedTemplates: boolean;
     isFiltered: boolean;
+    onClearFilters: () => void;
+    onViewArchived: () => void;
     onLifecycleAction: (template: ProjectTemplate, action: ProjectTemplateLifecycleAction) => void;
   },
 ) {
+  if (
+    props.templates.length === 0 &&
+    props.archiveStatus === "active" &&
+    props.hasArchivedTemplates &&
+    !props.isFiltered
+  ) {
+    return (
+      <TemplateListMessage actionLabel="View archived" onAction={props.onViewArchived}>
+        No active templates.
+      </TemplateListMessage>
+    );
+  }
+
   if (props.templates.length === 0 && props.isFiltered)
-    return <PageMessage>No matching templates. Try a different search or Space.</PageMessage>;
-  if (props.templates.length === 0) return <PageMessage>No project templates yet.</PageMessage>;
+    return (
+      <TemplateListMessage actionLabel="Clear filters" onAction={props.onClearFilters}>
+        No matching templates.
+      </TemplateListMessage>
+    );
 
   if (props.scope === "space") {
     return <TemplateGrid {...props} />;
@@ -346,13 +385,50 @@ function CreateTemplateModal({
   );
 }
 
-function PageMessage({ children, role = "status" }: { children: React.ReactNode; role?: "status" | "alert" }) {
+function EmptyTemplateLibrary({
+  canCreate,
+  scope,
+}: {
+  canCreate: boolean;
+  scope: ProjectTemplatesPage.Props["scope"];
+}) {
+  const readOnlyMessage =
+    scope === "space"
+      ? "No project templates have been created in this space yet."
+      : "No project templates have been created in this company yet.";
+
   return (
-    <div
-      role={role}
-      className="mt-12 rounded-lg border border-surface-outline px-6 py-12 text-center text-sm text-content-dimmed"
+    <section
+      className="flex flex-col items-center gap-4 px-4 py-20 text-center sm:py-24"
+      data-test-id="empty-template-library"
     >
-      {children}
+      <div className="flex flex-col items-center gap-2">
+        <h2 className="text-balance font-semibold text-content-accent">
+          {canCreate ? "Create your first project template" : "No project templates yet"}
+        </h2>
+        <p className="max-w-sm text-pretty text-base text-content-dimmed sm:text-sm">
+          {canCreate ? "Build a reusable starting point for recurring work." : readOnlyMessage}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function TemplateListMessage({
+  children,
+  actionLabel,
+  onAction,
+}: {
+  children: React.ReactNode;
+  actionLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <div role="status" className="flex flex-col items-center gap-4 px-4 py-16 text-center">
+      <p className="text-pretty text-base text-content-dimmed sm:text-sm">{children}</p>
+      <SecondaryButton size="xs" onClick={onAction}>
+        {actionLabel}
+      </SecondaryButton>
     </div>
   );
 }
