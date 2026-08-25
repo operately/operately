@@ -2,8 +2,7 @@ import React from "react";
 
 import { Avatar } from "../Avatar";
 import { BlackLink } from "../Link";
-import { IconChartColumn, IconDots } from "../icons";
-import { KpiActionsMenu } from "./KpiActionsMenu";
+import { IconChartColumn } from "../icons";
 import type { SpaceKpisPage } from "./types";
 import { formatCadence, formatValue, latestEntry, latestTrend } from "./utils";
 import { TrendIndicator } from "./TrendIndicator";
@@ -13,11 +12,12 @@ interface KpiListProps {
   canManage: boolean;
   onLogUpdate: (kpiId: string) => void;
   onNewKpi: () => void;
-  onEdit: (kpiId: string) => void;
-  onDelete: (kpiId: string) => void;
 }
 
-export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi, onEdit, onDelete }: KpiListProps) {
+// Logging an update is the one action a row offers, since it is the only thing
+// worth doing to several KPIs in a row. Renaming, retuning and deleting a KPI
+// happen on its own page, where its history is there to judge them by.
+export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi }: KpiListProps) {
   if (kpis.length === 0) {
     return <EmptyState canManage={canManage} onNewKpi={onNewKpi} />;
   }
@@ -36,14 +36,7 @@ export function KpiList({ kpis, canManage, onLogUpdate, onNewKpi, onEdit, onDele
         </thead>
         <tbody>
           {kpis.map((kpi) => (
-            <KpiRow
-              key={kpi.id}
-              kpi={kpi}
-              canManage={canManage}
-              onLogUpdate={() => onLogUpdate(kpi.id)}
-              onEdit={() => onEdit(kpi.id)}
-              onDelete={() => onDelete(kpi.id)}
-            />
+            <KpiRow key={kpi.id} kpi={kpi} canManage={canManage} onLogUpdate={() => onLogUpdate(kpi.id)} />
           ))}
         </tbody>
       </table>
@@ -55,14 +48,10 @@ function KpiRow({
   kpi,
   canManage,
   onLogUpdate,
-  onEdit,
-  onDelete,
 }: {
   kpi: SpaceKpisPage.Kpi;
   canManage: boolean;
   onLogUpdate: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
 }) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
@@ -110,31 +99,14 @@ function KpiRow({
 
       <td className="px-4 py-3 text-right">
         {canManage && (
-          <div className="flex items-center justify-end gap-1">
-            <button
-              type="button"
-              className="rounded-md px-2 py-1 text-xs font-medium text-link-base opacity-0 transition-opacity hover:bg-surface-accent group-hover:opacity-100"
-              onClick={onLogUpdate}
-              data-test-id={`log-update-${kpi.id}`}
-            >
-              Log update
-            </button>
-
-            <KpiActionsMenu
-              kpiId={kpi.id}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              customTrigger={
-                <button
-                  type="button"
-                  aria-label="KPI actions"
-                  className="rounded-md p-1 text-content-dimmed opacity-0 transition-opacity hover:bg-surface-accent hover:text-content-base group-hover:opacity-100 data-[state=open]:opacity-100"
-                >
-                  <IconDots size={18} />
-                </button>
-              }
-            />
-          </div>
+          <button
+            type="button"
+            className="rounded-md px-2 py-1 text-xs font-medium text-link-base opacity-0 transition-opacity hover:bg-surface-accent group-hover:opacity-100"
+            onClick={onLogUpdate}
+            data-test-id={`log-update-${kpi.id}`}
+          >
+            Log update
+          </button>
         )}
       </td>
     </tr>
