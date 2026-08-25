@@ -14,7 +14,8 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople
 // Demonstrates the end-to-end KPIs experience described in the POC:
 //   - a KPIs space tool using the same page chrome (breadcrumb header + tool
 //     title) as the other space tools (Work Map, Tasks)
-//   - a list view: name, unit, cadence, champion, latest value + trend
+//   - a list view: name, unit, champion, an inline history sparkline,
+//     latest value + trend
 //   - a detail view: line chart of history, last update + champion + cadence, "Log update"
 //   - a "New KPI" form (name, unit, cadence, champion picker)
 //   - editing a KPI in place on its own page: its name in the page title, its
