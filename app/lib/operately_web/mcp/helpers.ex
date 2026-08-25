@@ -137,6 +137,78 @@ defmodule OperatelyWeb.Mcp.Helpers do
   def put_optional(map, _key, nil), do: map
   def put_optional(map, key, value), do: Map.put(map, key, value)
 
+  def decode_enum(value, allowed) when is_binary(value) do
+    if value in allowed, do: {:ok, String.to_atom(value)}, else: {:error, :invalid_arguments}
+  end
+
+  def decode_enum(_value, _allowed), do: {:error, :invalid_arguments}
+
+  def decode_optional_enum(nil, _allowed), do: {:ok, nil}
+  def decode_optional_enum(value, allowed), do: decode_enum(value, allowed)
+
+  def parse_iso_date(value) when is_binary(value) do
+    case Date.from_iso8601(value) do
+      {:ok, date} -> {:ok, date}
+      {:error, _reason} -> {:error, :invalid_arguments}
+    end
+  end
+
+  def parse_iso_date(_value), do: {:error, :invalid_arguments}
+
+  # MCP-facing names use "contributor"; API/domain keep Person / people.
+  def present_project_template_result({:ok, %{template: template} = result}) do
+    {:ok, %{result | template: present_project_template(template)}}
+  end
+
+  def present_project_template_result({:ok, %{templates: templates} = result}) do
+    {:ok, %{result | templates: Enum.map(templates, &present_project_template/1)}}
+  end
+
+  def present_project_template_result({:ok, %{assignments: assignments} = result}) do
+    {:ok, %{result | assignments: Enum.map(assignments, &present_project_template_assignment/1)}}
+  end
+
+  def present_project_template_result(other), do: other
+
+  def present_project_template(nil), do: nil
+
+  def present_project_template(template) when is_map(template) do
+    template
+    |> rename_map_key(:people, :contributors)
+    |> rename_map_key(:inactive_people_summary, :inactive_contributors_summary)
+    |> present_project_template_task_assignments()
+  end
+
+  def decode_task_reminders(reminders) when is_list(reminders) do
+    Enum.reduce_while(reminders, {:ok, []}, fn reminder, {:ok, decoded} ->
+      case decode_task_reminder(reminder) do
+        {:ok, value} -> {:cont, {:ok, [value | decoded]}}
+        error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:ok, decoded} -> {:ok, Enum.reverse(decoded)}
+      error -> error
+    end
+  end
+
+  def decode_task_reminders(_reminders), do: {:error, :invalid_arguments}
+
+  def decode_template_task_status(%{"id" => id}) when is_binary(id), do: {:ok, %{id: id}}
+  def decode_template_task_status(_status), do: {:error, :invalid_arguments}
+
+  def decode_template_task_statuses(statuses) when is_list(statuses) do
+    {:ok, Enum.map(statuses, &atomize_known_keys(&1, ~w(id label color index value closed)))}
+  end
+
+  def decode_template_task_statuses(_statuses), do: {:error, :invalid_arguments}
+
+  def decode_status_replacements(replacements) when is_list(replacements) do
+    {:ok, Enum.map(replacements, &atomize_known_keys(&1, ~w(deleted_status_id replacement_status_id)))}
+  end
+
+  def decode_status_replacements(_replacements), do: {:error, :invalid_arguments}
+
   def markdown_to_rich_text(content) do
     FromMarkdown.to_rich_text(content)
   end
@@ -248,4 +320,37 @@ defmodule OperatelyWeb.Mcp.Helpers do
   defp decode_optional_boolean(_), do: {:error, :invalid_arguments}
 
   defp task_statuses(task), do: Task.available_statuses(task)
+
+  defp present_project_template_task_assignments(%{task_assignments: assignments} = template) when is_list(assignments) do
+    %{template | task_assignments: Enum.map(assignments, &present_project_template_assignment/1)}
+  end
+
+  defp present_project_template_task_assignments(template), do: template
+
+  defp present_project_template_assignment(assignment) when is_map(assignment) do
+    rename_map_key(assignment, :project_template_person_id, :contributor_id)
+  end
+
+  defp rename_map_key(map, from, to) do
+    case Map.pop(map, from) do
+      {nil, _} -> map
+      {value, rest} -> Map.put(rest, to, value)
+    end
+  end
+
+  defp decode_task_reminder(%{"type" => "before_due", "days" => days}) when is_integer(days) and days > 0 do
+    {:ok, %{type: :before_due, days: days}}
+  end
+
+  defp decode_task_reminder(%{"type" => type}) when type in ["due_day", "overdue"] do
+    {:ok, %{type: String.to_atom(type)}}
+  end
+
+  defp decode_task_reminder(_reminder), do: {:error, :invalid_arguments}
+
+  defp atomize_known_keys(map, keys) do
+    Enum.reduce(keys, %{}, fn key, result ->
+      if Map.has_key?(map, key), do: Map.put(result, String.to_existing_atom(key), map[key]), else: result
+    end)
+  end
 end
