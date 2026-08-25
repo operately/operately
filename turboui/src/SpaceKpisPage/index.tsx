@@ -34,8 +34,8 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   // sidebar — so they are held here and shared by both.
   const openKpi = useKpiFields(selectedKpi, props.onEditKpi);
 
-  // An update can be logged from a list row, or on the open KPI when its page is
-  // shown directly (its permalink may be opened before the list is browsed).
+  // An update is logged from the open KPI's page, whose permalink may be opened
+  // before the list is browsed.
   const logKpi = (() => {
     if (!logKpiId) return null;
     if (selectedKpi?.id === logKpiId) return selectedKpi;
@@ -81,7 +81,6 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             selectedKpi={selectedKpi}
             openKpi={openKpi}
             onOpenNew={() => setIsNewOpen(true)}
-            onOpenLog={setLogKpiId}
             onOpenDelete={() => setIsDeleteOpen(true)}
           />
         </div>
@@ -207,7 +206,6 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   selectedKpi: SpaceKpisPageNS.Kpi | null;
   openKpi: KpiFields | null;
   onOpenNew: () => void;
-  onOpenLog: (id: string) => void;
   onOpenDelete: () => void;
 }
 
@@ -238,7 +236,7 @@ function KpisContent(props: KpisContentProps) {
   }
 
   return (
-    <KpiList kpis={props.kpis} canManage={props.canManage} onLogUpdate={props.onOpenLog} onNewKpi={props.onOpenNew} />
+    <KpiList kpis={props.kpis} canManage={props.canManage} onNewKpi={props.onOpenNew} />
   );
 }
 
