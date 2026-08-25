@@ -40,6 +40,16 @@ export namespace SpaceKpisPage {
     commentsCount: number;
   }
 
+  // A date marked on the KPI chart, typically a launch, pricing change, or
+  // other event that helps explain a movement in the series.
+  export interface KpiAnnotation {
+    id: string;
+    date: Date;
+    title: string;
+    description: string | null;
+    createdBy: Person | null;
+  }
+
   export interface Kpi {
     id: string;
     name: string;
@@ -60,6 +70,10 @@ export namespace SpaceKpisPage {
     // Entries ordered oldest -> newest, ready for charting. Populated by the
     // detail endpoint; empty in the list payload.
     entries: KpiEntry[];
+
+    // Date-based chart markers for events that help explain the series.
+    // Loaded on the KPI's own page; empty in the list payload.
+    annotations: KpiAnnotation[];
   }
 
   // Payload for the `createKpi` mutation / `KpiCreating` operation.
@@ -94,6 +108,20 @@ export namespace SpaceKpisPage {
     comment?: Record<string, unknown>;
   }
 
+  export interface AnnotationInput {
+    kpiId: string;
+    date: string;
+    title: string;
+    description?: string;
+  }
+
+  export interface EditAnnotationInput {
+    id: string;
+    date: string;
+    title: string;
+    description?: string;
+  }
+
   export type MutationResult = { success: boolean; id?: string; error?: string };
 
   export interface Props {
@@ -126,6 +154,9 @@ export namespace SpaceKpisPage {
     onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
+    onAddAnnotation: (input: AnnotationInput) => Promise<MutationResult>;
+    onEditAnnotation: (input: EditAnnotationInput) => Promise<MutationResult>;
+    onDeleteAnnotation: (annotationId: string) => Promise<MutationResult>;
     richTextHandlers: RichEditorHandlers;
 
     // Comments on a recorded update. The app supplies the comment thread so

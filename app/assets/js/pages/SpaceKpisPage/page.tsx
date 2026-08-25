@@ -30,6 +30,9 @@ export function Page() {
   const [editKpi] = Kpis.useEditKpi();
   const [deleteKpi] = Kpis.useDeleteKpi();
   const [logKpiEntry] = Kpis.useLogKpiEntry();
+  const [addKpiAnnotation] = Kpis.useAddKpiAnnotation();
+  const [editKpiAnnotation] = Kpis.useEditKpiAnnotation();
+  const [deleteKpiAnnotation] = Kpis.useDeleteKpiAnnotation();
   const [createComment] = Comments.useCreateComment();
 
   const kpisLink = paths.spaceKpisPath(space.id!);
@@ -126,6 +129,34 @@ export function Page() {
       refresh();
     });
 
+  const onAddAnnotation = async (input: SpaceKpisPageTypes.AnnotationInput) =>
+    run(async () => {
+      await addKpiAnnotation({
+        kpiId: input.kpiId,
+        date: input.date,
+        title: input.title,
+        description: input.description,
+      });
+      refresh();
+    });
+
+  const onEditAnnotation = async (input: SpaceKpisPageTypes.EditAnnotationInput) =>
+    run(async () => {
+      await editKpiAnnotation({
+        annotationId: input.id,
+        date: input.date,
+        title: input.title,
+        description: input.description,
+      });
+      refresh();
+    });
+
+  const onDeleteAnnotation = async (annotationId: string) =>
+    run(async () => {
+      await deleteKpiAnnotation({ annotationId });
+      refresh();
+    });
+
   return (
     <SpaceKpisPage
       space={{ id: space.id!, name: space.name!, link: paths.spacePath(space.id!) }}
@@ -143,6 +174,9 @@ export function Page() {
       onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      onAddAnnotation={onAddAnnotation}
+      onEditAnnotation={onEditAnnotation}
+      onDeleteAnnotation={onDeleteAnnotation}
       canComment={space.permissions?.canComment ?? false}
       renderEntryComments={
         selectedKpi

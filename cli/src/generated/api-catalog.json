@@ -5311,6 +5311,87 @@
           }
         ]
       },
+      "activity_content_kpi_annotation_edited": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "annotation",
+            "type": {
+              "name": "kpi_annotation",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "old_title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "new_title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "date",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "project_template_task_assignment": {
         "fields": [
           {
@@ -8502,6 +8583,98 @@
           }
         ]
       },
+      "kpi_annotation": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "date",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "created_by",
+            "type": {
+              "name": "person",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "updated_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          }
+        ]
+      },
       "billing_company_access_state": {
         "fields": [
           {
@@ -9324,6 +9497,76 @@
           }
         ]
       },
+      "activity_content_kpi_annotation_added": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "annotation",
+            "type": {
+              "name": "kpi_annotation",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "date",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_task_description_change": {
         "fields": [
           {
@@ -9729,6 +9972,20 @@
             "type": {
               "item": {
                 "name": "kpi_entry",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "annotations",
+            "type": {
+              "item": {
+                "name": "kpi_annotation",
                 "kind": "named"
               },
               "kind": "list"
@@ -17758,6 +18015,65 @@
           }
         ]
       },
+      "activity_content_kpi_annotation_deleted": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "title",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "date",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "product_release": {
         "fields": [
           {
@@ -21643,6 +21959,18 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_kpi_annotation_added",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_kpi_annotation_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_kpi_annotation_deleted",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_goal_archived",
           "kind": "named"
         },
@@ -22435,9 +22763,9 @@
       ]
     }
   },
-  "endpoint_count": 247,
+  "endpoint_count": 250,
   "query_count": 73,
-  "mutation_count": 174,
+  "mutation_count": 177,
   "endpoints": [
     {
       "name": "create",
@@ -28808,6 +29136,75 @@
       "method": "POST"
     },
     {
+      "name": "add_kpi_annotation",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/add_kpi_annotation",
+      "handler": "OperatelyWeb.Api.Kpis.AddKpiAnnotation",
+      "outputs": [
+        {
+          "default": null,
+          "name": "annotation",
+          "type": {
+            "name": "kpi_annotation",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "kpi_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "date",
+          "type": {
+            "name": "date",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Marks a date on a KPI chart with a short event title.",
+      "full_name": "kpis/add_kpi_annotation",
+      "method": "POST"
+    },
+    {
       "name": "create_kpi",
       "type": "mutation",
       "path": "/api/external/v1/kpis/create_kpi",
@@ -28935,6 +29332,42 @@
       "method": "POST"
     },
     {
+      "name": "delete_kpi_annotation",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/delete_kpi_annotation",
+      "handler": "OperatelyWeb.Api.Kpis.DeleteKpiAnnotation",
+      "outputs": [
+        {
+          "default": null,
+          "name": "annotation",
+          "type": {
+            "name": "kpi_annotation",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "annotation_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Removes a KPI chart annotation.",
+      "full_name": "kpis/delete_kpi_annotation",
+      "method": "POST"
+    },
+    {
       "name": "edit_kpi",
       "type": "mutation",
       "path": "/api/external/v1/kpis/edit_kpi",
@@ -29023,6 +29456,75 @@
       ],
       "docstring": "Edits a KPI. Any space member with edit access may edit one.",
       "full_name": "kpis/edit_kpi",
+      "method": "POST"
+    },
+    {
+      "name": "edit_kpi_annotation",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/edit_kpi_annotation",
+      "handler": "OperatelyWeb.Api.Kpis.EditKpiAnnotation",
+      "outputs": [
+        {
+          "default": null,
+          "name": "annotation",
+          "type": {
+            "name": "kpi_annotation",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "kpis",
+      "inputs": [
+        {
+          "default": null,
+          "name": "annotation_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "date",
+          "type": {
+            "name": "date",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Edits a KPI chart annotation's date, title, or note.",
+      "full_name": "kpis/edit_kpi_annotation",
       "method": "POST"
     },
     {

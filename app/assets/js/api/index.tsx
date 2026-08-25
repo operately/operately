@@ -508,6 +508,33 @@ export interface ActivityContentGuestInvited {
   person: Person;
 }
 
+export interface ActivityContentKpiAnnotationAdded {
+  __typename: "activity_content_kpi_annotation_added";
+  space: Space;
+  kpi: Kpi | null;
+  annotation?: KpiAnnotation | null;
+  title: string;
+  date: string;
+}
+
+export interface ActivityContentKpiAnnotationDeleted {
+  __typename: "activity_content_kpi_annotation_deleted";
+  space: Space;
+  kpi: Kpi | null;
+  title: string;
+  date: string;
+}
+
+export interface ActivityContentKpiAnnotationEdited {
+  __typename: "activity_content_kpi_annotation_edited";
+  space: Space;
+  kpi: Kpi | null;
+  annotation?: KpiAnnotation | null;
+  oldTitle: string;
+  newTitle: string;
+  date: string;
+}
+
 export interface ActivityContentKpiCreated {
   __typename: "activity_content_kpi_created";
   company: Company;
@@ -1764,7 +1791,19 @@ export interface Kpi {
   champion?: Person | null;
   latestEntry?: KpiEntry | null;
   entries?: KpiEntry[] | null;
+  annotations?: KpiAnnotation[] | null;
   subscriptionList?: SubscriptionList | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface KpiAnnotation {
+  __typename: "kpi_annotation";
+  id: Id;
+  date: string;
+  title: string;
+  description?: string | null;
+  createdBy?: Person | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
 }
@@ -2786,6 +2825,9 @@ export type ActivityContent =
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
   | ActivityContentKpiEntryCommented
+  | ActivityContentKpiAnnotationAdded
+  | ActivityContentKpiAnnotationEdited
+  | ActivityContentKpiAnnotationDeleted
   | ActivityContentGoalArchived
   | ActivityContentGoalCheckIn
   | ActivityContentGoalCheckInAcknowledgement
@@ -5068,6 +5110,17 @@ export interface JoinCompanyResult {
   result: string;
 }
 
+export interface KpisAddKpiAnnotationInput {
+  kpiId: Id;
+  date: string;
+  title: string;
+  description?: string | null;
+}
+
+export interface KpisAddKpiAnnotationResult {
+  annotation: KpiAnnotation;
+}
+
 export interface KpisCreateKpiInput {
   spaceId: Id;
   name: string;
@@ -5089,6 +5142,14 @@ export interface KpisDeleteKpiResult {
   kpi: Kpi;
 }
 
+export interface KpisDeleteKpiAnnotationInput {
+  annotationId: Id;
+}
+
+export interface KpisDeleteKpiAnnotationResult {
+  annotation: KpiAnnotation;
+}
+
 export interface KpisEditKpiInput {
   kpiId: Id;
   name?: string | null;
@@ -5100,6 +5161,17 @@ export interface KpisEditKpiInput {
 
 export interface KpisEditKpiResult {
   kpi: Kpi;
+}
+
+export interface KpisEditKpiAnnotationInput {
+  annotationId: Id;
+  date?: string | null;
+  title?: string | null;
+  description?: string | null;
+}
+
+export interface KpisEditKpiAnnotationResult {
+  annotation: KpiAnnotation;
 }
 
 export interface KpisLogKpiEntryInput {
@@ -7003,6 +7075,10 @@ class ApiNamespaceKpis {
     return this.client.get("/kpis/list_kpis", input);
   }
 
+  async addKpiAnnotation(input: KpisAddKpiAnnotationInput): Promise<KpisAddKpiAnnotationResult> {
+    return this.client.post("/kpis/add_kpi_annotation", input);
+  }
+
   async createKpi(input: KpisCreateKpiInput): Promise<KpisCreateKpiResult> {
     return this.client.post("/kpis/create_kpi", input);
   }
@@ -7011,8 +7087,16 @@ class ApiNamespaceKpis {
     return this.client.post("/kpis/delete_kpi", input);
   }
 
+  async deleteKpiAnnotation(input: KpisDeleteKpiAnnotationInput): Promise<KpisDeleteKpiAnnotationResult> {
+    return this.client.post("/kpis/delete_kpi_annotation", input);
+  }
+
   async editKpi(input: KpisEditKpiInput): Promise<KpisEditKpiResult> {
     return this.client.post("/kpis/edit_kpi", input);
+  }
+
+  async editKpiAnnotation(input: KpisEditKpiAnnotationInput): Promise<KpisEditKpiAnnotationResult> {
+    return this.client.post("/kpis/edit_kpi_annotation", input);
   }
 
   async logKpiEntry(input: KpisLogKpiEntryInput): Promise<KpisLogKpiEntryResult> {
@@ -8830,10 +8914,23 @@ export default {
     useListKpis: (input: KpisListKpisInput) =>
       useQuery<KpisListKpisResult>(() => defaultApiClient.apiNamespaceKpis.listKpis(input)),
 
+    addKpiAnnotation: (input: KpisAddKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
+    useAddKpiAnnotation: () =>
+      useMutation<KpisAddKpiAnnotationInput, KpisAddKpiAnnotationResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
+      ),
+
     createKpi: (input: KpisCreateKpiInput) => defaultApiClient.apiNamespaceKpis.createKpi(input),
     useCreateKpi: () =>
       useMutation<KpisCreateKpiInput, KpisCreateKpiResult>((input) =>
         defaultApiClient.apiNamespaceKpis.createKpi(input),
+      ),
+
+    deleteKpiAnnotation: (input: KpisDeleteKpiAnnotationInput) =>
+      defaultApiClient.apiNamespaceKpis.deleteKpiAnnotation(input),
+    useDeleteKpiAnnotation: () =>
+      useMutation<KpisDeleteKpiAnnotationInput, KpisDeleteKpiAnnotationResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.deleteKpiAnnotation(input),
       ),
 
     deleteKpi: (input: KpisDeleteKpiInput) => defaultApiClient.apiNamespaceKpis.deleteKpi(input),
@@ -8845,6 +8942,13 @@ export default {
     editKpi: (input: KpisEditKpiInput) => defaultApiClient.apiNamespaceKpis.editKpi(input),
     useEditKpi: () =>
       useMutation<KpisEditKpiInput, KpisEditKpiResult>((input) => defaultApiClient.apiNamespaceKpis.editKpi(input)),
+
+    editKpiAnnotation: (input: KpisEditKpiAnnotationInput) =>
+      defaultApiClient.apiNamespaceKpis.editKpiAnnotation(input),
+    useEditKpiAnnotation: () =>
+      useMutation<KpisEditKpiAnnotationInput, KpisEditKpiAnnotationResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.editKpiAnnotation(input),
+      ),
 
     logKpiEntry: (input: KpisLogKpiEntryInput) => defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
     useLogKpiEntry: () =>
