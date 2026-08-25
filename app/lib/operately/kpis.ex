@@ -2,14 +2,17 @@ defmodule Operately.Kpis do
   import Ecto.Query, warn: false
 
   alias Operately.Repo
-  alias Operately.Kpis.{Kpi, KpiEntry}
+  alias Operately.Kpis.{Kpi, KpiAnnotation, KpiEntry}
 
   @kpi_actions [
     "kpi_created",
     "kpi_edited",
     "kpi_deleted",
     "kpi_entry_logged",
-    "kpi_entry_commented"
+    "kpi_entry_commented",
+    "kpi_annotation_added",
+    "kpi_annotation_edited",
+    "kpi_annotation_deleted"
   ]
 
   def kpi_actions, do: @kpi_actions
@@ -37,6 +40,13 @@ defmodule Operately.Kpis do
     from(e in KpiEntry, where: e.kpi_id == ^kpi_id, order_by: e.period)
     |> Repo.all()
   end
+
+  def list_annotations(kpi_id) do
+    from(a in KpiAnnotation, where: a.kpi_id == ^kpi_id, order_by: [asc: a.date, asc: a.inserted_at])
+    |> Repo.all()
+  end
+
+  def get_annotation(id), do: Repo.get(KpiAnnotation, id)
 
   # How much history a list view carries per KPI: enough to plot a trend
   # inline, without the cost of loading the whole series for every KPI.
@@ -84,4 +94,7 @@ defmodule Operately.Kpis do
   defdelegate edit_kpi(author, kpi, attrs), to: Operately.Operations.KpiEditing, as: :run
   defdelegate delete_kpi(author, kpi), to: Operately.Operations.KpiDeleting, as: :run
   defdelegate log_entry(author, kpi, attrs), to: Operately.Operations.KpiEntryLogging, as: :run
+  defdelegate add_annotation(author, kpi, attrs), to: Operately.Operations.KpiAnnotationAdding, as: :run
+  defdelegate edit_annotation(author, kpi, annotation, attrs), to: Operately.Operations.KpiAnnotationEditing, as: :run
+  defdelegate delete_annotation(author, kpi, annotation), to: Operately.Operations.KpiAnnotationDeleting, as: :run
 end

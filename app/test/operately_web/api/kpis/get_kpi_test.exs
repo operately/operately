@@ -40,6 +40,14 @@ defmodule OperatelyWeb.Api.Kpis.GetKpiTest do
       periods = Enum.map(res.kpi.entries, & &1.period)
       assert periods == ["2026-01-01", "2026-02-01", "2026-03-01"]
       assert Enum.all?(res.kpi.entries, &(&1.comments_count == 0))
+      assert res.kpi.annotations == []
+
+      annotation = kpi_annotation_fixture(ctx.member, kpi, title: "Launched enterprise plan", date: ~D[2026-02-15])
+      assert {200, res} = query(ctx.conn, [:kpis, :get_kpi], %{kpi_id: Paths.kpi_id(kpi)})
+      assert [loaded] = res.kpi.annotations
+      assert loaded.title == "Launched enterprise plan"
+      assert loaded.date == "2026-02-15"
+      assert loaded.id == Paths.kpi_annotation_id(annotation)
       assert res.kpi.subscription_list
       assert res.kpi.subscription_list.parent_type == "kpi"
     end
