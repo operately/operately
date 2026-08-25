@@ -15,12 +15,28 @@ interface KpiLineChartProps {
 //
 // Deliberately dependency-free so it renders identically in Storybook and the app.
 export function KpiLineChart({ entries, unit, height = 220 }: KpiLineChartProps) {
+  // Until there are two points to join there is nothing to plot, and the current
+  // value is already on the page, so these states only say what is missing.
   if (entries.length === 0) {
-    return <EmptyChart height={height} />;
+    return (
+      <Placeholder
+        title="No data yet"
+        hint="Values appear here once they are logged."
+        testId="kpi-line-chart-empty"
+        height={height}
+      />
+    );
   }
 
   if (entries.length === 1) {
-    return <SinglePointChart entry={entries[0]!} unit={unit} height={height} />;
+    return (
+      <Placeholder
+        title="Only one update so far"
+        hint="A second update is needed to plot a trend line."
+        testId="kpi-line-chart-single"
+        height={height}
+      />
+    );
   }
 
   return <MultiPointChart entries={entries} unit={unit} height={height} />;
@@ -28,6 +44,20 @@ export function KpiLineChart({ entries, unit, height = 220 }: KpiLineChartProps)
 
 const PADDING = { top: 16, right: 16, bottom: 28, left: 44 };
 const VIEW_WIDTH = 640;
+
+// Steps a reader recognises as round, so the gridlines are labelled 1.5M / 750K
+// rather than the raw 1.47M / 734.9K the data happens to reach. Halves of these
+// are round too, which matters because the middle gridline is labelled as well.
+const AXIS_STEPS = [1, 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 4, 5, 6, 8, 10];
+
+function roundedAxisMax(value: number): number {
+  if (value <= 0) return 1;
+
+  const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+  const step = AXIS_STEPS.find((candidate) => value <= candidate * magnitude) ?? 10;
+
+  return step * magnitude;
+}
 
 function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>) {
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
@@ -42,7 +72,7 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
   // headroom above the largest value so the line is not glued to the top edge.
   const span = max - min || Math.abs(max) || 1;
   const yMin = 0;
-  const yMax = max + span * 0.15;
+  const yMax = roundedAxisMax(max + span * 0.15);
 
   const innerWidth = VIEW_WIDTH - PADDING.left - PADDING.right;
   const innerHeight = height - PADDING.top - PADDING.bottom;
@@ -226,32 +256,15 @@ function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
   );
 }
 
-function SinglePointChart({ entry, unit, height }: { entry: SpaceKpisPage.KpiEntry; unit: string; height: number }) {
+function Placeholder({ title, hint, testId, height }: { title: string; hint: string; testId: string; height: number }) {
   return (
     <div
-      className="flex flex-col items-center justify-center rounded-lg border border-dashed border-surface-outline bg-surface-dimmed text-center"
+      className="flex flex-col items-center justify-center px-6 text-center"
       style={{ height }}
-      data-test-id="kpi-line-chart-single"
+      data-test-id={testId}
     >
-      <div className="text-2xl font-bold text-content-accent">
-        {formatNumber(entry.value)}
-        {unit ? <span className="ml-1 text-base font-medium text-content-dimmed">{unit}</span> : null}
-      </div>
-      <div className="mt-1 text-sm text-content-dimmed">Recorded {formatShortDate(entry.recordedAt)}</div>
-      <div className="mt-3 text-xs text-content-subtle">Log another update to start plotting a trend line.</div>
-    </div>
-  );
-}
-
-function EmptyChart({ height }: { height: number }) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center rounded-lg border border-dashed border-surface-outline bg-surface-dimmed text-center"
-      style={{ height }}
-      data-test-id="kpi-line-chart-empty"
-    >
-      <div className="text-sm font-medium text-content-dimmed">No data yet</div>
-      <div className="mt-1 text-xs text-content-subtle">Log an update to see values plotted over time.</div>
+      <div className="text-sm font-medium text-content-dimmed">{title}</div>
+      <div className="mt-1 text-xs text-content-subtle">{hint}</div>
     </div>
   );
 }

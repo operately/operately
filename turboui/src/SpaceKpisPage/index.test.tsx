@@ -111,19 +111,25 @@ describe("SpaceKpisPage layout", () => {
     expect(row).toHaveTextContent(formatNumber(target.latestEntry!.value));
   });
 
-  test("opening a KPI moves its name into the header and swaps the primary action to 'Log update'", () => {
+  // The KPI's name leads its own page rather than sitting in the compact tool
+  // header, so the page reads name -> description -> history.
+  test("opening a KPI leads the page with its name and swaps the primary action to 'Log update'", () => {
     const target = mockKpis[0]!;
     const { container } = renderPage({ selectedKpi: target });
 
-    // KPI name becomes the header title...
     expect(screen.getByRole("heading", { name: target.name })).toBeInTheDocument();
 
-    // ...and "KPIs" becomes a breadcrumb linking back to the list.
-    const backCrumb = container.querySelector('[data-test-id="kpis-breadcrumb"]');
-    expect(backCrumb).toHaveAttribute("href", kpisLink);
+    const heading = container.querySelector('[data-test-id="kpi-heading"]')!;
+    const description = container.querySelector('[data-test-id="kpi-description"]')!;
+    expect(heading.compareDocumentPosition(description) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    // The header keeps only the trail back to the list, not the name.
+    const header = container.querySelector<HTMLElement>("header")!;
+    expect(header).not.toHaveTextContent(target.name);
+    expect(header.querySelector('[data-test-id="kpis-breadcrumb"]')).toHaveAttribute("href", kpisLink);
 
     // The header action is now "Log update", not "New KPI".
-    expect(container.querySelector('[data-test-id="kpi-detail-log-update"]')).toBeInTheDocument();
+    expect(header.querySelector('[data-test-id="kpi-detail-log-update"]')).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="new-kpi"]')).not.toBeInTheDocument();
   });
 
@@ -133,7 +139,6 @@ describe("SpaceKpisPage layout", () => {
     const sidebar = container.querySelector<HTMLElement>('[data-test-id="kpi-sidebar"]')!;
 
     expect(sidebar).toBeInTheDocument();
-    expect(within(sidebar).getByText("Last update")).toBeInTheDocument();
     expect(within(sidebar).getByText("Champion")).toBeInTheDocument();
     expect(within(sidebar).getByText(target.champion!.fullName)).toBeInTheDocument();
     expect(within(sidebar).getByText("Cadence")).toBeInTheDocument();
@@ -186,60 +191,50 @@ describe("SpaceKpisPage layout", () => {
     expect(screen.queryByText("Add a description...")).not.toBeInTheDocument();
   });
 
-  // Mirrors a project's last check-in: the sidebar answers what was recorded,
-  // when, and by whom. The main column used to repeat the value as a headline;
-  // it must not, now that the sidebar card is the source of truth.
-  test("shows the last update in the sidebar with its value, date and who recorded it", () => {
+  // The latest value is the newest point of the history chart, so it leads that
+  // chart instead of being repeated elsewhere on the page. When it was recorded
+  // is shown with it; by whom is left to the recorded-updates log.
+  test("shows the current value at the head of the history chart", () => {
     const target = mockKpis[0]!;
     const latest = target.entries[target.entries.length - 1]!;
     const { container } = renderPage({ selectedKpi: target });
-    const card = container.querySelector<HTMLElement>('[data-test-id="kpi-last-update"]')!;
+    const history = container.querySelector<HTMLElement>('[data-test-id="kpi-history"]')!;
+    const value = history.querySelector<HTMLElement>('[data-test-id="kpi-current-value"]')!;
 
-    expect(card).toBeInTheDocument();
-    expect(within(card).getByText(formatShortDate(latest.recordedAt))).toBeInTheDocument();
-    expect(within(card).getByText(formatValue(latest.value, target.unit))).toBeInTheDocument();
-    expect(within(card).getByText(latest.recordedBy!.fullName.split(" ")[0]!)).toBeInTheDocument();
+    expect(within(value).getByText(formatValue(latest.value, target.unit))).toBeInTheDocument();
+    expect(value).toHaveTextContent(formatShortDate(latest.recordedAt));
   });
 
-  // The value alone doesn't say whether the KPI is moving, so the card carries
-  // the signed change against the entry before it.
-  test("shows the change against the previous entry beside the last value", () => {
+  // The value alone doesn't say whether the KPI is moving, so it carries the
+  // signed change against the entry before it.
+  test("shows the change against the previous entry beside the current value", () => {
     const target = mockKpis[0]!;
     const entries = target.entries;
     const delta = entries[entries.length - 1]!.value - entries[entries.length - 2]!.value;
     const { container } = renderPage({ selectedKpi: target });
-    const card = container.querySelector<HTMLElement>('[data-test-id="kpi-last-update"]')!;
+    const value = container.querySelector<HTMLElement>('[data-test-id="kpi-current-value"]')!;
 
-    expect(within(card).getByText(formatNumber(Math.abs(delta)))).toBeInTheDocument();
-    expect(within(card).getByTitle(`+${formatNumber(Math.abs(delta))} vs previous`)).toBeInTheDocument();
+    expect(within(value).getByText(formatNumber(Math.abs(delta)))).toBeInTheDocument();
+    expect(within(value).getByTitle(`+${formatNumber(Math.abs(delta))} vs previous`)).toBeInTheDocument();
   });
 
   test("shows no change indicator when a KPI has only one update", () => {
     const target = mockKpis.find((kpi) => kpi.entries.length === 1)!;
     const { container } = renderPage({ selectedKpi: target });
-    const card = container.querySelector<HTMLElement>('[data-test-id="kpi-last-update"]')!;
+    const value = container.querySelector<HTMLElement>('[data-test-id="kpi-current-value"]')!;
 
-    expect(within(card).getByText(formatValue(target.entries[0]!.value, target.unit))).toBeInTheDocument();
-    expect(card.querySelector("[title$='vs previous']")).not.toBeInTheDocument();
+    expect(within(value).getByText(formatValue(target.entries[0]!.value, target.unit))).toBeInTheDocument();
+    expect(value.querySelector("[title$='vs previous']")).not.toBeInTheDocument();
   });
 
-  test("prompts editors to log the first value when a KPI has no updates", () => {
+  // With nothing logged there is no reading to show, so the chart's empty state
+  // carries the message on its own rather than pairing it with a blank value.
+  test("shows no value at all when nothing has been logged", () => {
     const target = mockKpis.find((kpi) => kpi.entries.length === 0)!;
     const { container } = renderPage({ selectedKpi: target });
 
-    expect(container.querySelector('[data-test-id="kpi-last-update"]')).not.toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="kpi-last-update-empty"]')).toHaveTextContent(
-      "Log the first value to start tracking",
-    );
-  });
-
-  test("read-only viewers are not prompted to log a value for a KPI with no updates", () => {
-    const target = mockKpis.find((kpi) => kpi.entries.length === 0)!;
-    const { container } = renderPage({ selectedKpi: target, canManage: false });
-
-    const empty = container.querySelector('[data-test-id="kpi-last-update-empty"]');
-    expect(empty).toBeInTheDocument();
-    expect(empty).not.toHaveTextContent("Log the first value");
+    expect(container.querySelector('[data-test-id="kpi-current-value"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="kpi-line-chart-empty"]')).toBeInTheDocument();
   });
 
   test("editors can change the champion from the sidebar", async () => {
@@ -396,7 +391,7 @@ describe("SpaceKpisPage list latest value", () => {
 });
 
 // These tests cover the answer to "how can I edit or delete a KPI?": its fields
-// are edited in place on its own page — the name in the title, the unit,
+// are edited in place on its own page — the name in the page heading, the unit,
 // cadence and champion in the sidebar — and deleting it is a sidebar action,
 // the way a task page works. Nothing is tucked away behind an overflow menu.
 describe("SpaceKpisPage edit & delete", () => {
@@ -415,7 +410,7 @@ describe("SpaceKpisPage edit & delete", () => {
     });
   }
 
-  test("editors can rename a KPI from the page title", async () => {
+  test("editors can rename a KPI from the page heading", async () => {
     const target = mockKpis[0]!;
     const onEditKpi = jest.fn().mockResolvedValue({ success: true, id: target.id });
 
@@ -441,7 +436,7 @@ describe("SpaceKpisPage edit & delete", () => {
 
   // A rejected edit must not leave the page showing a value the server does not
   // have, so the field goes back to what it was.
-  test("a rejected rename reverts the title", async () => {
+  test("a rejected rename reverts the heading", async () => {
     const target = mockKpis[0]!;
     const onEditKpi = jest.fn().mockResolvedValue({ success: false, error: "Name is already taken" });
 
