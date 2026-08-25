@@ -84,4 +84,29 @@ describe("RelativeDayField", () => {
     expect(screen.getByRole("button", { name: "Set relative date" })).toHaveClass("w-full");
     expect(screen.getByRole("button", { name: "Set relative date" })).toHaveClass("border-surface-outline");
   });
+
+  it("keeps the days suffix next to the inline input", () => {
+    render(<RelativeDayField value={20} onChange={jest.fn()} />);
+
+    fireEvent.click(screen.getByText("20 days after project starts"));
+    const input = screen.getByRole("textbox");
+
+    expect(input).not.toHaveClass("flex-1");
+    expect(input.nextElementSibling).toHaveTextContent("days");
+    expect(input.parentElement).toHaveClass("gap-1");
+  });
+
+  it("still stretches the form-field input across the control", () => {
+    render(<RelativeDayField variant="form-field" value={20} onChange={jest.fn()} />);
+
+    fireEvent.click(screen.getByText("20 days after project starts"));
+
+    expect(screen.getByRole("textbox")).toHaveClass("flex-1");
+  });
+
+  it("can hide the calendar icon on the trigger", () => {
+    render(<RelativeDayField value={null} onChange={jest.fn()} hideCalendarIcon />);
+
+    expect(screen.getByRole("button", { name: "Set relative date" }).querySelector("svg")).toBeNull();
+  });
 });
