@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
   import Operately.ProjectsFixtures
   import Operately.CommentsFixtures
   import Operately.MessagesFixtures
+  import Operately.KpisFixtures
 
   alias Operately.Repo
   alias Operately.Support.RichText
@@ -381,6 +382,53 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
+               })
+
+      assert length(res.comments) == 0
+    end
+  end
+
+  describe "permissions - kpi entry" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{creator: creator, space: space})
+    end
+
+    test "space members can list comments on a KPI update", ctx do
+      add_person_to_space(ctx)
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id)
+      entry = kpi_entry_fixture(ctx.creator, kpi)
+
+      comments =
+        Enum.map(1..3, fn _ ->
+          add_comment(ctx, entry, "kpi_entry")
+        end)
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.kpi_entry_id(entry),
+                 entity_type: "kpi_entry"
+               })
+
+      assert_comments(res, comments)
+    end
+
+    test "non-members cannot list comments on a KPI update", ctx do
+      space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+      kpi = kpi_fixture(ctx.creator, space_id: space.id)
+      entry = kpi_entry_fixture(ctx.creator, kpi)
+
+      Enum.each(1..3, fn _ ->
+        add_comment(ctx, entry, "kpi_entry")
+      end)
+
+      assert {200, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.kpi_entry_id(entry),
+                 entity_type: "kpi_entry"
                })
 
       assert length(res.comments) == 0

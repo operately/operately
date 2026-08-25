@@ -226,10 +226,12 @@ function KpisContent(props: KpisContentProps) {
         kpi={selectedKpi}
         fields={openKpi}
         canManage={props.canManage}
+        canComment={props.canComment}
         championSearch={props.championSearch}
         onDescriptionChange={props.onDescriptionChange}
         onDelete={props.onOpenDelete}
         richTextHandlers={props.richTextHandlers}
+        renderEntryComments={props.renderEntryComments}
         subscriptions={props.subscriptions}
       />
     );

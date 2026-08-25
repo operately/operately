@@ -38,5 +38,7 @@ export function findMentionedScope(props: Comments.CommentableResource): SearchS
       }
 
       throw new Error("CommentThread must have either goal or project defined");
+    case "kpi_entry":
+      return { type: "space", id: props.space.id };
   }
 }

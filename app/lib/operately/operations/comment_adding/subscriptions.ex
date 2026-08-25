@@ -12,6 +12,7 @@ defmodule Operately.Operations.CommentAdding.Subscriptions do
   def update(multi, :resource_hub_link_commented, content), do: execute_update(multi, content)
   def update(multi, :project_task_commented, content), do: execute_update(multi, content)
   def update(multi, :space_task_commented, content), do: execute_update(multi, content)
+  def update(multi, :kpi_entry_commented, content), do: execute_kpi_entry_update(multi, content)
   def update(multi, _, _), do: multi
 
   defp execute_update(multi, content) do
@@ -27,5 +28,18 @@ defmodule Operately.Operations.CommentAdding.Subscriptions do
         preload: :subscriptions
       ])
     end)
+  end
+
+  # KPI updates share the KPI's subscription list rather than carrying their own.
+  defp execute_kpi_entry_update(multi, content) do
+    multi
+    |> Multi.run(:subscription_list, fn _, %{comment: comment} ->
+      entry = Operately.Repo.get!(Operately.Kpis.KpiEntry, comment.entity_id)
+
+      SubscriptionList.get(:system, parent_id: entry.kpi_id, opts: [
+        preload: :subscriptions
+      ])
+    end)
+    |> Operately.Operations.Notifications.Subscription.update_mentioned_people(content)
   end
 end

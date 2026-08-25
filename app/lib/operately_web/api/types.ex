@@ -252,6 +252,13 @@ defmodule OperatelyWeb.Api.Types do
     field :kpi_name, :string
   end
 
+  object :activity_content_kpi_entry_commented, for: Operately.Activities.Content.KpiEntryCommented do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field :entry, :kpi_entry, null: true
+    field :comment, :comment, null: true
+  end
+
   object :activity_content_goal_target_updating, for: Operately.Activities.Content.GoalTargetUpdating do
     field :company, :company
     field :space, :space
@@ -615,7 +622,8 @@ defmodule OperatelyWeb.Api.Types do
       :space_task,
       :resource_hub_document,
       :resource_hub_file,
-      :resource_hub_link
+      :resource_hub_link,
+      :kpi_entry
     ]
   )
 
@@ -1065,6 +1073,7 @@ defmodule OperatelyWeb.Api.Types do
     field :value, :float, null: false
     field :period, :date, null: false
     field? :recorded_by, :person, null: true
+    field? :comments_count, :integer, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
   end
@@ -1126,6 +1135,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_editing,
       :activity_content_discussion_posting,
       :activity_content_kpi_created,
+      :activity_content_kpi_entry_commented,
       :activity_content_goal_archived,
       :activity_content_goal_check_in,
       :activity_content_goal_check_in_acknowledgement,
@@ -2440,7 +2450,8 @@ defmodule OperatelyWeb.Api.Types do
       :resource_hub_link,
       :space_task,
       :project_task,
-      :milestone
+      :milestone,
+      :kpi_entry
     ]
   )
 

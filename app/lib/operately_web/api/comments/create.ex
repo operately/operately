@@ -67,6 +67,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
       :project_task -> Task.get(person, id: id, opts: [preload: :project])
       :space_task -> Task.get(person, id: id, opts: [preload: :space])
       :milestone -> Milestone.get(person, id: id)
+      :kpi_entry -> Operately.Kpis.KpiEntry.get(person, id: id, opts: [preload: :kpi])
     end
   end
 
@@ -84,6 +85,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
       :project_task -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
       :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
       :milestone -> Projects.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
+      :kpi_entry -> Groups.Permissions.check(parent.request_info.access_level, :can_comment, company_read_only: company_read_only)
     end
   end
 
