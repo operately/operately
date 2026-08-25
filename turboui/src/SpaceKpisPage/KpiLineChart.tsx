@@ -7,14 +7,18 @@ interface KpiLineChartProps {
   entries: SpaceKpisPage.KpiEntry[];
   unit: string;
   height?: number;
+  annotations?: SpaceKpisPage.KpiAnnotation[];
+  onAnnotationClick?: (annotation: SpaceKpisPage.KpiAnnotation) => void;
 }
 
 // Lightweight SVG line chart mirroring the goal target progress chart pattern.
 // It plots a KPI's historical values over time with min/max gridlines, a
 // filled area under the line, and dots + tooltips for each recorded entry.
+// Date-based annotations appear as vertical markers so events can be read
+// against the series.
 //
 // Deliberately dependency-free so it renders identically in Storybook and the app.
-export function KpiLineChart({ entries, unit, height = 220 }: KpiLineChartProps) {
+export function KpiLineChart({ entries, unit, height = 220, annotations = [], onAnnotationClick }: KpiLineChartProps) {
   // Until there are two points to join there is nothing to plot, and the current
   // value is already on the page, so these states only say what is missing.
   if (entries.length === 0) {
@@ -39,7 +43,15 @@ export function KpiLineChart({ entries, unit, height = 220 }: KpiLineChartProps)
     );
   }
 
-  return <MultiPointChart entries={entries} unit={unit} height={height} />;
+  return (
+    <MultiPointChart
+      entries={entries}
+      unit={unit}
+      height={height}
+      annotations={annotations}
+      onAnnotationClick={onAnnotationClick}
+    />
+  );
 }
 
 const PADDING = { top: 16, right: 16, bottom: 28, left: 44 };
@@ -59,8 +71,29 @@ function roundedAxisMax(value: number): number {
   return step * magnitude;
 }
 
-function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>) {
+const MARKER = { stem: 15, width: 9, height: 7, hitHalfWidth: 10 };
+
+// A flag planted on the baseline, matching the icon on the "Add annotation"
+// button, so the same shape means "a dated event" wherever it appears.
+function annotationFlagPath(cx: number, baseline: number, hovered: boolean): string {
+  const stem = hovered ? MARKER.stem + 3 : MARKER.stem;
+  const top = baseline - stem;
+  const width = hovered ? MARKER.width + 2 : MARKER.width;
+  const height = hovered ? MARKER.height + 1 : MARKER.height;
+
+  return `M ${cx} ${top + height} L ${cx + width} ${top + height / 2} L ${cx} ${top} Z`;
+}
+
+function MultiPointChart({
+  entries,
+  unit,
+  height,
+  annotations,
+  onAnnotationClick,
+}: Required<Pick<KpiLineChartProps, "entries" | "unit" | "height" | "annotations">> &
+  Pick<KpiLineChartProps, "onAnnotationClick">) {
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+  const [hoveredAnnotationId, setHoveredAnnotationId] = React.useState<string | null>(null);
 
   const values = entries.map((e) => e.value);
   const min = Math.min(...values);
@@ -77,10 +110,29 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
   const innerWidth = VIEW_WIDTH - PADDING.left - PADDING.right;
   const innerHeight = height - PADDING.top - PADDING.bottom;
 
-  const x = (index: number) => PADDING.left + (innerWidth * index) / (entries.length - 1);
+  const times = [
+    ...entries.map((entry) => entry.recordedAt.getTime()),
+    ...annotations.map((annotation) => annotation.date.getTime()),
+  ];
+  const tMin = Math.min(...times);
+  const tMax = Math.max(...times);
+  const tSpan = tMax - tMin;
+
+  const xAt = (time: number, index: number) => {
+    if (tSpan <= 0) return PADDING.left + (innerWidth * index) / (entries.length - 1);
+    return PADDING.left + (innerWidth * (time - tMin)) / tSpan;
+  };
   const y = (value: number) => PADDING.top + innerHeight * (1 - (value - yMin) / (yMax - yMin));
 
-  const points = entries.map((entry, index) => ({ entry, cx: x(index), cy: y(entry.value) }));
+  const points = entries.map((entry, index) => ({
+    entry,
+    cx: xAt(entry.recordedAt.getTime(), index),
+    cy: y(entry.value),
+  }));
+  const annotationMarks = annotations.map((annotation, index) => ({
+    annotation,
+    cx: xAt(annotation.date.getTime(), index),
+  }));
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.cx} ${p.cy}`).join(" ");
   const areaPath =
     `${linePath} L ${points[points.length - 1]!.cx} ${PADDING.top + innerHeight}` +
@@ -89,6 +141,7 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
   const gridLines = [yMax, (yMax + yMin) / 2, yMin];
   const baseline = PADDING.top + innerHeight;
   const hovered = hoveredIndex === null ? null : (points[hoveredIndex] ?? null);
+  const hoveredAnnotation = annotationMarks.find((mark) => mark.annotation.id === hoveredAnnotationId) ?? null;
 
   return (
     <div className="w-full" data-test-id="kpi-line-chart">
@@ -98,7 +151,10 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
         style={{ height }}
         role="img"
         aria-label="KPI history line chart"
-        onMouseLeave={() => setHoveredIndex(null)}
+        onMouseLeave={() => {
+          setHoveredIndex(null);
+          setHoveredAnnotationId(null);
+        }}
       >
         {gridLines.map((value, i) => (
           <g key={i}>
@@ -124,6 +180,22 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
           </g>
         ))}
 
+        {/* Behind the series, so the data line reads as one unbroken stroke and
+            the annotation only whispers where on the timeline it sits. */}
+        {annotationMarks.map((mark) => (
+          <line
+            key={`annotation-line-${mark.annotation.id}`}
+            x1={mark.cx}
+            x2={mark.cx}
+            y1={PADDING.top + 4}
+            y2={baseline}
+            className={hoveredAnnotationId === mark.annotation.id ? "stroke-amber-500/80" : "stroke-amber-500/40"}
+            strokeWidth={1}
+            strokeDasharray="3 4"
+            strokeLinecap="round"
+          />
+        ))}
+
         <path d={areaPath} className="fill-blue-500/10" />
         <path
           d={linePath}
@@ -134,7 +206,7 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
           strokeLinecap="round"
         />
 
-        {hovered && (
+        {hovered && !hoveredAnnotation && (
           <line
             x1={hovered.cx}
             x2={hovered.cx}
@@ -150,7 +222,7 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
             <circle
               cx={p.cx}
               cy={p.cy}
-              r={hoveredIndex === i ? 6 : 4}
+              r={hoveredIndex === i && !hoveredAnnotation ? 6 : 4}
               className="fill-surface-base stroke-blue-500"
               strokeWidth={2}
             />
@@ -185,12 +257,66 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
               height={innerHeight}
               fill="transparent"
               data-test-id={`kpi-chart-hover-band-${i}`}
-              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseEnter={() => {
+                setHoveredAnnotationId(null);
+                setHoveredIndex(i);
+              }}
             />
           );
         })}
 
-        {hovered && <Tooltip point={hovered} unit={unit} />}
+        {/* Markers stand on the baseline, where the reader already looks for
+            dates, and above the series so they stay legible over the fill. */}
+        {annotationMarks.map((mark) => {
+          const active = hoveredAnnotationId === mark.annotation.id;
+
+          return (
+            <g
+              key={`annotation-marker-${mark.annotation.id}`}
+              data-test-id={`kpi-chart-annotation-${mark.annotation.id}`}
+            >
+              <line
+                x1={mark.cx}
+                x2={mark.cx}
+                y1={baseline}
+                y2={baseline - (active ? MARKER.stem + 3 : MARKER.stem)}
+                className="stroke-amber-500"
+                strokeWidth={active ? 2 : 1.5}
+                strokeLinecap="round"
+              />
+              <path
+                d={annotationFlagPath(mark.cx, baseline, active)}
+                className="fill-amber-500 stroke-amber-500"
+                strokeWidth={1.5}
+                strokeLinejoin="round"
+              />
+            </g>
+          );
+        })}
+
+        {annotationMarks.map((mark) => (
+          <rect
+            key={`annotation-hit-${mark.annotation.id}`}
+            x={mark.cx - 4}
+            y={baseline - MARKER.stem - 4}
+            width={MARKER.hitHalfWidth + 8}
+            height={MARKER.stem + 14}
+            fill="transparent"
+            className={onAnnotationClick ? "cursor-pointer" : undefined}
+            data-test-id={`kpi-chart-annotation-hit-${mark.annotation.id}`}
+            onMouseEnter={() => {
+              setHoveredIndex(null);
+              setHoveredAnnotationId(mark.annotation.id);
+            }}
+            onClick={() => onAnnotationClick?.(mark.annotation)}
+          />
+        ))}
+
+        {hoveredAnnotation ? (
+          <AnnotationTooltip mark={hoveredAnnotation} baseline={baseline} />
+        ) : hovered ? (
+          <Tooltip point={hovered} unit={unit} />
+        ) : null}
       </svg>
     </div>
   );
@@ -254,6 +380,83 @@ function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
       </text>
     </g>
   );
+}
+
+const ANNOTATION_TOOLTIP = { paddingX: 11, paddingTop: 8, lineHeight: 15, titleMaxChars: 44, noteMaxChars: 52 };
+
+function AnnotationTooltip({
+  mark,
+  baseline,
+}: {
+  mark: { annotation: SpaceKpisPage.KpiAnnotation; cx: number };
+  baseline: number;
+}) {
+  const dateLabel = formatShortDate(mark.annotation.date);
+  const title = truncate(mark.annotation.title, ANNOTATION_TOOLTIP.titleMaxChars);
+  const note = mark.annotation.description
+    ? truncate(mark.annotation.description, ANNOTATION_TOOLTIP.noteMaxChars)
+    : null;
+
+  const lines = note ? 3 : 2;
+  const height = ANNOTATION_TOOLTIP.paddingTop * 2 + lines * ANNOTATION_TOOLTIP.lineHeight;
+  const textWidth = Math.max(
+    dateLabel.length * TOOLTIP.dateFontSize * 0.55,
+    title.length * TOOLTIP.valueFontSize * 0.6,
+    note ? note.length * TOOLTIP.dateFontSize * 0.55 : 0,
+  );
+  const width = Math.min(Math.max(textWidth + ANNOTATION_TOOLTIP.paddingX * 2, 120), VIEW_WIDTH - 8);
+  const clampedX = Math.max(4, Math.min(mark.cx - width / 2, VIEW_WIDTH - width - 4));
+  // Floats just above the marker it belongs to, and stays inside the plot area
+  // when a note makes the box tall.
+  const boxY = Math.max(PADDING.top, baseline - MARKER.stem - 12 - height);
+  const textX = clampedX + ANNOTATION_TOOLTIP.paddingX;
+  const firstBaseline = boxY + ANNOTATION_TOOLTIP.paddingTop + 11;
+
+  return (
+    <g pointerEvents="none" data-test-id="kpi-chart-annotation-tooltip">
+      <rect
+        x={clampedX}
+        y={boxY}
+        width={width}
+        height={height}
+        rx={6}
+        className="fill-surface-base stroke-stroke-base"
+        strokeWidth={1}
+        style={{ filter: "drop-shadow(0 2px 6px rgb(0 0 0 / 0.12))" }}
+      />
+      <text
+        x={textX}
+        y={firstBaseline}
+        className="fill-content-accent"
+        style={{ fontSize: TOOLTIP.valueFontSize, fontWeight: 600 }}
+      >
+        {title}
+      </text>
+      <text
+        x={textX}
+        y={firstBaseline + ANNOTATION_TOOLTIP.lineHeight}
+        className="fill-content-dimmed"
+        style={{ fontSize: TOOLTIP.dateFontSize }}
+      >
+        {dateLabel}
+      </text>
+      {note && (
+        <text
+          x={textX}
+          y={firstBaseline + ANNOTATION_TOOLTIP.lineHeight * 2}
+          className="fill-content-dimmed"
+          style={{ fontSize: TOOLTIP.dateFontSize }}
+        >
+          {note}
+        </text>
+      )}
+    </g>
+  );
+}
+
+function truncate(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text;
+  return `${text.slice(0, maxChars - 1).trimEnd()}…`;
 }
 
 function Placeholder({ title, hint, testId, height }: { title: string; hint: string; testId: string; height: number }) {
