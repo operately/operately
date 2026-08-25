@@ -105,6 +105,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         isOpen={logKpiId !== null}
         onClose={() => setLogKpiId(null)}
         onRecord={props.onRecordEntry}
+        richTextHandlers={props.richTextHandlers}
       />
     </PageNew>
   );
@@ -237,9 +238,7 @@ function KpisContent(props: KpisContentProps) {
     );
   }
 
-  return (
-    <KpiList kpis={props.kpis} canManage={props.canManage} onNewKpi={props.onOpenNew} />
-  );
+  return <KpiList kpis={props.kpis} canManage={props.canManage} onNewKpi={props.onOpenNew} />;
 }
 
 function LoadingState() {
