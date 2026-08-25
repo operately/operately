@@ -168,7 +168,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(normalizeRichTextContent(content), { emitUpdate: false });
+      editor.commands.setContent(normalizeRichTextContent(content) ?? "", { emitUpdate: false });
     },
     [editor],
   );
