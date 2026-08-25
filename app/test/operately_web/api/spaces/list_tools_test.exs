@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
   import Operately.TasksFixtures
+  import Operately.KpisFixtures
 
   alias Operately.Access.Binding
   alias Operately.ProjectTemplates.ProjectTemplate
@@ -364,6 +365,54 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
       assert res.tools.templates == []
     end
 
+  end
+
+  describe "kpis" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.enable_space_tool(:space, :kpis)
+    end
+
+    test "each KPI carries its latest entry and the same recent history window as the KPIs tool", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, name: "Sign-ups")
+
+      Enum.each(1..15, fn day ->
+        kpi_entry_fixture(ctx.creator, kpi, value: day * 1.0, period: Date.add(~D[2026-01-01], day))
+      end)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+
+      listed = Enum.find(res.tools.kpis, &(&1.id == Paths.kpi_id(kpi)))
+
+      # The 12 most recent periods, oldest -> newest, so the space dashboard
+      # sparkline plots the same series as the KPI list.
+      assert length(listed.entries) == 12
+      assert Enum.map(listed.entries, & &1.value) == Enum.map(4..15, &(&1 * 1.0))
+      assert listed.latest_entry.value == 15.0
+    end
+
+    test "a KPI with no entries has a nil latest entry and no history", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, name: "Fresh KPI")
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+
+      listed = Enum.find(res.tools.kpis, &(&1.id == Paths.kpi_id(kpi)))
+      assert listed.latest_entry == nil
+      assert listed.entries == []
+    end
+
+    test "when KPIs are disabled it returns an empty list", ctx do
+      ctx = Factory.disable_space_tool(ctx, :space, :kpis)
+      kpi_fixture(ctx.creator, space_id: ctx.space.id)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
+
+      assert res.tools.kpis_enabled == false
+      assert res.tools.kpis == []
+    end
   end
 
   #
