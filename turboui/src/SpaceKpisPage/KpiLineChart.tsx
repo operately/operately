@@ -21,8 +21,9 @@ export function KpiLineChart({ entries, unit, height = 220 }: KpiLineChartProps)
     return (
       <Placeholder
         title="No data yet"
-        hint="Log an update to see values plotted over time."
+        hint="Values appear here once they are logged."
         testId="kpi-line-chart-empty"
+        height={height}
       />
     );
   }
@@ -31,8 +32,9 @@ export function KpiLineChart({ entries, unit, height = 220 }: KpiLineChartProps)
     return (
       <Placeholder
         title="Only one update so far"
-        hint="Log another update to start plotting a trend line."
+        hint="A second update is needed to plot a trend line."
         testId="kpi-line-chart-single"
+        height={height}
       />
     );
   }
@@ -254,9 +256,13 @@ function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
   );
 }
 
-function Placeholder({ title, hint, testId }: { title: string; hint: string; testId: string }) {
+function Placeholder({ title, hint, testId, height }: { title: string; hint: string; testId: string; height: number }) {
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-12 text-center" data-test-id={testId}>
+    <div
+      className="flex flex-col items-center justify-center px-6 text-center"
+      style={{ height }}
+      data-test-id={testId}
+    >
       <div className="text-sm font-medium text-content-dimmed">{title}</div>
       <div className="mt-1 text-xs text-content-subtle">{hint}</div>
     </div>
