@@ -78,4 +78,68 @@ defmodule OperatelyWeb.Mcp.InputValidatorTest do
     assert {:error, {:invalid_type, "assignee_ids", "array"}} ==
              InputValidator.validate(schema, %{"assignee_ids" => "person_123"})
   end
+
+  test "accepts integers and rejects floats" do
+    schema = JsonSchema.object(%{"index" => JsonSchema.integer("Zero-based index.", minimum: 0)})
+
+    assert :ok == InputValidator.validate(schema, %{"index" => 0})
+    assert {:error, {:invalid_type, "index", "integer"}} == InputValidator.validate(schema, %{"index" => 1.5})
+    assert {:error, {:invalid_minimum, "index", 0}} == InputValidator.validate(schema, %{"index" => -1})
+  end
+
+  test "accepts nullable values" do
+    schema = JsonSchema.object(%{"description" => JsonSchema.nullable(JsonSchema.string("Description."))})
+
+    assert :ok == InputValidator.validate(schema, %{"description" => nil})
+    assert :ok == InputValidator.validate(schema, %{"description" => "Updated"})
+  end
+
+  test "recursively validates nested objects" do
+    schema =
+      JsonSchema.object(%{
+        "reminder" =>
+          JsonSchema.object(
+            %{
+              "type" => JsonSchema.string("Reminder type.", enum: ["before_due", "due_day"]),
+              "days" => JsonSchema.nullable(JsonSchema.integer("Days before due.", minimum: 1))
+            },
+            required: ["type"]
+          )
+      })
+
+    assert :ok == InputValidator.validate(schema, %{"reminder" => %{"type" => "before_due", "days" => 2}})
+
+    assert {:error, {:missing_required_key, "reminder.type"}} ==
+             InputValidator.validate(schema, %{"reminder" => %{"days" => 2}})
+
+    assert {:error, {:unexpected_key, "reminder.extra"}} ==
+             InputValidator.validate(schema, %{"reminder" => %{"type" => "due_day", "extra" => true}})
+
+    assert {:error, {:invalid_enum, "reminder.type"}} ==
+             InputValidator.validate(schema, %{"reminder" => %{"type" => "later"}})
+  end
+
+  test "recursively validates arrays of objects" do
+    schema =
+      JsonSchema.object(%{
+        "reminders" =>
+          JsonSchema.array(
+            JsonSchema.object(
+              %{
+                "type" => JsonSchema.string("Reminder type."),
+                "days" => JsonSchema.integer("Days before due.")
+              },
+              required: ["type"]
+            )
+          )
+      })
+
+    assert :ok == InputValidator.validate(schema, %{"reminders" => [%{"type" => "due_day", "days" => 0}]})
+
+    assert {:error, {:invalid_type, "reminders[0].days", "integer"}} ==
+             InputValidator.validate(schema, %{"reminders" => [%{"type" => "before_due", "days" => "two"}]})
+
+    assert {:error, {:missing_required_key, "reminders[0].type"}} ==
+             InputValidator.validate(schema, %{"reminders" => [%{"days" => 2}]})
+  end
 end
