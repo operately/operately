@@ -35,5 +35,6 @@ function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPag
     value: entry.value,
     recordedAt: new Date(entry.period),
     recordedBy: parsePersonForTurboUi(paths, entry.recordedBy),
+    commentsCount: entry.commentsCount ?? 0,
   };
 }

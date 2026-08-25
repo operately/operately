@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
   import Operately.CommentsFixtures
   import Operately.MessagesFixtures
   import Operately.ResourceHubsFixtures
+  import Operately.KpisFixtures
 
   alias Operately.{Notifications, Updates}
   alias Operately.Notifications.SubscriptionList
@@ -117,6 +118,29 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
 
         case @test.expected do
           200 -> assert count_comments(task.id, :space_task) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @space_table do
+      test "kpi entry - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, @test.company, @test.space)
+        kpi = kpi_fixture(ctx.creator, space_id: space.id)
+        entry = kpi_entry_fixture(ctx.creator, kpi)
+
+        assert {code, res} =
+                 mutation(ctx.conn, [:comments, :create], %{
+                   entity_id: Paths.kpi_entry_id(entry),
+                   entity_type: "kpi_entry",
+                   content: RichText.rich_text("Content", :as_string)
+                 })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert count_comments(entry.id, :kpi_entry) == 1
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end

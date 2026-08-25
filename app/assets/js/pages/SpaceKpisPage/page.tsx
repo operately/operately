@@ -13,6 +13,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
+import { KpiEntryComments } from "./KpiEntryComments";
 
 export function Page() {
   const paths = usePaths();
@@ -124,6 +125,18 @@ export function Page() {
       onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      canComment={space.permissions?.canComment ?? false}
+      renderEntryComments={
+        selectedKpi
+          ? (entry) => (
+              <KpiEntryComments
+                entryId={entry.id}
+                spaceId={space.id!}
+                canComment={space.permissions?.canComment ?? false}
+              />
+            )
+          : undefined
+      }
     />
   );
 }

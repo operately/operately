@@ -934,6 +934,50 @@ defmodule Operately.Operations.CommentAddingTest do
     end
   end
 
+  describe "Commenting on a KPI update" do
+    @action "kpi_entry_commented"
+
+    setup ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space)
+        |> Factory.add_space_member(:champion, :space)
+        |> Factory.add_space_member(:member, :space)
+
+      kpi = Operately.KpisFixtures.kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id)
+      entry = Operately.KpisFixtures.kpi_entry_fixture(ctx.creator, kpi)
+
+      Map.merge(ctx, %{kpi: kpi, entry: entry})
+    end
+
+    test "adds a comment to the KPI update", ctx do
+      {:ok, comment} = CommentAdding.run(ctx.member, ctx.entry, "kpi_entry", RichText.rich_text("Looks high"))
+
+      assert comment.entity_id == ctx.entry.id
+      assert comment.entity_type == :kpi_entry
+      assert comment.content == RichText.rich_text("Looks high")
+    end
+
+    test "notifies the KPI champion and the person who recorded the update", ctx do
+      {:ok, comment} =
+        Oban.Testing.with_testing_mode(:manual, fn ->
+          CommentAdding.run(ctx.member, ctx.entry, "kpi_entry", RichText.rich_text("Looks high"))
+        end)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+
+      perform_job(activity.id)
+
+      notified_ids = activity.id |> fetch_notifications(action: @action) |> Enum.map(& &1.person_id)
+
+      assert ctx.champion.id in notified_ids
+      assert ctx.creator.id in notified_ids
+      refute ctx.member.id in notified_ids
+    end
+  end
+
   describe "author subscription" do
     setup ctx do
       ctx
