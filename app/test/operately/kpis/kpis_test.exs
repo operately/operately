@@ -77,4 +77,23 @@ defmodule Operately.KpisTest do
     assert Enum.map(loaded.entries, & &1.value) == [3.0, 4.0, 5.0]
     assert loaded.latest_entry.value == 5.0
   end
+
+  test "list_kpis_with_recent_entries/1 returns the space's KPIs with their champion and recent history", ctx do
+    other_space = group_fixture(ctx.creator, %{name: "Other space"})
+
+    kpi = kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
+    _other = kpi_fixture(ctx.creator, %{space_id: other_space.id})
+
+    Enum.each(1..15, fn day ->
+      kpi_entry_fixture(ctx.creator, kpi, %{period: Date.add(~D[2026-01-01], day), value: day * 1.0})
+    end)
+
+    assert [loaded] = Kpis.list_kpis_with_recent_entries(ctx.space.id)
+
+    assert loaded.id == kpi.id
+    assert loaded.champion.id == ctx.creator.id
+
+    assert Enum.map(loaded.entries, & &1.value) == Enum.map(4..15, &(&1 * 1.0))
+    assert loaded.latest_entry.value == 15.0
+  end
 end
