@@ -15,6 +15,7 @@ export namespace RelativeDayField {
     label?: string;
     testId?: string;
     className?: string;
+    hideCalendarIcon?: boolean;
   }
 }
 
@@ -34,13 +35,12 @@ export function RelativeDayField({
   label,
   testId = "relative-day-field",
   className,
+  hideCalendarIcon = false,
 }: RelativeDayField.Props) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(value === null ? "" : String(value));
   const [error, setError] = React.useState<string | null>(null);
-  const [editWidth, setEditWidth] = React.useState<number | undefined>();
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
     if (!isEditing) setInputValue(value === null ? "" : String(value));
@@ -53,7 +53,6 @@ export function RelativeDayField({
   const cancel = () => {
     setInputValue(value === null ? "" : String(value));
     setError(null);
-    setEditWidth(undefined);
     setIsEditing(false);
   };
 
@@ -67,14 +66,12 @@ export function RelativeDayField({
     }
 
     setError(null);
-    setEditWidth(undefined);
     setIsEditing(false);
     if (nextValue !== value) await onChange?.(nextValue);
   };
 
   const startEditing = () => {
     if (readonly || !onChange) return;
-    setEditWidth(triggerRef.current?.offsetWidth);
     setError(null);
     setIsEditing(true);
   };
@@ -82,7 +79,8 @@ export function RelativeDayField({
   const isFormField = variant === "form-field";
 
   const shellClassName = classNames(
-    "items-center gap-1.5 text-left text-sm",
+    "items-center text-left text-sm",
+    isFormField ? "gap-1.5" : "gap-1",
     isFormField
       ? classNames(
           "flex w-full rounded-lg border bg-surface-base px-2 py-1.5",
@@ -95,8 +93,6 @@ export function RelativeDayField({
         ),
   );
 
-  const shellStyle = !isFormField && isEditing && editWidth ? { width: editWidth } : undefined;
-
   return (
     <div
       className={classNames(className, isFormField ? "block" : "inline-flex flex-col items-start")}
@@ -104,7 +100,7 @@ export function RelativeDayField({
     >
       {label && <label className="mb-1 block text-sm font-bold">{label}</label>}
       {isEditing ? (
-        <div className={shellClassName} style={shellStyle}>
+        <div className={shellClassName}>
           <IconCalendar size={16} className="shrink-0 text-content-dimmed" />
           <input
             ref={inputRef}
@@ -124,13 +120,15 @@ export function RelativeDayField({
                 cancel();
               }
             }}
-            className="min-w-0 flex-1 border-none bg-transparent text-sm outline-none"
+            className={classNames(
+              "border-none bg-transparent text-sm outline-none",
+              isFormField ? "min-w-0 flex-1" : "w-8 px-0",
+            )}
           />
           <span className="shrink-0 text-sm text-content-dimmed">days</span>
         </div>
       ) : (
         <button
-          ref={triggerRef}
           type="button"
           onClick={startEditing}
           disabled={readonly || !onChange}
@@ -140,7 +138,7 @@ export function RelativeDayField({
             (readonly || !onChange) && "cursor-default",
           )}
         >
-          <IconCalendar size={16} className="shrink-0 text-content-dimmed" />
+          {!hideCalendarIcon && <IconCalendar size={16} className="shrink-0 text-content-dimmed" />}
           <span className="truncate">{formatRelativeDay(value, placeholder)}</span>
         </button>
       )}

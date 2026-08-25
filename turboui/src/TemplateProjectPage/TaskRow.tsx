@@ -12,6 +12,11 @@ import type { TemplateProjectPage } from ".";
 import { useSortableItem } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
 
+const EMPTY_DUE_DATE_REVEAL_CLASS =
+  "[&>button>span]:text-transparent max-sm:[&>button>span]:text-content-dimmed sm:group-hover/task-row:[&>button>span]:text-content-dimmed group-focus-within/task-row:[&>button>span]:text-content-dimmed";
+const EMPTY_ASSIGNEE_REVEAL_CLASS =
+  "opacity-0 max-sm:opacity-100 transition-opacity group-hover/task-row:opacity-100 group-focus-within/task-row:opacity-100 [&:has([data-state=open])]:opacity-100";
+
 export function TaskRow({
   task,
   props,
@@ -85,11 +90,13 @@ export function TaskRow({
   );
 
   const stopDragFromInteractive = (event: React.MouseEvent) => event.stopPropagation();
+  const hasDueDate = task.dueOffsetDays !== null;
+  const hasVisibleAssignees = currentAssignees.length > 0 || unavailableAssignees.length > 0;
 
   return (
     <div
       ref={ref}
-      className={classNames("border-b border-surface-outline last:border-b-0", {
+      className={classNames("group/task-row border-b border-surface-outline last:border-b-0", {
         "cursor-grab active:cursor-grabbing": isDraggable && !isDragging,
         "cursor-grabbing bg-surface-accent": isDragging,
       })}
@@ -117,8 +124,24 @@ export function TaskRow({
             </div>
           )}
         </div>
+        <div onMouseDown={stopDragFromInteractive}>
+          <RelativeDayField
+            value={task.dueOffsetDays}
+            onChange={(dueOffsetDays) => {
+              void props.onTaskUpdate?.(task.id, { dueOffsetDays });
+            }}
+            readonly={!canEdit}
+            placeholder="Set when due"
+            hideCalendarIcon={!hasDueDate}
+            className={hasDueDate ? undefined : EMPTY_DUE_DATE_REVEAL_CLASS}
+            testId={`template-task-${task.id}-due-offset`}
+          />
+        </div>
         <div
-          className="flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1"
+          className={classNames(
+            "flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1",
+            !hasVisibleAssignees && EMPTY_ASSIGNEE_REVEAL_CLASS,
+          )}
           onMouseDown={stopDragFromInteractive}
         >
           <UnavailableTaskAssignees
@@ -145,16 +168,6 @@ export function TaskRow({
               testId={`template-task-${task.id}-assignees`}
             />
           )}
-        </div>
-        <div onMouseDown={stopDragFromInteractive}>
-          <RelativeDayField
-            value={task.dueOffsetDays}
-            onChange={(dueOffsetDays) => {
-              void props.onTaskUpdate?.(task.id, { dueOffsetDays });
-            }}
-            readonly={!canEdit}
-            testId={`template-task-${task.id}-due-offset`}
-          />
         </div>
       </div>
     </div>
