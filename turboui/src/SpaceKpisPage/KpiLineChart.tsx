@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { SpaceKpisPage } from "./types";
-import { formatNumber, formatShortDate } from "./utils";
+import { formatNumber, formatShortDate, formatValue } from "./utils";
 
 interface KpiLineChartProps {
   entries: SpaceKpisPage.KpiEntry[];
@@ -30,6 +30,8 @@ const PADDING = { top: 16, right: 16, bottom: 28, left: 44 };
 const VIEW_WIDTH = 640;
 
 function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>) {
+  const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+
   const values = entries.map((e) => e.value);
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -55,6 +57,8 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
     ` L ${points[0]!.cx} ${PADDING.top + innerHeight} Z`;
 
   const gridLines = [yMax, (yMax + yMin) / 2, yMin];
+  const baseline = PADDING.top + innerHeight;
+  const hovered = hoveredIndex === null ? null : (points[hoveredIndex] ?? null);
 
   return (
     <div className="w-full" data-test-id="kpi-line-chart">
@@ -64,6 +68,7 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
         style={{ height }}
         role="img"
         aria-label="KPI history line chart"
+        onMouseLeave={() => setHoveredIndex(null)}
       >
         {gridLines.map((value, i) => (
           <g key={i}>
@@ -99,15 +104,30 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
           strokeLinecap="round"
         />
 
+        {hovered && (
+          <line
+            x1={hovered.cx}
+            x2={hovered.cx}
+            y1={PADDING.top}
+            y2={baseline}
+            className="stroke-blue-500/40"
+            strokeWidth={1}
+          />
+        )}
+
         {points.map((p, i) => (
           <g key={p.entry.id}>
-            <circle cx={p.cx} cy={p.cy} r={4} className="fill-surface-base stroke-blue-500" strokeWidth={2}>
-              <title>{`${formatNumber(p.entry.value)}${unit ? ` ${unit}` : ""}`}</title>
-            </circle>
+            <circle
+              cx={p.cx}
+              cy={p.cy}
+              r={hoveredIndex === i ? 6 : 4}
+              className="fill-surface-base stroke-blue-500"
+              strokeWidth={2}
+            />
             {(i === 0 || i === points.length - 1) && (
               <text
                 x={p.cx}
-                y={PADDING.top + innerHeight + 18}
+                y={baseline + 18}
                 textAnchor={i === 0 ? "start" : "end"}
                 className="fill-content-dimmed"
                 style={{ fontSize: 11 }}
@@ -117,8 +137,92 @@ function MultiPointChart({ entries, unit, height }: Required<KpiLineChartProps>)
             )}
           </g>
         ))}
+
+        {/* Invisible bands, one per entry, so hovering anywhere in a point's
+            vertical slice reveals its value without pointer coordinate math. */}
+        {points.map((p, i) => {
+          const prev = points[i - 1];
+          const next = points[i + 1];
+          const left = prev ? (prev.cx + p.cx) / 2 : PADDING.left;
+          const right = next ? (p.cx + next.cx) / 2 : VIEW_WIDTH - PADDING.right;
+
+          return (
+            <rect
+              key={`hover-${p.entry.id}`}
+              x={left}
+              y={PADDING.top}
+              width={Math.max(right - left, 1)}
+              height={innerHeight}
+              fill="transparent"
+              data-test-id={`kpi-chart-hover-band-${i}`}
+              onMouseEnter={() => setHoveredIndex(i)}
+            />
+          );
+        })}
+
+        {hovered && <Tooltip point={hovered} unit={unit} />}
       </svg>
     </div>
+  );
+}
+
+interface ChartPoint {
+  entry: SpaceKpisPage.KpiEntry;
+  cx: number;
+  cy: number;
+}
+
+const TOOLTIP = { height: 40, paddingX: 10, valueFontSize: 12, dateFontSize: 11, gap: 12 };
+
+function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
+  const valueLabel = formatValue(point.entry.value, unit);
+  const dateLabel = formatShortDate(point.entry.recordedAt);
+
+  // Approximate the text width from character counts: measuring rendered SVG
+  // text would require a layout pass the chart otherwise does not need.
+  const textWidth = Math.max(
+    valueLabel.length * TOOLTIP.valueFontSize * 0.6,
+    dateLabel.length * TOOLTIP.dateFontSize * 0.55,
+  );
+  // Cap the box so a long unit/date cannot push clampedX negative and clip
+  // the tooltip outside the SVG viewport.
+  const width = Math.min(textWidth + TOOLTIP.paddingX * 2, VIEW_WIDTH - 8);
+  const clampedX = Math.max(4, Math.min(point.cx - width / 2, VIEW_WIDTH - width - 4));
+  const above = point.cy - TOOLTIP.gap - TOOLTIP.height;
+  const boxY = above < 0 ? point.cy + TOOLTIP.gap : above;
+  const centerX = clampedX + width / 2;
+
+  return (
+    <g pointerEvents="none" data-test-id="kpi-chart-tooltip">
+      <rect
+        x={clampedX}
+        y={boxY}
+        width={width}
+        height={TOOLTIP.height}
+        rx={4}
+        className="fill-surface-base stroke-stroke-base"
+        strokeWidth={1}
+        style={{ filter: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.1))" }}
+      />
+      <text
+        x={centerX}
+        y={boxY + 17}
+        textAnchor="middle"
+        className="fill-content-accent"
+        style={{ fontSize: TOOLTIP.valueFontSize, fontWeight: 600 }}
+      >
+        {valueLabel}
+      </text>
+      <text
+        x={centerX}
+        y={boxY + 31}
+        textAnchor="middle"
+        className="fill-content-dimmed"
+        style={{ fontSize: TOOLTIP.dateFontSize }}
+      >
+        {dateLabel}
+      </text>
+    </g>
   );
 }
 
