@@ -30,4 +30,17 @@ defmodule Operately.KpisFixtures do
     {:ok, entry} = Kpis.log_entry(author, kpi, attrs)
     entry
   end
+
+  def kpi_annotation_fixture(author, kpi, attrs \\ %{}) do
+    attrs =
+      Enum.into(attrs, %{
+        title: "Launched enterprise plan",
+        date: ~D[2026-03-15],
+        description: nil,
+        created_by_id: author.id
+      })
+
+    {:ok, annotation} = Kpis.add_annotation(author, kpi, attrs)
+    annotation
+  end
 end

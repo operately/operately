@@ -259,6 +259,30 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment, null: true
   end
 
+  object :activity_content_kpi_annotation_added, for: Operately.Activities.Content.KpiAnnotationAdded do
+    field :space, :space, null: true
+    field :kpi, :kpi, null: true
+    field? :annotation, :kpi_annotation, null: true
+    field :title, :string, null: false
+    field :date, :date, null: false
+  end
+
+  object :activity_content_kpi_annotation_edited, for: Operately.Activities.Content.KpiAnnotationEdited do
+    field :space, :space, null: true
+    field :kpi, :kpi, null: true
+    field? :annotation, :kpi_annotation, null: true
+    field :old_title, :string, null: false
+    field :new_title, :string, null: false
+    field :date, :date, null: false
+  end
+
+  object :activity_content_kpi_annotation_deleted, for: Operately.Activities.Content.KpiAnnotationDeleted do
+    field :space, :space, null: true
+    field :kpi, :kpi, null: true
+    field :title, :string, null: false
+    field :date, :date, null: false
+  end
+
   object :activity_content_goal_target_updating, for: Operately.Activities.Content.GoalTargetUpdating do
     field :company, :company
     field :space, :space
@@ -705,17 +729,20 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_name, :string, null: true
   end
 
-  enum :project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses()
-  enum :project_template_person_role, values: Operately.ProjectTemplates.Person.roles()
+  enum(:project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses())
+  enum(:project_template_person_role, values: Operately.ProjectTemplates.Person.roles())
 
-  enum :project_template_schedule_resource_type,
+  enum(:project_template_schedule_resource_type,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.resource_types()
+  )
 
-  enum :project_template_schedule_field,
+  enum(:project_template_schedule_field,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.fields()
+  )
 
-  enum :project_template_schedule_reason,
+  enum(:project_template_schedule_reason,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.reasons()
+  )
 
   object :project_template_schedule_issue do
     field :resource_type, :project_template_schedule_resource_type, null: false
@@ -829,7 +856,7 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :datetime, null: false
   end
 
-  enum :project_template_comment_parent_type, values: Operately.ProjectTemplates.Comment.parent_types()
+  enum(:project_template_comment_parent_type, values: Operately.ProjectTemplates.Comment.parent_types())
 
   object :project_template_comment, for: Operately.ProjectTemplates.Comment do
     field :id, :string, null: false
@@ -1063,6 +1090,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :champion, :person, null: true
     field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true
+    field? :annotations, list_of(:kpi_annotation), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
@@ -1074,6 +1102,16 @@ defmodule OperatelyWeb.Api.Types do
     field :period, :date, null: false
     field? :recorded_by, :person, null: true
     field? :comments_count, :integer, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
+  end
+
+  object :kpi_annotation, for: Operately.Kpis.KpiAnnotation do
+    field :id, :id, null: false
+    field :date, :date, null: false
+    field :title, :string, null: false
+    field? :description, :string, null: true
+    field? :created_by, :person, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
   end
@@ -1136,6 +1174,9 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_posting,
       :activity_content_kpi_created,
       :activity_content_kpi_entry_commented,
+      :activity_content_kpi_annotation_added,
+      :activity_content_kpi_annotation_edited,
+      :activity_content_kpi_annotation_deleted,
       :activity_content_goal_archived,
       :activity_content_goal_check_in,
       :activity_content_goal_check_in_acknowledgement,
@@ -1793,7 +1834,7 @@ defmodule OperatelyWeb.Api.Types do
     field :context, :string, null: false
   end
 
-  enum :search_result_type,
+  enum(:search_result_type,
     values: [
       :resource_hub_folder,
       :resource_hub_document,
@@ -1809,11 +1850,12 @@ defmodule OperatelyWeb.Api.Types do
       :goal_check_in,
       :project_retrospective
     ]
+  )
 
-  enum :search_matched_field, values: [:title, :name, :content, :description, :message]
-  enum :search_result_state, values: [:closed, :completed, :archived, :paused]
-  enum :search_time_range, values: Operately.Search.CompanyQuery.Filters.time_ranges()
-  enum :search_sort, values: Operately.Search.CompanyQuery.Filters.sorts()
+  enum(:search_matched_field, values: [:title, :name, :content, :description, :message])
+  enum(:search_result_state, values: [:closed, :completed, :archived, :paused])
+  enum(:search_time_range, values: Operately.Search.CompanyQuery.Filters.time_ranges())
+  enum(:search_sort, values: Operately.Search.CompanyQuery.Filters.sorts())
 
   object :search_navigation_target do
     field? :resource_hub_id, :string, null: true

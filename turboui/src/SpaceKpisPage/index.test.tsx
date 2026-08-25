@@ -47,6 +47,9 @@ function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPag
     onDescriptionChange: async () => true,
     onDeleteKpi: async () => ({ success: true }),
     onRecordEntry: async () => ({ success: true }),
+    onAddAnnotation: async () => ({ success: true }),
+    onEditAnnotation: async () => ({ success: true }),
+    onDeleteAnnotation: async () => ({ success: true }),
     richTextHandlers: createMockRichEditorHandlers(),
     ...overrides,
   };
@@ -368,6 +371,7 @@ describe("SpaceKpisPage list latest value", () => {
       link: `${kpisLink}/kpi-throughput`,
       latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null, commentsCount: 0 },
       entries: [],
+      annotations: [],
     };
 
     const { container } = renderPage({ kpis: [kpi] });
@@ -668,5 +672,37 @@ describe("SpaceKpisPage KPI update comments", () => {
     await waitFor(() => {
       expect(document.querySelector('[data-test-id="entry-comments-slide-in"]')).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("SpaceKpisPage annotations", () => {
+  // Annotations live on the chart itself rather than in a list beside it, so the
+  // page offers exactly one way in: the marker on the date it describes.
+  test("marks annotated dates on the chart and opens the add form", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const annotation = target.annotations[0]!;
+
+    const { container } = renderPage({ selectedKpi: target });
+
+    expect(container.querySelector(`[data-test-id="kpi-chart-annotation-${annotation.id}"]`)).toBeInTheDocument();
+
+    await user.click(await findByTestId("add-kpi-annotation"));
+
+    const modal = await findByTestId("kpi-annotation-modal");
+    expect(modal).toHaveTextContent("Mark a date on this chart");
+  });
+
+  test("opens an existing annotation for editing from its chart marker", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const annotation = target.annotations[0]!;
+
+    renderPage({ selectedKpi: target });
+
+    await user.click(await findByTestId(`kpi-chart-annotation-hit-${annotation.id}`));
+
+    const modal = await findByTestId("kpi-annotation-modal");
+    expect(modal).toHaveTextContent("Edit annotation");
   });
 });
