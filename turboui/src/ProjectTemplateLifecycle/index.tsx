@@ -4,6 +4,7 @@ import { ConfirmDialog } from "../ConfirmDialog";
 import * as Forms from "../Forms";
 import Modal from "../Modal";
 import { IconArchive, IconRotate, IconTrash } from "../icons";
+import { showSuccessToast } from "../Toasts";
 
 export type ProjectTemplateLifecycleAction = "duplicate" | "archive" | "restore" | "delete";
 
@@ -46,6 +47,7 @@ export function ProjectTemplateLifecycleDialogs(props: ProjectTemplateLifecycle.
   return (
     <LifecycleConfirmDialog
       {...copy}
+      action={action}
       testId={`${action}-project-template-dialog`}
       onCancel={props.onClose}
       onConfirm={() => lifecycleHandler(props, action)(template.id)}
@@ -62,6 +64,7 @@ function DuplicateTemplateModal(
     submit: async () => {
       const result = await props.onDuplicate(props.template.id, form.values.name.trim());
       if (!result.success) throw new Error(result.error ?? "The template could not be duplicated. Try again.");
+      notifyLifecycleSuccess("duplicate");
       props.onClose();
     },
     cancel: props.onClose,
@@ -90,10 +93,12 @@ function DuplicateTemplateModal(
 }
 
 function LifecycleConfirmDialog({
+  action,
   onConfirm,
   onSuccess,
   ...props
 }: Omit<React.ComponentProps<typeof ConfirmDialog>, "isOpen" | "onConfirm"> & {
+  action: Exclude<ProjectTemplateLifecycleAction, "duplicate">;
   onConfirm: () => Promise<ProjectTemplateLifecycle.MutationResult>;
   onSuccess: () => void;
 }) {
@@ -103,13 +108,33 @@ function LifecycleConfirmDialog({
     setConfirming(true);
     try {
       const result = await onConfirm();
-      if (result.success) onSuccess();
+      if (result.success) {
+        notifyLifecycleSuccess(action);
+        onSuccess();
+      }
     } finally {
       setConfirming(false);
     }
   }
 
   return <ConfirmDialog {...props} isOpen onConfirm={() => void confirm()} confirming={confirming} />;
+}
+
+function notifyLifecycleSuccess(action: ProjectTemplateLifecycleAction) {
+  const message = successToast(action);
+  if (message) showSuccessToast(message.title, message.description);
+}
+
+function successToast(action: ProjectTemplateLifecycleAction) {
+  if (action === "duplicate") {
+    return { title: "Template duplicated", description: "You're now editing the copy." };
+  }
+
+  if (action === "archive") {
+    return { title: "Template archived", description: "It can be restored later." };
+  }
+
+  return null;
 }
 
 function lifecycleHandler(
