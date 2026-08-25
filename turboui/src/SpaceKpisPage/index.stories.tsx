@@ -19,9 +19,10 @@ import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople
 //     title) as the other space tools (Work Map, Tasks)
 //   - a list view: name, unit, champion, an inline history sparkline,
 //     latest value + trend
-//   - a detail view: line chart of history, last update + champion + cadence, "Log update"
+//   - a detail view: name + current value, line chart of history, champion +
+//     cadence, "Log update"
 //   - a "New KPI" form (name, unit, cadence, champion picker)
-//   - editing a KPI in place on its own page: its name in the page title, its
+//   - editing a KPI in place on its own page: its name above the description, its
 //     unit, cadence and champion in the sidebar, and a sidebar Actions section
 //     offering Copy URL and Delete (with a destructive confirmation)
 //   - single-KPI "Log update" only — NO "update all KPIs at once" batch UI
