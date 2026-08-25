@@ -371,7 +371,7 @@ describe("SpaceKpisPage list latest value", () => {
       champion: null,
       insertedAt: new Date(),
       link: `${kpisLink}/kpi-throughput`,
-      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null },
+      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null, commentsCount: 0 },
       entries: [],
     };
 
@@ -581,7 +581,7 @@ describe("SpaceKpisPage create & log", () => {
       const [kpi, setKpi] = React.useState(base);
 
       const onRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput) => {
-        const entry = { id: "new-entry", value: input.value, recordedAt: new Date(), recordedBy: null };
+        const entry = { id: "new-entry", value: input.value, recordedAt: new Date(), recordedBy: null, commentsCount: 0 };
         setKpi((current) => ({ ...current, entries: [...current.entries, entry] }));
 
         return { success: true };
