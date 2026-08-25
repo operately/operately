@@ -68,7 +68,9 @@ export function TemplateDiscussionForm(props: TemplateDiscussionForm.Props) {
               testId="save-template-discussion"
               containerClassName="mt-0"
             />
-            <DimmedLink to={props.cancelLink}>Cancel</DimmedLink>
+            <DimmedLink to={props.cancelLink} className="inline-flex items-center">
+              Cancel
+            </DimmedLink>
           </div>
         </Forms.Form>
       </main>

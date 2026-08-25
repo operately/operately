@@ -30,9 +30,9 @@ export function Submit(props: SubmitProps) {
   const buttonType = submitOnEnter ? "submit" : "button";
 
   const containerStyles = classNames(
-    "mt-8 flex items-center gap-2",
+    "flex items-center gap-2",
     layout === "centered" ? "justify-center" : "justify-start",
-    containerClassName,
+    containerClassName ?? "mt-8",
   );
 
   const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
