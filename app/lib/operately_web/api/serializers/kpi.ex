@@ -11,19 +11,26 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.Kpi do
       space_id: Operately.ShortUuid.encode!(kpi.space_id),
       champion: Serializer.serialize(kpi.champion),
       latest_entry: serialize_latest_entry(kpi),
+      entries: serialize_entries(kpi),
       subscription_list: serialize_subscription_list(kpi),
       inserted_at: Serializer.serialize(kpi.inserted_at),
       updated_at: Serializer.serialize(kpi.updated_at)
     }
   end
 
-  def serialize(kpi, level: :full) do
-    serialize(kpi, level: :essential)
-    |> Map.put(:entries, Serializer.serialize(kpi.entries, level: :essential))
+  def serialize(kpi, level: :full), do: serialize(kpi, level: :essential)
+
+  # Entries are included whenever the caller loaded them: a KPI's own page loads
+  # its full history, while the list loads a bounded recent window for the
+  # inline trend line.
+  defp serialize_entries(kpi) do
+    if Ecto.assoc_loaded?(kpi.entries) do
+      Serializer.serialize(kpi.entries, level: :essential)
+    end
   end
 
-  # The list view carries only the most recent entry (value + period) so it can
-  # show the latest value without the cost of preloading the full history.
+  # The most recent entry (value + period), so a list can show the latest value
+  # without depending on how much history was loaded.
   defp serialize_latest_entry(%{latest_entry: %Operately.Kpis.KpiEntry{} = entry}) do
     Serializer.serialize(entry, level: :essential)
   end

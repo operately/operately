@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Kpis do
         kpis =
           Kpis.list_kpis(ctx.space.id)
           |> Repo.preload(:champion)
-          |> Kpis.load_latest_entries()
+          |> Kpis.load_recent_entries()
 
         {:ok, kpis}
       end)

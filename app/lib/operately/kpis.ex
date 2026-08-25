@@ -26,27 +26,46 @@ defmodule Operately.Kpis do
     |> Repo.all()
   end
 
+  # How much history the list view carries per KPI: enough to plot a trend
+  # inline, without the cost of loading the whole series for every KPI.
+  @recent_entries_limit 12
+
   @doc """
-  Populates the virtual `:latest_entry` field of each KPI with its most recent
-  entry (by period). Uses a single `DISTINCT ON` query for the whole list so the
-  list view can render latest values without preloading full entry history.
+  Loads the most recent entries of each KPI (oldest -> newest) into its `:entries`
+  association, and its latest one into the virtual `:latest_entry` field. Uses a
+  single query for the whole list, capped at #{@recent_entries_limit} entries per
+  KPI, so the list view can render latest values and inline trends cheaply.
   """
-  def load_latest_entries(kpis) when is_list(kpis) do
-    latest = latest_entries_by_kpi_id(Enum.map(kpis, & &1.id))
-    Enum.map(kpis, fn kpi -> %{kpi | latest_entry: Map.get(latest, kpi.id)} end)
+  def load_recent_entries(kpis, limit \\ @recent_entries_limit) when is_list(kpis) do
+    recent = recent_entries_by_kpi_id(Enum.map(kpis, & &1.id), limit)
+
+    Enum.map(kpis, fn kpi ->
+      entries = Map.get(recent, kpi.id, [])
+      %{kpi | entries: entries, latest_entry: List.last(entries)}
+    end)
   end
 
-  defp latest_entries_by_kpi_id([]), do: %{}
+  defp recent_entries_by_kpi_id([], _limit), do: %{}
 
-  defp latest_entries_by_kpi_id(kpi_ids) do
+  defp recent_entries_by_kpi_id(kpi_ids, limit) do
+    ranked =
+      from(e in KpiEntry,
+        where: e.kpi_id in ^kpi_ids,
+        select: %{
+          id: e.id,
+          rank: row_number() |> over(partition_by: e.kpi_id, order_by: [desc: e.period, desc: e.inserted_at])
+        }
+      )
+
     from(e in KpiEntry,
-      where: e.kpi_id in ^kpi_ids,
-      distinct: e.kpi_id,
-      order_by: [asc: e.kpi_id, desc: e.period, desc: e.inserted_at]
+      join: r in subquery(ranked),
+      on: r.id == e.id,
+      where: r.rank <= ^limit,
+      order_by: [asc: e.kpi_id, asc: e.period, asc: e.inserted_at]
     )
     |> Repo.all()
     |> Repo.preload(:recorded_by)
-    |> Map.new(fn entry -> {entry.kpi_id, entry} end)
+    |> Enum.group_by(& &1.kpi_id)
   end
 
   defdelegate create_kpi(creator, attrs), to: Operately.Operations.KpiCreation, as: :run

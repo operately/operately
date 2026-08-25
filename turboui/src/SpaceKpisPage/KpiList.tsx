@@ -1,10 +1,11 @@
 import React from "react";
 
 import { Avatar } from "../Avatar";
-import { BlackLink } from "../Link";
+import { DivLink } from "../Link";
 import { IconChartColumn } from "../icons";
+import { KpiSparkline } from "./KpiSparkline";
 import type { SpaceKpisPage } from "./types";
-import { formatCadence, formatValue, latestEntry, latestTrend } from "./utils";
+import { formatNumber, formatValue, latestEntry, latestTrend } from "./utils";
 import { TrendIndicator } from "./TrendIndicator";
 
 interface KpiListProps {
@@ -13,28 +14,31 @@ interface KpiListProps {
   onNewKpi: () => void;
 }
 
+// Shared by the header and every row so columns stay aligned without a <table>
+// (a table row cannot be an <a>, and we want the whole line to be the link).
+const ROW_GRID = "grid grid-cols-[minmax(0,1fr)_14rem_8rem_11rem] items-center";
+
 export function KpiList({ kpis, canManage, onNewKpi }: KpiListProps) {
   if (kpis.length === 0) {
     return <EmptyState canManage={canManage} onNewKpi={onNewKpi} />;
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-stroke-base" data-test-id="kpi-list">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-stroke-base bg-surface-dimmed text-left text-xs uppercase tracking-wide text-content-dimmed">
-            <th className="px-4 py-2 font-medium">KPI</th>
-            <th className="px-4 py-2 font-medium">Cadence</th>
-            <th className="px-4 py-2 font-medium">Champion</th>
-            <th className="px-4 py-2 text-right font-medium">Latest value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {kpis.map((kpi) => (
-            <KpiRow key={kpi.id} kpi={kpi} />
-          ))}
-        </tbody>
-      </table>
+    <div className="mx-auto max-w-3xl overflow-hidden rounded-lg border border-stroke-base" data-test-id="kpi-list">
+      <div className="text-sm">
+        <div
+          className={`${ROW_GRID} border-b border-stroke-base bg-surface-dimmed text-left text-xs uppercase tracking-wide text-content-dimmed`}
+        >
+          <div className="px-4 py-2 font-medium">KPI</div>
+          <div className="px-4 py-2 font-medium">Champion</div>
+          <div className="px-4 py-2 font-medium">History</div>
+          <div className="px-4 py-2 text-right font-medium">Latest value</div>
+        </div>
+
+        {kpis.map((kpi) => (
+          <KpiRow key={kpi.id} kpi={kpi} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -44,46 +48,43 @@ function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
   const trend = latestTrend(kpi);
 
   return (
-    <tr
-      className="border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight"
-      data-test-id={`kpi-row-${kpi.id}`}
+    <DivLink
+      to={kpi.link}
+      testId={`kpi-row-${kpi.id}`}
+      className={`${ROW_GRID} cursor-pointer border-b border-stroke-dimmed last:border-b-0 hover:bg-surface-highlight`}
     >
-      <td className="px-4 py-3">
-        <BlackLink
-          to={kpi.link}
-          className="font-semibold text-content-accent"
-          underline="hover"
-          testId={`kpi-link-${kpi.id}`}
-        >
-          {kpi.name}
-        </BlackLink>
-        <div className="text-xs text-content-dimmed">Measured in {kpi.unit}</div>
-      </td>
+      <div className="truncate px-4 py-3 text-content-accent" data-test-id={`kpi-link-${kpi.id}`}>
+        {kpi.name}
+      </div>
 
-      <td className="px-4 py-3 text-content-base">{formatCadence(kpi.cadence)}</td>
-
-      <td className="px-4 py-3">
+      <div className="truncate whitespace-nowrap px-4 py-3">
         {kpi.champion ? (
           <div className="flex items-center gap-2">
             <Avatar person={kpi.champion} size="tiny" />
-            <span className="text-content-base">{kpi.champion.fullName}</span>
+            <span className="truncate text-content-base">{kpi.champion.fullName}</span>
           </div>
         ) : (
           <span className="text-content-subtle">Unassigned</span>
         )}
-      </td>
+      </div>
 
-      <td className="px-4 py-3 text-right">
+      <div className="px-4 py-3">
+        <KpiSparkline entries={kpi.entries} width={112} testId={`kpi-sparkline-${kpi.id}`} />
+      </div>
+
+      <div className="whitespace-nowrap px-4 py-3 text-right">
         {latest ? (
           <div className="flex items-center justify-end gap-2">
-            <span className="font-semibold text-content-accent">{formatValue(latest.value, kpi.unit)}</span>
+            <span className="text-content-accent">
+              {kpi.unit === "%" ? formatValue(latest.value, "%") : formatNumber(latest.value)}
+            </span>
             <TrendIndicator delta={trend} />
           </div>
         ) : (
           <span className="text-content-subtle">No data</span>
         )}
-      </td>
-    </tr>
+      </div>
+    </DivLink>
   );
 }
 
