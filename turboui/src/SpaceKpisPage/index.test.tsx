@@ -98,6 +98,19 @@ describe("SpaceKpisPage layout", () => {
     });
   });
 
+  // Champion, history, and latest value sit inside the same <a> as the name, so
+  // clicking anywhere on the row opens the KPI.
+  test("the whole row is the link to the KPI's page", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage();
+    const row = container.querySelector(`[data-test-id="kpi-row-${target.id}"]`)!;
+
+    expect(row.tagName).toBe("A");
+    expect(row).toHaveAttribute("href", target.link);
+    expect(row).toHaveTextContent(target.champion!.fullName);
+    expect(row).toHaveTextContent(formatNumber(target.latestEntry!.value));
+  });
+
   test("opening a KPI moves its name into the header and swaps the primary action to 'Log update'", () => {
     const target = mockKpis[0]!;
     const { container } = renderPage({ selectedKpi: target });
@@ -365,8 +378,20 @@ describe("SpaceKpisPage list latest value", () => {
     const { container } = renderPage({ kpis: [kpi] });
 
     const row = container.querySelector(`[data-test-id="kpi-row-${kpi.id}"]`)!;
-    expect(row).toHaveTextContent("123 USD");
+    expect(row).toHaveTextContent("123");
+    expect(row).not.toHaveTextContent("USD");
     expect(row).not.toHaveTextContent("No data");
+  });
+
+  // The list carries a bounded window of recent entries, so each row can show
+  // where the KPI has been next to where it is now.
+  test("plots the recent history inline for KPIs that have any", () => {
+    const { container } = renderPage();
+    const plotted = mockKpis.find((kpi) => kpi.entries.length > 1)!;
+    const noHistory = mockKpis.find((kpi) => kpi.entries.length === 0)!;
+
+    expect(container.querySelector(`[data-test-id="kpi-sparkline-${plotted.id}"]`)).toBeInTheDocument();
+    expect(container.querySelector(`[data-test-id="kpi-sparkline-${noHistory.id}"]`)).not.toBeInTheDocument();
   });
 });
 

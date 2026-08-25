@@ -43,4 +43,38 @@ defmodule Operately.KpisTest do
 
     assert periods == [~D[2026-01-01], ~D[2026-02-01], ~D[2026-03-01]]
   end
+
+  test "load_recent_entries/2 loads each KPI's recent history and its latest entry", ctx do
+    kpi = kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
+    other = kpi_fixture(ctx.creator, %{space_id: ctx.space.id, name: "Other KPI"})
+    empty = kpi_fixture(ctx.creator, %{space_id: ctx.space.id, name: "Fresh KPI"})
+
+    kpi_entry_fixture(ctx.creator, kpi, %{period: ~D[2026-02-01], value: 2.0})
+    kpi_entry_fixture(ctx.creator, kpi, %{period: ~D[2026-01-01], value: 1.0})
+    kpi_entry_fixture(ctx.creator, other, %{period: ~D[2026-01-01], value: 9.0})
+
+    [loaded, loaded_other, loaded_empty] = Kpis.load_recent_entries([kpi, other, empty])
+
+    assert Enum.map(loaded.entries, & &1.value) == [1.0, 2.0]
+    assert loaded.latest_entry.value == 2.0
+
+    assert Enum.map(loaded_other.entries, & &1.value) == [9.0]
+    assert loaded_other.latest_entry.value == 9.0
+
+    assert loaded_empty.entries == []
+    assert loaded_empty.latest_entry == nil
+  end
+
+  test "load_recent_entries/2 keeps only the most recent entries within the limit", ctx do
+    kpi = kpi_fixture(ctx.creator, %{space_id: ctx.space.id})
+
+    Enum.each(1..5, fn day ->
+      kpi_entry_fixture(ctx.creator, kpi, %{period: Date.add(~D[2026-01-01], day), value: day * 1.0})
+    end)
+
+    [loaded] = Kpis.load_recent_entries([kpi], 3)
+
+    assert Enum.map(loaded.entries, & &1.value) == [3.0, 4.0, 5.0]
+    assert loaded.latest_entry.value == 5.0
+  end
 end

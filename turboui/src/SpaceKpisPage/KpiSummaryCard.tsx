@@ -4,6 +4,7 @@ import { GhostButton } from "../Button";
 import { IconChartColumn } from "../icons";
 import classNames from "../utils/classnames";
 
+import { KpiSparkline } from "./KpiSparkline";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
 import { formatValue, latestEntry, latestTrend } from "./utils";
@@ -79,52 +80,8 @@ function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
         )}
       </div>
 
-      <Sparkline entries={kpi.entries} />
+      <KpiSparkline entries={kpi.entries} />
     </div>
-  );
-}
-
-// Minimal, dependency-free sparkline — the same SVG plotting approach as
-// KpiLineChart, stripped down to just a trend line (no axes, gridlines, dots,
-// or labels). Coloured by overall direction: up = success, down = error.
-function Sparkline({ entries }: { entries: SpaceKpisPage.KpiEntry[] }) {
-  const width = 56;
-  const height = 24;
-  const pad = 2;
-
-  if (entries.length === 0) return null;
-
-  const values = entries.map((e) => e.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = max - min || Math.abs(max) || 1;
-
-  const innerWidth = width - pad * 2;
-  const innerHeight = height - pad * 2;
-
-  const x = (index: number) => (entries.length === 1 ? width / 2 : pad + (innerWidth * index) / (entries.length - 1));
-  const y = (value: number) => pad + innerHeight * (1 - (value - min) / span);
-
-  const direction = values[values.length - 1]! - values[0]!;
-  const strokeClass =
-    direction > 0 ? "stroke-callout-success-content" : direction < 0 ? "stroke-callout-error-content" : "stroke-blue-500";
-
-  if (entries.length === 1) {
-    const cy = height / 2;
-    return (
-      <svg width={width} height={height} className="shrink-0" aria-hidden>
-        <line x1={pad} x2={width - pad} y1={cy} y2={cy} className="stroke-surface-outline" strokeWidth={1.5} strokeDasharray="3 3" />
-        <circle cx={width / 2} cy={cy} r={2} className="fill-blue-500" />
-      </svg>
-    );
-  }
-
-  const linePath = entries.map((entry, index) => `${index === 0 ? "M" : "L"} ${x(index)} ${y(entry.value)}`).join(" ");
-
-  return (
-    <svg width={width} height={height} className="shrink-0" aria-hidden>
-      <path d={linePath} className={strokeClass} strokeWidth={1.5} fill="none" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
   );
 }
 
