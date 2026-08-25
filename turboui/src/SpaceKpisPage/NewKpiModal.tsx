@@ -5,27 +5,17 @@ import { Modal } from "../Modal";
 import type { SpaceKpisPage } from "./types";
 import { CADENCE_OPTIONS } from "./utils";
 
-interface KpiFormModalProps {
+interface NewKpiModalProps {
   isOpen: boolean;
   onClose: () => void;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
-
-  // When `kpi` is provided the modal edits it (calls onEdit); otherwise it
-  // creates a new KPI (calls onCreate). Only one of the callbacks is used per
-  // mode, keeping the shared form free of mode-specific branching at the caller.
-  kpi?: SpaceKpisPage.Kpi | null;
   onCreate: (input: SpaceKpisPage.NewKpiInput) => Promise<SpaceKpisPage.MutationResult>;
-  onEdit: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
 }
 
-// Create/Edit KPI form → calls the `createKpi` / `updateKpi` mutation via the
-// onCreate / onEdit callbacks. Mirrors the goal add form: presentational form,
-// no direct data access.
-//
-// The modal is remounted (via a `key` at the call site) whenever the edited KPI
-// changes so `useForm`'s one-shot initial values pick up the right defaults.
-export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, onEdit }: KpiFormModalProps) {
-  const isEditing = Boolean(kpi);
+// New KPI form → calls the `createKpi` mutation via the onCreate callback.
+// Mirrors the goal add form: presentational form, no direct data access. There
+// is no edit mode: an existing KPI's fields are edited in place on its own page.
+export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKpiModalProps) {
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const searchFn = React.useCallback(
@@ -38,10 +28,10 @@ export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, o
 
   const form = useForm<{ name: string; unit: string; cadence: string; championId: string | null }>({
     fields: {
-      name: kpi?.name ?? "",
-      unit: kpi?.unit ?? "",
-      cadence: kpi?.cadence ?? "monthly",
-      championId: kpi?.champion?.id ?? null,
+      name: "",
+      unit: "",
+      cadence: "monthly",
+      championId: null,
     },
     validate: (addError) => {
       if (!form.values.name.trim()) addError("name", "Name is required");
@@ -53,14 +43,12 @@ export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, o
     submit: async () => {
       setSubmitError(null);
 
-      const shared = {
+      const result = await onCreate({
         name: form.values.name.trim(),
         unit: form.values.unit.trim(),
         cadence: form.values.cadence as SpaceKpisPage.Cadence,
         championId: form.values.championId,
-      };
-
-      const result = kpi ? await onEdit({ id: kpi.id, ...shared }) : await onCreate(shared);
+      });
 
       if (result.success) {
         form.actions.reset();
@@ -73,13 +61,7 @@ export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, o
   });
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEditing ? "Edit KPI" : "New KPI"}
-      size="small"
-      testId={isEditing ? "edit-kpi-modal" : "new-kpi-modal"}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="New KPI" size="small" testId="new-kpi-modal">
       <Form form={form}>
         <div className="space-y-4">
           <TextInput field="name" label="Name" placeholder="e.g. Monthly Recurring Revenue" required autoFocus />
@@ -91,7 +73,6 @@ export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, o
             field="championId"
             label="Champion"
             searchFn={searchFn}
-            default={kpi?.champion ?? undefined}
             allowEmpty
             emptyLabel="No champion"
             required={false}
@@ -105,7 +86,7 @@ export function KpiFormModal({ isOpen, onClose, championSearch, kpi, onCreate, o
           </div>
         )}
 
-        <Submit saveText={isEditing ? "Save changes" : "Create KPI"} cancelText="Cancel" />
+        <Submit saveText="Create KPI" cancelText="Cancel" />
       </Form>
     </Modal>
   );

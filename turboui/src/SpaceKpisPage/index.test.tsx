@@ -125,7 +125,8 @@ describe("SpaceKpisPage layout", () => {
     expect(within(sidebar).getByText(target.champion!.fullName)).toBeInTheDocument();
     expect(within(sidebar).getByText("Cadence")).toBeInTheDocument();
     expect(within(sidebar).getByText("Monthly")).toBeInTheDocument();
-    expect(within(sidebar).queryByText("Unit")).not.toBeInTheDocument();
+    expect(within(sidebar).getByText("Unit")).toBeInTheDocument();
+    expect(sidebar.querySelector('[data-test-id="kpi-unit"]')).toHaveTextContent(target.unit);
   });
 
   test("shows a subscribe control in the sidebar on a KPI page", () => {
@@ -344,9 +345,6 @@ describe("SpaceKpisPage layout", () => {
   });
 });
 
-// These tests cover the answer to "how can I edit/delete a KPI?": every KPI now
-// exposes an overflow "manage" menu (in the list and the detail header) offering
-// Edit and Delete, gated on canManage.
 describe("SpaceKpisPage list latest value", () => {
   // The list endpoint omits full history but carries `latestEntry`; the list
   // must render that value rather than "No data".
@@ -372,43 +370,80 @@ describe("SpaceKpisPage list latest value", () => {
   });
 });
 
+// These tests cover the answer to "how can I edit or delete a KPI?": its fields
+// are edited in place on its own page — the name in the title, the unit,
+// cadence and champion in the sidebar — and deleting it is a sidebar action,
+// the way a task page works. Nothing is tucked away behind an overflow menu.
 describe("SpaceKpisPage edit & delete", () => {
-  test("each KPI row exposes a manage menu with Edit and Delete", async () => {
+  async function editInlineField(testId: string, value: string) {
     const user = userEvent.setup();
-    const target = mockKpis[0]!;
-    const { container } = renderPage();
 
-    await user.click(container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)!);
+    await user.click(await findByTestId(testId));
 
-    await waitFor(() => {
-      expect(document.querySelector(`[data-test-id="edit-kpi-${target.id}"]`)).toBeInTheDocument();
-      expect(document.querySelector(`[data-test-id="delete-kpi-${target.id}"]`)).toBeInTheDocument();
+    const input = await findByTestId(createTestId(testId, "input"));
+    fireEvent.change(input, { target: { value } });
+
+    // Enter saves, which fires the update mutation. Settle it here so its
+    // result — including a rollback on failure — is applied inside act.
+    await act(async () => {
+      fireEvent.keyDown(input, { key: "Enter" });
     });
-  });
+  }
 
-  test("choosing Edit opens the edit form pre-filled with the KPI", async () => {
-    const user = userEvent.setup();
+  test("editors can rename a KPI from the page title", async () => {
     const target = mockKpis[0]!;
-    const { container } = renderPage();
+    const onEditKpi = jest.fn().mockResolvedValue({ success: true, id: target.id });
 
-    await user.click(container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)!);
-    await user.click(await findByTestId(`edit-kpi-${target.id}`));
+    renderPage({ selectedKpi: target, onEditKpi });
+    await editInlineField("kpi-name", "Net Revenue Retention");
 
-    // The edit modal opens with the KPI's current name and unit already filled in.
-    expect(await findByTestId("edit-kpi-modal")).toBeInTheDocument();
-    expect(screen.getByDisplayValue(target.name)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(target.unit)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(onEditKpi).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, name: "Net Revenue Retention" })),
+    );
   });
 
-  test("choosing Delete opens a confirmation that calls onDeleteKpi", async () => {
+  test("editors can change the unit from the sidebar", async () => {
+    const target = mockKpis[0]!;
+    const onEditKpi = jest.fn().mockResolvedValue({ success: true, id: target.id });
+
+    renderPage({ selectedKpi: target, onEditKpi });
+    await editInlineField("kpi-unit", "EUR");
+
+    await waitFor(() =>
+      expect(onEditKpi).toHaveBeenCalledWith(expect.objectContaining({ id: target.id, unit: "EUR" })),
+    );
+  });
+
+  // A rejected edit must not leave the page showing a value the server does not
+  // have, so the field goes back to what it was.
+  test("a rejected rename reverts the title", async () => {
+    const target = mockKpis[0]!;
+    const onEditKpi = jest.fn().mockResolvedValue({ success: false, error: "Name is already taken" });
+
+    renderPage({ selectedKpi: target, onEditKpi });
+    await editInlineField("kpi-name", "Duplicate name");
+
+    await waitFor(() => expect(screen.getByRole("heading", { name: target.name })).toBeInTheDocument());
+  });
+
+  test("the sidebar lists the KPI's actions: Copy URL and Delete", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target });
+    const sidebar = container.querySelector<HTMLElement>('[data-test-id="kpi-sidebar"]')!;
+
+    expect(within(sidebar).getByText("Actions")).toBeInTheDocument();
+    expect(within(sidebar).getByText("Copy URL")).toBeInTheDocument();
+    expect(within(sidebar).getByText("Delete")).toBeInTheDocument();
+  });
+
+  test("Delete opens a confirmation that calls onDeleteKpi", async () => {
     const user = userEvent.setup();
     const onDeleteKpi = jest.fn().mockResolvedValue({ success: true });
     const target = mockKpis[0]!;
-    const { container } = renderPage({ onDeleteKpi });
 
-    await user.click(container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)!);
-    await user.click(await findByTestId(`delete-kpi-${target.id}`));
+    renderPage({ selectedKpi: target, onDeleteKpi });
 
+    await user.click(await findByTestId("delete-kpi"));
     expect(await findByTestId("delete-kpi-modal")).toBeInTheDocument();
 
     await user.click(await findByTestId("confirm-delete-kpi"));
@@ -416,28 +451,26 @@ describe("SpaceKpisPage edit & delete", () => {
     await waitFor(() => expect(onDeleteKpi).toHaveBeenCalledWith(target.id));
   });
 
-  test("the detail header exposes the same manage menu for the open KPI", async () => {
+  test("read-only viewers cannot rename a KPI or delete it", async () => {
     const user = userEvent.setup();
     const target = mockKpis[0]!;
-    const { container } = renderPage({ selectedKpi: target });
+    const { container } = renderPage({ canManage: false, selectedKpi: target });
 
-    await user.click(container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)!);
+    await user.click(await findByTestId("kpi-name"));
+    expect(document.querySelector(`[data-test-id="${createTestId("kpi-name", "input")}"]`)).not.toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(document.querySelector(`[data-test-id="edit-kpi-${target.id}"]`)).toBeInTheDocument();
-      expect(document.querySelector(`[data-test-id="delete-kpi-${target.id}"]`)).toBeInTheDocument();
-    });
+    expect(container.querySelector('[data-test-id="delete-kpi"]')).not.toBeInTheDocument();
   });
 
-  test("read-only viewers get no manage menu on rows or the detail header", () => {
+  // Managing a KPI belongs on its own page, where its history is on screen to
+  // judge the change by, so rows carry no manage menu of their own.
+  test("KPI rows offer only 'Log update', with no overflow menu", () => {
     const target = mockKpis[0]!;
+    const { container } = renderPage();
+    const row = container.querySelector<HTMLElement>(`[data-test-id="kpi-row-${target.id}"]`)!;
 
-    const list = renderPage({ canManage: false });
-    expect(list.container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)).not.toBeInTheDocument();
-    list.unmount();
-
-    const detail = renderPage({ canManage: false, selectedKpi: target });
-    expect(detail.container.querySelector(`[data-test-id="kpi-actions-${target.id}"]`)).not.toBeInTheDocument();
+    expect(within(row).getByText("Log update")).toBeInTheDocument();
+    expect(within(row).queryByLabelText("KPI actions")).not.toBeInTheDocument();
   });
 });
 

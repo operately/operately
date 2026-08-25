@@ -1,22 +1,28 @@
 import React from "react";
 
+import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
 import { PageDescription } from "../PageDescription";
 import { PersonField } from "../PersonField";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
+import { TextField } from "../TextField";
+import { showErrorToast, showSuccessToast } from "../Toasts";
+import { IconLink, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
+import type { KpiFields } from "./useKpiFields";
 import { CADENCE_OPTIONS, formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
 
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
+  fields: KpiFields;
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
-  onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
   onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
+  onDelete: () => void;
   richTextHandlers: RichEditorHandlers;
   subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }
@@ -26,10 +32,11 @@ interface KpiDetailProps {
 // card, so the main column is the history chart and the recorded-updates log.
 export function KpiDetail({
   kpi,
+  fields,
   canManage,
   championSearch,
-  onEditKpi,
   onDescriptionChange,
+  onDelete,
   richTextHandlers,
   subscriptions,
 }: KpiDetailProps) {
@@ -64,18 +71,19 @@ export function KpiDetail({
         <div>
           <div className="rounded-lg border border-stroke-base bg-surface-base p-4">
             <h2 className="mb-3 text-sm font-bold text-content-accent">History</h2>
-            <KpiLineChart entries={kpi.entries} unit={kpi.unit} />
+            <KpiLineChart entries={kpi.entries} unit={fields.unit} />
           </div>
 
-          <EntriesTable entries={kpi.entries} unit={kpi.unit} />
+          <EntriesTable entries={kpi.entries} unit={fields.unit} />
         </div>
       </div>
 
       <KpiSidebar
         kpi={kpi}
+        fields={fields}
         canManage={canManage}
         championSearch={championSearch}
-        onEditKpi={onEditKpi}
+        onDelete={onDelete}
         subscriptions={subscriptions}
       />
     </div>
@@ -84,77 +92,113 @@ export function KpiDetail({
 
 function KpiSidebar({
   kpi,
+  fields,
   canManage,
   championSearch,
-  onEditKpi,
+  onDelete,
   subscriptions,
 }: {
   kpi: SpaceKpisPage.Kpi;
+  fields: KpiFields;
   canManage: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
-  onEditKpi: (input: SpaceKpisPage.EditKpiInput) => Promise<SpaceKpisPage.MutationResult>;
+  onDelete: () => void;
   subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }) {
-  const [champion, setChampion] = React.useState(kpi.champion);
-  const [cadence, setCadence] = React.useState(kpi.cadence);
   const searchData = useChampionSearch(championSearch);
-
-  React.useEffect(() => {
-    setChampion(kpi.champion);
-    setCadence(kpi.cadence);
-  }, [kpi.champion, kpi.cadence]);
-
-  const save = async (nextChampion: SpaceKpisPage.Person | null, nextCadence: SpaceKpisPage.Cadence) => {
-    const previous = { champion, cadence };
-    setChampion(nextChampion);
-    setCadence(nextCadence);
-
-    const result = await onEditKpi({
-      id: kpi.id,
-      name: kpi.name,
-      unit: kpi.unit,
-      cadence: nextCadence,
-      championId: nextChampion?.id ?? null,
-    });
-
-    if (!result.success) {
-      setChampion(previous.champion);
-      setCadence(previous.cadence);
-    }
-  };
 
   return (
     <aside className="mt-8 space-y-6 sm:col-span-4 sm:mt-0 sm:pl-8" data-test-id="kpi-sidebar">
-      <LastUpdate kpi={kpi} canManage={canManage} />
+      <LastUpdate kpi={kpi} unit={fields.unit} canManage={canManage} />
 
       <SidebarSection title="Champion">
         {canManage ? (
           <PersonField
-            person={champion}
-            setPerson={(person) => save(person, cadence)}
+            person={fields.champion}
+            setPerson={(champion) => fields.update({ champion })}
             searchData={searchData}
             emptyStateMessage="Set champion"
             emptyStateReadOnlyMessage="No champion"
             testId="kpi-champion"
           />
         ) : (
-          <PersonField person={champion} readonly emptyStateReadOnlyMessage="No champion" testId="kpi-champion" />
+          <PersonField
+            person={fields.champion}
+            readonly
+            emptyStateReadOnlyMessage="No champion"
+            testId="kpi-champion"
+          />
         )}
       </SidebarSection>
 
       <SidebarSection title="Cadence">
-        <CadenceField cadence={cadence} readonly={!canManage} onChange={(next) => save(champion, next)} />
+        <CadenceField
+          cadence={fields.cadence}
+          readonly={!canManage}
+          onChange={(cadence) => fields.update({ cadence })}
+        />
+      </SidebarSection>
+
+      <SidebarSection title="Unit">
+        <TextField
+          className="text-sm text-content-base"
+          text={fields.unit}
+          onChange={(unit) => fields.update({ unit })}
+          readonly={!canManage}
+          trimBeforeSave
+          testId="kpi-unit"
+        />
       </SidebarSection>
 
       {subscriptions && <SidebarNotificationSection {...subscriptions} />}
+
+      <Actions canManage={canManage} onDelete={onDelete} />
     </aside>
+  );
+}
+
+// The KPI's whole-page actions, listed in the sidebar the way a task page lists
+// its own, rather than hidden behind an overflow menu.
+function Actions({ canManage, onDelete }: { canManage: boolean; onDelete: () => void }) {
+  const copyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showSuccessToast("Success", "KPI URL copied to clipboard");
+    } catch {
+      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+    }
+  };
+
+  const actions = [
+    {
+      type: "action" as const,
+      label: "Copy URL",
+      onClick: copyUrl,
+      icon: IconLink,
+      testId: "copy-kpi-url",
+    },
+    {
+      type: "action" as const,
+      label: "Delete",
+      onClick: onDelete,
+      icon: IconTrash,
+      hidden: !canManage,
+      danger: true,
+      testId: "delete-kpi",
+    },
+  ];
+
+  return (
+    <SidebarSection title="Actions">
+      <ActionList actions={actions} />
+    </SidebarSection>
   );
 }
 
 // The KPI's current reading, and the only place the latest value appears on the
 // detail page. The value leads, with the change since the previous entry beside
 // it; when it was recorded and by whom are supporting details underneath.
-function LastUpdate({ kpi, canManage }: { kpi: SpaceKpisPage.Kpi; canManage: boolean }) {
+function LastUpdate({ kpi, unit, canManage }: { kpi: SpaceKpisPage.Kpi; unit: string; canManage: boolean }) {
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
@@ -174,9 +218,7 @@ function LastUpdate({ kpi, canManage }: { kpi: SpaceKpisPage.Kpi; canManage: boo
     <SidebarSection title="Last update">
       <div data-test-id="kpi-last-update">
         <div className="flex items-center gap-2">
-          <div className="text-3xl font-bold leading-none text-content-accent">
-            {formatValue(latest.value, kpi.unit)}
-          </div>
+          <div className="text-3xl font-bold leading-none text-content-accent">{formatValue(latest.value, unit)}</div>
           <TrendIndicator delta={trend} />
         </div>
 
