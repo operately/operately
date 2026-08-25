@@ -260,7 +260,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_kpi_annotation_added, for: Operately.Activities.Content.KpiAnnotationAdded do
-    field :space, :space, null: true
+    field :space, :space, null: false
     field :kpi, :kpi, null: true
     field? :annotation, :kpi_annotation, null: true
     field :title, :string, null: false
@@ -268,7 +268,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_kpi_annotation_edited, for: Operately.Activities.Content.KpiAnnotationEdited do
-    field :space, :space, null: true
+    field :space, :space, null: false
     field :kpi, :kpi, null: true
     field? :annotation, :kpi_annotation, null: true
     field :old_title, :string, null: false
@@ -277,7 +277,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_kpi_annotation_deleted, for: Operately.Activities.Content.KpiAnnotationDeleted do
-    field :space, :space, null: true
+    field :space, :space, null: false
     field :kpi, :kpi, null: true
     field :title, :string, null: false
     field :date, :date, null: false

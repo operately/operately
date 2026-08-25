@@ -390,7 +390,7 @@ export interface ActivityContentGuestInvited {
 
 export interface ActivityContentKpiAnnotationAdded {
   __typename: "activity_content_kpi_annotation_added";
-  space: Space | null;
+  space: Space;
   kpi: Kpi | null;
   annotation?: KpiAnnotation | null;
   title: string;
@@ -399,7 +399,7 @@ export interface ActivityContentKpiAnnotationAdded {
 
 export interface ActivityContentKpiAnnotationDeleted {
   __typename: "activity_content_kpi_annotation_deleted";
-  space: Space | null;
+  space: Space;
   kpi: Kpi | null;
   title: string;
   date: string;
@@ -407,7 +407,7 @@ export interface ActivityContentKpiAnnotationDeleted {
 
 export interface ActivityContentKpiAnnotationEdited {
   __typename: "activity_content_kpi_annotation_edited";
-  space: Space | null;
+  space: Space;
   kpi: Kpi | null;
   annotation?: KpiAnnotation | null;
   oldTitle: string;
