@@ -11,7 +11,6 @@ describe("MilestonePage.variantFeatures", () => {
       showCreatedBy: true,
       showCompletedOn: true,
       showKanbanLink: true,
-      showInsertedAt: false,
       showProjectTasks: true,
       showTemplateTasks: false,
       sidebarTestId: "sidebar",
@@ -19,7 +18,7 @@ describe("MilestonePage.variantFeatures", () => {
     });
   });
 
-  it("shows relative due date and hides status, activity, and subscriptions for template milestones", () => {
+  it("shows relative due date and hides status, activity, subscriptions, and created date for template milestones", () => {
     expect(variantFeatures("project-template")).toEqual({
       showStatus: false,
       showCalendarDueDate: false,
@@ -29,7 +28,6 @@ describe("MilestonePage.variantFeatures", () => {
       showCreatedBy: false,
       showCompletedOn: false,
       showKanbanLink: false,
-      showInsertedAt: true,
       showProjectTasks: false,
       showTemplateTasks: true,
       sidebarTestId: "template-milestone-sidebar",
