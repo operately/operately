@@ -22,6 +22,7 @@ defmodule Operately.Mcp.ToolsTest do
     "list_project_check_ins",
     "get_project_check_in",
     "list_goals",
+    "list_project_contributors",
     "list_goal_discussions",
     "list_goal_check_ins",
     "get_goal",
@@ -32,10 +33,14 @@ defmodule Operately.Mcp.ToolsTest do
     "list_task_statuses",
     "get_space_discussion",
     "search",
+    "search_full_text",
     "list_docs_and_files",
     "get_document",
     "get_file",
     "get_link",
+    "search_docs_and_files",
+    "list_document_versions",
+    "get_document_version",
     "fetch",
     "create_comment",
     "create_project_check_in",
@@ -56,6 +61,8 @@ defmodule Operately.Mcp.ToolsTest do
     "acknowledge_project_retrospective",
     "create_project_discussion",
     "update_project_discussion",
+    "add_project_contributor",
+    "update_project_contributor",
     "create_goal",
     "update_goal_name",
     "update_goal_description",
@@ -92,6 +99,7 @@ defmodule Operately.Mcp.ToolsTest do
     "create_document",
     "update_document",
     "publish_document",
+    "restore_document_version",
     "create_link",
     "update_link",
     "create_folder",
@@ -110,7 +118,8 @@ defmodule Operately.Mcp.ToolsTest do
     "delete_document",
     "delete_file",
     "delete_link",
-    "delete_folder"
+    "delete_folder",
+    "remove_project_contributor"
   ]
   @company_modes [:none, :authenticated, :resource_derived]
   @safety_classifications [:read_only, :write, :destructive]
@@ -178,6 +187,7 @@ defmodule Operately.Mcp.ToolsTest do
     assert tools["list_tasks"].company_mode == :authenticated
     assert tools["get_task"].company_mode == :resource_derived
     assert tools["search"].company_mode == :authenticated
+    assert tools["search_full_text"].company_mode == :authenticated
     assert tools["fetch"].company_mode == :resource_derived
     assert tools["create_comment"].company_mode == :resource_derived
     assert tools["create_project_check_in"].company_mode == :resource_derived
@@ -262,19 +272,20 @@ defmodule Operately.Mcp.ToolsTest do
 
     assert create_comment["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
 
-    assert Enum.sort(create_comment["inputSchema"]["properties"]["parent_type"]["enum"]) == Enum.sort([
-             "goal_check_in",
-             "project_check_in",
-             "goal_discussion",
-             "project_discussion",
-             "space_discussion",
-             "milestone",
-             "document",
-             "file",
-             "link",
-             "project_task",
-             "space_task"
-           ])
+    assert Enum.sort(create_comment["inputSchema"]["properties"]["parent_type"]["enum"]) ==
+             Enum.sort([
+               "goal_check_in",
+               "project_check_in",
+               "goal_discussion",
+               "project_discussion",
+               "space_discussion",
+               "milestone",
+               "document",
+               "file",
+               "link",
+               "project_task",
+               "space_task"
+             ])
 
     assert create_comment["_meta"]["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert create_comment["_meta"]["safetyClassification"] == "write"
