@@ -8,6 +8,7 @@ import { PersonField } from "../PersonField";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
+import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
 import { IconLink, IconMessage, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
@@ -81,6 +82,7 @@ export function KpiDetail({
           <EntriesTable
             entries={kpi.entries}
             unit={fields.unit}
+            kpiName={fields.name}
             canComment={canComment}
             renderEntryComments={renderEntryComments}
           />
@@ -321,18 +323,26 @@ function CadenceField({
   );
 }
 
+// The comment composer's editor toolbar needs about 570px before it starts
+// clipping, so the panel keeps a floor of 680px and only narrows to the full
+// screen when the window itself is smaller than that.
+const COMMENTS_PANEL_WIDTH = "min(100%, max(70%, 680px))";
+
 function EntriesTable({
   entries,
   unit,
+  kpiName,
   canComment,
   renderEntryComments,
 }: {
   entries: SpaceKpisPage.KpiEntry[];
   unit: string;
+  kpiName: string;
   canComment: boolean;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
 }) {
   const [openEntryId, setOpenEntryId] = React.useState<string | null>(null);
+  const openEntry = entries.find((entry) => entry.id === openEntryId) ?? null;
 
   if (entries.length === 0) return null;
 
@@ -359,52 +369,99 @@ function EntriesTable({
               const canOpenComments = Boolean(renderEntryComments) && (canComment || commentsCount > 0);
 
               return (
-                <React.Fragment key={entry.id}>
-                  <tr className="border-b border-stroke-dimmed last:border-b-0" data-test-id={`entry-row-${entry.id}`}>
-                    <td className="px-4 py-2 text-content-base">{formatShortDate(entry.recordedAt)}</td>
-                    <td className="px-4 py-2">
-                      {entry.recordedBy ? (
-                        <div className="flex items-center gap-2">
-                          <Avatar person={entry.recordedBy} size="tiny" />
-                          <span className="text-content-base">{entry.recordedBy.fullName}</span>
-                        </div>
-                      ) : (
-                        <span className="text-content-subtle">Unknown</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-right font-medium text-content-accent">{formatValue(entry.value, unit)}</td>
-                    <td className="px-4 py-2 text-right">
-                      {canOpenComments ? (
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1.5 rounded px-1.5 py-1 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
-                          onClick={() => setOpenEntryId(isOpen ? null : entry.id)}
-                          data-test-id={`entry-comments-toggle-${entry.id}`}
-                          aria-expanded={isOpen}
-                        >
-                          <IconMessage size={14} />
-                          {commentsCount > 0 ? commentsCount : "Comment"}
-                        </button>
-                      ) : commentsCount > 0 ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-content-dimmed">
-                          <IconMessage size={14} />
-                          {commentsCount}
-                        </span>
-                      ) : null}
-                    </td>
-                  </tr>
-                  {isOpen && renderEntryComments && (
-                    <tr className="border-b border-stroke-dimmed last:border-b-0 bg-surface-base" data-test-id={`entry-comments-${entry.id}`}>
-                      <td colSpan={4} className="px-4 py-4">
-                        {renderEntryComments(entry)}
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                <tr
+                  key={entry.id}
+                  className="border-b border-stroke-dimmed last:border-b-0"
+                  data-test-id={`entry-row-${entry.id}`}
+                >
+                  <td className="px-4 py-2 text-content-base">{formatShortDate(entry.recordedAt)}</td>
+                  <td className="px-4 py-2">
+                    {entry.recordedBy ? (
+                      <div className="flex items-center gap-2">
+                        <Avatar person={entry.recordedBy} size="tiny" />
+                        <span className="text-content-base">{entry.recordedBy.fullName}</span>
+                      </div>
+                    ) : (
+                      <span className="text-content-subtle">Unknown</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-right font-medium text-content-accent">
+                    {formatValue(entry.value, unit)}
+                  </td>
+                  <td className="px-4 py-2 text-right">
+                    {canOpenComments ? (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1.5 rounded px-1.5 py-1 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
+                        onClick={() => setOpenEntryId(isOpen ? null : entry.id)}
+                        data-test-id={`entry-comments-toggle-${entry.id}`}
+                        aria-expanded={isOpen}
+                      >
+                        <IconMessage size={14} />
+                        {commentsCount > 0 ? commentsCount : "Comment"}
+                      </button>
+                    ) : commentsCount > 0 ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs text-content-dimmed">
+                        <IconMessage size={14} />
+                        {commentsCount}
+                      </span>
+                    ) : null}
+                  </td>
+                </tr>
               );
             })}
           </tbody>
         </table>
+      </div>
+
+      <SlideIn
+        isOpen={Boolean(openEntry && renderEntryComments)}
+        onClose={() => setOpenEntryId(null)}
+        width={COMMENTS_PANEL_WIDTH}
+        testId="entry-comments-slide-in"
+        header={openEntry ? <EntryCommentsHeader entry={openEntry} unit={unit} kpiName={kpiName} /> : undefined}
+      >
+        {openEntry && renderEntryComments && (
+          <div className="px-6 py-4" data-test-id={`entry-comments-${openEntry.id}`}>
+            {renderEntryComments(openEntry)}
+          </div>
+        )}
+      </SlideIn>
+    </div>
+  );
+}
+
+// The update under discussion leads the panel: the value it recorded, then who
+// logged it and when. The KPI name sits above as context, since the panel covers
+// the page that would otherwise carry it.
+function EntryCommentsHeader({
+  entry,
+  unit,
+  kpiName,
+}: {
+  entry: SpaceKpisPage.KpiEntry;
+  unit: string;
+  kpiName: string;
+}) {
+  return (
+    <div className="border-b border-stroke-base px-6 py-4 pr-12" data-test-id="entry-comments-header">
+      <div className="text-xs text-content-dimmed">{kpiName}</div>
+
+      <h2 className="mt-1 text-2xl font-bold leading-none text-content-accent">{formatValue(entry.value, unit)}</h2>
+
+      <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-content-dimmed">
+        {entry.recordedBy ? (
+          <>
+            <span>Logged by</span>
+            <Avatar person={entry.recordedBy} size={16} />
+            <span>
+              <span className="font-medium text-content-base">{entry.recordedBy.fullName}</span> on{" "}
+              {formatShortDate(entry.recordedAt)}
+            </span>
+          </>
+        ) : (
+          <span>Logged on {formatShortDate(entry.recordedAt)}</span>
+        )}
       </div>
     </div>
   );

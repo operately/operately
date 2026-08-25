@@ -88,6 +88,10 @@ export namespace SpaceKpisPage {
     kpiId: string;
     value: number;
     period: string;
+
+    // Optional note explaining the value, posted as the update's first comment.
+    // Absent when the author left the note blank.
+    comment?: Record<string, unknown>;
   }
 
   export type MutationResult = { success: boolean; id?: string; error?: string };
@@ -125,7 +129,7 @@ export namespace SpaceKpisPage {
     richTextHandlers: RichEditorHandlers;
 
     // Comments on a recorded update. The app supplies the comment thread so
-    // TurboUI stays free of API calls; omit it in stories that only show the table.
+    // TurboUI stays free of API calls; opening a row shows it in a slide-in.
     renderEntryComments?: (entry: KpiEntry) => ReactNode;
     canComment?: boolean;
 
