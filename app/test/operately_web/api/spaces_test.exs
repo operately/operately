@@ -1067,6 +1067,25 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert space.tools.kpis_enabled == true
       assert space.tools.templates_enabled == false
     end
+
+    test "it preserves tools omitted from a partial update", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:spaces, :update_tools], %{
+        space_id: Paths.space_id(ctx.space),
+        tools: %{templates_enabled: false}
+      })
+
+      assert res.success == true
+
+      space = Repo.reload(ctx.space)
+
+      assert space.tools.tasks_enabled == false
+      assert space.tools.discussions_enabled == true
+      assert space.tools.resource_hub_enabled == true
+      assert space.tools.kpis_enabled == false
+      assert space.tools.templates_enabled == false
+    end
   end
 
   #

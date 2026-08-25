@@ -308,3 +308,20 @@ test("rejects repeated --file flags for documents create_file", () => {
     },
   );
 });
+
+test("parses custom file input for project_templates create_file", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    ["project_templates", "create_file", "--template-id", "tpl1", "--file", "./report.pdf"],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      template_id: "tpl1",
+      file: "./report.pdf",
+    });
+  }
+});

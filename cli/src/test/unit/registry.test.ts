@@ -21,11 +21,14 @@ test("custom catalog commands are still normal registry endpoints", () => {
   const registry = createRegistry(fixtureCatalog);
   const pictureEndpoint = registry.find(["people", "update_picture"]);
   const fileEndpoint = registry.find(["documents", "create_file"]);
+  const templateFileEndpoint = registry.find(["project_templates", "create_file"]);
 
   assert.ok(pictureEndpoint);
   assert.ok(fileEndpoint);
+  assert.ok(templateFileEndpoint);
   assert.equal(pictureEndpoint?.full_name, "people/update_picture");
   assert.equal(fileEndpoint?.full_name, "documents/create_file");
+  assert.equal(templateFileEndpoint?.full_name, "project_templates/create_file");
 });
 
 test("throws when generated catalog and custom endpoints share a command", () => {

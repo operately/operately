@@ -18,6 +18,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Wrappers.Documents.DeleteFile,
       Mutations.Wrappers.Documents.DeleteLink,
       Mutations.Wrappers.Documents.PublishDocument,
+      Mutations.Wrappers.Documents.RestoreDocumentVersion,
       Mutations.Wrappers.Documents.UpdateDocument,
       Mutations.Wrappers.Documents.UpdateFile,
       Mutations.Wrappers.Documents.UpdateLink,
