@@ -89,6 +89,50 @@ defmodule OperatelyWeb.Mcp.Helpers do
     end
   end
 
+  def decode_optional_notification_inputs(arguments) do
+    if Map.has_key?(arguments, "notify_person_ids") or Map.has_key?(arguments, "notify_everyone") do
+      decode_notification_inputs(arguments)
+    else
+      {:ok, %{}}
+    end
+  end
+
+  def access_level_values do
+    Binding.valid_access_levels(:as_atom) |> Enum.map(&Atom.to_string/1)
+  end
+
+  def decode_access_level(value, allowed_values \\ access_level_values())
+
+  def decode_access_level(value, allowed_values) when is_binary(value) do
+    if value in allowed_values, do: {:ok, String.to_atom(value)}, else: {:error, :invalid_arguments}
+  end
+
+  def decode_access_level(_value, _allowed_values), do: {:error, :invalid_arguments}
+
+  def parse_datetime(nil), do: {:ok, nil}
+
+  def parse_datetime(value) when is_binary(value) do
+    case DateTime.from_iso8601(value) do
+      {:ok, datetime, _offset} -> {:ok, datetime}
+      {:error, _reason} -> {:error, :invalid_arguments}
+    end
+  end
+
+  def parse_datetime(_value), do: {:error, :invalid_arguments}
+
+  def markdown_to_rich_text_nullable(nil), do: {:ok, nil}
+  def markdown_to_rich_text_nullable(content), do: markdown_to_rich_text_allow_blank(content)
+
+  def put_present(inputs, arguments, argument_key, input_key, decoder \\ &{:ok, &1}) do
+    if Map.has_key?(arguments, argument_key) do
+      with {:ok, value} <- decoder.(arguments[argument_key]) do
+        {:ok, Map.put(inputs, input_key, value)}
+      end
+    else
+      {:ok, inputs}
+    end
+  end
+
   def put_optional(map, _key, nil), do: map
   def put_optional(map, key, value), do: Map.put(map, key, value)
 

@@ -32,6 +32,16 @@ defmodule OperatelyWeb.Mcp.Catalog.JsonSchema do
     |> put_if_present("default", Keyword.get(opts, :default), Keyword.has_key?(opts, :default))
   end
 
+  def integer(description, opts \\ []) when is_binary(description) do
+    %{"type" => "integer", "description" => description}
+    |> put_if_present("minimum", Keyword.get(opts, :minimum), Keyword.has_key?(opts, :minimum))
+    |> put_if_present("default", Keyword.get(opts, :default), Keyword.has_key?(opts, :default))
+  end
+
+  def nullable(%{"type" => type} = schema) when is_binary(type) do
+    Map.put(schema, "type", [type, "null"])
+  end
+
   def array(items, opts \\ []) when is_map(items) do
     %{
       "type" => "array",
