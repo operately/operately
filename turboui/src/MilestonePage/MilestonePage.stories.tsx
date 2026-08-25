@@ -668,7 +668,6 @@ function TemplateMilestoneStory({
     },
     dueOffsetDays: offsetDays,
     onDueOffsetDaysChange: setOffsetDays,
-    insertedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
     tasks,
     statuses: templateStatuses,
     milestones: sampleTemplateMilestones,

@@ -6,7 +6,6 @@ import * as People from "@/models/people";
 import { persistTemplateChange } from "@/models/projectTemplates";
 import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
-import * as Time from "@/utils/time";
 import { compareIds, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import React from "react";
@@ -100,7 +99,6 @@ function Page() {
       onDueOffsetDaysChange={(dueOffsetDays) => {
         void onMilestoneUpdate(milestone.id, { dueOffsetDays });
       }}
-      insertedAt={Time.parseDate(milestone.insertedAt) ?? undefined}
       onDelete={handleDelete}
       tasks={tasks}
       statuses={statuses}
