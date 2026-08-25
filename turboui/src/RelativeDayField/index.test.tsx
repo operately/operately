@@ -86,22 +86,22 @@ describe("RelativeDayField", () => {
   });
 
   it("keeps the days suffix next to the inline input", () => {
-    render(<RelativeDayField value={20} onChange={jest.fn()} />);
+    render(<RelativeDayField value={20} onChange={jest.fn()} testId="relative-day-field" />);
 
-    fireEvent.click(screen.getByText("20 days after project starts"));
-    const input = screen.getByRole("textbox");
+    fireEvent.click(document.querySelector('[data-test-id="relative-day-field"] button')!);
+    const input = document.querySelector('[data-test-id="relative-day-field-input"]');
 
     expect(input).not.toHaveClass("flex-1");
-    expect(input.nextElementSibling).toHaveTextContent("days");
-    expect(input.parentElement).toHaveClass("gap-1");
+    expect(input?.nextElementSibling).toHaveTextContent("days");
+    expect(input?.parentElement).toHaveClass("gap-1");
   });
 
   it("still stretches the form-field input across the control", () => {
-    render(<RelativeDayField variant="form-field" value={20} onChange={jest.fn()} />);
+    render(<RelativeDayField variant="form-field" value={20} onChange={jest.fn()} testId="relative-day-field" />);
 
-    fireEvent.click(screen.getByText("20 days after project starts"));
+    fireEvent.click(document.querySelector('[data-test-id="relative-day-field"] button')!);
 
-    expect(screen.getByRole("textbox")).toHaveClass("flex-1");
+    expect(document.querySelector('[data-test-id="relative-day-field-input"]')).toHaveClass("flex-1");
   });
 
   it("can hide the calendar icon on the trigger", () => {

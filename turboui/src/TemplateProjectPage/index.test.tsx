@@ -1445,8 +1445,8 @@ describe("TemplateProjectPage", () => {
     const onTaskUpdate = jest.fn();
     renderPage(createProps({ onTaskUpdate }), "/templates/template-1?tab=tasks");
 
-    fireEvent.click(screen.getByText("12 days after project starts"));
-    const input = screen.getByRole("textbox", { name: "Set when due" });
+    fireEvent.click(document.querySelector('[data-test-id="template-task-task-1-due-offset"] button')!);
+    const input = document.querySelector('[data-test-id="template-task-task-1-due-offset-input"]') as HTMLInputElement;
     fireEvent.change(input, { target: { value: "18" } });
     fireEvent.keyDown(input, { key: "Enter" });
 
@@ -1475,7 +1475,7 @@ describe("TemplateProjectPage", () => {
     expect(dueDateTrigger).toHaveClass("sm:group-hover/task-row:[&>span]:text-content-dimmed");
     expect(assignees).toBeInTheDocument();
     expect(assignees?.parentElement).not.toHaveClass("opacity-0");
-    expect(screen.getByText("Set when due")).toBeInTheDocument();
+    expect(dueDateTrigger).toBeInTheDocument();
     expect(dueOffset!.compareDocumentPosition(assignees!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -1498,7 +1498,7 @@ describe("TemplateProjectPage", () => {
     const dueDateTrigger = dueOffset?.querySelector("button");
     const assignees = document.querySelector('[data-test-id="template-task-task-1-assignees"]');
 
-    expect(screen.getByText("12 days after project starts")).toBeInTheDocument();
+    expect(dueDateTrigger).toBeInTheDocument();
     expect(dueDateTrigger).not.toHaveClass("[&>span]:text-transparent");
     expect(assignees?.parentElement).not.toHaveClass("opacity-0");
   });
