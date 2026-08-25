@@ -1569,11 +1569,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :update_space_tools_payload do
-    field :tasks_enabled, :boolean, null: false
-    field :discussions_enabled, :boolean, null: false
-    field :resource_hub_enabled, :boolean, null: false
-    field :kpis_enabled, :boolean, null: false
-    field :templates_enabled, :boolean, null: false
+    field? :tasks_enabled, :boolean, null: false
+    field? :discussions_enabled, :boolean, null: false
+    field? :resource_hub_enabled, :boolean, null: false
+    field? :kpis_enabled, :boolean, null: false
+    field? :templates_enabled, :boolean, null: false
   end
 
   object :space_tools, for: Operately.Groups.SpaceTools do

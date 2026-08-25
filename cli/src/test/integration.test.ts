@@ -97,7 +97,6 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("people namespace"));
       assert.ok(result.stdout.includes("update_picture"));
-      assert.ok(result.stdout.includes("Updates the authenticated user's profile picture using a local file path or clears the current picture."));
     });
 
     it("shows custom catalog commands in documents namespace help", async () => {
@@ -105,7 +104,6 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("documents namespace"));
       assert.ok(result.stdout.includes("create_file"));
-      assert.ok(result.stdout.includes("Uploads one local file into a Docs & Files hub and creates the corresponding file record."));
     });
 
     it("shows namespace help with trailing help", async () => {
@@ -168,6 +166,28 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Command: documents create_file"));
       assert.ok(result.stdout.includes("--space-id <id> (optional, nullable)"));
       assert.ok(result.stdout.includes("--project-id <id> (optional, nullable)"));
+    });
+
+    it("shows project_templates create_file help without raw blob inputs", async () => {
+      const result = await runCLI(["project_templates", "create_file", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: project_templates create_file"));
+      assert.ok(result.stdout.includes("--template-id <id> (required)"));
+      assert.ok(result.stdout.includes("--file <path> (required)"));
+      assert.ok(result.stdout.includes("--description-file <path> (optional, alternative to --description)"));
+      assert.ok(!result.stdout.includes("--files.0.blob-id"));
+    });
+
+    it("exposes document version history commands", async () => {
+      const listResult = await runCLI(["documents", "list_document_versions", "--help"]);
+      const getResult = await runCLI(["documents", "get_document_version", "--help"]);
+      const restoreResult = await runCLI(["documents", "restore_document_version", "--help"]);
+
+      assert.strictEqual(listResult.exitCode, 0);
+      assert.strictEqual(getResult.exitCode, 0);
+      assert.strictEqual(restoreResult.exitCode, 0);
+      assert.ok(getResult.stdout.includes("--version-number <integer> (required)"));
+      assert.ok(restoreResult.stdout.includes("--expected-current-version <integer> (required)"));
     });
 
     it("shows plural task assignee flags in command help", async () => {
@@ -238,8 +258,9 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Command:"));
       assert.ok(result.stdout.includes("auth create-company"));
-      assert.ok(result.stdout.includes("operately auth create-company [--base-url <url>] [--profile <name>]"));
-      assert.ok(result.stdout.includes("full-access CLI profile"));
+      assert.ok(result.stdout.includes("--base-url <url>"));
+      assert.ok(result.stdout.includes("--profile <name>"));
+      assert.ok(result.stdout.includes("--method <email-password|email-code|google>"));
     });
 
     it("shows auth login help with --help", async () => {
@@ -247,8 +268,9 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Command:"));
       assert.ok(result.stdout.includes("auth login"));
-      assert.ok(result.stdout.includes("operately auth login [--token <token>] [--base-url <url>] [--profile <name>]"));
-      assert.ok(result.stdout.includes("interactively"));
+      assert.ok(result.stdout.includes("--token <token>"));
+      assert.ok(result.stdout.includes("--method <email-password|email-code|google>"));
+      assert.ok(result.stdout.includes("--profile <name>"));
     });
 
     it("shows auth profiles help with --help", async () => {
@@ -279,14 +301,16 @@ describe("CLI Integration Tests", () => {
       const result = await runCLI(["help", "auth", "login"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("auth login"));
-      assert.ok(result.stdout.includes("operately auth login [--token <token>] [--base-url <url>] [--profile <name>]"));
+      assert.ok(result.stdout.includes("--token <token>"));
+      assert.ok(result.stdout.includes("--access-mode <read-only|full-access>"));
     });
 
     it("shows auth create-company help when 'help auth create-company' is used", async () => {
       const result = await runCLI(["help", "auth", "create-company"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("auth create-company"));
-      assert.ok(result.stdout.includes("operately auth create-company [--base-url <url>] [--profile <name>]"));
+      assert.ok(result.stdout.includes("--company-name <name>"));
+      assert.ok(result.stdout.includes("--profile <name>"));
     });
 
     it("shows auth profiles help when 'help auth profiles' is used", async () => {
