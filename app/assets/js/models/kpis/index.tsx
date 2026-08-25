@@ -48,7 +48,6 @@ function parseKpiAnnotationForTurboUi(paths: Paths, annotation: ApiKpiAnnotation
     id: annotation.id,
     date: new Date(annotation.date),
     title: annotation.title,
-    description: annotation.description ?? null,
     createdBy: parsePersonForTurboUi(paths, annotation.createdBy),
   };
 }

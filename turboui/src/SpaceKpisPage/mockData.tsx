@@ -55,13 +55,12 @@ function makeEntries(
 }
 
 function makeAnnotations(
-  samples: { title: string; daysAgo: number; description?: string; by: SpaceKpisPage.Person | null }[],
+  samples: { title: string; daysAgo: number; by: SpaceKpisPage.Person | null }[],
 ): SpaceKpisPage.KpiAnnotation[] {
   return samples
     .map((sample, index) => ({
       id: `annotation-${index}-${sample.daysAgo}`,
       title: sample.title,
-      description: sample.description ?? null,
       date: daysAgo(sample.daysAgo),
       createdBy: sample.by,
     }))
@@ -100,7 +99,7 @@ export const mockKpis: SpaceKpisPage.Kpi[] = (
         { value: 1385000, daysAgo: 2, by: bob! },
       ]),
       annotations: makeAnnotations([
-        { title: "Launched enterprise plan", daysAgo: 90, description: "First paid cohort went live", by: bob! },
+        { title: "Launched enterprise plan", daysAgo: 90, by: bob! },
         { title: "Raised starter pricing", daysAgo: 45, by: carol! },
       ]),
     },

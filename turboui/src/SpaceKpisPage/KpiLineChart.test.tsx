@@ -105,7 +105,6 @@ describe("KpiLineChart annotations", () => {
       id: "ann-1",
       date: new Date("2026-01-02"),
       title: "Launched enterprise plan",
-      description: "First paid cohort went live",
       createdBy: null,
     },
   ];
@@ -124,6 +123,5 @@ describe("KpiLineChart annotations", () => {
     const tooltip = container.querySelector('[data-test-id="kpi-chart-annotation-tooltip"]');
     expect(tooltip).toHaveTextContent("Launched enterprise plan");
     expect(tooltip).toHaveTextContent(formatShortDate(annotations[0]!.date));
-    expect(tooltip).toHaveTextContent("First paid cohort went live");
   });
 });

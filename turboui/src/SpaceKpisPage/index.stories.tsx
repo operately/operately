@@ -185,7 +185,6 @@ function Harness(args: HarnessArgs) {
       id: `annotation-${crypto.randomUUID()}`,
       date: new Date(`${input.date}T12:00:00`),
       title: input.title,
-      description: input.description ?? null,
       createdBy: mockCurrentUser,
     };
 
@@ -214,7 +213,6 @@ function Harness(args: HarnessArgs) {
                 ...annotation,
                 date: new Date(`${input.date}T12:00:00`),
                 title: input.title,
-                description: input.description ?? null,
               }
             : annotation,
         ),

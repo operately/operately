@@ -20,7 +20,6 @@ defmodule Operately.Operations.KpiAnnotationAdding do
         kpi_id: kpi.id,
         date: attrs[:date],
         title: attrs[:title],
-        description: attrs[:description],
         created_by_id: attrs[:created_by_id]
       })
     )

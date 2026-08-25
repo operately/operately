@@ -7,7 +7,6 @@ defmodule Operately.Repo.Migrations.CreateKpiAnnotations do
       add :kpi_id, references(:kpis, on_delete: :delete_all, type: :binary_id), null: false
       add :date, :date, null: false
       add :title, :string, null: false
-      add :description, :string
       add :created_by_id, references(:people, on_delete: :nilify_all, type: :binary_id)
 
       timestamps()

@@ -19,17 +19,15 @@ defmodule Operately.Operations.KpiAnnotationEditingTest do
     {:ok, creator: creator, space: space, kpi: kpi, annotation: annotation}
   end
 
-  test "updates the annotation title, date, and note", ctx do
+  test "updates the annotation title and date", ctx do
     {:ok, annotation} =
       Kpis.edit_annotation(ctx.creator, ctx.kpi, ctx.annotation, %{
         title: "Pricing change",
-        date: ~D[2026-04-01],
-        description: "Raised starter plan"
+        date: ~D[2026-04-01]
       })
 
     assert annotation.title == "Pricing change"
     assert annotation.date == ~D[2026-04-01]
-    assert annotation.description == "Raised starter plan"
   end
 
   test "records a kpi_annotation_edited activity", ctx do

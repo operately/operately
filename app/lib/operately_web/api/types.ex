@@ -1107,7 +1107,6 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :id, null: false
     field :date, :date, null: false
     field :title, :string, null: false
-    field? :description, :string, null: true
     field? :created_by, :person, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true

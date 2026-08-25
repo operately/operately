@@ -36,7 +36,6 @@ defmodule Operately.KpisFixtures do
       Enum.into(attrs, %{
         title: "Launched enterprise plan",
         date: ~D[2026-03-15],
-        description: nil,
         created_by_id: author.id
       })
 

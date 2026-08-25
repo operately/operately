@@ -306,7 +306,6 @@ defmodule OperatelyWeb.Api.Kpis do
       field :kpi_id, :id, null: false
       field :date, :date, null: false
       field :title, :string, null: false
-      field? :description, :string, null: true
     end
 
     outputs do
@@ -323,7 +322,6 @@ defmodule OperatelyWeb.Api.Kpis do
         Kpis.add_annotation(ctx.me, ctx.kpi, %{
           date: inputs.date,
           title: inputs.title,
-          description: inputs[:description],
           created_by_id: ctx.me.id
         })
       end)
@@ -351,7 +349,7 @@ defmodule OperatelyWeb.Api.Kpis do
   end
 
   defmodule EditKpiAnnotation do
-    @moduledoc "Edits a KPI chart annotation's date, title, or note."
+    @moduledoc "Edits a KPI chart annotation's date or title."
 
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -362,7 +360,6 @@ defmodule OperatelyWeb.Api.Kpis do
       field :annotation_id, :id, null: false
       field? :date, :date, null: true
       field? :title, :string, null: true
-      field? :description, :string, null: true
     end
 
     outputs do
@@ -389,7 +386,7 @@ defmodule OperatelyWeb.Api.Kpis do
     end
 
     defp edit_attrs(inputs) do
-      [:date, :title, :description]
+      [:date, :title]
       |> Enum.filter(&Map.has_key?(inputs, &1))
       |> Map.new(fn key -> {key, inputs[key]} end)
     end

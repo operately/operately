@@ -382,7 +382,7 @@ function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
   );
 }
 
-const ANNOTATION_TOOLTIP = { paddingX: 11, paddingTop: 8, lineHeight: 15, titleMaxChars: 44, noteMaxChars: 52 };
+const ANNOTATION_TOOLTIP = { paddingX: 11, paddingTop: 8, lineHeight: 15, titleMaxChars: 44 };
 
 function AnnotationTooltip({
   mark,
@@ -393,21 +393,16 @@ function AnnotationTooltip({
 }) {
   const dateLabel = formatShortDate(mark.annotation.date);
   const title = truncate(mark.annotation.title, ANNOTATION_TOOLTIP.titleMaxChars);
-  const note = mark.annotation.description
-    ? truncate(mark.annotation.description, ANNOTATION_TOOLTIP.noteMaxChars)
-    : null;
 
-  const lines = note ? 3 : 2;
+  const lines = 2;
   const height = ANNOTATION_TOOLTIP.paddingTop * 2 + lines * ANNOTATION_TOOLTIP.lineHeight;
   const textWidth = Math.max(
     dateLabel.length * TOOLTIP.dateFontSize * 0.55,
     title.length * TOOLTIP.valueFontSize * 0.6,
-    note ? note.length * TOOLTIP.dateFontSize * 0.55 : 0,
   );
   const width = Math.min(Math.max(textWidth + ANNOTATION_TOOLTIP.paddingX * 2, 120), VIEW_WIDTH - 8);
   const clampedX = Math.max(4, Math.min(mark.cx - width / 2, VIEW_WIDTH - width - 4));
-  // Floats just above the marker it belongs to, and stays inside the plot area
-  // when a note makes the box tall.
+  // Floats just above the marker it belongs to and stays inside the plot area.
   const boxY = Math.max(PADDING.top, baseline - MARKER.stem - 12 - height);
   const textX = clampedX + ANNOTATION_TOOLTIP.paddingX;
   const firstBaseline = boxY + ANNOTATION_TOOLTIP.paddingTop + 11;
@@ -440,16 +435,6 @@ function AnnotationTooltip({
       >
         {dateLabel}
       </text>
-      {note && (
-        <text
-          x={textX}
-          y={firstBaseline + ANNOTATION_TOOLTIP.lineHeight * 2}
-          className="fill-content-dimmed"
-          style={{ fontSize: TOOLTIP.dateFontSize }}
-        >
-          {note}
-        </text>
-      )}
     </g>
   );
 }

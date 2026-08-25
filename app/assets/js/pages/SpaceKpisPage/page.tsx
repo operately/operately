@@ -135,7 +135,6 @@ export function Page() {
         kpiId: input.kpiId,
         date: input.date,
         title: input.title,
-        description: input.description,
       });
       refresh();
     });
@@ -146,7 +145,6 @@ export function Page() {
         annotationId: input.id,
         date: input.date,
         title: input.title,
-        description: input.description,
       });
       refresh();
     });

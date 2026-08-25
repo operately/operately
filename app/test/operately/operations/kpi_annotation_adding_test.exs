@@ -26,14 +26,12 @@ defmodule Operately.Operations.KpiAnnotationAddingTest do
       Kpis.add_annotation(ctx.creator, ctx.kpi, %{
         title: "Launched enterprise plan",
         date: ~D[2026-03-15],
-        description: "First paid cohort went live",
         created_by_id: ctx.creator.id
       })
 
     assert annotation.kpi_id == ctx.kpi.id
     assert annotation.title == "Launched enterprise plan"
     assert annotation.date == ~D[2026-03-15]
-    assert annotation.description == "First paid cohort went live"
     assert annotation.created_by_id == ctx.creator.id
     assert length(Kpis.list_annotations(ctx.kpi.id)) == 1
   end

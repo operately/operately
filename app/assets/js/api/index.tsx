@@ -1802,7 +1802,6 @@ export interface KpiAnnotation {
   id: Id;
   date: string;
   title: string;
-  description?: string | null;
   createdBy?: Person | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
@@ -5114,7 +5113,6 @@ export interface KpisAddKpiAnnotationInput {
   kpiId: Id;
   date: string;
   title: string;
-  description?: string | null;
 }
 
 export interface KpisAddKpiAnnotationResult {
@@ -5167,7 +5165,6 @@ export interface KpisEditKpiAnnotationInput {
   annotationId: Id;
   date?: string | null;
   title?: string | null;
-  description?: string | null;
 }
 
 export interface KpisEditKpiAnnotationResult {

@@ -46,7 +46,6 @@ export namespace SpaceKpisPage {
     id: string;
     date: Date;
     title: string;
-    description: string | null;
     createdBy: Person | null;
   }
 
@@ -112,14 +111,12 @@ export namespace SpaceKpisPage {
     kpiId: string;
     date: string;
     title: string;
-    description?: string;
   }
 
   export interface EditAnnotationInput {
     id: string;
     date: string;
     title: string;
-    description?: string;
   }
 
   export type MutationResult = { success: boolean; id?: string; error?: string };

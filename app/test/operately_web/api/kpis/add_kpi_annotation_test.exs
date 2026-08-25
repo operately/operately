@@ -31,15 +31,13 @@ defmodule OperatelyWeb.Api.Kpis.AddKpiAnnotationTest do
       inputs = %{
         kpi_id: Paths.kpi_id(ctx.kpi),
         date: "2026-03-15",
-        title: "Launched enterprise plan",
-        description: "First paid cohort went live"
+        title: "Launched enterprise plan"
       }
 
       assert {200, res} = mutation(ctx.conn, [:kpis, :add_kpi_annotation], inputs)
 
       assert res.annotation.title == "Launched enterprise plan"
       assert res.annotation.date == "2026-03-15"
-      assert res.annotation.description == "First paid cohort went live"
 
       assert [annotation] = Kpis.list_annotations(ctx.kpi.id)
       assert annotation.title == "Launched enterprise plan"

@@ -21,11 +21,10 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
   const [isDeleting, setIsDeleting] = React.useState(false);
   const isEditing = annotation !== null;
 
-  const form = useForm<{ date: string; title: string; description: string }>({
+  const form = useForm<{ date: string; title: string }>({
     fields: {
       date: annotation ? toIsoDate(annotation.date) : toIsoDate(new Date()),
       title: annotation?.title ?? "",
-      description: annotation?.description ?? "",
     },
     validate: (addError) => {
       if (!form.values.date) addError("date", "Choose a date");
@@ -35,19 +34,16 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
       if (!kpi) return;
       setSubmitError(null);
 
-      const description = form.values.description.trim();
       const result = isEditing
         ? await onEdit({
             id: annotation.id,
             date: form.values.date,
             title: form.values.title.trim(),
-            description,
           })
         : await onCreate({
             kpiId: kpi.id,
             date: form.values.date,
             title: form.values.title.trim(),
-            description,
           });
 
       if (result.success) {
@@ -65,7 +61,6 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
 
     form.actions.setValue("date", annotation ? toIsoDate(annotation.date) : toIsoDate(new Date()));
     form.actions.setValue("title", annotation?.title ?? "");
-    form.actions.setValue("description", annotation?.description ?? "");
     setSubmitError(null);
     setIsDeleting(false);
     // form.actions is a stable imperative handle; including it would retrigger this fill.
@@ -115,12 +110,6 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
             required
             autoFocus
             maxLength={80}
-          />
-          <TextInput
-            field="description"
-            label="Note (optional)"
-            placeholder="What changed, and why it matters"
-            maxLength={500}
           />
         </div>
 

@@ -1682,7 +1682,6 @@ export interface KpiAnnotation {
   id: Id;
   date: string;
   title: string;
-  description?: string | null;
   createdBy?: Person | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
