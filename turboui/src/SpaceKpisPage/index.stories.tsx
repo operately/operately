@@ -2,6 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { useParams } from "react-router";
 
+import { CommentSection } from "../CommentSection";
+import type { CommentSectionItem } from "../CommentSection";
+import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { SpaceKpisPage } from "./index";
@@ -107,9 +110,7 @@ function Harness(args: HarnessArgs) {
 
     setKpis((prev) =>
       prev.map((kpi) =>
-        kpi.id === input.id
-          ? { ...kpi, name: input.name, unit: input.unit, cadence: input.cadence, champion }
-          : kpi,
+        kpi.id === input.id ? { ...kpi, name: input.name, unit: input.unit, cadence: input.cadence, champion } : kpi,
       ),
     );
 
@@ -154,6 +155,8 @@ function Harness(args: HarnessArgs) {
                 value: input.value,
                 recordedAt: new Date(),
                 recordedBy: mockCurrentUser,
+                // The app posts the note as the update's first comment.
+                commentsCount: input.comment ? 1 : 0,
               };
               return { ...kpi, latestEntry: entry, entries: [...kpi.entries, entry] };
             })()
@@ -183,6 +186,42 @@ function Harness(args: HarnessArgs) {
       error={args.error}
       canManage={args.canManage}
       subscriptions={subscriptions}
+      canComment
+      renderEntryComments={(entry) => <EntryComments key={entry.id} />}
+    />
+  );
+}
+
+// Stands in for the app's KpiEntryComments bridge, which loads the thread for a
+// recorded update and posts to the comments API.
+function EntryComments() {
+  const [items, setItems] = React.useState<CommentSectionItem[]>([]);
+
+  return (
+    <CommentSection
+      items={items}
+      currentUser={{ ...mockCurrentUser, profileLink: mockCurrentUser.profileLink ?? "#" }}
+      canComment
+      commentParentType="kpi_entry"
+      richTextHandlers={createMockRichEditorHandlers()}
+      formattedTimePreferences={defaultFormattedTimePreferences}
+      onAddComment={(content) => {
+        setItems((prev) => [
+          ...prev,
+          {
+            type: "comment",
+            value: {
+              id: `comment-${prev.length + 1}`,
+              content: JSON.stringify(content),
+              author: { ...mockCurrentUser, profileLink: mockCurrentUser.profileLink ?? "#" },
+              insertedAt: new Date().toISOString(),
+              reactions: [],
+            },
+          },
+        ]);
+        return true;
+      }}
+      onEditComment={() => true}
     />
   );
 }
@@ -196,6 +235,25 @@ export const Default: Story = {
 // chart, trend, champion + cadence, and the recorded-updates log.
 export const DetailView: Story = {
   parameters: kpiRoute("kpi-mrr"),
+};
+
+// The comment thread for a recorded update, opened in a slide-in from the
+// "Recorded updates" log. Guards against the composer overflowing the panel.
+export const UpdateComments: Story = {
+  parameters: kpiRoute("kpi-mrr"),
+  play: async ({ canvasElement }) => {
+    const toggle = canvasElement.querySelector<HTMLButtonElement>('[data-test-id^="entry-comments-toggle-"]');
+    toggle?.click();
+  },
+};
+
+// Logging an update, including the optional note that the app posts as the
+// update's first comment.
+export const LogUpdate: Story = {
+  parameters: kpiRoute("kpi-mrr"),
+  play: async ({ canvasElement }) => {
+    canvasElement.querySelector<HTMLButtonElement>('[data-test-id="kpi-detail-log-update"]')?.click();
+  },
 };
 
 // Edge case: a KPI with a single entry can't plot a trend line yet, so its page

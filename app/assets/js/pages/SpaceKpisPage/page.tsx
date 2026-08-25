@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from "react-router";
 import { showErrorToast, SpaceKpisPage } from "turboui";
 import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/types";
 
+import * as Comments from "@/models/comments";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
@@ -13,6 +14,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
+import { KpiEntryComments } from "./KpiEntryComments";
 
 export function Page() {
   const paths = usePaths();
@@ -28,6 +30,7 @@ export function Page() {
   const [editKpi] = Kpis.useEditKpi();
   const [deleteKpi] = Kpis.useDeleteKpi();
   const [logKpiEntry] = Kpis.useLogKpiEntry();
+  const [createComment] = Comments.useCreateComment();
 
   const kpisLink = paths.spaceKpisPath(space.id!);
   const parsedKpis = React.useMemo(() => kpis.map((k) => Kpis.parseKpiForTurboUi(paths, k)), [kpis, paths]);
@@ -101,9 +104,25 @@ export function Page() {
       else refresh();
     });
 
+  // The value is recorded first and the note is a comment on it, so a failed
+  // note must not report the update as failed — that would invite logging the
+  // same value twice.
   const onRecordEntry = async (input: SpaceKpisPageTypes.RecordEntryInput) =>
     run(async () => {
-      await logKpiEntry({ kpiId: input.kpiId, value: input.value, period: input.period });
+      const res = await logKpiEntry({ kpiId: input.kpiId, value: input.value, period: input.period });
+
+      if (input.comment) {
+        try {
+          await createComment({
+            entityId: res.entry.id,
+            entityType: "kpi_entry",
+            content: Comments.stringifyCommentContent(input.comment),
+          });
+        } catch {
+          showErrorToast("Note not posted", "The value was recorded, but the note wasn't saved.");
+        }
+      }
+
       refresh();
     });
 
@@ -124,6 +143,19 @@ export function Page() {
       onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      canComment={space.permissions?.canComment ?? false}
+      renderEntryComments={
+        selectedKpi
+          ? (entry) => (
+              <KpiEntryComments
+                entryId={entry.id}
+                spaceId={space.id!}
+                canComment={space.permissions?.canComment ?? false}
+                onCommentsChanged={refresh}
+              />
+            )
+          : undefined
+      }
     />
   );
 }

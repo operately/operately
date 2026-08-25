@@ -23,7 +23,8 @@ defmodule OperatelyWeb.Mcp.Helpers do
     "file" => :resource_hub_file,
     "link" => :resource_hub_link,
     "project_task" => :project_task,
-    "space_task" => :space_task
+    "space_task" => :space_task,
+    "kpi_update" => :kpi_entry
   }
 
   def decode_id(id) when is_binary(id) do
