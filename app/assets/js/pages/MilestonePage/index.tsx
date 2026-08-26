@@ -493,7 +493,7 @@ export async function updateMilestoneStatus({
   nextStatus,
   resolution,
 }: UpdateMilestoneStatusParams): Promise<void> {
-  const tmpId = `temp-${Date.now()}`;
+  const tmpId = `temp-${crypto.randomUUID()}`;
   const optimisticComment: Milestones.MilestoneComment = {
     __typename: "milestone_comment",
     action: nextStatus === "done" ? "complete" : "reopen",
