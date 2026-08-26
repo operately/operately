@@ -180,6 +180,7 @@ beforeEach(() => {
   mockBoardState = { draggedItemId: null, destination: null, draggedItemDimensions: null };
   mockUseSortableItem.mockClear();
   window.localStorage.removeItem("templateTaskBoard:taskDisplayMode");
+  HTMLElement.prototype.scrollIntoView = jest.fn();
 });
 
 describe("TemplateProjectPage", () => {
@@ -1285,6 +1286,71 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByRole("heading", { name: "Create Task" })).toBeInTheDocument();
   });
 
+  it("selects template tasks with j and k and clears the selection with Escape", () => {
+    renderPage(createTwoTaskBoardProps(), "/templates/template-1?tab=tasks");
+
+    fireTaskKey("j", 74);
+    expect(document.querySelector('[data-test-id="template-task-task-1"]')).toHaveAttribute("data-selected", "true");
+
+    fireTaskKey("j", 74);
+    expect(document.querySelector('[data-test-id="template-task-task-2"]')).toHaveAttribute("data-selected", "true");
+    expect(document.querySelector('[data-test-id="template-task-task-1"]')).toHaveAttribute("data-selected", "false");
+
+    fireTaskKey("k", 75);
+    expect(document.querySelector('[data-test-id="template-task-task-1"]')).toHaveAttribute("data-selected", "true");
+
+    fireTaskKey("Escape", 27);
+    expect(document.querySelector('[data-test-id="template-task-task-1"]')).toHaveAttribute("data-selected", "false");
+    expect(document.querySelector('[data-test-id="template-task-task-2"]')).toHaveAttribute("data-selected", "false");
+  });
+
+  it("opens the selected template task with Enter", () => {
+    const getTemplateTaskPageProps = jest.fn((taskId: string) => ({
+      variant: "template",
+      name: taskId === "task-1" ? "Publish announcement" : "Prepare screenshots",
+    }));
+    renderPage(
+      createTwoTaskBoardProps({ getTemplateTaskPageProps: getTemplateTaskPageProps as never }),
+      "/templates/template-1?tab=tasks",
+    );
+
+    fireTaskKey("j", 74);
+    fireTaskKey("Enter", 13);
+
+    expect(document.querySelector('[data-test-id="task-slide-in"]')).toHaveTextContent("Publish announcement");
+    expect(getTemplateTaskPageProps).toHaveBeenCalledWith(
+      "task-1",
+      expect.objectContaining({ tasks: expect.any(Array) }),
+    );
+  });
+
+  it("opens the selected template task assignee picker with a", () => {
+    renderPage(createTwoTaskBoardProps(), "/templates/template-1?tab=tasks");
+
+    fireTaskKey("j", 74);
+    fireTaskKey("a", 65);
+
+    expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
+  });
+
+  it("opens the selected template task status picker with s", () => {
+    renderPage(createTwoTaskBoardProps(), "/templates/template-1?tab=tasks");
+
+    fireTaskKey("j", 74);
+    fireTaskKey("s", 83);
+
+    expect(screen.getByPlaceholderText("Change status...")).toBeInTheDocument();
+  });
+
+  it("opens the selected template task due date with d", () => {
+    renderPage(createTwoTaskBoardProps(), "/templates/template-1?tab=tasks");
+
+    fireTaskKey("j", 74);
+    fireTaskKey("d", 68);
+
+    expect(document.querySelector('[data-test-id="template-task-task-1-due-offset-input"]')).toBeInTheDocument();
+  });
+
   it("opens the task slide-in when a task title is clicked", () => {
     const getTemplateTaskPageProps = jest.fn(() => ({ variant: "template", name: "Publish announcement" }));
     renderPage(
@@ -1931,6 +1997,22 @@ function setupFileInputMock(files: File[]) {
   });
 
   return () => createElementSpy.mockRestore();
+}
+
+function createTwoTaskBoardProps(overrides: Partial<Types.Props> = {}): Types.Props {
+  const first = createProps().tasks[0]!;
+  const second = { ...first, id: "task-2", name: "Prepare screenshots", dueOffsetDays: 5 };
+
+  return createProps({
+    tasks: [first, second],
+    milestones: [{ ...createProps().milestones[0]!, tasksOrderingState: ["task-1", "task-2"] }],
+    ...overrides,
+  });
+}
+
+function fireTaskKey(key: "j" | "k" | "a" | "s" | "d" | "Enter" | "Escape", keyCode: number) {
+  fireEvent.keyDown(document, { key, keyCode, which: keyCode });
+  fireEvent.keyUp(document, { key, keyCode, which: keyCode });
 }
 
 function taskIdsIn(milestoneId: string) {
