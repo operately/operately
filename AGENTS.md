@@ -23,6 +23,13 @@
 - CLI: `make cli.build` (compile `cli/`), `make cli.test` (unit tests, alias for `make cli.test.unit`), `make cli.test.e2e` (end-to-end against the app). Keep the CLI command catalog in sync with the API using `make gen.cli.catalog`; `make test.cli.catalog.sync` verifies it.
 - Docker image: `make docker.build` (see `Dockerfile.prod`).
 
+## Cross-Surface API Changes
+
+- When changing API inputs, validation, or behavior, audit every existing consumer in the same change: the web UI, MCP wrappers, the external API, and the generated CLI catalog.
+- Search `app/lib/operately_web/mcp/tools/` for wrappers that call the changed API. Update their input schema, argument mapping, examples, and MCP tests so published tools remain compatible.
+- Regenerate the CLI catalog with `make gen.cli.catalog` after API contract changes, inspect the generated command flags, and run `make test.cli.catalog.sync`.
+- If a surface intentionally does not expose the changed behavior, document that decision in the implementation summary.
+
 ## Coding Style & Naming Conventions 
 
 - Elixir: `mix format` with `app/.formatter.exs` (line_length 200). Modules under `Operately.*`. Tests end with `_test.exs`.

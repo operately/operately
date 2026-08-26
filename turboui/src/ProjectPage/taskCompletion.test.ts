@@ -51,11 +51,33 @@ describe("getTaskCompletionStats", () => {
     expect(getTaskCompletionStats([task("helper", todo, { _isHelperTask: true })])).toBeNull();
   });
 
-  it("counts green completed tasks without counting canceled tasks", () => {
+  it("excludes canceled tasks from the completion total", () => {
     expect(getTaskCompletionStats([task("todo", todo), task("done", done), task("canceled", canceled)])).toEqual({
       completedCount: 1,
-      totalCount: 3,
-      percentage: 33,
+      totalCount: 2,
+      percentage: 50,
+    });
+  });
+
+  it("excludes open tasks parked in completed milestones", () => {
+    const completedMilestone: Types.Milestone = {
+      id: "completed-milestone",
+      name: "Completed milestone",
+      status: "done",
+      dueDate: null,
+      link: "#",
+    };
+
+    expect(
+      getTaskCompletionStats([
+        task("visible-todo", todo),
+        task("hidden-todo", todo, { milestone: completedMilestone }),
+        task("historical-done", done, { milestone: completedMilestone }),
+      ]),
+    ).toEqual({
+      completedCount: 1,
+      totalCount: 2,
+      percentage: 50,
     });
   });
 

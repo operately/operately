@@ -15,6 +15,11 @@ export function CompletedMilestonesSection({ milestones, formattedTimePreference
   const [isExpanded, setIsExpanded] = useState(false);
   const contentId = useId();
   const sectionLabel = `${milestones.length} completed milestone${milestones.length === 1 ? "" : "s"}`;
+  const openTaskCount = milestones.reduce(
+    (total, milestoneData) =>
+      total + Math.max(0, milestoneData.stats.total - milestoneData.stats.done - milestoneData.stats.canceled),
+    0,
+  );
 
   return (
     <section className="mt-6" data-test-id="completed-milestones-compact-section">
@@ -28,6 +33,11 @@ export function CompletedMilestonesSection({ milestones, formattedTimePreference
       >
         {isExpanded ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
         <span>{sectionLabel}</span>
+        {openTaskCount > 0 && (
+          <span className="text-callout-warning-content">
+            · {openTaskCount} open task{openTaskCount === 1 ? "" : "s"}
+          </span>
+        )}
       </button>
 
       {isExpanded && (

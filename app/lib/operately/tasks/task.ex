@@ -102,6 +102,15 @@ defmodule Operately.Tasks.Task do
     |> validate_project_or_group()
   end
 
+  def status_change_attrs(task, new_status) do
+    %{
+      task_status: task_status_attrs(new_status),
+      status: new_status.value,
+      closed_at: next_closed_at(task, new_status),
+      reopened_at: next_reopened_at(task, new_status)
+    }
+  end
+
   def getter_profile(:default) do
     %Profile{access_contexts: [:project_access_context, :space_access_context]}
   end
@@ -136,6 +145,27 @@ defmodule Operately.Tasks.Task do
       _ -> changeset
     end
   end
+
+  defp next_closed_at(task, new_status) do
+    cond do
+      new_status.closed && task.closed_at -> task.closed_at
+      new_status.closed -> NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      true -> nil
+    end
+  end
+
+  defp next_reopened_at(task, new_status) do
+    was_closed = not is_nil(task.closed_at) or (task.task_status && task.task_status.closed)
+
+    if was_closed && !new_status.closed do
+      NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    else
+      task.reopened_at
+    end
+  end
+
+  defp task_status_attrs(status) when is_struct(status), do: Map.from_struct(status)
+  defp task_status_attrs(status), do: status
 
   defp validate_project_or_group(changeset) do
     project_id = Ecto.Changeset.get_field(changeset, :project_id)

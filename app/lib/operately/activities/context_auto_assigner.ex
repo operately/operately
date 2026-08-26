@@ -137,8 +137,12 @@ defmodule Operately.Activities.ContextAutoAssigner do
   ]
 
   def assign_context(multi) do
-    multi
-    |> Multi.update(:updated_activity, fn %{activity: activity} ->
+    assign_context(multi, :activity, :updated_activity)
+  end
+
+  def assign_context(multi, activity_name, updated_activity_name) do
+    Multi.update(multi, updated_activity_name, fn changes ->
+      activity = Map.fetch!(changes, activity_name)
       context_id = fetch_context(activity)
 
       Activity.changeset(activity, %{access_context_id: context_id})

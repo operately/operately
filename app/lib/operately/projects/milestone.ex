@@ -3,6 +3,7 @@ defmodule Operately.Projects.Milestone do
   use Operately.Repo.Getter
 
   @valid_statuses [:pending, :done]
+  @valid_open_tasks_resolution_actions [:move_to_no_milestone, :set_status]
 
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
@@ -79,6 +80,7 @@ defmodule Operately.Projects.Milestone do
   end
 
   def valid_status, do: @valid_statuses
+  def valid_open_tasks_resolution_actions, do: @valid_open_tasks_resolution_actions
 
   #
   # After load hooks

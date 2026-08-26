@@ -318,6 +318,7 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
   test "copies comments onto included discussions and resources and skips milestone and task comments", ctx do
     source = ctx.source |> Project.changeset(%{timeframe: timeframe(~D[2028-01-01], nil)}) |> Repo.update!()
     task_status = source.task_statuses |> List.first() |> Map.from_struct()
+    closed_task_status = Enum.find(source.task_statuses, & &1.closed)
 
     ctx =
       ctx
@@ -348,12 +349,18 @@ defmodule Operately.Operations.ProjectTemplateCreationFromProjectTest do
     ctx = stamp_comment_times(ctx, discussion_comment: ~N[2028-01-01 00:00:00], later_discussion_comment: ~N[2028-01-01 00:00:01])
 
     {:ok, _complete} =
-      Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "complete", %{
-        content: RichText.rich_text("Completed"),
-        author_id: ctx.creator.id,
-        entity_id: ctx.milestone.id,
-        entity_type: :project_milestone
-      })
+      Operately.Comments.create_milestone_comment(
+        ctx.creator,
+        ctx.milestone,
+        "complete",
+        %{action: :set_status, status_id: closed_task_status.id},
+        %{
+          content: RichText.rich_text("Completed"),
+          author_id: ctx.creator.id,
+          entity_id: ctx.milestone.id,
+          entity_type: :project_milestone
+        }
+      )
 
     {:ok, _reopen} =
       Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "reopen", %{

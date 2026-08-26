@@ -1119,6 +1119,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:milestone_comment_action, values: Operately.Comments.MilestoneComment.valid_actions())
+  enum :milestone_open_tasks_resolution_action, values: Operately.Projects.Milestone.valid_open_tasks_resolution_actions()
+
+  object :milestone_open_tasks_resolution_input do
+    field :action, :milestone_open_tasks_resolution_action, null: false
+    field? :status_id, :string, null: true
+  end
 
   object :milestone_comment, for: Operately.Comments.MilestoneComment do
     field :action, :milestone_comment_action, null: false
