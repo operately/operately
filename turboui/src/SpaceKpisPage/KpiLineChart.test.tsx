@@ -40,6 +40,69 @@ describe("KpiLineChart y-axis", () => {
   });
 });
 
+describe("KpiLineChart x-axis", () => {
+  function entryOn(id: string, date: Date): SpaceKpisPage.KpiEntry {
+    return { id, value: 100, recordedAt: date, recordedBy: null, commentsCount: 0 };
+  }
+
+  function axisLabels(entries: SpaceKpisPage.KpiEntry[]): string[] {
+    const { container } = render(<KpiLineChart entries={entries} unit="users" />);
+
+    return Array.from(container.querySelectorAll('[data-test-id="kpi-chart-x-axis-tick"] text')).map((node) =>
+      String(node.textContent),
+    );
+  }
+
+  // The old axis labelled only the first and last entry, which left a
+  // multi-year series with no way to tell where any middle point sits in time.
+  test("labels dates between the first and last entry", () => {
+    const labels = axisLabels([
+      entryOn("1", new Date(2024, 2, 1)),
+      entryOn("2", new Date(2025, 5, 1)),
+      entryOn("3", new Date(2026, 7, 15)),
+    ]);
+
+    expect(labels.length).toBeGreaterThan(2);
+  });
+
+  // A lone "Jul" between two years leaves the reader inferring which July it is
+  // from a neighbouring label.
+  test("names the year on every axis label of a multi-year series", () => {
+    const labels = axisLabels([entryOn("1", new Date(2024, 2, 1)), entryOn("2", new Date(2026, 7, 15))]);
+
+    expect(labels.length).toBeGreaterThan(1);
+    labels.forEach((label) => expect(label).toMatch(/\d{4}/));
+  });
+
+  test("keeps every axis label inside the chart viewport", () => {
+    const { container } = render(
+      <KpiLineChart entries={[entryOn("1", new Date(2024, 2, 1)), entryOn("2", new Date(2026, 7, 15))]} unit="users" />,
+    );
+
+    const labels = Array.from(container.querySelectorAll('[data-test-id="kpi-chart-x-axis-tick"] text'));
+    expect(labels.length).toBeGreaterThan(0);
+
+    labels.forEach((label) => {
+      const x = Number(label.getAttribute("x"));
+      const anchor = label.getAttribute("text-anchor");
+
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(x).toBeLessThanOrEqual(640);
+      if (x < 78) expect(anchor).toBe("start");
+      if (x > 590) expect(anchor).toBe("end");
+    });
+  });
+
+  test("includes the year in tooltips when the series spans more than one year", () => {
+    const entries = [entryOn("1", new Date(2024, 2, 1)), entryOn("2", new Date(2026, 7, 15))];
+    const { container } = render(<KpiLineChart entries={entries} unit="users" />);
+
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-hover-band-0"]')!);
+
+    expect(container.querySelector('[data-test-id="kpi-chart-tooltip"]')).toHaveTextContent("2024");
+  });
+});
+
 describe("KpiLineChart hover", () => {
   const entries = [entry("1", 810), entry("2", 848), entry("3", 802)];
 

@@ -1,5 +1,6 @@
 import React from "react";
 
+import { timeAxisTicks } from "./timeAxis";
 import type { SpaceKpisPage } from "./types";
 import { formatNumber, formatShortDate, formatValue } from "./utils";
 
@@ -118,9 +119,10 @@ function MultiPointChart({
   const tMax = Math.max(...times);
   const tSpan = tMax - tMin;
 
+  const xAtTime = (time: number) => PADDING.left + (innerWidth * (time - tMin)) / tSpan;
   const xAt = (time: number, index: number) => {
     if (tSpan <= 0) return PADDING.left + (innerWidth * index) / (entries.length - 1);
-    return PADDING.left + (innerWidth * (time - tMin)) / tSpan;
+    return xAtTime(time);
   };
   const y = (value: number) => PADDING.top + innerHeight * (1 - (value - yMin) / (yMax - yMin));
 
@@ -140,6 +142,12 @@ function MultiPointChart({
 
   const gridLines = [yMax, (yMax + yMin) / 2, yMin];
   const baseline = PADDING.top + innerHeight;
+
+  const axisTicks = tSpan > 0 ? timeAxisTicks(new Date(tMin), new Date(tMax)) : [];
+  // A series crossing a year boundary needs the year in its tooltips too, or a
+  // reader hovering "Aug 15" cannot tell which August they are looking at.
+  const spansYears = new Date(tMin).getFullYear() !== new Date(tMax).getFullYear();
+
   const hovered = hoveredIndex === null ? null : (points[hoveredIndex] ?? null);
   const hoveredAnnotation = annotationMarks.find((mark) => mark.annotation.id === hoveredAnnotationId) ?? null;
 
@@ -180,6 +188,34 @@ function MultiPointChart({
           </g>
         ))}
 
+        {/* Dates on calendar boundaries rather than on the first and last entry,
+            so the reader can place any part of the line in time. */}
+        {axisTicks.map((tick) => {
+          const cx = xAtTime(tick.time);
+
+          return (
+            <g key={tick.time} data-test-id="kpi-chart-x-axis-tick">
+              <line
+                x1={cx}
+                x2={cx}
+                y1={baseline}
+                y2={baseline + 4}
+                className="stroke-surface-outline"
+                strokeWidth={1}
+              />
+              <text
+                x={cx}
+                y={baseline + 18}
+                textAnchor={labelAnchor(cx)}
+                className="fill-content-dimmed"
+                style={{ fontSize: 11 }}
+              >
+                {tick.label}
+              </text>
+            </g>
+          );
+        })}
+
         {/* Behind the series, so the data line reads as one unbroken stroke and
             the annotation only whispers where on the timeline it sits. */}
         {annotationMarks.map((mark) => (
@@ -218,26 +254,14 @@ function MultiPointChart({
         )}
 
         {points.map((p, i) => (
-          <g key={p.entry.id}>
-            <circle
-              cx={p.cx}
-              cy={p.cy}
-              r={hoveredIndex === i && !hoveredAnnotation ? 6 : 4}
-              className="fill-surface-base stroke-blue-500"
-              strokeWidth={2}
-            />
-            {(i === 0 || i === points.length - 1) && (
-              <text
-                x={p.cx}
-                y={baseline + 18}
-                textAnchor={i === 0 ? "start" : "end"}
-                className="fill-content-dimmed"
-                style={{ fontSize: 11 }}
-              >
-                {formatShortDate(p.entry.recordedAt)}
-              </text>
-            )}
-          </g>
+          <circle
+            key={p.entry.id}
+            cx={p.cx}
+            cy={p.cy}
+            r={hoveredIndex === i && !hoveredAnnotation ? 6 : 4}
+            className="fill-surface-base stroke-blue-500"
+            strokeWidth={2}
+          />
         ))}
 
         {/* Invisible bands, one per entry, so hovering anywhere in a point's
@@ -313,13 +337,23 @@ function MultiPointChart({
         ))}
 
         {hoveredAnnotation ? (
-          <AnnotationTooltip mark={hoveredAnnotation} baseline={baseline} />
+          <AnnotationTooltip mark={hoveredAnnotation} baseline={baseline} withYear={spansYears} />
         ) : hovered ? (
-          <Tooltip point={hovered} unit={unit} />
+          <Tooltip point={hovered} unit={unit} withYear={spansYears} />
         ) : null}
       </svg>
     </div>
   );
+}
+
+// Ticks at the very edges of the plot would have half their label hanging
+// outside the viewport, so those two align to the inside instead.
+const LABEL_EDGE = 34;
+
+function labelAnchor(cx: number): "start" | "middle" | "end" {
+  if (cx - PADDING.left < LABEL_EDGE) return "start";
+  if (VIEW_WIDTH - PADDING.right - cx < LABEL_EDGE) return "end";
+  return "middle";
 }
 
 interface ChartPoint {
@@ -330,9 +364,9 @@ interface ChartPoint {
 
 const TOOLTIP = { height: 40, paddingX: 10, valueFontSize: 12, dateFontSize: 11, gap: 12 };
 
-function Tooltip({ point, unit }: { point: ChartPoint; unit: string }) {
+function Tooltip({ point, unit, withYear }: { point: ChartPoint; unit: string; withYear: boolean }) {
   const valueLabel = formatValue(point.entry.value, unit);
-  const dateLabel = formatShortDate(point.entry.recordedAt);
+  const dateLabel = formatShortDate(point.entry.recordedAt, { withYear });
 
   // Approximate the text width from character counts: measuring rendered SVG
   // text would require a layout pass the chart otherwise does not need.
@@ -387,11 +421,13 @@ const ANNOTATION_TOOLTIP = { paddingX: 11, paddingTop: 8, lineHeight: 15, titleM
 function AnnotationTooltip({
   mark,
   baseline,
+  withYear,
 }: {
   mark: { annotation: SpaceKpisPage.KpiAnnotation; cx: number };
   baseline: number;
+  withYear: boolean;
 }) {
-  const dateLabel = formatShortDate(mark.annotation.date);
+  const dateLabel = formatShortDate(mark.annotation.date, { withYear });
   const title = truncate(mark.annotation.title, ANNOTATION_TOOLTIP.titleMaxChars);
 
   const lines = 2;

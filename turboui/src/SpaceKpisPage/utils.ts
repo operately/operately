@@ -61,12 +61,14 @@ export function latestTrend(kpi: SpaceKpisPage.Kpi): number | null {
 
 // Self-contained short date (e.g. "Apr 5" / "Apr 5, 2026") so components render
 // identically in Storybook and the app without a FormattedTime preferences context.
-export function formatShortDate(date: Date): string {
+// The year is dropped for the current year unless the caller needs it, as a chart
+// spanning several years does.
+export function formatShortDate(date: Date, { withYear = false }: { withYear?: boolean } = {}): string {
   const sameYear = date.getFullYear() === new Date().getFullYear();
   return date.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
-    year: sameYear ? undefined : "numeric",
+    year: withYear || !sameYear ? "numeric" : undefined,
   });
 }
 
