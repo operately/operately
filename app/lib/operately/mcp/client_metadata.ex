@@ -15,6 +15,12 @@ defmodule Operately.Mcp.ClientMetadata do
   alias Operately.Repo
 
   @localhost_hosts ["localhost", "127.0.0.1", "::1"]
+  @supported_token_endpoint_auth_methods ["none"]
+
+  @doc """
+  Token-endpoint authentication methods this authorization server accepts.
+  """
+  def supported_token_endpoint_auth_methods, do: @supported_token_endpoint_auth_methods
 
   @doc """
   Resolves one OAuth client definition from the allowlist or a CIMD document.
@@ -49,8 +55,10 @@ defmodule Operately.Mcp.ClientMetadata do
   end
 
   def validate_auth_method(%ClientMetadata{token_endpoint_auth_method: method} = metadata) do
-    if method in [nil, "none"] do
-      {:ok, %ClientMetadata{metadata | token_endpoint_auth_method: method || "none"}}
+    method = method || "none"
+
+    if method in supported_token_endpoint_auth_methods() do
+      {:ok, %ClientMetadata{metadata | token_endpoint_auth_method: method}}
     else
       {:error, :unsupported_client_authentication}
     end

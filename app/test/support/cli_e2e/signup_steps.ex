@@ -376,7 +376,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
   end
 
   step :complete_google_signup_with_a_new_account, ctx do
-    session = Helpers.wait_for_google_session!()
+    session = Helpers.wait_for_google_session!(ctx.cli_task)
 
     Helpers.complete_mock_google_auth!(ctx, session,
       email: ctx.expected_email,
@@ -385,7 +385,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
   end
 
   step :complete_google_signup_with_an_existing_account, ctx do
-    session = Helpers.wait_for_google_session!()
+    session = Helpers.wait_for_google_session!(ctx.cli_task)
     Helpers.complete_mock_google_auth!(ctx, session, [account_id: ctx.existing_account.id], :failed)
   end
 
