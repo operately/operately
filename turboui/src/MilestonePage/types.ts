@@ -125,7 +125,6 @@ export namespace MilestonePage {
     onDescriptionChange: (newDescription: any) => Promise<boolean>;
     dueOffsetDays: number | null;
     onDueOffsetDaysChange: (value: number | null) => void;
-    insertedAt?: Date;
 
     onDelete?: () => void;
 

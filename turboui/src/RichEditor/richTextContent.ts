@@ -13,6 +13,10 @@ export function normalizeRichTextContent(content: RichTextContent): RichTextCont
   return normalizeRichTextNode(content);
 }
 
+export function toEditorContent(content: RichTextContent): NonNullable<RichTextContent> {
+  return normalizeRichTextContent(content) ?? "";
+}
+
 function isRichTextNode(content: RichTextContent): content is RichTextNode {
   return typeof content === "object" && content !== null && !Array.isArray(content);
 }

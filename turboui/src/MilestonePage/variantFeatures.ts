@@ -9,7 +9,6 @@ export interface VariantFeatures {
   showCreatedBy: boolean;
   showCompletedOn: boolean;
   showKanbanLink: boolean;
-  showInsertedAt: boolean;
   showProjectTasks: boolean;
   showTemplateTasks: boolean;
   sidebarTestId: "sidebar" | "template-milestone-sidebar";
@@ -28,7 +27,6 @@ export function variantFeatures(variant: Variant): VariantFeatures {
         showCreatedBy: true,
         showCompletedOn: true,
         showKanbanLink: true,
-        showInsertedAt: false,
         showProjectTasks: true,
         showTemplateTasks: false,
         sidebarTestId: "sidebar",
@@ -44,7 +42,6 @@ export function variantFeatures(variant: Variant): VariantFeatures {
         showCreatedBy: false,
         showCompletedOn: false,
         showKanbanLink: false,
-        showInsertedAt: true,
         showProjectTasks: false,
         showTemplateTasks: true,
         sidebarTestId: "template-milestone-sidebar",

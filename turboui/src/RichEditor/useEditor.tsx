@@ -12,7 +12,7 @@ import {
   writeLocalDraft,
 } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
-import { normalizeRichTextContent } from "./richTextContent";
+import { normalizeRichTextContent, toEditorContent } from "./richTextContent";
 
 export interface Person {
   id: string;
@@ -168,7 +168,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(normalizeRichTextContent(content), { emitUpdate: false });
+      editor.commands.setContent(toEditorContent(content), { emitUpdate: false });
     },
     [editor],
   );
