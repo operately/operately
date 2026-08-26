@@ -10,6 +10,7 @@ defmodule Operately.Operations.KpiDeleting do
     |> Multi.delete(:kpi, kpi)
     |> Repo.transaction()
     |> Repo.extract_result(:kpi)
+    |> broadcast_assignments_count(kpi)
   end
 
   defp insert_activity(multi, author, kpi) do
@@ -22,4 +23,11 @@ defmodule Operately.Operations.KpiDeleting do
       }
     end)
   end
+
+  defp broadcast_assignments_count({:ok, _deleted_kpi} = result, %Kpi{champion_id: champion_id}) when not is_nil(champion_id) do
+    OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
+    result
+  end
+
+  defp broadcast_assignments_count(result, _kpi), do: result
 end

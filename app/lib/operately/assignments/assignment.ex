@@ -13,7 +13,9 @@ defmodule Operately.Assignments.Assignment do
   alias Operately.Goals.{Goal, Update}
   alias Operately.Tasks.Task
   alias Operately.Groups.Group
+  alias Operately.Kpis.Kpi
   alias Operately.Activities.Activity
+  alias Operately.Assignments.KpiSchedule
   alias Operately.ContextualDates.{ContextualDate, Timeframe}
   alias OperatelyWeb.Paths
 
@@ -111,6 +113,23 @@ defmodule Operately.Assignments.Assignment do
       role: :owner,
       action_label: milestone.title,
       path: Paths.project_milestone_path(company, milestone),
+      origin: origin
+    })
+  end
+
+  # KPI update (champion role)
+  def build(%Kpi{space: %Group{}} = kpi, company) do
+    origin = build_space_origin(company, kpi.space)
+    {due_date, _period_end} = KpiSchedule.current_period(kpi.cadence)
+
+    build_with_enrichment(%{
+      resource_id: Paths.kpi_id(kpi),
+      name: kpi.name,
+      due: due_date,
+      type: :kpi_update,
+      role: :owner,
+      action_label: "Log update for #{kpi.name}",
+      path: Paths.space_kpi_path(company, kpi.space, kpi),
       origin: origin
     })
   end
