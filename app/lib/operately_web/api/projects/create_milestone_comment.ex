@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneComment do
     field :milestone_id, :id, null: false
     field :content, :json, null: true
     field :action, :string, null: false
+    field? :open_tasks_resolution, :milestone_open_tasks_resolution_input, null: true
   end
 
   outputs do
@@ -35,6 +36,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneComment do
       {:error, :id, _} -> {:error, :bad_request}
       {:error, :milestone, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: {:bad_request, message}}} -> {:error, :bad_request, message}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
@@ -45,6 +47,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneComment do
       person,
       milestone,
       inputs.action,
+      inputs[:open_tasks_resolution],
       %{
         content: inputs.content || %{},
         author_id: person.id,

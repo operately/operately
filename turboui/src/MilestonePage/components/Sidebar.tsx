@@ -10,7 +10,6 @@ import { isProjectMilestoneState, isTemplateMilestoneState } from "../types";
 import { variantFeatures } from "../variantFeatures";
 import { SidebarSection, SidebarNotificationSection } from "../../SidebarSection";
 import { showSuccessToast, showErrorToast } from "../../Toasts";
-import { launchConfetti } from "../../utils/confetti";
 
 export function Sidebar(props: MilestonePage.State) {
   const features = variantFeatures(props.variant);
@@ -96,10 +95,7 @@ function SidebarStatus({
   const handleStatusToggle = () => {
     // Toggle the completion status (stored as any property for demo)
     const newStatus = isCompleted ? "pending" : "done";
-    if (newStatus === "done") {
-      launchConfetti();
-    }
-    onStatusChange(newStatus);
+    void onStatusChange(newStatus);
   };
 
   if (!canEdit) {
