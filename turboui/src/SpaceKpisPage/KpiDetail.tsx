@@ -2,6 +2,7 @@ import React from "react";
 
 import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
+import { SecondaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
 import { PageDescription } from "../PageDescription";
 import { PersonField } from "../PersonField";
@@ -10,7 +11,7 @@ import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
-import { IconLink, IconMessage, IconTrash } from "../icons";
+import { IconFlag, IconLink, IconMessage, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -24,6 +25,8 @@ interface KpiDetailProps {
   canComment?: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
   onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
+  onOpenNewAnnotation: () => void;
+  onOpenAnnotation: (annotation: SpaceKpisPage.KpiAnnotation) => void;
   onDelete: () => void;
   richTextHandlers: RichEditorHandlers;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
@@ -41,6 +44,8 @@ export function KpiDetail({
   canComment = false,
   championSearch,
   onDescriptionChange,
+  onOpenNewAnnotation,
+  onOpenAnnotation,
   onDelete,
   richTextHandlers,
   renderEntryComments,
@@ -82,8 +87,20 @@ export function KpiDetail({
           className="space-y-4 rounded-lg border border-stroke-base bg-surface-base px-5 pb-3 pt-4"
           data-test-id="kpi-history"
         >
-          <CurrentValue kpi={kpi} unit={fields.unit} />
-          <KpiLineChart entries={kpi.entries} unit={fields.unit} />
+          <div className="flex items-start justify-between gap-4">
+            <CurrentValue kpi={kpi} unit={fields.unit} />
+            {canManage && (
+              <SecondaryButton size="xxs" icon={IconFlag} onClick={onOpenNewAnnotation} testId="add-kpi-annotation">
+                Add annotation
+              </SecondaryButton>
+            )}
+          </div>
+          <KpiLineChart
+            entries={kpi.entries}
+            unit={fields.unit}
+            annotations={kpi.annotations}
+            onAnnotationClick={canManage ? onOpenAnnotation : undefined}
+          />
         </div>
 
         <EntriesTable

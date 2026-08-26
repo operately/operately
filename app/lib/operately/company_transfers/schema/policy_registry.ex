@@ -165,6 +165,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "goal_updates",
     "goals",
     "groups",
+    "kpi_annotations",
     "kpi_entries",
     "kpis",
     "members",
