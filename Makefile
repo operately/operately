@@ -404,26 +404,46 @@ test.timings.merge:
 #
 
 DOCKER_IMAGE_TAG = $(shell git rev-parse --short HEAD)
+DOCKER_PLATFORMS ?= linux/amd64,linux/arm64
+DOCKER_BUILDX_BUILDER ?= prodimage-builder
+DOCKER_IMAGE_TAGS = -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG)
 
 inject.rel.version:
 	sed -i -E 's/dev-version/$(shell date +%Y-%m-%d)-$(DOCKER_IMAGE_TAG)/g' app/lib/operately.ex
 
+# docker-container builder required to produce a multi-platform manifest list.
+# Override DOCKER_BUILDX_BUILDER if several builders may share a Docker daemon.
+docker.buildx.setup:
+	docker buildx inspect $(DOCKER_BUILDX_BUILDER) >/dev/null 2>&1 || \
+		docker buildx create --name $(DOCKER_BUILDX_BUILDER) --driver docker-container
+	docker buildx use $(DOCKER_BUILDX_BUILDER)
+	docker buildx inspect --bootstrap
+
+# Native-arch build loaded into the local daemon. Used locally and on PR CI so we
+# do not emulate linux/arm64 on every branch.
 docker.build:
 	$(MAKE) inject.rel.version
-	docker build -f Dockerfile.prod -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG) .
+	docker buildx build -f Dockerfile.prod $(DOCKER_IMAGE_TAGS) --load .
 
-docker.push:
-	docker push operately/operately:$(DOCKER_IMAGE_TAG)
-	docker push operately/operately:latest
+# Build linux/amd64 and linux/arm64 and push them as one manifest list. Multi-arch
+# images cannot be --load'ed into the daemon, so build and push are one step.
+docker.buildx.push: docker.buildx.setup
+	$(MAKE) inject.rel.version
+	docker buildx build --platform $(DOCKER_PLATFORMS) -f Dockerfile.prod \
+		$(DOCKER_IMAGE_TAGS) --push .
+
+docker.push: docker.buildx.push
 
 #
 # Release related tasks
 #
 
+# Copy the published multi-arch manifest to the version tag. pull/tag/push would
+# flatten it to a single architecture.
 release.tag.docker:
-	docker pull operately/operately:$(DOCKER_IMAGE_TAG)
-	docker tag operately/operately:$(DOCKER_IMAGE_TAG) operately/operately:$(VERSION)
-	docker push operately/operately:$(VERSION)
+	docker buildx imagetools create \
+		-t operately/operately:$(VERSION) \
+		operately/operately:$(DOCKER_IMAGE_TAG)
 
 release.build.singlehost:
 	elixir app/rel/single-host/build.exs $(VERSION)
