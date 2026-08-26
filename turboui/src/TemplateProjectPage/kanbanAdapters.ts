@@ -33,6 +33,7 @@ export function toBoardTask(
     ),
     milestone: milestone ? toBoardMilestone(milestone) : null,
     dueDate: null,
+    dueOffsetDays: task.dueOffsetDays,
     hasDescription: !isContentEmpty(task.description),
     type: "project",
   };

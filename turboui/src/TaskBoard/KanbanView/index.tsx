@@ -106,6 +106,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
         statuses={orderedStatuses}
         onTaskAssigneeChange={props.onTaskAssigneeChange}
         onTaskDueDateChange={props.onTaskDueDateChange}
+        onTaskDueOffsetDaysChange={props.onTaskDueOffsetDaysChange}
         assigneePersonSearch={props.assigneePersonSearch}
         onTaskCreate={props.onTaskCreate}
         canEdit={props.canEdit}

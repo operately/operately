@@ -195,6 +195,9 @@ function BoardView({
           })),
         })
       }
+      onTaskDueOffsetDaysChange={
+        canEdit ? (taskId, dueOffsetDays) => void props.onTaskUpdate?.(taskId, { dueOffsetDays }) : undefined
+      }
       onTaskStatusChange={handleStatusChange}
       onTaskMilestoneChange={(taskId, milestone) =>
         void props.onTaskUpdate?.(taskId, { milestoneId: milestone?.id ?? null })
