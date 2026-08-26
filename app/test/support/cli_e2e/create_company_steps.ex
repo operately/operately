@@ -187,7 +187,7 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
   end
 
   step :complete_pending_google_create_company, ctx do
-    session = Helpers.wait_for_google_session!()
+    session = Helpers.wait_for_google_session!(ctx.cli_task)
     account = Map.fetch!(ctx, ctx.auth_account_key)
     Helpers.complete_mock_google_auth!(ctx, session, account_id: account.id)
   end
