@@ -31,10 +31,14 @@ ${commandLines}
 Use 'operately help ${namespace} <command>' for command-specific details.`);
 }
 
+function isHiddenEndpoint(endpoint: CatalogEndpoint): boolean {
+  return endpoint.hidden === true;
+}
+
 export function printGeneralHelp(registry: EndpointRegistry, namespaceDescriptions: Record<string, string>): void {
   const namespaces = new Set<string>();
   for (const endpoint of registry.endpoints) {
-    if (endpoint.namespace) {
+    if (endpoint.namespace && !isHiddenEndpoint(endpoint)) {
       namespaces.add(endpoint.namespace);
     }
   }
@@ -46,6 +50,8 @@ export function printGeneralHelp(registry: EndpointRegistry, namespaceDescriptio
       return `  ${ns.padEnd(20)} ${desc}`;
     })
     .join("\n");
+
+  const visibleEndpointCount = registry.endpoints.filter((endpoint) => !isHiddenEndpoint(endpoint)).length;
 
   console.log(`Operately CLI
 
@@ -77,7 +83,7 @@ Global flags:
   --version
   --help
 
-Endpoint commands available: ${registry.endpoints.length}
+Endpoint commands available: ${visibleEndpointCount}
 Use 'operately help <command>' for command-specific input flags.`);
 }
 

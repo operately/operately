@@ -3,7 +3,7 @@ import type { Catalog } from "../../types/catalog";
 export const fixtureCatalog: Catalog = {
   schema_version: 1,
   api_base_path: "/api/external/v1",
-  endpoint_count: 7,
+  endpoint_count: 8,
   query_count: 2,
   mutation_count: 5,
   types: {
@@ -326,6 +326,28 @@ export const fixtureCatalog: Catalog = {
       ],
       outputs: [],
       docstring: "Updates the assignees of a task.",
+    },
+    {
+      full_name: "kpis/list_kpis",
+      namespace: "kpis",
+      name: "list_kpis",
+      type: "query",
+      method: "GET",
+      path: "/api/external/v1/kpis/list_kpis",
+      handler: "OperatelyWeb.Api.Kpis.ListKpis",
+      inputs: [
+        {
+          name: "space_id",
+          type: { kind: "named", name: "id" },
+          optional: false,
+          nullable: false,
+          has_default: false,
+          default: null,
+        },
+      ],
+      outputs: [],
+      docstring: "Lists the KPIs of a space.",
+      hidden: true,
     },
   ],
 };

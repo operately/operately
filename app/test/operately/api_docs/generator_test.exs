@@ -18,13 +18,14 @@ defmodule Operately.ApiDocs.GeneratorTest do
     catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
 
     expected_count = length(catalog.endpoints)
+    visible_count = Enum.count(catalog.endpoints, &(not Map.get(&1, :hidden, false)))
 
     endpoint_files =
       Path.wildcard(Path.join(out_dir, "help/api/**/*.mdx"))
       |> Enum.reject(&(Path.basename(&1) == "index.mdx"))
 
     assert result.endpoint_count == expected_count
-    assert length(endpoint_files) == expected_count
+    assert length(endpoint_files) == visible_count
 
     assert File.exists?(Path.join(out_dir, "help/api/index.mdx"))
     assert File.exists?(Path.join(out_dir, "help/api/people/get_account.mdx"))
@@ -160,6 +161,23 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert Enum.sort(Map.keys(field)) == [:default, :has_default, :name, :nullable, :optional, :type]
   end
 
+  test "catalog JSON encoding keeps a stable object key order" do
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+    json = Catalog.encode(Catalog.payload(catalog, "/api/external/v1"))
+    decoded = Jason.decode!(json, objects: :ordered_objects)
+
+    assert ordered_keys(decoded) == ~w(types namespace_descriptions api_base_path endpoint_count endpoints query_count mutation_count schema_version)
+    assert ordered_keys(decoded["types"]) == ~w(enums int_enums primitives unions objects)
+
+    [endpoint | _] = decoded["endpoints"]
+    refute "hidden" in ordered_keys(endpoint)
+    assert ordered_keys(endpoint) == ~w(name type path handler outputs inputs full_name method namespace docstring)
+
+    [field | _] = endpoint["inputs"] ++ endpoint["outputs"]
+    assert ordered_keys(field) == ~w(default name type optional nullable has_default)
+    assert ordered_keys(field["type"]) == ~w(name kind)
+  end
+
   test "hidden external endpoints are routable but excluded from catalog and docs", %{out_dir: out_dir} do
     external_mutations = OperatelyWeb.Api.External.__mutations__()
     assert Map.has_key?(external_mutations, "create_avatar_blob")
@@ -269,10 +287,53 @@ defmodule Operately.ApiDocs.GeneratorTest do
     refute File.exists?(Path.join(out_dir, "help/api/documents/create_file.mdx"))
   end
 
+  test "hidden catalog endpoints stay in the catalog but are excluded from docs", %{out_dir: out_dir} do
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+    kpi_endpoints = Enum.filter(catalog.endpoints, &(&1.namespace == :kpis))
+
+    assert kpi_endpoints != []
+    assert Enum.all?(kpi_endpoints, & &1.hidden)
+
+    payload = Catalog.payload(catalog, "/api/external/v1")
+    kpi_payload = Enum.filter(payload.endpoints, &(&1.namespace == "kpis"))
+
+    assert kpi_payload != []
+    assert Enum.all?(kpi_payload, &(&1.hidden == true))
+
+    Generator.generate(out_dir: out_dir)
+
+    refute File.exists?(Path.join(out_dir, "help/api/kpis/index.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/kpis/list_kpis.mdx"))
+    refute File.exists?(Path.join(out_dir, "help/api/kpis/get_kpi.mdx"))
+
+    index = File.read!(Path.join(out_dir, "help/api/index.mdx"))
+    refute index =~ "./kpis"
+  end
+
+  test "raises when catalog option is not a supported atom" do
+    assert_raise ArgumentError, ~r/Invalid catalog option false/, fn ->
+      Generator.build_catalog(Operately.ApiDocs.GeneratorTest.InvalidCatalogApi, "/api/external/v1")
+    end
+  end
+
   defp find_input_field(catalog, full_name, field_name) do
     catalog.endpoints
     |> Enum.find(&(&1.full_name == full_name))
     |> Map.fetch!(:inputs)
     |> Enum.find(fn {name, _, _} -> name == field_name end)
   end
+
+  defp ordered_keys(%Jason.OrderedObject{values: values}), do: Enum.map(values, &elem(&1, 0))
+end
+
+defmodule Operately.ApiDocs.GeneratorTest.ExampleQuery do
+  use TurboConnect.Query
+
+  def call(_, _), do: {:ok, %{}}
+end
+
+defmodule Operately.ApiDocs.GeneratorTest.InvalidCatalogApi do
+  use TurboConnect.Api
+
+  query(:bad, Operately.ApiDocs.GeneratorTest.ExampleQuery, catalog: false)
 end

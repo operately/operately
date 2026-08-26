@@ -16,9 +16,109 @@ defmodule Operately.ApiDocs.Catalog do
     }
   end
 
-  def encode(payload) do
-    Jason.encode!(payload, pretty: true, maps: :strict)
+  # Object key order is fixed to keep `make gen.cli.catalog` byte-stable.
+  # OTP 27 iterates atom-keyed maps by atom-table order, which changes across compilations.
+  @payload_key_order ~w(types namespace_descriptions api_base_path endpoint_count endpoints query_count mutation_count schema_version)
+  @types_key_order ~w(enums int_enums primitives unions objects)
+  @endpoint_key_order ~w(name type path handler outputs inputs full_name method namespace docstring hidden)
+  @field_key_order ~w(default name type optional nullable has_default)
+  @named_type_key_order ~w(name kind)
+  @list_type_key_order ~w(item kind)
+
+  def encode(payload, previous \\ nil) do
+    payload
+    |> ordered_payload(previous)
+    |> Jason.encode!(pretty: true, maps: :strict)
   end
+
+  defp ordered_payload(payload, previous) do
+    order_map(payload, @payload_key_order, fn
+      "types", types -> ordered_types(types, previous && previous["types"])
+      "namespace_descriptions", descriptions -> order_string_key_map(descriptions, previous && previous["namespace_descriptions"])
+      "endpoints", endpoints -> Enum.map(endpoints, &ordered_endpoint/1)
+      _key, value -> value
+    end)
+  end
+
+  defp ordered_types(types, previous) do
+    order_map(types, @types_key_order, fn
+      "primitives", primitives ->
+        order_string_key_map(primitives, previous && previous["primitives"], fn primitive -> order_map(primitive, ["encoded_type"]) end)
+
+      "objects", objects ->
+        order_string_key_map(objects, previous && previous["objects"], fn object ->
+          order_map(object, ["fields"], fn "fields", fields -> Enum.map(fields, &ordered_field/1) end)
+        end)
+
+      "unions", unions ->
+        order_string_key_map(unions, previous && previous["unions"], fn refs -> Enum.map(refs, &ordered_type_ref/1) end)
+
+      key, values ->
+        order_string_key_map(values, previous && previous[key])
+    end)
+  end
+
+  defp ordered_endpoint(endpoint) do
+    order_map(endpoint, @endpoint_key_order, fn
+      key, fields when key in ["inputs", "outputs"] -> Enum.map(fields, &ordered_field/1)
+      _key, value -> value
+    end)
+  end
+
+  defp ordered_field(field) do
+    order_map(field, @field_key_order, fn
+      "type", type -> ordered_type_ref(type)
+      "default", default -> ordered_json_value(default)
+      _key, value -> value
+    end)
+  end
+
+  defp ordered_type_ref(%{kind: kind} = type_ref) when kind in ["list", :list] do
+    order_map(type_ref, @list_type_key_order, fn
+      "item", item -> ordered_type_ref(item)
+      _key, value -> value
+    end)
+  end
+
+  defp ordered_type_ref(type_ref) when is_map(type_ref) do
+    order_map(type_ref, @named_type_key_order)
+  end
+
+  defp ordered_json_value(map) when is_map(map), do: order_string_key_map(map, nil, &ordered_json_value/1)
+  defp ordered_json_value(list) when is_list(list), do: Enum.map(list, &ordered_json_value/1)
+  defp ordered_json_value(value), do: value
+
+  defp order_map(map, key_order, transform \\ fn _key, value -> value end) do
+    string_map = Map.new(map, fn {key, value} -> {to_string(key), value} end)
+
+    known_keys = Enum.filter(key_order, &Map.has_key?(string_map, &1))
+
+    unknown_keys =
+      string_map
+      |> Map.keys()
+      |> Enum.reject(&(&1 in key_order))
+      |> Enum.sort()
+
+    (known_keys ++ unknown_keys)
+    |> Enum.map(fn key -> {key, transform.(key, Map.fetch!(string_map, key))} end)
+    |> Jason.OrderedObject.new()
+  end
+
+  defp order_string_key_map(map, previous), do: order_string_key_map(map, previous, fn value -> value end)
+
+  defp order_string_key_map(map, previous, transform_value) do
+    current = Map.new(map, fn {key, value} -> {to_string(key), value} end)
+    previous_keys = Enum.filter(previous_keys(previous), &Map.has_key?(current, &1))
+    new_keys = current |> Map.keys() |> Enum.reject(&(&1 in previous_keys)) |> Enum.sort()
+
+    (previous_keys ++ new_keys)
+    |> Enum.map(fn key -> {key, transform_value.(Map.fetch!(current, key))} end)
+    |> Jason.OrderedObject.new()
+  end
+
+  defp previous_keys(%Jason.OrderedObject{values: values}), do: Enum.map(values, fn {key, _} -> to_string(key) end)
+  defp previous_keys(map) when is_map(map), do: Enum.map(Map.keys(map), &to_string/1)
+  defp previous_keys(_), do: []
 
   defp serialize_types(types) do
     %{
@@ -88,7 +188,7 @@ defmodule Operately.ApiDocs.Catalog do
   end
 
   defp serialize_endpoint(endpoint) do
-    %{
+    payload = %{
       full_name: endpoint.full_name,
       namespace: serialize_namespace(endpoint.namespace),
       name: endpoint.name,
@@ -100,6 +200,12 @@ defmodule Operately.ApiDocs.Catalog do
       outputs: Enum.map(endpoint.outputs, &serialize_field/1),
       docstring: endpoint.docstring
     }
+
+    if Map.get(endpoint, :hidden, false) do
+      Map.put(payload, :hidden, true)
+    else
+      payload
+    end
   end
 
   defp serialize_field({name, type, opts}) do

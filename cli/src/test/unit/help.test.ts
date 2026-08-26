@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import * as assert from "node:assert";
-import { printAuthCommandHelp, printEndpointHelp } from "../../commands/help";
+import { printAuthCommandHelp, printEndpointHelp, printGeneralHelp, printNamespaceHelp } from "../../commands/help";
 import { createRegistry } from "../../commands/registry";
 import type { CatalogEndpoint } from "../../types/catalog";
 import { fixtureCatalog } from "./fixture-catalog";
@@ -175,4 +175,26 @@ test("prints hybrid create-company help with flag-driven guidance", () => {
   assert.ok(output.includes("All other create-company prompts can be skipped with flags."));
   assert.ok(output.includes("--company-name <name>                (skip the company-name prompt)"));
   assert.ok(output.includes("operately auth create-company --method email-password --email user@example.com --password secret123456 --company-name \"Acme Corp\" --profile team"));
+});
+
+test("omits hidden namespaces from general help and counts only visible endpoints", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const visibleCount = registry.endpoints.filter((endpoint) => !endpoint.hidden).length;
+  const output = captureHelpOutput(() => {
+    printGeneralHelp(registry, fixtureCatalog.namespace_descriptions || {});
+  });
+
+  assert.ok(output.includes("  goals"));
+  assert.ok(output.includes(`Endpoint commands available: ${visibleCount}`));
+  assert.ok(!output.includes("  kpis"));
+  assert.notEqual(visibleCount, registry.endpoints.length);
+});
+
+test("prints hidden namespace commands in namespace help", () => {
+  const output = captureHelpOutput(() => {
+    printNamespaceHelp("kpis", createRegistry(fixtureCatalog));
+  });
+
+  assert.ok(output.includes("kpis namespace"));
+  assert.ok(output.includes("list_kpis"));
 });

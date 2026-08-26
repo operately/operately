@@ -9,6 +9,7 @@ defmodule Operately.ApiDocs.Markdown do
     root_endpoint_rows =
       catalog.endpoints_by_namespace
       |> Map.get("root", [])
+      |> visible_endpoints()
       |> Enum.map(fn endpoint ->
         """
         <tr>
@@ -25,7 +26,11 @@ defmodule Operately.ApiDocs.Markdown do
       catalog.namespaces
       |> Enum.reject(&(&1 == "root"))
       |> Enum.map(fn namespace ->
-        endpoints = catalog.endpoints_by_namespace[namespace] || []
+        endpoints = visible_endpoints(catalog.endpoints_by_namespace[namespace] || [])
+        {namespace, endpoints}
+      end)
+      |> Enum.reject(fn {_namespace, endpoints} -> endpoints == [] end)
+      |> Enum.map(fn {namespace, endpoints} ->
         query_count = Enum.count(endpoints, &(&1.type == :query))
         mutation_count = Enum.count(endpoints, &(&1.type == :mutation))
 
@@ -361,4 +366,8 @@ defmodule Operately.ApiDocs.Markdown do
 
   defp yes_no(true), do: "Yes"
   defp yes_no(false), do: "No"
+
+  defp hidden?(endpoint), do: Map.get(endpoint, :hidden, false)
+
+  defp visible_endpoints(endpoints), do: Enum.reject(endpoints, &hidden?/1)
 end
