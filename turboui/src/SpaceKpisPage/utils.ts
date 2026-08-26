@@ -61,12 +61,14 @@ export function latestTrend(kpi: SpaceKpisPage.Kpi): number | null {
 
 // Self-contained short date (e.g. "Apr 5" / "Apr 5, 2026") so components render
 // identically in Storybook and the app without a FormattedTime preferences context.
-export function formatShortDate(date: Date): string {
+// The year is dropped for the current year unless the caller needs it, as a chart
+// spanning several years does.
+export function formatShortDate(date: Date, { withYear = false }: { withYear?: boolean } = {}): string {
   const sameYear = date.getFullYear() === new Date().getFullYear();
   return date.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
-    year: sameYear ? undefined : "numeric",
+    year: withYear || !sameYear ? "numeric" : undefined,
   });
 }
 
@@ -76,4 +78,12 @@ export function toIsoDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+// Inverse of `toIsoDate`. `new Date("YYYY-MM-DD")` is UTC midnight, which is
+// the previous calendar day in negative-offset timezones; parse the parts as
+// a local date so axis ticks and labels match the stored period.
+export function fromIsoDate(iso: string): Date {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(year!, month! - 1, day);
 }
