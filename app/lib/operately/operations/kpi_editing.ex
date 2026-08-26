@@ -12,6 +12,7 @@ defmodule Operately.Operations.KpiEditing do
     |> insert_activity(author, kpi)
     |> Repo.transaction()
     |> Repo.extract_result(:kpi)
+    |> broadcast_assignments_count(kpi)
   end
 
   defp subscribe_champion(multi) do
@@ -31,4 +32,15 @@ defmodule Operately.Operations.KpiEditing do
       }
     end)
   end
+
+  defp broadcast_assignments_count({:ok, updated_kpi} = result, previous_kpi) do
+    [previous_kpi.champion_id, updated_kpi.champion_id]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+    |> Enum.each(&OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: &1))
+
+    result
+  end
+
+  defp broadcast_assignments_count(result, _previous_kpi), do: result
 end

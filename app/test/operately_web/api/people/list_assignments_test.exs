@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
   alias Operately.ContextualDates.ContextualDate
 
   import Operately.PeopleFixtures
+  import Operately.KpisFixtures
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -713,6 +714,29 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert length(reviewer_goal_updates) == 1
       assert length(tasks) == 1
       assert length(milestones) == 1
+    end
+
+    test "serializes pending KPI updates for the champion", ctx do
+      kpi =
+        kpi_fixture(ctx.person,
+          space_id: ctx.space.id,
+          champion_id: ctx.person.id,
+          name: "Weekly sign-ups",
+          cadence: :weekly
+        )
+
+      assert {200, %{due_soon: due_soon}} = query(ctx.conn, [:people, :list_assignments], %{})
+
+      assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assignment = Enum.find(assignments, &(&1.resource_id == Paths.kpi_id(kpi)))
+
+      assert assignment.name == "Weekly sign-ups"
+      assert assignment.type == "kpi_update"
+      assert assignment.role == "owner"
+      assert assignment.action_label == "Log update for Weekly sign-ups"
+      assert assignment.path == Paths.space_kpi_path(ctx.company, ctx.space, kpi)
+      assert assignment.origin.type == "space"
+      assert assignment.origin.name == ctx.space.name
     end
   end
 

@@ -2,9 +2,11 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
   use Operately.DataCase
 
   import Swoosh.TestAssertions
+  import Operately.KpisFixtures
 
   alias Operately.ContextualDates.ContextualDate
   alias Operately.Support.Factory
+  alias OperatelyWeb.Paths
   alias OperatelyEmail.Emails.AssignmentsEmail
 
   setup ctx do
@@ -50,6 +52,27 @@ defmodule OperatelyEmail.AssignmentsEmailTest do
       email.to == [{"", ctx.second_assignee.email}] and
         email.subject == "#{ctx.company.name}: Your work for today" and
         email.html_body =~ "Shared urgent task"
+    end)
+  end
+
+  test "includes pending KPI updates for the champion", ctx do
+    flush_emails()
+
+    kpi =
+      kpi_fixture(ctx.first_assignee,
+        space_id: ctx.space.id,
+        champion_id: ctx.first_assignee.id,
+        name: "Weekly sign-ups",
+        cadence: :weekly
+      )
+
+    AssignmentsEmail.send(ctx.first_assignee)
+
+    assert_email_sent(fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.html_body =~ "Weekly sign-ups" and
+        email.html_body =~ "Log update for Weekly sign-ups" and
+        email.html_body =~ Paths.to_url(Paths.space_kpi_path(ctx.company, ctx.space, kpi))
     end)
   end
 
