@@ -134,6 +134,10 @@ function successToast(action: ProjectTemplateLifecycleAction) {
     return { title: "Template archived", description: "It can be restored later." };
   }
 
+  if (action === "restore") {
+    return { title: "Template restored", description: "It's available for project creation again." };
+  }
+
   return null;
 }
 

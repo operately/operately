@@ -76,4 +76,28 @@ describe("ProjectTemplateLifecycleDialogs", () => {
     await waitFor(() => expect(props.onArchive).toHaveBeenCalled());
     expect(showSuccessToast).not.toHaveBeenCalled();
   });
+
+  it("shows a success toast after restoring a template", async () => {
+    const user = userEvent.setup();
+    const props = handlers();
+    render(<ProjectTemplateLifecycleDialogs action="restore" template={template} {...props} />);
+
+    await user.click(screen.getByRole("button", { name: "Restore template" }));
+
+    await waitFor(() => expect(props.onRestore).toHaveBeenCalledWith("template-1"));
+    expect(showSuccessToast).toHaveBeenCalledWith("Template restored", "It's available for project creation again.");
+  });
+
+  it("does not toast when restoring fails", async () => {
+    const user = userEvent.setup();
+    const props = handlers({
+      onRestore: jest.fn().mockResolvedValue({ success: false, error: "Could not restore" }),
+    });
+    render(<ProjectTemplateLifecycleDialogs action="restore" template={template} {...props} />);
+
+    await user.click(screen.getByRole("button", { name: "Restore template" }));
+
+    await waitFor(() => expect(props.onRestore).toHaveBeenCalled());
+    expect(showSuccessToast).not.toHaveBeenCalled();
+  });
 });

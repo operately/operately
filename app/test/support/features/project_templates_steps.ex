@@ -219,7 +219,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.click_text("Restore")
     |> UI.assert_text("This template will return to active use and project creation.")
     |> UI.click_button("Restore template")
-    |> UI.sleep(300)
+    |> assert_template_restored_toast()
   end
 
   step :delete_template_from_library, ctx, template_key do
@@ -252,6 +252,12 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     ctx
     |> UI.assert_text("Template archived")
     |> UI.assert_text("It can be restored later.")
+  end
+
+  step :assert_template_restored_toast, ctx do
+    ctx
+    |> UI.assert_text("Template restored")
+    |> UI.assert_text("It's available for project creation again.")
   end
 
   step :assert_template_actions_hidden, ctx, template_key do
