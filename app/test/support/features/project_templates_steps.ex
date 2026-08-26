@@ -196,6 +196,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.click(testid: "duplicate-project-template")
     |> UI.assert_has(testid: "project-template-page")
     |> UI.assert_text(name)
+    |> assert_template_duplicated_toast()
     |> Map.put(:template, Repo.get_by!(ProjectTemplate, name: name))
   end
 
@@ -207,7 +208,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.click_text("Archive")
     |> UI.assert_text("This template will leave project creation and can be restored later.")
     |> UI.click_button("Archive template")
-    |> UI.sleep(300)
+    |> assert_template_archived_toast()
   end
 
   step :restore_template_from_library, ctx, template_key do
@@ -218,7 +219,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.click_text("Restore")
     |> UI.assert_text("This template will return to active use and project creation.")
     |> UI.click_button("Restore template")
-    |> UI.sleep(300)
+    |> assert_template_restored_toast()
   end
 
   step :delete_template_from_library, ctx, template_key do
@@ -238,6 +239,25 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.assert_text("This template will leave project creation and can be restored later.")
     |> UI.click_button("Archive template")
     |> UI.assert_text("Archived")
+    |> assert_template_archived_toast()
+  end
+
+  step :assert_template_duplicated_toast, ctx do
+    ctx
+    |> UI.assert_text("Template duplicated")
+    |> UI.assert_text("You're now editing the copy.")
+  end
+
+  step :assert_template_archived_toast, ctx do
+    ctx
+    |> UI.assert_text("Template archived")
+    |> UI.assert_text("It can be restored later.")
+  end
+
+  step :assert_template_restored_toast, ctx do
+    ctx
+    |> UI.assert_text("Template restored")
+    |> UI.assert_text("It's available for project creation again.")
   end
 
   step :assert_template_actions_hidden, ctx, template_key do
