@@ -10,7 +10,14 @@ export function TasksSection(props: MilestonePage.State) {
   const { selectedTaskId, setSelectedTaskId, taskSlideIn } = useTaskSlideIn(props);
 
   if (isTemplateMilestoneState(props)) {
-    return <TemplateTasksSection {...props} taskSlideIn={taskSlideIn} onTaskOpen={setSelectedTaskId} />;
+    return (
+      <TemplateTasksSection
+        {...props}
+        taskSlideIn={taskSlideIn}
+        selectedTaskId={selectedTaskId}
+        onTaskOpen={setSelectedTaskId}
+      />
+    );
   }
 
   return (

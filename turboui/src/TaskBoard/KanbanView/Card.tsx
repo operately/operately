@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { IconFileText, IconGripVertical, IconMessageCircle } from "../../icons";
 import { DateField } from "../../DateField";
+import { RelativeDayField } from "../../RelativeDayField";
 import { AssigneesField } from "../../AssigneesField";
 import classNames from "../../utils/classnames";
 import { DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop";
@@ -21,6 +22,7 @@ interface CardProps {
   draggedItemId: string | null;
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
+  onTaskDueOffsetDaysChange?: TaskBoardProps["onTaskDueOffsetDaysChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   showDropIndicator?: boolean;
   onTaskClick?: (taskId: string) => void;
@@ -34,6 +36,7 @@ export function Card({
   draggedItemId,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskDueOffsetDaysChange,
   assigneePersonSearch,
   showDropIndicator = true,
   onTaskClick,
@@ -41,6 +44,7 @@ export function Card({
 }: CardProps) {
   const [currentAssignees, setCurrentAssignees] = useState<TaskBoard.Person[]>(task.assignees || []);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
+  const [currentDueOffsetDays, setCurrentDueOffsetDays] = useState<number | null>(task.dueOffsetDays ?? null);
   const [assigneeFieldOpen, setAssigneeFieldOpen] = useState(false);
   const [dueDateFieldOpen, setDueDateFieldOpen] = useState(false);
   const { ref, isDragging, closestEdge } = useSortableItem({
@@ -63,7 +67,11 @@ export function Card({
     };
 
     const openDueDateField = () => {
-      if (!onTaskDueDateChange) return;
+      if (usesRelativeDueDate(task)) {
+        if (!onTaskDueOffsetDaysChange) return;
+      } else if (!onTaskDueDateChange) {
+        return;
+      }
 
       prepareFocusRestore();
       setDueDateFieldOpen(true);
@@ -81,7 +89,16 @@ export function Card({
       element.removeEventListener(OPEN_TASK_DUE_DATE_EVENT, openDueDateField);
       element.removeEventListener(OPEN_TASK_EVENT, openTask);
     };
-  }, [assigneePersonSearch, onTaskClick, onTaskDueDateChange, prepareFocusRestore, ref, task.id]);
+  }, [
+    assigneePersonSearch,
+    onTaskClick,
+    onTaskDueDateChange,
+    onTaskDueOffsetDaysChange,
+    prepareFocusRestore,
+    ref,
+    task.dueOffsetDays,
+    task.id,
+  ]);
 
   useEffect(() => {
     setCurrentAssignees(task.assignees || []);
@@ -89,7 +106,8 @@ export function Card({
 
   useEffect(() => {
     setCurrentDueDate(task.dueDate || null);
-  }, [task.dueDate, task.id]);
+    setCurrentDueOffsetDays(task.dueOffsetDays ?? null);
+  }, [task.dueDate, task.dueOffsetDays, task.id]);
 
   const handleAssigneesChange = useCallback(
     (newAssignees: TaskBoard.Person[]) => {
@@ -107,15 +125,24 @@ export function Card({
     [onTaskDueDateChange, task.id],
   );
 
+  const handleDueOffsetDaysChange = useCallback(
+    (dueOffsetDays: number | null) => {
+      setCurrentDueOffsetDays(dueOffsetDays);
+      onTaskDueOffsetDaysChange?.(task.id, dueOffsetDays);
+    },
+    [onTaskDueOffsetDaysChange, task.id],
+  );
+
   const isDimmed = draggedItemId === task.id;
   const dropIndicatorEdge = showDropIndicator ? closestEdge : null;
   const shouldShowDescriptionIndicator = Boolean(task.hasDescription);
   const shouldShowCommentsIndicator = Boolean(task.hasComments);
   const shouldShowCommentCount = task.commentCount !== undefined;
+  const hasDueDate = usesRelativeDueDate(task) ? currentDueOffsetDays !== null : Boolean(currentDueDate);
   const dateFieldClassName = classNames({
-    "[&>span]:text-transparent": !currentDueDate,
-    "group-hover:[&>span]:text-content-dimmed": !currentDueDate,
-    "group-focus-within:[&>span]:text-content-dimmed": !currentDueDate,
+    "[&>span]:text-transparent": !hasDueDate,
+    "group-hover:[&>span]:text-content-dimmed": !hasDueDate,
+    "group-focus-within:[&>span]:text-content-dimmed": !hasDueDate,
   });
 
   const stopDragFromInteractive = (event: React.MouseEvent) => {
@@ -201,22 +228,37 @@ export function Card({
 
             <div className="flex items-center gap-2 flex-shrink-0">
               <div onMouseDown={stopDragFromInteractive}>
-                <DateField
-                  date={currentDueDate}
-                  onDateSelect={handleDueDateChange}
-                  variant="inline"
-                  hideCalendarIcon={true}
-                  showOverdueWarning={!task.status?.closed}
-                  placeholder={currentDueDate ? "" : "Set due date"}
-                  readonly={!onTaskDueDateChange}
-                  size="small"
-                  calendarOnly
-                  className={dateFieldClassName}
-                  testId={createTestId("kanban-card-due-date", task.id)}
-                  isOpen={dueDateFieldOpen}
-                  onOpenChange={handleDueDateFieldOpenChange}
-                  onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
-                />
+                {usesRelativeDueDate(task) ? (
+                  <RelativeDayField
+                    value={currentDueOffsetDays}
+                    onChange={onTaskDueOffsetDaysChange ? handleDueOffsetDaysChange : undefined}
+                    variant="inline"
+                    hideCalendarIcon={true}
+                    placeholder={hasDueDate ? "" : "Set when due"}
+                    readonly={!onTaskDueOffsetDaysChange}
+                    className={dateFieldClassName}
+                    testId={createTestId("kanban-card-due-offset", task.id)}
+                    isOpen={dueDateFieldOpen}
+                    onOpenChange={handleDueDateFieldOpenChange}
+                  />
+                ) : (
+                  <DateField
+                    date={currentDueDate}
+                    onDateSelect={handleDueDateChange}
+                    variant="inline"
+                    hideCalendarIcon={true}
+                    showOverdueWarning={!task.status?.closed}
+                    placeholder={currentDueDate ? "" : "Set due date"}
+                    readonly={!onTaskDueDateChange}
+                    size="small"
+                    calendarOnly
+                    className={dateFieldClassName}
+                    testId={createTestId("kanban-card-due-date", task.id)}
+                    isOpen={dueDateFieldOpen}
+                    onOpenChange={handleDueDateFieldOpenChange}
+                    onCloseAutoFocus={restoreFocusOnCloseAutoFocus}
+                  />
+                )}
               </div>
 
               <div onMouseDown={stopDragFromInteractive}>
@@ -247,4 +289,8 @@ export function Card({
       </div>
     </div>
   );
+}
+
+function usesRelativeDueDate(task: TaskBoard.Task): boolean {
+  return task.dueOffsetDays !== undefined;
 }

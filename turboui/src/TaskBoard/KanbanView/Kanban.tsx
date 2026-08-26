@@ -22,6 +22,7 @@ interface Props {
   statuses: StatusSelector.StatusOption[];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
+  onTaskDueOffsetDaysChange?: TaskBoardProps["onTaskDueOffsetDaysChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   onAddStatusClick?: () => void;
@@ -42,6 +43,7 @@ export function Kanban({
   statuses,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskDueOffsetDaysChange,
   assigneePersonSearch,
   onTaskCreate,
   onAddStatusClick,
@@ -114,6 +116,7 @@ export function Kanban({
               placeholderHeight={placeholderHeight}
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
+              onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
               assigneePersonSearch={assigneePersonSearch}
               onCreateTask={undefined}
               dragHandleRef={undefined}
@@ -141,6 +144,7 @@ export function Kanban({
                   placeholderHeight={placeholderHeight}
                   onTaskAssigneeChange={onTaskAssigneeChange}
                   onTaskDueDateChange={onTaskDueDateChange}
+                  onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
                   assigneePersonSearch={assigneePersonSearch}
                   onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
                   dragHandleRef={dragHandleRef}

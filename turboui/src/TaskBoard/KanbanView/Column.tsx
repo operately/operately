@@ -18,6 +18,7 @@ interface Props {
   draggedItemId: string | null;
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
+  onTaskDueOffsetDaysChange?: TaskBoardProps["onTaskDueOffsetDaysChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   targetLocation: BoardLocation | null;
   placeholderHeight: number | null;
@@ -41,6 +42,7 @@ export function Column({
   draggedItemId,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskDueOffsetDaysChange,
   assigneePersonSearch,
   targetLocation,
   placeholderHeight,
@@ -157,6 +159,7 @@ export function Column({
                 draggedItemId={draggedItemId}
                 onTaskAssigneeChange={onTaskAssigneeChange}
                 onTaskDueDateChange={onTaskDueDateChange}
+                onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
                 assigneePersonSearch={assigneePersonSearch}
                 showDropIndicator={shouldShowDropIndicator}
                 onTaskClick={onTaskClick}
