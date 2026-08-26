@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateComment do
     Definition.new!(
       name: "create_project_template_comment",
       title: "Create Project Template Comment",
-      description: "Adds a reusable Markdown comment to a template discussion or resource.",
+      description: "Adds a reusable Markdown comment to a project template discussion or resource. Applies only to project templates / reusable blueprint content. For comments on live Operately resources, use create_comment, update_comment, or delete_comment.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

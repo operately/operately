@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.DeleteFile do
     Definition.new!(
       name: "delete_file",
       title: "Delete File",
-      description: "Permanently deletes one file from a resource hub.",
+      description: "Permanently deletes one file from a live Docs & Files hub. For template resources, use delete_project_template_resource.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :destructive,

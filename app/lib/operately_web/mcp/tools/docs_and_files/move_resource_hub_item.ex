@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.MoveResourceHubItem do
     Definition.new!(
       name: "move_resource_hub_item",
       title: "Move Resource Hub Item",
-      description: "Moves one document, file, link, or folder to a different folder or to the hub root.",
+      description: "Moves one document, file, link, or folder in a live Docs & Files hub. For template resources, use move_project_template_resource.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

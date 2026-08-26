@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.AddContributor do
     Definition.new!(
       name: "add_project_contributor",
       title: "Add Project Contributor",
-      description: "Adds a person as a project contributor with a role and access level.",
+      description: "Adds a person as a contributor on an active project with a role and access level. For blueprint staffing on a project template, use add_project_template_contributor.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

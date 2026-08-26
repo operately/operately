@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.RemoveContributor do
     Definition.new!(
       name: "remove_project_contributor",
       title: "Remove Project Contributor",
-      description: "Removes a contributor from a project.",
+      description: "Removes a contributor from an active project. For blueprint staffing on a project template, use remove_project_template_contributor.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :destructive,

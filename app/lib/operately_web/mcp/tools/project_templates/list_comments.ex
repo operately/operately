@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.ListComments do
     Definition.new!(
       name: "list_project_template_comments",
       title: "List Project Template Comments",
-      description: "Lists comments attached to one template discussion or resource.",
+      description: "Lists comments attached to one project template discussion or resource. Applies only to project templates / reusable blueprint content. For comments on live Operately resources, use create_comment, update_comment, or delete_comment.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,

@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateLink do
     Definition.new!(
       name: "update_project_template_link",
       title: "Update Project Template Link",
-      description: "Replaces a template link's name, URL, description, and provider type.",
+      description: "Replaces a project-template link's name, URL, description, and provider type. For live hub links, use update_link.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

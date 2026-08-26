@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateComment do
     Definition.new!(
       name: "update_project_template_comment",
       title: "Update Project Template Comment",
-      description: "Replaces a project-template comment with Markdown content.",
+      description: "Replaces a project-template comment with Markdown content. Applies only to project templates / reusable blueprint content. For comments on live Operately resources, use update_comment (see also create_comment and delete_comment).",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

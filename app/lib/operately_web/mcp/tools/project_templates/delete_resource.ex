@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.DeleteResource do
     Definition.new!(
       name: "delete_project_template_resource",
       title: "Delete Project Template Resource",
-      description: "Deletes a folder, document, file, or link node from a project template.",
+      description: "Deletes a folder, document, file, or link node from a project template Docs & Files tree. For live hub resources, use delete_document, delete_file, delete_link, or delete_folder.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :destructive,
