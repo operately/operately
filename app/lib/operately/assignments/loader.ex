@@ -7,6 +7,7 @@ defmodule Operately.Assignments.Loader do
   alias Operately.Comments.CommentThread
   alias Operately.Activities.Activity
   alias Operately.Assignments.Assignment
+  alias Operately.Assignments.KpiSchedule
 
   @due_soon_window_in_days 1
 
@@ -20,7 +21,8 @@ defmodule Operately.Assignments.Loader do
       Task.async(fn -> load_pending_goal_retrospective_acknowledgements(company, person) end),
       Task.async(fn -> load_pending_tasks(company, person) end),
       Task.async(fn -> load_pending_space_tasks(company, person) end),
-      Task.async(fn -> load_pending_milestones(company, person) end)
+      Task.async(fn -> load_pending_milestones(company, person) end),
+      Task.async(fn -> load_pending_kpi_updates(company, person) end)
     ]
     |> Task.await_many()
     |> List.flatten()
@@ -36,7 +38,8 @@ defmodule Operately.Assignments.Loader do
       Task.async(fn -> count_pending_goal_retrospective_acknowledgements(person) end),
       Task.async(fn -> count_pending_tasks(person) end),
       Task.async(fn -> count_pending_space_tasks(person) end),
-      Task.async(fn -> count_pending_milestones(person) end)
+      Task.async(fn -> count_pending_milestones(person) end),
+      Task.async(fn -> count_pending_kpi_updates(person) end)
     ]
     |> Task.await_many()
     |> Enum.sum()
@@ -119,6 +122,42 @@ defmodule Operately.Assignments.Loader do
       where: champion.id == ^person.id,
       where: is_nil(project.deleted_at) and is_nil(m.deleted_at),
       where: project.status == "active" and is_nil(project.closed_at)
+    )
+  end
+
+  #
+  # KPI updates (champion role)
+  #
+
+  defp load_pending_kpi_updates(company, person) do
+    from([kpi: k, space: s] in pending_kpi_updates_query(person),
+      preload: [space: s]
+    )
+    |> Repo.all()
+    |> Enum.map(&Assignment.build(&1, company))
+  end
+
+  defp count_pending_kpi_updates(person) do
+    from([kpi: k] in pending_kpi_updates_query(person), select: count(k.id))
+    |> Repo.one()
+    |> default_zero()
+  end
+
+  defp pending_kpi_updates_query(person) do
+    {weekly_start, weekly_end} = KpiSchedule.current_period(:weekly)
+    {monthly_start, monthly_end} = KpiSchedule.current_period(:monthly)
+
+    from(k in Operately.Kpis.Kpi,
+      as: :kpi,
+      join: space in assoc(k, :space),
+      as: :space,
+      left_join: entry in assoc(k, :entries),
+      on:
+        (k.cadence == :weekly and entry.period >= ^weekly_start and entry.period <= ^weekly_end) or
+          (k.cadence == :monthly and entry.period >= ^monthly_start and entry.period <= ^monthly_end),
+      where: k.champion_id == ^person.id,
+      where: is_nil(space.deleted_at),
+      where: is_nil(entry.id)
     )
   end
 

@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
   use OperatelyWeb.TurboCase
 
+  import Operately.KpisFixtures
+
   alias Operately.Repo
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
@@ -97,6 +99,17 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCountTest do
 
       assert {200, %{count: count}} = query(ctx.conn, [:people, :get_assignments_count], %{})
       assert count == 6
+    end
+
+    test "counts a pending KPI until its champion logs the current period", ctx do
+      kpi = kpi_fixture(ctx.person, space_id: ctx.space.id, champion_id: ctx.person.id, cadence: :monthly)
+
+      assert {200, %{count: 1}} = query(ctx.conn, [:people, :get_assignments_count], %{})
+
+      {period_start, _period_end} = Operately.Assignments.KpiSchedule.current_period(kpi.cadence)
+      kpi_entry_fixture(ctx.person, kpi, period: period_start)
+
+      assert {200, %{count: 0}} = query(ctx.conn, [:people, :get_assignments_count], %{})
     end
   end
 

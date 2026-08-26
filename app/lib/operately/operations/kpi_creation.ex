@@ -15,6 +15,7 @@ defmodule Operately.Operations.KpiCreation do
     |> insert_activity(creator)
     |> Repo.transaction()
     |> Repo.extract_result(:kpi)
+    |> broadcast_assignments_count()
   end
 
   defp insert_kpi(multi, attrs) do
@@ -52,4 +53,11 @@ defmodule Operately.Operations.KpiCreation do
       }
     end)
   end
+
+  defp broadcast_assignments_count({:ok, %Kpi{champion_id: champion_id}} = result) when not is_nil(champion_id) do
+    OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
+    result
+  end
+
+  defp broadcast_assignments_count(result), do: result
 end

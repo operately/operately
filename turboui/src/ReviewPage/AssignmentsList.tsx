@@ -2,7 +2,16 @@ import React from "react";
 
 import { BlackLink, DivLink } from "../Link";
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
-import { IconCalendar, IconFlag, IconGoalPlain, IconMessage, IconProjectPlain, IconSquare, IconTent } from "../icons";
+import {
+  IconCalendar,
+  IconChartColumn,
+  IconFlag,
+  IconGoalPlain,
+  IconMessage,
+  IconProjectPlain,
+  IconSquare,
+  IconTent,
+} from "../icons";
 import { createTestId } from "../TestableElement";
 
 import { ReviewPageV2 } from ".";
@@ -13,6 +22,7 @@ const TYPE_ICON: Record<ReviewPageV2.AssignmentType, typeof IconSquare> = {
   space_task: IconSquare,
   project_task: IconSquare,
   milestone: IconFlag,
+  kpi_update: IconChartColumn,
   project_retrospective: IconMessage,
   goal_retrospective: IconMessage,
 };

@@ -3083,6 +3083,7 @@ export type ReviewAssignmentTypes =
   | "space_task"
   | "project_task"
   | "milestone"
+  | "kpi_update"
   | "project_retrospective"
   | "goal_retrospective";
 

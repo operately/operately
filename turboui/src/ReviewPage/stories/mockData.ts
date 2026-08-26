@@ -117,6 +117,15 @@ const engagementGoal: ReviewPageV2.AssignmentOrigin = {
   dueDate: getDateOffset(9),
 };
 
+const productSpace: ReviewPageV2.AssignmentOrigin = {
+  id: "space-product",
+  name: "Product",
+  type: "space",
+  path: "/spaces/product",
+  spaceName: "Product",
+  dueDate: null,
+};
+
 const rawDueSoonAssignments = [
   // Overdue items
   {
@@ -162,6 +171,17 @@ const rawDueSoonAssignments = [
     actionLabel: "Submit goal check-in",
     path: "/goals/customer-satisfaction/updates/latest",
     origin: customerSatisfaction,
+    taskStatus: null,
+  },
+  {
+    resourceId: "kpi-weekly-signups",
+    name: "Weekly sign-ups",
+    due: getDateOffset(-2),
+    type: "kpi_update",
+    role: "owner",
+    actionLabel: "Log update for Weekly sign-ups",
+    path: "/spaces/product/kpis/weekly-signups",
+    origin: productSpace,
     taskStatus: null,
   },
   // Due soon

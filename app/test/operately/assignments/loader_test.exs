@@ -1,10 +1,13 @@
 defmodule Operately.Assignments.LoaderTest do
   use Operately.DataCase
 
+  import Operately.KpisFixtures
+
   alias Operately.Assignments.Loader
   alias OperatelyWeb.Paths
   alias Operately.Repo
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.Assignments.KpiSchedule
 
   setup ctx do
     ctx
@@ -413,6 +416,56 @@ defmodule Operately.Assignments.LoaderTest do
 
       assignments = Loader.load(ctx.champion, ctx.company)
       refute Enum.any?(assignments, &(&1.type == :goal_update and &1.role == :owner))
+    end
+  end
+
+  describe "KPI updates" do
+    test "returns a pending KPI assignment for its champion", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, cadence: :weekly)
+      {due_date, _period_end} = KpiSchedule.current_period(kpi.cadence)
+
+      [assignment] = Loader.load(ctx.champion, ctx.company)
+
+      assert assignment.resource_id == Paths.kpi_id(kpi)
+      assert assignment.type == :kpi_update
+      assert assignment.role == :owner
+      assert assignment.action_label == "Log update for #{kpi.name}"
+      assert assignment.due == due_date
+      assert assignment.path == Paths.space_kpi_path(ctx.company, ctx.space, kpi)
+      assert assignment.origin.type == :space
+      assert assignment.origin.name == ctx.space.name
+    end
+
+    test "does not return a KPI after an entry is logged in its current cadence period", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, cadence: :monthly)
+      {period_start, _due_date} = KpiSchedule.current_period(kpi.cadence)
+      kpi_entry_fixture(ctx.champion, kpi, period: period_start)
+
+      assert Loader.load(ctx.champion, ctx.company) == []
+    end
+
+    test "an entry from a previous cadence period does not complete the current assignment", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, cadence: :weekly)
+      {period_start, _due_date} = KpiSchedule.current_period(kpi.cadence)
+      kpi_entry_fixture(ctx.champion, kpi, period: Date.add(period_start, -1))
+
+      assert [%{type: :kpi_update, resource_id: resource_id}] = Loader.load(ctx.champion, ctx.company)
+      assert resource_id == Paths.kpi_id(kpi)
+    end
+
+    test "does not return KPIs for another person or from a deleted space", ctx do
+      kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id)
+
+      assert Loader.load(ctx.reviewer, ctx.company) == []
+
+      Repo.soft_delete(ctx.space)
+      assert Loader.load(ctx.champion, ctx.company) == []
+    end
+
+    test "counts a pending KPI when its cadence deadline is due soon", ctx do
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, champion_id: ctx.champion.id, cadence: :weekly)
+
+      assert Loader.count(ctx.champion) == 1
     end
   end
 
