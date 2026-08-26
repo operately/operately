@@ -263,6 +263,10 @@
         "past_due",
         "over_limit_after_downgrade"
       ],
+      "milestone_open_tasks_resolution_action": [
+        "move_to_no_milestone",
+        "set_status"
+      ],
       "review_assignment_due_status": [
         "overdue",
         "due_today",
@@ -15758,6 +15762,32 @@
           }
         ]
       },
+      "milestone_open_tasks_resolution_input": {
+        "fields": [
+          {
+            "default": null,
+            "name": "action",
+            "type": {
+              "name": "milestone_open_tasks_resolution_action",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "status_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          }
+        ]
+      },
       "goal": {
         "fields": [
           {
@@ -22752,6 +22782,25 @@
       }
     }
   },
+  "namespace_descriptions": {
+    "comments": "List, create and manage comments on resources",
+    "companies": "Get, list, update and manage company settings, members, and permissions",
+    "documents": "",
+    "files": "",
+    "goals": "Get, list, create and manage goals",
+    "kpis": "Get, list, create and manage Space KPIs",
+    "links": "",
+    "notifications": "List and manage notifications and subscriptions",
+    "people": "Get, list, update and manage user profiles and account settings",
+    "project_templates": "Get, list, create and manage project templates",
+    "projects": "Get, list, create and manage projects",
+    "reactions": "Add or remove emoji reactions to content",
+    "resource_hubs": "",
+    "spaces": "Get, list, create and manage spaces",
+    "tasks": "Get, list, create and manage tasks across projects and spaces"
+  },
+  "api_base_path": "/api/external/v1",
+  "endpoint_count": 252,
   "endpoints": [
     {
       "name": "create",
@@ -22771,8 +22820,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "comments",
       "inputs": [
         {
           "default": null,
@@ -22809,6 +22856,8 @@
         }
       ],
       "full_name": "comments/create",
+      "method": "POST",
+      "namespace": "comments",
       "docstring": "Creates a new comment."
     },
     {
@@ -22829,8 +22878,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "comments",
       "inputs": [
         {
           "default": null,
@@ -22856,6 +22903,8 @@
         }
       ],
       "full_name": "comments/delete",
+      "method": "POST",
+      "namespace": "comments",
       "docstring": "Deletes a comment."
     },
     {
@@ -22879,8 +22928,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "comments",
       "inputs": [
         {
           "default": null,
@@ -22906,6 +22953,8 @@
         }
       ],
       "full_name": "comments/list",
+      "method": "GET",
+      "namespace": "comments",
       "docstring": "Lists comments for a resource."
     },
     {
@@ -22926,8 +22975,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "comments",
       "inputs": [
         {
           "default": null,
@@ -22964,6 +23011,8 @@
         }
       ],
       "full_name": "comments/update",
+      "method": "POST",
+      "namespace": "comments",
       "docstring": "Updates a comment."
     },
     {
@@ -22984,8 +23033,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23000,6 +23047,8 @@
         }
       ],
       "full_name": "companies/convert_member_to_guest",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Converts a company member to a guest."
     },
     {
@@ -23008,8 +23057,6 @@
       "path": "/api/external/v1/companies/create_admins",
       "handler": "OperatelyWeb.Api.Companies.CreateAdmins",
       "outputs": [],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23027,6 +23074,8 @@
         }
       ],
       "full_name": "companies/create_admins",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Creates admins for a company."
     },
     {
@@ -23069,8 +23118,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23107,6 +23154,8 @@
         }
       ],
       "full_name": "companies/create_member",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Creates a new company member."
     },
     {
@@ -23127,8 +23176,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23143,6 +23190,8 @@
         }
       ],
       "full_name": "companies/delete_activity",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Deletes an activity from the company feed."
     },
     {
@@ -23163,8 +23212,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23179,6 +23226,8 @@
         }
       ],
       "full_name": "companies/delete_admin",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Removes an admin from a company."
     },
     {
@@ -23199,8 +23248,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23215,6 +23262,8 @@
         }
       ],
       "full_name": "companies/delete_member",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Removes a member from a company."
     },
     {
@@ -23223,8 +23272,6 @@
       "path": "/api/external/v1/companies/delete_owner",
       "handler": "OperatelyWeb.Api.Companies.DeleteOwner",
       "outputs": [],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23239,6 +23286,8 @@
         }
       ],
       "full_name": "companies/delete_owner",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Removes an owner from a company."
     },
     {
@@ -23259,8 +23308,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23286,6 +23333,8 @@
         }
       ],
       "full_name": "companies/delete_trusted_email_domain",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Deletes a trusted email domain from a company."
     },
     {
@@ -23306,8 +23355,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23377,6 +23424,8 @@
         }
       ],
       "full_name": "companies/get",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Retrieves a company by ID with optional related data."
     },
     {
@@ -23397,8 +23446,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23468,6 +23515,8 @@
         }
       ],
       "full_name": "companies/get_activity",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Retrieves an activity by ID with optional related data."
     },
     {
@@ -23491,8 +23540,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23595,6 +23642,8 @@
         }
       ],
       "full_name": "companies/get_flat_work_map",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Retrieves the company's work map without hierarchy."
     },
     {
@@ -23618,8 +23667,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23711,6 +23758,8 @@
         }
       ],
       "full_name": "companies/get_work_map",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Retrieves the work map for a company."
     },
     {
@@ -23874,8 +23923,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23890,6 +23937,8 @@
         }
       ],
       "full_name": "companies/global_search",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Preserves the global-search route while delegating to quick search."
     },
     {
@@ -23910,8 +23959,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -23940,6 +23987,8 @@
         }
       ],
       "full_name": "companies/grant_resource_access",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Grants resource access to a person."
     },
     {
@@ -23982,8 +24031,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24020,6 +24067,8 @@
         }
       ],
       "full_name": "companies/invite_guest",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Invites a guest to a company."
     },
     {
@@ -24043,8 +24092,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24081,6 +24128,8 @@
         }
       ],
       "full_name": "companies/list",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Lists all companies for the current account."
     },
     {
@@ -24104,8 +24153,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24145,6 +24192,8 @@
         }
       ],
       "full_name": "companies/list_activities",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Lists activities for a company."
     },
     {
@@ -24308,8 +24357,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24324,6 +24371,8 @@
         }
       ],
       "full_name": "companies/quick_search",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Searches visible company resources by their canonical title or name."
     },
     {
@@ -24332,8 +24381,6 @@
       "path": "/api/external/v1/companies/restore_member",
       "handler": "OperatelyWeb.Api.Companies.RestoreMember",
       "outputs": [],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24348,6 +24395,8 @@
         }
       ],
       "full_name": "companies/restore_member",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Restores a suspended company member."
     },
     {
@@ -24371,8 +24420,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24437,6 +24484,8 @@
         }
       ],
       "full_name": "companies/search",
+      "method": "GET",
+      "namespace": "companies",
       "docstring": "Returns relevance-ranked full-text results visible to the current person."
     },
     {
@@ -24457,8 +24506,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24473,6 +24520,8 @@
         }
       ],
       "full_name": "companies/update",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Updates a company's information."
     },
     {
@@ -24493,8 +24542,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "companies",
       "inputs": [
         {
           "default": null,
@@ -24512,6 +24559,8 @@
         }
       ],
       "full_name": "companies/update_members_permissions",
+      "method": "POST",
+      "namespace": "companies",
       "docstring": "Updates permissions for multiple company members."
     },
     {
@@ -24532,8 +24581,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -24570,6 +24617,8 @@
         }
       ],
       "full_name": "documents/copy_folder",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Copies a folder within Docs & Files."
     },
     {
@@ -24590,8 +24639,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -24708,6 +24755,8 @@
         }
       ],
       "full_name": "documents/create_document",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Creates a new document in a Docs & Files hub."
     },
     {
@@ -24728,8 +24777,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -24788,6 +24835,8 @@
         }
       ],
       "full_name": "documents/create_folder",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Creates a new folder in a Docs & Files hub."
     },
     {
@@ -24808,8 +24857,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -24926,6 +24973,8 @@
         }
       ],
       "full_name": "documents/create_link",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Creates a new link in a Docs & Files hub."
     },
     {
@@ -24946,8 +24995,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -24962,6 +25009,8 @@
         }
       ],
       "full_name": "documents/delete_document",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Deletes a document."
     },
     {
@@ -24982,8 +25031,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -24998,6 +25045,8 @@
         }
       ],
       "full_name": "documents/delete_file",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Deletes a file."
     },
     {
@@ -25018,8 +25067,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25034,6 +25081,8 @@
         }
       ],
       "full_name": "documents/delete_folder",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Deletes a folder."
     },
     {
@@ -25054,8 +25103,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25070,6 +25117,8 @@
         }
       ],
       "full_name": "documents/delete_link",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Deletes a link."
     },
     {
@@ -25090,8 +25139,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25249,6 +25296,8 @@
         }
       ],
       "full_name": "documents/get_document",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": "Retrieves a document by ID with optional related data."
     },
     {
@@ -25269,8 +25318,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25296,6 +25343,8 @@
         }
       ],
       "full_name": "documents/get_document_version",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": null
     },
     {
@@ -25316,8 +25365,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25453,6 +25500,8 @@
         }
       ],
       "full_name": "documents/get_file",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": "Retrieves a file by ID with optional related data."
     },
     {
@@ -25473,8 +25522,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25577,6 +25624,8 @@
         }
       ],
       "full_name": "documents/get_folder",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": "Retrieves a folder by ID with optional related data."
     },
     {
@@ -25597,8 +25646,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25745,6 +25792,8 @@
         }
       ],
       "full_name": "documents/get_link",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": "Retrieves a link by ID with optional related data."
     },
     {
@@ -25782,8 +25831,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25853,6 +25900,8 @@
         }
       ],
       "full_name": "documents/list_contents",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": "Lists contents in a Docs & Files hub or folder."
     },
     {
@@ -25876,8 +25925,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25892,6 +25939,8 @@
         }
       ],
       "full_name": "documents/list_document_versions",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": null
     },
     {
@@ -25912,8 +25961,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -25975,6 +26022,8 @@
         }
       ],
       "full_name": "documents/publish_document",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Publishes a draft document."
     },
     {
@@ -25995,8 +26044,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26022,6 +26069,8 @@
         }
       ],
       "full_name": "documents/rename_folder",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Renames a folder."
     },
     {
@@ -26053,8 +26102,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26091,6 +26138,8 @@
         }
       ],
       "full_name": "documents/restore_document_version",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": null
     },
     {
@@ -26114,8 +26163,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26163,6 +26210,8 @@
         }
       ],
       "full_name": "documents/search",
+      "method": "GET",
+      "namespace": "documents",
       "docstring": "Searches Docs & Files by its Space, Project, or Goal scope."
     },
     {
@@ -26183,8 +26232,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26257,6 +26304,8 @@
         }
       ],
       "full_name": "documents/update_document",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Updates a document."
     },
     {
@@ -26277,8 +26326,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26315,6 +26362,8 @@
         }
       ],
       "full_name": "documents/update_file",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Updates a file."
     },
     {
@@ -26335,8 +26384,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26395,6 +26442,8 @@
         }
       ],
       "full_name": "documents/update_link",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Updates a link."
     },
     {
@@ -26415,8 +26464,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "documents",
       "inputs": [
         {
           "default": null,
@@ -26453,6 +26500,8 @@
         }
       ],
       "full_name": "documents/update_parent_folder",
+      "method": "POST",
+      "namespace": "documents",
       "docstring": "Updates the parent folder of a Docs & Files item."
     },
     {
@@ -26473,8 +26522,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26489,6 +26536,8 @@
         }
       ],
       "full_name": "goals/acknowledge_check_in",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Acknowledges a goal check-in."
     },
     {
@@ -26509,8 +26558,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26525,6 +26572,8 @@
         }
       ],
       "full_name": "goals/acknowledge_retrospective",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Acknowledges a goal retrospective by goal ID."
     },
     {
@@ -26545,8 +26594,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26572,6 +26619,8 @@
         }
       ],
       "full_name": "goals/change_parent",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Changes the parent goal of a goal."
     },
     {
@@ -26592,8 +26641,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26666,6 +26713,8 @@
         }
       ],
       "full_name": "goals/close",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Closes a goal with success status and retrospective."
     },
     {
@@ -26686,8 +26735,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26702,6 +26749,8 @@
         }
       ],
       "full_name": "goals/count_children",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Counts discussions, check-ins, and docs & files for a goal."
     },
     {
@@ -26722,8 +26771,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26851,6 +26898,8 @@
         }
       ],
       "full_name": "goals/create",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Creates a new goal in a space."
     },
     {
@@ -26871,8 +26920,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26901,6 +26948,8 @@
         }
       ],
       "full_name": "goals/create_access_members",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Gives access to a goal to specified members."
     },
     {
@@ -26932,8 +26981,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -26959,6 +27006,8 @@
         }
       ],
       "full_name": "goals/create_check",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Creates a checklist item (check) for a goal."
     },
     {
@@ -26979,8 +27028,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27100,6 +27147,8 @@
         }
       ],
       "full_name": "goals/create_check_in",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Creates a new check-in for a goal."
     },
     {
@@ -27131,8 +27180,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27194,6 +27241,8 @@
         }
       ],
       "full_name": "goals/create_discussion",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Creates a new discussion for a goal."
     },
     {
@@ -27225,8 +27274,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27285,6 +27332,8 @@
         }
       ],
       "full_name": "goals/create_target",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Creates a target for a goal."
     },
     {
@@ -27305,8 +27354,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27321,6 +27368,8 @@
         }
       ],
       "full_name": "goals/delete",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Deletes a goal permanently."
     },
     {
@@ -27341,8 +27390,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27368,6 +27415,8 @@
         }
       ],
       "full_name": "goals/delete_access_member",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Removes access to a goal from a member."
     },
     {
@@ -27388,8 +27437,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27415,6 +27462,8 @@
         }
       ],
       "full_name": "goals/delete_check",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Deletes a checklist item from a goal."
     },
     {
@@ -27435,8 +27484,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27451,6 +27498,8 @@
         }
       ],
       "full_name": "goals/delete_check_in",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Deletes a goal check-in."
     },
     {
@@ -27471,8 +27520,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27498,6 +27545,8 @@
         }
       ],
       "full_name": "goals/delete_target",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Deletes a target from a goal."
     },
     {
@@ -27529,8 +27578,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27721,6 +27768,8 @@
         }
       ],
       "full_name": "goals/get",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Retrieves a goal by ID with optional includes for related data."
     },
     {
@@ -27741,8 +27790,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -27911,6 +27958,8 @@
         }
       ],
       "full_name": "goals/get_check_in",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Retrieves a goal check-in by ID with optional includes for related data."
     },
     {
@@ -27934,8 +27983,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28005,6 +28052,8 @@
         }
       ],
       "full_name": "goals/list",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Lists goals with optional filtering by space and includes for related data."
     },
     {
@@ -28028,8 +28077,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28044,6 +28091,8 @@
         }
       ],
       "full_name": "goals/list_access_members",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Lists people with access to a goal."
     },
     {
@@ -28067,8 +28116,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28083,6 +28130,8 @@
         }
       ],
       "full_name": "goals/list_check_ins",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Lists check-ins for a goal."
     },
     {
@@ -28106,8 +28155,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28122,6 +28169,8 @@
         }
       ],
       "full_name": "goals/list_contributors",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Lists a goal's contributors."
     },
     {
@@ -28145,8 +28194,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28161,6 +28208,8 @@
         }
       ],
       "full_name": "goals/list_discussions",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Lists discussions for a goal."
     },
     {
@@ -28181,8 +28230,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28233,6 +28280,8 @@
         }
       ],
       "full_name": "goals/reopen",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Reopens a closed goal."
     },
     {
@@ -28256,8 +28305,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28283,6 +28330,8 @@
         }
       ],
       "full_name": "goals/search_parent_goal",
+      "method": "GET",
+      "namespace": "goals",
       "docstring": "Searches for potential parent goals for a given goal."
     },
     {
@@ -28303,8 +28352,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28330,6 +28377,8 @@
         }
       ],
       "full_name": "goals/toggle_check",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Toggles the completion status of a checklist item in a goal."
     },
     {
@@ -28350,8 +28399,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28377,6 +28424,8 @@
         }
       ],
       "full_name": "goals/update_access_levels",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the access levels for a goal."
     },
     {
@@ -28397,8 +28446,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28435,6 +28482,8 @@
         }
       ],
       "full_name": "goals/update_access_member",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the access level of a member for a goal."
     },
     {
@@ -28455,8 +28504,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28482,6 +28529,8 @@
         }
       ],
       "full_name": "goals/update_champion",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the champion of a goal."
     },
     {
@@ -28502,8 +28551,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28540,6 +28587,8 @@
         }
       ],
       "full_name": "goals/update_check",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the name of a checklist item in a goal."
     },
     {
@@ -28560,8 +28609,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28656,6 +28703,8 @@
         }
       ],
       "full_name": "goals/update_check_in",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates a goal check-in."
     },
     {
@@ -28676,8 +28725,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28714,6 +28761,8 @@
         }
       ],
       "full_name": "goals/update_check_index",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the order/index of a checklist item within a goal."
     },
     {
@@ -28734,8 +28783,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28761,6 +28808,8 @@
         }
       ],
       "full_name": "goals/update_description",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the description of a goal."
     },
     {
@@ -28769,8 +28818,6 @@
       "path": "/api/external/v1/goals/update_discussion",
       "handler": "OperatelyWeb.Api.Goals.UpdateDiscussion",
       "outputs": [],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28807,6 +28854,8 @@
         }
       ],
       "full_name": "goals/update_discussion",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates a goal discussion."
     },
     {
@@ -28827,8 +28876,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28854,6 +28901,8 @@
         }
       ],
       "full_name": "goals/update_due_date",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the due date of a goal."
     },
     {
@@ -28874,8 +28923,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28901,6 +28948,8 @@
         }
       ],
       "full_name": "goals/update_name",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the name of a goal."
     },
     {
@@ -28921,8 +28970,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28948,6 +28995,8 @@
         }
       ],
       "full_name": "goals/update_parent_goal",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the parent goal of a goal."
     },
     {
@@ -28968,8 +29017,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -28995,6 +29042,8 @@
         }
       ],
       "full_name": "goals/update_reviewer",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the reviewer of a goal."
     },
     {
@@ -29015,8 +29064,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -29042,6 +29089,8 @@
         }
       ],
       "full_name": "goals/update_space",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Moves a goal to a different space."
     },
     {
@@ -29062,8 +29111,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -29089,6 +29136,8 @@
         }
       ],
       "full_name": "goals/update_start_date",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the start date of a goal."
     },
     {
@@ -29109,8 +29158,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -29180,6 +29227,8 @@
         }
       ],
       "full_name": "goals/update_target",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates properties of a target for a goal."
     },
     {
@@ -29200,8 +29249,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -29238,6 +29285,8 @@
         }
       ],
       "full_name": "goals/update_target_index",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the order/index of a target within a goal."
     },
     {
@@ -29258,8 +29307,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -29296,6 +29343,8 @@
         }
       ],
       "full_name": "goals/update_target_value",
+      "method": "POST",
+      "namespace": "goals",
       "docstring": "Updates the current value of a target for a goal."
     },
     {
@@ -29316,8 +29365,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29354,6 +29401,8 @@
         }
       ],
       "full_name": "kpis/add_kpi_annotation",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Marks a date on a KPI chart with a short event title."
     },
     {
@@ -29374,8 +29423,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29445,6 +29492,8 @@
         }
       ],
       "full_name": "kpis/create_kpi",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Creates a KPI in a space. Any space member with edit access may create one."
     },
     {
@@ -29465,8 +29514,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29481,6 +29528,8 @@
         }
       ],
       "full_name": "kpis/delete_kpi",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Deletes a KPI. Any space member with edit access may delete one."
     },
     {
@@ -29501,8 +29550,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29517,6 +29564,8 @@
         }
       ],
       "full_name": "kpis/delete_kpi_annotation",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Removes a KPI chart annotation."
     },
     {
@@ -29537,8 +29586,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29608,6 +29655,8 @@
         }
       ],
       "full_name": "kpis/edit_kpi",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Edits a KPI. Any space member with edit access may edit one."
     },
     {
@@ -29628,8 +29677,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29666,6 +29713,8 @@
         }
       ],
       "full_name": "kpis/edit_kpi_annotation",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Edits a KPI chart annotation's date or title."
     },
     {
@@ -29686,8 +29735,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29702,6 +29749,8 @@
         }
       ],
       "full_name": "kpis/get_kpi",
+      "method": "GET",
+      "namespace": "kpis",
       "docstring": "Retrieves a KPI together with its entries (history) for charting."
     },
     {
@@ -29725,8 +29774,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29741,6 +29788,8 @@
         }
       ],
       "full_name": "kpis/list_kpis",
+      "method": "GET",
+      "namespace": "kpis",
       "docstring": "Lists the KPIs of a space."
     },
     {
@@ -29761,8 +29810,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "kpis",
       "inputs": [
         {
           "default": null,
@@ -29799,6 +29846,8 @@
         }
       ],
       "full_name": "kpis/log_kpi_entry",
+      "method": "POST",
+      "namespace": "kpis",
       "docstring": "Logs a value for a KPI in a given period. Any space member with edit access may log."
     },
     {
@@ -29819,10 +29868,10 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "notifications",
       "inputs": [],
       "full_name": "notifications/get_unread_count",
+      "method": "GET",
+      "namespace": "notifications",
       "docstring": "Returns the count of unread notifications for the current user."
     },
     {
@@ -29843,8 +29892,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -29870,6 +29917,8 @@
         }
       ],
       "full_name": "notifications/is_subscribed",
+      "method": "GET",
+      "namespace": "notifications",
       "docstring": "Checks if the current user is subscribed to notifications for a specific resource."
     },
     {
@@ -29893,8 +29942,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -29920,6 +29967,8 @@
         }
       ],
       "full_name": "notifications/list",
+      "method": "GET",
+      "namespace": "notifications",
       "docstring": "Lists notifications for the current user."
     },
     {
@@ -29928,10 +29977,10 @@
       "path": "/api/external/v1/notifications/mark_all_as_read",
       "handler": "OperatelyWeb.Api.Notifications.MarkAllAsRead",
       "outputs": [],
-      "method": "POST",
-      "namespace": "notifications",
       "inputs": [],
       "full_name": "notifications/mark_all_as_read",
+      "method": "POST",
+      "namespace": "notifications",
       "docstring": "Marks all notifications as read for the current user."
     },
     {
@@ -29940,8 +29989,6 @@
       "path": "/api/external/v1/notifications/mark_as_read",
       "handler": "OperatelyWeb.Api.Notifications.MarkAsRead",
       "outputs": [],
-      "method": "POST",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -29956,6 +30003,8 @@
         }
       ],
       "full_name": "notifications/mark_as_read",
+      "method": "POST",
+      "namespace": "notifications",
       "docstring": "Marks a notification as read for the current user."
     },
     {
@@ -29964,8 +30013,6 @@
       "path": "/api/external/v1/notifications/mark_many_as_read",
       "handler": "OperatelyWeb.Api.Notifications.MarkManyAsRead",
       "outputs": [],
-      "method": "POST",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -29983,6 +30030,8 @@
         }
       ],
       "full_name": "notifications/mark_many_as_read",
+      "method": "POST",
+      "namespace": "notifications",
       "docstring": "Marks multiple notifications as read for the current user."
     },
     {
@@ -29991,8 +30040,6 @@
       "path": "/api/external/v1/notifications/subscribe",
       "handler": "OperatelyWeb.Api.Notifications.Subscribe",
       "outputs": [],
-      "method": "POST",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -30018,6 +30065,8 @@
         }
       ],
       "full_name": "notifications/subscribe",
+      "method": "POST",
+      "namespace": "notifications",
       "docstring": "Subscribes the current user to notifications for a specific resource."
     },
     {
@@ -30026,8 +30075,6 @@
       "path": "/api/external/v1/notifications/unsubscribe",
       "handler": "OperatelyWeb.Api.Notifications.Unsubscribe",
       "outputs": [],
-      "method": "POST",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -30042,6 +30089,8 @@
         }
       ],
       "full_name": "notifications/unsubscribe",
+      "method": "POST",
+      "namespace": "notifications",
       "docstring": "Unsubscribes the current user from notifications for a specific subscription list."
     },
     {
@@ -30050,8 +30099,6 @@
       "path": "/api/external/v1/notifications/update_subscriptions_list",
       "handler": "OperatelyWeb.Api.Notifications.UpdateSubscriptionsList",
       "outputs": [],
-      "method": "POST",
-      "namespace": "notifications",
       "inputs": [
         {
           "default": null,
@@ -30102,6 +30149,8 @@
         }
       ],
       "full_name": "notifications/update_subscriptions_list",
+      "method": "POST",
+      "namespace": "notifications",
       "docstring": "Updates the subscriptions list for a resource."
     },
     {
@@ -30122,8 +30171,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30193,6 +30240,8 @@
         }
       ],
       "full_name": "people/get",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Retrieves a person by ID with optional related data."
     },
     {
@@ -30213,10 +30262,10 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [],
       "full_name": "people/get_account",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Retrieves the current account information."
     },
     {
@@ -30237,10 +30286,10 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [],
       "full_name": "people/get_assignments_count",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Gets the count of assignments for the current user."
     },
     {
@@ -30264,8 +30313,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30291,6 +30338,8 @@
         }
       ],
       "full_name": "people/get_binded",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Gets people bound to a resource."
     },
     {
@@ -30311,8 +30360,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30327,6 +30374,8 @@
         }
       ],
       "full_name": "people/get_me",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Retrieves the current user's profile information."
     },
     {
@@ -30350,8 +30399,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30421,6 +30468,8 @@
         }
       ],
       "full_name": "people/list",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Lists people in the company."
     },
     {
@@ -30472,10 +30521,10 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [],
       "full_name": "people/list_assignments",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Lists assignments for the current user."
     },
     {
@@ -30499,8 +30548,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30526,6 +30573,8 @@
         }
       ],
       "full_name": "people/list_possible_managers",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Lists possible managers for a person."
     },
     {
@@ -30549,8 +30598,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "people",
       "inputs": [
         {
           "default": "",
@@ -30601,6 +30648,8 @@
         }
       ],
       "full_name": "people/search",
+      "method": "GET",
+      "namespace": "people",
       "docstring": "Searches for people."
     },
     {
@@ -30621,8 +30670,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30769,6 +30816,8 @@
         }
       ],
       "full_name": "people/update",
+      "method": "POST",
+      "namespace": "people",
       "docstring": "Updates a person's profile information."
     },
     {
@@ -30789,8 +30838,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "people",
       "inputs": [
         {
           "default": null,
@@ -30805,6 +30852,8 @@
         }
       ],
       "full_name": "people/update_theme",
+      "method": "POST",
+      "namespace": "people",
       "docstring": "Updates the theme preference for the current account."
     },
     {
@@ -30825,8 +30874,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -30841,6 +30888,8 @@
         }
       ],
       "full_name": "project_templates/archive",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -30861,8 +30910,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -30910,6 +30957,8 @@
         }
       ],
       "full_name": "project_templates/create",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -30930,8 +30979,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -30979,6 +31026,8 @@
         }
       ],
       "full_name": "project_templates/create_comment",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -30999,8 +31048,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31037,6 +31084,8 @@
         }
       ],
       "full_name": "project_templates/create_discussion",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31057,8 +31106,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31106,6 +31153,8 @@
         }
       ],
       "full_name": "project_templates/create_document",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31126,8 +31175,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31164,6 +31211,8 @@
         }
       ],
       "full_name": "project_templates/create_folder",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31198,8 +31247,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31280,6 +31327,8 @@
         }
       ],
       "full_name": "project_templates/create_from_project",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31300,8 +31349,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31371,6 +31418,8 @@
         }
       ],
       "full_name": "project_templates/create_link",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31391,8 +31440,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31440,6 +31487,8 @@
         }
       ],
       "full_name": "project_templates/create_milestone",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31460,8 +31509,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31520,6 +31567,8 @@
         }
       ],
       "full_name": "project_templates/create_person",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31540,8 +31589,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31633,6 +31680,8 @@
         }
       ],
       "full_name": "project_templates/create_project",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31653,8 +31702,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31774,6 +31821,8 @@
         }
       ],
       "full_name": "project_templates/create_task",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31794,8 +31843,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31810,6 +31857,8 @@
         }
       ],
       "full_name": "project_templates/delete",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31830,8 +31879,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31857,6 +31904,8 @@
         }
       ],
       "full_name": "project_templates/delete_comment",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31877,8 +31926,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31904,6 +31951,8 @@
         }
       ],
       "full_name": "project_templates/delete_milestone",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31924,8 +31973,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31951,6 +31998,8 @@
         }
       ],
       "full_name": "project_templates/delete_person",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -31971,8 +32020,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -31998,6 +32045,8 @@
         }
       ],
       "full_name": "project_templates/delete_resource",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32018,8 +32067,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32045,6 +32092,8 @@
         }
       ],
       "full_name": "project_templates/delete_task",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32065,8 +32114,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32092,6 +32139,8 @@
         }
       ],
       "full_name": "project_templates/duplicate",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32112,8 +32161,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32128,6 +32175,8 @@
         }
       ],
       "full_name": "project_templates/get",
+      "method": "GET",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32148,8 +32197,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32175,6 +32222,8 @@
         }
       ],
       "full_name": "project_templates/get_discussion",
+      "method": "GET",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32198,8 +32247,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32236,6 +32283,8 @@
         }
       ],
       "full_name": "project_templates/list",
+      "method": "GET",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32259,8 +32308,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32297,6 +32344,8 @@
         }
       ],
       "full_name": "project_templates/list_comments",
+      "method": "GET",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32317,8 +32366,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32355,6 +32402,8 @@
         }
       ],
       "full_name": "project_templates/move_resource",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32375,8 +32424,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32391,6 +32438,8 @@
         }
       ],
       "full_name": "project_templates/restore",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32411,8 +32460,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32513,6 +32560,8 @@
         }
       ],
       "full_name": "project_templates/update",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32533,8 +32582,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32571,6 +32618,8 @@
         }
       ],
       "full_name": "project_templates/update_comment",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32591,8 +32640,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32640,6 +32687,8 @@
         }
       ],
       "full_name": "project_templates/update_discussion",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32660,8 +32709,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32709,6 +32756,8 @@
         }
       ],
       "full_name": "project_templates/update_document",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32729,8 +32778,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32778,6 +32825,8 @@
         }
       ],
       "full_name": "project_templates/update_file",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32798,8 +32847,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32836,6 +32883,8 @@
         }
       ],
       "full_name": "project_templates/update_folder",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32856,8 +32905,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -32927,6 +32974,8 @@
         }
       ],
       "full_name": "project_templates/update_link",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -32947,8 +32996,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -33032,6 +33079,8 @@
         }
       ],
       "full_name": "project_templates/update_milestone",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -33052,8 +33101,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -33101,6 +33148,8 @@
         }
       ],
       "full_name": "project_templates/update_milestone_and_ordering",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -33121,8 +33170,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -33192,6 +33239,8 @@
         }
       ],
       "full_name": "project_templates/update_person",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -33212,8 +33261,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -33330,6 +33377,8 @@
         }
       ],
       "full_name": "project_templates/update_task",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -33353,8 +33402,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "project_templates",
       "inputs": [
         {
           "default": null,
@@ -33394,6 +33441,8 @@
         }
       ],
       "full_name": "project_templates/update_task_assignees",
+      "method": "POST",
+      "namespace": "project_templates",
       "docstring": null
     },
     {
@@ -33414,8 +33463,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33430,6 +33477,8 @@
         }
       ],
       "full_name": "projects/acknowledge_check_in",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Acknowledges a project check-in."
     },
     {
@@ -33450,8 +33499,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33466,6 +33513,8 @@
         }
       ],
       "full_name": "projects/acknowledge_retrospective",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Acknowledges a project retrospective by project ID."
     },
     {
@@ -33486,8 +33535,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33549,6 +33596,8 @@
         }
       ],
       "full_name": "projects/close",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Closes a project with retrospective and success status."
     },
     {
@@ -33569,8 +33618,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33607,6 +33654,8 @@
         }
       ],
       "full_name": "projects/count_children",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Counts discussions, tasks, check-ins, and docs & files for a project."
     },
     {
@@ -33627,8 +33676,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33731,6 +33778,8 @@
         }
       ],
       "full_name": "projects/create",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Creates a new project in a space."
     },
     {
@@ -33751,8 +33800,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33836,6 +33883,8 @@
         }
       ],
       "full_name": "projects/create_check_in",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Creates a new project check-in."
     },
     {
@@ -33856,8 +33905,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33916,6 +33963,8 @@
         }
       ],
       "full_name": "projects/create_contributor",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Adds a contributor to a project."
     },
     {
@@ -33936,8 +33985,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -33966,6 +34013,8 @@
         }
       ],
       "full_name": "projects/create_contributors",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Adds multiple contributors to a project."
     },
     {
@@ -33986,8 +34035,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34049,6 +34096,8 @@
         }
       ],
       "full_name": "projects/create_discussion",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Creates a new project discussion."
     },
     {
@@ -34069,8 +34118,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34107,6 +34154,8 @@
         }
       ],
       "full_name": "projects/create_milestone",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Creates a milestone for a project."
     },
     {
@@ -34127,8 +34176,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34162,9 +34209,22 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "open_tasks_resolution",
+          "type": {
+            "name": "milestone_open_tasks_resolution_input",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "full_name": "projects/create_milestone_comment",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Creates a comment on a project milestone with an optional action (none, reopen, complete)."
     },
     {
@@ -34185,8 +34245,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34201,6 +34259,8 @@
         }
       ],
       "full_name": "projects/delete",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Deletes a project."
     },
     {
@@ -34221,8 +34281,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34237,6 +34295,8 @@
         }
       ],
       "full_name": "projects/delete_check_in",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Deletes a project check-in."
     },
     {
@@ -34257,8 +34317,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34273,6 +34331,8 @@
         }
       ],
       "full_name": "projects/delete_contributor",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Removes a contributor from a project."
     },
     {
@@ -34293,8 +34353,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34309,6 +34367,8 @@
         }
       ],
       "full_name": "projects/delete_milestone",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Deletes a project milestone."
     },
     {
@@ -34340,8 +34400,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34543,6 +34601,8 @@
         }
       ],
       "full_name": "projects/get",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Retrieves a project by ID with optional includes for related data."
     },
     {
@@ -34563,8 +34623,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34667,6 +34725,8 @@
         }
       ],
       "full_name": "projects/get_check_in",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Retrieves a single project check-in by ID with optional related data."
     },
     {
@@ -34687,8 +34747,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34736,6 +34794,8 @@
         }
       ],
       "full_name": "projects/get_contributor",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Retrieves a project contributor by ID."
     },
     {
@@ -34756,8 +34816,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34849,6 +34907,8 @@
         }
       ],
       "full_name": "projects/get_discussion",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Retrieves a single project discussion by ID with optional related data."
     },
     {
@@ -34880,8 +34940,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -34984,6 +35042,8 @@
         }
       ],
       "full_name": "projects/get_milestone",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Retrieves a project milestone by ID with optional related data."
     },
     {
@@ -35004,8 +35064,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35108,6 +35166,8 @@
         }
       ],
       "full_name": "projects/get_retrospective",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Retrieves a project retrospective."
     },
     {
@@ -35131,8 +35191,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35290,6 +35348,8 @@
         }
       ],
       "full_name": "projects/list",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Lists projects with optional filtering and includes."
     },
     {
@@ -35313,8 +35373,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35362,6 +35420,8 @@
         }
       ],
       "full_name": "projects/list_check_ins",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Lists all project check-ins for a given project with optional related data."
     },
     {
@@ -35385,8 +35445,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35426,6 +35484,8 @@
         }
       ],
       "full_name": "projects/list_contributors",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Lists contributors for a project."
     },
     {
@@ -35449,8 +35509,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35465,6 +35523,8 @@
         }
       ],
       "full_name": "projects/list_discussions",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Lists all discussions for a given project."
     },
     {
@@ -35488,8 +35548,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35504,6 +35562,8 @@
         }
       ],
       "full_name": "projects/list_milestone_tasks",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Lists all tasks associated with a project milestone."
     },
     {
@@ -35527,8 +35587,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35554,6 +35612,8 @@
         }
       ],
       "full_name": "projects/list_milestones",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Lists milestones for a project."
     },
     {
@@ -35562,8 +35622,6 @@
       "path": "/api/external/v1/projects/move_to_space",
       "handler": "OperatelyWeb.Api.Projects.MoveToSpace",
       "outputs": [],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35589,6 +35647,8 @@
         }
       ],
       "full_name": "projects/move_to_space",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Moves a project to a different space."
     },
     {
@@ -35609,8 +35669,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35661,6 +35719,8 @@
         }
       ],
       "full_name": "projects/pause",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Pauses a project."
     },
     {
@@ -35681,8 +35741,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35733,6 +35791,8 @@
         }
       ],
       "full_name": "projects/resume",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Resumes a paused project."
     },
     {
@@ -35756,8 +35816,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35808,6 +35866,8 @@
         }
       ],
       "full_name": "projects/search",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Searches for projects."
     },
     {
@@ -35831,8 +35891,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35858,6 +35916,8 @@
         }
       ],
       "full_name": "projects/search_parent_goal",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Searches for potential parent goals for a project."
     },
     {
@@ -35881,8 +35941,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35908,6 +35966,8 @@
         }
       ],
       "full_name": "projects/search_potential_contributors",
+      "method": "GET",
+      "namespace": "projects",
       "docstring": "Searches for potential contributors to add to a project."
     },
     {
@@ -35928,8 +35988,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -35955,6 +36013,8 @@
         }
       ],
       "full_name": "projects/update_champion",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the champion of a project."
     },
     {
@@ -35975,8 +36035,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36060,6 +36118,8 @@
         }
       ],
       "full_name": "projects/update_check_in",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates an existing project check-in's status and/or description."
     },
     {
@@ -36080,8 +36140,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36140,6 +36198,8 @@
         }
       ],
       "full_name": "projects/update_contributor",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates a project contributor's details and permissions."
     },
     {
@@ -36160,8 +36220,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36187,6 +36245,8 @@
         }
       ],
       "full_name": "projects/update_description",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the description of a project."
     },
     {
@@ -36207,8 +36267,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36259,6 +36317,8 @@
         }
       ],
       "full_name": "projects/update_discussion",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates an existing project discussion's title and/or message."
     },
     {
@@ -36279,8 +36339,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36306,6 +36364,8 @@
         }
       ],
       "full_name": "projects/update_due_date",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the due date of a project."
     },
     {
@@ -36326,8 +36386,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36375,6 +36433,8 @@
         }
       ],
       "full_name": "projects/update_milestone",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates a project milestone."
     },
     {
@@ -36395,8 +36455,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36422,6 +36480,8 @@
         }
       ],
       "full_name": "projects/update_milestone_description",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the description of a project milestone."
     },
     {
@@ -36442,8 +36502,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36469,6 +36527,8 @@
         }
       ],
       "full_name": "projects/update_milestone_due_date",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the due date of a project milestone."
     },
     {
@@ -36489,8 +36549,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36538,6 +36596,8 @@
         }
       ],
       "full_name": "projects/update_milestone_kanban",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the kanban state for a task within a milestone and changes the task status."
     },
     {
@@ -36558,8 +36618,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36588,6 +36646,8 @@
         }
       ],
       "full_name": "projects/update_milestone_ordering",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the ordering state of milestones within a project."
     },
     {
@@ -36608,8 +36668,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36635,6 +36693,8 @@
         }
       ],
       "full_name": "projects/update_milestone_title",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the title of a project milestone."
     },
     {
@@ -36655,8 +36715,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36682,6 +36740,8 @@
         }
       ],
       "full_name": "projects/update_name",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the name of a project."
     },
     {
@@ -36702,8 +36762,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36729,6 +36787,8 @@
         }
       ],
       "full_name": "projects/update_parent_goal",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the parent goal of a project."
     },
     {
@@ -36749,8 +36809,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36776,6 +36834,8 @@
         }
       ],
       "full_name": "projects/update_permissions",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the access permissions for a project."
     },
     {
@@ -36796,8 +36856,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36834,6 +36892,8 @@
         }
       ],
       "full_name": "projects/update_retrospective",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates a project retrospective."
     },
     {
@@ -36854,8 +36914,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36881,6 +36939,8 @@
         }
       ],
       "full_name": "projects/update_reviewer",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the reviewer of a project."
     },
     {
@@ -36901,8 +36961,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36928,6 +36986,8 @@
         }
       ],
       "full_name": "projects/update_start_date",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the start date of a project."
     },
     {
@@ -36948,8 +37008,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -36992,6 +37050,8 @@
         }
       ],
       "full_name": "projects/update_task_statuses",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the available task statuses for a project."
     },
     {
@@ -37012,8 +37072,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -37039,6 +37097,8 @@
         }
       ],
       "full_name": "projects/update_tasks_view",
+      "method": "POST",
+      "namespace": "projects",
       "docstring": "Updates the shared tasks List/Board view for a project."
     },
     {
@@ -37059,8 +37119,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "reactions",
       "inputs": [
         {
           "default": null,
@@ -37108,6 +37166,8 @@
         }
       ],
       "full_name": "reactions/create",
+      "method": "POST",
+      "namespace": "reactions",
       "docstring": "Creates a reaction on an entity."
     },
     {
@@ -37128,8 +37188,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "reactions",
       "inputs": [
         {
           "default": null,
@@ -37144,6 +37202,8 @@
         }
       ],
       "full_name": "reactions/delete",
+      "method": "POST",
+      "namespace": "reactions",
       "docstring": "Deletes a reaction."
     },
     {
@@ -37164,8 +37224,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37194,6 +37252,8 @@
         }
       ],
       "full_name": "spaces/add_members",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Adds members to a space."
     },
     {
@@ -37202,8 +37262,6 @@
       "path": "/api/external/v1/spaces/archive_discussion",
       "handler": "OperatelyWeb.Api.Spaces.ArchiveDiscussion",
       "outputs": [],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37218,6 +37276,8 @@
         }
       ],
       "full_name": "spaces/archive_discussion",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Archives a space discussion."
     },
     {
@@ -37238,8 +37298,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37254,6 +37312,8 @@
         }
       ],
       "full_name": "spaces/count_by_access_level",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Counts spaces by access level."
     },
     {
@@ -37274,8 +37334,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37323,6 +37381,8 @@
         }
       ],
       "full_name": "spaces/create",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Creates a new space."
     },
     {
@@ -37343,8 +37403,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37428,6 +37486,8 @@
         }
       ],
       "full_name": "spaces/create_discussion",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Creates a new space discussion."
     },
     {
@@ -37448,8 +37508,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37464,6 +37522,8 @@
         }
       ],
       "full_name": "spaces/delete",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Deletes a space."
     },
     {
@@ -37472,8 +37532,6 @@
       "path": "/api/external/v1/spaces/delete_member",
       "handler": "OperatelyWeb.Api.Spaces.DeleteMember",
       "outputs": [],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37499,6 +37557,8 @@
         }
       ],
       "full_name": "spaces/delete_member",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Removes a member from a space."
     },
     {
@@ -37530,8 +37590,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37623,6 +37681,8 @@
         }
       ],
       "full_name": "spaces/get",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Retrieves a space by ID with optional related data."
     },
     {
@@ -37643,8 +37703,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37747,6 +37805,8 @@
         }
       ],
       "full_name": "spaces/get_discussion",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Retrieves a space discussion by ID with optional related data."
     },
     {
@@ -37755,8 +37815,6 @@
       "path": "/api/external/v1/spaces/join",
       "handler": "OperatelyWeb.Api.Spaces.Join",
       "outputs": [],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37771,6 +37829,8 @@
         }
       ],
       "full_name": "spaces/join",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Joins a space."
     },
     {
@@ -37794,8 +37854,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37843,6 +37901,8 @@
         }
       ],
       "full_name": "spaces/list",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Lists all spaces accessible to the current user."
     },
     {
@@ -37880,8 +37940,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37929,6 +37987,8 @@
         }
       ],
       "full_name": "spaces/list_discussions",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Lists space discussions for a space."
     },
     {
@@ -37952,8 +38012,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -37993,6 +38051,8 @@
         }
       ],
       "full_name": "spaces/list_members",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Lists members of a space."
     },
     {
@@ -38016,8 +38076,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38032,6 +38090,8 @@
         }
       ],
       "full_name": "spaces/list_tasks",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Lists tasks in a space."
     },
     {
@@ -38052,8 +38112,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38068,6 +38126,8 @@
         }
       ],
       "full_name": "spaces/list_tools",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Lists all tools and their contents for a space."
     },
     {
@@ -38088,8 +38148,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38104,6 +38162,8 @@
         }
       ],
       "full_name": "spaces/publish_discussion",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Publishes a space discussion draft."
     },
     {
@@ -38127,8 +38187,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38179,6 +38237,8 @@
         }
       ],
       "full_name": "spaces/search",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Searches for spaces."
     },
     {
@@ -38202,8 +38262,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38254,6 +38312,8 @@
         }
       ],
       "full_name": "spaces/search_potential_members",
+      "method": "GET",
+      "namespace": "spaces",
       "docstring": "Searches for potential members to add to a space."
     },
     {
@@ -38274,8 +38334,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38312,6 +38370,8 @@
         }
       ],
       "full_name": "spaces/update",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Updates a space's name and mission."
     },
     {
@@ -38332,8 +38392,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38392,6 +38450,8 @@
         }
       ],
       "full_name": "spaces/update_discussion",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Updates a space discussion."
     },
     {
@@ -38412,8 +38472,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38442,6 +38500,8 @@
         }
       ],
       "full_name": "spaces/update_members_permissions",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Updates permissions for multiple members in a space."
     },
     {
@@ -38462,8 +38522,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38489,6 +38547,8 @@
         }
       ],
       "full_name": "spaces/update_permissions",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Updates permissions for a space."
     },
     {
@@ -38509,8 +38569,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38553,6 +38611,8 @@
         }
       ],
       "full_name": "spaces/update_task_statuses",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Updates task statuses for a space."
     },
     {
@@ -38584,8 +38644,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -38611,6 +38669,8 @@
         }
       ],
       "full_name": "spaces/update_tools",
+      "method": "POST",
+      "namespace": "spaces",
       "docstring": "Updates the tools configuration for a space."
     },
     {
@@ -38653,8 +38713,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -38760,6 +38818,8 @@
         }
       ],
       "full_name": "tasks/create",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Creates a new task in a project or space."
     },
     {
@@ -38791,8 +38851,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -38818,6 +38876,8 @@
         }
       ],
       "full_name": "tasks/delete",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Deletes a task."
     },
     {
@@ -38849,8 +38909,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -38964,6 +39022,8 @@
         }
       ],
       "full_name": "tasks/get",
+      "method": "GET",
+      "namespace": "tasks",
       "docstring": "Retrieves a task by ID with optional related data."
     },
     {
@@ -38987,8 +39047,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39003,6 +39061,8 @@
         }
       ],
       "full_name": "tasks/list",
+      "method": "GET",
+      "namespace": "tasks",
       "docstring": "Lists all tasks for a project."
     },
     {
@@ -39026,8 +39086,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39078,6 +39136,8 @@
         }
       ],
       "full_name": "tasks/list_potential_assignees",
+      "method": "GET",
+      "namespace": "tasks",
       "docstring": "Lists potential assignees for a task in a project or space."
     },
     {
@@ -39101,8 +39161,6 @@
           "has_default": false
         }
       ],
-      "method": "GET",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39117,6 +39175,8 @@
         }
       ],
       "full_name": "tasks/list_task_statuses",
+      "method": "GET",
+      "namespace": "tasks",
       "docstring": "Lists the task statuses available for one task's project or space scope."
     },
     {
@@ -39159,8 +39219,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39197,6 +39255,8 @@
         }
       ],
       "full_name": "tasks/move",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Moves a task from one project or space to another."
     },
     {
@@ -39217,8 +39277,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39269,6 +39327,8 @@
         }
       ],
       "full_name": "tasks/update_assignee",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the assignee of a task."
     },
     {
@@ -39289,8 +39349,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39327,6 +39385,8 @@
         }
       ],
       "full_name": "tasks/update_description",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the description of a task."
     },
     {
@@ -39347,8 +39407,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39385,6 +39443,8 @@
         }
       ],
       "full_name": "tasks/update_due_date",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the due date of a task."
     },
     {
@@ -39405,8 +39465,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39432,6 +39490,8 @@
         }
       ],
       "full_name": "tasks/update_milestone",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the milestone of a task."
     },
     {
@@ -39466,8 +39526,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39504,6 +39562,8 @@
         }
       ],
       "full_name": "tasks/update_milestone_and_ordering",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the milestone and ordering of a task."
     },
     {
@@ -39524,8 +39584,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39562,6 +39620,8 @@
         }
       ],
       "full_name": "tasks/update_name",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the name of a task."
     },
     {
@@ -39582,8 +39642,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39623,6 +39681,8 @@
         }
       ],
       "full_name": "tasks/update_reminders",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates task due date reminder rules."
     },
     {
@@ -39654,8 +39714,6 @@
           "has_default": false
         }
       ],
-      "method": "POST",
-      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -39692,28 +39750,11 @@
         }
       ],
       "full_name": "tasks/update_status",
+      "method": "POST",
+      "namespace": "tasks",
       "docstring": "Updates the status of a task."
     }
   ],
-  "namespace_descriptions": {
-    "comments": "List, create and manage comments on resources",
-    "companies": "Get, list, update and manage company settings, members, and permissions",
-    "documents": "",
-    "files": "",
-    "goals": "Get, list, create and manage goals",
-    "kpis": "Get, list, create and manage Space KPIs",
-    "links": "",
-    "notifications": "List and manage notifications and subscriptions",
-    "people": "Get, list, update and manage user profiles and account settings",
-    "project_templates": "Get, list, create and manage project templates",
-    "projects": "Get, list, create and manage projects",
-    "reactions": "Add or remove emoji reactions to content",
-    "resource_hubs": "",
-    "spaces": "Get, list, create and manage spaces",
-    "tasks": "Get, list, create and manage tasks across projects and spaces"
-  },
-  "api_base_path": "/api/external/v1",
-  "endpoint_count": 252,
   "query_count": 75,
   "mutation_count": 177,
   "schema_version": 1

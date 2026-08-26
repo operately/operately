@@ -68,6 +68,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
           lock: "FOR UPDATE"
         )
         |> repo.all()
+        |> repo.preload(:assigned_people)
 
       {:ok, tasks}
     end)
@@ -133,8 +134,8 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     %{milestone_id: nil}
   end
 
-  defp open_task_resolution_attrs(_task, %{action: :set_status, status: status}) do
-    %{task_status: Map.from_struct(status)}
+  defp open_task_resolution_attrs(task, %{action: :set_status, status: status}) do
+    Task.status_change_attrs(task, status)
   end
 
   defp maybe_track_mentions(multi, _milestone, action, _attrs) when action in ["complete", "reopen"],
@@ -288,9 +289,9 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   defp broadcast_updates(result, action) do
     case result do
       {:ok, changes} ->
-        if action in ["complete", "reopen"] and changes.project.champion do
-          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: changes.project.champion.id)
-        end
+        changes
+        |> assignment_count_recipient_ids(action)
+        |> Enum.each(&OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: &1))
 
         if action not in ["complete", "reopen"] and changes.result do
           OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{changes.result.milestone_id}")
@@ -302,6 +303,26 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
 
     result
   end
+
+  defp assignment_count_recipient_ids(changes, action) do
+    champion_ids =
+      if action in ["complete", "reopen"] and changes.project.champion do
+        [changes.project.champion.id]
+      else
+        []
+      end
+
+    (champion_ids ++ resolved_task_assignee_ids(changes, action))
+    |> Enum.uniq()
+  end
+
+  defp resolved_task_assignee_ids(%{open_tasks_resolution: %{action: :set_status}, resolved_open_tasks: tasks}, "complete") do
+    tasks
+    |> Enum.flat_map(fn task -> task.assigned_people end)
+    |> Enum.map(& &1.id)
+  end
+
+  defp resolved_task_assignee_ids(_changes, _action), do: []
 
   defp ensure_subscription(nil, _person_id), do: {:ok, nil}
 

@@ -202,6 +202,28 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
       assert task.milestone_id == ctx.milestone.id
       assert task.task_status.id == closed_status.id
       assert task.task_status.closed
+      assert task.status == closed_status.value
+      assert task.closed_at
+      refute task.reopened_at
+    end
+
+    test "refreshes assignment counts for assignees of closed tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:assignee)
+        |> Factory.add_project_task(:second_open_task, :milestone)
+        |> Factory.add_task_assignee(:task_assignee, :open_task, :assignee)
+        |> Factory.add_task_assignee(:second_task_assignee, :second_open_task, :assignee)
+
+      topic = "api:assignments_count:#{ctx.assignee.id}"
+      OperatelyWeb.Endpoint.subscribe(topic)
+
+      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+
+      assert {200, _} = complete_milestone(ctx, %{action: "set_status", status_id: closed_status.id})
+
+      assert_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
+      refute_receive %Phoenix.Socket.Broadcast{topic: ^topic, event: "event", payload: %{}}
     end
 
     test "rejects an open task status", ctx do
