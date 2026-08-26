@@ -207,6 +207,27 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
       refute task.reopened_at
     end
 
+    test "records a status activity for every closed task", ctx do
+      ctx = Factory.add_project_task(ctx, :second_open_task, :milestone)
+      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+
+      assert {200, _} = complete_milestone(ctx, %{action: "set_status", status_id: closed_status.id})
+
+      activities =
+        from(a in Operately.Activities.Activity,
+          where: a.action == "task_status_updating",
+          order_by: [asc: a.content["task_id"]]
+        )
+        |> Operately.Repo.all()
+
+      assert Enum.map(activities, & &1.content["task_id"]) ==
+               Enum.sort([ctx.open_task.id, ctx.second_open_task.id])
+
+      assert Enum.all?(activities, &(&1.author_id == ctx.creator.id))
+      assert Enum.all?(activities, &(&1.content["milestone_id"] == ctx.milestone.id))
+      assert Enum.all?(activities, &(&1.content["new_status"]["id"] == closed_status.id))
+    end
+
     test "refreshes assignment counts for assignees of closed tasks", ctx do
       ctx =
         ctx

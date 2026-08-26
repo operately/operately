@@ -28,6 +28,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     |> load_open_tasks(milestone, action)
     |> validate_open_tasks_resolution(action, open_tasks_resolution)
     |> resolve_open_tasks(action)
+    |> record_task_status_activities(author, action)
     |> apply_comment_action(milestone, action)
     |> maybe_update_project_kanban(action)
     |> maybe_enqueue_resolved_tasks(action)
@@ -136,6 +137,45 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
 
   defp open_task_resolution_attrs(task, %{action: :set_status, status: status}) do
     Task.status_change_attrs(task, status)
+  end
+
+  defp record_task_status_activities(multi, _author, action) when action != "complete", do: multi
+
+  defp record_task_status_activities(multi, author, "complete") do
+    Multi.merge(multi, fn changes ->
+      case changes.open_tasks_resolution do
+        %{action: :set_status} ->
+          original_tasks = Map.new(changes.open_tasks, &{&1.id, &1})
+
+          Enum.reduce(changes.resolved_open_tasks, Multi.new(), fn updated_task, activities_multi ->
+            original_task = Map.fetch!(original_tasks, updated_task.id)
+
+            Activities.insert_sync(
+              activities_multi,
+              author.id,
+              :task_status_updating,
+              fn _ -> task_status_activity_content(changes.project, original_task, updated_task) end,
+              operation_name: updated_task.id
+            )
+          end)
+
+        _ ->
+          Multi.new()
+      end
+    end)
+  end
+
+  defp task_status_activity_content(project, original_task, updated_task) do
+    %{
+      company_id: project.company_id,
+      space_id: project.group_id,
+      project_id: project.id,
+      milestone_id: original_task.milestone_id,
+      task_id: original_task.id,
+      old_status: Map.from_struct(original_task.task_status),
+      new_status: Map.from_struct(updated_task.task_status),
+      name: original_task.name
+    }
   end
 
   defp maybe_track_mentions(multi, _milestone, action, _attrs) when action in ["complete", "reopen"],
