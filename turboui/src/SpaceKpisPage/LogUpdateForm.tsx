@@ -5,7 +5,7 @@ import { Modal } from "../Modal";
 import { emptyContent, isContentEmpty } from "../RichContent";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { SpaceKpisPage } from "./types";
-import { formatShortDate, formatValue, latestEntry } from "./utils";
+import { formatShortDate, formatValue, fromIsoDate, latestEntry } from "./utils";
 
 interface LogUpdateFormProps {
   kpi: SpaceKpisPage.Kpi | null;
@@ -27,9 +27,7 @@ function today(): string {
 // via `new Date(string)`, which would treat the value as UTC) so the displayed
 // date matches the picked calendar day.
 function formatPeriodLabel(period: string): string {
-  const [year, month, day] = period.split("-").map(Number);
-  if (!year || !month || !day) return period;
-  return formatShortDate(new Date(year, month - 1, day));
+  return formatShortDate(fromIsoDate(period));
 }
 
 // Single-KPI "Log update" form → calls the `logKpiEntry` mutation.

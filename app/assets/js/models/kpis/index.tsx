@@ -2,6 +2,7 @@ import Api, { Kpi as ApiKpi, KpiAnnotation as ApiKpiAnnotation, KpiEntry as ApiK
 import { Paths } from "@/routes/paths";
 import { parsePersonForTurboUi } from "@/models/people";
 import type { SpaceKpisPage } from "turboui/SpaceKpisPage/types";
+import { fromIsoDate } from "turboui/SpaceKpisPage/utils";
 
 export type { Kpi } from "@/api";
 
@@ -15,8 +16,9 @@ export const useAddKpiAnnotation = Api.kpis.useAddKpiAnnotation;
 export const useEditKpiAnnotation = Api.kpis.useEditKpiAnnotation;
 export const useDeleteKpiAnnotation = Api.kpis.useDeleteKpiAnnotation;
 
-// Map the API KPI shape onto the presentational turboui shape. The `period` /
-// timestamps arrive as ISO strings and are parsed into `Date`s for the chart.
+// Map the API KPI shape onto the presentational turboui shape. Date-only
+// `period` / annotation values arrive as `YYYY-MM-DD` and are parsed as local
+// calendar days so the chart axis is not shifted by UTC midnight.
 export function parseKpiForTurboUi(paths: Paths, kpi: ApiKpi): SpaceKpisPage.Kpi {
   return {
     id: kpi.id,
@@ -37,7 +39,7 @@ function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPag
   return {
     id: entry.id,
     value: entry.value,
-    recordedAt: new Date(entry.period),
+    recordedAt: fromIsoDate(entry.period),
     recordedBy: parsePersonForTurboUi(paths, entry.recordedBy),
     commentsCount: entry.commentsCount ?? 0,
   };
@@ -46,7 +48,7 @@ function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPag
 function parseKpiAnnotationForTurboUi(paths: Paths, annotation: ApiKpiAnnotation): SpaceKpisPage.KpiAnnotation {
   return {
     id: annotation.id,
-    date: new Date(annotation.date),
+    date: fromIsoDate(annotation.date),
     title: annotation.title,
     createdBy: parsePersonForTurboUi(paths, annotation.createdBy),
   };
