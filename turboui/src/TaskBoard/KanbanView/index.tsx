@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
-import { useSearchParams } from "react-router";
 import { Kanban } from "./Kanban";
 import { TaskSlideIn } from "./TaskSlideIn";
 import { AddStatusModal } from "./AddStatusModal";
 import { DeleteStatusModal } from "./DeleteStatusModal";
 import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } from "./types";
 import type { TaskBoard } from "../components";
+import { useTaskSlideInSelection } from "../hooks/useTaskSlideInSelection";
 
 export function KanbanBoard(props: KanbanBoardProps) {
   const { statuses, kanbanState: kanbanStateProp, onStatusesChange, onTaskKanbanChange, milestone } = props;
@@ -312,53 +312,16 @@ function useTaskSlideIn({
   spaceSearch,
   getTaskPageProps,
 }: KanbanBoardProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { selectedTaskId, setSelectedTaskId } = useTaskSlideInSelection({
+    tasks,
+    enabled: Boolean(getTaskPageProps),
+  });
 
   const taskById = useMemo(() => {
     const map = new Map<string, TaskBoard.Task>();
     tasks.forEach((task) => map.set(task.id, task));
     return map;
   }, [tasks]);
-
-  const taskIdFromUrl = useMemo(() => {
-    const value = searchParams.get("taskId");
-    return value && value.length > 0 ? value : null;
-  }, [searchParams]);
-
-  const [selectedTaskId, setSelectedTaskIdState] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!taskIdFromUrl) {
-      setSelectedTaskIdState(null);
-      return;
-    }
-
-    if (taskById.has(taskIdFromUrl)) {
-      setSelectedTaskIdState(taskIdFromUrl);
-      return;
-    }
-
-    const next = new URLSearchParams(searchParams);
-    next.delete("taskId");
-    setSearchParams(next, { replace: true });
-    setSelectedTaskIdState(null);
-  }, [taskById, taskIdFromUrl, searchParams, setSearchParams]);
-
-  const setSelectedTaskId = useCallback(
-    (taskId: string | null) => {
-      const next = new URLSearchParams(searchParams);
-
-      if (taskId) {
-        next.set("taskId", taskId);
-      } else {
-        next.delete("taskId");
-      }
-
-      setSearchParams(next, { replace: true });
-      setSelectedTaskIdState(taskId);
-    },
-    [searchParams, setSearchParams],
-  );
 
   const taskSlideInContext: TaskSlideInContext = useMemo(
     () => ({
