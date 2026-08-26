@@ -2,7 +2,7 @@ defmodule Operately.Support.CliBackwardCompatibility.ResourceHubsSteps do
   @moduledoc """
   Steps for legacy `resource_hubs/*` external API routes.
 
-  These routes are hidden from the CLI catalog (`catalog: false`) but remain
+  These routes are omitted from the CLI catalog (`catalog: :omit`) but remain
   routable on `/api/external/v1` for backward compatibility with CLI <= 1.6.0.
   """
 

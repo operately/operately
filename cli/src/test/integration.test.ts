@@ -70,6 +70,21 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Authentication & Setup:"));
       assert.ok(result.stdout.includes("auth create-company"));
       assert.ok(result.stdout.includes("auth join"));
+      assert.ok(!result.stdout.includes("  kpis"));
+    });
+
+    it("shows hidden namespace help with --help flag", async () => {
+      const result = await runCLI(["kpis", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("kpis namespace"));
+      assert.ok(result.stdout.includes("list_kpis"));
+    });
+
+    it("shows hidden command help with --help flag", async () => {
+      const result = await runCLI(["kpis", "list_kpis", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: kpis list_kpis"));
+      assert.ok(result.stdout.includes("--space-id"));
     });
 
     it("shows version with --version flag", async () => {
@@ -668,6 +683,8 @@ describe("CLI Integration Tests", () => {
       assert.ok(!commandsDoc.includes("create_avatar_blob"));
       assert.ok(!commandsDoc.includes("create_blob"));
       assert.ok(!commandsDoc.includes("mark_blob_uploaded"));
+      assert.ok(!commandsDoc.includes("`kpis list_kpis`"));
+      assert.ok(!commandsDoc.includes("`kpis create_kpi`"));
     });
   });
 
