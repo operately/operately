@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateFolder do
     Definition.new!(
       name: "update_project_template_folder",
       title: "Update Project Template Folder",
-      description: "Renames a folder in a project template.",
+      description: "Renames a folder in a project template Docs & Files tree. For live hub folders, use rename_folder.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

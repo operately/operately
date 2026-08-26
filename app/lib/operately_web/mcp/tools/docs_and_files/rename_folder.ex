@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.RenameFolder do
     Definition.new!(
       name: "rename_folder",
       title: "Rename Folder",
-      description: "Renames one docs and files folder.",
+      description: "Renames one folder in a live Docs & Files hub. For folders inside a project template, use update_project_template_folder.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
