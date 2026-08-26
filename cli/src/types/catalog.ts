@@ -50,6 +50,7 @@ export interface CatalogEndpoint {
   inputs: CatalogField[];
   outputs: CatalogField[];
   docstring: string | null;
+  hidden?: boolean;
   execution_mode?: EndpointExecutionMode;
   example_mode?: EndpointExampleMode;
   cli_examples?: string[];

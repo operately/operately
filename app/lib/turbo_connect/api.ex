@@ -32,6 +32,30 @@ defmodule TurboConnect.Api do
     end
   end
 
+  @doc """
+  Groups queries and mutations under a named namespace.
+
+  ## Options
+
+    * `:catalog` - How endpoints in this namespace appear in the generated CLI
+      catalog and API docs. Individual `query/3` and `mutation/3` calls can
+      override this. One of:
+
+        * `:visible` (default) — include in the catalog and in generated help/docs
+        * `:hidden` — include in the catalog so targeted help and dispatch still
+          work, but omit from `operately --help` and website API docs
+        * `:omit` — do not include in the catalog at all
+
+  ## Examples
+
+      namespace(:goals) do
+        query(:get, OperatelyWeb.Api.Goals.Get)
+      end
+
+      namespace(:kpis, catalog: :hidden) do
+        query(:list_kpis, OperatelyWeb.Api.Kpis.ListKpis)
+      end
+  """
   defmacro namespace(ns, opts \\ [], do: block) do
     quote do
       desc = Module.get_attribute(__MODULE__, :doc) || {nil, ""}

@@ -132,6 +132,24 @@ test("resolves documents create_file custom endpoint help", () => {
   }
 });
 
+test("resolves hidden namespace help", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["kpis"], registry);
+
+  assert.deepEqual(request, { kind: "namespace", namespace: "kpis" });
+});
+
+test("resolves hidden endpoint help", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["help", "kpis", "list_kpis"], registry);
+
+  assert.ok(request);
+  assert.equal(request.kind, "endpoint");
+  if (request.kind === "endpoint") {
+    assert.equal(request.endpoint.full_name, "kpis/list_kpis");
+  }
+});
+
 test("returns null for executable commands", () => {
   const registry = createRegistry(fixtureCatalog);
   const request = resolveHelpRequest(["auth", "whoami"], registry);

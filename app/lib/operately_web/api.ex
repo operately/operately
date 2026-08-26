@@ -153,7 +153,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_folder, OperatelyWeb.Api.ProjectTemplates.UpdateFolder)
         mutation(:create_document, OperatelyWeb.Api.ProjectTemplates.CreateDocument)
         mutation(:update_document, OperatelyWeb.Api.ProjectTemplates.UpdateDocument)
-        mutation(:create_files, OperatelyWeb.Api.ProjectTemplates.CreateFiles, catalog: false)
+        mutation(:create_files, OperatelyWeb.Api.ProjectTemplates.CreateFiles, catalog: :omit)
         mutation(:update_file, OperatelyWeb.Api.ProjectTemplates.UpdateFile)
         mutation(:create_link, OperatelyWeb.Api.ProjectTemplates.CreateLink)
         mutation(:update_link, OperatelyWeb.Api.ProjectTemplates.UpdateLink)
@@ -211,7 +211,7 @@ defmodule OperatelyWeb.Api do
       end
 
       @doc "Get, list, create and manage Space KPIs"
-      namespace(:kpis) do
+      namespace(:kpis, catalog: :hidden) do
         query(:list_kpis, OperatelyWeb.Api.Kpis.ListKpis)
         query(:get_kpi, OperatelyWeb.Api.Kpis.GetKpi)
 
@@ -238,7 +238,7 @@ defmodule OperatelyWeb.Api do
 
         mutation(:update, OperatelyWeb.Api.People.Update)
         mutation(:update_theme, OperatelyWeb.Api.People.UpdateTheme)
-        mutation(:update_picture, OperatelyWeb.Api.People.UpdatePicture, catalog: false)
+        mutation(:update_picture, OperatelyWeb.Api.People.UpdatePicture, catalog: :omit)
       end
 
       @doc "Get, list, update and manage company settings, members, and permissions"
@@ -282,9 +282,9 @@ defmodule OperatelyWeb.Api do
       end
 
       # Legacy Docs & Files routes stay on the external API for CLI <= 1.6.0 backward
-      # compatibility but are hidden from the catalog. The documents namespace
+      # compatibility but are omitted from the catalog. The documents namespace
       # is the supported CLI-facing surface for new clients.
-      namespace(:resource_hubs, catalog: false) do
+      namespace(:resource_hubs, catalog: :omit) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
@@ -297,7 +297,7 @@ defmodule OperatelyWeb.Api do
         mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
       end
 
-      namespace(:documents, catalog: false) do
+      namespace(:documents, catalog: :omit) do
         query(:get, OperatelyWeb.Api.Documents.Get)
         query(:list_versions, OperatelyWeb.Api.Documents.ListVersions)
         query(:get_version, OperatelyWeb.Api.Documents.GetVersion)
@@ -309,7 +309,7 @@ defmodule OperatelyWeb.Api do
         mutation(:restore_version, OperatelyWeb.Api.Documents.RestoreVersion)
       end
 
-      namespace(:links, catalog: false) do
+      namespace(:links, catalog: :omit) do
         query(:get, OperatelyWeb.Api.Links.Get)
 
         mutation(:create, OperatelyWeb.Api.Links.Create)
@@ -317,7 +317,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Links.Update)
       end
 
-      namespace(:files, catalog: false) do
+      namespace(:files, catalog: :omit) do
         query(:get, OperatelyWeb.Api.Files.Get)
 
         mutation(:create, OperatelyWeb.Api.Files.Create)
@@ -339,9 +339,9 @@ defmodule OperatelyWeb.Api do
         mutation(:unsubscribe, OperatelyWeb.Api.Notifications.Unsubscribe)
       end
 
-      mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob, catalog: false)
-      mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob, catalog: false)
-      mutation(:mark_blob_uploaded, OperatelyWeb.Api.Mutations.MarkBlobUploaded, catalog: false)
+      mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob, catalog: :omit)
+      mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob, catalog: :omit)
+      mutation(:mark_blob_uploaded, OperatelyWeb.Api.Mutations.MarkBlobUploaded, catalog: :omit)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)
@@ -500,7 +500,7 @@ defmodule OperatelyWeb.Api do
         mutation(:delete_link, OperatelyWeb.Api.Links.Delete)
         mutation(:update_link, OperatelyWeb.Api.Links.Update)
 
-        mutation(:create_file, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile, catalog: false)
+        mutation(:create_file, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFile, catalog: :omit)
         mutation(:delete_file, OperatelyWeb.Api.Files.Delete)
         mutation(:update_file, OperatelyWeb.Api.Files.Update)
       end
