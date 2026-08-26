@@ -30,9 +30,7 @@ describe("CompleteMilestoneModal", () => {
       />,
     );
 
-    expect(
-      await screen.findByText("This milestone has 2 open tasks. Choose what happens to them before completing it."),
-    ).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="resolutionAction-move_to_no_milestone"]')).toBeChecked();
 
     fireEvent.click(screen.getByRole("button", { name: "Complete milestone" }));
 

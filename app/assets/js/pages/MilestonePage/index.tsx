@@ -465,41 +465,8 @@ function useStatusField(
   const [status, updateStatus] = usePageField<MilestonePage.Status, StatusUpdate>(pageData, {
     value: ({ milestone }) => milestone.status,
     optimisticValue: (command) => command.status,
-    update: async ({ status: nextStatus, resolution }) => {
-      const tmpId = `temp-${Date.now()}`;
-      const optimisticComment: Milestones.MilestoneComment = {
-        __typename: "milestone_comment",
-        action: nextStatus === "done" ? "complete" : "reopen",
-        comment: {
-          __typename: "comment",
-          id: tmpId,
-          insertedAt: new Date().toISOString(),
-          author: me,
-        },
-      };
-
-      setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
-
-      const res = await Api.projects.createMilestoneComment({
-        milestoneId: milestone.id,
-        content: null,
-        action: nextStatus === "done" ? "complete" : "reopen",
-        openTasksResolution: serializeOpenTasksResolution(resolution),
-      });
-
-      PageCache.invalidate(pageCacheKey(milestone.id));
-
-      setComments((prev) =>
-        prev.map((c) => {
-          if (c.id === tmpId) {
-            const comment = { ...res.comment.comment, author: me };
-            return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment });
-          } else {
-            return c;
-          }
-        }),
-      );
-    },
+    update: ({ status: nextStatus, resolution }) =>
+      updateMilestoneStatus({ paths, milestone, me, setComments, nextStatus, resolution }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
 
@@ -507,6 +474,63 @@ function useStatusField(
     updateStatus({ status: nextStatus, resolution });
 
   return [status, setStatus] as const;
+}
+
+interface UpdateMilestoneStatusParams {
+  paths: Paths;
+  milestone: Milestones.Milestone;
+  me: NonNullable<Milestones.MilestoneComment["comment"]["author"]>;
+  setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>>;
+  nextStatus: MilestonePage.Status;
+  resolution?: MilestonePage.OpenTasksResolution;
+}
+
+export async function updateMilestoneStatus({
+  paths,
+  milestone,
+  me,
+  setComments,
+  nextStatus,
+  resolution,
+}: UpdateMilestoneStatusParams): Promise<void> {
+  const tmpId = `temp-${Date.now()}`;
+  const optimisticComment: Milestones.MilestoneComment = {
+    __typename: "milestone_comment",
+    action: nextStatus === "done" ? "complete" : "reopen",
+    comment: {
+      __typename: "comment",
+      id: tmpId,
+      insertedAt: new Date().toISOString(),
+      author: me,
+    },
+  };
+
+  setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
+
+  try {
+    const res = await Api.projects.createMilestoneComment({
+      milestoneId: milestone.id,
+      content: null,
+      action: nextStatus === "done" ? "complete" : "reopen",
+      openTasksResolution: serializeOpenTasksResolution(resolution),
+    });
+
+    PageCache.invalidate(pageCacheKey(milestone.id));
+
+    setComments((prev) =>
+      prev.map((comment) => {
+        if (comment.id === tmpId) {
+          const savedComment = { ...res.comment.comment, author: me };
+          return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment: savedComment });
+        } else {
+          return comment;
+        }
+      }),
+    );
+  } catch (error) {
+    setComments((prev) => prev.filter((comment) => comment.id !== tmpId));
+    throw error;
+  }
 }
 
 function serializeOpenTasksResolution(resolution?: MilestonePage.OpenTasksResolution) {
