@@ -7,7 +7,10 @@ export interface RichTextNode {
 
 export type RichTextContent = RichTextNode | RichTextNode[] | string | null | undefined;
 
-export function normalizeRichTextContent(content: RichTextContent): RichTextContent {
+export type NormalizedRichTextContent = Exclude<RichTextContent, undefined>;
+
+export function normalizeRichTextContent(content: RichTextContent): NormalizedRichTextContent {
+  if (content === undefined) return null;
   if (!isRichTextNode(content)) return content;
 
   return normalizeRichTextNode(content);
