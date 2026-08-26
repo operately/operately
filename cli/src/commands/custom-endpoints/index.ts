@@ -6,11 +6,13 @@ import { uploadToSignedUrl } from "../../core/uploads/signed-url";
 import type { CatalogEndpoint } from "../../types/catalog";
 import { executeDocumentsCreateFile } from "./documents/create_file";
 import { executePeopleUpdatePicture } from "./people/update-picture";
+import { executeProjectTemplatesCreateFile } from "./project_templates/create_file";
 import type { CustomEndpointDeps, CustomEndpointExecutionInput, CustomEndpointExecutor } from "./types";
 
 const CUSTOM_ENDPOINT_EXECUTORS: Record<string, CustomEndpointExecutor> = {
   "documents/create_file": executeDocumentsCreateFile,
   "people/update_picture": executePeopleUpdatePicture,
+  "project_templates/create_file": executeProjectTemplatesCreateFile,
 };
 
 const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
@@ -103,6 +105,65 @@ const CUSTOM_ENDPOINTS: CatalogEndpoint[] = [
     cli_examples: [
       "operately documents create_file --space-id sp_123 --file ./report.png",
       "operately documents create_file --space-id sp_123 --file ./report.png --name Q2-report --description-file ./notes.md",
+    ],
+  },
+  {
+    full_name: "project_templates/create_file",
+    namespace: "project_templates",
+    name: "create_file",
+    type: "mutation",
+    method: "POST",
+    path: "/api/external/v1/project_templates/create_files",
+    handler: "OperatelyWeb.Api.ProjectTemplates.CreateFiles",
+    inputs: [
+      {
+        name: "template_id",
+        type: { kind: "named", name: "id" },
+        optional: false,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "parent_folder_id",
+        type: { kind: "named", name: "id" },
+        optional: true,
+        nullable: true,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "file",
+        type: { kind: "named", name: "path" },
+        optional: false,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "name",
+        type: { kind: "named", name: "string" },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+      {
+        name: "description",
+        type: { kind: "named", name: "json" },
+        optional: true,
+        nullable: false,
+        has_default: false,
+        default: null,
+      },
+    ],
+    outputs: [],
+    docstring: "Uploads one local file into a reusable project template.",
+    execution_mode: "custom",
+    example_mode: "cli",
+    cli_examples: [
+      "operately project_templates create_file --template-id pt_123 --file ./report.pdf",
+      "operately project_templates create_file --template-id pt_123 --parent-folder-id ptr_456 --file ./report.pdf --description-file ./notes.md",
     ],
   },
   {

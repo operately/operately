@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.MoveResource do
     Definition.new!(
       name: "move_project_template_resource",
       title: "Move Project Template Resource",
-      description: "Moves a template resource node into a folder or to the root.",
+      description: "Moves a project-template Docs & Files node into a folder or to the root. For live hub resources, use move_resource_hub_item.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

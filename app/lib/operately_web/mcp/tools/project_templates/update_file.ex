@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateFile do
     Definition.new!(
       name: "update_project_template_file",
       title: "Update Project Template File",
-      description: "Updates the name and optional Markdown description of a file already stored in a template.",
+      description: "Updates the name and optional Markdown description of a file already stored in a project template. For live hub files, use the live Docs & Files tools (delete_file / move_resource_hub_item).",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

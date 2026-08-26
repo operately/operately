@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateLink do
     Definition.new!(
       name: "create_project_template_link",
       title: "Create Project Template Link",
-      description: "Creates a typed external link in a project template.",
+      description: "Creates a typed external link in a project template Docs & Files tree. Template resources materialize when a project is created from the template. For live hub links, use create_link.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

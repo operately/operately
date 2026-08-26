@@ -93,5 +93,90 @@ defmodule OperatelyWeb.Mcp.Tools.SearchFullTextTest do
     assert result.type == :milestone
   end
 
+  test "call/2 applies space, time_range, and most_recent filters" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space, name: "Product Space")
+      |> Factory.add_space(:marketing, name: "Marketing Space")
+      |> Factory.add_project(:product_project, :space, name: "Filter marker product")
+      |> Factory.add_project(:marketing_project, :marketing, name: "Filter marker marketing")
+      |> Factory.add_goal(:product_goal, :space, name: "Filter marker goal")
+      |> update_project_description(:product_project, "Filter marker shared body")
+      |> update_project_description(:marketing_project, "Filter marker shared body")
+      |> update_goal_description(:product_goal, "Filter marker shared body")
+
+    assert {:ok, _} = SourceIndexer.sync("project", ctx.product_project.id)
+    assert {:ok, _} = SourceIndexer.sync("project", ctx.marketing_project.id)
+    assert {:ok, _} = SourceIndexer.sync("goal", ctx.product_goal.id)
+
+    assert {:ok, %{results: results}} =
+             SearchFullText.call(conn(ctx), %{
+               "query" => "Filter marker",
+               "space_ids" => [Paths.space_id(ctx.space)],
+               "types" => ["project"]
+             })
+
+    assert Enum.map(results, & &1.id) == [ShortUuid.encode!(ctx.product_project.id)]
+
+    set_entry_inserted_at(ctx.marketing_project, days_ago(1))
+    set_entry_inserted_at(ctx.product_project, days_ago(5))
+    set_entry_inserted_at(ctx.product_goal, days_ago(40))
+
+    assert {:ok, %{results: recent_results}} =
+             SearchFullText.call(conn(ctx), %{
+               "query" => "Filter marker",
+               "time_range" => "last_7_days",
+               "sort" => "most_recent"
+             })
+
+    assert Enum.map(recent_results, & &1.id) == [
+             ShortUuid.encode!(ctx.marketing_project.id),
+             ShortUuid.encode!(ctx.product_project.id)
+           ]
+  end
+
   defp conn(ctx), do: ToolConnHelper.conn_with_assigns(ctx.account, ctx.company, ctx.creator)
+
+  defp update_project_description(ctx, project_name, description) do
+    project =
+      ctx
+      |> Map.fetch!(project_name)
+      |> Operately.Projects.Project.changeset(%{description: RichText.rich_text(description)})
+      |> Operately.Repo.update!()
+
+    Map.put(ctx, project_name, project)
+  end
+
+  defp update_goal_description(ctx, goal_name, description) do
+    goal =
+      ctx
+      |> Map.fetch!(goal_name)
+      |> Operately.Goals.Goal.changeset(%{description: RichText.rich_text(description)})
+      |> Operately.Repo.update!()
+
+    Map.put(ctx, goal_name, goal)
+  end
+
+  defp set_entry_inserted_at(resource, inserted_at) do
+    import Ecto.Query
+
+    source_type =
+      case resource do
+        %Operately.Projects.Project{} -> :project
+        %Operately.Goals.Goal{} -> :goal
+      end
+
+    from(entry in Operately.Search.Entry,
+      where: entry.source_type == ^source_type and entry.source_id == ^resource.id
+    )
+    |> Operately.Repo.update_all(set: [source_inserted_at: inserted_at])
+  end
+
+  defp days_ago(days) do
+    DateTime.utc_now()
+    |> DateTime.shift(day: -days)
+    |> DateTime.to_naive()
+    |> NaiveDateTime.truncate(:microsecond)
+  end
 end

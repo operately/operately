@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateDocument do
     Definition.new!(
       name: "create_project_template_document",
       title: "Create Project Template Document",
-      description: "Creates a Markdown document in a project template.",
+      description: "Creates a Markdown document in a project template Docs & Files tree. Template resources materialize when a project is created from the template. For live hub documents, use create_document.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

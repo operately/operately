@@ -12,6 +12,10 @@ import type { TemplateProjectPage } from ".";
 import { useSortableItem } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
 
+// Match TaskItem: empty due dates stay in layout but are invisible until the row is hovered.
+const EMPTY_DUE_DATE_REVEAL_CLASS =
+  "[&>span]:text-transparent max-sm:[&>span]:text-content-dimmed sm:group-hover/task-row:[&>span]:text-content-dimmed group-focus-within/task-row:[&>span]:text-content-dimmed";
+
 export function TaskRow({
   task,
   props,
@@ -85,18 +89,25 @@ export function TaskRow({
   );
 
   const stopDragFromInteractive = (event: React.MouseEvent) => event.stopPropagation();
+  const hasDueDate = task.dueOffsetDays !== null;
 
   return (
     <div
       ref={ref}
-      className={classNames("border-b border-surface-outline last:border-b-0", {
+      className={classNames("group/task-row border-b border-surface-outline last:border-b-0 focus-visible:outline-none", {
         "cursor-grab active:cursor-grabbing": isDraggable && !isDragging,
         "cursor-grabbing bg-surface-accent": isDragging,
       })}
       data-test-id={`template-task-${task.id}`}
       data-task-row-id={task.id}
     >
-      <div className="flex items-center gap-3 px-4 py-2.5">
+      <div
+        className={classNames(
+          "flex items-center gap-3 px-4 py-2.5 transition-colors",
+          "bg-surface-base hover:bg-surface-highlight",
+          "group-focus-visible/task-row:bg-[rgba(224,242,254,0.75)] group-focus-visible/task-row:shadow-[inset_0_0_0_2px_var(--color-brand-1)] dark:group-focus-visible/task-row:bg-[rgba(37,99,235,0.20)]",
+        )}
+      >
         <div onMouseDown={stopDragFromInteractive}>
           <StatusSelector
             statusOptions={props.statuses}
@@ -116,6 +127,19 @@ export function TaskRow({
               <TaskTitleContent task={task} />
             </div>
           )}
+        </div>
+        <div onMouseDown={stopDragFromInteractive}>
+          <RelativeDayField
+            value={task.dueOffsetDays}
+            onChange={(dueOffsetDays) => {
+              void props.onTaskUpdate?.(task.id, { dueOffsetDays });
+            }}
+            readonly={!canEdit}
+            placeholder="Set when due"
+            hideCalendarIcon={!hasDueDate}
+            className={hasDueDate ? undefined : EMPTY_DUE_DATE_REVEAL_CLASS}
+            testId={`template-task-${task.id}-due-offset`}
+          />
         </div>
         <div
           className="flex h-6 min-w-6 max-w-[10rem] flex-shrink-0 items-center justify-end gap-1"
@@ -145,16 +169,6 @@ export function TaskRow({
               testId={`template-task-${task.id}-assignees`}
             />
           )}
-        </div>
-        <div onMouseDown={stopDragFromInteractive}>
-          <RelativeDayField
-            value={task.dueOffsetDays}
-            onChange={(dueOffsetDays) => {
-              void props.onTaskUpdate?.(task.id, { dueOffsetDays });
-            }}
-            readonly={!canEdit}
-            testId={`template-task-${task.id}-due-offset`}
-          />
         </div>
       </div>
     </div>

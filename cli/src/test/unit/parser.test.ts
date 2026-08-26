@@ -2,6 +2,7 @@ import { test } from "node:test";
 import * as assert from "node:assert";
 import { createRegistry } from "../../commands/registry";
 import { parseCommand, UsageError } from "../../core/parser";
+import type { Catalog } from "../../types/catalog";
 import { fixtureCatalog } from "./fixture-catalog";
 
 test("parses required input flags", () => {
@@ -308,3 +309,57 @@ test("rejects repeated --file flags for documents create_file", () => {
     },
   );
 });
+
+test("parses custom file input for project_templates create_file", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    ["project_templates", "create_file", "--template-id", "tpl1", "--file", "./report.pdf"],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      template_id: "tpl1",
+      file: "./report.pdf",
+    });
+  }
+});
+
+test("parses partial spaces update_tools with only templates_enabled", () => {
+  const catalog = loadRealCatalog();
+  const registry = createRegistry(catalog);
+  const parsed = parseCommand(
+    ["spaces", "update_tools", "--space-id", "s1", "--tools.templates-enabled", "true"],
+    registry,
+    catalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      space_id: "s1",
+      tools: {
+        templates_enabled: true,
+      },
+    });
+  }
+});
+
+function loadRealCatalog(): Catalog {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const catalogJson = require("../../generated/api-catalog.json");
+  const intEnums: Record<string, number[]> = {};
+  for (const [key, values] of Object.entries(catalogJson.types.int_enums || {})) {
+    intEnums[key] = (values as string[]).map(Number);
+  }
+
+  return {
+    ...catalogJson,
+    types: {
+      ...catalogJson.types,
+      int_enums: intEnums,
+    },
+  } as Catalog;
+}

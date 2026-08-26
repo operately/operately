@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateFolder do
     Definition.new!(
       name: "create_project_template_folder",
       title: "Create Project Template Folder",
-      description: "Creates a folder in a project template's Docs & Files tree.",
+      description: "Creates a folder in a project template Docs & Files tree. Template resources materialize when a project is created from the template. For live hub folders, use create_folder.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

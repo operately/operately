@@ -45,6 +45,7 @@ defmodule Operately.Mcp.ToolsTest do
     "list_project_templates",
     "get_project_template",
     "get_project_template_discussion",
+    "list_project_template_comments",
     "create_comment",
     "create_project_check_in",
     "create_goal_check_in",
@@ -144,6 +145,9 @@ defmodule Operately.Mcp.ToolsTest do
     "remove_project_template_contributor",
     "create_project_template_discussion",
     "update_project_template_discussion",
+    "create_project_template_comment",
+    "update_project_template_comment",
+    "delete_project_template_comment",
     "create_project_template_folder",
     "update_project_template_folder",
     "create_project_template_document",
@@ -359,6 +363,81 @@ defmodule Operately.Mcp.ToolsTest do
     assert delete_task["securitySchemes"] == [%{"type" => "oauth2", "scopes" => ["mcp:write"]}]
     assert delete_task["_meta"]["safetyClassification"] == "destructive"
     assert delete_task["inputSchema"]["required"] == ["task_id"]
+  end
+
+  test "live and template comment descriptions cross-reference each other" do
+    tools = tools_by_name()
+
+    live_comment_tools = ~w(create_comment update_comment delete_comment)
+    template_comment_tools =
+      ~w(create_project_template_comment update_project_template_comment delete_project_template_comment list_project_template_comments)
+
+    for name <- live_comment_tools do
+      description = tools[name].description
+
+      assert description =~ "live"
+      refute description =~ "blueprint staffing"
+
+      for template_name <- template_comment_tools do
+        assert description =~ template_name
+      end
+    end
+
+    for name <- template_comment_tools do
+      description = tools[name].description
+
+      assert description =~ "project template" or description =~ "blueprint"
+
+      for live_name <- live_comment_tools do
+        assert description =~ live_name
+      end
+    end
+  end
+
+  test "live and template contributor descriptions distinguish active projects from blueprint staffing" do
+    tools = tools_by_name()
+
+    live = ~w(list_project_contributors add_project_contributor update_project_contributor remove_project_contributor)
+    template = ~w(add_project_template_contributor update_project_template_contributor remove_project_template_contributor)
+
+    for name <- live do
+      description = tools[name].description
+      assert description =~ "active project"
+      assert Enum.any?(template, &String.contains?(description, &1))
+    end
+
+    for name <- template do
+      description = tools[name].description
+      assert description =~ "blueprint" or description =~ "project template"
+      assert Enum.any?(live, &String.contains?(description, &1))
+    end
+  end
+
+  test "live and template Docs & Files descriptions distinguish hub resources from template resources" do
+    tools = tools_by_name()
+
+    live =
+      ~w(create_document update_document create_folder rename_folder create_link update_link delete_document delete_file delete_link delete_folder move_resource_hub_item)
+
+    template =
+      ~w(create_project_template_document update_project_template_document create_project_template_folder update_project_template_folder create_project_template_link update_project_template_link update_project_template_file delete_project_template_resource move_project_template_resource)
+
+    for name <- live do
+      description = tools[name].description
+      assert description =~ "live"
+      assert Enum.any?(template, &String.contains?(description, &1))
+    end
+
+    for name <- template do
+      description = tools[name].description
+      assert description =~ "project template" or description =~ "template"
+      assert Enum.any?(["create_document", "update_document", "create_folder", "rename_folder", "create_link", "update_link", "delete_document", "delete_file", "delete_link", "delete_folder", "move_resource_hub_item"], &String.contains?(description, &1))
+    end
+  end
+
+  defp tools_by_name do
+    Tools.list_definitions()
+    |> Map.new(&{&1.name, &1})
   end
 
   defp valid_example?(%{"title" => title, "arguments" => arguments}) when is_binary(title) and title != "" and is_map(arguments), do: true

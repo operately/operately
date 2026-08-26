@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Projects.ListContributors do
     Definition.new!(
       name: "list_project_contributors",
       title: "List Project Contributors",
-      description: "Lists project contributors and their access levels.",
+      description: "Lists people on an active project and their access levels. For blueprint staffing on a project template, use add_project_template_contributor, update_project_template_contributor, or remove_project_template_contributor.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:read"],
       safety_classification: :read_only,

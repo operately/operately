@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument do
     Definition.new!(
       name: "create_document",
       title: "Create Document",
-      description: "Creates a new document in exactly one space, project, or goal resource hub.",
+      description: "Creates a new document in a live space, project, or goal Docs & Files hub. For reusable documents inside a project template, use create_project_template_document.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

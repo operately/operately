@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Create do
     Definition.new!(
       name: "create_comment",
       title: "Create Comment",
-      description: "Creates a comment on a supported Operately resource using its existing MCP resource ID and parent type.",
+      description: "Creates a comment on a live Operately resource using its existing MCP resource ID and parent type. Applies only to live resources (projects, goals, spaces, hub docs/files/links, tasks, check-ins, etc.). For reusable blueprint comments inside a project template, use create_project_template_comment, update_project_template_comment, delete_project_template_comment, or list_project_template_comments.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

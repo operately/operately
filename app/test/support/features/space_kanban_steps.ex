@@ -42,16 +42,25 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.assert_has(testid: "task-slide-in")
   end
 
-  step :create_space_task_through_external_api, ctx, name: name do
+  step :create_space_task_through_external_api, ctx, opts do
     conn = api_conn()
+    name = Keyword.fetch!(opts, :name)
 
-    assert {200, res} = OperatelyWeb.TurboCase.external_mutation(conn, ctx.api_token, "tasks/create", %{
+    inputs = %{
       assignee_id: nil,
       due_date: nil,
       id: Paths.space_id(ctx.space),
       name: name,
       type: "space"
-    })
+    }
+
+    inputs =
+      case Keyword.fetch(opts, :description) do
+        {:ok, description} -> Map.put(inputs, :description, description)
+        :error -> inputs
+      end
+
+    assert {200, res} = OperatelyWeb.TurboCase.external_mutation(conn, ctx.api_token, "tasks/create", inputs)
 
     Map.put(ctx, :external_api_task_id, res.task.id)
   end

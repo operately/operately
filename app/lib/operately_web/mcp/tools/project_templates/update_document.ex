@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateDocument do
     Definition.new!(
       name: "update_project_template_document",
       title: "Update Project Template Document",
-      description: "Replaces a template document's name and Markdown content.",
+      description: "Replaces a project-template document's name and Markdown content. For live hub documents, use update_document.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

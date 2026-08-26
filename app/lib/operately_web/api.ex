@@ -153,7 +153,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_folder, OperatelyWeb.Api.ProjectTemplates.UpdateFolder)
         mutation(:create_document, OperatelyWeb.Api.ProjectTemplates.CreateDocument)
         mutation(:update_document, OperatelyWeb.Api.ProjectTemplates.UpdateDocument)
-        mutation(:create_files, OperatelyWeb.Api.ProjectTemplates.CreateFiles)
+        mutation(:create_files, OperatelyWeb.Api.ProjectTemplates.CreateFiles, catalog: false)
         mutation(:update_file, OperatelyWeb.Api.ProjectTemplates.UpdateFile)
         mutation(:create_link, OperatelyWeb.Api.ProjectTemplates.CreateLink)
         mutation(:update_link, OperatelyWeb.Api.ProjectTemplates.UpdateLink)
@@ -476,9 +476,11 @@ defmodule OperatelyWeb.Api do
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
-        query(:search, OperatelyWeb.Api.ResourceHubs.Search)
+        query(:search, OperatelyWeb.Api.Wrappers.DocsAndFiles.Search)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
         query(:get_document, OperatelyWeb.Api.Documents.Get)
+        query(:list_document_versions, OperatelyWeb.Api.Documents.ListVersions)
+        query(:get_document_version, OperatelyWeb.Api.Documents.GetVersion)
         query(:get_link, OperatelyWeb.Api.Links.Get)
         query(:get_file, OperatelyWeb.Api.Files.Get)
 
@@ -492,6 +494,7 @@ defmodule OperatelyWeb.Api do
         mutation(:publish_document, OperatelyWeb.Api.Documents.Publish)
         mutation(:delete_document, OperatelyWeb.Api.Documents.Delete)
         mutation(:update_document, OperatelyWeb.Api.Documents.Update)
+        mutation(:restore_document_version, OperatelyWeb.Api.Documents.RestoreVersion)
 
         mutation(:create_link, OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateLink)
         mutation(:delete_link, OperatelyWeb.Api.Links.Delete)

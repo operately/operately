@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.DeleteLink do
     Definition.new!(
       name: "delete_link",
       title: "Delete Link",
-      description: "Permanently deletes one link from a resource hub.",
+      description: "Permanently deletes one link from a live Docs & Files hub. For template resources, use delete_project_template_resource.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :destructive,

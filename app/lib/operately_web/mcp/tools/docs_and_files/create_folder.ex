@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateFolder do
     Definition.new!(
       name: "create_folder",
       title: "Create Folder",
-      description: "Creates a new folder in exactly one space, project, or goal resource hub.",
+      description: "Creates a new folder in a live space, project, or goal Docs & Files hub. For folders inside a project template, use create_project_template_folder.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

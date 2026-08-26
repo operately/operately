@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateLink do
     Definition.new!(
       name: "update_link",
       title: "Update Link",
-      description: "Updates the name, URL, type, and optional description of one link.",
+      description: "Updates a link in a live Docs & Files hub. For links inside a project template, use update_project_template_link.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

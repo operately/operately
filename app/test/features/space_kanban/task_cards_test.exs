@@ -38,18 +38,32 @@ defmodule Operately.Features.SpaceKanban.TaskCardsTest do
     |> Steps.assert_description(content: "Updated description for kanban flow.")
   end
 
-  feature "task description set through external API is visible in the slide-in", ctx do
-    description = Operately.Support.RichText.rich_text("Hello world from API", :as_string)
+  feature "task description set during external API creation is visible in the slide-in", ctx do
+    ctx =
+      ctx
+      |> Factory.add_api_token(:api_token, :creator, read_only: false)
+      |> Steps.create_space_task_through_external_api(
+        name: "External API task",
+        description: api_task_description()
+      )
 
+    ctx
+    |> Steps.visit_kanban_page(task_id: ctx.external_api_task_id)
+    |> Steps.assert_description(content: "First paragraph from the API.")
+    |> Steps.assert_description(content: "Second paragraph from the API.")
+  end
+
+  feature "task description updated through external API is visible after a fresh page load", ctx do
     ctx =
       ctx
       |> Factory.add_api_token(:api_token, :creator, read_only: false)
       |> Steps.create_space_task_through_external_api(name: "External API task")
-      |> Steps.update_task_description_through_external_api(description: description)
+      |> Steps.update_task_description_through_external_api(description: api_task_description())
 
     ctx
     |> Steps.visit_kanban_page(task_id: ctx.external_api_task_id)
-    |> Steps.assert_description(content: "Hello world from API")
+    |> Steps.assert_description(content: "First paragraph from the API.")
+    |> Steps.assert_description(content: "Second paragraph from the API.")
   end
 
   feature "delete a task from the slide-in", ctx do
@@ -62,5 +76,27 @@ defmodule Operately.Features.SpaceKanban.TaskCardsTest do
     |> Steps.change_task_status(prev_status: "Not started", next_status: new_status)
     |> Steps.delete_task()
     |> Steps.assert_task_removed(task_key: :second_task, status_value: new_status)
+  end
+
+  defp api_task_description do
+    Jason.encode!(%{
+      type: "doc",
+      content: [
+        %{
+          type: "paragraph",
+          content: [
+            %{type: "text", text: ""},
+            %{type: "text", text: "First paragraph from the API."}
+          ]
+        },
+        %{
+          type: "paragraph",
+          content: [
+            %{type: "text", text: "Second paragraph from the API."},
+            %{type: "text", text: ""}
+          ]
+        }
+      ]
+    })
   end
 end

@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 250
+- Endpoints: 252
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -42,12 +42,15 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents delete_folder` | `op documents delete_folder` | `POST` | `/api/external/v1/documents/delete_folder` |
 | `documents delete_link` | `op documents delete_link` | `POST` | `/api/external/v1/documents/delete_link` |
 | `documents get_document` | `op documents get_document` | `GET` | `/api/external/v1/documents/get_document` |
+| `documents get_document_version` | `op documents get_document_version` | `GET` | `/api/external/v1/documents/get_document_version` |
 | `documents get_file` | `op documents get_file` | `GET` | `/api/external/v1/documents/get_file` |
 | `documents get_folder` | `op documents get_folder` | `GET` | `/api/external/v1/documents/get_folder` |
 | `documents get_link` | `op documents get_link` | `GET` | `/api/external/v1/documents/get_link` |
 | `documents list_contents` | `op documents list_contents` | `GET` | `/api/external/v1/documents/list_contents` |
+| `documents list_document_versions` | `op documents list_document_versions` | `GET` | `/api/external/v1/documents/list_document_versions` |
 | `documents publish_document` | `op documents publish_document` | `POST` | `/api/external/v1/documents/publish_document` |
 | `documents rename_folder` | `op documents rename_folder` | `POST` | `/api/external/v1/documents/rename_folder` |
+| `documents restore_document_version` | `op documents restore_document_version` | `POST` | `/api/external/v1/documents/restore_document_version` |
 | `documents search` | `op documents search` | `GET` | `/api/external/v1/documents/search` |
 | `documents update_document` | `op documents update_document` | `POST` | `/api/external/v1/documents/update_document` |
 | `documents update_file` | `op documents update_file` | `POST` | `/api/external/v1/documents/update_file` |
@@ -130,7 +133,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `project_templates create_comment` | `op project_templates create_comment` | `POST` | `/api/external/v1/project_templates/create_comment` |
 | `project_templates create_discussion` | `op project_templates create_discussion` | `POST` | `/api/external/v1/project_templates/create_discussion` |
 | `project_templates create_document` | `op project_templates create_document` | `POST` | `/api/external/v1/project_templates/create_document` |
-| `project_templates create_files` | `op project_templates create_files` | `POST` | `/api/external/v1/project_templates/create_files` |
 | `project_templates create_folder` | `op project_templates create_folder` | `POST` | `/api/external/v1/project_templates/create_folder` |
 | `project_templates create_from_project` | `op project_templates create_from_project` | `POST` | `/api/external/v1/project_templates/create_from_project` |
 | `project_templates create_link` | `op project_templates create_link` | `POST` | `/api/external/v1/project_templates/create_link` |

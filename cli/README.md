@@ -58,14 +58,16 @@ operately companies get_work_map
 
 ## Current CLI Shape
 
-The current bundled API catalog exposes **199 endpoint commands** across **10 namespaces**:
+The current bundled API catalog exposes **249 endpoint commands** across **12 namespaces**:
 
 - `comments`
 - `companies`
 - `documents`
 - `goals`
+- `kpis`
 - `notifications`
 - `people`
+- `project_templates`
 - `projects`
 - `reactions`
 - `spaces`
