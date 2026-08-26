@@ -30,6 +30,7 @@ defmodule OperatelyWeb.McpMetadataControllerTest do
              "registration_endpoint" => registration_endpoint,
              "grant_types_supported" => grant_types_supported,
              "code_challenge_methods_supported" => code_challenge_methods_supported,
+             "token_endpoint_auth_methods_supported" => token_endpoint_auth_methods_supported,
              "client_id_metadata_document_supported" => client_id_metadata_document_supported,
              "default_scopes" => default_scopes
            } = Jason.decode!(conn.resp_body)
@@ -41,6 +42,7 @@ defmodule OperatelyWeb.McpMetadataControllerTest do
     assert registration_endpoint == OperatelyWeb.Endpoint.url() <> "/oauth/register"
     assert grant_types_supported == ["authorization_code", "refresh_token"]
     assert code_challenge_methods_supported == ["S256"]
+    assert token_endpoint_auth_methods_supported == Operately.Mcp.ClientMetadata.supported_token_endpoint_auth_methods()
     assert client_id_metadata_document_supported == true
     assert default_scopes == Mcp.default_scopes()
   end

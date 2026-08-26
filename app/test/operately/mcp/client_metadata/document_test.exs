@@ -127,6 +127,30 @@ defmodule Operately.Mcp.ClientMetadata.DocumentTest do
                })
     end
 
+    test "defaults omitted token endpoint auth method to none" do
+      assert {:ok, metadata} =
+               Document.parse(@client_id, %{
+                 "client_id" => @client_id,
+                 "client_name" => "Example MCP Client",
+                 "redirect_uris" => ["https://client.example.com/callback"]
+               })
+
+      assert metadata.token_endpoint_auth_method == "none"
+    end
+
+    test "accepts a preferred private_key_jwt method when none is also supported" do
+      assert {:ok, metadata} =
+               Document.parse(@client_id, %{
+                 "client_id" => @client_id,
+                 "client_name" => "ChatGPT",
+                 "redirect_uris" => ["https://chatgpt.com/connector/oauth/example"],
+                 "token_endpoint_auth_method" => "private_key_jwt",
+                 "token_endpoint_auth_methods_supported" => ["none", "private_key_jwt"]
+               })
+
+      assert metadata.token_endpoint_auth_method == "none"
+    end
+
     test "rejects unsupported client authentication methods" do
       assert {:error, :unsupported_client_authentication} =
                Document.parse(@client_id, %{
@@ -134,6 +158,17 @@ defmodule Operately.Mcp.ClientMetadata.DocumentTest do
                  "client_name" => "Example MCP Client",
                  "redirect_uris" => ["https://client.example.com/callback"],
                  "token_endpoint_auth_method" => "client_secret_post"
+               })
+    end
+
+    test "rejects private_key_jwt when none is not a supported fallback" do
+      assert {:error, :unsupported_client_authentication} =
+               Document.parse(@client_id, %{
+                 "client_id" => @client_id,
+                 "client_name" => "ChatGPT",
+                 "redirect_uris" => ["https://chatgpt.com/connector/oauth/example"],
+                 "token_endpoint_auth_method" => "private_key_jwt",
+                 "token_endpoint_auth_methods_supported" => ["private_key_jwt"]
                })
     end
   end

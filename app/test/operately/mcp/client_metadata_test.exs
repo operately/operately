@@ -80,6 +80,28 @@ defmodule Operately.Mcp.ClientMetadataTest do
     end
   end
 
+  test "resolves a cimd client that prefers private_key_jwt when none is also supported" do
+    Application.put_env(:operately, :mcp_oauth_clients, [])
+
+    document = %{
+      "client_id" => @cimd_client_id,
+      "client_name" => "ChatGPT",
+      "redirect_uris" => ["https://chatgpt.com/connector/oauth/example"],
+      "token_endpoint_auth_method" => "private_key_jwt",
+      "token_endpoint_auth_methods_supported" => ["none", "private_key_jwt"]
+    }
+
+    with_mock Operately.Mcp.ClientMetadata.Fetcher, [],
+      fetch: fn client_id ->
+        assert client_id == @cimd_client_id
+        {:ok, document}
+      end do
+      assert {:ok, metadata} = ClientMetadata.resolve(@cimd_client_id)
+      assert metadata.client_name == "ChatGPT"
+      assert metadata.token_endpoint_auth_method == "none"
+    end
+  end
+
   test "resolves a cimd client from cached metadata" do
     Application.put_env(:operately, :mcp_oauth_clients, [])
     assert :ok = Cache.put(@cimd_client_id, @cimd_document, 60)

@@ -2,6 +2,7 @@ defmodule OperatelyWeb.McpMetadataController do
   use OperatelyWeb, :controller
 
   alias Operately.Mcp
+  alias Operately.Mcp.ClientMetadata
 
   def protected_resource(conn, _params) do
     json(conn, protected_resource_metadata())
@@ -41,7 +42,7 @@ defmodule OperatelyWeb.McpMetadataController do
       scopes_supported: Mcp.supported_scopes(),
       default_scopes: Mcp.default_scopes(),
       code_challenge_methods_supported: ["S256"],
-      token_endpoint_auth_methods_supported: ["none"],
+      token_endpoint_auth_methods_supported: ClientMetadata.supported_token_endpoint_auth_methods(),
       client_id_metadata_document_supported: true
     }
   end

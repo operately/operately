@@ -32,6 +32,7 @@ defmodule Operately.Mcp.ClientMetadata.Document do
          {:ok, client_name} <- fetch_required_string(document, "client_name"),
          {:ok, redirect_uris} <- fetch_redirect_uris(document),
          :ok <- validate_client_id_match(client_id, document_client_id),
+         {:ok, token_endpoint_auth_method} <- negotiate_token_endpoint_auth_method(document),
          {:ok, metadata} <-
            ClientMetadata.build(%{
              client_id: normalize_client_id(client_id),
@@ -39,7 +40,7 @@ defmodule Operately.Mcp.ClientMetadata.Document do
              client_uri: fetch_optional_string(document, "client_uri"),
              logo_uri: fetch_optional_string(document, "logo_uri"),
              redirect_uris: redirect_uris,
-             token_endpoint_auth_method: Map.get(document, "token_endpoint_auth_method")
+             token_endpoint_auth_method: token_endpoint_auth_method
            }) do
       {:ok, metadata}
     else
@@ -81,6 +82,39 @@ defmodule Operately.Mcp.ClientMetadata.Document do
     case Map.get(document, key) do
       value when is_binary(value) and value != "" -> value
       _ -> nil
+    end
+  end
+
+  defp negotiate_token_endpoint_auth_method(document) do
+    intersection =
+      document
+      |> client_token_endpoint_auth_methods()
+      |> Enum.filter(&(&1 in ClientMetadata.supported_token_endpoint_auth_methods()))
+
+    case intersection do
+      [method | _] -> {:ok, method}
+      [] -> {:error, :unsupported_client_authentication}
+    end
+  end
+
+  defp client_token_endpoint_auth_methods(document) do
+    methods =
+      Enum.uniq(token_endpoint_auth_methods_supported(document) ++ preferred_token_endpoint_auth_method(document))
+
+    if methods == [], do: ClientMetadata.supported_token_endpoint_auth_methods(), else: methods
+  end
+
+  defp token_endpoint_auth_methods_supported(document) do
+    case Map.get(document, "token_endpoint_auth_methods_supported") do
+      methods when is_list(methods) -> Enum.filter(methods, &is_binary/1)
+      _ -> []
+    end
+  end
+
+  defp preferred_token_endpoint_auth_method(document) do
+    case Map.get(document, "token_endpoint_auth_method") do
+      method when is_binary(method) and method != "" -> [method]
+      _ -> []
     end
   end
 
