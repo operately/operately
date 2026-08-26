@@ -53,7 +53,7 @@ describe("normalizeRichTextContent", () => {
         },
       ],
     });
-    expect(descriptionWithEmptyTextNodes.content[0].content[0]).toEqual({ type: "text", text: "" });
+    expect(descriptionWithEmptyTextNodes.content[0]?.content?.[0]).toEqual({ type: "text", text: "" });
   });
 
   it("leaves valid rich text, empty paragraphs, mentions, attributes, and marks unchanged", () => {
