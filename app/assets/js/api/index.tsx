@@ -1867,6 +1867,11 @@ export interface MilestoneComment {
   comment: Comment;
 }
 
+export interface MilestoneOpenTasksResolutionInput {
+  action: MilestoneOpenTasksResolutionAction;
+  statusId?: string | null;
+}
+
 export interface Notification {
   __typename: "notification";
   id: string;
@@ -2995,6 +3000,8 @@ export type GoalStatus =
   | "outdated";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
+
+export type MilestoneOpenTasksResolutionAction = "move_to_no_milestone" | "set_status";
 
 export type MilestoneStatus = "pending" | "done";
 
@@ -5801,6 +5808,7 @@ export interface ProjectsCreateMilestoneCommentInput {
   milestoneId: Id;
   content: Json | null;
   action: string;
+  openTasksResolution?: MilestoneOpenTasksResolutionInput | null;
 }
 
 export interface ProjectsCreateMilestoneCommentResult {

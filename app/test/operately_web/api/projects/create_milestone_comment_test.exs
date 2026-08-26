@@ -152,12 +152,87 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
     end
   end
 
+  describe "completing a milestone with open tasks" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:open_task, :milestone)
+    end
+
+    test "requires an open task resolution", ctx do
+      assert {400, res} = complete_milestone(ctx)
+      assert res.message == "Choose what happens to the open tasks before completing the milestone"
+
+      assert Operately.Repo.reload!(ctx.milestone).status == :pending
+      assert Operately.Repo.reload!(ctx.open_task).milestone_id == ctx.milestone.id
+    end
+
+    test "moves open tasks outside the milestone", ctx do
+      assert {200, _} = complete_milestone(ctx, %{action: "move_to_no_milestone"})
+
+      assert Operately.Repo.reload!(ctx.milestone).status == :done
+      assert Operately.Repo.reload!(ctx.open_task).milestone_id == nil
+    end
+
+    test "does not move tasks that are already closed", ctx do
+      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+
+      ctx =
+        Factory.add_project_task(ctx, :closed_task, :milestone,
+          task_status: Map.from_struct(closed_status),
+          closed_at: NaiveDateTime.utc_now()
+        )
+
+      assert {200, _} = complete_milestone(ctx, %{action: "move_to_no_milestone"})
+
+      assert Operately.Repo.reload!(ctx.open_task).milestone_id == nil
+      assert Operately.Repo.reload!(ctx.closed_task).milestone_id == ctx.milestone.id
+    end
+
+    test "changes open tasks to a selected closed status", ctx do
+      closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
+
+      assert {200, _} = complete_milestone(ctx, %{action: "set_status", status_id: closed_status.id})
+
+      task = Operately.Repo.reload!(ctx.open_task)
+      assert task.milestone_id == ctx.milestone.id
+      assert task.task_status.id == closed_status.id
+      assert task.task_status.closed
+    end
+
+    test "rejects an open task status", ctx do
+      open_status = Enum.find(ctx.project.task_statuses, &(!&1.closed))
+
+      assert {400, res} = complete_milestone(ctx, %{action: "set_status", status_id: open_status.id})
+      assert res.message == "Select a closed task status"
+
+      refute Operately.Repo.reload!(ctx.open_task).task_status.closed
+      assert Operately.Repo.reload!(ctx.milestone).status == :pending
+    end
+  end
+
   #
   # Helpers
   #
 
   def create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+  end
+
+  defp complete_milestone(ctx, resolution \\ nil) do
+    inputs = %{
+      milestone_id: Paths.milestone_id(ctx.milestone),
+      content: nil,
+      action: "complete"
+    }
+
+    inputs = if resolution, do: Map.put(inputs, :open_tasks_resolution, resolution), else: inputs
+
+    mutation(ctx.conn, [:projects, :create_milestone_comment], inputs)
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do

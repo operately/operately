@@ -54,7 +54,11 @@ defmodule Operately.Comments do
   def get_milestone_comment!(id), do: Repo.get!(MilestoneComment, id)
 
   def create_milestone_comment(author, milestone, action, comment_attrs = %{}) do
-    CreateMilestoneCommentOperation.run(author, milestone, action, comment_attrs)
+    CreateMilestoneCommentOperation.run(author, milestone, action, nil, comment_attrs)
+  end
+
+  def create_milestone_comment(author, milestone, action, open_tasks_resolution, comment_attrs) do
+    CreateMilestoneCommentOperation.run(author, milestone, action, open_tasks_resolution, comment_attrs)
   end
 
   def update_milestone_comment(%MilestoneComment{} = milestone_comment, attrs) do

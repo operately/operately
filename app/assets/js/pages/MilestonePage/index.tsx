@@ -345,20 +345,22 @@ function Page() {
   return <MilestonePage key={milestone.id!} {...props} />;
 }
 
-function usePageField<T>(
+function usePageField<T, Command = T>(
   pageData: LoaderResult & { refresh?: () => Promise<void> },
   {
     value,
     update,
+    optimisticValue,
     onError,
     validations,
   }: {
     value: (data: { milestone: Milestones.Milestone }) => T;
-    update: (value: T) => Promise<any>;
+    update: (command: Command) => Promise<any>;
+    optimisticValue?: (command: Command) => T;
     onError?: (error: string) => void;
     validations?: ((value: T) => string | null)[];
   },
-): [T, (v: T) => Promise<boolean>] {
+): [T, (command: Command) => Promise<boolean>] {
   const { cacheVersion, data, refresh: refreshPageData } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -371,7 +373,9 @@ function usePageField<T>(
     }
   }, [value, cacheVersion, stateVersion, data]);
 
-  const updateState = async (newVal: T): Promise<boolean> => {
+  const updateState = async (command: Command): Promise<boolean> => {
+    const newVal = optimisticValue ? optimisticValue(command) : (command as unknown as T);
+
     if (validations) {
       for (const validation of validations) {
         const error = validation(newVal);
@@ -384,7 +388,7 @@ function usePageField<T>(
 
     try {
       setState(newVal);
-      await update(newVal);
+      await update(command);
 
       // Invalidate the cache for this entity
       if (data.milestone.id) {
@@ -453,13 +457,19 @@ function useStatusField(
   const { data } = pageData;
   const milestone = data.milestone;
 
-  const [status, setStatus] = usePageField(pageData, {
+  type StatusUpdate = {
+    status: MilestonePage.Status;
+    resolution?: MilestonePage.OpenTasksResolution;
+  };
+
+  const [status, updateStatus] = usePageField<MilestonePage.Status, StatusUpdate>(pageData, {
     value: ({ milestone }) => milestone.status,
-    update: async (v) => {
+    optimisticValue: (command) => command.status,
+    update: async ({ status: nextStatus, resolution }) => {
       const tmpId = `temp-${Date.now()}`;
       const optimisticComment: Milestones.MilestoneComment = {
         __typename: "milestone_comment",
-        action: v === "done" ? "complete" : "reopen",
+        action: nextStatus === "done" ? "complete" : "reopen",
         comment: {
           __typename: "comment",
           id: tmpId,
@@ -473,7 +483,8 @@ function useStatusField(
       const res = await Api.projects.createMilestoneComment({
         milestoneId: milestone.id,
         content: null,
-        action: v === "done" ? "complete" : "reopen",
+        action: nextStatus === "done" ? "complete" : "reopen",
+        openTasksResolution: serializeOpenTasksResolution(resolution),
       });
 
       PageCache.invalidate(pageCacheKey(milestone.id));
@@ -492,7 +503,20 @@ function useStatusField(
     onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
 
+  const setStatus = (nextStatus: MilestonePage.Status, resolution?: MilestonePage.OpenTasksResolution) =>
+    updateStatus({ status: nextStatus, resolution });
+
   return [status, setStatus] as const;
+}
+
+function serializeOpenTasksResolution(resolution?: MilestonePage.OpenTasksResolution) {
+  if (!resolution) return null;
+
+  if (resolution.action === "move_to_no_milestone") {
+    return { action: resolution.action, statusId: null };
+  }
+
+  return { action: resolution.action, statusId: resolution.status.id };
 }
 
 function useMilestones(pageData, milestone: Milestones.Milestone) {

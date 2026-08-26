@@ -112,6 +112,16 @@ const tasks: Types.Task[] = [
     closedAt: new Date("2024-01-20T00:00:00Z"),
     type: "project",
   },
+  {
+    id: "open-task-in-completed-milestone",
+    title: "Open task in completed milestone",
+    status: PENDING_STATUS,
+    description: null,
+    link: "#",
+    milestone: completedMilestone,
+    dueDate: null,
+    type: "project",
+  },
 ];
 
 function renderTaskBoard() {
@@ -150,7 +160,7 @@ describe("TaskBoard completed milestones", () => {
 
     const openMilestoneHeading = screen.getByText("Open Milestone");
     const noMilestoneHeading = screen.getByText("No milestone");
-    const completedSectionToggle = screen.getByRole("button", { name: "1 completed milestone" });
+    const completedSectionToggle = screen.getByRole("button", { name: /1 completed milestone/ });
 
     expect(
       openMilestoneHeading.compareDocumentPosition(noMilestoneHeading) & Node.DOCUMENT_POSITION_FOLLOWING,
@@ -159,6 +169,7 @@ describe("TaskBoard completed milestones", () => {
       noMilestoneHeading.compareDocumentPosition(completedSectionToggle) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
     expect(completedSectionToggle).toHaveAttribute("aria-expanded", "false");
+    expect(within(completedSection as HTMLElement).getByText("· 1 open task")).toBeInTheDocument();
     expect(screen.queryByText("Completed Milestone")).not.toBeInTheDocument();
 
     fireEvent.click(completedSectionToggle);
@@ -166,10 +177,11 @@ describe("TaskBoard completed milestones", () => {
     expect(completedSectionToggle).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByText("Completed Milestone")).toBeInTheDocument();
     if (!(completedSection instanceof HTMLElement)) throw new Error("expected completed milestones section");
-    expect(within(completedSection).getByText("1 task")).toBeInTheDocument();
+    expect(within(completedSection).getByText("2 tasks")).toBeInTheDocument();
     expect(within(completedSection).getByText("Completed Jan 20, 2024")).toBeInTheDocument();
     expect(completedSection?.querySelector('[data-test-id="milestone-add-task"]')).not.toBeInTheDocument();
     expect(screen.queryByText("Closed task in completed milestone")).not.toBeInTheDocument();
+    expect(screen.queryByText("Open task in completed milestone")).not.toBeInTheDocument();
     expect(screen.queryByText(/click \+ or press c to add a task/i)).not.toBeInTheDocument();
   });
 });

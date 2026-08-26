@@ -11,6 +11,7 @@ import { Sidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
 import { Header } from "./components/Header";
 import { TasksSection } from "./components/TasksSection";
+import { CompleteMilestoneModal } from "./components/CompleteMilestoneModal";
 import { SidebarSection } from "../SidebarSection";
 import { GhostButton, SecondaryButton } from "../Button";
 import { launchConfetti } from "../utils/confetti";
@@ -29,6 +30,7 @@ export namespace MilestonePage {
   export type SpaceProps = MilestonePageTypes.SpaceProps;
   export type Person = MilestonePageTypes.Person;
   export type Status = MilestonePageTypes.Status;
+  export type OpenTasksResolution = MilestonePageTypes.OpenTasksResolution;
   export type ProjectProps = MilestonePageTypes.ProjectProps;
   export type TemplateProps = MilestonePageTypes.TemplateProps;
   export type Props = MilestonePageTypes.Props;
@@ -82,6 +84,8 @@ export function MilestonePage(props: MilestonePage.Props) {
 }
 
 function ProjectMilestoneLayout({ state }: { state: MilestonePage.ProjectState }) {
+  const statusActions = useMilestoneStatusActions(state);
+  const contentState = { ...state, onStatusChange: statusActions.requestStatusChange };
   const tabs = useProjectPageTabs({
     defaultTab: "tasks",
     childrenCount: state.childrenCount,
@@ -112,7 +116,7 @@ function ProjectMilestoneLayout({ state }: { state: MilestonePage.ProjectState }
       {...spaceProps}
     >
       <MainContainer>
-        <MilestoneContent {...state} />
+        <MilestoneContent {...contentState} />
       </MainContainer>
 
       <TaskCreationModal
@@ -128,7 +132,69 @@ function ProjectMilestoneLayout({ state }: { state: MilestonePage.ProjectState }
         richTextHandlers={state.richTextHandlers}
         formattedTimePreferences={state.formattedTimePreferences}
       />
+
+      <CompleteMilestoneModal
+        isOpen={statusActions.isCompletionModalOpen}
+        milestoneName={state.title}
+        openTaskCount={statusActions.openTasks.length}
+        closedStatuses={statusActions.closedStatuses}
+        onClose={statusActions.closeCompletionModal}
+        onComplete={statusActions.completeMilestone}
+      />
     </ProjectPageLayout>
+  );
+}
+
+function useMilestoneStatusActions(state: MilestonePage.ProjectState) {
+  const [isCompletionModalOpen, setIsCompletionModalOpen] = React.useState(false);
+  const openTasks = React.useMemo(() => state.tasks.filter((task) => !isClosedTask(task)), [state.tasks]);
+  const closedStatuses = React.useMemo(() => state.statusOptions.filter(isClosedStatus), [state.statusOptions]);
+
+  const requestStatusChange = async (nextStatus: MilestonePage.Status): Promise<boolean> => {
+    if (nextStatus === "done" && openTasks.length > 0) {
+      setIsCompletionModalOpen(true);
+      return false;
+    }
+
+    const updated = (await state.onStatusChange(nextStatus)) !== false;
+    if (updated && nextStatus === "done") {
+      launchConfetti();
+    }
+
+    return updated;
+  };
+
+  const completeMilestone = async (resolution: MilestonePageTypes.OpenTasksResolution) => {
+    const updated = (await state.onStatusChange("done", resolution)) !== false;
+    if (updated) {
+      launchConfetti();
+    }
+
+    return updated;
+  };
+
+  return {
+    isCompletionModalOpen,
+    openTasks,
+    closedStatuses,
+    requestStatusChange,
+    completeMilestone,
+    closeCompletionModal: () => setIsCompletionModalOpen(false),
+  };
+}
+
+function isClosedTask(task: Types.Task) {
+  return Boolean(task.closedAt) || (task.status ? isClosedStatus(task.status) : false);
+}
+
+function isClosedStatus(status: Types.Status) {
+  return (
+    Boolean(status.closed) ||
+    status.color === "green" ||
+    status.color === "red" ||
+    status.value === "done" ||
+    status.value === "completed" ||
+    status.value === "canceled"
   );
 }
 
@@ -257,11 +323,7 @@ function MobileMeta(props: MilestonePage.ContentState) {
     if (!canEdit) return;
 
     const nextStatus = isCompleted ? "pending" : "done";
-    if (nextStatus === "done") {
-      launchConfetti();
-    }
-
-    onStatusChange(nextStatus);
+    void onStatusChange(nextStatus);
   };
 
   return (
