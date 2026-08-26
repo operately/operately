@@ -190,6 +190,35 @@ describe("CLI Integration Tests", () => {
       assert.ok(restoreResult.stdout.includes("--expected-current-version <integer> (required)"));
     });
 
+    it("shows partial spaces update_tools object fields as optional", async () => {
+      const result = await runCLI(["spaces", "update_tools", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--tools <update_space_tools_payload> (required)"));
+      assert.ok(result.stdout.includes("Fields for object 'update_space_tools_payload':"));
+      assert.ok(result.stdout.includes("tasks_enabled: <boolean> (optional)"));
+      assert.ok(result.stdout.includes("discussions_enabled: <boolean> (optional)"));
+      assert.ok(result.stdout.includes("resource_hub_enabled: <boolean> (optional)"));
+      assert.ok(result.stdout.includes("kpis_enabled: <boolean> (optional)"));
+      assert.ok(result.stdout.includes("templates_enabled: <boolean> (optional)"));
+    });
+
+    it("exposes generated project_templates command schemas", async () => {
+      const createResult = await runCLI(["project_templates", "create", "--help"]);
+      const createProjectResult = await runCLI(["project_templates", "create_project", "--help"]);
+      const orderingResult = await runCLI(["project_templates", "update_milestone_and_ordering", "--help"]);
+
+      assert.strictEqual(createResult.exitCode, 0);
+      assert.strictEqual(createProjectResult.exitCode, 0);
+      assert.strictEqual(orderingResult.exitCode, 0);
+      assert.ok(createResult.stdout.includes("--space-id <id> (required)"));
+      assert.ok(createResult.stdout.includes("--name <string> (required)"));
+      assert.ok(createProjectResult.stdout.includes("--template-id <id> (required)"));
+      assert.ok(createProjectResult.stdout.includes("--space-id <id> (required)"));
+      assert.ok(createProjectResult.stdout.includes("--start-date <date> (required)"));
+      assert.ok(createProjectResult.stdout.includes("--name <string> (required)"));
+      assert.ok(orderingResult.stdout.includes("--index <integer> (required)"));
+    });
+
     it("shows plural task assignee flags in command help", async () => {
       const result = await runCLI(["tasks", "update_assignee", "--help"]);
       assert.strictEqual(result.exitCode, 0);

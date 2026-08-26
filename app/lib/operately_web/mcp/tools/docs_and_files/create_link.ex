@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateLink do
     Definition.new!(
       name: "create_link",
       title: "Create Link",
-      description: "Creates a new link in exactly one space, project, or goal resource hub.",
+      description: "Creates a new link in a live space, project, or goal Docs & Files hub. For links inside a project template, use create_project_template_link.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

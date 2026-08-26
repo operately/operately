@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocument do
     Definition.new!(
       name: "update_document",
       title: "Update Document",
-      description: "Updates the name and body of one document.",
+      description: "Updates the name and body of one document in a live Docs & Files hub. For reusable documents inside a project template, use update_project_template_document.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

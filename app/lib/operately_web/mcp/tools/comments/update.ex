@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Update do
     Definition.new!(
       name: "update_comment",
       title: "Update Comment",
-      description: "Updates one existing comment on a supported Operately resource.",
+      description: "Updates one existing comment on a live Operately resource. Applies only to live collaboration comments. For reusable blueprint comments inside a project template, use update_project_template_comment (see also create_project_template_comment, delete_project_template_comment, list_project_template_comments).",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,

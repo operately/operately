@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.DeleteComment do
     Definition.new!(
       name: "delete_project_template_comment",
       title: "Delete Project Template Comment",
-      description: "Deletes a comment from a project template.",
+      description: "Deletes a comment from a project template. Applies only to project templates / reusable blueprint content. For comments on live Operately resources, use delete_comment (see also create_comment and update_comment).",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :destructive,

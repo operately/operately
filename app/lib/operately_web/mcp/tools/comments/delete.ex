@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Comments.Delete do
     Definition.new!(
       name: "delete_comment",
       title: "Delete Comment",
-      description: "Permanently deletes one comment on a supported Operately resource.",
+      description: "Permanently deletes one comment on a live Operately resource. Applies only to live collaboration comments. For reusable blueprint comments inside a project template, use delete_project_template_comment (see also create_project_template_comment, update_project_template_comment, list_project_template_comments).",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :destructive,

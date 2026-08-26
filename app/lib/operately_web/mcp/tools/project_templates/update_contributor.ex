@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateContributor do
     Definition.new!(
       name: "update_project_template_contributor",
       title: "Update Project Template Contributor",
-      description: "Updates selected template-contributor fields. Omitted fields remain unchanged; null clears responsibility.",
+      description: "Updates selected blueprint-staffing fields on a project template. Omitted fields remain unchanged; null clears responsibility. For people on an active project, use update_project_contributor.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
