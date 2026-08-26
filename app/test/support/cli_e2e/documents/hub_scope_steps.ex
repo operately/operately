@@ -6,7 +6,7 @@ defmodule Operately.Support.CliE2E.Documents.HubScopeSteps do
   alias Operately.Support.CliE2E.Helpers
   alias Operately.Support.Factory
 
-  @one_by_one_png Base.decode64!("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+tmH0AAAAASUVORK5CYII=")
+  @one_by_one_png Base.decode64!("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=")
 
   def one_by_one_png, do: @one_by_one_png
 
