@@ -43,6 +43,8 @@ export namespace MilestonePage {
 
   export type Status = "pending" | "done";
 
+  export type OpenTasksResolution = { action: "move_to_no_milestone" } | { action: "set_status"; status: Types.Status };
+
   type ProjectPropsBase = SpaceProps & {
     childrenCount: ProjectPageLayout.ChildrenCount;
     permissions: ProjectPermissions;
@@ -58,7 +60,7 @@ export namespace MilestonePage {
     dueDate: DateField.ContextualDate | null;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
     status: Status;
-    onStatusChange: (status: Status) => void;
+    onStatusChange: (status: Status, resolution?: OpenTasksResolution) => void | boolean | Promise<boolean>;
     description: any;
     onDescriptionChange: (newDescription: any) => Promise<boolean>;
 

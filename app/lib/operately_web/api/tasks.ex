@@ -716,32 +716,9 @@ defmodule OperatelyWeb.Api.Tasks do
     def update_task_status(multi, new_status) do
       multi
       |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, %{
-          task_status: new_status,
-          status: new_status.value,
-          closed_at: next_closed_at(task, new_status),
-          reopened_at: next_reopened_at(task, new_status)
-        })
+        Operately.Tasks.Task.changeset(task, Operately.Tasks.Task.status_change_attrs(task, new_status))
       end)
       |> Operately.Search.IndexUpdates.enqueue(:search_task, "task", fn changes -> changes.updated_task.id end)
-    end
-
-    defp next_closed_at(task, new_status) do
-      cond do
-        new_status.closed && task.closed_at -> task.closed_at
-        new_status.closed -> now_truncated()
-        true -> nil
-      end
-    end
-
-    defp next_reopened_at(task, new_status) do
-      was_closed = not is_nil(task.closed_at) or (task.task_status && task.task_status.closed)
-
-      if was_closed && !new_status.closed do
-        now_truncated()
-      else
-        task.reopened_at
-      end
     end
 
     def update_task_due_date(multi, new_due_date) do
