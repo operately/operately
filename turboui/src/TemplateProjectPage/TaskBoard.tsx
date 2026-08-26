@@ -17,6 +17,7 @@ import {
 import { TemplateTaskList } from "../TaskBoard/components/TemplateTaskList";
 import { InlineTaskCreator } from "../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../TaskBoard/hooks/useInlineTaskCreator";
+import { useTaskKeyboardNavigation } from "../TaskBoard/hooks/useTaskKeyboardNavigation";
 import { useTaskSlideInSelection } from "../TaskBoard/hooks/useTaskSlideInSelection";
 import { TaskSlideIn } from "../TaskBoard/KanbanView/TaskSlideIn";
 import type { KanbanState, TemplateTaskSlideInContext } from "../TaskBoard/KanbanView/types";
@@ -194,6 +195,9 @@ function BoardView({
           })),
         })
       }
+      onTaskDueOffsetDaysChange={
+        canEdit ? (taskId, dueOffsetDays) => void props.onTaskUpdate?.(taskId, { dueOffsetDays }) : undefined
+      }
       onTaskStatusChange={handleStatusChange}
       onTaskMilestoneChange={(taskId, milestone) =>
         void props.onTaskUpdate?.(taskId, { milestoneId: milestone?.id ?? null })
@@ -230,9 +234,17 @@ function ListView({
   const [createMilestoneId, setCreateMilestoneId] = React.useState<string | undefined>();
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
   const slideInEnabled = Boolean(props.getTemplateTaskPageProps);
-  const { selectedTaskId, setSelectedTaskId } = useTaskSlideInSelection({
+  const { selectedTaskId: slideInTaskId, setSelectedTaskId: setSlideInTaskId } = useTaskSlideInSelection({
     tasks: props.tasks,
     enabled: slideInEnabled,
+  });
+  const {
+    containerRef: keyboardNavigationRef,
+    selectedTaskId: keyboardSelectedTaskId,
+    clearSelection: clearTaskSelection,
+    scopeBind: keyboardNavigationScopeBind,
+  } = useTaskKeyboardNavigation<HTMLDivElement>({
+    clearSelectionWithEscape: !slideInTaskId,
   });
   const isDraggingEnabled = canEdit && Boolean(props.onTaskReorder);
   const handleTaskMove = React.useCallback(
@@ -252,8 +264,8 @@ function ListView({
   const activeDestination = isDraggingEnabled ? destination : null;
   const slideInContext = useTemplateSlideInContext(props, canEdit);
   const taskPageProps =
-    selectedTaskId && props.getTemplateTaskPageProps
-      ? props.getTemplateTaskPageProps(selectedTaskId, slideInContext)
+    slideInTaskId && props.getTemplateTaskPageProps
+      ? props.getTemplateTaskPageProps(slideInTaskId, slideInContext)
       : null;
   const openCreateModal = (milestoneId?: string) => {
     setCreateMilestoneId(milestoneId);
@@ -307,11 +319,15 @@ function ListView({
         onCreate={props.onMilestoneCreate}
       />
       <TaskSlideIn
-        isOpen={Boolean(selectedTaskId)}
-        onClose={() => setSelectedTaskId(null)}
+        isOpen={Boolean(slideInTaskId)}
+        onClose={() => setSlideInTaskId(null)}
         taskPageProps={taskPageProps}
       />
-      <div className="overflow-hidden rounded-md border border-surface-outline bg-surface-base">
+      <div
+        ref={keyboardNavigationRef}
+        {...keyboardNavigationScopeBind}
+        className="overflow-hidden rounded-md border border-surface-outline bg-surface-base"
+      >
         {orderedMilestones.map((milestone) => {
           const milestoneTasks = tasks.filter((task) => task.milestoneId === (milestone?.id ?? null));
           const containerId = milestone?.id ?? ROOT_TASKS_CONTAINER_ID;
@@ -333,8 +349,10 @@ function ListView({
               draggedItemId={activeDraggedItemId}
               destination={activeDestination}
               placeholderHeight={draggedItemDimensions?.height ?? null}
-              onTaskOpen={slideInEnabled ? setSelectedTaskId : undefined}
+              onTaskOpen={slideInEnabled ? setSlideInTaskId : undefined}
               onRequestAdvancedCreate={() => openCreateModal(milestone?.id)}
+              selectedTaskId={keyboardSelectedTaskId}
+              onInlineCreateOpen={clearTaskSelection}
             />
           );
         })}
@@ -394,6 +412,8 @@ function TaskSection({
   placeholderHeight,
   onTaskOpen,
   onRequestAdvancedCreate,
+  selectedTaskId,
+  onInlineCreateOpen,
 }: {
   title: string;
   link?: string;
@@ -409,10 +429,14 @@ function TaskSection({
   placeholderHeight: number | null;
   onTaskOpen?: (taskId: string | null) => void;
   onRequestAdvancedCreate: () => void;
+  selectedTaskId: string | null;
+  onInlineCreateOpen: () => void;
 }) {
   const sectionRef = React.useRef<HTMLElement>(null);
   const defaultStatus = props.statuses[0];
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
+  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+    onOpen: onInlineCreateOpen,
+  });
   const handleCreateTask = React.useCallback(
     (name: string) => {
       if (!defaultStatus || !props.onTaskCreate) return;
@@ -515,6 +539,7 @@ function TaskSection({
         emptyState={<TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />}
         dragState={{ draggedItemId, destination, placeholderHeight }}
         highlighted={isRootDropTarget}
+        selectedTaskId={selectedTaskId}
       />
     </section>
   );

@@ -115,4 +115,20 @@ describe("RelativeDayField", () => {
 
     expect(screen.getByRole("button", { name: "Set relative date" })).toHaveClass("[&>span]:text-transparent");
   });
+
+  it("opens for editing when a parent sets isOpen", () => {
+    render(<RelativeDayField value={1} onChange={jest.fn()} isOpen />);
+
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+  });
+
+  it("notifies the parent when editing starts", () => {
+    const onOpenChange = jest.fn();
+    render(<RelativeDayField value={1} onChange={jest.fn()} isOpen={false} onOpenChange={onOpenChange} />);
+
+    fireEvent.click(screen.getByText("1 day after project starts"));
+
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByRole("textbox")).toBeNull();
+  });
 });

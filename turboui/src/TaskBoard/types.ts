@@ -70,6 +70,7 @@ export interface Task {
   milestone: Milestone | null;
   points?: number;
   dueDate: DateField.ContextualDate | null;
+  dueOffsetDays?: number | null;
   reminders?: TaskPage.Reminder[];
   closedAt?: Date | null;
   hasDescription?: boolean;
@@ -188,6 +189,7 @@ export interface TaskBoardProps {
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskDueOffsetDaysChange?: (taskId: string, dueOffsetDays: number | null) => void;
   onTaskRemindersChange?: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;

@@ -6,6 +6,7 @@ import { calculateMilestoneStats } from "../../TaskBoard/components/MilestoneCar
 import { TemplateTaskList } from "../../TaskBoard/components/TemplateTaskList";
 import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
+import { useTaskKeyboardNavigation } from "../../TaskBoard/hooks/useTaskKeyboardNavigation";
 import * as Types from "../../TaskBoard/types";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import { compareIds } from "../../utils/ids";
@@ -25,10 +26,19 @@ export function TemplateTasksSection({
   onTaskReorder,
   personSearch,
   taskSlideIn,
+  selectedTaskId,
   onTaskOpen,
   setIsTaskModalOpen,
 }: MilestonePage.TemplateState & Props) {
   const canEdit = permissions.canEdit || false;
+  const {
+    containerRef: keyboardNavigationRef,
+    selectedTaskId: keyboardSelectedTaskId,
+    clearSelection: clearTaskSelection,
+    scopeBind: keyboardNavigationScopeBind,
+  } = useTaskKeyboardNavigation<HTMLDivElement>({
+    clearSelectionWithEscape: !selectedTaskId,
+  });
   const orderedTasks = React.useMemo(() => {
     const orderingState =
       milestones.find((milestone) => compareIds(milestone.id, milestoneId))?.tasksOrderingState ?? [];
@@ -41,7 +51,7 @@ export function TemplateTasksSection({
     closeCreator,
     creatorRef,
     hoverBind,
-  } = useInlineTaskCreator({ requireHover: false });
+  } = useInlineTaskCreator({ requireHover: false, onOpen: clearTaskSelection });
   const stats = calculateMilestoneStats(templateTasksAsBoardTasks(orderedTasks));
   const completionPercentage = calculateCompletionPercentage(stats);
   const handleCreateTask = React.useCallback(
@@ -97,16 +107,19 @@ export function TemplateTasksSection({
         ) : null
       }
     >
-      <TemplateTaskList
-        tasks={orderedTasks}
-        destinationMilestoneId={milestoneId}
-        canEdit={canEdit}
-        onTaskReorder={onTaskReorder}
-        taskRowProps={taskRowProps}
-        onTaskOpen={onTaskOpen}
-        inlineCreateRow={inlineCreator}
-        emptyState={<TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />}
-      />
+      <div ref={keyboardNavigationRef} {...keyboardNavigationScopeBind}>
+        <TemplateTaskList
+          tasks={orderedTasks}
+          destinationMilestoneId={milestoneId}
+          canEdit={canEdit}
+          onTaskReorder={onTaskReorder}
+          taskRowProps={taskRowProps}
+          onTaskOpen={onTaskOpen}
+          selectedTaskId={keyboardSelectedTaskId}
+          inlineCreateRow={inlineCreator}
+          emptyState={<TaskSectionEmptyState inlineCreator={inlineCreator} showCreationPrompt={canEdit} />}
+        />
+      </div>
     </TaskSectionLayout>
   );
 }
@@ -132,5 +145,6 @@ function calculateCompletionPercentage(stats: Types.MilestoneStats) {
 
 type Props = {
   taskSlideIn: React.ReactNode;
+  selectedTaskId: string | null;
   onTaskOpen: (taskId: string | null) => void;
 };

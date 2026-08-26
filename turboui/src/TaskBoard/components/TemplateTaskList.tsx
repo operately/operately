@@ -20,6 +20,7 @@ export function TemplateTaskList({
   emptyState,
   dragState,
   highlighted = false,
+  selectedTaskId = null,
 }: TemplateTaskListProps) {
   const listRef = React.useRef<HTMLDivElement>(null);
   const dropContainerId = destinationMilestoneId ?? ROOT_TASKS_CONTAINER_ID;
@@ -87,6 +88,7 @@ export function TemplateTaskList({
             index={index}
             containerId={dropContainerId}
             isDraggable={isDraggingEnabled}
+            selected={task.id === selectedTaskId}
           />
         </React.Fragment>
       ))}
@@ -118,4 +120,5 @@ export interface TemplateTaskListProps {
     placeholderHeight: number | null;
   };
   highlighted?: boolean;
+  selectedTaskId?: string | null;
 }
