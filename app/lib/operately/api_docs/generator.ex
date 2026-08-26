@@ -39,9 +39,10 @@ defmodule Operately.ApiDocs.Generator do
     catalog = build_catalog(api_module, api_base_path)
     catalog_payload = Catalog.payload(catalog, api_base_path)
     docs_dir = Path.join(out_dir, "help/api")
+    encoded = Catalog.encode(catalog_payload, previous_catalog(cli_catalog_path, docs_dir))
 
-    write_catalog_file!(docs_dir, catalog_payload)
-    write_cli_catalog(cli_catalog_path, catalog_payload)
+    write_file!(Path.join(docs_dir, "catalog.json"), encoded)
+    write_cli_catalog(cli_catalog_path, encoded)
 
     %{
       out_dir: out_dir,
@@ -97,29 +98,53 @@ defmodule Operately.ApiDocs.Generator do
   end
 
   defp build_endpoint(spec, full_name, type, api_base_path, api_module) do
-    if Map.get(spec, :catalog, true) == false do
-      nil
-    else
-      namespace_segment = if spec.namespace == nil, do: "root", else: Atom.to_string(spec.namespace)
-      endpoint_name = spec.name |> to_string()
-      method = if type == :query, do: "GET", else: "POST"
-      path = "#{api_base_path}/#{full_name}"
+    case catalog_visibility(spec) do
+      :omit ->
+        nil
 
-      %{
-        full_name: full_name,
-        namespace: spec.namespace,
-        namespace_segment: namespace_segment,
-        name: endpoint_name,
-        type: type,
-        method: method,
-        path: path,
-        handler: inspect(spec.handler),
-        inputs: TurboConnect.InputDefaults.normalize_fields_for_api(spec.inputs.fields, api_module),
-        outputs: spec.outputs.fields,
-        docstring: extract_module_docstring(spec.handler)
-      }
+      visibility ->
+        namespace_segment = if spec.namespace == nil, do: "root", else: Atom.to_string(spec.namespace)
+        endpoint_name = spec.name |> to_string()
+        method = if type == :query, do: "GET", else: "POST"
+        path = "#{api_base_path}/#{full_name}"
+
+        %{
+          full_name: full_name,
+          namespace: spec.namespace,
+          namespace_segment: namespace_segment,
+          name: endpoint_name,
+          type: type,
+          method: method,
+          path: path,
+          handler: inspect(spec.handler),
+          inputs: TurboConnect.InputDefaults.normalize_fields_for_api(spec.inputs.fields, api_module),
+          outputs: spec.outputs.fields,
+          docstring: extract_module_docstring(spec.handler),
+          hidden: visibility == :hidden
+        }
     end
   end
+
+  defp catalog_visibility(spec) do
+    case Map.get(spec, :catalog, :visible) do
+      :visible ->
+        :visible
+
+      :hidden ->
+        :hidden
+
+      :omit ->
+        :omit
+
+      other ->
+        raise ArgumentError,
+              "Invalid catalog option #{inspect(other)} for #{inspect(spec.handler)}. Expected :visible, :hidden, or :omit."
+    end
+  end
+
+  defp hidden?(endpoint), do: Map.get(endpoint, :hidden, false)
+
+  defp visible_endpoints(endpoints), do: Enum.reject(endpoints, &hidden?/1)
 
   defp extract_module_docstring(module) do
     case Code.fetch_docs(module) do
@@ -143,7 +168,10 @@ defmodule Operately.ApiDocs.Generator do
 
     write_file!(Path.join(docs_dir, "index.mdx"), Markdown.api_index(catalog))
 
-    root_endpoints = Map.get(catalog.endpoints_by_namespace, "root", [])
+    root_endpoints =
+      catalog.endpoints_by_namespace
+      |> Map.get("root", [])
+      |> visible_endpoints()
 
     Enum.each(root_endpoints, fn endpoint ->
       endpoint_file = Path.join(docs_dir, "#{endpoint.name}.mdx")
@@ -153,29 +181,45 @@ defmodule Operately.ApiDocs.Generator do
     catalog.namespaces
     |> Enum.reject(&(&1 == "root"))
     |> Enum.each(fn namespace ->
-      namespace_dir = Path.join(docs_dir, namespace)
-      File.mkdir_p!(namespace_dir)
+      namespace_endpoints =
+        catalog.endpoints_by_namespace
+        |> Map.get(namespace, [])
+        |> visible_endpoints()
 
-      namespace_endpoints = Map.get(catalog.endpoints_by_namespace, namespace, [])
-      namespace_atom = if is_binary(namespace), do: String.to_existing_atom(namespace), else: namespace
-      namespace_description = Map.get(catalog.namespace_descriptions, namespace_atom, "")
-      write_file!(Path.join(namespace_dir, "index.mdx"), Markdown.namespace_index(namespace, namespace_endpoints, namespace_description))
+      if namespace_endpoints != [] do
+        namespace_dir = Path.join(docs_dir, namespace)
+        File.mkdir_p!(namespace_dir)
 
-      Enum.each(namespace_endpoints, fn endpoint ->
-        endpoint_file = Path.join(namespace_dir, "#{endpoint.name}.mdx")
-        write_file!(endpoint_file, Markdown.endpoint_page(endpoint, catalog.types))
-      end)
+        namespace_atom = if is_binary(namespace), do: String.to_existing_atom(namespace), else: namespace
+        namespace_description = Map.get(catalog.namespace_descriptions, namespace_atom, "")
+        write_file!(Path.join(namespace_dir, "index.mdx"), Markdown.namespace_index(namespace, namespace_endpoints, namespace_description))
+
+        Enum.each(namespace_endpoints, fn endpoint ->
+          endpoint_file = Path.join(namespace_dir, "#{endpoint.name}.mdx")
+          write_file!(endpoint_file, Markdown.endpoint_page(endpoint, catalog.types))
+        end)
+      end
     end)
   end
 
-  defp write_catalog_file!(docs_dir, catalog_payload) do
-    write_file!(Path.join(docs_dir, "catalog.json"), Catalog.encode(catalog_payload))
+  defp write_cli_catalog(nil, _encoded), do: :ok
+
+  defp write_cli_catalog(path, encoded) do
+    write_file!(path, encoded)
   end
 
-  defp write_cli_catalog(nil, _catalog_payload), do: :ok
+  defp previous_catalog(cli_catalog_path, docs_dir) do
+    [cli_catalog_path, Path.join(docs_dir, "catalog.json")]
+    |> Enum.find(&(&1 && File.exists?(&1)))
+    |> decode_previous_catalog()
+  end
 
-  defp write_cli_catalog(path, catalog_payload) do
-    write_file!(path, Catalog.encode(catalog_payload))
+  defp decode_previous_catalog(nil), do: nil
+
+  defp decode_previous_catalog(path) do
+    path
+    |> File.read!()
+    |> Jason.decode!(objects: :ordered_objects)
   end
 
   defp write_file!(path, content) do

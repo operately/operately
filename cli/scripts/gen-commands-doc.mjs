@@ -18,7 +18,9 @@ if (!fs.existsSync(catalogPath)) {
 }
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
-const endpoints = Array.isArray(catalog.endpoints) ? catalog.endpoints.slice() : [];
+const endpoints = (Array.isArray(catalog.endpoints) ? catalog.endpoints.slice() : []).filter(
+  (endpoint) => !endpoint.hidden,
+);
 
 endpoints.sort((a, b) => {
   const left = a.namespace ? `${a.namespace}/${a.name}` : a.name;
