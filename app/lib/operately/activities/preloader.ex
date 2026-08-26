@@ -29,6 +29,8 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.ResourceHubs.Link)
     |> preload(Operately.ResourceHubs.Node)
     |> preload(Operately.Comments.CommentThread)
+    |> preload(Operately.Kpis.Kpi)
+    |> preload(Operately.Kpis.KpiAnnotation)
     |> preload_sub_activities()
   end
 

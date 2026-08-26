@@ -6,6 +6,7 @@ import { PageNew } from "../Page";
 import type { Navigation } from "../Page/Navigation";
 import { IconChartColumn, IconChevronRight } from "../icons";
 
+import { AnnotationForm } from "./AnnotationForm";
 import { DeleteKpiModal } from "./DeleteKpiModal";
 import { KpiDetail } from "./KpiDetail";
 import { KpiList } from "./KpiList";
@@ -23,6 +24,10 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const [isNewOpen, setIsNewOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [logKpiId, setLogKpiId] = React.useState<string | null>(null);
+  const [annotationState, setAnnotationState] = React.useState<{
+    kpi: SpaceKpisPageNS.Kpi;
+    annotation: SpaceKpisPageNS.KpiAnnotation | null;
+  } | null>(null);
 
   // The KPI on display is decided by the route, not by page state: each KPI has
   // its own page, so opening one is a navigation and its data (including the
@@ -80,6 +85,8 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             openKpi={openKpi}
             onOpenNew={() => setIsNewOpen(true)}
             onOpenDelete={() => setIsDeleteOpen(true)}
+            onOpenNewAnnotation={() => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation: null })}
+            onOpenAnnotation={(annotation) => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation })}
           />
         </div>
       </div>
@@ -104,6 +111,16 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         onClose={() => setLogKpiId(null)}
         onRecord={props.onRecordEntry}
         richTextHandlers={props.richTextHandlers}
+      />
+
+      <AnnotationForm
+        kpi={annotationState?.kpi ?? null}
+        annotation={annotationState?.annotation ?? null}
+        isOpen={annotationState !== null}
+        onClose={() => setAnnotationState(null)}
+        onCreate={props.onAddAnnotation}
+        onEdit={props.onEditAnnotation}
+        onDelete={props.onDeleteAnnotation}
       />
     </PageNew>
   );
@@ -211,6 +228,8 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   openKpi: KpiFields | null;
   onOpenNew: () => void;
   onOpenDelete: () => void;
+  onOpenNewAnnotation: () => void;
+  onOpenAnnotation: (annotation: SpaceKpisPageNS.KpiAnnotation) => void;
 }
 
 function KpisContent(props: KpisContentProps) {
@@ -233,6 +252,8 @@ function KpisContent(props: KpisContentProps) {
         canComment={props.canComment}
         championSearch={props.championSearch}
         onDescriptionChange={props.onDescriptionChange}
+        onOpenNewAnnotation={props.onOpenNewAnnotation}
+        onOpenAnnotation={props.onOpenAnnotation}
         onDelete={props.onOpenDelete}
         richTextHandlers={props.richTextHandlers}
         renderEntryComments={props.renderEntryComments}

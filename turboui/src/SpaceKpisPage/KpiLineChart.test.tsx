@@ -97,3 +97,31 @@ describe("KpiLineChart hover", () => {
     expect(x + width).toBeLessThanOrEqual(640);
   });
 });
+
+describe("KpiLineChart annotations", () => {
+  const entries = [entry("1", 810), entry("2", 848), entry("3", 802)];
+  const annotations: SpaceKpisPage.KpiAnnotation[] = [
+    {
+      id: "ann-1",
+      date: new Date("2026-01-02"),
+      title: "Launched enterprise plan",
+      createdBy: null,
+    },
+  ];
+
+  test("renders a marker for each annotation", () => {
+    const { container } = render(<KpiLineChart entries={entries} unit="users" annotations={annotations} />);
+
+    expect(container.querySelector('[data-test-id="kpi-chart-annotation-ann-1"]')).toBeInTheDocument();
+  });
+
+  test("shows the annotation title and date on hover", () => {
+    const { container } = render(<KpiLineChart entries={entries} unit="users" annotations={annotations} />);
+
+    fireEvent.mouseEnter(container.querySelector('[data-test-id="kpi-chart-annotation-hit-ann-1"]')!);
+
+    const tooltip = container.querySelector('[data-test-id="kpi-chart-annotation-tooltip"]');
+    expect(tooltip).toHaveTextContent("Launched enterprise plan");
+    expect(tooltip).toHaveTextContent(formatShortDate(annotations[0]!.date));
+  });
+});

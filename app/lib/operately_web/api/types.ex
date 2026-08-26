@@ -259,6 +259,30 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment, null: true
   end
 
+  object :activity_content_kpi_annotation_added, for: Operately.Activities.Content.KpiAnnotationAdded do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field? :annotation, :kpi_annotation, null: true
+    field :title, :string, null: false
+    field :date, :date, null: false
+  end
+
+  object :activity_content_kpi_annotation_edited, for: Operately.Activities.Content.KpiAnnotationEdited do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field? :annotation, :kpi_annotation, null: true
+    field :old_title, :string, null: false
+    field :new_title, :string, null: false
+    field :date, :date, null: false
+  end
+
+  object :activity_content_kpi_annotation_deleted, for: Operately.Activities.Content.KpiAnnotationDeleted do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field :title, :string, null: false
+    field :date, :date, null: false
+  end
+
   object :activity_content_goal_target_updating, for: Operately.Activities.Content.GoalTargetUpdating do
     field :company, :company
     field :space, :space
@@ -1063,6 +1087,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :champion, :person, null: true
     field? :latest_entry, :kpi_entry, null: true
     field? :entries, list_of(:kpi_entry), null: true
+    field? :annotations, list_of(:kpi_annotation), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
@@ -1074,6 +1099,15 @@ defmodule OperatelyWeb.Api.Types do
     field :period, :date, null: false
     field? :recorded_by, :person, null: true
     field? :comments_count, :integer, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
+  end
+
+  object :kpi_annotation, for: Operately.Kpis.KpiAnnotation do
+    field :id, :id, null: false
+    field :date, :date, null: false
+    field :title, :string, null: false
+    field? :created_by, :person, null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
   end
@@ -1136,6 +1170,9 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_posting,
       :activity_content_kpi_created,
       :activity_content_kpi_entry_commented,
+      :activity_content_kpi_annotation_added,
+      :activity_content_kpi_annotation_edited,
+      :activity_content_kpi_annotation_deleted,
       :activity_content_goal_archived,
       :activity_content_goal_check_in,
       :activity_content_goal_check_in_acknowledgement,
