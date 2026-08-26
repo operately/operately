@@ -73,20 +73,22 @@ export function CompleteMilestoneModal(props: CompleteMilestoneModalProps) {
           This milestone has {taskLabel}. Choose what happens to them before completing it.
         </p>
 
-        <Forms.RadioButtons
-          field="resolutionAction"
-          label="Open tasks"
-          options={[
-            { value: "move_to_no_milestone", label: "Move tasks to No milestone" },
-            { value: "set_status", label: "Change tasks to a closed status" },
-          ]}
-        />
+        <div className="space-y-2">
+          <Forms.RadioButtons
+            field="resolutionAction"
+            label="Open tasks"
+            options={[
+              { value: "move_to_no_milestone", label: "Move tasks to No milestone" },
+              { value: "set_status", label: "Change tasks to a closed status" },
+            ]}
+          />
 
-        <p className="text-xs text-content-dimmed">
-          {changesStatus
-            ? "The tasks stay in this milestone and use the selected status."
-            : "The tasks stay open and remain visible on the project task board."}
-        </p>
+          <p className="text-xs text-content-dimmed">
+            {changesStatus
+              ? "The tasks stay in this milestone and use the selected status."
+              : "The tasks stay open and remain visible on the project task board."}
+          </p>
+        </div>
 
         {changesStatus && selectedStatus && (
           <div className="space-y-1.5">

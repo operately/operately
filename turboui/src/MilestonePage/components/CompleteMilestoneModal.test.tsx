@@ -54,6 +54,13 @@ describe("CompleteMilestoneModal", () => {
     );
 
     fireEvent.click(await screen.findByLabelText("Change tasks to a closed status"));
+
+    const statusSelector = document.querySelector('[data-test-id="complete-milestone-task-status"]');
+    fireEvent.click(statusSelector!);
+
+    const statusSearch = await screen.findByPlaceholderText("Change status...");
+    expect(statusSearch.closest("[data-side]")).toHaveAttribute("data-side", "bottom");
+
     fireEvent.click(screen.getByRole("button", { name: "Complete milestone" }));
 
     await waitFor(() => expect(onComplete).toHaveBeenCalledWith({ action: "set_status", status: doneStatus }));

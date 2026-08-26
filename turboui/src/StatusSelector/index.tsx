@@ -209,7 +209,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   const triggerClassName = classNames(
     isFormField &&
       "flex w-full items-center gap-2 rounded-lg border border-surface-outline bg-surface-base px-2 py-1.5 text-left",
-    isFormField && !readonly && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-base",
+    isFormField && !readonly && "cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-1",
     isFormField && readonly && "cursor-default",
     !isFormField && !readonly && "cursor-pointer",
   );
@@ -248,8 +248,10 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
 
       <Popover.Portal>
         <Popover.Content
-          className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-50"
-          style={{ width: 220 }}
+          className={classNames(
+            "bg-surface-base shadow rounded border border-stroke-base p-0.5 z-50",
+            isFormField ? "w-[var(--radix-popover-trigger-width)]" : "w-[220px]",
+          )}
           sideOffset={4}
           alignOffset={2}
           align="start"
@@ -259,7 +261,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
             <div className="p-1 pb-0.5">
               <input
                 ref={inputRef}
-                className="w-full border border-stroke-base rounded px-2 py-1 text-sm bg-surface-base text-content-accent placeholder:text-content-dimmed focus:outline outline-brand-1 focus:border-stroke-base"
+                className="w-full border border-stroke-base rounded px-2 py-1 text-sm bg-surface-base text-content-accent placeholder:text-content-dimmed focus:outline-none focus:ring-2 focus:ring-brand-1"
                 placeholder="Change status..."
                 value={searchTerm}
                 autoFocus
