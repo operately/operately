@@ -1,7 +1,9 @@
 import { timeAxisTicks } from "./timeAxis";
 
 // Local-time constructor: the axis labels calendar days, so a UTC-parsed string
-// would shift the expected labels depending on the machine's timezone.
+// would shift the expected labels depending on the machine's timezone. Callers
+// that receive backend `:date` values as `YYYY-MM-DD` must parse them with
+// `fromIsoDate` (local midnight), not `new Date(iso)`.
 function at(year: number, month: number, day: number, hour = 0): Date {
   return new Date(year, month - 1, day, hour);
 }

@@ -79,3 +79,11 @@ export function toIsoDate(date: Date): string {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+// Inverse of `toIsoDate`. `new Date("YYYY-MM-DD")` is UTC midnight, which is
+// the previous calendar day in negative-offset timezones; parse the parts as
+// a local date so axis ticks and labels match the stored period.
+export function fromIsoDate(iso: string): Date {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(year!, month! - 1, day);
+}

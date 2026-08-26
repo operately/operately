@@ -6,6 +6,10 @@
 // boundaries the reader already thinks in — days, months, quarters, years — at
 // the finest spacing that still fits, so the shape of the line can be read
 // against real dates.
+//
+// Ticks are computed in local calendar time. Date-only API values must be
+// parsed with `fromIsoDate`; `new Date("YYYY-MM-DD")` is UTC midnight and would
+// land on the previous day in negative-offset timezones.
 
 export interface TimeAxisTick {
   time: number;
