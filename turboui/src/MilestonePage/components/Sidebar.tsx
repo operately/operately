@@ -36,14 +36,6 @@ export function Sidebar(props: MilestonePage.State) {
             formattedTimePreferences={props.formattedTimePreferences}
           />
         )}
-        {features.showInsertedAt && isTemplateMilestoneState(props) && props.insertedAt && (
-          <SidebarSection title="Created">
-            <div className="flex items-center gap-1.5 text-sm text-content-dimmed">
-              <IconCalendar size={14} />
-              <FormattedTime {...props.formattedTimePreferences} time={props.insertedAt} format="short-date" />
-            </div>
-          </SidebarSection>
-        )}
         {features.showSubscriptions && isProjectMilestoneState(props) && <SidebarNotificationSection {...props.subscriptions} />}
         <SidebarActions onDelete={props.openDeleteModal} canEdit={canEdit} />
       </div>
