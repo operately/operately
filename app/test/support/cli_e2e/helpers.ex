@@ -32,9 +32,12 @@ defmodule Operately.Support.CliE2E.Helpers do
     Application.put_env(:operately, :allow_signup_with_email, previous.allow_signup_with_email)
   end
 
-  def wait_for_google_session!(timeout_ms \\ 5_000) do
+  # Matches Task.await/2 on the CLI process in the Google auth e2e steps.
+  @google_session_timeout_ms 20_000
+
+  def wait_for_google_session!(cli_task \\ nil, timeout_ms \\ @google_session_timeout_ms) do
     deadline = System.monotonic_time(:millisecond) + timeout_ms
-    do_wait_for_google_session(deadline)
+    do_wait_for_google_session(deadline, cli_task)
   end
 
   def activation_code_response(email) do
@@ -62,25 +65,49 @@ defmodule Operately.Support.CliE2E.Helpers do
     ctx
   end
 
-  defp do_wait_for_google_session(deadline) do
+  defp do_wait_for_google_session(deadline, cli_task) do
     session =
       from(s in CliAuthSession,
-        where: s.auth_method == :google,
+        where: s.auth_method == :google and s.status == :pending,
         order_by: [desc: s.inserted_at],
         limit: 1
       )
       |> Repo.one()
 
     cond do
-      session && session.status == :pending ->
+      session ->
         session
+
+      cli_exited_without_session?(cli_task) ->
+        flunk("CLI exited before creating a pending Google auth session#{cli_exit_detail(cli_task)}")
 
       System.monotonic_time(:millisecond) >= deadline ->
         flunk("Timed out waiting for the CLI to create a pending Google auth session")
 
       true ->
         Process.sleep(100)
-        do_wait_for_google_session(deadline)
+        do_wait_for_google_session(deadline, cli_task)
+    end
+  end
+
+  defp cli_exited_without_session?(nil), do: false
+
+  defp cli_exited_without_session?(%Task{pid: pid}) when is_pid(pid) do
+    not Process.alive?(pid)
+  end
+
+  defp cli_exited_without_session?(%Task{}), do: true
+
+  defp cli_exit_detail(%Task{} = cli_task) do
+    case Task.yield(cli_task, 0) do
+      {:ok, %{exit_code: exit_code, output: output}} ->
+        " (exit #{exit_code}): #{String.trim(output)}"
+
+      {:ok, result} ->
+        " (#{inspect(result)})"
+
+      _ ->
+        ""
     end
   end
 

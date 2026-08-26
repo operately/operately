@@ -178,7 +178,7 @@ defmodule Operately.Support.CliE2E.AuthSteps do
   end
 
   step :complete_pending_google_login, ctx do
-    session = Helpers.wait_for_google_session!()
+    session = Helpers.wait_for_google_session!(ctx.cli_task)
     Helpers.complete_mock_google_auth!(ctx, session, account_id: ctx.account.id)
   end
 

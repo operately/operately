@@ -270,7 +270,7 @@ defmodule Operately.Support.CliE2E.JoinSteps do
   end
 
   step :complete_personal_invite_google_join, ctx do
-    session = Helpers.wait_for_google_session!()
+    session = Helpers.wait_for_google_session!(ctx.cli_task)
 
     Helpers.complete_mock_google_auth!(ctx, session,
       account_id: ctx.invitee_account.id,
@@ -446,7 +446,7 @@ defmodule Operately.Support.CliE2E.JoinSteps do
   end
 
   step :complete_company_wide_google_join_for_a_new_account, ctx do
-    session = Helpers.wait_for_google_session!()
+    session = Helpers.wait_for_google_session!(ctx.cli_task)
     new_google_email = "new-google-joiner@example.com"
     new_google_name = "New Google Joiner"
 
