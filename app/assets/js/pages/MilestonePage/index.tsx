@@ -345,20 +345,22 @@ function Page() {
   return <MilestonePage key={milestone.id!} {...props} />;
 }
 
-function usePageField<T>(
+function usePageField<T, Command = T>(
   pageData: LoaderResult & { refresh?: () => Promise<void> },
   {
     value,
     update,
+    optimisticValue,
     onError,
     validations,
   }: {
     value: (data: { milestone: Milestones.Milestone }) => T;
-    update: (value: T) => Promise<any>;
+    update: (command: Command) => Promise<any>;
+    optimisticValue?: (command: Command) => T;
     onError?: (error: string) => void;
     validations?: ((value: T) => string | null)[];
   },
-): [T, (v: T) => Promise<boolean>] {
+): [T, (command: Command) => Promise<boolean>] {
   const { cacheVersion, data, refresh: refreshPageData } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -371,7 +373,9 @@ function usePageField<T>(
     }
   }, [value, cacheVersion, stateVersion, data]);
 
-  const updateState = async (newVal: T): Promise<boolean> => {
+  const updateState = async (command: Command): Promise<boolean> => {
+    const newVal = optimisticValue ? optimisticValue(command) : (command as unknown as T);
+
     if (validations) {
       for (const validation of validations) {
         const error = validation(newVal);
@@ -384,7 +388,7 @@ function usePageField<T>(
 
     try {
       setState(newVal);
-      await update(newVal);
+      await update(command);
 
       // Invalidate the cache for this entity
       if (data.milestone.id) {
@@ -453,46 +457,90 @@ function useStatusField(
   const { data } = pageData;
   const milestone = data.milestone;
 
-  const [status, setStatus] = usePageField(pageData, {
+  type StatusUpdate = {
+    status: MilestonePage.Status;
+    resolution?: MilestonePage.OpenTasksResolution;
+  };
+
+  const [status, updateStatus] = usePageField<MilestonePage.Status, StatusUpdate>(pageData, {
     value: ({ milestone }) => milestone.status,
-    update: async (v) => {
-      const tmpId = `temp-${Date.now()}`;
-      const optimisticComment: Milestones.MilestoneComment = {
-        __typename: "milestone_comment",
-        action: v === "done" ? "complete" : "reopen",
-        comment: {
-          __typename: "comment",
-          id: tmpId,
-          insertedAt: new Date().toISOString(),
-          author: me,
-        },
-      };
-
-      setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
-
-      const res = await Api.projects.createMilestoneComment({
-        milestoneId: milestone.id,
-        content: null,
-        action: v === "done" ? "complete" : "reopen",
-      });
-
-      PageCache.invalidate(pageCacheKey(milestone.id));
-
-      setComments((prev) =>
-        prev.map((c) => {
-          if (c.id === tmpId) {
-            const comment = { ...res.comment.comment, author: me };
-            return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment });
-          } else {
-            return c;
-          }
-        }),
-      );
-    },
+    optimisticValue: (command) => command.status,
+    update: ({ status: nextStatus, resolution }) =>
+      updateMilestoneStatus({ paths, milestone, me, setComments, nextStatus, resolution }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
 
+  const setStatus = (nextStatus: MilestonePage.Status, resolution?: MilestonePage.OpenTasksResolution) =>
+    updateStatus({ status: nextStatus, resolution });
+
   return [status, setStatus] as const;
+}
+
+interface UpdateMilestoneStatusParams {
+  paths: Paths;
+  milestone: Milestones.Milestone;
+  me: NonNullable<Milestones.MilestoneComment["comment"]["author"]>;
+  setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>>;
+  nextStatus: MilestonePage.Status;
+  resolution?: MilestonePage.OpenTasksResolution;
+}
+
+export async function updateMilestoneStatus({
+  paths,
+  milestone,
+  me,
+  setComments,
+  nextStatus,
+  resolution,
+}: UpdateMilestoneStatusParams): Promise<void> {
+  const tmpId = `temp-${Date.now()}`;
+  const optimisticComment: Milestones.MilestoneComment = {
+    __typename: "milestone_comment",
+    action: nextStatus === "done" ? "complete" : "reopen",
+    comment: {
+      __typename: "comment",
+      id: tmpId,
+      insertedAt: new Date().toISOString(),
+      author: me,
+    },
+  };
+
+  setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
+
+  try {
+    const res = await Api.projects.createMilestoneComment({
+      milestoneId: milestone.id,
+      content: null,
+      action: nextStatus === "done" ? "complete" : "reopen",
+      openTasksResolution: serializeOpenTasksResolution(resolution),
+    });
+
+    PageCache.invalidate(pageCacheKey(milestone.id));
+
+    setComments((prev) =>
+      prev.map((comment) => {
+        if (comment.id === tmpId) {
+          const savedComment = { ...res.comment.comment, author: me };
+          return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment: savedComment });
+        } else {
+          return comment;
+        }
+      }),
+    );
+  } catch (error) {
+    setComments((prev) => prev.filter((comment) => comment.id !== tmpId));
+    throw error;
+  }
+}
+
+function serializeOpenTasksResolution(resolution?: MilestonePage.OpenTasksResolution) {
+  if (!resolution) return null;
+
+  if (resolution.action === "move_to_no_milestone") {
+    return { action: resolution.action, statusId: null };
+  }
+
+  return { action: resolution.action, statusId: resolution.status.id };
 }
 
 function useMilestones(pageData, milestone: Milestones.Milestone) {
