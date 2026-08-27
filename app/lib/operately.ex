@@ -12,6 +12,13 @@ defmodule Operately do
     "dev-version"
   end
 
+  def release_version do
+    case System.get_env("OPERATELY_VERSION") do
+      version when is_binary(version) and version != "" -> version
+      _ -> nil
+    end
+  end
+
   def installation_id do
     System.get_env("OPERATELY_INSTALLATION_ID") || "unknown"
   end

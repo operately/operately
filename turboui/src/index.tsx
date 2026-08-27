@@ -71,6 +71,7 @@ export { GoalPage } from "./GoalPage";
 export { HomePage } from "./HomePage";
 export { LastCheckIn } from "./LastCheckIn";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
+export { LobbyPage } from "./LobbyPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
 export { MemberTypeSelectionPage } from "./MemberTypeSelectionPage";
@@ -176,6 +177,8 @@ export { ResourceHubPage } from "./ResourceHubPage";
 export { ReviewPage } from "./ReviewPage";
 export { ProductReleaseAnnouncement } from "./ProductReleaseAnnouncement";
 export type { ProductRelease } from "./ProductReleaseAnnouncement";
+export { CurrentVersion } from "./CurrentVersion";
+
 export { SidebarNotificationSection } from "./SidebarSection";
 export { SpaceCard, SpaceCardGrid } from "./SpaceCards";
 export type { SpaceCardProps } from "./SpaceCards";
