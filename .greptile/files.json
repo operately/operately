@@ -1,0 +1,18 @@
+{
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "description": "Repository guidelines, including JS test file naming"
+    },
+    {
+      "path": "turboui/jest.config.json",
+      "description": "TurboUI Jest config",
+      "scope": ["turboui/**"]
+    },
+    {
+      "path": "app/jest.config.json",
+      "description": "App Jest config",
+      "scope": ["app/assets/js/**", "app/ee/assets/js/**"]
+    }
+  ]
+}
