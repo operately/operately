@@ -1,3 +1,9 @@
+interface StorybookWindow {
+  STORYBOOK_ENV?: boolean;
+}
+
 export const isStorybook = () => {
-  return typeof window !== "undefined" && window.STORYBOOK_ENV === true;
+  if (typeof window === "undefined") return false;
+
+  return (window as StorybookWindow).STORYBOOK_ENV === true;
 };
