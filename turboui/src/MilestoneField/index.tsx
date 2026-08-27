@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { DateField } from "../DateField";
 import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
-import { IconCircleX, IconExternalLink, IconFlag, IconSearch } from "../icons";
+import { IconChevronDown, IconChevronRight, IconCircleX, IconExternalLink, IconFlag, IconSearch } from "../icons";
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
 import { createTestId, TestableElement } from "../TestableElement";
@@ -316,7 +316,10 @@ function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOp
 
 function DialogSearch({ state }: { state: State }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [showCompletedMilestones, setShowCompletedMilestones] = React.useState(false);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+  const { activeMilestones, completedMilestones } = groupMilestonesByCompletion(state.milestones);
+  const visibleMilestones = showCompletedMilestones ? [...activeMilestones, ...completedMilestones] : activeMilestones;
 
   // Reset selected index when search results change
   React.useEffect(() => {
@@ -332,7 +335,7 @@ function DialogSearch({ state }: { state: State }) {
   }, [selectedIndex]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const totalOptions = state.milestones.length;
+    const totalOptions = visibleMilestones.length;
 
     switch (e.key) {
       case "ArrowDown":
@@ -345,7 +348,7 @@ function DialogSearch({ state }: { state: State }) {
         break;
       case "Enter":
         e.preventDefault();
-        const selectedMilestone = state.milestones[selectedIndex];
+        const selectedMilestone = visibleMilestones[selectedIndex];
         if (selectedMilestone) {
           state.setMilestone(selectedMilestone);
           state.setSearchQuery(""); // Clear search query
@@ -359,6 +362,41 @@ function DialogSearch({ state }: { state: State }) {
         break;
     }
   };
+
+  const renderMilestone = (milestone: Milestone, index: number) => (
+    <div
+      key={milestone.id}
+      ref={(el) => (itemRefs.current[index] = el)}
+      className={classNames(
+        "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer",
+        milestone.status === "done" && "text-content-dimmed",
+        {
+          "bg-surface-dimmed": index === selectedIndex,
+          "hover:bg-surface-dimmed": index !== selectedIndex,
+        },
+      )}
+      onClick={() => {
+        state.setMilestone(milestone);
+        state.setSearchQuery(""); // Clear search query
+        state.setIsOpen(false);
+      }}
+      onMouseEnter={() => setSelectedIndex(index)}
+      data-test-id={createTestId(state.testId, "search-result", milestone.name)}
+    >
+      <div className="flex items-start gap-1.5 truncate">
+        <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
+        <div className="truncate">
+          <div className="text-sm truncate">{milestone.name || milestone.title}</div>
+          {milestone.dueDate?.date && state.formattedTimePreferences && (
+            <div className="text-xs text-content-dimmed">
+              Due{" "}
+              <FormattedTime {...state.formattedTimePreferences} time={milestone.dueDate.date} format="short-date" />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="p-1">
@@ -374,40 +412,28 @@ function DialogSearch({ state }: { state: State }) {
       </div>
 
       <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
-        {state.milestones.map((milestone, index) => (
-          <div
-            key={milestone.id}
-            ref={(el) => (itemRefs.current[index] = el)}
-            className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
-              "bg-surface-dimmed": index === selectedIndex,
-              "hover:bg-surface-dimmed": index !== selectedIndex,
-            })}
+        {activeMilestones.map(renderMilestone)}
+
+        {completedMilestones.length > 0 && (
+          <button
+            type="button"
+            className="flex w-full items-center gap-1.5 rounded px-1.5 py-1.5 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
+            aria-expanded={showCompletedMilestones}
             onClick={() => {
-              state.setMilestone(milestone);
-              state.setSearchQuery(""); // Clear search query
-              state.setIsOpen(false);
+              setShowCompletedMilestones((isVisible) => !isVisible);
+              setSelectedIndex(0);
             }}
-            onMouseEnter={() => setSelectedIndex(index)}
-            data-test-id={createTestId(state.testId, "search-result", milestone.name)}
+            data-test-id={createTestId(state.testId, "completed-milestones-toggle")}
           >
-            <div className="flex items-start gap-1.5 truncate">
-              <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
-              <div className="truncate">
-                <div className="text-sm truncate">{milestone.name || milestone.title}</div>
-                {milestone.dueDate?.date && state.formattedTimePreferences && (
-                  <div className="text-xs text-content-dimmed">
-                    Due{" "}
-                    <FormattedTime
-                      {...state.formattedTimePreferences}
-                      time={milestone.dueDate.date}
-                      format="short-date"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+            {showCompletedMilestones ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+            <span>
+              {completedMilestones.length} completed milestone{completedMilestones.length === 1 ? "" : "s"}
+            </span>
+          </button>
+        )}
+
+        {showCompletedMilestones &&
+          completedMilestones.map((milestone, index) => renderMilestone(milestone, activeMilestones.length + index))}
 
         {state.milestones.length === 0 && state.searchQuery && (
           <div className="px-1.5 py-2 text-sm text-content-dimmed text-center">No milestones found</div>
@@ -415,4 +441,19 @@ function DialogSearch({ state }: { state: State }) {
       </div>
     </div>
   );
+}
+
+function groupMilestonesByCompletion(milestones: Milestone[]) {
+  const activeMilestones: Milestone[] = [];
+  const completedMilestones: Milestone[] = [];
+
+  milestones.forEach((milestone) => {
+    if (milestone.status === "done") {
+      completedMilestones.push(milestone);
+    } else {
+      activeMilestones.push(milestone);
+    }
+  });
+
+  return { activeMilestones, completedMilestones };
 }
