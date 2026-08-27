@@ -13,12 +13,14 @@ import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 import { usePaths } from "@/routes/paths";
 import { useLoadedData, useRefresh } from "./loader";
 import { buildResourceHubPageNavigation } from "./navigation";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
   const search = useResourceHubSearchProps(resourceHub.id);
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
@@ -38,6 +40,7 @@ export function Page() {
     addFileWidgetProps,
     nodesListProps,
     search,
+    formattedTimePreferences,
     addFolderModalProps: {
       resourceHubId: resourceHub.id!,
       onCreated: refresh,

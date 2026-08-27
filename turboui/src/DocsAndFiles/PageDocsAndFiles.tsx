@@ -19,7 +19,7 @@ import {
 } from "../ResourceHub";
 import { DocsAndFiles, DocsAndFilesTab } from ".";
 import {
-  getNodeAuthorName,
+  getNodeAuthor,
   getNodeChildrenCount,
   getNodeCommentsCount,
   getNodeContentType,
@@ -32,6 +32,7 @@ import {
   isNodeMovFile,
   isNodeVideoFile,
 } from "../ResourceHub/selectors";
+import type { FormattedTimePreferences } from "../FormattedTime";
 import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
 import { nodeDisplayInsertedAt } from "../utils/drafts";
@@ -54,16 +55,29 @@ export interface PageDocsAndFiles {
   search?: ResourceHubSearchProps;
 }
 
-export function PageDocsAndFilesTab({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
+export function PageDocsAndFilesTab({
+  docsAndFiles,
+  formattedTimePreferences,
+}: {
+  docsAndFiles: PageDocsAndFiles;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
   return (
     <NewFileModalsProvider value={docsAndFiles.newFileModals}>
-      <PageDocsAndFilesTabContent docsAndFiles={docsAndFiles} />
+      <PageDocsAndFilesTabContent docsAndFiles={docsAndFiles} formattedTimePreferences={formattedTimePreferences} />
     </NewFileModalsProvider>
   );
 }
 
-function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAndFiles }) {
-  const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, toggleShowAddFolder } = useNewFileModalsContext();
+function PageDocsAndFilesTabContent({
+  docsAndFiles,
+  formattedTimePreferences,
+}: {
+  docsAndFiles: PageDocsAndFiles;
+  formattedTimePreferences: FormattedTimePreferences;
+}) {
+  const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, toggleShowAddFolder } =
+    useNewFileModalsContext();
   const searchState = useResourceHubSearch(docsAndFiles.search);
   const displayedNodes = searchState.isActive ? searchState.results : docsAndFiles.nodesListProps.nodes;
   const items = React.useMemo(
@@ -94,6 +108,7 @@ function PageDocsAndFilesTabContent({ docsAndFiles }: { docsAndFiles: PageDocsAn
             />
           }
           beforeItems={<AddFileWidget {...docsAndFiles.addFileWidgetProps} />}
+          formattedTimePreferences={formattedTimePreferences}
         />
         <AddFolderModal {...docsAndFiles.addFolderModalProps} />
       </FileDragAndDropArea>
@@ -130,6 +145,7 @@ function mapNodeToItem(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles): D
       insertedAt: nodeDisplayInsertedAt(node),
       updatedAt: node.updatedAt,
       commentsCount: getNodeCommentsCount(node),
+      author: getNodeAuthor(node),
       details: buildNodeDetails(node, docsAndFiles),
       fileKind: buildFileKind(node),
       fileTypeLabel: buildFileTypeLabel(node),
@@ -148,11 +164,9 @@ function buildNodeDetails(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles)
     return [plurarize(childrenCount, "item", "items")];
   }
 
-  return [
-    getNodeAuthorName(node),
-    buildFileSize(node, docsAndFiles),
-    buildContentSnippet(node),
-  ].filter((detail): detail is string => Boolean(detail));
+  return [buildFileSize(node, docsAndFiles), buildContentSnippet(node)].filter((detail): detail is string =>
+    Boolean(detail),
+  );
 }
 
 function buildFileSize(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles) {

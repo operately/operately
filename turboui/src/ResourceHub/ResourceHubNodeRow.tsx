@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { CommentCountIndicator } from "../CommentCountIndicator";
+import type { FormattedTimePreferences } from "../FormattedTime";
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
 import { NodeDescription } from "./NodeDescription";
@@ -14,9 +15,17 @@ interface ResourceHubNodeRowProps {
   testId: string;
   actions?: React.ReactNode;
   className?: string;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
-export function ResourceHubNodeRow({ node, path, testId, actions, className }: ResourceHubNodeRowProps) {
+export function ResourceHubNodeRow({
+  node,
+  path,
+  testId,
+  actions,
+  className,
+  formattedTimePreferences,
+}: ResourceHubNodeRowProps) {
   const rowClassName = classNames(
     "flex justify-between gap-2 py-4 px-2 items-center",
     "border-b border-stroke-base",
@@ -25,12 +34,12 @@ export function ResourceHubNodeRow({ node, path, testId, actions, className }: R
 
   return (
     <div className={rowClassName} data-test-id={testId}>
-      <DivLink to={path} className="flex gap-4 items-center cursor-pointer flex-1">
+      <DivLink to={path} className="flex min-w-0 flex-1 cursor-pointer items-center gap-4">
         <NodeIcon node={node} size={48} />
 
-        <div>
-          <div className="font-bold text-base">{getNodeName(node)}</div>
-          <NodeDescription node={node} />
+        <div className="min-w-0">
+          <div className="truncate text-base font-bold">{getNodeName(node)}</div>
+          <NodeDescription node={node} formattedTimePreferences={formattedTimePreferences} />
         </div>
       </DivLink>
 

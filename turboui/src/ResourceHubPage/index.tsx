@@ -31,6 +31,7 @@ export function ResourceHubPage(props: ResourceHubPage.Props) {
       heading={props.resourceHub.name ?? ""}
       permissions={props.resourceHub.permissions}
       search={props.search}
+      formattedTimePreferences={props.formattedTimePreferences}
       beforeList={
         <ContinueEditingDrafts
           drafts={props.drafts.nodes}
