@@ -13,6 +13,7 @@ import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import * as Billing from "@/models/billing";
 import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
+import * as Companies from "@/models/companies";
 import * as Notifications from "@/models/notifications";
 import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
@@ -111,6 +112,7 @@ function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () =
     search,
     onNavigate: navigate,
     fullTextSearchPath,
+    showCurrentVersion: Companies.hasFeature(company, "current_version"),
   };
 
   return <CompanyNavigation {...props} />;
