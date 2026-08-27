@@ -11,6 +11,7 @@ services:
       - MIX_ENV=prod
       - DB_HOST=db
       - CERT_DB_DIR=/certs
+      - OPERATELY_VERSION=<%= version %>
     env_file:
       - operately.env
     volumes:

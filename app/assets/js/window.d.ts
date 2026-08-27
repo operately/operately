@@ -21,6 +21,7 @@ declare global {
     allowSignupWithGoogle: boolean;
 
     version: string;
+    releaseVersion?: string | null;
     sentry: SentryConfig;
     api: ApiConfig;
 

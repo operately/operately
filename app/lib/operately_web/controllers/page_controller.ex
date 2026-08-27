@@ -34,6 +34,7 @@ defmodule OperatelyWeb.PageController do
       allowLoginWithEmail: Application.get_env(:operately, :allow_login_with_email),
       allowSignupWithEmail: Application.get_env(:operately, :allow_signup_with_email),
       version: Operately.version(),
+      releaseVersion: Operately.release_version(),
       sentry: %{
         enabled: Application.get_env(:operately, :js_sentry_enabled),
         dsn: Application.get_env(:operately, :js_sentry_dsn)

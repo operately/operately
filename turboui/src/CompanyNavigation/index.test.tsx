@@ -75,34 +75,24 @@ describe("CompanyNavigation", () => {
     expect(trigger).toHaveAttribute("title", "Nexus Global Manufacturing Group");
   });
 
-  it("does not show the update badge outside Storybook", () => {
+  it("does not show the update badge until the feature flag is enabled", () => {
     renderNav({ availableUpdate: { version: "v1.8" } });
 
     expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
   });
 
-  describe("in Storybook", () => {
-    beforeEach(() => {
-      window.STORYBOOK_ENV = true;
-    });
+  it("hides the update badge when the feature flag is enabled but no update is available", () => {
+    renderNav({ showCurrentVersion: true });
 
-    afterEach(() => {
-      delete window.STORYBOOK_ENV;
-    });
+    expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
+  });
 
-    it("hides the update badge when no update is available", () => {
-      renderNav();
+  it("shows a New pill with the version when the feature flag is enabled and an update is available", () => {
+    renderNav({ showCurrentVersion: true, availableUpdate: { version: "v1.8" } });
 
-      expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
-    });
+    const badge = getByTestId("update-available-badge");
 
-    it("shows a New pill with the version when an update is available", () => {
-      renderNav({ availableUpdate: { version: "v1.8" } });
-
-      const badge = getByTestId("update-available-badge");
-
-      expect(badge).toHaveTextContent("New");
-      expect(badge).toHaveTextContent("v1.8");
-    });
+    expect(badge).toHaveTextContent("New");
+    expect(badge).toHaveTextContent("v1.8");
   });
 });
