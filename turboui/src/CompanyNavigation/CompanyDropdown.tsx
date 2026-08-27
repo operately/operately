@@ -3,6 +3,7 @@ import React from "react";
 import { IconBinaryTree2, IconBuildingEstate, IconCircleKey, IconSwitch, IconUserCircle } from "../icons";
 import { CompanyNavigationLinks } from "./types";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
+import { truncateCompanyName } from "./truncateCompanyName";
 
 export function CompanyDropdown({
   companyName,
@@ -13,8 +14,17 @@ export function CompanyDropdown({
   links: CompanyNavigationLinks;
   canViewCompanyDirectory: boolean;
 }) {
+  const displayName = truncateCompanyName(companyName);
+
   return (
-    <DropdownMenu testId="company-dropdown" name={companyName} icon={IconBuildingEstate} align="start" showDropdownIcon>
+    <DropdownMenu
+      testId="company-dropdown"
+      name={displayName}
+      title={displayName === companyName ? undefined : companyName}
+      icon={IconBuildingEstate}
+      align="start"
+      showDropdownIcon
+    >
       <DropdownLinkItem
         path={links.people}
         icon={IconUserCircle}

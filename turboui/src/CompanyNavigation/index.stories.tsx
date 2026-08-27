@@ -10,6 +10,14 @@ const meta = {
   title: "Components/CompanyNavigation",
   component: CompanyNavigation,
   parameters: { layout: "fullscreen" },
+  render: (args) => (
+    <div className="flex flex-col h-screen">
+      <CompanyNavigation {...args} />
+      <div className="relative flex-1 min-h-0 overflow-y-auto">
+        <HomePage {...homePageProps} />
+      </div>
+    </div>
+  ),
 } satisfies Meta<typeof CompanyNavigation>;
 
 export default meta;
@@ -38,14 +46,31 @@ export const RestrictedPermissions: Story = {
   },
 };
 
-export const WithHomePage: Story = {
-  args: defaultProps,
-  render: () => (
-    <div className="flex flex-col h-screen">
-      <CompanyNavigation {...defaultProps} />
-      <div className="relative flex-1 min-h-0 overflow-y-auto">
-        <HomePage {...homePageProps} />
-      </div>
-    </div>
-  ),
+const longCompanyName = "Nexus Global Manufacturing Group";
+
+/** Company names longer than 24 characters are truncated in the navbar. */
+export const LongCompanyName: Story = {
+  args: {
+    ...defaultProps,
+    companyName: longCompanyName,
+  },
+};
+
+/**
+ * Prototype of the "instance is outdated" badge. Gated to Storybook until the
+ * app wires an outdated-instance check; pass `availableUpdate` to show it.
+ */
+export const UpdateAvailable: Story = {
+  args: {
+    ...defaultProps,
+    availableUpdate: { version: "v1.8" },
+  },
+};
+
+export const UpdateAvailableLongCompanyName: Story = {
+  args: {
+    ...defaultProps,
+    companyName: longCompanyName,
+    availableUpdate: { version: "v1.10.2" },
+  },
 };

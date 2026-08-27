@@ -7,6 +7,13 @@ export interface CompanyNavigationPerson {
   avatarUrl?: string | null;
 }
 
+export interface CompanyNavigationUpdate {
+  /** Version to update to, formatted for display (e.g. "v1.8"). */
+  version: string;
+  /** Where the badge points. Defaults to the public releases page. */
+  link?: string;
+}
+
 export interface CompanyNavigationLinks {
   home: string;
   workMap: string;
@@ -40,6 +47,8 @@ export interface CompanyNavigationProps {
   canInvitePeople: boolean;
   unreadNotificationCount: number;
   reviewCount: number;
+  /** Prototype: Storybook-only until the app wires an outdated-instance check. */
+  availableUpdate?: CompanyNavigationUpdate | null;
   discordUrl: string;
   contactUsHref: string;
   onOpenKeyboardShortcuts: () => void;
