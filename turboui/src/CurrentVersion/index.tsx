@@ -15,13 +15,7 @@ export function CurrentVersion({ version }: CurrentVersion.Props) {
   return (
     <p className="flex items-center gap-2 text-xs text-content-subtle" data-test-id="current-version">
       <span className="font-medium text-content-dimmed">Operately</span>
-      <span className="tabular-nums">{formatVersion(version)}</span>
+      <span className="tabular-nums">{version}</span>
     </p>
   );
-}
-
-function formatVersion(version: string): string {
-  const bare = version.replace(/^v(?=\d)/i, "");
-
-  return /^\d/.test(bare) ? `v${bare}` : bare;
 }

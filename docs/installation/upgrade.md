@@ -14,14 +14,22 @@ docker compose down
 
 ### Update the version
 
-Edit the `docker-compose.yml` file and update the Operately version tag:
+Prefer `./operately update` so the helper script, image tag, and
+`OPERATELY_VERSION` stay in sync.
+
+To upgrade by hand, edit `docker-compose.yml` and set the image tag and
+`OPERATELY_VERSION` to the same release:
 
 ```
 # From this:
 image: operately/operately:vOLD
+...
+- OPERATELY_VERSION=vOLD
 
 # To this:
 image: operately/operately:vNEW
+...
+- OPERATELY_VERSION=vNEW
 ```
 
 Replace `vOLD` with your current version and `vNEW` with the target version you
@@ -32,17 +40,25 @@ Examples:
 ```
 # From this:
 image: operately/operately:1.2.0
+...
+- OPERATELY_VERSION=1.2.0
 
 # To this:
 image: operately/operately:1.3.0
+...
+- OPERATELY_VERSION=1.3.0
 ```
 
 ```
 # From this:
 image: operately/operately:1.2.0
+...
+- OPERATELY_VERSION=1.2.0
 
 # To this:
 image: operately/operately:nightly-build-20260116-070020-49842cd04
+...
+- OPERATELY_VERSION=nightly-build-20260116-070020-49842cd04
 ```
 
 ### Run database migrations

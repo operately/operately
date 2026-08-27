@@ -16,10 +16,10 @@ describe("CurrentVersion", () => {
     expect(getCurrentVersion()).toHaveTextContent("v1.8");
   });
 
-  it("adds the v prefix to bare version numbers", () => {
+  it("renders the version exactly as provided", () => {
     render(<CurrentVersion version="1.8" />);
 
-    expect(getCurrentVersion()).toHaveTextContent("v1.8");
+    expect(getCurrentVersion()).toHaveTextContent("1.8");
   });
 
   it("keeps non-semver strings intact", () => {
