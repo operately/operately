@@ -1,5 +1,6 @@
 defmodule Operately.SystemSettings do
   alias Operately.Repo
+  alias Operately.SystemSettings.Cache
   alias Operately.SystemSettings.Settings
 
   @global_key "global"
@@ -20,6 +21,17 @@ defmodule Operately.SystemSettings do
     case get() do
       nil -> %Settings{} |> Settings.changeset(attrs) |> Repo.insert()
       settings -> settings |> Settings.changeset(attrs) |> Repo.update()
+    end
+  end
+
+  def update_badge_enabled? do
+    try do
+      case Cache.get() do
+        %Settings{update_badge_enabled: false} -> false
+        _ -> true
+      end
+    rescue
+      _ -> true
     end
   end
 end

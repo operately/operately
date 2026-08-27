@@ -18,6 +18,7 @@ import {
   IconMail,
   IconSearch,
   IconShieldLock,
+  IconSparkles,
   IconUser,
   IconX,
   Tabs,
@@ -389,6 +390,7 @@ function Options() {
   return (
     <PageOptions.Root testId="options-button">
       <PageOptions.Link icon={IconMail} title="Email Configuration" to="/admin/email-settings" />
+      <PageOptions.Link icon={IconSparkles} title="Update Badge" to="/admin/update-badge" />
       <PageOptions.Link icon={IconInfoCircle} title="Site Messages" to="/admin/site-messages" />
       <PageOptions.Link icon={IconSearch} title="Search Index" to="/admin/search-index" />
       {window.appConfig.billingEnabled && (

@@ -7,13 +7,14 @@ defmodule Operately.SystemSettings.Settings do
     field :key, :string
     embeds_one :email_config, Operately.SystemSettings.EmailConfig, on_replace: :update, source: :data
     field :email_secrets, Operately.SystemSettings.EncryptedEmailSecrets
+    field :update_badge_enabled, :boolean, default: true
 
     timestamps()
   end
 
   def changeset(settings, attrs) do
     settings
-    |> cast(attrs, [:key, :email_secrets])
+    |> cast(attrs, [:key, :email_secrets, :update_badge_enabled])
     |> cast_embed(:email_config)
     |> put_default_email_secrets()
     |> validate_required([:key])
