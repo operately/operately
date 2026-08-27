@@ -13,7 +13,7 @@
 
 - Setup dev environment: `make dev.build` (deps, compile, DB create/migrate, build UI).
 - Run server: `make dev.server` (Phoenix at http://localhost:4000).
-- One-shot tests: `make test` (Elixir + Jest). Targeted: `make test FILE=app/test/some_test.exs` or `make test FILE=assets/js/path.spec.ts`.
+- One-shot tests: `make test` (Elixir + Jest). Targeted: `make test FILE=app/test/some_test.exs` or `make test FILE=assets/js/path.test.ts`.
 - Separate suites: `make test.mix` (Elixir), `make test.npm` (Jest), `make test.dialyzer` (types), `make test.tsc.lint` (TS checks).
 - Unit tests: `make test.mix.unit` (Elixir unit tests with retry logic).
 - Feature tests: `make test.mix.features` (Elixir feature tests with parallel splitting).
@@ -39,7 +39,7 @@
 - TypeScript/JS: Prettier (`printWidth: 120`, `trailingComma: all`). Check: `npm --prefix app run prettier:check`; fix: `make js.fmt.fix`.
 - When TypeScript warns that a value may be `null` or `undefined` (common in activity handlers under `app/assets/js/features/activities`), do not silence the warning with the non-null assertion operator (`!`) or with helpers like `assertPresent`. Add the guards or type refinements needed so the compiler is satisfied without risking runtime errors.
 - Locale-aware formatting: do not hard-code `"en-US"` or manually format user-facing dates, times, or numbers. Use shared formatting helpers and keep timezone, locale, and explicit display preferences as separate concerns. Timezone controls which local time is shown; locale/preferences control how dates, times, and numbers are displayed. Use TurboUI `FormattedTime` everywhere: import from `turboui` and spread `useFormattedTimePreferences()` from `@/hooks/useFormattedTimePreferences` (reads `TimezoneContext`). TurboUI page components (e.g. `TaskPage`, `GoalPage`, `WorkMapPage`) require `formattedTimePreferences` on their props; bridge pages pass the hook result through. Do not hard-code `"en-US"` inside date/time rendering.
-- Components and pages: PascalCase for React components; filenames `ComponentName.tsx`. Tests: `*.spec.ts(x)`.
+- Components and pages: PascalCase for React components; filenames `ComponentName.tsx`. Tests: `*.test.ts(x)`.
 - TurboUI component architecture and patterns: `turboui/AGENTS.md`.
 
 ## UI Pattern Checklist
