@@ -178,6 +178,34 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
       assert Operately.Repo.reload!(ctx.open_task).milestone_id == nil
     end
 
+    test "records a milestone activity for every moved task", ctx do
+      closed_status = Enum.find(ctx.project.task_statuses, & &1.closed)
+
+      ctx =
+        ctx
+        |> Factory.add_project_task(:second_open_task, :milestone)
+        |> Factory.add_project_task(:closed_task, :milestone,
+          task_status: Map.from_struct(closed_status),
+          closed_at: NaiveDateTime.utc_now()
+        )
+
+      assert {200, _} = complete_milestone(ctx, %{action: "move_to_no_milestone"})
+
+      activities =
+        from(a in Operately.Activities.Activity,
+          where: a.action == "task_milestone_updating",
+          order_by: [asc: a.content["task_id"]]
+        )
+        |> Operately.Repo.all()
+
+      assert Enum.map(activities, & &1.content["task_id"]) ==
+               Enum.sort([ctx.open_task.id, ctx.second_open_task.id])
+
+      assert Enum.all?(activities, &(&1.author_id == ctx.creator.id))
+      assert Enum.all?(activities, &(&1.content["old_milestone_id"] == ctx.milestone.id))
+      assert Enum.all?(activities, &is_nil(&1.content["new_milestone_id"]))
+    end
+
     test "does not move tasks that are already closed", ctx do
       closed_status = Enum.find(ctx.project.task_statuses, &(&1.closed && &1.color == :green))
 
