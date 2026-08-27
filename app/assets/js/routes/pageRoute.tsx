@@ -1,7 +1,7 @@
-import { AxiosError } from "axios";
 import React from "react";
 
 import { setDevData } from "@/features/DevBar/useDevBarData";
+import { isUnauthorizedError, loginPath } from "@/utils/unauthorized";
 import nprogress from "nprogress";
 import { redirect } from "react-router";
 import { Loader, PageModule } from "./types";
@@ -52,7 +52,7 @@ function pageLoader(path: string, pageName: string, loader: Loader, options: Opt
       stopProgressIndicator();
       redirectToLoginIfUnauthorized(error);
 
-      if (error["status"] === 500) {
+      if (hasHttpStatus(error, 500)) {
         console.log("Error loading page", path, error);
       }
 
@@ -73,12 +73,14 @@ function stopProgressIndicator() {
   }
 }
 
-function redirectToLoginIfUnauthorized(error: any) {
-  if (error instanceof AxiosError) {
-    if (error.response?.status === 401) {
-      throw redirect("/log_in");
-    }
+function redirectToLoginIfUnauthorized(error: unknown) {
+  if (isUnauthorizedError(error)) {
+    throw redirect(loginPath());
   }
+}
+
+function hasHttpStatus(error: unknown, status: number): boolean {
+  return typeof error === "object" && error !== null && "status" in error && error.status === status;
 }
 
 export function checkAuth() {
@@ -89,11 +91,6 @@ export function checkAuth() {
 
   if (!window.appConfig.account?.id) {
     stopProgressIndicator();
-
-    if (window.location.pathname === "/") {
-      throw redirect("/log_in");
-    } else {
-      throw redirect("/log_in?redirect_to=" + encodeURIComponent(window.location.pathname));
-    }
+    throw redirect(loginPath());
   }
 }
