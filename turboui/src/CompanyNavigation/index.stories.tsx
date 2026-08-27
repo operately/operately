@@ -57,12 +57,13 @@ export const LongCompanyName: Story = {
 };
 
 /**
- * Prototype of the "instance is outdated" badge. Gated to Storybook until the
- * app wires an outdated-instance check; pass `availableUpdate` to show it.
+ * Prototype of the "instance is outdated" badge. Shown when
+ * `showCurrentVersion` is set.
  */
 export const UpdateAvailable: Story = {
   args: {
     ...defaultProps,
+    showCurrentVersion: true,
     availableUpdate: { version: "v1.8" },
   },
 };
@@ -71,6 +72,7 @@ export const UpdateAvailableLongCompanyName: Story = {
   args: {
     ...defaultProps,
     companyName: longCompanyName,
+    showCurrentVersion: true,
     availableUpdate: { version: "v1.10.2" },
   },
 };

@@ -16,7 +16,6 @@ import {
 } from "../icons";
 import { DivLink } from "../Link";
 import { OperatelyLogo } from "../Logo";
-import { isStorybook } from "../utils/storybook/isStorybook";
 import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 import { Bell } from "./Bell";
 import { CompanyDropdown } from "./CompanyDropdown";
@@ -168,7 +167,7 @@ function DesktopNavigation(props: CompanyNavigationProps) {
             <OperatelyLogo />
           </DivLink>
 
-          {isStorybook() && <UpdateBadge update={props.availableUpdate} />}
+          {props.showCurrentVersion && <UpdateBadge update={props.availableUpdate} />}
 
           <div className="border-l border-surface-outline px-2.5 ml-4">
             <CompanyDropdown
