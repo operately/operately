@@ -3,7 +3,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
   alias Operately.Activities
   alias Operately.Repo
   alias Operately.Search.IndexUpdates
-  alias Operately.Tasks.KanbanState
+  alias Operately.Tasks.{KanbanState, Task}
 
   def run(author, scope, task, status, kanban_state) do
     Multi.new()
@@ -12,7 +12,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
     end)
     |> Multi.run(:status, fn _repo, _changes -> validate_status(scope, status) end)
     |> Multi.update(:updated_task, fn %{status: status} ->
-      Operately.Tasks.Task.changeset(task, %{task_status: status})
+      Task.changeset(task, Task.status_change_attrs(task, status))
     end)
     |> Multi.run(:updated_task_with_preloads, fn _repo, %{updated_task: task} ->
       {:ok, Repo.preload(task, :assigned_people)}
