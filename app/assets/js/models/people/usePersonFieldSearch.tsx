@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Api from "@/api";
+import { showErrorToast } from "turboui";
 import { Person, SearchScope } from ".";
 
 interface UsePeopleSearch<T> {
@@ -19,23 +20,27 @@ export function usePersonFieldSearch<T>(hookParams: UsePeopleSearch<T>): SearchD
 
   const onSearch = useCallback(
     async (query: string) => {
-      const transform = hookParams.transformResult || ((person) => person as unknown as T);
+      try {
+        const transform = hookParams.transformResult || ((person) => person as unknown as T);
 
-      const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
-      const trimmedQuery = query.trim();
+        const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
+        const trimmedQuery = query.trim();
 
-      const result = await Api.people.search({
-        query: trimmedQuery,
-        ignoredIds,
-        searchScopeType: hookParams.scope.type,
-        searchScopeId: hookParams.scope.id,
-      });
+        const result = await Api.people.search({
+          query: trimmedQuery,
+          ignoredIds,
+          searchScopeType: hookParams.scope.type,
+          searchScopeId: hookParams.scope.id,
+        });
 
-      const fetchedPeople = result.people || [];
-      const transformedPeople = fetchedPeople
-        .filter((person): person is Person => !!person)
-        .map((person) => transform(person)) as T[];
-      setPeople(transformedPeople);
+        const fetchedPeople = result.people || [];
+        const transformedPeople = fetchedPeople
+          .filter((person): person is Person => !!person)
+          .map((person) => transform(person)) as T[];
+        setPeople(transformedPeople);
+      } catch {
+        showErrorToast("Couldn't load people", "Please try again.");
+      }
     },
     [hookParams.scope.type, hookParams.scope.id, hookParams.ignoredIds, hookParams.transformResult],
   );
