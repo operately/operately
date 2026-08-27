@@ -79,7 +79,7 @@ export function Kanban({
     if (hasClosedTasks) setAreClosedStatusesVisible(true);
   }, [hasClosedTasks]);
 
-  const visibleStatuses = areClosedStatusesVisible ? regularStatuses : activeStatuses;
+  const closedStatusesLabel = `${areClosedStatusesVisible ? "Hide" : "Show"} ${closedStatuses.length} closed status${closedStatuses.length === 1 ? "" : "es"}`;
 
   const setScrollContainerRefs = React.useCallback(
     (element: HTMLDivElement | null) => {
@@ -102,6 +102,34 @@ export function Kanban({
       status: status,
     });
   };
+
+  const renderStatusColumn = (status: StatusSelector.StatusOption, index: number) => (
+    <SortableStatusColumn key={status.value} status={status} index={index} canReorder={canManageStatuses}>
+      {(dragHandleRef) => (
+        <Column
+          status={status}
+          tasks={columns[status.value] || []}
+          draggedItemId={draggedItemId}
+          targetLocation={targetLocation}
+          placeholderHeight={placeholderHeight}
+          onTaskAssigneeChange={onTaskAssigneeChange}
+          onTaskDueDateChange={onTaskDueDateChange}
+          onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
+          assigneePersonSearch={assigneePersonSearch}
+          onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
+          dragHandleRef={dragHandleRef}
+          isStatusDraggable={canManageStatuses}
+          allStatuses={statuses}
+          canManageStatuses={canManageStatuses}
+          canCreateTask={canEdit}
+          onEditStatus={onEditStatus}
+          onDeleteStatus={onDeleteStatus}
+          onTaskClick={onTaskClick}
+          selectedTaskId={keyboardSelectedTaskId}
+        />
+      )}
+    </SortableStatusColumn>
+  );
 
   return (
     <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
@@ -133,33 +161,7 @@ export function Kanban({
             />
           )}
 
-          {visibleStatuses.map((status, index) => (
-            <SortableStatusColumn key={status.value} status={status} index={index} canReorder={canManageStatuses}>
-              {(dragHandleRef) => (
-                <Column
-                  status={status}
-                  tasks={columns[status.value] || []}
-                  draggedItemId={draggedItemId}
-                  targetLocation={targetLocation}
-                  placeholderHeight={placeholderHeight}
-                  onTaskAssigneeChange={onTaskAssigneeChange}
-                  onTaskDueDateChange={onTaskDueDateChange}
-                  onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
-                  assigneePersonSearch={assigneePersonSearch}
-                  onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
-                  dragHandleRef={dragHandleRef}
-                  isStatusDraggable={canManageStatuses}
-                  allStatuses={statuses}
-                  canManageStatuses={canManageStatuses}
-                  canCreateTask={canEdit}
-                  onEditStatus={onEditStatus}
-                  onDeleteStatus={onDeleteStatus}
-                  onTaskClick={onTaskClick}
-                  selectedTaskId={keyboardSelectedTaskId}
-                />
-              )}
-            </SortableStatusColumn>
-          ))}
+          {activeStatuses.map(renderStatusColumn)}
 
           {closedStatuses.length > 0 && (
             <button
@@ -170,10 +172,12 @@ export function Kanban({
               data-test-id="toggle-closed-statuses"
             >
               {areClosedStatusesVisible ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
-              <span>Closed</span>
-              <span className="text-xs tabular-nums">{closedStatuses.length}</span>
+              <span>{closedStatusesLabel}</span>
             </button>
           )}
+
+          {areClosedStatusesVisible &&
+            closedStatuses.map((status, index) => renderStatusColumn(status, activeStatuses.length + index))}
 
           {canManageStatuses && onAddStatusClick && (
             <button

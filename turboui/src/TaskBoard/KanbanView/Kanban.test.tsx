@@ -51,17 +51,27 @@ const doneStatus: StatusSelector.StatusOption = {
   closed: true,
 };
 
+const canceledStatus: StatusSelector.StatusOption = {
+  id: "canceled",
+  value: "canceled",
+  label: "Canceled",
+  color: "red",
+  icon: "circleX",
+  index: 2,
+  closed: true,
+};
+
 describe("Kanban", () => {
-  it("keeps empty closed statuses out of the working board until requested", () => {
+  it("keeps the closed-status disclosure clear and accessible in both states", () => {
     const onTaskCreate = jest.fn();
     const { container } = render(
       <Kanban
         milestone={null}
-        columns={{ pending: [], done: [] }}
+        columns={{ pending: [], done: [], canceled: [] }}
         draggedItemId={null}
         targetLocation={null}
         placeholderHeight={null}
-        statuses={[pendingStatus, doneStatus]}
+        statuses={[pendingStatus, doneStatus, canceledStatus]}
         onTaskCreate={onTaskCreate}
         onTaskClick={jest.fn()}
         isTaskSlideInOpen={false}
@@ -71,7 +81,8 @@ describe("Kanban", () => {
 
     expect(container.querySelector('[data-test-id="kanban-column-pending"]')).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="kanban-column-done"]')).not.toBeInTheDocument();
-    const closedStatusesToggle = container.querySelector('[data-test-id="toggle-closed-statuses"]');
+    expect(container.querySelector('[data-test-id="kanban-column-canceled"]')).not.toBeInTheDocument();
+    const closedStatusesToggle = screen.getByRole("button", { name: "Show 2 closed statuses" });
 
     expect(closedStatusesToggle).toHaveAttribute("aria-expanded", "false");
     expect(screen.getByRole("button", { name: "Add task" })).toBeInTheDocument();
@@ -82,10 +93,35 @@ describe("Kanban", () => {
 
     expect(screen.getByPlaceholderText("What needs to be done?")).toBeInTheDocument();
 
-    fireEvent.click(closedStatusesToggle!);
+    fireEvent.click(closedStatusesToggle);
 
-    expect(container.querySelector('[data-test-id="kanban-column-done"]')).toBeInTheDocument();
+    const doneColumn = getKanbanColumn(container, "done");
+    const canceledColumn = getKanbanColumn(container, "canceled");
+
+    expect(doneColumn).toBeInTheDocument();
+    expect(canceledColumn).toBeInTheDocument();
     expect(closedStatusesToggle).toHaveAttribute("aria-expanded", "true");
+    expect(closedStatusesToggle).toHaveAccessibleName("Hide 2 closed statuses");
+    expect(closedStatusesToggle).toAppearBefore(doneColumn);
+    expect(closedStatusesToggle).toAppearBefore(canceledColumn);
+  });
+
+  it("uses singular copy for one closed status", () => {
+    render(
+      <Kanban
+        milestone={null}
+        columns={{ pending: [], done: [] }}
+        draggedItemId={null}
+        targetLocation={null}
+        placeholderHeight={null}
+        statuses={[pendingStatus, doneStatus]}
+        onTaskClick={jest.fn()}
+        isTaskSlideInOpen={false}
+        canEdit={false}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Show 1 closed status" })).toBeInTheDocument();
   });
 
   it("shows a task count in each visible column header", () => {
@@ -106,3 +142,11 @@ describe("Kanban", () => {
     expect(container.querySelector('[data-test-id="kanban-column-task-count-pending"]')).toHaveTextContent("0");
   });
 });
+
+function getKanbanColumn(container: HTMLElement, status: string): HTMLElement {
+  const column = container.querySelector<HTMLElement>(`[data-test-id="kanban-column-${status}"]`);
+
+  if (!column) throw new Error(`Expected the ${status} Kanban column to be visible`);
+
+  return column;
+}
