@@ -8,10 +8,19 @@ import type { PersonField } from "../../PersonField";
 import type { ProjectField } from "../../ProjectField";
 import type { SpaceField } from "../../SpaceField";
 import type { FormattedTimePreferences } from "../../FormattedTime";
+import type { ReactNode } from "react";
 
 export type KanbanStatus = string;
 
 export type KanbanState = Record<KanbanStatus, string[]>;
+
+export interface KanbanToolbarContext {
+  closedStatuses: {
+    count: number;
+    visible: boolean;
+    onVisibilityChange: (visible: boolean) => void;
+  };
+}
 
 export type GetTaskPageProps = (taskId: string, ctx: TaskSlideInContext) => TaskPage.ContentProps | null;
 
@@ -100,4 +109,6 @@ export interface KanbanBoardProps {
   richTextHandlers?: RichEditorHandlers;
   getTaskPageProps: GetTaskPageProps;
   unstyled?: boolean;
+  toolbarLeading?: ReactNode;
+  toolbarActions?: ReactNode | ((context: KanbanToolbarContext) => ReactNode);
 }
