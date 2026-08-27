@@ -40,6 +40,7 @@ defmodule OperatelyWeb.PageController do
         dsn: Application.get_env(:operately, :js_sentry_dsn)
       },
       billingEnabled: Application.get_env(:operately, :billing_enabled, false),
+      updateBadgeEnabled: Operately.SystemSettings.update_badge_enabled?(),
       discordUrl: "https://discord.com/invite/2ngnragJYV",
       bookDemoUrl: "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3aS205iUzxYTRPq0sO1fVMbTobKXWGpKxSp26XkALJFnx3LzfB9gcWKQ0kAmj2JoERc0CX70Hg"
     }
