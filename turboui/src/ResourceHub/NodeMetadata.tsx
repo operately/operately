@@ -25,7 +25,12 @@ export function NodeMetadata({
   if (!author && !hasUpdatedAt && visibleDetails.length < 1) return null;
 
   return (
-    <div className={classNames("mt-0.5 flex min-w-0 items-center gap-1.5 text-content-dimmed", textSizeClassName)}>
+    <div
+      className={classNames(
+        "mt-0.5 flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-content-dimmed",
+        textSizeClassName,
+      )}
+    >
       {author && (
         <div className="shrink-0" data-test-id="resource-hub-node-author">
           <AvatarWithName person={author} size="tiny" textSize="small" nameFormat="short" />
@@ -43,7 +48,7 @@ export function NodeMetadata({
       {(author || hasUpdatedAt) && visibleDetails.length > 0 && <Separator hideOnSmallScreens />}
 
       {visibleDetails.length > 0 && (
-        <div className="hidden min-w-0 truncate sm:block">{visibleDetails.join(" · ")}</div>
+        <div className="min-w-0 basis-full truncate sm:basis-auto">{visibleDetails.join(" · ")}</div>
       )}
     </div>
   );

@@ -147,6 +147,15 @@ describe("resource hub node presentation", () => {
     expect(screen.getByText(/Plan summary/)).toBeInTheDocument();
   });
 
+  test("keeps secondary details visible on small screens", () => {
+    render(<NodeDescription node={documentNode} formattedTimePreferences={defaultFormattedTimePreferences} />);
+
+    const details = screen.getByText(/Plan summary/);
+
+    expect(details).not.toHaveClass("hidden");
+    expect(details).toHaveClass("basis-full");
+  });
+
   test("gives native documents a visible file type badge", () => {
     render(<NodeIcon node={documentNode} size={48} />);
 

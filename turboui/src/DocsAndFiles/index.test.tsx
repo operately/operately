@@ -36,6 +36,7 @@ describe("DocsAndFilesTab", () => {
     expect(screen.getByTitle("Alice Example")).toBeInTheDocument();
     expect(document.querySelector('[data-test-id="resource-hub-node-updated-at"]')).toHaveTextContent("Updated");
     expect(screen.getByText("DOC")).toBeInTheDocument();
-    expect(screen.getByText("Plan summary")).toBeInTheDocument();
+    expect(screen.getByText("Plan summary")).not.toHaveClass("hidden");
+    expect(screen.getByText("Plan summary")).toHaveClass("basis-full");
   });
 });
