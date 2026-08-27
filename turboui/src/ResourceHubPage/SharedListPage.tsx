@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import type { FormattedTimePreferences } from "../FormattedTime";
 import { Page } from "../Page";
 import {
   AddFileWidget,
@@ -35,6 +36,7 @@ export interface SharedListPageProps {
   };
   addFolderModalProps: AddFolderModalProps;
   search?: ResourceHubSearchProps;
+  formattedTimePreferences: FormattedTimePreferences;
 }
 
 interface SharedListContentProps extends Omit<SharedListPageProps, "title" | "navigation"> {
@@ -57,6 +59,7 @@ function SharedListContent({
   permissions,
   beforeList,
   search,
+  formattedTimePreferences,
 }: SharedListContentProps) {
   return (
     <div className="min-h-[75vh] px-4 sm:px-12 py-10">
@@ -75,7 +78,7 @@ function SharedListContent({
 
       {beforeList}
       <AddFileWidget {...addFileWidgetProps} />
-      <NodesList {...nodesListProps} search={search} />
+      <NodesList {...nodesListProps} search={search} formattedTimePreferences={formattedTimePreferences} />
       <AddFolderModal {...addFolderModalProps} />
     </div>
   );

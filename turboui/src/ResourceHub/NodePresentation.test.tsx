@@ -8,6 +8,7 @@ import { NodeDescription } from "./NodeDescription";
 import { NodeIcon, ResourceHubTypeIcon } from "./NodeIcon";
 import { NodeMenu } from "./NodeMenu";
 import type { ResourceHubNode } from "./types";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 
 jest.mock("../icons", () => ({
   IconAlignJustified: () => <span>doc-icon</span>,
@@ -137,11 +138,19 @@ describe("resource hub node presentation", () => {
     expect(screen.getByText("link-icon")).toBeInTheDocument();
   });
 
-  test("renders description details from a raw document node", () => {
-    render(<NodeDescription node={documentNode} />);
+  test("renders compact author and update metadata from a raw document node", () => {
+    render(<NodeDescription node={documentNode} formattedTimePreferences={defaultFormattedTimePreferences} />);
 
-    expect(screen.getByText("Alice Example")).toBeInTheDocument();
+    expect(screen.getByText("Alice E.")).toBeInTheDocument();
+    expect(screen.getByTitle("Alice Example")).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="resource-hub-node-updated-at"]')).toHaveTextContent("Updated");
     expect(screen.getByText(/Plan summary/)).toBeInTheDocument();
+  });
+
+  test("gives native documents a visible file type badge", () => {
+    render(<NodeIcon node={documentNode} size={48} />);
+
+    expect(screen.getByText("DOC")).toBeInTheDocument();
   });
 
   test("renders thumbnails from a raw file node", () => {

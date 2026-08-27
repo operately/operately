@@ -189,9 +189,7 @@ export namespace ProjectPage {
     contributors: Contributor[];
     canEditContributors?: boolean;
     contributorPersonSearch?: PersonField.SearchData;
-    onContributorCreate?: (
-      values: ContributorFormValues,
-    ) => void | boolean | Promise<void | boolean>;
+    onContributorCreate?: (values: ContributorFormValues) => void | boolean | Promise<void | boolean>;
     onContributorUpdate?: (
       contributorId: string,
       updates: Partial<ContributorFormValues>,
@@ -286,7 +284,10 @@ export function ProjectPage(props: ProjectPage.Props) {
         {activeTab === "check-ins" && <CheckIns {...state} />}
         {activeTab === "discussions" && <Discussions {...state} />}
         {activeTab === "docs-and-files" && state.docsAndFiles && (
-          <PageDocsAndFilesTab docsAndFiles={state.docsAndFiles} />
+          <PageDocsAndFilesTab
+            docsAndFiles={state.docsAndFiles}
+            formattedTimePreferences={state.formattedTimePreferences}
+          />
         )}
         {activeTab === "activity" && <Activity {...state} />}
       </div>

@@ -218,7 +218,12 @@ export function GoalPage(props: GoalPage.Props) {
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.childrenCount.checkInsCount },
-    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} />, count: props.childrenCount.discussionsCount },
+    {
+      id: "discussions",
+      label: "Discussions",
+      icon: <IconMessages size={14} />,
+      count: props.childrenCount.discussionsCount,
+    },
     {
       id: "docs-and-files",
       label: "Docs & Files",
@@ -247,7 +252,12 @@ export function GoalPage(props: GoalPage.Props) {
           {activeTab === "overview" && <Overview {...state} />}
           {activeTab === "check-ins" && <CheckIns {...state} />}
           {activeTab === "discussions" && <Discussions {...state} />}
-          {activeTab === "docs-and-files" && state.docsAndFiles && <PageDocsAndFilesTab docsAndFiles={state.docsAndFiles} />}
+          {activeTab === "docs-and-files" && state.docsAndFiles && (
+            <PageDocsAndFilesTab
+              docsAndFiles={state.docsAndFiles}
+              formattedTimePreferences={state.formattedTimePreferences}
+            />
+          )}
           {activeTab === "activity" && <Activity {...state} />}
         </div>
 

@@ -19,6 +19,7 @@ import { SubscribersSelector } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { genPeople } from "../utils/storybook/genPeople";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { asSubscriber } from "../utils/storybook/genSubscribers";
 
 import type { SharedListPageProps } from "./SharedListPage";
@@ -85,6 +86,9 @@ export function createMockDocumentNode(
     name: document.name ?? overrides.name ?? "Quarterly Planning Notes",
     content: document.content ?? JSON.stringify(asRichText("Plan summary for the next quarter.")),
     state: document.state ?? "published",
+    insertedAt: document.insertedAt ?? overrides.insertedAt ?? "2026-08-20T12:00:00Z",
+    updatedAt: document.updatedAt ?? overrides.updatedAt ?? "2026-08-26T12:00:00Z",
+    publishedAt: document.publishedAt ?? "2026-08-20T12:00:00Z",
     author:
       document.author ??
       ({
@@ -100,6 +104,8 @@ export function createMockDocumentNode(
     id: overrides.id ?? `node-${documentId}`,
     name: overrides.name ?? "Quarterly Planning Notes",
     type: "document",
+    insertedAt: overrides.insertedAt ?? documentData.insertedAt,
+    updatedAt: overrides.updatedAt ?? documentData.updatedAt,
     document: documentData,
     __typename: "resource_hub_node",
   };
@@ -135,6 +141,7 @@ export function createMockFileNode(
     name: file.name ?? overrides.name ?? "Roadmap Screenshot",
     description: file.description ?? "Updated mockup from the planning session.",
     type: file.type ?? "image",
+    insertedAt: file.insertedAt ?? overrides.insertedAt ?? "2026-08-22T12:00:00Z",
     blob:
       file.blob ??
       ({
@@ -159,6 +166,8 @@ export function createMockFileNode(
     id: overrides.id ?? `node-${fileId}`,
     name: overrides.name ?? "Roadmap Screenshot",
     type: "file",
+    insertedAt: overrides.insertedAt ?? fileData.insertedAt,
+    updatedAt: overrides.updatedAt ?? "2026-08-25T12:00:00Z",
     file: fileData,
     __typename: "resource_hub_node",
   };
@@ -312,6 +321,7 @@ export function useMockSharedListPageProps({
       onCreated: onCreated ?? (() => undefined),
       onCreateFolder: onCreateFolder ?? (async () => undefined),
     },
+    formattedTimePreferences: defaultFormattedTimePreferences,
   };
 }
 
@@ -381,8 +391,18 @@ function useMockNewFileModals() {
 function useMockSubscribers(): SubscribersSelector.Props {
   const availableSubscribers = React.useMemo<SubscribersSelector.Subscriber[]>(
     () => [
-      asSubscriber(subscriber ?? { id: "person-3", fullName: "Jordan Example", title: "Member", avatarUrl: null, profileLink: "#" }),
-      asSubscriber(reviewer ?? { id: "person-2", fullName: "Riley Example", title: "Member", avatarUrl: null, profileLink: "#" }),
+      asSubscriber(
+        subscriber ?? {
+          id: "person-3",
+          fullName: "Jordan Example",
+          title: "Member",
+          avatarUrl: null,
+          profileLink: "#",
+        },
+      ),
+      asSubscriber(
+        reviewer ?? { id: "person-2", fullName: "Riley Example", title: "Member", avatarUrl: null, profileLink: "#" },
+      ),
     ],
     [],
   );

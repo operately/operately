@@ -1,7 +1,10 @@
 import * as React from "react";
 
+import type { AvatarPerson } from "../Avatar";
+import type { FormattedTimePreferences } from "../FormattedTime";
 import { DivLink, Link } from "../Link";
 import { ResourceHubSearchMessage } from "../ResourceHub";
+import { NodeMetadata } from "../ResourceHub/NodeMetadata";
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
 import type { ResourceHubSearchState } from "../ResourceHub/useResourceHubSearch";
 import { SortControl } from "../SortControl";
@@ -44,6 +47,7 @@ export namespace DocsAndFiles {
     insertedAt?: string | null;
     updatedAt?: string | null;
     commentsCount?: number;
+    author?: AvatarPerson | null;
     details?: string[];
     fileKind?: FileKind;
     fileTypeLabel?: string;
@@ -79,6 +83,7 @@ export namespace DocsAndFiles {
     toolbar?: React.ReactNode;
     actions?: React.ReactNode;
     beforeItems?: React.ReactNode;
+    formattedTimePreferences?: FormattedTimePreferences;
   }
 }
 
@@ -153,6 +158,7 @@ export function DocsAndFilesTab({
   toolbar,
   actions,
   beforeItems,
+  formattedTimePreferences,
 }: DocsAndFiles.TabProps) {
   const [sortBy, setSortBy] = React.useState<DocsAndFiles.SortBy>("name");
 
@@ -180,6 +186,7 @@ export function DocsAndFilesTab({
         hideEmptyState={hideEmptyState}
         sortBy={sortBy}
         search={search}
+        formattedTimePreferences={formattedTimePreferences}
       />
     </div>
   );
@@ -245,12 +252,14 @@ export function DocsAndFilesBody({
   hideEmptyState = false,
   sortBy,
   search,
+  formattedTimePreferences,
 }: {
   items: DocsAndFiles.Item[];
   emptyStateKind?: "resourceHub" | "folder";
   hideEmptyState?: boolean;
   sortBy: DocsAndFiles.SortBy;
   search?: DocsAndFiles.Search;
+  formattedTimePreferences?: FormattedTimePreferences;
 }) {
   const displayedItems = React.useMemo(
     () => (search?.state.isActive ? items : sortDocsAndFilesItems(items, sortBy)),
@@ -263,6 +272,7 @@ export function DocsAndFilesBody({
       emptyStateKind={emptyStateKind}
       hideEmptyState={hideEmptyState}
       search={search}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }
@@ -272,22 +282,24 @@ function DocsAndFilesContent({
   emptyStateKind,
   hideEmptyState,
   search,
+  formattedTimePreferences,
 }: {
   items: DocsAndFiles.Item[];
   emptyStateKind: "resourceHub" | "folder";
   hideEmptyState: boolean;
   search?: DocsAndFiles.Search;
+  formattedTimePreferences?: FormattedTimePreferences;
 }) {
   if (search?.state.isActive) {
     if (search.state.status === "success" && items.length > 0) {
-      return <DocsAndFilesList items={items} />;
+      return <DocsAndFilesList items={items} formattedTimePreferences={formattedTimePreferences} />;
     }
 
     return <ResourceHubSearchMessage searchState={search.state} />;
   }
 
   if (items.length > 0) {
-    return <DocsAndFilesList items={items} />;
+    return <DocsAndFilesList items={items} formattedTimePreferences={formattedTimePreferences} />;
   }
 
   if (hideEmptyState) return null;
@@ -295,11 +307,22 @@ function DocsAndFilesContent({
   return <EmptyState kind={emptyStateKind} />;
 }
 
-function DocsAndFilesList({ items }: { items: DocsAndFiles.Item[] }) {
+function DocsAndFilesList({
+  items,
+  formattedTimePreferences,
+}: {
+  items: DocsAndFiles.Item[];
+  formattedTimePreferences?: FormattedTimePreferences;
+}) {
   return (
     <div className="divide-y divide-surface-outline">
       {items.map((item, index) => (
-        <DocsAndFilesListItem item={item} testId={`node-${index}`} key={item.id} />
+        <DocsAndFilesListItem
+          item={item}
+          testId={`node-${index}`}
+          formattedTimePreferences={formattedTimePreferences}
+          key={item.id}
+        />
       ))}
     </div>
   );
@@ -329,7 +352,15 @@ function BreadcrumbItem({ breadcrumb }: { breadcrumb: DocsAndFiles.Breadcrumb })
   );
 }
 
-function DocsAndFilesListItem({ item, testId }: { item: DocsAndFiles.Item; testId: string }) {
+function DocsAndFilesListItem({
+  item,
+  testId,
+  formattedTimePreferences,
+}: {
+  item: DocsAndFiles.Item;
+  testId: string;
+  formattedTimePreferences?: FormattedTimePreferences;
+}) {
   const className = classNames(
     "group flex min-h-[72px] items-center gap-3 px-3 py-3",
     "transition-colors hover:bg-surface-dimmed",
@@ -337,7 +368,7 @@ function DocsAndFilesListItem({ item, testId }: { item: DocsAndFiles.Item; testI
 
   return (
     <div className={className} data-test-id={testId}>
-      <ItemMain item={item} />
+      <ItemMain item={item} formattedTimePreferences={formattedTimePreferences} />
 
       <div className="flex w-10 shrink-0 justify-end">
         <CommentsCountIndicator count={item.commentsCount || 0} size={22} />
@@ -347,14 +378,20 @@ function DocsAndFilesListItem({ item, testId }: { item: DocsAndFiles.Item; testI
   );
 }
 
-function ItemMain({ item }: { item: DocsAndFiles.Item }) {
+function ItemMain({
+  item,
+  formattedTimePreferences,
+}: {
+  item: DocsAndFiles.Item;
+  formattedTimePreferences?: FormattedTimePreferences;
+}) {
   const content = (
     <>
       <DocsAndFilesItemIcon item={item} size={40} />
 
       <div className="min-w-0 flex-1">
         <div className="truncate text-base font-semibold text-content-base group-hover:text-link-base">{item.name}</div>
-        <ItemDetails item={item} />
+        <ItemDetails item={item} formattedTimePreferences={formattedTimePreferences} />
       </div>
     </>
   );
@@ -375,12 +412,21 @@ function ItemMain({ item }: { item: DocsAndFiles.Item }) {
   );
 }
 
-function ItemDetails({ item }: { item: DocsAndFiles.Item }) {
-  const details = item.details?.filter(Boolean) || [];
-
-  if (details.length < 1) return null;
-
-  return <div className="mt-0.5 truncate text-sm text-content-dimmed">{details.join(" · ")}</div>;
+function ItemDetails({
+  item,
+  formattedTimePreferences,
+}: {
+  item: DocsAndFiles.Item;
+  formattedTimePreferences?: FormattedTimePreferences;
+}) {
+  return (
+    <NodeMetadata
+      author={item.author}
+      updatedAt={item.updatedAt ?? item.insertedAt}
+      details={item.details}
+      formattedTimePreferences={formattedTimePreferences}
+    />
+  );
 }
 
 function EmptyState({ kind }: { kind: "resourceHub" | "folder" }) {
@@ -431,7 +477,7 @@ function DocsAndFilesNodeIcon({ node, size }: { node: ResourceHubNode; size: num
   const thumbnail = getNodeThumbnail(node);
 
   if (getNodeType(node) === "document") {
-    return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
+    return <FileIcon size={size} filetype="DOC" icon={IconAlignJustified} color="bg-sky-500" />;
   }
 
   if (thumbnail && hasNodeContentType(node, "image")) {
@@ -458,7 +504,7 @@ function DocsAndFilesItemIcon({ item, size }: { item: DocsAndFiles.Item; size: n
   }
 
   if (item.type === "document") {
-    return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
+    return <FileIcon size={size} filetype="DOC" icon={IconAlignJustified} color="bg-sky-500" />;
   }
 
   if (item.thumbnail?.url && item.fileKind === "image") {
