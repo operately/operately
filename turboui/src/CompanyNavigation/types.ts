@@ -12,8 +12,6 @@ export interface CompanyNavigationUpdate {
   version: string;
   /** Where the badge points. Defaults to the public releases page. */
   link?: string;
-  /** Prototype: which phrasing to show. Defaults to "Update to v1.8". */
-  phrasing?: "update-to" | "available";
 }
 
 export interface CompanyNavigationLinks {
@@ -49,7 +47,7 @@ export interface CompanyNavigationProps {
   canInvitePeople: boolean;
   unreadNotificationCount: number;
   reviewCount: number;
-  /** Prototype: set when this instance is running behind the latest release. */
+  /** Prototype: Storybook-only until the app wires an outdated-instance check. */
   availableUpdate?: CompanyNavigationUpdate | null;
   discordUrl: string;
   contactUsHref: string;

@@ -57,22 +57,13 @@ export const LongCompanyName: Story = {
 };
 
 /**
- * Prototype of the "instance is outdated" badge, in the spirit of Chrome's update
- * chip. Deciding whether an instance is behind the latest release is not wired up
- * yet, so the badge only appears when `availableUpdate` is passed in.
+ * Prototype of the "instance is outdated" badge. Gated to Storybook until the
+ * app wires an outdated-instance check; pass `availableUpdate` to show it.
  */
 export const UpdateAvailable: Story = {
   args: {
     ...defaultProps,
     availableUpdate: { version: "v1.8" },
-  },
-};
-
-/** Same badge, shorter phrasing: "v1.8 available". */
-export const VersionAvailable: Story = {
-  args: {
-    ...defaultProps,
-    availableUpdate: { version: "v1.8", phrasing: "available" },
   },
 };
 
