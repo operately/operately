@@ -47,8 +47,8 @@ export interface CompanyNavigationProps {
   canInvitePeople: boolean;
   unreadNotificationCount: number;
   reviewCount: number;
-  /** Prototype: Storybook-only until the app wires an outdated-instance check. */
   availableUpdate?: CompanyNavigationUpdate | null;
+  showCurrentVersion?: boolean;
   discordUrl: string;
   contactUsHref: string;
   onOpenKeyboardShortcuts: () => void;
