@@ -65,4 +65,44 @@ describe("CompanyNavigation", () => {
 
     expect(onLogOut).toHaveBeenCalled();
   });
+
+  it("truncates long company names in the dropdown trigger", () => {
+    renderNav({ companyName: "Nexus Global Manufacturing Group" });
+
+    const trigger = getByTestId("company-dropdown");
+
+    expect(trigger).toHaveTextContent("Nexus Global Manufactur…");
+    expect(trigger).toHaveAttribute("title", "Nexus Global Manufacturing Group");
+  });
+
+  it("does not show the update badge outside Storybook", () => {
+    renderNav({ availableUpdate: { version: "v1.8" } });
+
+    expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
+  });
+
+  describe("in Storybook", () => {
+    beforeEach(() => {
+      window.STORYBOOK_ENV = true;
+    });
+
+    afterEach(() => {
+      delete window.STORYBOOK_ENV;
+    });
+
+    it("hides the update badge when no update is available", () => {
+      renderNav();
+
+      expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
+    });
+
+    it("shows a New pill with the version when an update is available", () => {
+      renderNav({ availableUpdate: { version: "v1.8" } });
+
+      const badge = getByTestId("update-available-badge");
+
+      expect(badge).toHaveTextContent("New");
+      expect(badge).toHaveTextContent("v1.8");
+    });
+  });
 });
