@@ -45,7 +45,7 @@ function Page() {
       }))}
       newCompanyPath={Paths.newCompanyPath()}
       adminPath={account.siteAdmin ? "/admin" : null}
-      version={window.appConfig.version}
+      version={window.appConfig.releaseVersion}
       showCurrentVersion={companies.some((company) => Companies.hasFeature(company, "current_version"))}
     />
   );
