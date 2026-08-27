@@ -51,7 +51,7 @@ const mockMilestones: Milestone[] = [
     id: "2",
     name: "Beta Testing Complete",
     dueDate: createContextualDate(new Date("2024-02-01"), "day"),
-    status: "complete" as const,
+    status: "done" as const,
     projectLink: "/projects/beta",
   },
   {
