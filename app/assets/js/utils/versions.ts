@@ -1,10 +1,10 @@
-export interface ReleaseLike {
+interface ReleaseLike {
   id?: string | null;
   title?: string | null;
   teaser?: string | null;
 }
 
-export interface AvailableUpdate {
+interface AvailableUpdate {
   version: string;
 }
 
