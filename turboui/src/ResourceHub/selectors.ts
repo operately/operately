@@ -32,17 +32,27 @@ export function getNodeName(node: ResourceHubNode): string {
 }
 
 export function getNodeCommentsCount(node: ResourceHubNode): number {
-  if (node.document?.commentsCount !== undefined && node.document.commentsCount !== null) return node.document.commentsCount;
+  if (node.document?.commentsCount !== undefined && node.document.commentsCount !== null)
+    return node.document.commentsCount;
   if (node.file?.commentsCount !== undefined && node.file.commentsCount !== null) return node.file.commentsCount;
   if (node.link?.commentsCount !== undefined && node.link.commentsCount !== null) return node.link.commentsCount;
   return 0;
 }
 
-export function getNodeAuthorName(node: ResourceHubNode): string | null {
-  if (node.document?.author?.fullName) return node.document.author.fullName;
-  if (node.file?.author?.fullName) return node.file.author.fullName;
-  if (node.link?.author?.fullName) return node.link.author.fullName;
-  return null;
+export function getNodeAuthor(node: ResourceHubNode) {
+  return node.document?.author ?? node.file?.author ?? node.link?.author ?? null;
+}
+
+export function getNodeUpdatedAt(node: ResourceHubNode): string | null {
+  return (
+    node.updatedAt ??
+    node.document?.updatedAt ??
+    node.insertedAt ??
+    node.document?.insertedAt ??
+    node.file?.insertedAt ??
+    node.link?.insertedAt ??
+    null
+  );
 }
 
 export function getNodeChildrenCount(node: ResourceHubNode): number | null {
@@ -74,7 +84,10 @@ export function hasNodeContentType(node: ResourceHubNode, contentType: string): 
 export function isNodeMovFile(node: ResourceHubNode): boolean {
   const contentType = getNodeContentType(node);
 
-  return getNodeType(node) === "file" && Boolean(contentType && (contentType.includes("quicktime") || contentType.includes("mov")));
+  return (
+    getNodeType(node) === "file" &&
+    Boolean(contentType && (contentType.includes("quicktime") || contentType.includes("mov")))
+  );
 }
 
 export function isNodeVideoFile(node: ResourceHubNode): boolean {
@@ -142,7 +155,7 @@ export function getFolderSelectLocationId(location: FolderSelectCurrentLocation)
 }
 
 export function getFolderSelectLocationName(location: FolderSelectCurrentLocation) {
-  return location.type === "folder" ? location.folder.name ?? "" : location.resourceHub.name;
+  return location.type === "folder" ? (location.folder.name ?? "") : location.resourceHub.name;
 }
 
 function richTextToPlainText(content: string) {

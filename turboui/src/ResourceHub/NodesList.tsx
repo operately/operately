@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
+import type { FormattedTimePreferences } from "../FormattedTime";
 import { SortControl } from "../SortControl";
 import { NodeMenu } from "./NodeMenu";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
@@ -21,6 +22,7 @@ interface NodesListProps {
   listContext: ResourceHubNodesListContextValue;
   getNodeTestId?: (node: ResourceHubNode, index: number) => string;
   search?: ResourceHubSearchProps;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
 export function NodesList({
@@ -32,6 +34,7 @@ export function NodesList({
   listContext,
   getNodeTestId,
   search,
+  formattedTimePreferences,
 }: NodesListProps) {
   const { filesSelected } = useNewFileModalsContext();
   const searchState = useResourceHubSearch(search);
@@ -41,6 +44,7 @@ export function NodesList({
       searchState={searchState}
       getNodePath={getNodePath}
       testId={search?.testId ?? "resource-hub-search"}
+      formattedTimePreferences={formattedTimePreferences}
     />
   ) : (
     <RegularContent
@@ -49,6 +53,7 @@ export function NodesList({
       emptyVariant={emptyVariant}
       filesSelected={filesSelected}
       getNodeTestId={getNodeTestId}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 
@@ -70,10 +75,12 @@ function SearchContent({
   searchState,
   getNodePath,
   testId,
+  formattedTimePreferences,
 }: {
   searchState: ReturnType<typeof useResourceHubSearch>;
   getNodePath: NodesListProps["getNodePath"];
   testId: string;
+  formattedTimePreferences?: FormattedTimePreferences;
 }) {
   const message = <ResourceHubSearchMessage searchState={searchState} />;
 
@@ -84,6 +91,7 @@ function SearchContent({
       nodes={searchState.results}
       getNodePath={getNodePath}
       getNodeTestId={(_, index) => `${testId}-result-${index}`}
+      formattedTimePreferences={formattedTimePreferences}
     />
   );
 }
@@ -94,21 +102,32 @@ function RegularContent({
   emptyVariant,
   filesSelected,
   getNodeTestId,
-}: Pick<NodesListProps, "nodes" | "getNodePath" | "emptyVariant" | "getNodeTestId"> & { filesSelected: boolean }) {
+  formattedTimePreferences,
+}: Pick<NodesListProps, "nodes" | "getNodePath" | "emptyVariant" | "getNodeTestId" | "formattedTimePreferences"> & {
+  filesSelected: boolean;
+}) {
   if (nodes.length < 1) {
     if (filesSelected) return null;
     if (emptyVariant === "hub") return <HubZeroNodes />;
     return <FolderZeroNodes />;
   }
 
-  return <NodeRows nodes={nodes} getNodePath={getNodePath} getNodeTestId={getNodeTestId} />;
+  return (
+    <NodeRows
+      nodes={nodes}
+      getNodePath={getNodePath}
+      getNodeTestId={getNodeTestId}
+      formattedTimePreferences={formattedTimePreferences}
+    />
+  );
 }
 
 function NodeRows({
   nodes,
   getNodePath,
   getNodeTestId,
-}: Pick<NodesListProps, "nodes" | "getNodePath" | "getNodeTestId">) {
+  formattedTimePreferences,
+}: Pick<NodesListProps, "nodes" | "getNodePath" | "getNodeTestId" | "formattedTimePreferences">) {
   return (
     <div>
       {nodes.map((node, index) => (
@@ -119,6 +138,7 @@ function NodeRows({
           testId={getNodeTestId ? getNodeTestId(node, index) : `node-${index}`}
           className="first:border-t"
           actions={<NodeMenu node={node} />}
+          formattedTimePreferences={formattedTimePreferences}
         />
       ))}
     </div>

@@ -194,7 +194,7 @@ describe("ResourceHubPage", () => {
     });
 
     expect(await screen.findByText("Approval workflow")).toBeInTheDocument();
-    expect(screen.getByText("Bob Williams")).toBeInTheDocument();
+    expect(screen.getByText("Bob W.")).toBeInTheDocument();
     expect(screen.getByText(/Matching workflow details/)).toBeInTheDocument();
     expect(screen.getByText("menu-dots")).toBeInTheDocument();
     expect(screen.queryByText("Quarterly planning notes")).not.toBeInTheDocument();

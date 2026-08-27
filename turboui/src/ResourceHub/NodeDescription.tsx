@@ -1,71 +1,71 @@
 import * as React from "react";
 
+import type { FormattedTimePreferences } from "../FormattedTime";
 import { plurarize } from "../utils/plurarize";
-import { getNodeAuthorName, getNodeChildrenCount, getNodeDescription, getNodeFileSize, getNodeType } from "./selectors";
+import { NodeMetadata } from "./NodeMetadata";
+import {
+  getNodeAuthor,
+  getNodeChildrenCount,
+  getNodeDescription,
+  getNodeFileSize,
+  getNodeType,
+  getNodeUpdatedAt,
+} from "./selectors";
 import type { ResourceHubNode } from "./types";
 
 interface NodeDescriptionProps {
   node: ResourceHubNode;
   fontSize?: string;
   maxCharacters?: number;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
-const DEFAULT_FONT_SIZE = "text-xs";
+const DEFAULT_FONT_SIZE = "text-sm";
 const DEFAULT_MAX_CHARACTERS = 60;
 
-export function NodeDescription({ node, fontSize = DEFAULT_FONT_SIZE, maxCharacters = DEFAULT_MAX_CHARACTERS }: NodeDescriptionProps) {
+export function NodeDescription({
+  node,
+  fontSize = DEFAULT_FONT_SIZE,
+  maxCharacters = DEFAULT_MAX_CHARACTERS,
+  formattedTimePreferences,
+}: NodeDescriptionProps) {
   return (
-    <div className={fontSize}>
-      <SubItemsCount node={node} />
-      <Author node={node} />
-      <FileSize node={node} />
-      <ContentSnippet node={node} maxCharacters={maxCharacters} />
-    </div>
+    <NodeMetadata
+      author={getNodeAuthor(node)}
+      updatedAt={getNodeUpdatedAt(node)}
+      details={buildDetails(node, maxCharacters)}
+      formattedTimePreferences={formattedTimePreferences}
+      textSizeClassName={fontSize}
+    />
   );
 }
 
-function Author({ node }: { node: ResourceHubNode }) {
-  const nodeType = getNodeType(node);
-  const authorName = getNodeAuthorName(node);
-
-  if (nodeType === "folder" || !authorName) return null;
-
-  return <span className="font-medium">{authorName}</span>;
+function buildDetails(node: ResourceHubNode, maxCharacters: number): string[] {
+  return [subItemsCount(node), fileSize(node), contentSnippet(node, maxCharacters)].filter((detail): detail is string =>
+    Boolean(detail),
+  );
 }
 
-function FileSize({ node }: { node: ResourceHubNode }) {
+function fileSize(node: ResourceHubNode) {
   const size = getNodeFileSize(node);
 
   if (getNodeType(node) !== "file" || size === null) return null;
-
-  return (
-    <span className="font-medium">
-      {" "}
-      <BulletDot /> {humanReadableSize(size)}
-    </span>
-  );
+  return humanReadableSize(size);
 }
 
-function SubItemsCount({ node }: { node: ResourceHubNode }) {
+function subItemsCount(node: ResourceHubNode) {
   const childrenCount = getNodeChildrenCount(node);
 
   if (getNodeType(node) !== "folder" || childrenCount === null) return null;
-
-  return <span className="font-medium">{plurarize(childrenCount, "item", "items")}</span>;
+  return plurarize(childrenCount, "item", "items");
 }
 
-function ContentSnippet({ node, maxCharacters }: { node: ResourceHubNode; maxCharacters: number }) {
+function contentSnippet(node: ResourceHubNode, maxCharacters: number) {
   const nodeType = getNodeType(node);
   const description = getNodeDescription(node);
 
   if (nodeType === "folder" || nodeType === "link" || !description) return null;
-
-  return (
-    <>
-      {" "}
-      <MDash /> {truncateString(description, maxCharacters)}
-    </>
-  );
+  return truncateString(description, maxCharacters);
 }
 
 function humanReadableSize(size: number) {
@@ -77,12 +77,4 @@ function humanReadableSize(size: number) {
 function truncateString(value: string, maxCharacters: number) {
   if (value.length <= maxCharacters) return value;
   return `${value.slice(0, maxCharacters)}…`;
-}
-
-function BulletDot() {
-  return <span>&bull;</span>;
-}
-
-function MDash() {
-  return <span>&mdash;</span>;
 }
