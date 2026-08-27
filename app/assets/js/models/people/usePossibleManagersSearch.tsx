@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import Api from "@/api";
+import { showErrorToast } from "turboui";
 import { Person } from ".";
 
 interface UsePossibleManagersSearch<T> {
@@ -18,18 +19,22 @@ export function usePossibleManagersSearch<T = Person>(
 
   const onSearch = React.useCallback(
     async (query: string) => {
-      const res = await Api.people.listPossibleManagers({
-        userId: personId,
-        query: query,
-      });
+      try {
+        const res = await Api.people.listPossibleManagers({
+          userId: personId,
+          query: query,
+        });
 
-      const transform = transformResult || ((person: Person) => person as unknown as T);
-      const fetchedPeople = res.people || [];
-      const transformedPeople = fetchedPeople
-        .filter((person): person is Person => !!person)
-        .map((person) => transform(person)) as T[];
+        const transform = transformResult || ((person: Person) => person as unknown as T);
+        const fetchedPeople = res.people || [];
+        const transformedPeople = fetchedPeople
+          .filter((person): person is Person => !!person)
+          .map((person) => transform(person)) as T[];
 
-      setPeople(transformedPeople);
+        setPeople(transformedPeople);
+      } catch {
+        showErrorToast("Couldn't load people", "Please try again.");
+      }
     },
     [personId, transformResult],
   );

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import Api, { Person } from "@/api";
+import { showErrorToast } from "turboui";
 
 interface UseTaskAssigneeSearchParams<T> {
   id: string;
@@ -18,23 +19,27 @@ export function useTaskAssigneeSearch<T>(hookParams: UseTaskAssigneeSearchParams
 
   const onSearch = useCallback(
     async (query: string) => {
-      const transform = hookParams.transformResult || ((person) => person as unknown as T);
+      try {
+        const transform = hookParams.transformResult || ((person) => person as unknown as T);
 
-      const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
-      const trimmedQuery = query.trim();
+        const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
+        const trimmedQuery = query.trim();
 
-      const result = await Api.tasks.listPotentialAssignees({
-        id: hookParams.id,
-        type: hookParams.type,
-        ignoredIds,
-        query: trimmedQuery === "" ? undefined : trimmedQuery,
-      });
+        const result = await Api.tasks.listPotentialAssignees({
+          id: hookParams.id,
+          type: hookParams.type,
+          ignoredIds,
+          query: trimmedQuery === "" ? undefined : trimmedQuery,
+        });
 
-      const fetchedPeople = result.people || [];
-      const transformedPeople = fetchedPeople
-        .filter((person): person is Person => !!person)
-        .map((person) => transform(person)) as T[];
-      setPeople(transformedPeople);
+        const fetchedPeople = result.people || [];
+        const transformedPeople = fetchedPeople
+          .filter((person): person is Person => !!person)
+          .map((person) => transform(person)) as T[];
+        setPeople(transformedPeople);
+      } catch {
+        showErrorToast("Couldn't load people", "Please try again.");
+      }
     },
     [hookParams.id, hookParams.type, hookParams.ignoredIds, hookParams.transformResult],
   );
