@@ -75,7 +75,6 @@ export function Kanban({
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");
   const regularStatuses = statuses.filter((status) => status.value !== "unknown-status");
-  const activeStatuses = regularStatuses.filter((status) => !status.closed);
   const closedStatuses = regularStatuses.filter((status) => status.closed);
   const hasClosedTasks = closedStatuses.some((status) => (columns[status.value] || []).length > 0);
   const [areClosedStatusesVisible, setAreClosedStatusesVisible] = React.useState(hasClosedTasks);
@@ -199,10 +198,11 @@ export function Kanban({
             />
           )}
 
-          {activeStatuses.map(renderStatusColumn)}
+          {regularStatuses.map((status, index) => {
+            if (status.closed && !areClosedStatusesVisible) return null;
 
-          {areClosedStatusesVisible &&
-            closedStatuses.map((status, index) => renderStatusColumn(status, activeStatuses.length + index))}
+            return renderStatusColumn(status, index);
+          })}
 
           {canManageStatuses && onAddStatusClick && <AddStatusButton onClick={onAddStatusClick} />}
         </div>
