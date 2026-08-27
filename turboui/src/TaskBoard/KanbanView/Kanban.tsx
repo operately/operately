@@ -1,17 +1,18 @@
 import React, { useMemo } from "react";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 
-import { IconChevronDown, IconChevronRight, IconPlus } from "../../icons";
+import { IconPlus } from "../../icons";
 import { createTestId } from "../../TestableElement";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
 import { Column } from "./Column";
-import type { KanbanStatus } from "./types";
+import type { KanbanStatus, KanbanToolbarContext } from "./types";
 import { StatusSelector } from "../../StatusSelector";
 import { useHorizontalAutoScroll, useSortableItem, DropIndicator } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
 import { useTaskKeyboardNavigation } from "../hooks/useTaskKeyboardNavigation";
+import { TaskDisplayMenu } from "../components/TaskDisplayMenu";
 
 interface Props {
   milestone: TaskBoard.Milestone | null;
@@ -32,6 +33,8 @@ interface Props {
   isTaskSlideInOpen: boolean;
   canEdit: boolean;
   canManageStatuses?: boolean;
+  toolbarLeading?: React.ReactNode;
+  toolbarActions?: React.ReactNode | ((context: KanbanToolbarContext) => React.ReactNode);
 }
 
 export function Kanban({
@@ -53,6 +56,8 @@ export function Kanban({
   isTaskSlideInOpen,
   canEdit,
   canManageStatuses = false,
+  toolbarLeading,
+  toolbarActions,
 }: Props) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -70,7 +75,6 @@ export function Kanban({
 
   const unknownStatus = statuses.find((status) => status.value === "unknown-status");
   const regularStatuses = statuses.filter((status) => status.value !== "unknown-status");
-  const activeStatuses = regularStatuses.filter((status) => !status.closed);
   const closedStatuses = regularStatuses.filter((status) => status.closed);
   const hasClosedTasks = closedStatuses.some((status) => (columns[status.value] || []).length > 0);
   const [areClosedStatusesVisible, setAreClosedStatusesVisible] = React.useState(hasClosedTasks);
@@ -79,7 +83,19 @@ export function Kanban({
     if (hasClosedTasks) setAreClosedStatusesVisible(true);
   }, [hasClosedTasks]);
 
-  const visibleStatuses = areClosedStatusesVisible ? regularStatuses : activeStatuses;
+  const toolbarContext: KanbanToolbarContext = {
+    closedStatuses: {
+      count: closedStatuses.length,
+      visible: areClosedStatusesVisible,
+      onVisibilityChange: setAreClosedStatusesVisible,
+    },
+  };
+  const resolvedToolbarActions =
+    typeof toolbarActions === "function"
+      ? toolbarActions(toolbarContext)
+      : toolbarActions ||
+        (closedStatuses.length > 0 && <TaskDisplayMenu closedStatuses={toolbarContext.closedStatuses} />);
+  const hasBoardToolbar = Boolean(toolbarLeading || resolvedToolbarActions);
 
   const setScrollContainerRefs = React.useCallback(
     (element: HTMLDivElement | null) => {
@@ -103,10 +119,59 @@ export function Kanban({
     });
   };
 
+  const renderStatusColumn = (status: StatusSelector.StatusOption, index: number) => (
+    <SortableStatusColumn key={status.value} status={status} index={index} canReorder={canManageStatuses}>
+      {(dragHandleRef) => (
+        <Column
+          status={status}
+          tasks={columns[status.value] || []}
+          draggedItemId={draggedItemId}
+          targetLocation={targetLocation}
+          placeholderHeight={placeholderHeight}
+          onTaskAssigneeChange={onTaskAssigneeChange}
+          onTaskDueDateChange={onTaskDueDateChange}
+          onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
+          assigneePersonSearch={assigneePersonSearch}
+          onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
+          dragHandleRef={dragHandleRef}
+          isStatusDraggable={canManageStatuses}
+          allStatuses={statuses}
+          canManageStatuses={canManageStatuses}
+          canCreateTask={canEdit}
+          onEditStatus={onEditStatus}
+          onDeleteStatus={onDeleteStatus}
+          onTaskClick={onTaskClick}
+          selectedTaskId={keyboardSelectedTaskId}
+        />
+      )}
+    </SortableStatusColumn>
+  );
+
   return (
     <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
-      <div ref={setScrollContainerRefs} className="h-[80vh] overflow-x-auto px-3 py-3" {...scopeBind}>
-        <div className="flex gap-3 min-w-max items-start">
+      {hasBoardToolbar && (
+        <div
+          className={classNames(
+            "mx-4 mt-4 flex min-h-9 flex-wrap items-center gap-3 px-1",
+            toolbarLeading ? "justify-between" : "justify-end",
+          )}
+          data-test-id="kanban-toolbar"
+        >
+          {toolbarLeading}
+
+          <div className="flex items-center gap-1">{resolvedToolbarActions}</div>
+        </div>
+      )}
+
+      <div
+        ref={setScrollContainerRefs}
+        className={classNames(
+          "overflow-x-auto px-3 pb-3",
+          hasBoardToolbar ? "h-[calc(80vh-52px)] pt-3" : "h-[80vh] pt-3",
+        )}
+        {...scopeBind}
+      >
+        <div className="flex gap-3 min-w-max items-start" data-test-id="kanban-columns">
           {unknownStatus && (
             <Column
               status={unknownStatus}
@@ -133,62 +198,34 @@ export function Kanban({
             />
           )}
 
-          {visibleStatuses.map((status, index) => (
-            <SortableStatusColumn key={status.value} status={status} index={index} canReorder={canManageStatuses}>
-              {(dragHandleRef) => (
-                <Column
-                  status={status}
-                  tasks={columns[status.value] || []}
-                  draggedItemId={draggedItemId}
-                  targetLocation={targetLocation}
-                  placeholderHeight={placeholderHeight}
-                  onTaskAssigneeChange={onTaskAssigneeChange}
-                  onTaskDueDateChange={onTaskDueDateChange}
-                  onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
-                  assigneePersonSearch={assigneePersonSearch}
-                  onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
-                  dragHandleRef={dragHandleRef}
-                  isStatusDraggable={canManageStatuses}
-                  allStatuses={statuses}
-                  canManageStatuses={canManageStatuses}
-                  canCreateTask={canEdit}
-                  onEditStatus={onEditStatus}
-                  onDeleteStatus={onDeleteStatus}
-                  onTaskClick={onTaskClick}
-                  selectedTaskId={keyboardSelectedTaskId}
-                />
-              )}
-            </SortableStatusColumn>
-          ))}
+          {regularStatuses.map((status, index) => {
+            if (status.closed && !areClosedStatusesVisible) return null;
 
-          {closedStatuses.length > 0 && (
-            <button
-              type="button"
-              className="mt-1 flex shrink-0 items-center gap-1.5 rounded px-2 py-2 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
-              onClick={() => setAreClosedStatusesVisible((isVisible) => !isVisible)}
-              aria-expanded={areClosedStatusesVisible}
-              data-test-id="toggle-closed-statuses"
-            >
-              {areClosedStatusesVisible ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
-              <span>Closed</span>
-              <span className="text-xs tabular-nums">{closedStatuses.length}</span>
-            </button>
-          )}
+            return renderStatusColumn(status, index);
+          })}
 
-          {canManageStatuses && onAddStatusClick && (
-            <button
-              type="button"
-              className="mt-1 flex shrink-0 items-center gap-1.5 rounded px-2 py-2 text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
-              onClick={onAddStatusClick}
-              data-test-id="add-status"
-            >
-              <IconPlus size={16} />
-              Add status
-            </button>
-          )}
+          {canManageStatuses && onAddStatusClick && <AddStatusButton onClick={onAddStatusClick} />}
         </div>
       </div>
     </section>
+  );
+}
+
+interface AddStatusButtonProps {
+  onClick: () => void;
+}
+
+function AddStatusButton({ onClick }: AddStatusButtonProps) {
+  return (
+    <button
+      type="button"
+      className="flex w-48 flex-shrink-0 items-center gap-2 rounded-lg border border-dashed border-surface-outline px-3 py-3 text-left text-sm font-medium text-content-dimmed transition-colors hover:bg-surface-dimmed hover:text-content-base"
+      onClick={onClick}
+      data-test-id="add-status"
+    >
+      <IconPlus size={16} />
+      Add status
+    </button>
   );
 }
 
