@@ -2,7 +2,14 @@ import * as React from "react";
 import { calculateImageRatio, ImageWithPlaceholder } from "../ImageWithPlaceholder";
 import classNames from "../utils/classnames";
 import { IconAlignJustified, IconChartColumn, IconFolderFilled, IconLink, IconLogs, IconVideo } from "../icons";
-import { getNodeLinkType, getNodeThumbnail, getNodeType, hasNodeContentType, isNodeMovFile, isNodeVideoFile } from "./selectors";
+import {
+  getNodeLinkType,
+  getNodeThumbnail,
+  getNodeType,
+  hasNodeContentType,
+  isNodeMovFile,
+  isNodeVideoFile,
+} from "./selectors";
 import type { ResourceHubNode, ResourceHubNodeType } from "./types";
 import { LinkIcon } from "./LinkIcon";
 
@@ -18,10 +25,20 @@ export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }
     return <ResourceHubTypeIcon type="link" size={size} />;
   }
 
-  if (thumbnail) return <Thumbnail url={thumbnail.url} alt={thumbnail.alt} width={thumbnail.width} height={thumbnail.height} size={size} />;
+  if (thumbnail)
+    return (
+      <Thumbnail
+        url={thumbnail.url}
+        alt={thumbnail.alt}
+        width={thumbnail.width}
+        height={thumbnail.height}
+        size={size}
+      />
+    );
 
   if (nodeType === "document") return <ResourceHubTypeIcon type="document" size={size} />;
-  if (hasNodeContentType(node, "pdf")) return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
+  if (hasNodeContentType(node, "pdf"))
+    return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
   if (isNodeMovFile(node)) return <FileIcon size={size} filetype="mov" icon={IconVideo} />;
   if (isNodeVideoFile(node)) return <FileIcon size={size} icon={IconVideo} />;
   if (hasNodeContentType(node, "audio")) return <FileIcon size={size} filetype="audio" />;
@@ -33,6 +50,7 @@ export function NodeIcon({ node, size }: { node: ResourceHubNode; size: number }
 export function ResourceHubTypeIcon({ type, size }: { type: ResourceHubNodeType; size: number }) {
   if (type === "folder") return <IconFolderFilled size={size} className="text-sky-500" />;
   if (type === "link") return <FileIcon size={size} icon={IconLink} />;
+  if (type === "document") return <FileIcon size={size} filetype="DOC" color="bg-sky-500" icon={IconAlignJustified} />;
 
   return <FileIcon size={size} icon={IconAlignJustified} />;
 }
@@ -71,7 +89,13 @@ export function FileIcon({ size, filetype, color, icon: Icon = IconLogs }: FileI
 }
 
 function FileIconBadge({ size, filetype, color }: FileIconProps) {
-  const badgeClass = classNames("text-center", "text-white-1", "font-bold", "tracking-widest w-full uppercase", color || "bg-stone-500");
+  const badgeClass = classNames(
+    "text-center",
+    "text-white-1",
+    "font-bold",
+    "tracking-widest w-full uppercase",
+    color || "bg-stone-500",
+  );
 
   const style = {
     fontSize: size * 0.17,
@@ -83,7 +107,19 @@ function FileIconBadge({ size, filetype, color }: FileIconProps) {
   return <div className={badgeClass} style={style} children={filetype} />;
 }
 
-function Thumbnail({ url, alt, width, height, size }: { url: string; alt: string; width: number; height: number; size: number }) {
+function Thumbnail({
+  url,
+  alt,
+  width,
+  height,
+  size,
+}: {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+  size: number;
+}) {
   const padding = 1;
   const imgRatio = calculateImageRatio(width, height);
   const thumbnailWidth = size - padding * 2;

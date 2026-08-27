@@ -12,11 +12,13 @@ import {
 } from "@/models/resourceHubs";
 import { buildFolderPageNavigation } from "./navigation";
 import { usePaths } from "@/routes/paths";
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
   const { folder, nodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
+  const formattedTimePreferences = useFormattedTimePreferences();
 
   assertPresent(folder.resourceHub, "resourceHub must be present in folder");
   assertPresent(folder.permissions, "permissions must be present in folder");
@@ -58,6 +60,7 @@ export function Page() {
         });
       },
     },
+    formattedTimePreferences,
   };
 
   return <ResourceHubFolderPage {...props} />;

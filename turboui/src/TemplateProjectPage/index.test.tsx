@@ -788,7 +788,15 @@ describe("TemplateProjectPage", () => {
 
     expect(await screen.findByText("Move Launch guide")).toBeInTheDocument();
     const modal = document.querySelector('[data-test-id="move-resource-modal"]') as HTMLElement;
-    const names = Array.from(modal.querySelectorAll(".h-\\[240px\\] > div")).map((row) => row.textContent?.trim());
+    const names = Array.from(modal.querySelectorAll(".h-\\[240px\\] > div")).map((row) => {
+      const label = row.querySelector(".text-sm");
+
+      return Array.from(label?.childNodes ?? [])
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent)
+        .join("")
+        .trim();
+    });
 
     expect(names).toEqual(["Assets", "Zeta", "Launch guide", "Design Spec"]);
   });

@@ -47,6 +47,7 @@ export function ResourceHubFolderPage(props: ResourceHubFolderPage.Props) {
       heading={props.folder.name ?? ""}
       permissions={props.folder.permissions}
       options={options}
+      formattedTimePreferences={props.formattedTimePreferences}
     >
       <RenameFolderModal
         folder={props.folder}
