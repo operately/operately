@@ -320,6 +320,12 @@ export interface GetSearchIndexStatusResult {
   sources: SearchIndexSourceStatus[];
 }
 
+export interface GetUpdateBadgeSettingsInput {}
+
+export interface GetUpdateBadgeSettingsResult {
+  enabled: boolean;
+}
+
 export interface ListBillingPlanDefinitionsInput {}
 
 export interface ListBillingPlanDefinitionsResult {
@@ -548,6 +554,15 @@ export interface UpdateSiteMessageResult {
   message: SiteMessage;
 }
 
+export interface UpdateUpdateBadgeSettingsInput {
+  enabled: boolean;
+}
+
+export interface UpdateUpdateBadgeSettingsResult {
+  success: boolean;
+  enabled: boolean;
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -577,6 +592,10 @@ class ApiNamespaceRoot {
 
   async getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
     return this.client.get("/get_search_index_status", input);
+  }
+
+  async getUpdateBadgeSettings(input: GetUpdateBadgeSettingsInput): Promise<GetUpdateBadgeSettingsResult> {
+    return this.client.get("/get_update_badge_settings", input);
   }
 
   async listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
@@ -682,6 +701,10 @@ class ApiNamespaceRoot {
   async updateSiteMessage(input: UpdateSiteMessageInput): Promise<UpdateSiteMessageResult> {
     return this.client.post("/update_site_message", input);
   }
+
+  async updateUpdateBadgeSettings(input: UpdateUpdateBadgeSettingsInput): Promise<UpdateUpdateBadgeSettingsResult> {
+    return this.client.post("/update_update_badge_settings", input);
+  }
 }
 
 export class ApiClient {
@@ -761,6 +784,10 @@ export class ApiClient {
 
   getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
     return this.apiNamespaceRoot.getSearchIndexStatus(input);
+  }
+
+  getUpdateBadgeSettings(input: GetUpdateBadgeSettingsInput): Promise<GetUpdateBadgeSettingsResult> {
+    return this.apiNamespaceRoot.getUpdateBadgeSettings(input);
   }
 
   listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
@@ -856,6 +883,10 @@ export class ApiClient {
   updateSiteMessage(input: UpdateSiteMessageInput): Promise<UpdateSiteMessageResult> {
     return this.apiNamespaceRoot.updateSiteMessage(input);
   }
+
+  updateUpdateBadgeSettings(input: UpdateUpdateBadgeSettingsInput): Promise<UpdateUpdateBadgeSettingsResult> {
+    return this.apiNamespaceRoot.updateUpdateBadgeSettings(input);
+  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -880,6 +911,11 @@ export async function getEmailSettings(input: GetEmailSettingsInput): Promise<Ge
 }
 export async function getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
   return defaultApiClient.getSearchIndexStatus(input);
+}
+export async function getUpdateBadgeSettings(
+  input: GetUpdateBadgeSettingsInput,
+): Promise<GetUpdateBadgeSettingsResult> {
+  return defaultApiClient.getUpdateBadgeSettings(input);
 }
 export async function listBillingPlanDefinitions(
   input: ListBillingPlanDefinitionsInput,
@@ -970,6 +1006,11 @@ export async function updateEmailSettings(input: UpdateEmailSettingsInput): Prom
 export async function updateSiteMessage(input: UpdateSiteMessageInput): Promise<UpdateSiteMessageResult> {
   return defaultApiClient.updateSiteMessage(input);
 }
+export async function updateUpdateBadgeSettings(
+  input: UpdateUpdateBadgeSettingsInput,
+): Promise<UpdateUpdateBadgeSettingsResult> {
+  return defaultApiClient.updateUpdateBadgeSettings(input);
+}
 
 export function useGetAccounts(input: GetAccountsInput): UseQueryHookResult<GetAccountsResult> {
   return useQuery<GetAccountsResult>(() => defaultApiClient.getAccounts(input));
@@ -999,6 +1040,12 @@ export function useGetSearchIndexStatus(
   input: GetSearchIndexStatusInput,
 ): UseQueryHookResult<GetSearchIndexStatusResult> {
   return useQuery<GetSearchIndexStatusResult>(() => defaultApiClient.getSearchIndexStatus(input));
+}
+
+export function useGetUpdateBadgeSettings(
+  input: GetUpdateBadgeSettingsInput,
+): UseQueryHookResult<GetUpdateBadgeSettingsResult> {
+  return useQuery<GetUpdateBadgeSettingsResult>(() => defaultApiClient.getUpdateBadgeSettings(input));
 }
 
 export function useListBillingPlanDefinitions(
@@ -1163,6 +1210,15 @@ export function useUpdateSiteMessage(): UseMutationHookResult<UpdateSiteMessageI
   );
 }
 
+export function useUpdateUpdateBadgeSettings(): UseMutationHookResult<
+  UpdateUpdateBadgeSettingsInput,
+  UpdateUpdateBadgeSettingsResult
+> {
+  return useMutation<UpdateUpdateBadgeSettingsInput, UpdateUpdateBadgeSettingsResult>((input) =>
+    defaultApiClient.updateUpdateBadgeSettings(input),
+  );
+}
+
 export default {
   default: defaultApiClient,
 
@@ -1180,6 +1236,8 @@ export default {
   useGetEmailSettings,
   getSearchIndexStatus,
   useGetSearchIndexStatus,
+  getUpdateBadgeSettings,
+  useGetUpdateBadgeSettings,
   listBillingPlanDefinitions,
   useListBillingPlanDefinitions,
   listBillingProducts,
@@ -1226,4 +1284,6 @@ export default {
   useUpdateEmailSettings,
   updateSiteMessage,
   useUpdateSiteMessage,
+  updateUpdateBadgeSettings,
+  useUpdateUpdateBadgeSettings,
 };
