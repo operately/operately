@@ -4,6 +4,7 @@ import * as SaasAdminEmailSettingsPage from "./SaasAdminEmailSettingsPage";
 import * as SaasAdminPage from "./SaasAdminPage";
 import * as SaasAdminSiteMessagesPage from "./SaasAdminSiteMessagesPage";
 import * as SaasAdminSearchIndexPage from "./SaasAdminSearchIndexPage";
+import * as SaasAdminUpdateBadgePage from "./SaasAdminUpdateBadgePage";
 
 export default {
   SaasAdminPage: {
@@ -40,5 +41,11 @@ export default {
     name: "SaasAdminSearchIndexPage",
     loader: SaasAdminSearchIndexPage.loader,
     Page: SaasAdminSearchIndexPage.Page,
+  },
+
+  SaasAdminUpdateBadgePage: {
+    name: "SaasAdminUpdateBadgePage",
+    loader: SaasAdminUpdateBadgePage.loader,
+    Page: SaasAdminUpdateBadgePage.Page,
   },
 };

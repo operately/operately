@@ -16,6 +16,7 @@ export function saasAdminRoutes() {
     children: [
       pageRoute("", adminpages.SaasAdminPage),
       pageRoute("email-settings", adminpages.SaasAdminEmailSettingsPage),
+      pageRoute("update-badge", adminpages.SaasAdminUpdateBadgePage),
       pageRoute("billing-catalog", adminpages.SaasAdminBillingCatalogPage),
       pageRoute("site-messages", adminpages.SaasAdminSiteMessagesPage),
       pageRoute("search-index", adminpages.SaasAdminSearchIndexPage),

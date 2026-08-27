@@ -33,6 +33,7 @@ declare global {
     discordUrl: string;
     bookDemoUrl: string;
     billingEnabled: boolean;
+    updateBadgeEnabled?: boolean;
   }
 
   interface Window {

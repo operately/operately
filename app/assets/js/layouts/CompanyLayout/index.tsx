@@ -18,10 +18,12 @@ import * as Notifications from "@/models/notifications";
 import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
+import { toAvailableUpdate } from "@/utils/versions";
 import { BillingDangerBanner } from "./BillingDangerBanner";
 import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
 import { SiteMessageBanner } from "./SiteMessageBanner";
 import { SupportSessionBanner } from "./SupportSessionBanner";
+import { PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE } from "@/routes/companyLoader";
 
 export default function CompanyLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);
@@ -51,7 +53,7 @@ export default function CompanyLayout() {
 }
 
 function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () => void }) {
-  const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
+  const { company, canAddGoal, canAddProject, productRelease } = useCompanyLoaderData();
   const me = useMe()!;
   const paths = usePaths();
   const navigate = useNavigate();
@@ -112,7 +114,10 @@ function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () =
     search,
     onNavigate: navigate,
     fullTextSearchPath,
-    showCurrentVersion: Companies.hasFeature(company, "current_version"),
+    showCurrentVersion:
+      Companies.hasFeature(company, PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE) &&
+      window.appConfig.updateBadgeEnabled !== false,
+    availableUpdate: toAvailableUpdate(productRelease, window.appConfig.releaseVersion),
   };
 
   return <CompanyNavigation {...props} />;
