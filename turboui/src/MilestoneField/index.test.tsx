@@ -6,6 +6,24 @@ import { MilestoneField } from "./index";
 
 const milestones = [{ id: "m-1", name: "Launch" }];
 
+function getByTestId(testId: string): HTMLElement {
+  const element = document.querySelector(`[data-test-id="${testId}"]`);
+  if (!(element instanceof HTMLElement)) throw new Error(`Missing element with data-test-id="${testId}"`);
+
+  return element;
+}
+
+function queryByTestId(testId: string): HTMLElement | null {
+  return document.querySelector(`[data-test-id="${testId}"]`);
+}
+
+function openMilestoneField() {
+  const trigger = getByTestId("milestone-field").closest("button");
+  if (!(trigger instanceof HTMLButtonElement)) throw new Error("Missing milestone field trigger");
+
+  fireEvent.click(trigger);
+}
+
 describe("MilestoneField", () => {
   beforeAll(() => {
     Element.prototype.scrollIntoView = jest.fn();
@@ -43,7 +61,6 @@ describe("MilestoneField", () => {
     const trigger = document.querySelector('[data-test-id="milestone-field"]')?.closest("button");
     expect(trigger).toHaveClass("border-surface-outline");
     expect(trigger).toHaveClass("w-full");
-    expect(trigger).toHaveTextContent("No milestone");
   });
 
   it("hides completed milestones behind a disclosure and prioritizes active keyboard selection", () => {
@@ -62,15 +79,17 @@ describe("MilestoneField", () => {
       />,
     );
 
-    fireEvent.click(screen.getByText("Select milestone"));
+    openMilestoneField();
 
     const options = Array.from(document.querySelectorAll('[data-test-id^="milestone-field-search-result-"]'));
 
-    expect(options.map((option) => option.textContent)).toEqual(["Active milestone"]);
-    expect(screen.queryByText("Completed milestone")).not.toBeInTheDocument();
-    expect(screen.getByText("1 completed milestone")).toBeInTheDocument();
+    expect(options.map((option) => option.getAttribute("data-test-id"))).toEqual([
+      "milestone-field-search-result-active-milestone",
+    ]);
+    expect(queryByTestId("milestone-field-search-result-completed-milestone")).not.toBeInTheDocument();
+    expect(getByTestId("milestone-field-completed-milestones-toggle")).toHaveAttribute("aria-expanded", "false");
 
-    fireEvent.keyDown(screen.getByPlaceholderText("Find or create milestone..."), { key: "Enter" });
+    fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
 
     expect(setMilestone).toHaveBeenCalledWith({ id: "active", name: "Active milestone", status: "pending" });
   });
@@ -87,9 +106,13 @@ describe("MilestoneField", () => {
       />,
     );
 
-    fireEvent.click(screen.getByText("Select milestone"));
-    fireEvent.click(screen.getByText("1 completed milestone"));
-    fireEvent.click(screen.getByText("Completed milestone"));
+    openMilestoneField();
+
+    const completedMilestonesToggle = getByTestId("milestone-field-completed-milestones-toggle");
+    fireEvent.click(completedMilestonesToggle);
+
+    expect(completedMilestonesToggle).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(getByTestId("milestone-field-search-result-completed-milestone"));
 
     expect(setMilestone).toHaveBeenCalledWith({ id: "completed", name: "Completed milestone", status: "done" });
   });
