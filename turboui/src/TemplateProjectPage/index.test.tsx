@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
+import type { KanbanToolbarContext } from "../TaskBoard/KanbanView/types";
 
 type MockBoardMove = {
   itemId: string;
@@ -37,7 +38,28 @@ jest.mock("../TaskBoard/KanbanView/TaskSlideIn", () => ({
 }));
 
 jest.mock("../TaskBoard/KanbanView", () => ({
-  KanbanBoard: () => <div data-test-id="template-kanban-board">Kanban board</div>,
+  KanbanBoard: ({
+    toolbarLeading,
+    toolbarActions,
+  }: {
+    toolbarLeading?: React.ReactNode;
+    toolbarActions?: React.ReactNode | ((context: KanbanToolbarContext) => React.ReactNode);
+  }) => {
+    const resolvedToolbarActions =
+      typeof toolbarActions === "function"
+        ? toolbarActions({
+            closedStatuses: { count: 1, visible: false, onVisibilityChange: jest.fn() },
+          })
+        : toolbarActions;
+
+    return (
+      <div data-test-id="template-kanban-board">
+        {toolbarLeading}
+        {resolvedToolbarActions}
+        <span>Kanban board</span>
+      </div>
+    );
+  },
 }));
 
 jest.mock("../utils/PragmaticDragAndDrop", () => ({
