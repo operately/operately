@@ -116,7 +116,7 @@ If a killed feature run leaves port 4002 busy:
 | CLI e2e | `app/test/cli_e2e/` | see existing tests | Steps under `support/cli_e2e/` |
 | MCP e2e | `app/test/mcp_e2e/` | `Operately.McpE2eCase` etc. | Steps under `support/mcp_e2e/` |
 | Enterprise | `app/ee/test/` | per projections | `make test.ee` |
-| JS | `app/assets/js/**/*.test.ts(x)` | Jest | `make test FILE=assets/js/...` |
+| JS | `app/assets/js/**/*.test.ts(x)`, `app/ee/assets/js/**/*.test.ts(x)` | Jest | `make test FILE=assets/js/...` |
 
 DB tests clean up via transactions; no manual teardown.
 
