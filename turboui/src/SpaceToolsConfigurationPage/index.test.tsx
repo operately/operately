@@ -46,20 +46,15 @@ describe("SpaceToolsConfigurationPage KPIs gating", () => {
   });
 });
 
-describe("SpaceToolsConfigurationPage Templates gating", () => {
-  test("hides the Templates tool row by default", () => {
+describe("SpaceToolsConfigurationPage Templates", () => {
+  test("shows the Templates tool row", () => {
     renderPage();
-    expect(queryByTestId("templates")).not.toBeInTheDocument();
-  });
-
-  test("shows the Templates tool row when showTemplates is enabled", () => {
-    renderPage({ showTemplates: true });
     expect(queryByTestId("templates")).toBeInTheDocument();
   });
 
   test("reflects and updates the Templates setting", () => {
     const onToolsChange = jest.fn();
-    renderPage({ showTemplates: true, onToolsChange });
+    renderPage({ onToolsChange });
 
     const toggle = queryByTestId("templates");
     expect(toggle).toHaveAttribute("data-state", "checked");

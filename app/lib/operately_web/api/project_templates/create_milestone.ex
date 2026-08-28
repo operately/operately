@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateMilestone do
   def call(conn, inputs) do
     conn
     |> Steps.start_transaction()
-    |> Steps.ensure_feature_enabled()
     |> Steps.load_template(inputs.template_id)
     |> Steps.check_template_permissions(:can_edit)
     |> Steps.create_milestone(Map.delete(inputs, :template_id))

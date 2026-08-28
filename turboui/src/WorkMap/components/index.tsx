@@ -47,7 +47,6 @@ export function WorkMap({
   emptyStateVariant,
   onItemCreated,
   formattedTimePreferences,
-  projectTemplatesEnabled,
   projectTemplates,
 }: WorkMap.Props) {
   const location = useLocation();
@@ -92,7 +91,6 @@ export function WorkMap({
             emptyStateVariant={emptyStateVariant}
             onItemCreated={onItemCreated}
             formattedTimePreferences={formattedTimePreferences}
-            projectTemplatesEnabled={projectTemplatesEnabled}
             projectTemplates={projectTemplates}
           />
         )}
@@ -241,8 +239,6 @@ export namespace WorkMap {
     emptyStateVariant?: EmptyStateVariant;
     onItemCreated?: ItemCreatedFn;
     formattedTimePreferences: FormattedTimePreferences;
-
-    projectTemplatesEnabled?: boolean;
     projectTemplates?: ProjectTemplateSelection.Template[];
   }
 }

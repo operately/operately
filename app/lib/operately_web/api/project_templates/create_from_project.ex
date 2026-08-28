@@ -23,7 +23,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProject do
   def call(conn, inputs) do
     conn
     |> Steps.start_transaction()
-    |> Steps.ensure_feature_enabled()
     |> Steps.load_project(inputs.project_id)
     |> Steps.load_project_space()
     |> Steps.check_space_permissions(:can_edit)

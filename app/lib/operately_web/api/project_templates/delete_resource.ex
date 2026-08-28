@@ -15,7 +15,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.DeleteResource do
     do:
       conn
       |> Steps.start_transaction()
-      |> Steps.ensure_feature_enabled()
       |> Steps.load_template(inputs.template_id)
       |> Steps.check_template_permissions(:can_edit)
       |> Steps.load_resource_node(inputs.node_id)
