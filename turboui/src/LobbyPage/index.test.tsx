@@ -46,20 +46,14 @@ describe("LobbyPage", () => {
     expect(link).toHaveTextContent("Admin Panel");
   });
 
-  it("hides the current version until the feature flag is enabled", () => {
+  it("shows the current version when releaseVersion is available", () => {
     renderPage();
-
-    expect(document.querySelector('[data-test-id="current-version"]')).not.toBeInTheDocument();
-  });
-
-  it("shows the current version when the feature flag is enabled", () => {
-    renderPage({ showCurrentVersion: true });
 
     expect(getByTestId("current-version")).toHaveTextContent("v1.8");
   });
 
-  it("hides the version when it is missing even if the feature flag is enabled", () => {
-    renderPage({ showCurrentVersion: true, version: null });
+  it("hides the version when it is missing", () => {
+    renderPage({ version: null });
 
     expect(document.querySelector('[data-test-id="current-version"]')).not.toBeInTheDocument();
   });

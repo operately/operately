@@ -2,9 +2,6 @@ import * as React from "react";
 
 import Api, { type ProductRelease } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import * as Companies from "@/models/companies";
-import { PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE } from "@/routes/companyLoader";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { ProductReleaseAnnouncement } from "turboui";
 
 export async function persistDismissedProductRelease(id: string) {
@@ -12,13 +9,8 @@ export async function persistDismissedProductRelease(id: string) {
 }
 
 export function ProductReleaseAnnouncementBanner({ productRelease }: { productRelease: ProductRelease | null }) {
-  const { company } = useCompanyLoaderData();
   const me = useMe();
   const [hidden, setHidden] = React.useState(false);
-
-  if (!Companies.hasFeature(company, PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE)) {
-    return null;
-  }
 
   if (hidden || !productRelease?.id) {
     return null;

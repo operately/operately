@@ -6,8 +6,6 @@ import * as SiteMessages from "@/models/siteMessages";
 
 import { checkAuth } from "@/routes/pageRoute";
 
-export const PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE = "product_release_announcements";
-
 export interface CompanyLoadedData {
   company: Companies.Company;
   billingAccessState: Billing.BillingCompanyAccessState | null;
