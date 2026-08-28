@@ -138,18 +138,6 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateContributorTest do
     assert Operately.Repo.reload!(ctx.template_person).responsibility == "Lead"
   end
 
-  test "call/2 returns not_found when the feature is disabled", %{ctx: ctx} do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {:error, :not_found} =
-             UpdateContributor.call(ToolConnHelper.conn(ctx), %{
-               "template_id" => Paths.project_template_id(ctx.template),
-               "contributor_id" => Paths.project_template_person_id(ctx.template_person),
-               "responsibility" => "Nope"
-             })
-
-    assert Operately.Repo.reload!(ctx.template_person).responsibility == "Lead"
-  end
 
   test "call/2 returns invalid_arguments for an unknown role", %{ctx: ctx} do
     assert {:error, :invalid_arguments} =

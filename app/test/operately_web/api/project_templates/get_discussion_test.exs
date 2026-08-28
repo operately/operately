@@ -38,9 +38,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetDiscussionTest do
     assert {401, _} = request(%{ctx | conn: Phoenix.ConnTest.build_conn()})
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    assert {404, _} = request(Factory.disable_feature(ctx, "project_templates"))
-  end
 
   tabletest @permissions_table do
     test "allows #{@test.permissions}", ctx do

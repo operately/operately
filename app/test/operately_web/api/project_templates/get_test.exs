@@ -35,11 +35,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     assert {401, _} = query(Phoenix.ConnTest.build_conn(), [:project_templates, :get], %{id: Paths.project_template_id(ctx.template)})
   end
 
-  test "returns not found while the experimental feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {404, _} = request(ctx)
-  end
 
   test "returns the complete core template graph", ctx do
     assert {200, res} = request(ctx)

@@ -70,18 +70,13 @@ describe("ToolsSection KPIs gating", () => {
 });
 
 describe("ToolsSection Templates gating", () => {
-  test("hides the Templates tool when the project_templates feature is off", () => {
+  test("hides the Templates tool when the space has it disabled", () => {
+    const html = renderSection([], false, false);
+    expect(html).not.toContain('data-test-id="templates-tool"');
+  });
+
+  test("shows the Templates tool when the space tool is enabled", () => {
     const html = renderSection([], false, true);
-    expect(html).not.toContain('data-test-id="templates-tool"');
-  });
-
-  test("hides the Templates tool when the feature is on but the space has it disabled", () => {
-    const html = renderSection(["project_templates"], false, false);
-    expect(html).not.toContain('data-test-id="templates-tool"');
-  });
-
-  test("shows the Templates tool when the feature and space tool are enabled", () => {
-    const html = renderSection(["project_templates"], false, true);
     expect(html).toContain('data-test-id="templates-tool"');
   });
 });
