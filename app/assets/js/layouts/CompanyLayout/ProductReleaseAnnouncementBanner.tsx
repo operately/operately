@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api from "@/api";
+import Api, { type ProductRelease } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import * as Companies from "@/models/companies";
 import { PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE } from "@/routes/companyLoader";
@@ -11,8 +11,8 @@ export async function persistDismissedProductRelease(id: string) {
   await Api.product_releases.dismiss({ id });
 }
 
-export function ProductReleaseAnnouncementBanner() {
-  const { company, productRelease } = useCompanyLoaderData();
+export function ProductReleaseAnnouncementBanner({ productRelease }: { productRelease: ProductRelease | null }) {
+  const { company } = useCompanyLoaderData();
   const me = useMe();
   const [hidden, setHidden] = React.useState(false);
 
