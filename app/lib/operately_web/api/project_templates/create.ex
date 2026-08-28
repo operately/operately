@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Create do
   def call(conn, inputs) do
     conn
     |> Steps.start_transaction()
-    |> Steps.ensure_feature_enabled()
     |> Steps.load_space(inputs.space_id)
     |> Steps.check_space_permissions(:can_edit)
     |> Steps.create_template(inputs)

@@ -20,8 +20,7 @@ export function ToolsSection({ space, tools }: ToolsSectionPros) {
   const { company } = useCompanyLoaderData();
   const kpisFeatureEnabled = Companies.hasFeature(company, "space_kpis");
   const showKpis = kpisFeatureEnabled && tools.kpisEnabled;
-  const templatesFeatureEnabled = Companies.hasFeature(company, "project_templates");
-  const showTemplates = templatesFeatureEnabled && tools.templatesEnabled;
+  const showTemplates = tools.templatesEnabled;
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-4">

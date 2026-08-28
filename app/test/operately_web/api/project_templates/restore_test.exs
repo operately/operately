@@ -32,9 +32,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.RestoreTest do
     assert runtime_side_effect_counts() == counts_before
   end
 
-  test "requires authentication and the feature gate", ctx do
+  test "requires authentication", ctx do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:project_templates, :restore], %{})
-    assert {404, _} = request(Factory.disable_feature(ctx, "project_templates"))
   end
 
   test "rejects active templates and company read-only mode", ctx do

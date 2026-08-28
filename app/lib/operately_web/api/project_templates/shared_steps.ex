@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     ProjectTemplateMaterialization,
     ProjectTemplateMilestoneOrderingUpdating
   }
-  alias Operately.ProjectTemplates
   alias Operately.People.Person, as: CompanyPerson
 
   alias Operately.ProjectTemplates.{
@@ -44,12 +43,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     |> Ecto.Multi.put(:conn, conn)
     |> Ecto.Multi.put(:me, ApiHelpers.me(conn))
     |> Ecto.Multi.put(:company_read_only, ApiHelpers.company_read_only(conn))
-  end
-
-  def ensure_feature_enabled(multi) do
-    Ecto.Multi.run(multi, :feature_enabled, fn _repo, %{conn: conn} ->
-      ProjectTemplates.ensure_feature_enabled(ApiHelpers.company(conn))
-    end)
   end
 
   def load_space(multi, space_id) do

@@ -18,7 +18,6 @@ interface ZeroStateProps {
   zeroStateMessage?: string;
   variant?: WorkMap.EmptyStateVariant;
   onItemCreated?: WorkMap.ItemCreatedFn;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
@@ -46,7 +45,6 @@ export function ZeroStateCanAdd({
   addItem,
   addItemDefaultSpace,
   hideCompanyAccess,
-  projectTemplatesEnabled,
   projectTemplates,
 }: ZeroStateProps) {
   const [modalState, setModalState] = React.useState<{
@@ -100,7 +98,6 @@ export function ZeroStateCanAdd({
         initialItemType={modalState.type}
         hideTypeSelector={true}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
-        projectTemplatesEnabled={projectTemplatesEnabled}
         templates={projectTemplates}
       />
     </div>
@@ -112,7 +109,6 @@ function FirstProjectZeroState({
   addItem,
   addItemDefaultSpace,
   onItemCreated,
-  projectTemplatesEnabled,
   projectTemplates,
 }: ZeroStateProps) {
   const [navigationPending, setNavigationPending] = React.useState(false);
@@ -171,12 +167,10 @@ function FirstProjectZeroState({
                 placeholder="e.g. Launch the new website"
                 testId="first-project-name"
               />
-              {projectTemplatesEnabled ? (
-                <ProjectTemplateSelection
-                  spaceId={addItemDefaultSpace.id}
-                  templates={projectTemplates ?? []}
-                />
-              ) : null}
+              <ProjectTemplateSelection
+                spaceId={addItemDefaultSpace.id}
+                templates={projectTemplates ?? []}
+              />
             </Forms.FieldGroup>
 
             <PrimaryButton className="w-full" type="submit" loading={submitting} testId="create-first-project">
@@ -211,7 +205,6 @@ function FirstProjectZeroState({
         hideCreateMore
         keepOpenAfterSave={Boolean(onItemCreated)}
         onSaved={onItemCreated}
-        projectTemplatesEnabled={projectTemplatesEnabled}
         templates={projectTemplates}
       />
     </div>

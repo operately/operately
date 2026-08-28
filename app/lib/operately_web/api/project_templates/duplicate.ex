@@ -16,7 +16,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Duplicate do
   def call(conn, inputs) do
     conn
     |> Steps.start_transaction()
-    |> Steps.ensure_feature_enabled()
     |> Steps.load_template(inputs.id)
     |> Steps.check_template_permissions(:can_edit)
     |> Steps.duplicate_template(inputs.name)

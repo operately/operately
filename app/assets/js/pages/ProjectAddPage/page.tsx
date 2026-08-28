@@ -53,7 +53,7 @@ function Form() {
   const [searchParams] = useSearchParams();
   const [add] = Projects.useCreateProject();
   const [createFromTemplate] = Api.project_templates.useCreateProject();
-  const { space, spaces, spaceOptions, goal, goals, templates, projectTemplatesEnabled } = useLoadedData();
+  const { space, spaces, spaceOptions, goal, goals, templates } = useLoadedData();
   const search = People.usePeopleSearch(People.CompanyWideSearchScope);
   const initialTemplateID = templates.find(
     (template) => template.id === searchParams.get("templateId") && template.space.id === space?.id,
@@ -129,18 +129,16 @@ function Form() {
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus required />
           <Forms.SelectBox label="Space" field="space" options={spaceOptions} required />
-          {projectTemplatesEnabled ? (
-            <ProjectTemplateSelection
-              spaceId={form.values.space}
-              templates={templates.map((template) => ({
-                id: template.id,
-                name: template.name,
-                spaceId: template.space.id,
-                inactivePeopleSummary: template.inactivePeopleSummary,
-                inactiveDiscussionCount: template.inactiveDiscussionCount,
-              }))}
-            />
-          ) : null}
+          <ProjectTemplateSelection
+            spaceId={form.values.space}
+            templates={templates.map((template) => ({
+              id: template.id,
+              name: template.name,
+              spaceId: template.space.id,
+              inactivePeopleSummary: template.inactivePeopleSummary,
+              inactiveDiscussionCount: template.inactiveDiscussionCount,
+            }))}
+          />
           <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
 
           {!form.values.template && (

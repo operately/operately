@@ -44,10 +44,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateProjectTest do
     assert {400, _} = request(ctx, start_date: nil)
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-    assert {404, _} = request(ctx)
-  end
 
   test "rejects archived templates", ctx do
     template = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()
