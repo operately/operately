@@ -9,11 +9,6 @@ import {
   ProductReleaseAnnouncementBanner,
 } from "./ProductReleaseAnnouncementBanner";
 
-jest.mock("@/models/companies", () => ({
-  hasFeature: (company: { enabledExperimentalFeatures?: string[] }, feature: string) =>
-    (company.enabledExperimentalFeatures ?? []).includes(feature),
-}));
-
 jest.mock("@/contexts/CurrentCompanyContext", () => ({
   useMe: jest.fn(),
 }));
@@ -68,19 +63,8 @@ describe("ProductReleaseAnnouncementBanner", () => {
     jest.resetAllMocks();
   });
 
-  it("does not render when the experimental feature is disabled", () => {
-    mockUseCompanyLoaderData.mockReturnValue({
-      company: { enabledExperimentalFeatures: [] },
-      productRelease: release,
-    });
-    mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
-
-    expect(renderBanner()).toBe("");
-  });
-
   it("does not render when there is no release", () => {
     mockUseCompanyLoaderData.mockReturnValue({
-      company: { enabledExperimentalFeatures: ["product_release_announcements"] },
       productRelease: null,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
@@ -90,7 +74,6 @@ describe("ProductReleaseAnnouncementBanner", () => {
 
   it("does not render when the current person already dismissed the release", () => {
     mockUseCompanyLoaderData.mockReturnValue({
-      company: { enabledExperimentalFeatures: ["product_release_announcements"] },
       productRelease: release,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: release.id });
@@ -100,7 +83,6 @@ describe("ProductReleaseAnnouncementBanner", () => {
 
   it("renders the toast when the release has not been dismissed", () => {
     mockUseCompanyLoaderData.mockReturnValue({
-      company: { enabledExperimentalFeatures: ["product_release_announcements"] },
       productRelease: release,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });

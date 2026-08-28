@@ -5,16 +5,8 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
 
   setup ctx, do: Steps.setup(ctx)
 
-  feature "does not show the toast when the experimental feature is disabled", ctx do
+  feature "shows the toast when a release is available", ctx do
     ctx
-    |> Steps.given_a_cached_release()
-    |> Steps.visit_company_home()
-    |> Steps.refute_toast_visible()
-  end
-
-  feature "shows the toast when the feature is enabled", ctx do
-    ctx
-    |> Steps.enable_feature()
     |> Steps.given_a_cached_release()
     |> Steps.visit_company_home()
     |> Steps.assert_toast_visible()
@@ -22,7 +14,6 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
 
   feature "dismissing the toast hides it after reload", ctx do
     ctx
-    |> Steps.enable_feature()
     |> Steps.given_a_cached_release()
     |> Steps.visit_company_home()
     |> Steps.assert_toast_visible()
@@ -34,7 +25,6 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
 
   feature "a newer release shows the toast again", ctx do
     ctx
-    |> Steps.enable_feature()
     |> Steps.given_a_cached_release()
     |> Steps.visit_company_home()
     |> Steps.dismiss_toast()
