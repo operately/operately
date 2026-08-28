@@ -23,10 +23,6 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
     |> Factory.log_in_person(:creator)
   end
 
-  step :enable_feature, ctx do
-    Factory.enable_feature(ctx, "product_release_announcements")
-  end
-
   step :given_a_cached_release, ctx do
     Cache.put(@v18, 60)
     ctx

@@ -7,8 +7,6 @@ import * as SiteMessages from "@/models/siteMessages";
 
 import { checkAuth } from "@/routes/pageRoute";
 
-export const PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE = "product_release_announcements";
-
 export interface CompanyLoadedData {
   company: Companies.Company;
   billingAccessState: Billing.BillingCompanyAccessState | null;
@@ -35,7 +33,7 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
 
     const [billingAccessState, productRelease] = await Promise.all([
       fetchBillingAccessState(),
-      fetchProductRelease(company),
+      fetchProductRelease(),
     ]);
 
     return {
@@ -61,11 +59,7 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
   }
 }
 
-async function fetchProductRelease(company: Companies.Company): Promise<ProductRelease | null> {
-  if (!Companies.hasFeature(company, PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE)) {
-    return null;
-  }
-
+async function fetchProductRelease(): Promise<ProductRelease | null> {
   try {
     const data = await Api.product_releases.getLatest({});
     return data.productRelease ?? null;

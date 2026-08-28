@@ -13,7 +13,6 @@ import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import * as Billing from "@/models/billing";
 import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
-import * as Companies from "@/models/companies";
 import * as Notifications from "@/models/notifications";
 import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
@@ -23,7 +22,6 @@ import { BillingDangerBanner } from "./BillingDangerBanner";
 import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
 import { SiteMessageBanner } from "./SiteMessageBanner";
 import { SupportSessionBanner } from "./SupportSessionBanner";
-import { PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE } from "@/routes/companyLoader";
 
 export default function CompanyLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);
@@ -114,9 +112,7 @@ function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () =
     search,
     onNavigate: navigate,
     fullTextSearchPath,
-    showCurrentVersion:
-      Companies.hasFeature(company, PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE) &&
-      window.appConfig.updateBadgeEnabled !== false,
+    showCurrentVersion: window.appConfig.updateBadgeEnabled !== false,
     availableUpdate: toAvailableUpdate(productRelease, window.appConfig.releaseVersion),
   };
 
