@@ -438,9 +438,11 @@ docker.push: docker.buildx.push
 # Release related tasks
 #
 
-# Copy the published multi-arch manifest to the version tag. pull/tag/push would
-# flatten it to a single architecture.
+# Build and push the multi-arch image, then copy that manifest to the version
+# tag. pull/tag/push would flatten it to a single architecture.
 release.tag.docker:
+	test -n "$(VERSION)" || (echo "VERSION is required, e.g. make release.tag.docker VERSION=1.3.0" && exit 1)
+	$(MAKE) docker.buildx.push
 	docker buildx imagetools create \
 		-t operately/operately:$(VERSION) \
 		operately/operately:$(DOCKER_IMAGE_TAG)
