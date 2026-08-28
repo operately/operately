@@ -1,7 +1,6 @@
 import Api, { Account, Company } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
-import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import { LobbyPage } from "turboui";
@@ -9,7 +8,6 @@ import { LobbyPage } from "turboui";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
-import { PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE } from "@/routes/companyLoader";
 
 export default { name: "LobbyPage", loader, Page } as PageModule;
 
@@ -47,9 +45,7 @@ function Page() {
       newCompanyPath={Paths.newCompanyPath()}
       adminPath={account.siteAdmin ? "/admin" : null}
       version={window.appConfig.releaseVersion}
-      showCurrentVersion={companies.some((company) =>
-        Companies.hasFeature(company, PRODUCT_RELEASE_ANNOUNCEMENTS_FEATURE),
-      )}
+      showCurrentVersion
     />
   );
 }

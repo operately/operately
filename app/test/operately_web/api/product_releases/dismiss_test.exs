@@ -11,15 +11,8 @@ defmodule OperatelyWeb.Api.ProductReleases.DismissTest do
     setup ctx do
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("product_release_announcements")
       |> Factory.add_company_member(:member)
       |> Factory.log_in_person(:creator)
-    end
-
-    test "returns not found while the experimental feature is disabled", ctx do
-      ctx = Factory.disable_feature(ctx, "product_release_announcements")
-
-      assert {404, _} = mutation(ctx.conn, [:product_releases, :dismiss], %{id: "v1.8"})
     end
 
     test "stores the dismissed release id on the current person", ctx do
