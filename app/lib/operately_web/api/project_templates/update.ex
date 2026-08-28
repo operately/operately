@@ -21,7 +21,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Update do
   def call(conn, inputs) do
     conn
     |> Steps.start_transaction()
-    |> Steps.ensure_feature_enabled()
     |> Steps.load_template(inputs.id)
     |> Steps.check_template_permissions(:can_edit)
     |> Steps.update_template(Map.delete(inputs, :id))

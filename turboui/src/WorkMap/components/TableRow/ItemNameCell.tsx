@@ -23,7 +23,6 @@ interface Props {
   addItem?: WorkMap.AddNewItemFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
   hideCompanyAccess?: boolean;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
@@ -37,7 +36,6 @@ export function ItemNameCell({
   addItem,
   spaceSearch,
   hideCompanyAccess,
-  projectTemplatesEnabled,
   projectTemplates,
 }: Props) {
   return (
@@ -55,7 +53,6 @@ export function ItemNameCell({
             addItem={addItem!}
             spaceSearch={spaceSearch!}
             hideCompanyAccess={hideCompanyAccess}
-            projectTemplatesEnabled={projectTemplatesEnabled}
             projectTemplates={projectTemplates}
           />
         )}
@@ -182,14 +179,12 @@ function AddButton({
   addItem,
   spaceSearch,
   hideCompanyAccess,
-  projectTemplatesEnabled,
   projectTemplates,
 }: {
   item: WorkMap.Item;
   addItem: WorkMap.AddNewItemFn;
   spaceSearch: SpaceField.SearchSpaceFn;
   hideCompanyAccess?: boolean;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }) {
   if (item.type !== "goal") return null;
@@ -213,7 +208,6 @@ function AddButton({
         save={addItem}
         space={item.space}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
-        projectTemplatesEnabled={projectTemplatesEnabled}
         templates={projectTemplates}
       />
     </div>

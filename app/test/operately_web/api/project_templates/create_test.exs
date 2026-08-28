@@ -39,8 +39,4 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateTest do
     end
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-    assert {404, _} = mutation(ctx.conn, [:project_templates, :create], %{space_id: Paths.space_id(ctx.space), name: "Template"})
-  end
 end

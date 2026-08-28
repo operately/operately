@@ -60,9 +60,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateCommentTest do
     assert Repo.aggregate(Comment, :count) == 1
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    assert {404, _} = request(Factory.disable_feature(ctx, "project_templates"))
-  end
 
   test "rejects archived templates and read-only companies", ctx do
     template = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()

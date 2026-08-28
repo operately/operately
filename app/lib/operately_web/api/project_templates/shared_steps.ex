@@ -46,12 +46,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     |> Ecto.Multi.put(:company_read_only, ApiHelpers.company_read_only(conn))
   end
 
-  def ensure_feature_enabled(multi) do
-    Ecto.Multi.run(multi, :feature_enabled, fn _repo, %{conn: conn} ->
-      ProjectTemplates.ensure_feature_enabled(ApiHelpers.company(conn))
-    end)
-  end
-
   def load_space(multi, space_id) do
     Ecto.Multi.run(multi, :space, fn _repo, %{me: requester} ->
       Group.get(requester, id: space_id, company_id: requester.company_id)

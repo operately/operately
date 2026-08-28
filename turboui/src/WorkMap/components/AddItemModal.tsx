@@ -33,7 +33,6 @@ export namespace AddItemModal {
     hideCreateMore?: boolean;
     keepOpenAfterSave?: boolean;
     onSaved?: (type: ItemType, id: string) => void | Promise<void>;
-    projectTemplatesEnabled?: boolean;
     templates?: ProjectTemplateSelection.Template[];
   }
 
@@ -57,7 +56,7 @@ export namespace AddItemModal {
 export function AddItemModal(props: AddItemModal.Props) {
   const state = useAddItemModalState(props);
   const showTemplates =
-    Boolean(props.projectTemplatesEnabled) && state.itemType === "project" && Boolean(state.space?.id);
+    state.itemType === "project" && Boolean(state.space?.id);
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.close} size="large" closeOnBackdropClick={false} testId="add-item-modal">

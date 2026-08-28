@@ -39,9 +39,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateLinkTest do
     assert {401, _} = request(%{ctx | conn: Phoenix.ConnTest.build_conn()})
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    assert {404, _} = request(Factory.disable_feature(ctx, "project_templates"))
-  end
 
   test "rejects archived templates", ctx do
     template = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()
