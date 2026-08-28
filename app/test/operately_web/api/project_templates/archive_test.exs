@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ArchiveTest do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:project_templates, :archive], %{})
 
     archived = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()
-    assert {404, _} = request(%{ctx | template: archived})
+    assert {403, _} = request(%{ctx | template: archived})
   end
 
   test "rejects company read-only mode", ctx do
