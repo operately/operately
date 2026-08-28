@@ -12,6 +12,14 @@ defmodule OperatelyWeb.Api.ProductReleases.GetLatestTest do
     teaser: "Bring AI into your work."
   }
 
+  @release_with_version %Release{
+    id: "https://operately.com/releases/v190",
+    version: "1.9.0",
+    title: "Operately v1.9 is here",
+    published_at: ~U[2026-08-01 00:00:00Z],
+    teaser: "New features."
+  }
+
   setup do
     Cache.clear()
     on_exit(fn -> Cache.clear() end)
@@ -54,6 +62,19 @@ defmodule OperatelyWeb.Api.ProductReleases.GetLatestTest do
         assert returned.title == @release.title
         assert returned.published_at == "2026-07-17T00:00:00Z"
         assert returned.teaser == @release.teaser
+        assert returned.version == nil
+      end
+    end
+
+    test "serializes version when the cached release has one", ctx do
+      assert :ok = Cache.put(@release_with_version, 60)
+
+      with_mock Fetcher, [], fetch: fn -> flunk("expected a cache hit to skip fetch") end do
+        assert {200, %{product_release: returned}} = query(ctx.conn, [:product_releases, :get_latest], %{})
+
+        assert returned.id == @release_with_version.id
+        assert returned.version == "1.9.0"
+        assert returned.title == @release_with_version.title
       end
     end
   end

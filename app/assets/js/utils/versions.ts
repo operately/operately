@@ -1,5 +1,6 @@
 interface ReleaseLike {
   id?: string | null;
+  version?: string | null;
   title?: string | null;
   teaser?: string | null;
 }
@@ -15,11 +16,14 @@ const RELEASE_URL_SLUG = /(?:^|\/)v(\d)(\d)(\d)\/?$/i;
 
 /**
  * Extract a comparable/display version from a product release.
- * Prefers the stable URL slug (`…/v180` → `v1.8.0`), then a plain guid,
- * then a semver found in title/teaser.
+ * Prefers the explicit `version` field, then the URL slug (`…/v180` → `v1.8.0`),
+ * then a plain guid, then a semver found in title/teaser.
  */
 export function extractReleaseVersion(release: ReleaseLike | null | undefined): string | null {
   if (!release) return null;
+
+  const explicit = release.version?.trim();
+  if (explicit) return formatDisplayVersion(explicit);
 
   const id = release.id?.trim();
   if (id) {
