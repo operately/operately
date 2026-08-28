@@ -1927,6 +1927,7 @@ export interface PersonPermissions {
 export interface ProductRelease {
   __typename: "product_release";
   id: string;
+  version?: string | null;
   title: string;
   publishedAt: string;
   teaser?: string | null;

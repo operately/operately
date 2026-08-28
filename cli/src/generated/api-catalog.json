@@ -18982,6 +18982,17 @@
           },
           {
             "default": null,
+            "name": "version",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "title",
             "type": {
               "name": "string",

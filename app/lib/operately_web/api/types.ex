@@ -184,6 +184,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :product_release, for: Operately.ProductReleases.Release do
     field :id, :string, null: false
+    field? :version, :string, null: true
     field :title, :string, null: false
     field :published_at, :datetime, null: false
     field? :teaser, :string, null: true
