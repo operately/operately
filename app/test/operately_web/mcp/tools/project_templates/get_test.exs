@@ -48,18 +48,4 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.GetTest do
     assert template.id == Paths.project_template_id(archived)
   end
 
-  test "call/2 returns not_found when the feature is disabled" do
-    ctx =
-      %{}
-      |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
-      |> Factory.add_space(:space)
-      |> Factory.add_project_template(:template, :space, name: "Launch template", duration_days: 30)
-
-    arguments = %{"template_id" => Paths.project_template_id(ctx.template)}
-
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {:error, :not_found} = Get.call(ToolConnHelper.conn(ctx), arguments)
-  end
 end

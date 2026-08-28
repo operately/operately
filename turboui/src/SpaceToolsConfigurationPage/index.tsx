@@ -31,10 +31,6 @@ export namespace SpaceToolsConfigurationPage {
     // row only appears for companies with the `space_kpis` feature enabled.
     showKpis?: boolean;
 
-    // Whether to expose the experimental Templates tool. Gated by the caller
-    // so the row only appears for companies with the `project_templates`
-    // feature enabled.
-    showTemplates?: boolean;
   }
 }
 
@@ -80,15 +76,13 @@ export function SpaceToolsConfigurationPage(props: SpaceToolsConfigurationPage.P
               testId="task-board"
             />
 
-            {props.showTemplates && (
-              <ToolRow
-                title="Templates"
-                description="Save reusable project structures and use them for recurring work."
-                value={props.tools.templatesEnabled}
-                onChange={(value) => props.onToolsChange({ ...props.tools, templatesEnabled: value })}
-                testId="templates"
-              />
-            )}
+            <ToolRow
+              title="Templates"
+              description="Save reusable project structures and use them for recurring work."
+              value={props.tools.templatesEnabled}
+              onChange={(value) => props.onToolsChange({ ...props.tools, templatesEnabled: value })}
+              testId="templates"
+            />
 
             {props.showKpis && (
               <ToolRow

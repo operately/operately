@@ -126,10 +126,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
     end
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-    assert {404, _} = request(ctx)
-  end
 
   test "rejects company read-only mode", ctx do
     %{company_id: ctx.company.id, access_state: :read_only}

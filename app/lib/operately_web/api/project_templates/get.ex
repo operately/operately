@@ -4,7 +4,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
 
   import Ecto.Query, only: [from: 2]
 
-  alias Operately.ProjectTemplates
   alias Operately.ProjectTemplates.{Discussion, Milestone, People, ProjectTemplate, Task}
 
   inputs do
@@ -16,8 +15,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Get do
   end
 
   def call(conn, inputs) do
-    with {:ok, :enabled} <- ProjectTemplates.ensure_feature_enabled(company(conn)),
-         {:ok, template} <- get_project_template(me(conn), inputs.id, company_read_only(conn)) do
+    with {:ok, template} <- get_project_template(me(conn), inputs.id, company_read_only(conn)) do
       {:ok, %{template: Serializer.serialize(template, level: :full)}}
     end
   end

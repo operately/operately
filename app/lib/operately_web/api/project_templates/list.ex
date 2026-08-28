@@ -5,7 +5,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.List do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Access.Filters
-  alias Operately.ProjectTemplates
   alias Operately.ProjectTemplates.{Discussion, Milestone, People, ProjectTemplate, Task}
   alias Operately.Repo
 
@@ -20,11 +19,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.List do
   end
 
   def call(conn, inputs) do
-    with {:ok, :enabled} <- ProjectTemplates.ensure_feature_enabled(company(conn)) do
-      templates = list_accessible(me(conn), inputs)
+    templates = list_accessible(me(conn), inputs)
 
-      {:ok, %{templates: Serializer.serialize(templates, level: :essential)}}
-    end
+    {:ok, %{templates: Serializer.serialize(templates, level: :essential)}}
   end
 
   def list_accessible(requester, filters) do

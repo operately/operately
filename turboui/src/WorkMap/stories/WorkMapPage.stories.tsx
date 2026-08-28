@@ -56,7 +56,6 @@ export const Default: Story = {
     spaceSearch: mockSpaceSearch,
     addItem: mockAddItem,
     addItemDefaultSpace: mockSpaces[0]!,
-    projectTemplatesEnabled: true,
     projectTemplates: [
       { id: "tpl-1", name: "Campaign launch", spaceId: "space1" },
       { id: "tpl-2", name: "Product launch", spaceId: "space2" },
@@ -113,7 +112,6 @@ export const FirstProject: Story = {
     addItemDefaultSpace: mockSpaces[0]!,
     emptyStateVariant: "first-project",
     onItemCreated: (type, id) => console.log("Created first item:", type, id),
-    projectTemplatesEnabled: true,
     projectTemplates: [{ id: "tpl-1", name: "Campaign launch", spaceId: "space1" }],
     columnOptions: {
       hideProject: true,

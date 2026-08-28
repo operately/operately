@@ -11,7 +11,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 export function Page() {
   const paths = usePaths();
 
-  const { workMap, space, projectTemplatesEnabled, templates } = useLoadedData().data;
+  const { workMap, space, templates } = useLoadedData().data;
   const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
 
   const [items, addItem] = useWorkMapItems(workMap);
@@ -46,7 +46,6 @@ export function Page() {
         name: space.name,
         link: paths.spacePath(space.id),
       }}
-      projectTemplatesEnabled={projectTemplatesEnabled}
       projectTemplates={projectTemplates}
     />
   );

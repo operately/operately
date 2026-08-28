@@ -39,7 +39,7 @@ const templates = [{ id: "tpl-general", name: "General campaign", spaceId: "gene
 function renderFirstProjectState(
   addItem = jest.fn().mockResolvedValue({ id: "project-1" }),
   onItemCreated = jest.fn(),
-  options: { projectTemplatesEnabled?: boolean } = {},
+  options: { projectTemplates?: typeof templates } = {},
 ) {
   render(
     <MemoryRouter>
@@ -50,8 +50,7 @@ function renderFirstProjectState(
         addItemDefaultSpace={generalSpace}
         variant="first-project"
         onItemCreated={onItemCreated}
-        projectTemplatesEnabled={options.projectTemplatesEnabled}
-        projectTemplates={options.projectTemplatesEnabled ? templates : undefined}
+        projectTemplates={options.projectTemplates ?? templates}
       />
     </MemoryRouter>,
   );
@@ -146,7 +145,7 @@ describe("Work Map first-project state", () => {
   });
 
   it("shows the template picker when project templates are enabled", () => {
-    renderFirstProjectState(undefined, undefined, { projectTemplatesEnabled: true });
+    renderFirstProjectState(undefined, undefined);
 
     expect(screen.getByLabelText("Template")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "General campaign" })).toBeInTheDocument();
@@ -154,7 +153,7 @@ describe("Work Map first-project state", () => {
 
   it("passes templateId and startDate when creating from a template", async () => {
     const user = userEvent.setup();
-    const { addItem } = renderFirstProjectState(undefined, undefined, { projectTemplatesEnabled: true });
+    const { addItem } = renderFirstProjectState(undefined, undefined);
 
     await user.type(screen.getByLabelText("Project name"), "Launch customer portal");
     fireEvent.change(screen.getByLabelText("Template"), { target: { value: "tpl-general" } });
