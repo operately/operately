@@ -6,7 +6,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
-import { compareIds, Paths, usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { FilePage, IconDownload, IconEdit, IconTrash, showErrorToast } from "turboui";
 import React from "react";

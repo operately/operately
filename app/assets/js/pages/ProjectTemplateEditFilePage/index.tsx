@@ -2,7 +2,7 @@ import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/a
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
-import { compareIds, Paths, usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { FileEditPage, emptyContent, showErrorToast } from "turboui";
 import type { FileEditPage as FileEditPageTypes } from "turboui/FileEditPage/types";

@@ -2,7 +2,7 @@ import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
-import { Paths, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { LinkNewPage, showErrorToast, type ResourceHubLinkType } from "turboui";
 import type { LinkNewPage as LinkNewPageTypes } from "turboui/LinkNewPage/types";

@@ -2,7 +2,7 @@ import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
-import { Paths, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { NewDocumentPage, showErrorToast } from "turboui";
 import { useNavigate } from "react-router";
