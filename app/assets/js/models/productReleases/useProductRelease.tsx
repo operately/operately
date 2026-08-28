@@ -1,6 +1,6 @@
-import Api from "@/api";
+import Api, { type ProductRelease } from "@/api";
 
-export function useProductRelease() {
+export function useProductRelease(): ProductRelease | null {
   const { data } = Api.product_releases.useGetLatest({});
 
   return data?.productRelease ?? null;

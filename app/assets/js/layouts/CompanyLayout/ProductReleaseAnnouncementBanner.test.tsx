@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import Api from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useProductRelease } from "@/models/productReleases/useProductRelease";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import {
   persistDismissedProductRelease,
@@ -17,10 +16,6 @@ jest.mock("@/models/companies", () => ({
 
 jest.mock("@/contexts/CurrentCompanyContext", () => ({
   useMe: jest.fn(),
-}));
-
-jest.mock("@/models/productReleases/useProductRelease", () => ({
-  useProductRelease: jest.fn(),
 }));
 
 jest.mock("@/routes/useCompanyLoaderData", () => ({
@@ -54,7 +49,6 @@ jest.mock("turboui", () => ({
 }));
 
 const mockUseMe = useMe as jest.Mock;
-const mockUseProductRelease = useProductRelease as jest.Mock;
 const mockUseCompanyLoaderData = useCompanyLoaderData as jest.Mock;
 const mockDismiss = Api.product_releases.dismiss as jest.Mock;
 
@@ -65,8 +59,8 @@ const release = {
   publishedAt: "2026-07-17T00:00:00Z",
 };
 
-function renderBanner() {
-  return renderToStaticMarkup(<ProductReleaseAnnouncementBanner />);
+function renderBanner(productRelease: typeof release | null = release) {
+  return renderToStaticMarkup(<ProductReleaseAnnouncementBanner productRelease={productRelease} />);
 }
 
 describe("ProductReleaseAnnouncementBanner", () => {
@@ -78,7 +72,6 @@ describe("ProductReleaseAnnouncementBanner", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: [] },
     });
-    mockUseProductRelease.mockReturnValue(release);
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
 
     expect(renderBanner()).toBe("");
@@ -88,17 +81,15 @@ describe("ProductReleaseAnnouncementBanner", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: ["product_release_announcements"] },
     });
-    mockUseProductRelease.mockReturnValue(null);
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
 
-    expect(renderBanner()).toBe("");
+    expect(renderBanner(null)).toBe("");
   });
 
   it("does not render when the current person already dismissed the release", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: ["product_release_announcements"] },
     });
-    mockUseProductRelease.mockReturnValue(release);
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: release.id });
 
     expect(renderBanner()).toBe("");
@@ -108,7 +99,6 @@ describe("ProductReleaseAnnouncementBanner", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: ["product_release_announcements"] },
     });
-    mockUseProductRelease.mockReturnValue(release);
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
 
     const markup = renderBanner();
