@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     ProjectTemplateMaterialization,
     ProjectTemplateMilestoneOrderingUpdating
   }
-  alias Operately.ProjectTemplates
   alias Operately.People.Person, as: CompanyPerson
 
   alias Operately.ProjectTemplates.{
