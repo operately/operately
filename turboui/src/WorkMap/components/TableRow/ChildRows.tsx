@@ -20,7 +20,6 @@ interface Props {
   isExpanded: IsItemExpandedFn;
   setItemExpanded: SetItemExpandedFn;
   formattedTimePreferences: FormattedTimePreferences;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }
 

@@ -20,7 +20,7 @@ export function Page() {
   const navigate = useNavigate();
   const me = useMe();
   const companyLoaderData = useCompanyLoaderData();
-  const { workMap, company, spacesCount, projectTemplatesEnabled, templates } = useLoadedData().data;
+  const { workMap, company, spacesCount, templates } = useLoadedData().data;
 
   const title = `${company.name} Work Map`;
 
@@ -73,7 +73,6 @@ export function Page() {
       formattedTimePreferences={formattedTimePreferences}
       emptyStateVariant={firstProjectStateVisible ? "first-project" : "standard"}
       onItemCreated={firstProjectStateVisible ? handleItemCreated : undefined}
-      projectTemplatesEnabled={projectTemplatesEnabled}
       projectTemplates={projectTemplates}
     />
   );

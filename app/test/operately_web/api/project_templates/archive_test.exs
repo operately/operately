@@ -31,12 +31,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ArchiveTest do
     assert runtime_side_effect_counts() == counts_before
   end
 
-  test "requires authentication, feature access, and an active template", ctx do
+  test "requires authentication and an active template", ctx do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:project_templates, :archive], %{})
-    assert {404, _} = request(Factory.disable_feature(ctx, "project_templates"))
 
     archived = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()
-    assert {404, _} = request(%{ctx | template: archived})
+    assert {403, _} = request(%{ctx | template: archived})
   end
 
   test "rejects company read-only mode", ctx do

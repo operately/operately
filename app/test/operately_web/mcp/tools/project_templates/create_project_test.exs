@@ -36,13 +36,6 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.CreateProjectTest do
              CreateProject.call(ToolConnHelper.conn(ctx), create_args(%{ctx | template: archived}))
   end
 
-  test "call/2 returns not_found when the feature is disabled" do
-    ctx = setup_ctx()
-    arguments = create_args(ctx)
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {:error, :not_found} = CreateProject.call(ToolConnHelper.conn(ctx), arguments)
-  end
 
   defp setup_ctx do
     %{}

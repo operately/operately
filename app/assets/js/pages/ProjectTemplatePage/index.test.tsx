@@ -1,6 +1,5 @@
 import Api, { type ProjectTemplateResourceNode } from "@/api";
 import { uploadFilesWithPreviews } from "@/models/blobs";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { loader } from "./loader";
 import {
   createFilesUploadOperation,
@@ -48,8 +47,6 @@ jest.mock("@/api", () => ({
   },
 }));
 
-jest.mock("@/routes/redirectUtils", () => ({ redirectIfFeatureNotEnabled: jest.fn() }));
-
 const getTemplate = Api.project_templates.get as jest.Mock;
 const createPerson = Api.project_templates.createPerson as jest.Mock;
 const updatePerson = Api.project_templates.updatePerson as jest.Mock;
@@ -60,11 +57,9 @@ const deleteResource = Api.project_templates.deleteResource as jest.Mock;
 const moveResource = Api.project_templates.moveResource as jest.Mock;
 const updateFolder = Api.project_templates.updateFolder as jest.Mock;
 const uploadSelectedFiles = uploadFilesWithPreviews as jest.Mock;
-const featureRedirect = redirectIfFeatureNotEnabled as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  featureRedirect.mockResolvedValue(undefined);
 });
 
 test("loads the complete template graph for the editor", async () => {
@@ -72,19 +67,7 @@ test("loads the complete template graph for the editor", async () => {
   getTemplate.mockResolvedValue({ template });
 
   await expect(loader({ params: { companyId: "acme", id: "template-1" } } as any)).resolves.toEqual({ template });
-  expect(featureRedirect).toHaveBeenCalledWith(
-    { companyId: "acme", id: "template-1" },
-    { feature: "project_templates", path: "/acme" },
-  );
   expect(getTemplate).toHaveBeenCalledWith({ id: "template-1" });
-});
-
-test("redirects home before loading the template when the feature is disabled", async () => {
-  featureRedirect.mockRejectedValue(new Error("redirect"));
-
-  await expect(loader({ params: { companyId: "acme", id: "template-1" } } as any)).rejects.toThrow("redirect");
-
-  expect(getTemplate).not.toHaveBeenCalled();
 });
 
 test("deletes a template resource by node id", async () => {

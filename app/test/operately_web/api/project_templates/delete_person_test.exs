@@ -80,13 +80,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.DeletePersonTest do
     assert Repo.get(TaskAssignment, ctx.assignment.id)
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {404, _} = request(ctx)
-    assert Repo.get(Person, ctx.template_person.id)
-    assert Repo.get(TaskAssignment, ctx.assignment.id)
-  end
 
   test "rejects archived templates", ctx do
     template = ctx.template |> ProjectTemplate.changeset(%{archived_at: DateTime.utc_now()}) |> Repo.update!()

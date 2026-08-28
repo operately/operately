@@ -29,7 +29,6 @@ interface Props {
   emptyStateVariant?: WorkMap.EmptyStateVariant;
   onItemCreated?: WorkMap.ItemCreatedFn;
   formattedTimePreferences: FormattedTimePreferences;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
@@ -49,7 +48,6 @@ export function WorkMapTable({
   emptyStateVariant,
   onItemCreated,
   formattedTimePreferences,
-  projectTemplatesEnabled,
   projectTemplates,
 }: Props) {
   const emptyWorkMap = items.length === 0;
@@ -111,7 +109,6 @@ export function WorkMapTable({
           zeroStateMessage={zeroStateMessage}
           variant={emptyStateVariant}
           onItemCreated={onItemCreated}
-          projectTemplatesEnabled={projectTemplatesEnabled}
           projectTemplates={projectTemplates}
         />
       ) : (
@@ -135,7 +132,6 @@ export function WorkMapTable({
                 setItemExpanded={setItemExpanded}
                 profileUser={profileUser}
                 formattedTimePreferences={formattedTimePreferences}
-                projectTemplatesEnabled={projectTemplatesEnabled}
                 projectTemplates={projectTemplates}
               />
             ))}
@@ -147,7 +143,6 @@ export function WorkMapTable({
                 addItem={addItem!}
                 addItemDefaultSpace={addItemDefaultSpace!}
                 hideCompanyAccess={hideCompanyAccessInQuickAdd}
-                projectTemplatesEnabled={projectTemplatesEnabled}
                 projectTemplates={projectTemplates}
               />
             )}
@@ -256,7 +251,6 @@ function AddNewRow({
   addItem,
   addItemDefaultSpace,
   hideCompanyAccess,
-  projectTemplatesEnabled,
   projectTemplates,
 }: {
   addingEnabled: boolean;
@@ -264,7 +258,6 @@ function AddNewRow({
   addItem: WorkMap.AddNewItemFn;
   addItemDefaultSpace: SpaceField.Space;
   hideCompanyAccess: boolean;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }) {
   if (!addingEnabled) return null;
@@ -293,7 +286,6 @@ function AddNewRow({
           save={addItem}
           space={addItemDefaultSpace}
           hideCompanyAccess={hideCompanyAccess}
-          projectTemplatesEnabled={projectTemplatesEnabled}
           templates={projectTemplates}
         />
       </td>

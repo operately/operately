@@ -46,9 +46,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.DeleteTest do
     assert {403, _} = request(ctx)
   end
 
-  test "requires authentication and the feature gate", ctx do
+  test "requires authentication", ctx do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:project_templates, :delete], %{})
-    assert {404, _} = request(Factory.disable_feature(ctx, "project_templates"))
   end
 
   tabletest @permissions_table do

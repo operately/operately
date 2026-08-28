@@ -149,12 +149,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateTaskAssigneesTest do
     assert assignment_count(ctx) == 0
   end
 
-  test "returns not found when the feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {404, _} = request(ctx)
-    assert assignment_count(ctx) == 0
-  end
 
   test "rejects archived templates", ctx do
     template =
