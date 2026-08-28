@@ -17,6 +17,7 @@ import * as Companies from "@/models/companies";
 import * as Notifications from "@/models/notifications";
 import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
+import { useProductRelease } from "@/models/productReleases/useProductRelease";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { toAvailableUpdate } from "@/utils/versions";
 import { BillingDangerBanner } from "./BillingDangerBanner";
@@ -53,7 +54,8 @@ export default function CompanyLayout() {
 }
 
 function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () => void }) {
-  const { company, canAddGoal, canAddProject, productRelease } = useCompanyLoaderData();
+  const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
+  const productRelease = useProductRelease();
   const me = useMe()!;
   const paths = usePaths();
   const navigate = useNavigate();
