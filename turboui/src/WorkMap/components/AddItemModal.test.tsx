@@ -70,7 +70,6 @@ describe("AddItemModal", () => {
         spaceSearch={jest.fn().mockResolvedValue([generalSpace])}
         save={jest.fn()}
         space={generalSpace}
-        projectTemplatesEnabled
         templates={templates}
       />,
     );
@@ -89,7 +88,6 @@ describe("AddItemModal", () => {
         spaceSearch={jest.fn().mockResolvedValue([generalSpace])}
         save={jest.fn()}
         space={generalSpace}
-        projectTemplatesEnabled
         templates={templates}
       />,
     );
@@ -115,7 +113,6 @@ describe("AddItemModal", () => {
         space={generalSpace}
         initialItemType="project"
         hideTypeSelector
-        projectTemplatesEnabled
         templates={templates}
       />,
     );
@@ -142,7 +139,6 @@ describe("AddItemModal", () => {
         space={generalSpace}
         initialItemType="project"
         hideTypeSelector
-        projectTemplatesEnabled
         templates={templates}
       />,
     );

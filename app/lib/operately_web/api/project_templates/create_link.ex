@@ -20,7 +20,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateLink do
     do:
       conn
       |> Steps.start_transaction()
-      |> Steps.ensure_feature_enabled()
       |> Steps.load_template(inputs.template_id)
       |> Steps.check_template_permissions(:can_edit)
       |> Steps.create_resource(:link, Map.delete(inputs, :template_id))

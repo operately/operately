@@ -1,7 +1,4 @@
 import Api, { type ProjectTemplate, type Space } from "@/api";
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
-
 export interface LoadedData {
   templates: ProjectTemplate[];
   spaces: Space[];
@@ -9,11 +6,6 @@ export interface LoadedData {
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "project_templates",
-    path: Paths.companyHomePath(params.companyId),
-  });
-
   const spaceId = params.id ?? null;
   const [templates, spaces] = await Promise.all([
     Api.project_templates.list({ spaceId, archiveStatus: "all" }).then((result) => result.templates ?? []),

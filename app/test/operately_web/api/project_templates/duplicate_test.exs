@@ -36,10 +36,8 @@ defmodule OperatelyWeb.Api.ProjectTemplates.DuplicateTest do
     assert copied_task.id != ctx.task.id
   end
 
-  test "requires authentication and the feature gate", ctx do
+  test "requires authentication", ctx do
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:project_templates, :duplicate], %{})
-    ctx = Factory.disable_feature(ctx, "project_templates")
-    assert {404, _} = request(ctx)
   end
 
   test "does not disclose templates from inaccessible Spaces or companies", ctx do

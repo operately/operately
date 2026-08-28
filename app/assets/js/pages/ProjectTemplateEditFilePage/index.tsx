@@ -2,7 +2,6 @@ import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/a
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { compareIds, Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { FileEditPage, emptyContent, showErrorToast } from "turboui";
@@ -18,10 +17,6 @@ interface LoadedData {
 }
 
 async function loader({ params }): Promise<LoadedData> {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "project_templates",
-    path: Paths.companyHomePath(params.companyId),
-  });
 
   const { template } = await Api.project_templates.get({ id: params.templateId });
   const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));

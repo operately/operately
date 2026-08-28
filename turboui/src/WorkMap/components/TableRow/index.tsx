@@ -36,7 +36,6 @@ interface Props {
   setItemExpanded: SetItemExpandedFn;
   profileUser?: WorkMap.Person;
   formattedTimePreferences: FormattedTimePreferences;
-  projectTemplatesEnabled?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
 }
 
@@ -64,7 +63,6 @@ export function TableRow(props: Props) {
           spaceSearch={props.spaceSearch}
           addItem={props.addItem}
           hideCompanyAccess={props.hideCompanyAccessInQuickAdd}
-          projectTemplatesEnabled={props.projectTemplatesEnabled}
           projectTemplates={props.projectTemplates}
         />
         <StatusCell item={item} hide={columnOptions?.hideStatus} />

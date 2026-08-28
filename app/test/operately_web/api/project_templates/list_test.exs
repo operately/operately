@@ -32,11 +32,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
     assert {401, _} = query(Phoenix.ConnTest.build_conn(), [:project_templates, :list], %{})
   end
 
-  test "returns not found while the experimental feature is disabled", ctx do
-    ctx = Factory.disable_feature(ctx, "project_templates")
-
-    assert {404, _} = query(ctx.conn, [:project_templates, :list], %{})
-  end
 
   test "returns lightweight card metadata and counts", ctx do
     ctx = Factory.add_project_template(ctx, :alpha, :alpha_space, name: "Alpha")
