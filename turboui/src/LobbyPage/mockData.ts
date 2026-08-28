@@ -10,4 +10,5 @@ export const defaultProps: LobbyPage.Props = {
   companies: defaultCompanies,
   newCompanyPath: "/new",
   version: "v1.8",
+  showCurrentVersion: true,
 };

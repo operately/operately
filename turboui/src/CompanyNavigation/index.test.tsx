@@ -75,19 +75,19 @@ describe("CompanyNavigation", () => {
     expect(trigger).toHaveAttribute("title", "Nexus Global Manufacturing Group");
   });
 
-  it("does not show the update badge until the feature flag is enabled", () => {
+  it("does not show the update badge when it is disabled", () => {
     renderNav({ availableUpdate: { version: "v1.8" } });
 
     expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
   });
 
-  it("hides the update badge when the feature flag is enabled but no update is available", () => {
+  it("hides the update badge when enabled but no update is available", () => {
     renderNav({ showCurrentVersion: true });
 
     expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
   });
 
-  it("shows a New pill with the version when the feature flag is enabled and an update is available", () => {
+  it("shows a New pill with the version when enabled and an update is available", () => {
     renderNav({ showCurrentVersion: true, availableUpdate: { version: "v1.8" } });
 
     const badge = getByTestId("update-available-badge");
