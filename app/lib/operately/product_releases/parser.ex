@@ -12,6 +12,7 @@ defmodule Operately.ProductReleases.Parser do
         |> SweetXml.parse(quiet: true)
         |> xpath(~x"//rss/channel/item"l,
           id: ~x"./guid/text()"s,
+          version: ~x"./*[local-name()='version']/text()"s,
           title: ~x"./title/text()"s,
           published_at: ~x"./pubDate/text()"s,
           teaser: ~x"./description/text()"s
@@ -40,6 +41,7 @@ defmodule Operately.ProductReleases.Parser do
     if id && title && published_at do
       %{
         id: id,
+        version: blank_to_nil(item[:version]),
         title: title,
         published_at: published_at,
         teaser: teaser(item[:teaser], title)

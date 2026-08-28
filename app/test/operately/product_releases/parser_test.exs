@@ -11,6 +11,7 @@ defmodule Operately.ProductReleases.ParserTest do
     assert {:ok, release} = Parser.parse(fixture("rss.xml"))
 
     assert release.id == "v1.8"
+    assert release.version == nil
     assert release.title == "MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more"
     assert release.published_at == ~U[2026-07-17 00:00:00Z]
     assert release.teaser == "Bring AI into your work, prepare updates ahead of time, and review goal and project outcomes."
@@ -20,11 +21,21 @@ defmodule Operately.ProductReleases.ParserTest do
     assert {:ok, release} = Parser.parse(fixture("operately.xml"))
 
     assert release.id == "https://operately.com/releases/v180"
+    assert release.version == nil
     assert release.title == "MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more"
     assert release.published_at == ~U[2026-07-17 00:00:00Z]
 
     assert release.teaser ==
              "Operately v1.8 introduces MCP connections for AI clients, scheduled discussions and check-ins, retrospective acknowledgements, and workflow improvements across projects and Docs & Files."
+  end
+
+  test "parses operately:version when present without changing guid" do
+    assert {:ok, release} = Parser.parse(fixture("with_version.xml"))
+
+    assert release.id == "https://operately.com/releases/v180"
+    assert release.version == "1.8.0"
+    assert release.title == "MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more"
+    assert release.published_at == ~U[2026-07-17 00:00:00Z]
   end
 
   test "returns nil for an empty feed" do
