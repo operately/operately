@@ -59,8 +59,8 @@ const release = {
   publishedAt: "2026-07-17T00:00:00Z",
 };
 
-function renderBanner() {
-  return renderToStaticMarkup(<ProductReleaseAnnouncementBanner />);
+function renderBanner(productRelease: typeof release | null = release) {
+  return renderToStaticMarkup(<ProductReleaseAnnouncementBanner productRelease={productRelease} />);
 }
 
 describe("ProductReleaseAnnouncementBanner", () => {
@@ -71,7 +71,6 @@ describe("ProductReleaseAnnouncementBanner", () => {
   it("does not render when the experimental feature is disabled", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: [] },
-      productRelease: release,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
 
@@ -81,17 +80,15 @@ describe("ProductReleaseAnnouncementBanner", () => {
   it("does not render when there is no release", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: ["product_release_announcements"] },
-      productRelease: null,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
 
-    expect(renderBanner()).toBe("");
+    expect(renderBanner(null)).toBe("");
   });
 
   it("does not render when the current person already dismissed the release", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: ["product_release_announcements"] },
-      productRelease: release,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: release.id });
 
@@ -101,7 +98,6 @@ describe("ProductReleaseAnnouncementBanner", () => {
   it("renders the toast when the release has not been dismissed", () => {
     mockUseCompanyLoaderData.mockReturnValue({
       company: { enabledExperimentalFeatures: ["product_release_announcements"] },
-      productRelease: release,
     });
     mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
 

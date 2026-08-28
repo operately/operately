@@ -17,6 +17,7 @@ import * as Companies from "@/models/companies";
 import * as Notifications from "@/models/notifications";
 import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
+import { useProductRelease } from "@/models/productReleases/useProductRelease";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { toAvailableUpdate } from "@/utils/versions";
 import { BillingDangerBanner } from "./BillingDangerBanner";
@@ -29,6 +30,7 @@ export default function CompanyLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);
   const keyboardShortcutsModal = useKeyboardShortcutsModal();
   const refresh = useRefresh();
+  const productRelease = useProductRelease();
 
   useScrollToTopOnNavigationChange({ outletDiv });
   Billing.useBillingUpdatedSignal(refresh);
@@ -36,8 +38,8 @@ export default function CompanyLayout() {
   return (
     <div className="flex flex-col h-screen">
       <SiteMessageBanner />
-      <ProductReleaseAnnouncementBanner />
-      <Navigation onOpenKeyboardShortcuts={keyboardShortcutsModal.open} />
+      <ProductReleaseAnnouncementBanner productRelease={productRelease} />
+      <Navigation onOpenKeyboardShortcuts={keyboardShortcutsModal.open} productRelease={productRelease} />
       <SupportSessionBanner />
 
       <BillingDangerBanner />
@@ -52,8 +54,14 @@ export default function CompanyLayout() {
   );
 }
 
-function Navigation({ onOpenKeyboardShortcuts }: { onOpenKeyboardShortcuts: () => void }) {
-  const { company, canAddGoal, canAddProject, productRelease } = useCompanyLoaderData();
+function Navigation({
+  onOpenKeyboardShortcuts,
+  productRelease,
+}: {
+  onOpenKeyboardShortcuts: () => void;
+  productRelease: ReturnType<typeof useProductRelease>;
+}) {
+  const { company, canAddGoal, canAddProject } = useCompanyLoaderData();
   const me = useMe()!;
   const paths = usePaths();
   const navigate = useNavigate();

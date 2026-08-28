@@ -45,12 +45,14 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
 
   step :assert_toast_visible, ctx do
     ctx
+    |> UI.wait_until_testid(testid: "product-release-toast")
     |> UI.assert_has(testid: "product-release-toast")
     |> UI.assert_text(@v18.title)
   end
 
   step :assert_newer_toast_visible, ctx do
     ctx
+    |> UI.wait_until_testid(testid: "product-release-toast")
     |> UI.assert_has(testid: "product-release-toast")
     |> UI.assert_text(@v19.title)
   end
@@ -60,6 +62,8 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
   end
 
   step :dismiss_toast, ctx do
-    UI.click(ctx, testid: "product-release-toast-dismiss")
+    ctx
+    |> UI.wait_until_testid(testid: "product-release-toast-dismiss")
+    |> UI.click(testid: "product-release-toast-dismiss")
   end
 end
