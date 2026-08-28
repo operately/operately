@@ -419,30 +419,30 @@ docker.buildx.setup:
 	docker buildx use $(DOCKER_BUILDX_BUILDER)
 	docker buildx inspect --bootstrap
 
-# Native-arch build loaded into the local daemon. Used locally and on PR CI so we
-# do not emulate linux/arm64 on every branch.
+# Native-arch image for main CI (Blastoff) and local work. Pull :latest first in
+# CI so this reuses cached layers.
 docker.build:
 	$(MAKE) inject.rel.version
-	docker buildx build -f Dockerfile.prod $(DOCKER_IMAGE_TAGS) --load .
+	docker build -f Dockerfile.prod -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG) .
 
-# Build linux/amd64 and linux/arm64 and push them as one manifest list. Multi-arch
-# images cannot be --load'ed into the daemon, so build and push are one step.
+docker.push:
+	docker push operately/operately:$(DOCKER_IMAGE_TAG)
+	docker push operately/operately:latest
+
+# linux/amd64 + linux/arm64 as one manifest list. Used by the nightly pipeline.
+# Multi-arch images cannot be --load'ed into the daemon, so build and push are one step.
 docker.buildx.push: docker.buildx.setup
 	$(MAKE) inject.rel.version
 	docker buildx build --platform $(DOCKER_PLATFORMS) -f Dockerfile.prod \
 		$(DOCKER_IMAGE_TAGS) --push .
 
-docker.push: docker.buildx.push
-
 #
 # Release related tasks
 #
 
-# Build and push the multi-arch image, then copy that manifest to the version
-# tag. pull/tag/push would flatten it to a single architecture.
+# Copy the published multi-arch manifest to the version tag. pull/tag/push would
+# flatten it to a single architecture.
 release.tag.docker:
-	test -n "$(VERSION)" || (echo "VERSION is required, e.g. make release.tag.docker VERSION=1.3.0" && exit 1)
-	$(MAKE) docker.buildx.push
 	docker buildx imagetools create \
 		-t operately/operately:$(VERSION) \
 		operately/operately:$(DOCKER_IMAGE_TAG)

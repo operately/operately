@@ -218,6 +218,22 @@ blocks:
             - "[ -f cli/testreports/junit.xml ] && test-results publish cli/testreports/junit.xml"
             - ./scripts/publish_retries_report.sh app/testreports/retries.md
 
+  - name: Docker Build
+    dependencies: []
+    task:
+      secrets:
+        - name: docker-push
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+      jobs:
+        - name: "Docker Release"
+          commands:
+            - docker pull operately/operately:latest
+            - make docker.build
+            - 'if [[ "$SEMAPHORE_GIT_BRANCH" = "main" && "$SEMAPHORE_GIT_REF_TYPE" = "branch" ]]; then make docker.push; else echo "Skipping Docker push"; fi'
+
   - name: Collect Test Timings
     dependencies:
       - License Check
@@ -225,6 +241,7 @@ blocks:
       - App Tests
       - Sharded App Tests
       - CLI and MCP E2E
+      - Docker Build
     run:
       when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'}) or change_in('/scripts/test_timings', {default_branch: 'main'}) or change_in('/scripts/test_splitting', {default_branch: 'main'}) or change_in('/scripts/run_unit_tests.js', {default_branch: 'main'}) or change_in('/scripts/run_feature_tests.js', {default_branch: 'main'}) or change_in('/Makefile', {default_branch: 'main'}) or change_in('/.semaphore/semaphore.yml', {default_branch: 'main'})"
     task:
