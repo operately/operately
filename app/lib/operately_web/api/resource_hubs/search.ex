@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Search do
 
   def call(conn, inputs) do
     with {:ok, hub} <- ResourceHub.get(me(conn), id: inputs.resource_hub_id) do
-      nodes = hub |> Search.search_resource_hub(inputs.query) |> Serializer.serialize()
+      nodes = hub |> Search.search_resource_hub(inputs.query) |> Serializer.serialize(company: company(conn))
       {:ok, %{nodes: nodes}}
     else
       {:error, :not_found} -> {:error, :not_found}

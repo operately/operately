@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:filter, fn _ctx -> resolve_filter_inputs(inputs) end)
     |> run(:nodes, fn ctx -> load_nodes(ctx.me, ctx.filter, inputs) end)
-    |> run(:serialized, fn ctx -> serialize(ctx.nodes) end)
+    |> run(:serialized, fn ctx -> serialize(ctx.nodes, company(conn)) end)
     |> respond()
   end
 
@@ -73,12 +73,12 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
     {:ok, nodes}
   end
 
-  defp serialize(nodes) do
+  defp serialize(nodes, company) do
     {drafts, published} = Node.separate_drafts(nodes)
 
     {:ok, %{
-      nodes: Serializer.serialize(published, level: :essential),
-      draft_nodes: Serializer.serialize(drafts, level: :essential)
+      nodes: Serializer.serialize(published, level: :essential, company: company),
+      draft_nodes: Serializer.serialize(drafts, level: :essential, company: company)
     }}
   end
 

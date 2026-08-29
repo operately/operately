@@ -99,7 +99,11 @@ defmodule Operately.Search.CompanyQuery.ResultBuilder do
   defp navigation_target(%{source_type: :project} = candidate), do: %{project_id: candidate.source_id}
   defp navigation_target(%{source_type: :goal} = candidate), do: %{goal_id: candidate.source_id}
   defp navigation_target(%{source_type: :milestone} = candidate), do: %{milestone_id: candidate.source_id}
-  defp navigation_target(%{source_type: :task} = candidate), do: %{task_id: candidate.source_id}
+
+  defp navigation_target(%{source_type: :task} = candidate) do
+    %{task_id: candidate.source_id, space_id: candidate.source_space_id, project_id: candidate.source_project_id}
+  end
+
   defp navigation_target(%{source_type: :person} = candidate), do: %{person_id: candidate.source_id}
   defp navigation_target(%{source_type: :discussion} = candidate), do: %{discussion_id: candidate.source_id}
   defp navigation_target(%{source_type: :project_check_in} = candidate), do: %{project_check_in_id: candidate.source_id}

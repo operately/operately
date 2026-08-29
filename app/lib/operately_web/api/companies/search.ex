@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Companies.Search do
       conn
       |> me()
       |> Search.search_company(inputs.query, filters(inputs))
-      |> Serializer.serialize(level: :essential)
+      |> Serializer.serialize(level: :essential, company: company(conn))
 
     {:ok, %{results: results}}
   end

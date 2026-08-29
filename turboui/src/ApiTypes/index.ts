@@ -1504,6 +1504,7 @@ export interface EditProjectTimelineNewMilestoneInput {
 export interface Goal {
   __typename: "goal";
   id: string;
+  url?: string;
   name: string;
   status: GoalStatus;
   insertedAt?: string | null;
@@ -1723,6 +1724,7 @@ export interface MessagesBoard {
 export interface Milestone {
   __typename: "milestone";
   id: string;
+  url?: string;
   project?: Project | null;
   creator?: Person | null;
   title: string;
@@ -1771,6 +1773,7 @@ export interface Panel {
 export interface Person {
   __typename: "person";
   id: string;
+  url?: string;
   fullName: string;
   title: string;
   avatarUrl: string | null;
@@ -1816,6 +1819,7 @@ export interface ProductRelease {
 export interface Project {
   __typename: "project";
   id: string;
+  url?: string;
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
@@ -2157,12 +2161,14 @@ export interface QuickSearchDiscussion {
   id: string;
   title: string;
   context: string;
+  url?: string;
 }
 
 export interface QuickSearchResource {
   id: string;
   name: string;
   context: string;
+  url?: string;
 }
 
 export interface Reaction {
@@ -2196,6 +2202,7 @@ export interface ResourceHub {
 export interface ResourceHubDocument {
   __typename: "resource_hub_document";
   id: string;
+  url?: string;
   author?: Person | null;
   resourceHubId: string;
   resourceHub?: ResourceHub | null;
@@ -2224,6 +2231,7 @@ export interface ResourceHubDocument {
 export interface ResourceHubFile {
   __typename: "resource_hub_file";
   id: string;
+  url?: string;
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
@@ -2249,6 +2257,7 @@ export interface ResourceHubFile {
 export interface ResourceHubFolder {
   __typename: "resource_hub_folder";
   id: string;
+  url?: string;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
   space?: Space | null;
@@ -2277,6 +2286,7 @@ export interface ResourceHubLink {
   parentFolderId?: string | null;
   name: string;
   url: string;
+  pageUrl?: string;
   description?: string | null;
   type: ResourceHubLinkType;
   potentialSubscribers?: Subscriber[] | null;
@@ -2372,6 +2382,7 @@ export interface SearchNavigationTarget {
   documentId?: string | null;
   fileId?: string | null;
   linkId?: string | null;
+  spaceId?: string | null;
   projectId?: string | null;
   goalId?: string | null;
   milestoneId?: string | null;
@@ -2386,6 +2397,7 @@ export interface SearchNavigationTarget {
 export interface SearchResult {
   __typename: "result";
   id: string;
+  url?: string;
   type: SearchResultType;
   title: string;
   context: string;
@@ -2412,6 +2424,7 @@ export interface SiteMessage {
 export interface Space {
   __typename: "space";
   id: string;
+  url?: string;
   name: string;
   mission?: string | null;
   isMember?: boolean | null;
@@ -2495,6 +2508,7 @@ export interface Target {
 export interface Task {
   __typename: "task";
   id: string;
+  url?: string;
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
