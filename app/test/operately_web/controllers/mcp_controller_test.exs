@@ -258,6 +258,34 @@ defmodule OperatelyWeb.McpControllerTest do
     assert Jason.decode!(text) == body["result"]["structuredContent"]
   end
 
+  test "list_docs_and_files returns canonical folder and document URLs through HTTP", %{account: account, company: company, client: client} do
+    person = People.get_person(account, company)
+    space = group_fixture(person, %{company_id: company.id, name: "Docs Space"})
+    resource_hub = default_resource_hub_for_space(space)
+    folder = folder_fixture(resource_hub.id, %{name: "Planning"})
+    document = document_fixture(resource_hub.id, person.id, %{name: "Brief"})
+
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    {_initialize_conn, session_id} = initialize_session(access_token)
+
+    body =
+      access_token
+      |> call_tool(session_id, "list_docs_and_files", %{"space_id" => OperatelyWeb.Paths.space_id(space)})
+      |> json_body()
+
+    nodes = body["result"]["structuredContent"]["nodes"]
+    folder_result = Enum.find(nodes, &(&1["id"] == OperatelyWeb.Paths.node_id(%{id: folder.node_id})))
+    document_result = Enum.find(nodes, &(&1["id"] == OperatelyWeb.Paths.node_id(%{id: document.node_id})))
+
+    folder_url = OperatelyWeb.Paths.to_url(OperatelyWeb.Paths.folder_path(company, folder))
+    document_url = OperatelyWeb.Paths.to_url(OperatelyWeb.Paths.document_path(company, document))
+
+    assert folder_result["folder"]["url"] == folder_url
+    assert document_result["document"]["url"] == document_url
+    refute folder_result["folder"]["url"] =~ "/spaces/"
+    refute folder_result["folder"]["url"] =~ "/files/folders/"
+  end
+
   test "emits tools/call observability with tool name and outcome", %{account: account, company: company, client: client} do
     handler_id = "mcp-controller-tools-call-#{System.unique_integer([:positive])}"
     test_pid = self()

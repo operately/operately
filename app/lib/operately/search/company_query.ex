@@ -64,6 +64,7 @@ defmodule Operately.Search.CompanyQuery do
         source_id: entry.source_id,
         source_type: entry.source_type,
         resource_hub_id: entry.resource_hub_id,
+        source_space_id: type(candidate.space_id, :binary_id),
         source_project_id: type(candidate.project_id, :binary_id),
         source_goal_id: type(candidate.goal_id, :binary_id),
         title: entry.title,
@@ -143,6 +144,7 @@ defmodule Operately.Search.CompanyQuery do
         resource_hub_id: item.resource_hub_id,
         parent_folder_id: item.parent_folder_id,
         owner_name: item.owner_name,
+        space_id: item.space_id,
         project_id: item.project_id,
         goal_id: item.goal_id
       }

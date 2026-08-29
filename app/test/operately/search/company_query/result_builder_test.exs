@@ -121,13 +121,15 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
 
   test "builds semantic matches and navigation for milestones, tasks, and people" do
     milestone = ResultBuilder.build_one(candidate(%{source_type: :milestone, exact_title: true}))
-    task = ResultBuilder.build_one(candidate(%{source_type: :task, body_kind: "description"}))
+    project_id = Ecto.UUID.generate()
+    space_id = Ecto.UUID.generate()
+    task = ResultBuilder.build_one(candidate(%{source_type: :task, source_project_id: project_id, source_space_id: space_id, body_kind: "description"}))
     person = ResultBuilder.build_one(candidate(%{source_type: :person, body_kind: "title"}))
 
     assert milestone.matched_field == :title
     assert milestone.navigation_target == %{milestone_id: milestone.id}
     assert task.matched_field == :description
-    assert task.navigation_target == %{task_id: task.id}
+    assert task.navigation_target == %{task_id: task.id, project_id: project_id, space_id: space_id}
     assert person.matched_field == :title
     assert person.navigation_target == %{person_id: person.id}
   end
@@ -165,6 +167,7 @@ defmodule Operately.Search.CompanyQuery.ResultBuilderTest do
         source_type: :resource_hub_document,
         resource_hub_id: Ecto.UUID.generate(),
         source_project_id: nil,
+        source_space_id: nil,
         source_goal_id: nil,
         title: "Research",
         owner_name: "Product",

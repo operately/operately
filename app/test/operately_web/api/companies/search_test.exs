@@ -58,6 +58,7 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
              document_id: nil,
              file_id: nil,
              link_id: nil,
+             space_id: nil,
              project_id: Operately.ShortUuid.encode!(ctx.title_match.id),
              goal_id: nil,
              milestone_id: nil,
@@ -127,15 +128,35 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
 
     assert milestone_target.milestone_id == Operately.ShortUuid.encode!(ctx.milestone.id)
 
-    assert {200, %{results: [%{type: "task", matched_field: "name", navigation_target: task_target}]}} =
+    assert {200, %{results: [%{type: "task", matched_field: "name", navigation_target: task_target} = task_result]}} =
              query(ctx.conn, [:companies, :search], query: "Interview marker")
 
     assert task_target.task_id == Operately.ShortUuid.encode!(ctx.task.id)
+    assert task_target.project_id == Operately.ShortUuid.encode!(ctx.project.id)
+    assert task_target.space_id == Operately.ShortUuid.encode!(ctx.space.id)
+    assert task_result.url == Paths.to_url(Paths.project_task_path(ctx.company, ctx.task))
 
     assert {200, %{results: [%{type: "person", matched_field: "title", navigation_target: person_target}]}} =
              query(ctx.conn, [:companies, :search], query: "Product strategist")
 
     assert person_target.person_id == Operately.ShortUuid.encode!(ctx.teammate.id)
+  end
+
+  test "returns a canonical URL and owning space for space tasks", ctx do
+    ctx =
+      ctx
+      |> Factory.create_space_task(:space_task, :space, name: "Space task marker")
+      |> Factory.log_in_person(:creator)
+
+    assert {:ok, _} = SourceIndexer.sync("task", ctx.space_task.id)
+
+    assert {200, %{results: [result]}} =
+             query(ctx.conn, [:companies, :search], query: "Space task marker")
+
+    assert result.url == Paths.to_url(Paths.space_task_path(ctx.company, ctx.space, ctx.space_task))
+
+    assert result.navigation_target.space_id == Operately.ShortUuid.encode!(ctx.space.id)
+    assert result.navigation_target.project_id == nil
   end
 
   test "applies optional space, type, time, and sort filters", ctx do
@@ -235,4 +256,3 @@ defmodule OperatelyWeb.Api.Companies.SearchTest do
     |> NaiveDateTime.truncate(:microsecond)
   end
 end
-

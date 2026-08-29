@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space, name: "Searchable Space")
+    |> Factory.create_space_task(:space_task, :space, name: "Searchable Space Task")
     |> Factory.add_messages_board(:board, :space)
     |> Factory.add_message(:discussion, :board, title: "Searchable Discussion")
     |> Factory.add_resource_hub(:hub, :space, :creator)
@@ -27,11 +28,16 @@ defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
 
     assert Enum.map(result.spaces, & &1.id) == [Paths.space_id(ctx.space)]
 
+    assert [%{id: task_id, name: "Searchable Space Task", url: task_url}] = result.tasks
+    assert task_id == Paths.task_id(ctx.space_task)
+    assert task_url == Paths.to_url(Paths.space_task_path(ctx.company, ctx.space, ctx.space_task))
+
     assert result.discussions == [
              %{
                id: Paths.message_id(ctx.discussion),
                title: "Searchable Discussion",
-               context: "Searchable Space"
+               context: "Searchable Space",
+               url: Paths.to_url(Paths.message_path(ctx.company, ctx.discussion))
              }
            ]
 
@@ -39,7 +45,8 @@ defmodule OperatelyWeb.Api.Companies.QuickSearchTest do
              %{
                id: Paths.document_id(ctx.document),
                name: "Searchable Document",
-               context: "Searchable Space"
+               context: "Searchable Space",
+               url: Paths.to_url(Paths.document_path(ctx.company, ctx.document))
              }
            ]
 

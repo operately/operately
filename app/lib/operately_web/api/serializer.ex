@@ -1,16 +1,21 @@
 defmodule OperatelyWeb.Api.Serializer do
   @valid_levels [:essential, :full]
 
+  alias OperatelyWeb.Api.PageUrls
+
   def serialize(data) do
-    serialize(data, level: :essential)
+    serialize(data, [])
   end
 
-  def serialize(data, level: level) do
+  def serialize(data, opts) do
+    opts = Keyword.validate!(opts, level: :essential, company: nil)
+    level = opts[:level]
     validate_level(level)
 
     data
     |> OperatelyWeb.Api.Serializable.serialize(level: level)
     |> maybe_put_typename(data)
+    |> PageUrls.attach(data, opts[:company])
   end
 
   defp maybe_put_typename(result, %mod{}) when is_map(result) do

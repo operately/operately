@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Companies.QuickSearch do
   alias Operately.Messages.Message
   alias Operately.Search.QuickSearch
   alias OperatelyWeb.Api.Serializer
+  alias OperatelyWeb.Paths
 
   inputs do
     field :query, :string, null: false
@@ -33,40 +34,44 @@ defmodule OperatelyWeb.Api.Companies.QuickSearch do
       conn
       |> me()
       |> QuickSearch.search(inputs.query)
-      |> serialize()
+      |> serialize(company(conn))
 
     {:ok, results}
   end
 
-  defp serialize(results) do
+  defp serialize(results, company) do
     %{
-      spaces: Serializer.serialize(results.spaces, level: :essential),
-      projects: Serializer.serialize(results.projects, level: :full),
-      goals: Serializer.serialize(results.goals, level: :essential),
-      milestones: Serializer.serialize(results.milestones, level: :essential),
-      tasks: Serializer.serialize(results.tasks, level: :full),
-      people: Serializer.serialize(results.people, level: :essential),
-      discussions: Enum.map(results.discussions, &serialize_discussion/1),
-      folders: Enum.map(results.folders, &serialize_resource/1),
-      documents: Enum.map(results.documents, &serialize_resource/1),
-      files: Enum.map(results.files, &serialize_resource/1),
-      links: Enum.map(results.links, &serialize_resource/1)
+      spaces: Serializer.serialize(results.spaces, level: :essential, company: company),
+      projects: Serializer.serialize(results.projects, level: :full, company: company),
+      goals: Serializer.serialize(results.goals, level: :essential, company: company),
+      milestones: Serializer.serialize(results.milestones, level: :essential, company: company),
+      tasks: Serializer.serialize(results.tasks, level: :full, company: company),
+      people: Serializer.serialize(results.people, level: :essential, company: company),
+      discussions: Enum.map(results.discussions, &serialize_discussion(&1, company)),
+      folders: Enum.map(results.folders, &serialize_resource(&1, Paths.folder_path(company, &1.id))),
+      documents: Enum.map(results.documents, &serialize_resource(&1, Paths.document_path(company, &1))),
+      files: Enum.map(results.files, &serialize_resource(&1, Paths.file_path(company, &1))),
+      links: Enum.map(results.links, &serialize_resource(&1, Paths.link_path(company, &1)))
     }
   end
 
-  defp serialize_discussion(discussion) do
+  defp serialize_discussion(discussion, company) do
+    message = %Message{id: discussion.id, title: discussion.title}
+
     %{
-      id: OperatelyWeb.Paths.message_id(%Message{id: discussion.id, title: discussion.title}),
+      id: Paths.message_id(message),
       title: discussion.title,
-      context: discussion.context
+      context: discussion.context,
+      url: Paths.to_url(Paths.message_path(company, message))
     }
   end
 
-  defp serialize_resource(resource) do
+  defp serialize_resource(resource, path) do
     %{
       id: Operately.ShortUuid.encode!(resource.id),
       name: resource.name,
-      context: resource.context
+      context: resource.context,
+      url: Paths.to_url(path)
     }
   end
 end

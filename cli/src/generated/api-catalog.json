@@ -2259,6 +2259,17 @@
           },
           {
             "default": null,
+            "name": "page_url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "description",
             "type": {
               "name": "string",
@@ -4171,6 +4182,17 @@
           },
           {
             "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "author",
             "type": {
               "name": "person",
@@ -4828,6 +4850,17 @@
               "kind": "named"
             },
             "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
             "nullable": false,
             "has_default": false
           },
@@ -5648,6 +5681,17 @@
           },
           {
             "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "name",
             "type": {
               "name": "string",
@@ -6341,6 +6385,17 @@
             "optional": false,
             "nullable": false,
             "has_default": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
           }
         ]
       },
@@ -6530,6 +6585,17 @@
               "kind": "named"
             },
             "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
             "nullable": false,
             "has_default": false
           }
@@ -8781,6 +8847,17 @@
           },
           {
             "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "name",
             "type": {
               "name": "string",
@@ -10028,6 +10105,17 @@
           },
           {
             "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "resource_hub_id",
             "type": {
               "name": "string",
@@ -10260,6 +10348,17 @@
               "kind": "named"
             },
             "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
             "nullable": false,
             "has_default": false
           },
@@ -11562,6 +11661,17 @@
           {
             "default": null,
             "name": "link_id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space_id",
             "type": {
               "name": "string",
               "kind": "named"
@@ -14991,6 +15101,17 @@
           },
           {
             "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "full_name",
             "type": {
               "name": "string",
@@ -15464,6 +15585,17 @@
           },
           {
             "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "project",
             "type": {
               "name": "project",
@@ -15810,6 +15942,17 @@
               "kind": "named"
             },
             "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
             "nullable": false,
             "has_default": false
           },
@@ -22126,6 +22269,17 @@
               "kind": "named"
             },
             "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
             "nullable": false,
             "has_default": false
           },
