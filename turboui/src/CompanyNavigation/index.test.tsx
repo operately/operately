@@ -87,12 +87,15 @@ describe("CompanyNavigation", () => {
     expect(document.querySelector(`[data-test-id="update-available-badge"]`)).not.toBeInTheDocument();
   });
 
-  it("shows a New pill with the version when enabled and an update is available", () => {
+  it("clearly identifies the available update and its version", () => {
     renderNav({ showCurrentVersion: true, availableUpdate: { version: "v1.8" } });
 
     const badge = getByTestId("update-available-badge");
 
-    expect(badge).toHaveTextContent("New");
-    expect(badge).toHaveTextContent("v1.8");
+    expect(badge).toHaveTextContent("v1.8 available");
+    expect(badge).toHaveAttribute(
+      "title",
+      "Operately v1.8 is available. This instance is running an older version. View release notes.",
+    );
   });
 });
