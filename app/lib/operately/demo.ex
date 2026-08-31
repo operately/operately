@@ -1,5 +1,5 @@
 defmodule Operately.Demo do
-  alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects, Discussions, ResourceHubs}
+  alias Operately.Demo.{Resources, Company, People, Spaces, Goals, Projects, ProjectTemplates, Discussions, ResourceHubs}
 
   def run(account, company_name, title) do
     run(account, company_name, title, Operately.Demo.Data.data())
@@ -20,6 +20,7 @@ defmodule Operately.Demo do
           |> Spaces.create_spaces(data[:spaces])
           |> Goals.create_goals(data[:goals])
           |> Projects.create_projects(data[:projects])
+          |> ProjectTemplates.create_project_templates(data[:project_templates])
           |> Discussions.create_discussions(data[:discussions])
           |> ResourceHubs.create_documents(data[:documents])
           |> ResourceHubs.create_links(data[:links])

@@ -2863,6 +2863,716 @@ defmodule Operately.Demo.Data do
           ]
         }
       ],
+      project_templates: [
+        %{
+          key: :feature_launch_template,
+          name: "New Feature Launch",
+          space: :product_space,
+          champion: :frank_miller,
+          reviewer: :david_brown,
+          duration_days: 42,
+          description: "Use this template whenever a feature is ready to leave discovery and ship. It covers scope lock, build, and launch communication.",
+          contributors: [
+            %{person: :walter_baker, responsibility: "Engineering"},
+            %{person: :liam_harris, responsibility: "Design"}
+          ],
+          milestones: [
+            %{
+              title: "Scope locked",
+              due_offset_days: 7,
+              tasks: [
+                %{
+                  name: "Write the problem statement",
+                  description: "Describe the customer problem, who it affects, and how we will know the launch worked.",
+                  assignee: :frank_miller,
+                  due_offset_days: 3,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Agree launch criteria with engineering and design",
+                  description: "Confirm the must-have scope, open questions, and what can wait for a follow-up.",
+                  assignee: :walter_baker,
+                  due_offset_days: 7,
+                  priority: "high",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "Build complete",
+              due_offset_days: 28,
+              tasks: [
+                %{
+                  name: "Implement the agreed scope",
+                  description: "Build the feature against the locked scope and keep open questions visible.",
+                  assignee: :walter_baker,
+                  due_offset_days: 21,
+                  priority: "high",
+                  size: "large"
+                },
+                %{
+                  name: "Complete design QA and copy review",
+                  description: "Check empty states, error cases, and in-product copy before beta.",
+                  assignee: :liam_harris,
+                  due_offset_days: 28,
+                  priority: "medium",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "Launch announced",
+              due_offset_days: 42,
+              tasks: [
+                %{
+                  name: "Draft release notes and in-app announcement",
+                  description: "Write the customer-facing launch copy and share it with marketing.",
+                  assignee: :frank_miller,
+                  due_offset_days: 35,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Ship to production and confirm monitoring",
+                  description: "Release the feature and verify usage and error dashboards are in place.",
+                  assignee: :walter_baker,
+                  due_offset_days: 42,
+                  priority: "high",
+                  size: "medium"
+                }
+              ]
+            }
+          ],
+          discussions: [
+            %{
+              title: "How to use this launch template",
+              author: :frank_miller,
+              body: """
+              Start a new project from this template when a feature has a clear customer problem and an agreed owner.
+
+              Keep the first milestone tight. If scope is still moving, stay in discovery instead of creating a launch project.
+
+              After launch, leave the project open for one week of monitoring notes, then close it with a short retrospective.
+              """
+            }
+          ],
+          documents: [
+            %{
+              name: "Feature Launch Checklist",
+              author: :frank_miller,
+              content: """
+              Copy this checklist into the project and tick items as you go.
+
+              - Problem statement and success metric
+              - Scope locked with engineering and design
+              - QA on empty, error, and permission states
+              - Release notes and support macros
+              - Monitoring and rollback owner
+              """
+            }
+          ]
+        },
+        %{
+          key: :beta_program_template,
+          name: "Customer Beta Program",
+          space: :product_space,
+          champion: :walter_baker,
+          reviewer: :frank_miller,
+          duration_days: 35,
+          description: "A repeatable plan for inviting customers into a beta, collecting feedback, and deciding what ships next.",
+          contributors: [
+            %{person: :liam_harris, responsibility: "Design"},
+            %{person: :olivia_hall, responsibility: "Product"}
+          ],
+          milestones: [
+            %{
+              title: "Beta cohort selected",
+              due_offset_days: 7,
+              tasks: [
+                %{
+                  name: "Define the beta audience and success questions",
+                  description: "Write who should be invited and which questions the beta needs to answer.",
+                  assignee: :frank_miller,
+                  due_offset_days: 3,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Prepare invites and onboarding notes",
+                  description: "Draft the invite, access instructions, and what testers should try first.",
+                  assignee: :olivia_hall,
+                  due_offset_days: 7,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Feedback collected",
+              due_offset_days: 21,
+              tasks: [
+                %{
+                  name: "Run the first feedback session",
+                  description: "Schedule sessions, capture notes, and tag issues by severity.",
+                  assignee: :walter_baker,
+                  due_offset_days: 14,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Cluster feedback into ship, fix, and later",
+                  description: "Turn raw notes into a short list the team can act on before general availability.",
+                  assignee: :liam_harris,
+                  due_offset_days: 21,
+                  priority: "medium",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "Go or no-go decided",
+              due_offset_days: 35,
+              tasks: [
+                %{
+                  name: "Share the beta readout",
+                  description: "Present what we learned, what we will change, and what we will not ship yet.",
+                  assignee: :frank_miller,
+                  due_offset_days: 28,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Close the loop with beta customers",
+                  description: "Thank testers and tell them what changed because of their feedback.",
+                  assignee: :olivia_hall,
+                  due_offset_days: 35,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
+          ]
+        },
+        %{
+          key: :hiring_sprint_template,
+          name: "Role Hiring Sprint",
+          space: :people_space,
+          champion: :karen_martinez,
+          reviewer: :bob_williams,
+          duration_days: 35,
+          description: "A hiring sprint from role definition through offer. Use it for any full-time role, then swap in the hiring manager and interview panel.",
+          contributors: [
+            %{person: :liam_harris, responsibility: "Hiring manager"}
+          ],
+          milestones: [
+            %{
+              title: "Role and scorecard ready",
+              due_offset_days: 7,
+              tasks: [
+                %{
+                  name: "Write the role, level, and must-have skills",
+                  description: "Agree the problem this hire will own and the skills that are required on day one.",
+                  assignee: :karen_martinez,
+                  due_offset_days: 3,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Align compensation band and interview panel",
+                  description: "Confirm the band with finance and name who owns each interview.",
+                  assignee: :liam_harris,
+                  due_offset_days: 7,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Shortlist complete",
+              due_offset_days: 21,
+              tasks: [
+                %{
+                  name: "Source and screen the first cohort",
+                  description: "Publish the role, reach out to a target list, and complete first screens.",
+                  assignee: :karen_martinez,
+                  due_offset_days: 14,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Run work-sample interviews",
+                  description: "Give finalists a practical exercise and score it against the rubric.",
+                  assignee: :liam_harris,
+                  due_offset_days: 21,
+                  priority: "high",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "Offer accepted",
+              due_offset_days: 35,
+              tasks: [
+                %{
+                  name: "Debrief and choose a first-choice candidate",
+                  description: "Compare scorecards, check references, and decide who to offer.",
+                  assignee: :bob_williams,
+                  due_offset_days: 28,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Send the offer and plan the first week",
+                  description: "Issue the offer and hand a start-date plan to the onboarding template.",
+                  assignee: :karen_martinez,
+                  due_offset_days: 35,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            }
+          ],
+          documents: [
+            %{
+              name: "Interview Scorecard",
+              author: :karen_martinez,
+              content: """
+              Score each interview on the same four questions.
+
+              - Can they do the work this role owns?
+              - Have they done it in a similar environment?
+              - How do they communicate trade-offs?
+              - Would the hiring manager trust them with this problem in 90 days?
+
+              Use the same notes template for every candidate so the debrief compares like with like.
+              """
+            }
+          ]
+        },
+        %{
+          key: :onboarding_template,
+          name: "New Hire Onboarding",
+          space: :people_space,
+          champion: :karen_martinez,
+          reviewer: :bob_williams,
+          duration_days: 30,
+          description: "The first 30 days for a new teammate: access, introductions, and a first piece of real work.",
+          contributors: [
+            %{person: :quinn_walker, responsibility: "Operations"}
+          ],
+          milestones: [
+            %{
+              title: "Day one ready",
+              due_offset_days: 1,
+              tasks: [
+                %{
+                  name: "Provision accounts and tools",
+                  description: "Create email, Operately, and the tools this role needs before day one.",
+                  assignee: :quinn_walker,
+                  due_offset_days: 0,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Send the first-week schedule",
+                  description: "Share who they will meet, what to read, and where to find the handbook.",
+                  assignee: :karen_martinez,
+                  due_offset_days: 1,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "First week complete",
+              due_offset_days: 7,
+              tasks: [
+                %{
+                  name: "Walk through the company operating cadence",
+                  description: "Explain goals, projects, check-ins, and where decisions get written down.",
+                  assignee: :bob_williams,
+                  due_offset_days: 3,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Assign a first piece of real work",
+                  description: "Give the new hire a scoped task with a named reviewer and a due date.",
+                  assignee: :karen_martinez,
+                  due_offset_days: 7,
+                  priority: "high",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "30-day check-in held",
+              due_offset_days: 30,
+              tasks: [
+                %{
+                  name: "Collect feedback from the manager and new hire",
+                  description: "Ask what is working, what is confusing, and what to change in onboarding.",
+                  assignee: :karen_martinez,
+                  due_offset_days: 28,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Confirm 90-day goals",
+                  description: "Write down the outcomes expected by the end of the first quarter.",
+                  assignee: :bob_williams,
+                  due_offset_days: 30,
+                  priority: "high",
+                  size: "small"
+                }
+              ]
+            }
+          ]
+        },
+        %{
+          key: :campaign_launch_template,
+          name: "Campaign Launch",
+          space: :marketing_space,
+          champion: :emily_davis,
+          reviewer: :rachel_king,
+          duration_days: 28,
+          description: "A campaign from brief through launch and readout. Use it for paid, email, or launch campaigns.",
+          contributors: [
+            %{person: :noah_lewis, responsibility: "Growth"},
+            %{person: :olivia_hall, responsibility: "Product marketing"}
+          ],
+          milestones: [
+            %{
+              title: "Brief approved",
+              due_offset_days: 5,
+              tasks: [
+                %{
+                  name: "Write the campaign brief",
+                  description: "Define the audience, offer, channel mix, and the one metric that means this worked.",
+                  assignee: :emily_davis,
+                  due_offset_days: 3,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Review the brief with product and sales",
+                  description: "Check the promise against the product and the follow-up path for leads.",
+                  assignee: :olivia_hall,
+                  due_offset_days: 5,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Assets ready",
+              due_offset_days: 18,
+              tasks: [
+                %{
+                  name: "Produce creative and landing copy",
+                  description: "Create the ads, email, and landing page copy against the approved brief.",
+                  assignee: :rachel_king,
+                  due_offset_days: 14,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "QA tracking and conversion path",
+                  description: "Verify UTMs, events, and the path from click to signup before spend goes live.",
+                  assignee: :noah_lewis,
+                  due_offset_days: 18,
+                  priority: "high",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Launch readout shared",
+              due_offset_days: 28,
+              tasks: [
+                %{
+                  name: "Launch the campaign",
+                  description: "Go live, watch the first 48 hours, and pause anything that is clearly broken.",
+                  assignee: :noah_lewis,
+                  due_offset_days: 21,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Share results and next tests",
+                  description: "Report what worked, what did not, and the next two tests to run.",
+                  assignee: :emily_davis,
+                  due_offset_days: 28,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            }
+          ],
+          discussions: [
+            %{
+              title: "Campaign brief questions",
+              author: :emily_davis,
+              body: """
+              Before you start a project from this template, answer three questions in the brief:
+
+              1. Who is this for, in a sentence a salesperson would recognize?
+              2. What should someone do after they see the campaign?
+              3. Which metric will we look at in the readout?
+
+              If those are fuzzy, keep working the brief instead of creating the project.
+              """
+            }
+          ]
+        },
+        %{
+          key: :market_research_template,
+          name: "Market Research Cycle",
+          space: :marketing_space,
+          champion: :paul_young,
+          reviewer: :emily_davis,
+          duration_days: 30,
+          description: "A research cycle for a new segment or region: interviews, synthesis, and a recommendation.",
+          contributors: [
+            %{person: :rachel_king, responsibility: "Research support"}
+          ],
+          milestones: [
+            %{
+              title: "Research questions locked",
+              due_offset_days: 5,
+              tasks: [
+                %{
+                  name: "Write the decision this research should inform",
+                  description: "State the decision, the audience, and the questions interviews must answer.",
+                  assignee: :paul_young,
+                  due_offset_days: 3,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Build the interview list and guide",
+                  description: "Name who to talk to and the questions that will produce comparable notes.",
+                  assignee: :rachel_king,
+                  due_offset_days: 5,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Interviews complete",
+              due_offset_days: 21,
+              tasks: [
+                %{
+                  name: "Complete the interview set",
+                  description: "Run the planned interviews and store notes in the project Docs & Files.",
+                  assignee: :paul_young,
+                  due_offset_days: 18,
+                  priority: "high",
+                  size: "large"
+                },
+                %{
+                  name: "Tag themes and contradictions",
+                  description: "Cluster what we heard and call out where customers disagree.",
+                  assignee: :rachel_king,
+                  due_offset_days: 21,
+                  priority: "medium",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "Recommendation published",
+              due_offset_days: 30,
+              tasks: [
+                %{
+                  name: "Write the research readout",
+                  description: "Summarize findings, confidence, and the recommended next move.",
+                  assignee: :paul_young,
+                  due_offset_days: 26,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Review the readout with leadership",
+                  description: "Walk through the recommendation and capture the decision in the project.",
+                  assignee: :emily_davis,
+                  due_offset_days: 30,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            }
+          ]
+        },
+        %{
+          key: :quarterly_close_template,
+          name: "Quarterly Financial Close",
+          space: :finance_space,
+          champion: :martin_smith,
+          reviewer: :owner,
+          duration_days: 21,
+          description: "The quarterly close: books, runway, and a short readout for leadership.",
+          contributors: [],
+          milestones: [
+            %{
+              title: "Books closed",
+              due_offset_days: 10,
+              tasks: [
+                %{
+                  name: "Complete reconciliations and adjustments",
+                  description: "Close the books and flag anything that still needs a decision.",
+                  assignee: :martin_smith,
+                  due_offset_days: 7,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Refresh the runway and spend model",
+                  description: "Update cash, burn, and hiring plans against the closed numbers.",
+                  assignee: :martin_smith,
+                  due_offset_days: 10,
+                  priority: "high",
+                  size: "medium"
+                }
+              ]
+            },
+            %{
+              title: "Leadership readout delivered",
+              due_offset_days: 21,
+              tasks: [
+                %{
+                  name: "Draft the quarterly finance memo",
+                  description: "Summarize results, runway, risks, and the asks for next quarter.",
+                  assignee: :martin_smith,
+                  due_offset_days: 16,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Walk leadership through the numbers",
+                  description: "Review the memo, capture decisions, and file the final version in Docs & Files.",
+                  assignee: :owner,
+                  due_offset_days: 21,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            }
+          ],
+          links: [
+            %{
+              name: "Quarterly close workbook",
+              author: :martin_smith,
+              url: "https://docs.google.com/spreadsheets/d/quarterly-close-workbook",
+              type: :google_sheet,
+              content: "Starting workbook for reconciliations, runway, and the leadership memo."
+            }
+          ]
+        },
+        %{
+          key: :quarterly_planning_template,
+          name: "Quarterly Planning Cycle",
+          space: :company_space,
+          champion: :bob_williams,
+          reviewer: :owner,
+          duration_days: 21,
+          description: "Company quarterly planning: review last quarter, set goals, and publish the plan.",
+          contributors: [
+            %{person: :quinn_walker, responsibility: "Operations"}
+          ],
+          milestones: [
+            %{
+              title: "Last quarter reviewed",
+              due_offset_days: 7,
+              tasks: [
+                %{
+                  name: "Collect goal and project outcomes",
+                  description: "Pull closed work, missed targets, and open risks from each space.",
+                  assignee: :quinn_walker,
+                  due_offset_days: 4,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Write the company retrospective",
+                  description: "Summarize what worked, what slipped, and what we will not repeat.",
+                  assignee: :bob_williams,
+                  due_offset_days: 7,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Next-quarter goals drafted",
+              due_offset_days: 14,
+              tasks: [
+                %{
+                  name: "Propose company and space goals",
+                  description: "Draft a small set of goals with owners, timeframes, and targets.",
+                  assignee: :bob_williams,
+                  due_offset_days: 11,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Pressure-test capacity with space leads",
+                  description: "Check that the draft plan fits hiring, budget, and current project load.",
+                  assignee: :owner,
+                  due_offset_days: 14,
+                  priority: "high",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Plan published",
+              due_offset_days: 21,
+              tasks: [
+                %{
+                  name: "Publish goals and the planning memo",
+                  description: "Create or update goals in Operately and share the written plan with the company.",
+                  assignee: :bob_williams,
+                  due_offset_days: 18,
+                  priority: "high",
+                  size: "small"
+                },
+                %{
+                  name: "Kick off the first projects of the quarter",
+                  description: "Start the work that should be underway in week one, using templates where they exist.",
+                  assignee: :quinn_walker,
+                  due_offset_days: 21,
+                  priority: "medium",
+                  size: "small"
+                }
+              ]
+            }
+          ],
+          documents: [
+            %{
+              name: "Quarterly Planning Memo",
+              author: :bob_williams,
+              content: """
+              Fill this in before the planning review.
+
+              ## Last quarter
+              - Goals hit
+              - Goals missed, and why
+              - Work we should stop
+
+              ## Next quarter
+              - Company goals
+              - Space-level bets
+              - Capacity and hiring constraints
+
+              Keep the memo short enough to read in ten minutes.
+              """
+            }
+          ]
+        }
+      ],
       discussions: [
         %{
           key: :market_expansion_update,

@@ -13,8 +13,29 @@ defmodule Operately.DemoTest do
 
     assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
     assert %Operately.Companies.Company{} = company
-    assert Operately.Companies.get_company_by_name("Acme Inc.")
+    assert company.name == "Acme Inc."
     assert length(Operately.People.list_people(company.id)) == 17
+  end
+
+  test "creates 1 to 2 project templates for each space" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
+
+    spaces = Operately.Groups.list_groups_for_company(company.id)
+    assert length(spaces) > 0
+
+    templates = company_project_templates(company.id)
+    templates_by_space = Enum.group_by(templates, & &1.space_id)
+
+    Enum.each(spaces, fn space ->
+      count = length(Map.get(templates_by_space, space.id, []))
+      assert count in 1..2, "#{space.name} has #{count} project templates, expected 1 or 2"
+    end)
+
+    assert Enum.all?(templates, fn template ->
+             length(template.milestones) > 0 and length(template.tasks) > 0
+           end)
   end
 
   test "it does not enqueue activity notification jobs while building the demo" do
@@ -57,6 +78,55 @@ defmodule Operately.DemoTest do
            end)
   end
 
+  test "project template creation" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    data = %{
+      people: [],
+      spaces: [],
+      goals: [],
+      projects: [],
+      project_templates: [
+        %{
+          key: :launch_template,
+          name: "Feature Launch",
+          space: :company_space,
+          champion: :owner,
+          duration_days: 21,
+          description: "A reusable launch plan.",
+          contributors: [],
+          milestones: [
+            %{
+              title: "Scope locked",
+              due_offset_days: 7,
+              tasks: [
+                %{
+                  name: "Write the problem statement",
+                  description: "Describe the customer problem and success criteria.",
+                  assignee: :owner,
+                  due_offset_days: 3,
+                  priority: "high",
+                  size: "small"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO", data)
+
+    [template] = company_project_templates(company.id)
+
+    assert template.name == "Feature Launch"
+    assert template.duration_days == 21
+    assert length(template.milestones) == 1
+    assert length(template.tasks) == 1
+    assert hd(template.milestones).title == "Scope locked"
+    assert hd(template.tasks).name == "Write the problem statement"
+  end
+
   test "milestone creation" do
     account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
 
@@ -76,7 +146,7 @@ defmodule Operately.DemoTest do
             %{title: "M1", status: :done},
             %{title: "M2", status: :pending}
           ]
-        },
+        }
       ]
     }
 
@@ -105,10 +175,10 @@ defmodule Operately.DemoTest do
           contributors: [],
           check_ins: [
             %{status: :caution, content: "First check-in", days_ago: 14},
-            %{status: :on_track, content: "Second check-in", days_ago: 7},
+            %{status: :on_track, content: "Second check-in", days_ago: 7}
           ],
           milestones: []
-        },
+        }
       ]
     }
 
@@ -137,9 +207,9 @@ defmodule Operately.DemoTest do
           timeframe: :current_year,
           targets: [
             %{name: "A", from: 0, to: 5, unit: "units"},
-            %{name: "B", from: 0, to: 5, unit: "units"},
+            %{name: "B", from: 0, to: 5, unit: "units"}
           ],
-          update: nil,
+          update: nil
         },
         %{
           key: :quarterly_goal,
@@ -149,9 +219,9 @@ defmodule Operately.DemoTest do
           reviewer: :owner,
           targets: [
             %{name: "A", from: 0, to: 5, unit: "units"},
-            %{name: "B", from: 0, to: 5, unit: "units"},
+            %{name: "B", from: 0, to: 5, unit: "units"}
           ],
-          update: nil,
+          update: nil
         }
       ],
       projects: []
@@ -186,13 +256,13 @@ defmodule Operately.DemoTest do
           reviewer: :owner,
           targets: [
             %{name: "A", from: 0, to: 5, unit: "units"},
-            %{name: "B", from: 0, to: 5, unit: "units"},
+            %{name: "B", from: 0, to: 5, unit: "units"}
           ],
           update: %{
             status: :caution,
             content: "Progress needs attention.",
-            target_values: [1, 2],
-          },
+            target_values: [1, 2]
+          }
         }
       ],
       projects: []
@@ -300,6 +370,7 @@ defmodule Operately.DemoTest do
     versions = DocumentVersion.list_for_document(document.id) |> Enum.sort_by(& &1.version_number)
 
     assert document.current_version == 2
+
     assert Enum.map(versions, &{&1.version_number, &1.origin, &1.title}) == [
              {1, :created, "Handbook"},
              {2, :edited, "Company Handbook"}
@@ -307,6 +378,16 @@ defmodule Operately.DemoTest do
 
     assert Date.diff(Date.utc_today(), NaiveDateTime.to_date(Enum.at(versions, 0).inserted_at)) == 5
     assert Date.diff(Date.utc_today(), NaiveDateTime.to_date(Enum.at(versions, 1).inserted_at)) == 2
+  end
+
+  defp company_project_templates(company_id) do
+    import Ecto.Query
+
+    from(t in Operately.ProjectTemplates.ProjectTemplate,
+      where: t.company_id == ^company_id,
+      preload: [:milestones, :tasks, :space]
+    )
+    |> Repo.all()
   end
 
   defp company_documents(company_id) do
