@@ -22,6 +22,17 @@ defmodule Operately.Support.Features.UI.DateField do
     |> UI.refute_has(testid: "date-field-confirm")
   end
 
+  def select_day_in_inline_calendar(ctx, date) do
+    day_testid = "date-field-day-#{date.day}"
+
+    ctx
+    |> UI.wait_until_has(css: "[data-testid='date-field-current-month']")
+    |> navigate_date_field_to_month(date)
+    |> UI.wait_until_has(testid: day_testid)
+    |> UI.click(testid: day_testid)
+    |> UI.wait_until_has(css: "[data-test-id='#{day_testid}'][aria-pressed='true']")
+  end
+
   defp navigate_date_field_to_month(ctx, date) do
     {current_month, current_year} = read_date_field_displayed_month_year(ctx)
     month_offset = month_offset(current_month, current_year, date.month, date.year)
