@@ -7,6 +7,7 @@ interface UsePeopleSearch<T> {
   scope: SearchScope;
   transformResult?: (person: Person) => T; // transformResult must be memoized
   ignoredIds?: string[]; // ignoredIds must be memoized
+  loadInitialResults?: boolean;
 }
 
 // This matches PersonField.SearchData from turboui
@@ -45,10 +46,14 @@ export function usePersonFieldSearch<T>(hookParams: UsePeopleSearch<T>): SearchD
     [hookParams.scope.type, hookParams.scope.id, hookParams.ignoredIds, hookParams.transformResult],
   );
 
-  // Load initial people on mount
+  const loadInitialResults = hookParams.loadInitialResults ?? true;
+
+  // Existing callers receive initial results by default. Pages with many closed
+  // pickers can defer this request until the picker opens.
   useEffect(() => {
+    if (!loadInitialResults) return;
     onSearch("");
-  }, [onSearch]);
+  }, [loadInitialResults, onSearch]);
 
   return { people, onSearch };
 }

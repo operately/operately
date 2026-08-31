@@ -28,6 +28,23 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.ListTest do
       assert Enum.map(tasks, & &1.id) == [Paths.task_id(task)]
     end
 
+    test "accepts minimal project task lists" do
+      account = account_fixture()
+      company = company_fixture(%{company_name: "MCP Company"}, account)
+      person = People.get_person(account, company)
+      project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: company.company_space_id, name: "Roadmap Project"})
+      milestone = milestone_fixture(%{project_id: project.id, creator_id: person.id, title: "Roadmap Milestone"})
+      task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, project_id: project.id, name: "Roadmap Task"})
+
+      conn = conn_with_assigns(account, company, person)
+
+      assert {:ok, %{tasks: [minimal_task]}} = List.call(conn, %{"project_id" => Paths.project_id(project), "minimal" => true})
+
+      assert minimal_task.id == Paths.task_id(task)
+      assert minimal_task.description == nil
+      assert is_boolean(minimal_task.has_description)
+    end
+
     test "lists tasks for a space" do
       account = account_fixture()
       company = company_fixture(%{company_name: "MCP Company"}, account)

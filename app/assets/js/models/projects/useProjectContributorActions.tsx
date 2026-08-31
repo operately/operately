@@ -53,6 +53,7 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
     scope: { type: "project", id: project.id },
     ignoredIds: contributorPersonIds,
     transformResult: transformPerson,
+    loadInitialResults: false,
   });
 
   const onContributorCreate = React.useCallback(

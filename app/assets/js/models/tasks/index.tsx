@@ -36,9 +36,9 @@ export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[], opts: P
 }
 
 export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: ParserOptions): TaskBoard.Task {
-  const description = parseContent(task.description || "{}");
   const commentCount = task.commentsCount || 0;
   const hasComments = commentCount > 0;
+  const hasDescription = task.hasDescription ?? hasRichTextContent(task.description);
 
   return {
     id: task.id,
@@ -51,12 +51,17 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: Parse
     dueDate: parseContextualDate(task.dueDate),
     reminders: parseTaskReminders(task.reminders),
     closedAt: Time.parse(task.closedAt),
-    hasDescription: richContentToString(description).trim().length > 0,
+    hasDescription,
     hasComments,
     commentCount,
     comments: undefined,
     type: opts.type,
   };
+}
+
+function hasRichTextContent(description: string | null | undefined): boolean {
+  const content = parseContent(description || "{}");
+  return richContentToString(content).trim().length > 0;
 }
 
 export function parseTaskReminders(reminders: TaskReminder[] | null | undefined): TaskPage.Reminder[] {

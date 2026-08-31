@@ -13,6 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       id: OperatelyWeb.Paths.task_id(task),
       name: task.name,
       description: task.description && Jason.encode!(task.description),
+      has_description: has_description?(task),
       priority: task.priority,
       size: task.size,
       status: OperatelyWeb.Api.Serializer.serialize(task.task_status),
@@ -34,4 +35,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       type: Task.task_type(task)
     }
   end
+
+  defp has_description?(%Task{has_description: has_description}) when is_boolean(has_description), do: has_description
+  defp has_description?(%Task{} = task), do: Operately.RichContent.empty?(task.description)
 end

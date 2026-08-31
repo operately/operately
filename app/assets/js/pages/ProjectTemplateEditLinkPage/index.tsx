@@ -17,7 +17,6 @@ interface LoadedData {
 }
 
 async function loader({ params }): Promise<LoadedData> {
-
   const { template } = await Api.project_templates.get({ id: params.templateId });
   const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));
 
@@ -75,4 +74,3 @@ function Page() {
     />
   );
 }
-

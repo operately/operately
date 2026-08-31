@@ -2521,6 +2521,7 @@ export interface Task {
   milestone?: Milestone | null;
   project?: Project | null;
   description?: string | null;
+  hasDescription: boolean;
   assignees?: Person[] | null;
   creator?: Person | null;
   projectSpace?: Space | null;

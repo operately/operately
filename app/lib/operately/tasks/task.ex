@@ -24,6 +24,7 @@ defmodule Operately.Tasks.Task do
           space_id: Ecto.UUID.t() | nil,
           permissions: map() | nil,
           comments_count: integer() | nil,
+          has_description: boolean() | nil,
           available_statuses: list() | nil,
           inserted_at: NaiveDateTime.t() | nil,
           updated_at: NaiveDateTime.t() | nil
@@ -65,6 +66,7 @@ defmodule Operately.Tasks.Task do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
+    field :has_description, :boolean, virtual: true
     field :available_statuses, {:array, :map}, virtual: true
     field :assigned_at, :naive_datetime, virtual: true
 

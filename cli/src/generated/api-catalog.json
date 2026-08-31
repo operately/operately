@@ -8993,6 +8993,17 @@
           },
           {
             "default": null,
+            "name": "has_description",
+            "type": {
+              "name": "boolean",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "assignees",
             "type": {
               "item": {
@@ -39233,12 +39244,23 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": "false",
+          "name": "minimal",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": true
         }
       ],
       "full_name": "tasks/list",
       "method": "GET",
       "namespace": "tasks",
-      "docstring": "Lists all tasks for a project."
+      "docstring": "Lists all tasks for a project.\n\nSet `minimal` to `true` to return compact task data suitable for project task lists."
     },
     {
       "name": "list_potential_assignees",

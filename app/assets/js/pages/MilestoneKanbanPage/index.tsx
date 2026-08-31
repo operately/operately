@@ -10,7 +10,7 @@ import * as Spaces from "@/models/spaces";
 import { MilestoneKanbanPage } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
-import { projectPageCacheKey } from "../ProjectPage";
+import { invalidateProjectPageCache } from "../ProjectPage";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
@@ -126,11 +126,11 @@ function Page() {
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
       PageCache.invalidate(pageCacheKey(milestone.id));
       if (milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+        invalidateProjectPageCache(milestone.project.id);
       }
 
       if (destinationType === "project") {
-        PageCache.invalidate(projectPageCacheKey(destinationId));
+        invalidateProjectPageCache(destinationId);
       }
 
       if (refresh) {
@@ -158,7 +158,7 @@ function Page() {
       if (!result?.success) return;
 
       if (milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+        invalidateProjectPageCache(milestone.project.id);
       }
     },
     [deleteTask, milestone.project?.id],

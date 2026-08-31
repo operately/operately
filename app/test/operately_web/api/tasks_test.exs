@@ -130,6 +130,37 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task_with_comments.comments_count == 2
       assert task_without_comments.comments_count == 0
     end
+
+    test "returns compact task data when minimal is true", ctx do
+      description = RichText.rich_text("Task description")
+
+      ctx =
+        ctx
+        |> Factory.add_project_task(:described_task, :milestone, description: description)
+        |> Factory.preload(:described_task, :project)
+        |> Factory.add_task_assignee(:assignee, :described_task, :creator)
+        |> Factory.add_comment(:comment, :described_task)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, full_response} = query(ctx.conn, [:tasks, :list], %{project_id: Paths.project_id(ctx.project)})
+      full_task = Enum.find(full_response.tasks, &(&1.id == Paths.task_id(ctx.described_task)))
+
+      assert full_task.description == Jason.encode!(description)
+      assert full_task.has_description
+
+      assert {200, minimal_response} =
+               query(ctx.conn, [:tasks, :list], %{project_id: Paths.project_id(ctx.project), minimal: true})
+
+      minimal_task = Enum.find(minimal_response.tasks, &(&1.id == Paths.task_id(ctx.described_task)))
+
+      assert minimal_task.description == nil
+      assert minimal_task.has_description
+      assert minimal_task.comments_count == 1
+      assert minimal_task.milestone.id == Paths.milestone_id(ctx.milestone)
+      assert Enum.map(minimal_task.assignees, & &1.id) == [Paths.person_id(ctx.creator)]
+      assert minimal_task.subscription_list == nil
+      assert minimal_task.priority == nil
+    end
   end
 
   describe "create task" do

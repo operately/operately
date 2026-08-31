@@ -23,6 +23,7 @@ import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { SaveProjectAsTemplateModal } from "../SaveProjectAsTemplateModal";
+import { SecondaryButton } from "../Button";
 import type { Contributor as ContributorsSectionContributor, ContributorFormValues } from "../ContributorsSection";
 import type { OtherPeopleWithAccessPerson } from "../OtherPeopleWithAccess";
 
@@ -95,6 +96,14 @@ export namespace ProjectPage {
       };
 
   export type DocsAndFiles = PageDocsAndFiles;
+
+  export type TabId = "tasks" | "check-ins" | "discussions" | "docs-and-files";
+
+  export interface TabState {
+    loading: boolean;
+    error: boolean;
+    onRetry?: () => void;
+  }
 
   interface CommonProps {
     closeLink: string;
@@ -210,6 +219,8 @@ export namespace ProjectPage {
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
     docsAndFiles?: DocsAndFiles;
+    hasDocsAndFiles?: boolean;
+    tabStates?: Partial<Record<TabId, TabState>>;
     formattedTimePreferences: FormattedTimePreferences;
     saveAsTemplate?: {
       canSave: boolean;
@@ -265,9 +276,10 @@ export function ProjectPage(props: ProjectPage.Props) {
   const tabs = useProjectPageTabs({
     defaultTab: "overview",
     childrenCount: state.childrenCount,
-    showDocsAndFiles: Boolean(state.docsAndFiles),
+    showDocsAndFiles: state.hasDocsAndFiles ?? Boolean(state.docsAndFiles),
   });
-  const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
+  const hasDocsAndFiles = state.hasDocsAndFiles ?? Boolean(state.docsAndFiles);
+  const activeTab = !hasDocsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
 
   return (
     <ProjectPageLayout
@@ -280,14 +292,18 @@ export function ProjectPage(props: ProjectPage.Props) {
     >
       <div className="flex-1 overflow-auto">
         {activeTab === "overview" && <Overview {...state} />}
-        {activeTab === "tasks" && <TasksSection state={state} />}
-        {activeTab === "check-ins" && <CheckIns {...state} />}
-        {activeTab === "discussions" && <Discussions {...state} />}
-        {activeTab === "docs-and-files" && state.docsAndFiles && (
-          <PageDocsAndFilesTab
-            docsAndFiles={state.docsAndFiles}
-            formattedTimePreferences={state.formattedTimePreferences}
-          />
+        {activeTab === "tasks" && <TabPanel state={state.tabStates?.tasks}><TasksSection state={state} /></TabPanel>}
+        {activeTab === "check-ins" && <TabPanel state={state.tabStates?.["check-ins"]}><CheckIns {...state} /></TabPanel>}
+        {activeTab === "discussions" && <TabPanel state={state.tabStates?.discussions}><Discussions {...state} /></TabPanel>}
+        {activeTab === "docs-and-files" && (
+          <TabPanel state={state.tabStates?.["docs-and-files"]}>
+            {state.docsAndFiles && (
+              <PageDocsAndFilesTab
+                docsAndFiles={state.docsAndFiles}
+                formattedTimePreferences={state.formattedTimePreferences}
+              />
+            )}
+          </TabPanel>
         )}
         {activeTab === "activity" && <Activity {...state} />}
       </div>
@@ -309,6 +325,23 @@ export function ProjectPage(props: ProjectPage.Props) {
       )}
     </ProjectPageLayout>
   );
+}
+
+function TabPanel({ children, state }: { children: React.ReactNode; state?: ProjectPage.TabState }) {
+  if (state?.loading) {
+    return <div className="p-8 text-sm text-content-dimmed" role="status">Loading…</div>;
+  }
+
+  if (state?.error) {
+    return (
+      <div className="p-8 text-sm text-content-dimmed">
+        <p>Couldn’t load this tab.</p>
+        {state.onRetry && <SecondaryButton onClick={state.onRetry} size="xs" className="mt-3">Retry</SecondaryButton>}
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }
 
 function Activity(props: ProjectPage.State) {
