@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "mix"
+    directory: "/app"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directories:
+      - "/app"
+      - "/turboui"
+      - "/cli"
+    schedule:
+      interval: "weekly"
