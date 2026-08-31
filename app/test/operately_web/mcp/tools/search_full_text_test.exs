@@ -30,6 +30,8 @@ defmodule OperatelyWeb.Mcp.Tools.SearchFullTextTest do
 
     assert result.id == Paths.document_id(ctx.document)
     assert result.type == :resource_hub_document
+    assert result.url == Paths.to_url(Paths.document_path(ctx.company, ctx.document))
+    refute String.contains?(URI.parse(result.url).path, "/files/folders/")
   end
 
   test "call/2 returns indexed project matches" do
@@ -50,6 +52,7 @@ defmodule OperatelyWeb.Mcp.Tools.SearchFullTextTest do
 
     assert result.id == ShortUuid.encode!(ctx.project.id)
     assert result.type == :project
+    assert result.url == Paths.to_url(Paths.project_path(ctx.company, ctx.project))
   end
 
   test "call/2 returns indexed goal matches" do
@@ -91,6 +94,26 @@ defmodule OperatelyWeb.Mcp.Tools.SearchFullTextTest do
 
     assert result.id == ShortUuid.encode!(ctx.milestone.id)
     assert result.type == :milestone
+  end
+
+  test "call/2 returns canonical space-task URLs and navigation targets" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_space(:space, name: "Distinctive Space")
+      |> Factory.create_space_task(:space_task, :space, name: "Distinctive MCP space task")
+
+    assert {:ok, _} = SourceIndexer.sync("task", ctx.space_task.id)
+
+    assert {:ok, %{results: [result]}} =
+             SearchFullText.call(conn(ctx), %{
+               "query" => "Distinctive MCP space task",
+               "types" => ["task"]
+             })
+
+    assert result.url == Paths.to_url(Paths.space_task_path(ctx.company, ctx.space, ctx.space_task))
+    assert result.navigation_target.space_id == ShortUuid.encode!(ctx.space.id)
+    assert result.navigation_target.project_id == nil
   end
 
   test "call/2 applies space, time_range, and most_recent filters" do

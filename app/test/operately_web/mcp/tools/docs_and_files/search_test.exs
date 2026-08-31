@@ -28,6 +28,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.SearchTest do
              })
 
     assert node.document.id == Paths.document_id(ctx.document)
+    assert node.document.url == Paths.to_url(Paths.document_path(ctx.company, ctx.document))
   end
 
   test "call/2 searches files in a space hub" do
@@ -48,6 +49,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.SearchTest do
              })
 
     assert node.file.id == Paths.file_id(ctx.file)
+    assert node.file.url == Paths.to_url(Paths.file_path(ctx.company, ctx.file))
   end
 
   test "call/2 searches links in a space hub" do
@@ -68,6 +70,8 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.SearchTest do
              })
 
     assert node.link.id == Paths.link_id(ctx.link)
+    assert node.link.url == ctx.link.url
+    assert node.link.page_url == Paths.to_url(Paths.link_path(ctx.company, ctx.link))
   end
 
   test "call/2 searches documents in a project hub" do
@@ -91,6 +95,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.SearchTest do
              })
 
     assert node.document.id == Paths.document_id(ctx.document)
+    assert node.document.url == Paths.to_url(Paths.document_path(ctx.company, ctx.document))
   end
 
   test "call/2 searches documents in a goal hub" do
@@ -114,6 +119,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.SearchTest do
              })
 
     assert node.document.id == Paths.document_id(ctx.document)
+    assert node.document.url == Paths.to_url(Paths.document_path(ctx.company, ctx.document))
   end
 
   test "returns invalid_arguments when hub scope is missing or conflicting" do

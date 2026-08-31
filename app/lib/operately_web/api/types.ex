@@ -925,6 +925,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :project, for: Operately.Projects.Project do
     field :id, :string
+    field? :url, :string
     field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
@@ -1134,6 +1135,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :space, for: Operately.Groups.Group do
     field :id, :string, null: false
+    field? :url, :string
     field :name, :string, null: false
 
     field? :mission, :string, null: true
@@ -1715,6 +1717,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :resource_hub_folder, for: Operately.ResourceHubs.Folder do
     field :id, :string, null: false
+    field? :url, :string
     field? :resource_hub_id, :string, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :space, :space, null: true
@@ -1732,6 +1735,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :resource_hub_document, for: Operately.ResourceHubs.Document do
     field :id, :string, null: false
+    field? :url, :string
     field? :author, :person, null: true
     field :resource_hub_id, :string, null: false
     field? :resource_hub, :resource_hub, null: true
@@ -1759,6 +1763,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :resource_hub_file, for: Operately.ResourceHubs.File do
     field :id, :string, null: false
+    field? :url, :string
     field? :author, :person, null: true
     field? :resource_hub_id, :string, null: true
     field? :resource_hub, :resource_hub, null: true
@@ -1802,6 +1807,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :parent_folder_id, :string, null: true
     field :name, :string, null: false
     field :url, :string, null: false
+    field? :page_url, :string
     field? :description, :string, null: true
     field :type, :resource_hub_link_type, null: false
     field? :potential_subscribers, list_of(:subscriber), null: true
@@ -1830,12 +1836,14 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string, null: false
     field :title, :string, null: false
     field :context, :string, null: false
+    field? :url, :string
   end
 
   object :quick_search_resource do
     field :id, :string, null: false
     field :name, :string, null: false
     field :context, :string, null: false
+    field? :url, :string
   end
 
   enum :search_result_type,
@@ -1866,6 +1874,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :document_id, :string, null: true
     field? :file_id, :string, null: true
     field? :link_id, :string, null: true
+    field? :space_id, :string, null: true
     field? :project_id, :string, null: true
     field? :goal_id, :string, null: true
     field? :milestone_id, :string, null: true
@@ -1879,6 +1888,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :search_result, for: Operately.Search.Result do
     field :id, :string, null: false
+    field? :url, :string
     field :type, :search_result_type, null: false
     field :title, :string, null: false
     field :context, :string, null: false
@@ -1937,6 +1947,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :task, for: Operately.Tasks.Task do
     field :id, :string
+    field? :url, :string
     field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
@@ -2108,6 +2119,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :goal, for: Operately.Goals.Goal do
     field :id, :string, null: false
+    field? :url, :string
     field :name, :string, null: false
     field :status, :goal_status, null: false
 
@@ -2234,6 +2246,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :person, for: Operately.People.Person do
     field :id, :string
+    field? :url, :string
     field :full_name, :string
     field :title, :string
     field :avatar_url, :string, null: true
@@ -2358,6 +2371,7 @@ defmodule OperatelyWeb.Api.Types do
 
   object :milestone, for: Operately.Projects.Milestone do
     field :id, :string, null: false
+    field? :url, :string
     field? :project, :project, null: true
     field? :creator, :person, null: true
     field :title, :string, null: false
