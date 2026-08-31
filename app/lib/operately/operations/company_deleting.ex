@@ -2,6 +2,7 @@ defmodule Operately.Operations.CompanyDeleting do
   alias Operately.Repo
   alias Operately.Companies.Company
   alias Operately.Messages.{Message, MessagesBoard}
+  alias Operately.ProjectTemplates.{ResourceDocument, ResourceFile, ResourceFolder, ResourceLink, ResourceNode}
   alias Operately.ResourceHubs.DocumentVersion
   import Ecto.Query
 
@@ -10,6 +11,7 @@ defmodule Operately.Operations.CompanyDeleting do
       delete_project_tasks(company)
       delete_space_discussions(company)
       delete_document_versions(company)
+      delete_project_template_resources(company)
 
       case Repo.delete(company) do
         {:ok, res} -> res
@@ -77,6 +79,34 @@ defmodule Operately.Operations.CompanyDeleting do
       |> Repo.all()
 
     from(v in DocumentVersion, where: v.document_id in ^document_ids)
+    |> Repo.delete_all()
+  end
+
+  # Extra step so template Docs & Files are gone before node/folder cascade-delete
+  defp delete_project_template_resources(company) do
+    node_ids = project_template_node_ids(company)
+
+    delete_by_node_id(ResourceDocument, node_ids)
+    delete_by_node_id(ResourceFile, node_ids)
+    delete_by_node_id(ResourceLink, node_ids)
+
+    from(n in ResourceNode, where: n.id in subquery(node_ids))
+    |> Repo.update_all(set: [parent_folder_id: nil])
+
+    from(f in ResourceFolder, where: f.node_id in subquery(node_ids))
+    |> Repo.delete_all()
+  end
+
+  defp project_template_node_ids(company) do
+    from(n in ResourceNode,
+      join: t in assoc(n, :project_template),
+      where: t.company_id == ^company.id,
+      select: n.id
+    )
+  end
+
+  defp delete_by_node_id(schema, node_ids) do
+    from(row in schema, where: row.node_id in subquery(node_ids))
     |> Repo.delete_all()
   end
 end

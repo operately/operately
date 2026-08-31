@@ -8,6 +8,7 @@ defmodule Operately.Operations.CompanyDeletingTest do
   alias Operately.Projects.Milestone
   alias Operately.Tasks.Task
   alias Operately.People.Person
+  alias Operately.ProjectTemplates.ProjectTemplate
   alias Operately.ResourceHubs.{Document, DocumentVersion}
 
   setup do
@@ -32,10 +33,12 @@ defmodule Operately.Operations.CompanyDeletingTest do
 
   test "deletes company and all its resources, leaving others intact", ctx do
     # Create another company
-    account = Operately.PeopleFixtures.account_fixture(%{
-      full_name: "Bruce Wayne",
-      email: "bruce.wayne@localhost"
-    })
+    account =
+      Operately.PeopleFixtures.account_fixture(%{
+        full_name: "Bruce Wayne",
+        email: "bruce.wayne@localhost"
+      })
+
     {:ok, other_company} = Operately.Demo.run(account, "Wayne Enterprises", "CEO")
 
     # Initial counts
@@ -51,6 +54,7 @@ defmodule Operately.Operations.CompanyDeletingTest do
     assert ctx_resources.tasks > 0
     assert ctx_resources.documents > 0
     assert ctx_resources.document_versions > 0
+    assert ctx_resources.project_templates > 0
 
     # Run deletion
     assert {:ok, _} = Operately.Operations.CompanyDeleting.run(ctx.company.id)
@@ -65,6 +69,7 @@ defmodule Operately.Operations.CompanyDeletingTest do
     assert deleted_resources.tasks == 0
     assert deleted_resources.documents == 0
     assert deleted_resources.document_versions == 0
+    assert deleted_resources.project_templates == 0
 
     # Verify other company resources are intact
     assert other_resources == count_resources(other_company.id)
@@ -84,11 +89,17 @@ defmodule Operately.Operations.CompanyDeletingTest do
     milestones = Repo.aggregate(from(m in Milestone, join: p in assoc(m, :project), where: p.company_id == ^company_id), :count)
 
     # Tasks can belong to project or space
-    tasks = Repo.aggregate(from(t in Task,
-      left_join: p in assoc(t, :project),
-      left_join: s in assoc(t, :space),
-      where: p.company_id == ^company_id or s.company_id == ^company_id
-    ), :count)
+    tasks =
+      Repo.aggregate(
+        from(t in Task,
+          left_join: p in assoc(t, :project),
+          left_join: s in assoc(t, :space),
+          where: p.company_id == ^company_id or s.company_id == ^company_id
+        ),
+        :count
+      )
+
+    project_templates = Repo.aggregate(from(t in ProjectTemplate, where: t.company_id == ^company_id), :count)
 
     documents =
       Repo.aggregate(
@@ -125,7 +136,8 @@ defmodule Operately.Operations.CompanyDeletingTest do
       milestones: milestones,
       tasks: tasks,
       documents: documents,
-      document_versions: document_versions
+      document_versions: document_versions,
+      project_templates: project_templates
     }
   end
 end
