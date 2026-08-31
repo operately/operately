@@ -7,6 +7,7 @@ interface UseTaskAssigneeSearchParams<T> {
   type: "project" | "space";
   ignoredIds?: (string | null | undefined)[];
   transformResult?: (person: Person) => T;
+  loadInitialResults?: boolean;
 }
 
 interface SearchData<T> {
@@ -44,10 +45,14 @@ export function useTaskAssigneeSearch<T>(hookParams: UseTaskAssigneeSearchParams
     [hookParams.id, hookParams.type, hookParams.ignoredIds, hookParams.transformResult],
   );
 
-  // Load initial people on mount
+  const loadInitialResults = hookParams.loadInitialResults ?? true;
+
+  // Existing callers receive initial results by default. Pages with many closed
+  // pickers can defer this request until the picker opens.
   useEffect(() => {
+    if (!loadInitialResults) return;
     onSearch("");
-  }, [onSearch]);
+  }, [loadInitialResults, onSearch]);
 
   return { people, onSearch };
 }

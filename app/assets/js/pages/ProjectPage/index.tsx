@@ -1,4 +1,4 @@
-import Api from "@/api";
+import Api, { type Task as BackendTask } from "@/api";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router";
@@ -12,10 +12,9 @@ import * as Time from "@/utils/time";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
 import { ProjectPage, showErrorToast } from "turboui";
-import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
-import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
+import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
 import * as Spaces from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
@@ -30,30 +29,21 @@ import {
   useResourceHubNodesListProps,
 } from "@/models/resourceHubs";
 import { useSubscription } from "@/models/subscriptions";
-import type * as Hub from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
+import { invalidateProjectPageCache, type ProjectDocsAndFilesData, useProjectTabData } from "./useProjectTabData";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
+export { invalidateProjectPageCache } from "./useProjectTabData";
 
 function pageCacheKey(id: string): string {
-  return `v11-ProjectV2Page.project-${id}`;
+  return `v12-ProjectV2Page.project-${id}`;
 }
-
-type ProjectDocsAndFilesData = {
-  resourceHub: Hub.ResourceHub;
-  nodes: Hub.ResourceHubNode[];
-  draftNodes: Hub.ResourceHubNode[];
-};
 
 type LoaderResult = {
   data: {
     project: Projects.Project;
-    checkIns: ProjectCheckIn[];
-    discussions: Projects.Discussion[];
-    backendTasks: Tasks.Task[];
     childrenCount: Projects.ProjectChildrenCount;
-    docsAndFiles: ProjectDocsAndFilesData | null;
     space: Spaces.Space | null;
   };
   cacheVersion: number;
@@ -64,8 +54,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
     cacheKey: pageCacheKey(params.id),
     refreshCache,
     fetchFn: async () => {
-      const data = await fetchAll({
-        project: Projects.getProject({
+      const [project, childrenCount] = await Promise.all([
+        Projects.getProject({
           id: params.id,
           includeGoal: true,
           includeChampion: true,
@@ -82,23 +72,15 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSubscriptionList: true,
           includeResourceHub: true,
         }).then((d) => d.project!),
-        checkIns: Api.projects
-          .listCheckIns({ projectId: params.id, includeAuthor: true })
-          .then((d) => d.projectCheckIns!),
-        discussions: Api.projects.listDiscussions({ projectId: params.id }).then((d) => d.discussions!),
-        backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
-        childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
-      });
-
-      const [space, docsAndFiles] = await Promise.all([
-        loadSpaceWithPermissions(data.project),
-        loadProjectDocsAndFiles(data.project),
+        Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
       ]);
 
+      const space = await loadSpaceWithPermissions(project);
+
       return {
-        ...data,
+        project,
+        childrenCount,
         space,
-        docsAndFiles,
       };
     },
   });
@@ -118,45 +100,11 @@ async function loadSpaceWithPermissions(project: Projects.Project): Promise<Spac
   }
 }
 
-async function loadProjectDocsAndFiles(project: Projects.Project): Promise<ProjectDocsAndFilesData | null> {
-  const resourceHubId = project.resourceHub?.id;
-
-  if (!resourceHubId) {
-    return null;
-  }
-
-  try {
-    const [resourceHub, nodes] = await Promise.all([
-      Api.resource_hubs
-        .get({
-          id: resourceHubId,
-          includeSpace: true,
-          includeProject: true,
-          includePermissions: true,
-          includePotentialSubscribers: true,
-        })
-        .then((res) => res.resourceHub!),
-      Api.resource_hubs.listNodes({
-        resourceHubId,
-        includeCommentsCount: true,
-        includeChildrenCount: true,
-      }),
-    ]);
-
-    return {
-      resourceHub,
-      nodes: nodes.nodes || [],
-      draftNodes: nodes.draftNodes || [],
-    };
-  } catch {
-    return null;
-  }
-}
-
 function Page() {
   const paths = usePaths();
   const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles, space } = data;
+  const { project, childrenCount, space } = data;
+  const { data: tabData, states: tabStates, retry: retryTab } = useProjectTabData(project);
   const navigate = useNavigate();
   const currentUser = useMe();
 
@@ -229,6 +177,14 @@ function Page() {
     searchMilestones,
   } = useMilestones(paths, project, refresh);
 
+  const [taskDetails, setTaskDetails] = React.useState<Record<string, BackendTask>>({});
+  const taskDetailRequests = React.useRef(new Map<string, Promise<boolean>>());
+
+  React.useEffect(() => {
+    setTaskDetails({});
+    taskDetailRequests.current.clear();
+  }, [project.id]);
+
   const {
     tasks: baseTasks,
     setTasks,
@@ -241,12 +197,15 @@ function Page() {
     updateTaskMilestone,
     deleteTask,
   } = Tasks.useProjectTasksForTurboUi({
-    backendTasks,
+    backendTasks: tabData.tasks,
     projectId: project.id,
     cacheKey: pageCacheKey(project.id),
     milestones,
     setMilestones,
     refresh,
+    invalidateCache: () => invalidateProjectPageCache(project.id),
+    invalidateTaskDetails: () => setTaskDetails({}),
+    refreshTasks: () => retryTab("tasks"),
   });
 
   const subscriptions = useSubscription({
@@ -265,6 +224,7 @@ function Page() {
     id: project.id,
     type: "project",
     transformResult: transformPerson,
+    loadInitialResults: false,
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
@@ -277,7 +237,7 @@ function Page() {
           tasksView,
         });
 
-        PageCache.invalidate(pageCacheKey(project.id));
+        invalidateProjectPageCache(project.id);
 
         if (refresh) {
           await refresh();
@@ -303,10 +263,10 @@ function Page() {
 
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
-      PageCache.invalidate(pageCacheKey(project.id));
+      invalidateProjectPageCache(project.id);
 
       if (destinationType === "project") {
-        PageCache.invalidate(pageCacheKey(destinationId));
+        invalidateProjectPageCache(destinationId);
       }
 
       if (refresh) {
@@ -324,7 +284,7 @@ function Page() {
     tasks: baseTasks,
     setTasks,
     onSuccess: async () => {
-      PageCache.invalidate(pageCacheKey(project.id));
+      invalidateProjectPageCache(project.id);
 
       if (refresh) {
         await refresh();
@@ -332,8 +292,41 @@ function Page() {
     },
   });
 
+  const requestTaskDetails = React.useCallback((taskId: string): Promise<boolean> => {
+    const activeRequest = taskDetailRequests.current.get(taskId);
+    if (activeRequest) return activeRequest;
+
+    const request = Api.tasks
+      .get({
+        id: taskId,
+        includeAssignees: true,
+        includeMilestone: true,
+        includeProject: true,
+        includeCreator: true,
+        includeProjectSpace: true,
+        includePermissions: true,
+        includeSubscriptionList: true,
+        includeAvailableStatuses: true,
+      })
+      .then((response) => {
+        if (!response.task) return false;
+        setTaskDetails((current) => ({ ...current, [taskId]: response.task! }));
+        return true;
+      })
+      .catch((error) => {
+        console.error("Failed to load task details", error);
+        showErrorToast("Couldn't load task", "Please try again.");
+        return false;
+      })
+      .finally(() => taskDetailRequests.current.delete(taskId));
+
+    taskDetailRequests.current.set(taskId, request);
+    return request;
+  }, []);
+
   const slideInModel = Tasks.useTaskSlideInProps({
-    backendTasks,
+    backendTasks: Object.values(taskDetails),
+    requestTaskDetails,
     paths,
     currentUser,
     tasks: baseTasks,
@@ -358,7 +351,7 @@ function Page() {
     return Api.projects
       .delete({ projectId: project.id })
       .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
+        invalidateProjectPageCache(project.id);
         navigate(backLink);
 
         return { success: true };
@@ -376,12 +369,8 @@ function Page() {
     cacheKey: pageCacheKey(project.id),
   });
 
-  const {
-    includeDemotedContributor,
-    excludePromotedContributor,
-    restoreContributor,
-    ...contributorPageActions
-  } = contributorActions;
+  const { includeDemotedContributor, excludePromotedContributor, restoreContributor, ...contributorPageActions } =
+    contributorActions;
 
   const setChampion = React.useCallback(
     async (person: ProjectPage.Person | null) => {
@@ -459,9 +448,9 @@ function Page() {
   };
 
   const projectDocsAndFilesProps = useProjectDocsAndFilesProps({
-    docsAndFiles,
+    docsAndFiles: tabData.docsAndFiles,
     projectId: project.id,
-    onRefresh: refresh,
+    onRefresh: () => retryTab("docs-and-files"),
   });
 
   const props: ProjectPage.Props = {
@@ -531,8 +520,11 @@ function Page() {
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
     ...contributorPageActions,
-    checkIns: parseCheckInsForTurboUi(paths, checkIns),
-    discussions: prepareDiscussions(paths, discussions),
+    checkIns: parseCheckInsForTurboUi(
+      paths,
+      tabData.checkIns.length > 0 ? tabData.checkIns : project.lastCheckIn ? [project.lastCheckIn] : [],
+    ),
+    discussions: prepareDiscussions(paths, tabData.discussions),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     nextCheckInScheduledAt: Time.parse(project.nextCheckInScheduledAt),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
@@ -551,6 +543,13 @@ function Page() {
 
     subscriptions,
     docsAndFiles: projectDocsAndFilesProps,
+    hasDocsAndFiles: true,
+    tabStates: {
+      tasks: { ...tabStates.tasks, onRetry: () => retryTab("tasks") },
+      "check-ins": { ...tabStates["check-ins"], onRetry: () => retryTab("check-ins") },
+      discussions: { ...tabStates.discussions, onRetry: () => retryTab("discussions") },
+      "docs-and-files": { ...tabStates["docs-and-files"], onRetry: () => retryTab("docs-and-files") },
+    },
     formattedTimePreferences,
   };
 
@@ -680,7 +679,7 @@ function usePageField<T>({
       const oldVal = state;
 
       const successHandler = () => {
-        PageCache.invalidate(pageCacheKey(data.project.id!));
+        invalidateProjectPageCache(data.project.id!);
         resolve(true);
       };
 
@@ -753,12 +752,14 @@ function useSpaceProps({
     scope: searchScope,
     ignoredIds,
     transformResult: transformPerson,
+    loadInitialResults: false,
   });
 
   const reviewerSearch = People.usePersonFieldSearch({
     scope: searchScope,
     ignoredIds,
     transformResult: transformPerson,
+    loadInitialResults: false,
   });
 
   if (!space) {
@@ -865,7 +866,7 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
       .then((data) => {
         const createdMilestone = parseMilestoneForTurboUi(paths, data.milestone);
 
-        PageCache.invalidate(pageCacheKey(project.id));
+        invalidateProjectPageCache(project.id);
         setMilestones((prev) => [...prev, createdMilestone]);
 
         return { success: true, milestone: createdMilestone };
@@ -887,7 +888,7 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
         dueDate: serializeContextualDate(updates.dueDate),
       })
       .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
+        invalidateProjectPageCache(project.id);
         setMilestones((prev) =>
           prev.map((m) => {
             if (m.id === milestoneId) {

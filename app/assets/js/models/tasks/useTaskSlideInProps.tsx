@@ -15,6 +15,7 @@ type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
 export function useTaskSlideInProps(opts: {
   backendTasks: BackendTask[];
+  requestTaskDetails?: (taskId: string) => Promise<boolean>;
   paths: Paths;
   currentUser: ApiPerson | null;
   tasks: TaskBoard.Task[];
@@ -44,7 +45,9 @@ export function useTaskSlideInProps(opts: {
 
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
   const [timelineRefreshVersion, setTimelineRefreshVersion] = React.useState(0);
+  const [failedTaskDetails, setFailedTaskDetails] = React.useState<Record<string, true>>({});
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
+  const requestedTaskDetailsRef = React.useRef(new Set<string>());
   const activeBackendTask = React.useMemo(
     () => backendTasks.find((task) => activeTaskId && compareIds(task.id, activeTaskId)) ?? null,
     [activeTaskId, backendTasks],
@@ -307,16 +310,29 @@ export function useTaskSlideInProps(opts: {
 
       const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
 
+      if (!backendTask && opts.requestTaskDetails && !requestedTaskDetailsRef.current.has(taskId)) {
+        requestedTaskDetailsRef.current.add(taskId);
+        setTimeout(() => {
+          void opts.requestTaskDetails?.(taskId).then((loaded) => {
+            if (loaded) return;
+
+            requestedTaskDetailsRef.current.delete(taskId);
+            setFailedTaskDetails((current) => ({ ...current, [taskId]: true }));
+          });
+        }, 0);
+      }
+
       const description = (() => {
-        if (!task.description) return null;
+        const serializedDescription = backendTask?.description ?? task.description;
+        if (!serializedDescription) return null;
         try {
-          return JSON.parse(task.description);
+          return JSON.parse(serializedDescription);
         } catch {
           return null;
         }
       })();
 
-      const assignees = (task.assignees || [])
+      const assignees = (backendTask?.assignees || task.assignees || [])
         .map((assignee) => People.parsePersonForTurboUi(paths, assignee))
         .filter((assignee): assignee is TaskPage.Person => Boolean(assignee));
 
@@ -332,6 +348,23 @@ export function useTaskSlideInProps(opts: {
 
       return {
         variant,
+        detailsLoading: !backendTask,
+        detailsError: Boolean(failedTaskDetails[taskId]),
+        onRetryDetails: () => {
+          if (!opts.requestTaskDetails) return;
+
+          requestedTaskDetailsRef.current.add(taskId);
+          setFailedTaskDetails((current) => {
+            const { [taskId]: _, ...remaining } = current;
+            return remaining;
+          });
+          void opts.requestTaskDetails(taskId).then((loaded) => {
+            if (loaded) return;
+
+            requestedTaskDetailsRef.current.delete(taskId);
+            setFailedTaskDetails((current) => ({ ...current, [taskId]: true }));
+          });
+        },
         ...milestoneProps,
 
         name: task.title,
@@ -437,6 +470,8 @@ export function useTaskSlideInProps(opts: {
       paths,
       activities,
       comments,
+      failedTaskDetails,
+      opts.requestTaskDetails,
       opts.onMoveTaskSuccess,
       subscriptions,
       opts.projectSearch,

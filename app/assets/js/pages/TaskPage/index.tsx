@@ -18,7 +18,7 @@ import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
-import { projectPageCacheKey } from "../ProjectPage";
+import { invalidateProjectPageCache } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -191,7 +191,7 @@ function Page() {
       await Api.tasks.delete({ taskId: task.id, type: "project" });
 
       if (task.project) {
-        PageCache.invalidate(projectPageCacheKey(task.project.id));
+        invalidateProjectPageCache(task.project.id);
         navigate(paths.projectPath(task.project.id, { tab: "tasks" }));
       } else {
         navigate(paths.homePath());
@@ -369,7 +369,7 @@ function usePageField<T>({
           }
 
           if (clearProjectCache && data.task.project?.id) {
-            PageCache.invalidate(projectPageCacheKey(data.task.project.id));
+            invalidateProjectPageCache(data.task.project.id);
           }
           return true;
         }
@@ -398,11 +398,11 @@ function useMoveTask(task: Tasks.Task, refreshPageData: (() => Promise<void>) | 
         PageCache.invalidate(pageCacheKey(task.id));
 
         if (task.project?.id) {
-          PageCache.invalidate(projectPageCacheKey(task.project.id));
+          invalidateProjectPageCache(task.project.id);
         }
 
         if (resolvedDestinationType !== "space") {
-          PageCache.invalidate(projectPageCacheKey(resolvedDestinationId));
+          invalidateProjectPageCache(resolvedDestinationId);
         }
 
         if (resolvedDestinationType === "space") {

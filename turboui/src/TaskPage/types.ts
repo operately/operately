@@ -67,6 +67,9 @@ export namespace TaskPage {
 
     // Core task data
     name: string;
+    detailsLoading?: boolean;
+    detailsError?: boolean;
+    onRetryDetails?: () => void;
     onNameChange: (newName: string) => Promise<boolean>;
 
     description: any;
@@ -141,6 +144,9 @@ export namespace TaskPage {
     | "milestones"
     | "onMilestoneSearch"
     | "name"
+    | "detailsLoading"
+    | "detailsError"
+    | "onRetryDetails"
     | "onNameChange"
     | "description"
     | "onDescriptionChange"

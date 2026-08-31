@@ -1,18 +1,24 @@
 defmodule OperatelyWeb.Api.Tasks do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
+  alias Operately.People.Person
+  alias Operately.Projects.Milestone
+  alias Operately.Tasks.Task
   alias Operately.Repo
   alias OperatelyWeb.Api.Serializer
 
   defmodule List do
     @moduledoc """
     Lists all tasks for a project.
+
+    Set `minimal` to `true` to return compact task data suitable for project task lists.
     """
 
     use TurboConnect.Query
 
     inputs do
       field :project_id, :id, null: false
+      field? :minimal, :boolean, null: false, default: false
     end
 
     outputs do
@@ -24,7 +30,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_view)
-      |> Steps.get_tasks()
+      |> Steps.get_tasks(minimal: inputs[:minimal] || false)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{tasks: Serializer.serialize(changes.tasks, level: :full)}
@@ -672,18 +678,43 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    def get_tasks(multi) do
+    def get_tasks(multi, opts \\ []) do
       Ecto.Multi.run(multi, :tasks, fn _repo, %{project: project} ->
-        tasks =
-          from(t in Operately.Tasks.Task,
-            where: t.project_id == ^project.id,
-            preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
-          )
-          |> Repo.all()
-          |> Operately.Tasks.Task.load_comments_count()
+        tasks = list_project_tasks(project.id, opts)
 
         {:ok, tasks}
       end)
+    end
+
+    defp list_project_tasks(project_id, minimal: true), do: list_minimal_project_tasks(project_id)
+    defp list_project_tasks(project_id, _opts), do: list_full_project_tasks(project_id)
+
+    defp list_full_project_tasks(project_id) do
+      from(t in Operately.Tasks.Task,
+        where: t.project_id == ^project_id,
+        preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
+      )
+      |> Repo.all()
+      |> Operately.Tasks.Task.load_comments_count()
+    end
+
+    defp list_minimal_project_tasks(project_id) do
+      minimal_task_fields = [:id, :name, :description, :due_date, :task_status, :closed_at, :project_id, :milestone_id]
+      minimal_assignees = from(person in Person, select: struct(person, [:id, :full_name, :email, :avatar_url, :title, :type]))
+      minimal_milestones = from(milestone in Milestone, select: struct(milestone, [:id, :title, :status, :inserted_at, :completed_at]))
+
+      from(t in Task,
+        where: t.project_id == ^project_id,
+        select: struct(t, ^minimal_task_fields),
+        preload: [assigned_people: ^minimal_assignees, milestone: ^minimal_milestones]
+      )
+      |> Repo.all()
+      |> Operately.Tasks.Task.load_comments_count()
+      |> Enum.map(&prepare_minimal_task/1)
+    end
+
+    defp prepare_minimal_task(task) do
+      %{task | has_description: Operately.RichContent.empty?(task.description), description: nil}
     end
 
     def check_permissions(multi, permission) do

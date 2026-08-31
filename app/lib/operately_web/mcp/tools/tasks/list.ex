@@ -25,7 +25,8 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
       input_schema:
         JsonSchema.object(%{
           "space_id" => JsonSchema.string("Optional space identifier used to filter tasks."),
-          "project_id" => JsonSchema.string("Optional project identifier used to filter tasks.")
+          "project_id" => JsonSchema.string("Optional project identifier used to filter tasks."),
+          "minimal" => JsonSchema.boolean("When true, return compact task fields for a project list.", default: false)
         }),
       output_schema:
         JsonSchema.object(
@@ -45,7 +46,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
 
       {project_id, nil} ->
         with {:ok, project_id} <- Helpers.decode_id(project_id) do
-          ProjectTasksList.call(conn, %{project_id: project_id})
+          ProjectTasksList.call(conn, project_task_list_inputs(project_id, arguments))
         end
 
       {nil, space_id} ->
@@ -57,4 +58,7 @@ defmodule OperatelyWeb.Mcp.Tools.Tasks.List do
         {:error, :invalid_arguments}
     end
   end
+
+  defp project_task_list_inputs(project_id, %{"minimal" => minimal}), do: %{project_id: project_id, minimal: minimal}
+  defp project_task_list_inputs(project_id, _arguments), do: %{project_id: project_id}
 end

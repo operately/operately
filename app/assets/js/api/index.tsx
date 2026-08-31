@@ -2641,6 +2641,7 @@ export interface Task {
   milestone?: Milestone | null;
   project?: Project | null;
   description?: string | null;
+  hasDescription: boolean;
   assignees?: Person[] | null;
   creator?: Person | null;
   projectSpace?: Space | null;
@@ -4151,6 +4152,7 @@ export interface TasksGetResult {
 
 export interface TasksListInput {
   projectId: Id;
+  minimal?: boolean;
 }
 
 export interface TasksListResult {
