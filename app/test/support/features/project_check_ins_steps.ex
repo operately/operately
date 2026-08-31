@@ -3,6 +3,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   alias Operately.Access.Binding
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.UI.DateField, as: UIDateField
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
@@ -278,16 +279,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "submit-options")
-    |> UI.sleep(100)
     |> UI.click_text("Schedule for later")
     |> UI.assert_text("Schedule Check-in")
-    |> select_tomorrow_in_schedule_calendar()
-    |> UI.sleep(100)
-    |> UI.click_button("Schedule")
-    |> UI.sleep(100)
+    |> select_date_in_next_month()
+    |> UI.wait_until_has(css: "[data-test-id='confirm-schedule']:not([disabled])")
+    |> UI.click(testid: "confirm-schedule")
+    |> UI.refute_has(testid: "confirm-schedule")
     |> UI.click(testid: "submit")
-    |> UI.sleep(300)
-    |> UI.assert_has(testid: "project-check-in-page")
+    |> UI.wait_until_has(testid: "project-check-in-page")
     |> then(fn ctx ->
       check_in = Operately.Projects.CheckIn.get!(:system, project_id: ctx.project.id)
       assert check_in.state == :scheduled
@@ -367,20 +366,10 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.refute_has(testid: "status-dropdown")
   end
 
-  defp select_tomorrow_in_schedule_calendar(ctx) do
-    today = Date.utc_today()
-    tomorrow = Date.add(today, 1)
+  defp select_date_in_next_month(ctx) do
+    date = Date.utc_today() |> Date.end_of_month() |> Date.add(7)
 
-    ctx =
-      if tomorrow.month != today.month or tomorrow.year != today.year do
-        UI.click(ctx, testid: "date-field-next-month")
-      else
-        ctx
-      end
-
-    ctx
-    |> UI.wait_until_has(testid: "date-field-day-#{tomorrow.day}")
-    |> UI.click(testid: "date-field-day-#{tomorrow.day}")
+    UIDateField.select_day_in_inline_calendar(ctx, date)
   end
 
   step :assert_check_in_visible_on_project_page, ctx, %{description: description} do
