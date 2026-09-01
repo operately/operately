@@ -26,7 +26,7 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
     ctx
     |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.initiate_project_closing()
-    |> Steps.submit_retrospective()
+    |> Steps.submit_invalid_retrospective()
     |> Steps.assert_retrospective_error()
   end
 
