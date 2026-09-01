@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { handleStaleClientError } from "./staleClient";
+import { queryClient } from "./queryClient";
 
 function toCamel(o: any) {
   var newO: any, origKey: any, newKey: any, value: any;
@@ -1036,6 +1037,13 @@ export function getAccountsQueryOptions(input: GetAccountsInput) {
   });
 }
 
+export function getAccountsQuery(input: GetAccountsInput) {
+  return queryClient.query({
+    ...getAccountsQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function getActiveCompaniesQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/get_active_companies");
 }
@@ -1048,6 +1056,13 @@ export function getActiveCompaniesQueryOptions(input: GetActiveCompaniesInput) {
   return queryOptions({
     queryKey: getActiveCompaniesQueryKey(input),
     queryFn: () => defaultApiClient.getActiveCompanies(input),
+  });
+}
+
+export function getActiveCompaniesQuery(input: GetActiveCompaniesInput) {
+  return queryClient.query({
+    ...getActiveCompaniesQueryOptions(input),
+    staleTime: "static",
   });
 }
 
@@ -1066,6 +1081,13 @@ export function getActivitiesQueryOptions(input: GetActivitiesInput) {
   });
 }
 
+export function getActivitiesQuery(input: GetActivitiesInput) {
+  return queryClient.query({
+    ...getActivitiesQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function getCompaniesQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/get_companies");
 }
@@ -1078,6 +1100,13 @@ export function getCompaniesQueryOptions(input: GetCompaniesInput) {
   return queryOptions({
     queryKey: getCompaniesQueryKey(input),
     queryFn: () => defaultApiClient.getCompanies(input),
+  });
+}
+
+export function getCompaniesQuery(input: GetCompaniesInput) {
+  return queryClient.query({
+    ...getCompaniesQueryOptions(input),
+    staleTime: "static",
   });
 }
 
@@ -1096,6 +1125,13 @@ export function getCompanyQueryOptions(input: GetCompanyInput) {
   });
 }
 
+export function getCompanyQuery(input: GetCompanyInput) {
+  return queryClient.query({
+    ...getCompanyQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function getEmailSettingsQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/get_email_settings");
 }
@@ -1108,6 +1144,13 @@ export function getEmailSettingsQueryOptions(input: GetEmailSettingsInput) {
   return queryOptions({
     queryKey: getEmailSettingsQueryKey(input),
     queryFn: () => defaultApiClient.getEmailSettings(input),
+  });
+}
+
+export function getEmailSettingsQuery(input: GetEmailSettingsInput) {
+  return queryClient.query({
+    ...getEmailSettingsQueryOptions(input),
+    staleTime: "static",
   });
 }
 
@@ -1126,6 +1169,13 @@ export function getSearchIndexStatusQueryOptions(input: GetSearchIndexStatusInpu
   });
 }
 
+export function getSearchIndexStatusQuery(input: GetSearchIndexStatusInput) {
+  return queryClient.query({
+    ...getSearchIndexStatusQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function getUpdateBadgeSettingsQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/get_update_badge_settings");
 }
@@ -1138,6 +1188,13 @@ export function getUpdateBadgeSettingsQueryOptions(input: GetUpdateBadgeSettings
   return queryOptions({
     queryKey: getUpdateBadgeSettingsQueryKey(input),
     queryFn: () => defaultApiClient.getUpdateBadgeSettings(input),
+  });
+}
+
+export function getUpdateBadgeSettingsQuery(input: GetUpdateBadgeSettingsInput) {
+  return queryClient.query({
+    ...getUpdateBadgeSettingsQueryOptions(input),
+    staleTime: "static",
   });
 }
 
@@ -1156,6 +1213,13 @@ export function listBillingPlanDefinitionsQueryOptions(input: ListBillingPlanDef
   });
 }
 
+export function listBillingPlanDefinitionsQuery(input: ListBillingPlanDefinitionsInput) {
+  return queryClient.query({
+    ...listBillingPlanDefinitionsQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function listBillingProductsQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/list_billing_products");
 }
@@ -1171,6 +1235,13 @@ export function listBillingProductsQueryOptions(input: ListBillingProductsInput)
   });
 }
 
+export function listBillingProductsQuery(input: ListBillingProductsInput) {
+  return queryClient.query({
+    ...listBillingProductsQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function listSiteMessagesQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/list_site_messages");
 }
@@ -1183,6 +1254,13 @@ export function listSiteMessagesQueryOptions(input: ListSiteMessagesInput) {
   return queryOptions({
     queryKey: listSiteMessagesQueryKey(input),
     queryFn: () => defaultApiClient.listSiteMessages(input),
+  });
+}
+
+export function listSiteMessagesQuery(input: ListSiteMessagesInput) {
+  return queryClient.query({
+    ...listSiteMessagesQueryOptions(input),
+    staleTime: "static",
   });
 }
 
@@ -1527,56 +1605,67 @@ export default {
   getAccountsQueryKeyPrefix,
   getAccountsQueryKey,
   getAccountsQueryOptions,
+  getAccountsQuery,
   getActiveCompanies,
   useGetActiveCompanies,
   getActiveCompaniesQueryKeyPrefix,
   getActiveCompaniesQueryKey,
   getActiveCompaniesQueryOptions,
+  getActiveCompaniesQuery,
   getActivities,
   useGetActivities,
   getActivitiesQueryKeyPrefix,
   getActivitiesQueryKey,
   getActivitiesQueryOptions,
+  getActivitiesQuery,
   getCompanies,
   useGetCompanies,
   getCompaniesQueryKeyPrefix,
   getCompaniesQueryKey,
   getCompaniesQueryOptions,
+  getCompaniesQuery,
   getCompany,
   useGetCompany,
   getCompanyQueryKeyPrefix,
   getCompanyQueryKey,
   getCompanyQueryOptions,
+  getCompanyQuery,
   getEmailSettings,
   useGetEmailSettings,
   getEmailSettingsQueryKeyPrefix,
   getEmailSettingsQueryKey,
   getEmailSettingsQueryOptions,
+  getEmailSettingsQuery,
   getSearchIndexStatus,
   useGetSearchIndexStatus,
   getSearchIndexStatusQueryKeyPrefix,
   getSearchIndexStatusQueryKey,
   getSearchIndexStatusQueryOptions,
+  getSearchIndexStatusQuery,
   getUpdateBadgeSettings,
   useGetUpdateBadgeSettings,
   getUpdateBadgeSettingsQueryKeyPrefix,
   getUpdateBadgeSettingsQueryKey,
   getUpdateBadgeSettingsQueryOptions,
+  getUpdateBadgeSettingsQuery,
   listBillingPlanDefinitions,
   useListBillingPlanDefinitions,
   listBillingPlanDefinitionsQueryKeyPrefix,
   listBillingPlanDefinitionsQueryKey,
   listBillingPlanDefinitionsQueryOptions,
+  listBillingPlanDefinitionsQuery,
   listBillingProducts,
   useListBillingProducts,
   listBillingProductsQueryKeyPrefix,
   listBillingProductsQueryKey,
   listBillingProductsQueryOptions,
+  listBillingProductsQuery,
   listSiteMessages,
   useListSiteMessages,
   listSiteMessagesQueryKeyPrefix,
   listSiteMessagesQueryKey,
   listSiteMessagesQueryOptions,
+  listSiteMessagesQuery,
   archiveBillingPlanDefinition,
   useArchiveBillingPlanDefinition,
   archiveBillingPlanDefinitionMutationOptions,

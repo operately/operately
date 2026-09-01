@@ -1,24 +1,21 @@
-import Api, { Project, ProjectsGetInput } from "@/api";
-import { queryClient } from "@/api/queryClient";
+import Api, { Project } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useQuery } from "@tanstack/react-query";
 
-interface LoaderResult {
-  queryInput: ProjectsGetInput;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  const queryInput: ProjectsGetInput = {
+export async function loader({ params }) {
+  const queryInput = {
     id: params.projectID,
     includeSpace: true,
     includePermissions: true,
     includePotentialSubscribers: true,
   };
 
-  await queryClient.ensureQueryData(Api.projects.getQueryOptions(queryInput));
+  await Api.projects.getQuery(queryInput);
 
   return { queryInput };
 }
+
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): { project: Project } {
   const { queryInput } = Pages.useLoadedData<LoaderResult>();

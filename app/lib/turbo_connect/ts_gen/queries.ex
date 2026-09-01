@@ -91,6 +91,13 @@ defmodule TurboConnect.TsGen.Queries do
           queryFn: () => defaultApiClient.#{fn_name}(input),
         });
       }
+
+      export function #{fn_name}Query(input: #{input_type}) {
+        return queryClient.query({
+          ...#{fn_name}QueryOptions(input),
+          staleTime: "static",
+        });
+      }
       """
     end)
   end
@@ -116,7 +123,7 @@ defmodule TurboConnect.TsGen.Queries do
     |> Enum.map_join("\n", fn {name, _query} ->
       fn_name = ts_function_name(name)
 
-      "  #{fn_name},\n  use#{ts_type(name)},\n  #{fn_name}QueryKeyPrefix,\n  #{fn_name}QueryKey,\n  #{fn_name}QueryOptions,"
+      "  #{fn_name},\n  use#{ts_type(name)},\n  #{fn_name}QueryKeyPrefix,\n  #{fn_name}QueryKey,\n  #{fn_name}QueryOptions,\n  #{fn_name}Query,"
     end)
   end
 
