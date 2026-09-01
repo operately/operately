@@ -113,7 +113,9 @@ defmodule TurboConnect.TsGenTest do
   @ts_imports """
   import React from "react";
   import axios from "axios";
+  import { mutationOptions, queryOptions } from "@tanstack/react-query";
   import { handleStaleClientError } from "./staleClient";
+  import { queryClient } from "./queryClient";
   """
 
   @ts_shared_types """
@@ -288,6 +290,16 @@ defmodule TurboConnect.TsGenTest do
   };
   """
 
+  @ts_tanstack_helpers """
+  function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
+    return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+  }
+
+  function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
+    return [...buildApiQueryKeyPrefix(client, path), input] as const;
+  }
+  """
+
   @ts_default """
   const defaultApiClient = new ApiClient();
 
@@ -296,6 +308,34 @@ defmodule TurboConnect.TsGenTest do
   }
   export async function createUser(input: CreateUserInput) : Promise<CreateUserResult> {
     return defaultApiClient.createUser(input);
+  }
+
+  export function getUserQueryKeyPrefix() {
+    return buildApiQueryKeyPrefix(defaultApiClient, "/get_user");
+  }
+
+  export function getUserQueryKey(input: GetUserInput) {
+    return buildApiQueryKey(defaultApiClient, "/get_user", input);
+  }
+
+  export function getUserQueryOptions(input: GetUserInput) {
+    return queryOptions({
+      queryKey: getUserQueryKey(input),
+      queryFn: () => defaultApiClient.getUser(input),
+    });
+  }
+
+  export function getUserQuery(input: GetUserInput) {
+    return queryClient.query({
+      ...getUserQueryOptions(input),
+      staleTime: "static",
+    });
+  }
+
+  export function createUserMutationOptions() {
+    return mutationOptions({
+      mutationFn: (input: CreateUserInput) => defaultApiClient.createUser(input),
+    });
   }
 
   export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
@@ -311,15 +351,34 @@ defmodule TurboConnect.TsGenTest do
 
     getUser,
     useGetUser,
+    getUserQueryKeyPrefix,
+    getUserQueryKey,
+    getUserQueryOptions,
+    getUserQuery,
     createUser,
     useCreateUser,
+    createUserMutationOptions,
 
     users: {
       getUser: (input: UsersGetUserInput) => defaultApiClient.apiNamespaceUsers.getUser(input),
       useGetUser: (input: UsersGetUserInput) => useQuery<UsersGetUserResult>(() => defaultApiClient.apiNamespaceUsers.getUser(input)),
+      getUserQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/users/get_user"),
+      getUserQueryKey: (input: UsersGetUserInput) => buildApiQueryKey(defaultApiClient, "/users/get_user", input),
+      getUserQueryOptions: (input: UsersGetUserInput) => queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
+        queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
+      }),
+      getUserQuery: (input: UsersGetUserInput) => queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
+        queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
+        staleTime: "static",
+      }),
 
       createUser: (input: UsersCreateUserInput) => defaultApiClient.apiNamespaceUsers.createUser(input),
       useCreateUser: () => useMutation<UsersCreateUserInput, UsersCreateUserResult>((input) => defaultApiClient.apiNamespaceUsers.createUser(input)),
+      createUserMutationOptions: () => mutationOptions({
+        mutationFn: (input: UsersCreateUserInput) => defaultApiClient.apiNamespaceUsers.createUser(input),
+      }),
 
     },
 
@@ -403,6 +462,10 @@ defmodule TurboConnect.TsGenTest do
     assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
   end
 
+  test "generating TanStack query key helpers" do
+    assert_same(TurboConnect.TsGen.generate_tanstack_helpers(), @ts_tanstack_helpers)
+  end
+
   test "generating TypeScript default exports" do
     assert_same(TurboConnect.TsGen.generate_default_exports(ExampleApi), @ts_default)
   end
@@ -419,6 +482,7 @@ defmodule TurboConnect.TsGenTest do
       #{@ts_types}
       #{@ts_namespaces}
       #{@ts_api_client}
+      #{@ts_tanstack_helpers}
       #{@ts_default}
       """
     )

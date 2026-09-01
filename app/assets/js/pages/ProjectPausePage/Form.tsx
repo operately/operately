@@ -7,8 +7,6 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { usePaths } from "@/routes/paths";
-import { PageCache } from "@/routes/PageCache";
-import { projectPageCacheKey } from "../ProjectPage";
 
 export function Form({ project }: { project: Projects.Project }) {
   const paths = usePaths();
@@ -28,7 +26,7 @@ export function Form({ project }: { project: Projects.Project }) {
 
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: projectId } });
 
-  const [pause] = Projects.usePauseProject();
+  const pause = Projects.usePauseProject();
   const onSuccess = useNavigateTo(paths.projectPath(projectId));
 
   const form = Forms.useForm({
@@ -38,13 +36,12 @@ export function Form({ project }: { project: Projects.Project }) {
     submit: async () => {
       const message = form.values.message || emptyContent();
 
-      await pause({
+      await pause.mutateAsync({
         projectId: projectId,
         message: JSON.stringify(message),
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
-      PageCache.invalidate(projectPageCacheKey(projectId));
       onSuccess();
     },
   });

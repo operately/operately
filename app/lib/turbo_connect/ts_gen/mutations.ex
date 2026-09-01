@@ -64,6 +64,23 @@ defmodule TurboConnect.TsGen.Mutations do
     end)
   end
 
+  def generate_tanstack_options(mutations) do
+    mutations
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, _mutation} ->
+      input_type = ts_type(name) <> "Input"
+      fn_name = ts_function_name(name)
+
+      """
+      export function #{fn_name}MutationOptions() {
+        return mutationOptions({
+          mutationFn: (input: #{input_type}) => defaultApiClient.#{fn_name}(input),
+        });
+      }
+      """
+    end)
+  end
+
   def generate_default_functions(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
@@ -83,7 +100,9 @@ defmodule TurboConnect.TsGen.Mutations do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _mutation} ->
-      "  #{ts_function_name(name)},\n  use#{ts_type(name)},"
+      fn_name = ts_function_name(name)
+
+      "  #{fn_name},\n  use#{ts_type(name)},\n  #{fn_name}MutationOptions,"
     end)
   end
 

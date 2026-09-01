@@ -10,17 +10,30 @@ import { usePaths } from "@/routes/paths";
 
 type Mode = "create" | "edit";
 
-interface Props {
-  mode: Mode;
+interface BaseProps {
   project: Projects.Project;
-  retrospective?: Projects.ProjectRetrospective;
 }
 
-export function Form({ mode, project, retrospective }: Props) {
+interface CreateProps extends BaseProps {
+  mode: "create";
+  retrospective?: never;
+}
+
+interface EditProps extends BaseProps {
+  mode: "edit";
+  retrospective: Projects.ProjectRetrospective;
+}
+
+type Props = CreateProps | EditProps;
+
+export function Form(props: Props) {
+  const { project } = props;
+  const retrospective = props.mode === "edit" ? props.retrospective : undefined;
+
   const paths = usePaths();
   const navigate = useNavigate();
-  const [post] = Projects.useCloseProject();
-  const [edit] = Projects.useEditProjectRetrospective();
+  const closeProject = Projects.useCloseProject();
+  const editProjectRetrospective = Projects.useEditProjectRetrospective();
 
   const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers || [], {
     ignoreMe: true,
@@ -31,12 +44,12 @@ export function Form({ mode, project, retrospective }: Props) {
   const form = Forms.useForm({
     fields: {
       success: project.successStatus === "missed" ? "no" : "yes",
-      retrospective: retrospective ? JSON.parse(retrospective.content!) : emptyContent(),
+      retrospective: retrospective?.content ? JSON.parse(retrospective.content) : emptyContent(),
     },
     cancel: () => navigate(paths.projectPath(project.id)),
     submit: async () => {
-      if (mode == "create") {
-        await post({
+      if (props.mode === "create") {
+        await closeProject.mutateAsync({
           projectId: project.id,
           retrospective: JSON.stringify(form.values.retrospective),
           sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
@@ -45,8 +58,8 @@ export function Form({ mode, project, retrospective }: Props) {
         });
         navigate(paths.projectPath(project.id));
       } else {
-        await edit({
-          retrospectiveId: retrospective!.id,
+        await editProjectRetrospective.mutateAsync({
+          retrospectiveId: props.retrospective.id,
           content: JSON.stringify(form.values.retrospective),
           successStatus: form.values.success === "yes" ? "achieved" : "missed",
         });
@@ -62,9 +75,9 @@ export function Form({ mode, project, retrospective }: Props) {
         <RetrospectiveNotes project={project} />
       </Forms.FieldGroup>
 
-      <Subscribers mode={mode} subscriptionsState={subscriptionsState} />
+      <Subscribers mode={props.mode} subscriptionsState={subscriptionsState} />
 
-      <Forms.Submit saveText={mode === "create" ? "Close Project" : "Save"} />
+      <Forms.Submit saveText={props.mode === "create" ? "Close Project" : "Save"} />
     </Forms.Form>
   );
 }
