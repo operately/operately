@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { handleStaleClientError } from "./staleClient";
 
 function toCamel(o: any) {
@@ -8043,6 +8044,14 @@ export class ApiClient {
   }
 }
 
+function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
+  return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+}
+
+function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
+  return [...buildApiQueryKeyPrefix(client, path), input] as const;
+}
+
 const defaultApiClient = new ApiClient();
 
 export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
@@ -8093,6 +8102,105 @@ export async function requestPasswordReset(input: RequestPasswordResetInput): Pr
 }
 export async function resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
   return defaultApiClient.resetPassword(input);
+}
+
+export function getThemeQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_theme");
+}
+
+export function getThemeQueryKey(input: GetThemeInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_theme", input);
+}
+
+export function getThemeQueryOptions(input: GetThemeInput) {
+  return queryOptions({
+    queryKey: getThemeQueryKey(input),
+    queryFn: () => defaultApiClient.getTheme(input),
+  });
+}
+
+export function addCompanyOwnersMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: AddCompanyOwnersInput) => defaultApiClient.addCompanyOwners(input),
+  });
+}
+
+export function addCompanyTrustedEmailDomainMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: AddCompanyTrustedEmailDomainInput) => defaultApiClient.addCompanyTrustedEmailDomain(input),
+  });
+}
+
+export function addFirstCompanyMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: AddFirstCompanyInput) => defaultApiClient.addFirstCompany(input),
+  });
+}
+
+export function changePasswordMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: ChangePasswordInput) => defaultApiClient.changePassword(input),
+  });
+}
+
+export function completeCompanySetupMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CompleteCompanySetupInput) => defaultApiClient.completeCompanySetup(input),
+  });
+}
+
+export function createAccountMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateAccountInput) => defaultApiClient.createAccount(input),
+  });
+}
+
+export function createAvatarBlobMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateAvatarBlobInput) => defaultApiClient.createAvatarBlob(input),
+  });
+}
+
+export function createBlobMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateBlobInput) => defaultApiClient.createBlob(input),
+  });
+}
+
+export function createEmailActivationCodeMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateEmailActivationCodeInput) => defaultApiClient.createEmailActivationCode(input),
+  });
+}
+
+export function deleteCompanyMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: DeleteCompanyInput) => defaultApiClient.deleteCompany(input),
+  });
+}
+
+export function joinCompanyMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: JoinCompanyInput) => defaultApiClient.joinCompany(input),
+  });
+}
+
+export function markBlobUploadedMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: MarkBlobUploadedInput) => defaultApiClient.markBlobUploaded(input),
+  });
+}
+
+export function requestPasswordResetMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: RequestPasswordResetInput) => defaultApiClient.requestPasswordReset(input),
+  });
+}
+
+export function resetPasswordMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: ResetPasswordInput) => defaultApiClient.resetPassword(input),
+  });
 }
 
 export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
@@ -8186,34 +8294,51 @@ export default {
 
   getTheme,
   useGetTheme,
+  getThemeQueryKeyPrefix,
+  getThemeQueryKey,
+  getThemeQueryOptions,
   addCompanyOwners,
   useAddCompanyOwners,
+  addCompanyOwnersMutationOptions,
   addCompanyTrustedEmailDomain,
   useAddCompanyTrustedEmailDomain,
+  addCompanyTrustedEmailDomainMutationOptions,
   addFirstCompany,
   useAddFirstCompany,
+  addFirstCompanyMutationOptions,
   changePassword,
   useChangePassword,
+  changePasswordMutationOptions,
   completeCompanySetup,
   useCompleteCompanySetup,
+  completeCompanySetupMutationOptions,
   createAccount,
   useCreateAccount,
+  createAccountMutationOptions,
   createAvatarBlob,
   useCreateAvatarBlob,
+  createAvatarBlobMutationOptions,
   createBlob,
   useCreateBlob,
+  createBlobMutationOptions,
   createEmailActivationCode,
   useCreateEmailActivationCode,
+  createEmailActivationCodeMutationOptions,
   deleteCompany,
   useDeleteCompany,
+  deleteCompanyMutationOptions,
   joinCompany,
   useJoinCompany,
+  joinCompanyMutationOptions,
   markBlobUploaded,
   useMarkBlobUploaded,
+  markBlobUploadedMutationOptions,
   requestPasswordReset,
   useRequestPasswordReset,
+  requestPasswordResetMutationOptions,
   resetPassword,
   useResetPassword,
+  resetPasswordMutationOptions,
 
   company_transfers: {
     listExportRuns: (input: CompanyTransfersListExportRunsInput) =>
@@ -8222,6 +8347,14 @@ export default {
       useQuery<CompanyTransfersListExportRunsResult>(() =>
         defaultApiClient.apiNamespaceCompanyTransfers.listExportRuns(input),
       ),
+    listExportRunsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/company_transfers/list_export_runs"),
+    listExportRunsQueryKey: (input: CompanyTransfersListExportRunsInput) =>
+      buildApiQueryKey(defaultApiClient, "/company_transfers/list_export_runs", input),
+    listExportRunsQueryOptions: (input: CompanyTransfersListExportRunsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/list_export_runs", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.listExportRuns(input),
+      }),
 
     getImportRun: (input: CompanyTransfersGetImportRunInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
@@ -8229,6 +8362,14 @@ export default {
       useQuery<CompanyTransfersGetImportRunResult>(() =>
         defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
       ),
+    getImportRunQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/company_transfers/get_import_run"),
+    getImportRunQueryKey: (input: CompanyTransfersGetImportRunInput) =>
+      buildApiQueryKey(defaultApiClient, "/company_transfers/get_import_run", input),
+    getImportRunQueryOptions: (input: CompanyTransfersGetImportRunInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/get_import_run", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
+      }),
 
     listImportRuns: (input: CompanyTransfersListImportRunsInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
@@ -8236,6 +8377,14 @@ export default {
       useQuery<CompanyTransfersListImportRunsResult>(() =>
         defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
       ),
+    listImportRunsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/company_transfers/list_import_runs"),
+    listImportRunsQueryKey: (input: CompanyTransfersListImportRunsInput) =>
+      buildApiQueryKey(defaultApiClient, "/company_transfers/list_import_runs", input),
+    listImportRunsQueryOptions: (input: CompanyTransfersListImportRunsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/list_import_runs", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
+      }),
 
     getExportRun: (input: CompanyTransfersGetExportRunInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
@@ -8243,6 +8392,14 @@ export default {
       useQuery<CompanyTransfersGetExportRunResult>(() =>
         defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
       ),
+    getExportRunQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/company_transfers/get_export_run"),
+    getExportRunQueryKey: (input: CompanyTransfersGetExportRunInput) =>
+      buildApiQueryKey(defaultApiClient, "/company_transfers/get_export_run", input),
+    getExportRunQueryOptions: (input: CompanyTransfersGetExportRunInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/get_export_run", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
+      }),
 
     createImportArtifactBlobs: (input: CompanyTransfersCreateImportArtifactBlobsInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.createImportArtifactBlobs(input),
@@ -8250,6 +8407,11 @@ export default {
       useMutation<CompanyTransfersCreateImportArtifactBlobsInput, CompanyTransfersCreateImportArtifactBlobsResult>(
         (input) => defaultApiClient.apiNamespaceCompanyTransfers.createImportArtifactBlobs(input),
       ),
+    createImportArtifactBlobsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompanyTransfersCreateImportArtifactBlobsInput) =>
+          defaultApiClient.apiNamespaceCompanyTransfers.createImportArtifactBlobs(input),
+      }),
 
     startImport: (input: CompanyTransfersStartImportInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.startImport(input),
@@ -8257,6 +8419,11 @@ export default {
       useMutation<CompanyTransfersStartImportInput, CompanyTransfersStartImportResult>((input) =>
         defaultApiClient.apiNamespaceCompanyTransfers.startImport(input),
       ),
+    startImportMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompanyTransfersStartImportInput) =>
+          defaultApiClient.apiNamespaceCompanyTransfers.startImport(input),
+      }),
 
     startExport: (input: CompanyTransfersStartExportInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.startExport(input),
@@ -8264,12 +8431,24 @@ export default {
       useMutation<CompanyTransfersStartExportInput, CompanyTransfersStartExportResult>((input) =>
         defaultApiClient.apiNamespaceCompanyTransfers.startExport(input),
       ),
+    startExportMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompanyTransfersStartExportInput) =>
+          defaultApiClient.apiNamespaceCompanyTransfers.startExport(input),
+      }),
   },
 
   cli_auth: {
     status: (input: CliAuthStatusInput) => defaultApiClient.apiNamespaceCliAuth.status(input),
     useStatus: (input: CliAuthStatusInput) =>
       useQuery<CliAuthStatusResult>(() => defaultApiClient.apiNamespaceCliAuth.status(input)),
+    statusQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/cli_auth/status"),
+    statusQueryKey: (input: CliAuthStatusInput) => buildApiQueryKey(defaultApiClient, "/cli_auth/status", input),
+    statusQueryOptions: (input: CliAuthStatusInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/cli_auth/status", input),
+        queryFn: () => defaultApiClient.apiNamespaceCliAuth.status(input),
+      }),
 
     companyCreationStatus: (input: CliAuthCompanyCreationStatusInput) =>
       defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
@@ -8277,6 +8456,15 @@ export default {
       useQuery<CliAuthCompanyCreationStatusResult>(() =>
         defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
       ),
+    companyCreationStatusQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/cli_auth/company_creation_status"),
+    companyCreationStatusQueryKey: (input: CliAuthCompanyCreationStatusInput) =>
+      buildApiQueryKey(defaultApiClient, "/cli_auth/company_creation_status", input),
+    companyCreationStatusQueryOptions: (input: CliAuthCompanyCreationStatusInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/cli_auth/company_creation_status", input),
+        queryFn: () => defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
+      }),
 
     startGoogleSignup: (input: CliAuthStartGoogleSignupInput) =>
       defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
@@ -8284,6 +8472,11 @@ export default {
       useMutation<CliAuthStartGoogleSignupInput, CliAuthStartGoogleSignupResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
       ),
+    startGoogleSignupMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthStartGoogleSignupInput) =>
+          defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
+      }),
 
     requestEmailCode: (input: CliAuthRequestEmailCodeInput) =>
       defaultApiClient.apiNamespaceCliAuth.requestEmailCode(input),
@@ -8291,108 +8484,187 @@ export default {
       useMutation<CliAuthRequestEmailCodeInput, CliAuthRequestEmailCodeResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.requestEmailCode(input),
       ),
+    requestEmailCodeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthRequestEmailCodeInput) =>
+          defaultApiClient.apiNamespaceCliAuth.requestEmailCode(input),
+      }),
 
     createToken: (input: CliAuthCreateTokenInput) => defaultApiClient.apiNamespaceCliAuth.createToken(input),
     useCreateToken: () =>
       useMutation<CliAuthCreateTokenInput, CliAuthCreateTokenResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.createToken(input),
       ),
+    createTokenMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthCreateTokenInput) => defaultApiClient.apiNamespaceCliAuth.createToken(input),
+      }),
 
     setupCompany: (input: CliAuthSetupCompanyInput) => defaultApiClient.apiNamespaceCliAuth.setupCompany(input),
     useSetupCompany: () =>
       useMutation<CliAuthSetupCompanyInput, CliAuthSetupCompanyResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.setupCompany(input),
       ),
+    setupCompanyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthSetupCompanyInput) => defaultApiClient.apiNamespaceCliAuth.setupCompany(input),
+      }),
 
     authEmailCode: (input: CliAuthAuthEmailCodeInput) => defaultApiClient.apiNamespaceCliAuth.authEmailCode(input),
     useAuthEmailCode: () =>
       useMutation<CliAuthAuthEmailCodeInput, CliAuthAuthEmailCodeResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.authEmailCode(input),
       ),
+    authEmailCodeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthAuthEmailCodeInput) => defaultApiClient.apiNamespaceCliAuth.authEmailCode(input),
+      }),
 
     createCompany: (input: CliAuthCreateCompanyInput) => defaultApiClient.apiNamespaceCliAuth.createCompany(input),
     useCreateCompany: () =>
       useMutation<CliAuthCreateCompanyInput, CliAuthCreateCompanyResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.createCompany(input),
       ),
+    createCompanyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthCreateCompanyInput) => defaultApiClient.apiNamespaceCliAuth.createCompany(input),
+      }),
 
     joinWithInvite: (input: CliAuthJoinWithInviteInput) => defaultApiClient.apiNamespaceCliAuth.joinWithInvite(input),
     useJoinWithInvite: () =>
       useMutation<CliAuthJoinWithInviteInput, CliAuthJoinWithInviteResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.joinWithInvite(input),
       ),
+    joinWithInviteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthJoinWithInviteInput) => defaultApiClient.apiNamespaceCliAuth.joinWithInvite(input),
+      }),
 
     joinCompany: (input: CliAuthJoinCompanyInput) => defaultApiClient.apiNamespaceCliAuth.joinCompany(input),
     useJoinCompany: () =>
       useMutation<CliAuthJoinCompanyInput, CliAuthJoinCompanyResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.joinCompany(input),
       ),
+    joinCompanyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthJoinCompanyInput) => defaultApiClient.apiNamespaceCliAuth.joinCompany(input),
+      }),
 
     startGoogle: (input: CliAuthStartGoogleInput) => defaultApiClient.apiNamespaceCliAuth.startGoogle(input),
     useStartGoogle: () =>
       useMutation<CliAuthStartGoogleInput, CliAuthStartGoogleResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.startGoogle(input),
       ),
+    startGoogleMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthStartGoogleInput) => defaultApiClient.apiNamespaceCliAuth.startGoogle(input),
+      }),
 
     checkAccount: (input: CliAuthCheckAccountInput) => defaultApiClient.apiNamespaceCliAuth.checkAccount(input),
     useCheckAccount: () =>
       useMutation<CliAuthCheckAccountInput, CliAuthCheckAccountResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.checkAccount(input),
       ),
+    checkAccountMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthCheckAccountInput) => defaultApiClient.apiNamespaceCliAuth.checkAccount(input),
+      }),
 
     authPassword: (input: CliAuthAuthPasswordInput) => defaultApiClient.apiNamespaceCliAuth.authPassword(input),
     useAuthPassword: () =>
       useMutation<CliAuthAuthPasswordInput, CliAuthAuthPasswordResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.authPassword(input),
       ),
+    authPasswordMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthAuthPasswordInput) => defaultApiClient.apiNamespaceCliAuth.authPassword(input),
+      }),
 
     signup: (input: CliAuthSignupInput) => defaultApiClient.apiNamespaceCliAuth.signup(input),
     useSignup: () =>
       useMutation<CliAuthSignupInput, CliAuthSignupResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.signup(input),
       ),
+    signupMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CliAuthSignupInput) => defaultApiClient.apiNamespaceCliAuth.signup(input),
+      }),
   },
 
   mcp_grants: {
     list: (input: McpGrantsListInput) => defaultApiClient.apiNamespaceMcpGrants.list(input),
     useList: (input: McpGrantsListInput) =>
       useQuery<McpGrantsListResult>(() => defaultApiClient.apiNamespaceMcpGrants.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/mcp_grants/list"),
+    listQueryKey: (input: McpGrantsListInput) => buildApiQueryKey(defaultApiClient, "/mcp_grants/list", input),
+    listQueryOptions: (input: McpGrantsListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/mcp_grants/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceMcpGrants.list(input),
+      }),
 
     revoke: (input: McpGrantsRevokeInput) => defaultApiClient.apiNamespaceMcpGrants.revoke(input),
     useRevoke: () =>
       useMutation<McpGrantsRevokeInput, McpGrantsRevokeResult>((input) =>
         defaultApiClient.apiNamespaceMcpGrants.revoke(input),
       ),
+    revokeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: McpGrantsRevokeInput) => defaultApiClient.apiNamespaceMcpGrants.revoke(input),
+      }),
   },
 
   api_tokens: {
     list: (input: ApiTokensListInput) => defaultApiClient.apiNamespaceApiTokens.list(input),
     useList: (input: ApiTokensListInput) =>
       useQuery<ApiTokensListResult>(() => defaultApiClient.apiNamespaceApiTokens.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/api_tokens/list"),
+    listQueryKey: (input: ApiTokensListInput) => buildApiQueryKey(defaultApiClient, "/api_tokens/list", input),
+    listQueryOptions: (input: ApiTokensListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/api_tokens/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceApiTokens.list(input),
+      }),
 
     create: (input: ApiTokensCreateInput) => defaultApiClient.apiNamespaceApiTokens.create(input),
     useCreate: () =>
       useMutation<ApiTokensCreateInput, ApiTokensCreateResult>((input) =>
         defaultApiClient.apiNamespaceApiTokens.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ApiTokensCreateInput) => defaultApiClient.apiNamespaceApiTokens.create(input),
+      }),
 
     setReadOnly: (input: ApiTokensSetReadOnlyInput) => defaultApiClient.apiNamespaceApiTokens.setReadOnly(input),
     useSetReadOnly: () =>
       useMutation<ApiTokensSetReadOnlyInput, ApiTokensSetReadOnlyResult>((input) =>
         defaultApiClient.apiNamespaceApiTokens.setReadOnly(input),
       ),
+    setReadOnlyMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ApiTokensSetReadOnlyInput) => defaultApiClient.apiNamespaceApiTokens.setReadOnly(input),
+      }),
 
     updateName: (input: ApiTokensUpdateNameInput) => defaultApiClient.apiNamespaceApiTokens.updateName(input),
     useUpdateName: () =>
       useMutation<ApiTokensUpdateNameInput, ApiTokensUpdateNameResult>((input) =>
         defaultApiClient.apiNamespaceApiTokens.updateName(input),
       ),
+    updateNameMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ApiTokensUpdateNameInput) => defaultApiClient.apiNamespaceApiTokens.updateName(input),
+      }),
 
     delete: (input: ApiTokensDeleteInput) => defaultApiClient.apiNamespaceApiTokens.delete(input),
     useDelete: () =>
       useMutation<ApiTokensDeleteInput, ApiTokensDeleteResult>((input) =>
         defaultApiClient.apiNamespaceApiTokens.delete(input),
       ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ApiTokensDeleteInput) => defaultApiClient.apiNamespaceApiTokens.delete(input),
+      }),
   },
 
   invitations: {
@@ -8402,11 +8674,28 @@ export default {
       useQuery<InvitationsGetInviteLinkByTokenResult>(() =>
         defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
       ),
+    getInviteLinkByTokenQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/invitations/get_invite_link_by_token"),
+    getInviteLinkByTokenQueryKey: (input: InvitationsGetInviteLinkByTokenInput) =>
+      buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_by_token", input),
+    getInviteLinkByTokenQueryOptions: (input: InvitationsGetInviteLinkByTokenInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_by_token", input),
+        queryFn: () => defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
+      }),
 
     getInvitation: (input: InvitationsGetInvitationInput) =>
       defaultApiClient.apiNamespaceInvitations.getInvitation(input),
     useGetInvitation: (input: InvitationsGetInvitationInput) =>
       useQuery<InvitationsGetInvitationResult>(() => defaultApiClient.apiNamespaceInvitations.getInvitation(input)),
+    getInvitationQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/invitations/get_invitation"),
+    getInvitationQueryKey: (input: InvitationsGetInvitationInput) =>
+      buildApiQueryKey(defaultApiClient, "/invitations/get_invitation", input),
+    getInvitationQueryOptions: (input: InvitationsGetInvitationInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invitation", input),
+        queryFn: () => defaultApiClient.apiNamespaceInvitations.getInvitation(input),
+      }),
 
     getInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
       defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
@@ -8414,6 +8703,15 @@ export default {
       useQuery<InvitationsGetInviteLinkAvailabilityResult>(() =>
         defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
       ),
+    getInviteLinkAvailabilityQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/invitations/get_invite_link_availability"),
+    getInviteLinkAvailabilityQueryKey: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_availability", input),
+    getInviteLinkAvailabilityQueryOptions: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_availability", input),
+        queryFn: () => defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+      }),
 
     newInvitationToken: (input: InvitationsNewInvitationTokenInput) =>
       defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
@@ -8421,6 +8719,11 @@ export default {
       useMutation<InvitationsNewInvitationTokenInput, InvitationsNewInvitationTokenResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
       ),
+    newInvitationTokenMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InvitationsNewInvitationTokenInput) =>
+          defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
+      }),
 
     resetCompanyInviteLink: (input: InvitationsResetCompanyInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.resetCompanyInviteLink(input),
@@ -8428,6 +8731,11 @@ export default {
       useMutation<InvitationsResetCompanyInviteLinkInput, InvitationsResetCompanyInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.resetCompanyInviteLink(input),
       ),
+    resetCompanyInviteLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InvitationsResetCompanyInviteLinkInput) =>
+          defaultApiClient.apiNamespaceInvitations.resetCompanyInviteLink(input),
+      }),
 
     getCompanyInviteLink: (input: InvitationsGetCompanyInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
@@ -8435,6 +8743,11 @@ export default {
       useMutation<InvitationsGetCompanyInviteLinkInput, InvitationsGetCompanyInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
       ),
+    getCompanyInviteLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InvitationsGetCompanyInviteLinkInput) =>
+          defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
+      }),
 
     updateCompanyInviteLink: (input: InvitationsUpdateCompanyInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.updateCompanyInviteLink(input),
@@ -8442,6 +8755,11 @@ export default {
       useMutation<InvitationsUpdateCompanyInviteLinkInput, InvitationsUpdateCompanyInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.updateCompanyInviteLink(input),
       ),
+    updateCompanyInviteLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InvitationsUpdateCompanyInviteLinkInput) =>
+          defaultApiClient.apiNamespaceInvitations.updateCompanyInviteLink(input),
+      }),
 
     joinCompanyViaInviteLink: (input: InvitationsJoinCompanyViaInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
@@ -8449,49 +8767,109 @@ export default {
       useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
       ),
+    joinCompanyViaInviteLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: InvitationsJoinCompanyViaInviteLinkInput) =>
+          defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
+      }),
   },
 
   product_releases: {
     getLatest: (input: ProductReleasesGetLatestInput) => defaultApiClient.apiNamespaceProductReleases.getLatest(input),
     useGetLatest: (input: ProductReleasesGetLatestInput) =>
       useQuery<ProductReleasesGetLatestResult>(() => defaultApiClient.apiNamespaceProductReleases.getLatest(input)),
+    getLatestQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/product_releases/get_latest"),
+    getLatestQueryKey: (input: ProductReleasesGetLatestInput) =>
+      buildApiQueryKey(defaultApiClient, "/product_releases/get_latest", input),
+    getLatestQueryOptions: (input: ProductReleasesGetLatestInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/product_releases/get_latest", input),
+        queryFn: () => defaultApiClient.apiNamespaceProductReleases.getLatest(input),
+      }),
 
     dismiss: (input: ProductReleasesDismissInput) => defaultApiClient.apiNamespaceProductReleases.dismiss(input),
     useDismiss: () =>
       useMutation<ProductReleasesDismissInput, ProductReleasesDismissResult>((input) =>
         defaultApiClient.apiNamespaceProductReleases.dismiss(input),
       ),
+    dismissMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProductReleasesDismissInput) => defaultApiClient.apiNamespaceProductReleases.dismiss(input),
+      }),
   },
 
   site_messages: {
     listActive: (input: SiteMessagesListActiveInput) => defaultApiClient.apiNamespaceSiteMessages.listActive(input),
     useListActive: (input: SiteMessagesListActiveInput) =>
       useQuery<SiteMessagesListActiveResult>(() => defaultApiClient.apiNamespaceSiteMessages.listActive(input)),
+    listActiveQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/site_messages/list_active"),
+    listActiveQueryKey: (input: SiteMessagesListActiveInput) =>
+      buildApiQueryKey(defaultApiClient, "/site_messages/list_active", input),
+    listActiveQueryOptions: (input: SiteMessagesListActiveInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/site_messages/list_active", input),
+        queryFn: () => defaultApiClient.apiNamespaceSiteMessages.listActive(input),
+      }),
   },
 
   billing: {
     getCatalog: (input: BillingGetCatalogInput) => defaultApiClient.apiNamespaceBilling.getCatalog(input),
     useGetCatalog: (input: BillingGetCatalogInput) =>
       useQuery<BillingGetCatalogResult>(() => defaultApiClient.apiNamespaceBilling.getCatalog(input)),
+    getCatalogQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/billing/get_catalog"),
+    getCatalogQueryKey: (input: BillingGetCatalogInput) =>
+      buildApiQueryKey(defaultApiClient, "/billing/get_catalog", input),
+    getCatalogQueryOptions: (input: BillingGetCatalogInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_catalog", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.getCatalog(input),
+      }),
 
     get: (input: BillingGetInput) => defaultApiClient.apiNamespaceBilling.get(input),
     useGet: (input: BillingGetInput) =>
       useQuery<BillingGetResult>(() => defaultApiClient.apiNamespaceBilling.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/billing/get"),
+    getQueryKey: (input: BillingGetInput) => buildApiQueryKey(defaultApiClient, "/billing/get", input),
+    getQueryOptions: (input: BillingGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.get(input),
+      }),
 
     getLimitWarnings: (input: BillingGetLimitWarningsInput) =>
       defaultApiClient.apiNamespaceBilling.getLimitWarnings(input),
     useGetLimitWarnings: (input: BillingGetLimitWarningsInput) =>
       useQuery<BillingGetLimitWarningsResult>(() => defaultApiClient.apiNamespaceBilling.getLimitWarnings(input)),
+    getLimitWarningsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/billing/get_limit_warnings"),
+    getLimitWarningsQueryKey: (input: BillingGetLimitWarningsInput) =>
+      buildApiQueryKey(defaultApiClient, "/billing/get_limit_warnings", input),
+    getLimitWarningsQueryOptions: (input: BillingGetLimitWarningsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_limit_warnings", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.getLimitWarnings(input),
+      }),
 
     getAccessState: (input: BillingGetAccessStateInput) => defaultApiClient.apiNamespaceBilling.getAccessState(input),
     useGetAccessState: (input: BillingGetAccessStateInput) =>
       useQuery<BillingGetAccessStateResult>(() => defaultApiClient.apiNamespaceBilling.getAccessState(input)),
+    getAccessStateQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/billing/get_access_state"),
+    getAccessStateQueryKey: (input: BillingGetAccessStateInput) =>
+      buildApiQueryKey(defaultApiClient, "/billing/get_access_state", input),
+    getAccessStateQueryOptions: (input: BillingGetAccessStateInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_access_state", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.getAccessState(input),
+      }),
 
     cancel: (input: BillingCancelInput) => defaultApiClient.apiNamespaceBilling.cancel(input),
     useCancel: () =>
       useMutation<BillingCancelInput, BillingCancelResult>((input) =>
         defaultApiClient.apiNamespaceBilling.cancel(input),
       ),
+    cancelMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingCancelInput) => defaultApiClient.apiNamespaceBilling.cancel(input),
+      }),
 
     createPaymentMethodSession: (input: BillingCreatePaymentMethodSessionInput) =>
       defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
@@ -8499,12 +8877,21 @@ export default {
       useMutation<BillingCreatePaymentMethodSessionInput, BillingCreatePaymentMethodSessionResult>((input) =>
         defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
       ),
+    createPaymentMethodSessionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingCreatePaymentMethodSessionInput) =>
+          defaultApiClient.apiNamespaceBilling.createPaymentMethodSession(input),
+      }),
 
     changePlan: (input: BillingChangePlanInput) => defaultApiClient.apiNamespaceBilling.changePlan(input),
     useChangePlan: () =>
       useMutation<BillingChangePlanInput, BillingChangePlanResult>((input) =>
         defaultApiClient.apiNamespaceBilling.changePlan(input),
       ),
+    changePlanMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingChangePlanInput) => defaultApiClient.apiNamespaceBilling.changePlan(input),
+      }),
 
     createCustomerPortalSession: (input: BillingCreateCustomerPortalSessionInput) =>
       defaultApiClient.apiNamespaceBilling.createCustomerPortalSession(input),
@@ -8512,6 +8899,11 @@ export default {
       useMutation<BillingCreateCustomerPortalSessionInput, BillingCreateCustomerPortalSessionResult>((input) =>
         defaultApiClient.apiNamespaceBilling.createCustomerPortalSession(input),
       ),
+    createCustomerPortalSessionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingCreateCustomerPortalSessionInput) =>
+          defaultApiClient.apiNamespaceBilling.createCustomerPortalSession(input),
+      }),
 
     createCheckoutSession: (input: BillingCreateCheckoutSessionInput) =>
       defaultApiClient.apiNamespaceBilling.createCheckoutSession(input),
@@ -8519,18 +8911,31 @@ export default {
       useMutation<BillingCreateCheckoutSessionInput, BillingCreateCheckoutSessionResult>((input) =>
         defaultApiClient.apiNamespaceBilling.createCheckoutSession(input),
       ),
+    createCheckoutSessionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingCreateCheckoutSessionInput) =>
+          defaultApiClient.apiNamespaceBilling.createCheckoutSession(input),
+      }),
 
     reactivate: (input: BillingReactivateInput) => defaultApiClient.apiNamespaceBilling.reactivate(input),
     useReactivate: () =>
       useMutation<BillingReactivateInput, BillingReactivateResult>((input) =>
         defaultApiClient.apiNamespaceBilling.reactivate(input),
       ),
+    reactivateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingReactivateInput) => defaultApiClient.apiNamespaceBilling.reactivate(input),
+      }),
 
     refresh: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
     useRefresh: () =>
       useMutation<BillingRefreshInput, BillingRefreshResult>((input) =>
         defaultApiClient.apiNamespaceBilling.refresh(input),
       ),
+    refreshMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
+      }),
   },
 
   notifications: {
@@ -8538,6 +8943,14 @@ export default {
       defaultApiClient.apiNamespaceNotifications.isSubscribed(input),
     useIsSubscribed: (input: NotificationsIsSubscribedInput) =>
       useQuery<NotificationsIsSubscribedResult>(() => defaultApiClient.apiNamespaceNotifications.isSubscribed(input)),
+    isSubscribedQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/notifications/is_subscribed"),
+    isSubscribedQueryKey: (input: NotificationsIsSubscribedInput) =>
+      buildApiQueryKey(defaultApiClient, "/notifications/is_subscribed", input),
+    isSubscribedQueryOptions: (input: NotificationsIsSubscribedInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/notifications/is_subscribed", input),
+        queryFn: () => defaultApiClient.apiNamespaceNotifications.isSubscribed(input),
+      }),
 
     getUnreadCount: (input: NotificationsGetUnreadCountInput) =>
       defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
@@ -8545,10 +8958,25 @@ export default {
       useQuery<NotificationsGetUnreadCountResult>(() =>
         defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
       ),
+    getUnreadCountQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/notifications/get_unread_count"),
+    getUnreadCountQueryKey: (input: NotificationsGetUnreadCountInput) =>
+      buildApiQueryKey(defaultApiClient, "/notifications/get_unread_count", input),
+    getUnreadCountQueryOptions: (input: NotificationsGetUnreadCountInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/notifications/get_unread_count", input),
+        queryFn: () => defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
+      }),
 
     list: (input: NotificationsListInput) => defaultApiClient.apiNamespaceNotifications.list(input),
     useList: (input: NotificationsListInput) =>
       useQuery<NotificationsListResult>(() => defaultApiClient.apiNamespaceNotifications.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/notifications/list"),
+    listQueryKey: (input: NotificationsListInput) => buildApiQueryKey(defaultApiClient, "/notifications/list", input),
+    listQueryOptions: (input: NotificationsListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/notifications/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceNotifications.list(input),
+      }),
 
     markAllAsRead: (input: NotificationsMarkAllAsReadInput) =>
       defaultApiClient.apiNamespaceNotifications.markAllAsRead(input),
@@ -8556,6 +8984,11 @@ export default {
       useMutation<NotificationsMarkAllAsReadInput, NotificationsMarkAllAsReadResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.markAllAsRead(input),
       ),
+    markAllAsReadMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: NotificationsMarkAllAsReadInput) =>
+          defaultApiClient.apiNamespaceNotifications.markAllAsRead(input),
+      }),
 
     unsubscribe: (input: NotificationsUnsubscribeInput) =>
       defaultApiClient.apiNamespaceNotifications.unsubscribe(input),
@@ -8563,12 +8996,22 @@ export default {
       useMutation<NotificationsUnsubscribeInput, NotificationsUnsubscribeResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.unsubscribe(input),
       ),
+    unsubscribeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: NotificationsUnsubscribeInput) =>
+          defaultApiClient.apiNamespaceNotifications.unsubscribe(input),
+      }),
 
     markAsRead: (input: NotificationsMarkAsReadInput) => defaultApiClient.apiNamespaceNotifications.markAsRead(input),
     useMarkAsRead: () =>
       useMutation<NotificationsMarkAsReadInput, NotificationsMarkAsReadResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.markAsRead(input),
       ),
+    markAsReadMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: NotificationsMarkAsReadInput) =>
+          defaultApiClient.apiNamespaceNotifications.markAsRead(input),
+      }),
 
     markManyAsRead: (input: NotificationsMarkManyAsReadInput) =>
       defaultApiClient.apiNamespaceNotifications.markManyAsRead(input),
@@ -8576,12 +9019,21 @@ export default {
       useMutation<NotificationsMarkManyAsReadInput, NotificationsMarkManyAsReadResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.markManyAsRead(input),
       ),
+    markManyAsReadMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: NotificationsMarkManyAsReadInput) =>
+          defaultApiClient.apiNamespaceNotifications.markManyAsRead(input),
+      }),
 
     subscribe: (input: NotificationsSubscribeInput) => defaultApiClient.apiNamespaceNotifications.subscribe(input),
     useSubscribe: () =>
       useMutation<NotificationsSubscribeInput, NotificationsSubscribeResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.subscribe(input),
       ),
+    subscribeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: NotificationsSubscribeInput) => defaultApiClient.apiNamespaceNotifications.subscribe(input),
+      }),
 
     updateSubscriptionsList: (input: NotificationsUpdateSubscriptionsListInput) =>
       defaultApiClient.apiNamespaceNotifications.updateSubscriptionsList(input),
@@ -8589,54 +9041,120 @@ export default {
       useMutation<NotificationsUpdateSubscriptionsListInput, NotificationsUpdateSubscriptionsListResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.updateSubscriptionsList(input),
       ),
+    updateSubscriptionsListMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: NotificationsUpdateSubscriptionsListInput) =>
+          defaultApiClient.apiNamespaceNotifications.updateSubscriptionsList(input),
+      }),
   },
 
   files: {
     get: (input: FilesGetInput) => defaultApiClient.apiNamespaceFiles.get(input),
     useGet: (input: FilesGetInput) => useQuery<FilesGetResult>(() => defaultApiClient.apiNamespaceFiles.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/files/get"),
+    getQueryKey: (input: FilesGetInput) => buildApiQueryKey(defaultApiClient, "/files/get", input),
+    getQueryOptions: (input: FilesGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/files/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceFiles.get(input),
+      }),
 
     delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
     useDelete: () =>
       useMutation<FilesDeleteInput, FilesDeleteResult>((input) => defaultApiClient.apiNamespaceFiles.delete(input)),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
+      }),
 
     update: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
     useUpdate: () =>
       useMutation<FilesUpdateInput, FilesUpdateResult>((input) => defaultApiClient.apiNamespaceFiles.update(input)),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
+      }),
 
     create: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
     useCreate: () =>
       useMutation<FilesCreateInput, FilesCreateResult>((input) => defaultApiClient.apiNamespaceFiles.create(input)),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
+      }),
   },
 
   links: {
     get: (input: LinksGetInput) => defaultApiClient.apiNamespaceLinks.get(input),
     useGet: (input: LinksGetInput) => useQuery<LinksGetResult>(() => defaultApiClient.apiNamespaceLinks.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/links/get"),
+    getQueryKey: (input: LinksGetInput) => buildApiQueryKey(defaultApiClient, "/links/get", input),
+    getQueryOptions: (input: LinksGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/links/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceLinks.get(input),
+      }),
 
     create: (input: LinksCreateInput) => defaultApiClient.apiNamespaceLinks.create(input),
     useCreate: () =>
       useMutation<LinksCreateInput, LinksCreateResult>((input) => defaultApiClient.apiNamespaceLinks.create(input)),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: LinksCreateInput) => defaultApiClient.apiNamespaceLinks.create(input),
+      }),
 
     update: (input: LinksUpdateInput) => defaultApiClient.apiNamespaceLinks.update(input),
     useUpdate: () =>
       useMutation<LinksUpdateInput, LinksUpdateResult>((input) => defaultApiClient.apiNamespaceLinks.update(input)),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: LinksUpdateInput) => defaultApiClient.apiNamespaceLinks.update(input),
+      }),
 
     delete: (input: LinksDeleteInput) => defaultApiClient.apiNamespaceLinks.delete(input),
     useDelete: () =>
       useMutation<LinksDeleteInput, LinksDeleteResult>((input) => defaultApiClient.apiNamespaceLinks.delete(input)),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: LinksDeleteInput) => defaultApiClient.apiNamespaceLinks.delete(input),
+      }),
   },
 
   documents: {
     get: (input: DocumentsGetInput) => defaultApiClient.apiNamespaceDocuments.get(input),
     useGet: (input: DocumentsGetInput) =>
       useQuery<DocumentsGetResult>(() => defaultApiClient.apiNamespaceDocuments.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/documents/get"),
+    getQueryKey: (input: DocumentsGetInput) => buildApiQueryKey(defaultApiClient, "/documents/get", input),
+    getQueryOptions: (input: DocumentsGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/documents/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceDocuments.get(input),
+      }),
 
     getVersion: (input: DocumentsGetVersionInput) => defaultApiClient.apiNamespaceDocuments.getVersion(input),
     useGetVersion: (input: DocumentsGetVersionInput) =>
       useQuery<DocumentsGetVersionResult>(() => defaultApiClient.apiNamespaceDocuments.getVersion(input)),
+    getVersionQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/documents/get_version"),
+    getVersionQueryKey: (input: DocumentsGetVersionInput) =>
+      buildApiQueryKey(defaultApiClient, "/documents/get_version", input),
+    getVersionQueryOptions: (input: DocumentsGetVersionInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/documents/get_version", input),
+        queryFn: () => defaultApiClient.apiNamespaceDocuments.getVersion(input),
+      }),
 
     listVersions: (input: DocumentsListVersionsInput) => defaultApiClient.apiNamespaceDocuments.listVersions(input),
     useListVersions: (input: DocumentsListVersionsInput) =>
       useQuery<DocumentsListVersionsResult>(() => defaultApiClient.apiNamespaceDocuments.listVersions(input)),
+    listVersionsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/documents/list_versions"),
+    listVersionsQueryKey: (input: DocumentsListVersionsInput) =>
+      buildApiQueryKey(defaultApiClient, "/documents/list_versions", input),
+    listVersionsQueryOptions: (input: DocumentsListVersionsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/documents/list_versions", input),
+        queryFn: () => defaultApiClient.apiNamespaceDocuments.listVersions(input),
+      }),
 
     restoreVersion: (input: DocumentsRestoreVersionInput) =>
       defaultApiClient.apiNamespaceDocuments.restoreVersion(input),
@@ -8644,48 +9162,100 @@ export default {
       useMutation<DocumentsRestoreVersionInput, DocumentsRestoreVersionResult>((input) =>
         defaultApiClient.apiNamespaceDocuments.restoreVersion(input),
       ),
+    restoreVersionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: DocumentsRestoreVersionInput) =>
+          defaultApiClient.apiNamespaceDocuments.restoreVersion(input),
+      }),
 
     publish: (input: DocumentsPublishInput) => defaultApiClient.apiNamespaceDocuments.publish(input),
     usePublish: () =>
       useMutation<DocumentsPublishInput, DocumentsPublishResult>((input) =>
         defaultApiClient.apiNamespaceDocuments.publish(input),
       ),
+    publishMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: DocumentsPublishInput) => defaultApiClient.apiNamespaceDocuments.publish(input),
+      }),
 
     update: (input: DocumentsUpdateInput) => defaultApiClient.apiNamespaceDocuments.update(input),
     useUpdate: () =>
       useMutation<DocumentsUpdateInput, DocumentsUpdateResult>((input) =>
         defaultApiClient.apiNamespaceDocuments.update(input),
       ),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: DocumentsUpdateInput) => defaultApiClient.apiNamespaceDocuments.update(input),
+      }),
 
     delete: (input: DocumentsDeleteInput) => defaultApiClient.apiNamespaceDocuments.delete(input),
     useDelete: () =>
       useMutation<DocumentsDeleteInput, DocumentsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceDocuments.delete(input),
       ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: DocumentsDeleteInput) => defaultApiClient.apiNamespaceDocuments.delete(input),
+      }),
 
     create: (input: DocumentsCreateInput) => defaultApiClient.apiNamespaceDocuments.create(input),
     useCreate: () =>
       useMutation<DocumentsCreateInput, DocumentsCreateResult>((input) =>
         defaultApiClient.apiNamespaceDocuments.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: DocumentsCreateInput) => defaultApiClient.apiNamespaceDocuments.create(input),
+      }),
   },
 
   resource_hubs: {
     search: (input: ResourceHubsSearchInput) => defaultApiClient.apiNamespaceResourceHubs.search(input),
     useSearch: (input: ResourceHubsSearchInput) =>
       useQuery<ResourceHubsSearchResult>(() => defaultApiClient.apiNamespaceResourceHubs.search(input)),
+    searchQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/search"),
+    searchQueryKey: (input: ResourceHubsSearchInput) =>
+      buildApiQueryKey(defaultApiClient, "/resource_hubs/search", input),
+    searchQueryOptions: (input: ResourceHubsSearchInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.search(input),
+      }),
 
     listNodes: (input: ResourceHubsListNodesInput) => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
     useListNodes: (input: ResourceHubsListNodesInput) =>
       useQuery<ResourceHubsListNodesResult>(() => defaultApiClient.apiNamespaceResourceHubs.listNodes(input)),
+    listNodesQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/list_nodes"),
+    listNodesQueryKey: (input: ResourceHubsListNodesInput) =>
+      buildApiQueryKey(defaultApiClient, "/resource_hubs/list_nodes", input),
+    listNodesQueryOptions: (input: ResourceHubsListNodesInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/list_nodes", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
+      }),
 
     get: (input: ResourceHubsGetInput) => defaultApiClient.apiNamespaceResourceHubs.get(input),
     useGet: (input: ResourceHubsGetInput) =>
       useQuery<ResourceHubsGetResult>(() => defaultApiClient.apiNamespaceResourceHubs.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/get"),
+    getQueryKey: (input: ResourceHubsGetInput) => buildApiQueryKey(defaultApiClient, "/resource_hubs/get", input),
+    getQueryOptions: (input: ResourceHubsGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.get(input),
+      }),
 
     getFolder: (input: ResourceHubsGetFolderInput) => defaultApiClient.apiNamespaceResourceHubs.getFolder(input),
     useGetFolder: (input: ResourceHubsGetFolderInput) =>
       useQuery<ResourceHubsGetFolderResult>(() => defaultApiClient.apiNamespaceResourceHubs.getFolder(input)),
+    getFolderQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/get_folder"),
+    getFolderQueryKey: (input: ResourceHubsGetFolderInput) =>
+      buildApiQueryKey(defaultApiClient, "/resource_hubs/get_folder", input),
+    getFolderQueryOptions: (input: ResourceHubsGetFolderInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/get_folder", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.getFolder(input),
+      }),
 
     deleteFolder: (input: ResourceHubsDeleteFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.deleteFolder(input),
@@ -8693,6 +9263,11 @@ export default {
       useMutation<ResourceHubsDeleteFolderInput, ResourceHubsDeleteFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.deleteFolder(input),
       ),
+    deleteFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsDeleteFolderInput) =>
+          defaultApiClient.apiNamespaceResourceHubs.deleteFolder(input),
+      }),
 
     updateParentFolder: (input: ResourceHubsUpdateParentFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
@@ -8700,6 +9275,11 @@ export default {
       useMutation<ResourceHubsUpdateParentFolderInput, ResourceHubsUpdateParentFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
       ),
+    updateParentFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsUpdateParentFolderInput) =>
+          defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
+      }),
 
     renameFolder: (input: ResourceHubsRenameFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
@@ -8707,12 +9287,21 @@ export default {
       useMutation<ResourceHubsRenameFolderInput, ResourceHubsRenameFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
       ),
+    renameFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsRenameFolderInput) =>
+          defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
+      }),
 
     copyFolder: (input: ResourceHubsCopyFolderInput) => defaultApiClient.apiNamespaceResourceHubs.copyFolder(input),
     useCopyFolder: () =>
       useMutation<ResourceHubsCopyFolderInput, ResourceHubsCopyFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.copyFolder(input),
       ),
+    copyFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsCopyFolderInput) => defaultApiClient.apiNamespaceResourceHubs.copyFolder(input),
+      }),
 
     createFolder: (input: ResourceHubsCreateFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
@@ -8720,96 +9309,201 @@ export default {
       useMutation<ResourceHubsCreateFolderInput, ResourceHubsCreateFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
       ),
+    createFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ResourceHubsCreateFolderInput) =>
+          defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
+      }),
   },
 
   comments: {
     list: (input: CommentsListInput) => defaultApiClient.apiNamespaceComments.list(input),
     useList: (input: CommentsListInput) =>
       useQuery<CommentsListResult>(() => defaultApiClient.apiNamespaceComments.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/comments/list"),
+    listQueryKey: (input: CommentsListInput) => buildApiQueryKey(defaultApiClient, "/comments/list", input),
+    listQueryOptions: (input: CommentsListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/comments/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceComments.list(input),
+      }),
 
     delete: (input: CommentsDeleteInput) => defaultApiClient.apiNamespaceComments.delete(input),
     useDelete: () =>
       useMutation<CommentsDeleteInput, CommentsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceComments.delete(input),
       ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CommentsDeleteInput) => defaultApiClient.apiNamespaceComments.delete(input),
+      }),
 
     update: (input: CommentsUpdateInput) => defaultApiClient.apiNamespaceComments.update(input),
     useUpdate: () =>
       useMutation<CommentsUpdateInput, CommentsUpdateResult>((input) =>
         defaultApiClient.apiNamespaceComments.update(input),
       ),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CommentsUpdateInput) => defaultApiClient.apiNamespaceComments.update(input),
+      }),
 
     create: (input: CommentsCreateInput) => defaultApiClient.apiNamespaceComments.create(input),
     useCreate: () =>
       useMutation<CommentsCreateInput, CommentsCreateResult>((input) =>
         defaultApiClient.apiNamespaceComments.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CommentsCreateInput) => defaultApiClient.apiNamespaceComments.create(input),
+      }),
   },
 
   companies: {
     quickSearch: (input: CompaniesQuickSearchInput) => defaultApiClient.apiNamespaceCompanies.quickSearch(input),
     useQuickSearch: (input: CompaniesQuickSearchInput) =>
       useQuery<CompaniesQuickSearchResult>(() => defaultApiClient.apiNamespaceCompanies.quickSearch(input)),
+    quickSearchQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/quick_search"),
+    quickSearchQueryKey: (input: CompaniesQuickSearchInput) =>
+      buildApiQueryKey(defaultApiClient, "/companies/quick_search", input),
+    quickSearchQueryOptions: (input: CompaniesQuickSearchInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/quick_search", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.quickSearch(input),
+      }),
 
     getActivity: (input: CompaniesGetActivityInput) => defaultApiClient.apiNamespaceCompanies.getActivity(input),
     useGetActivity: (input: CompaniesGetActivityInput) =>
       useQuery<CompaniesGetActivityResult>(() => defaultApiClient.apiNamespaceCompanies.getActivity(input)),
+    getActivityQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/get_activity"),
+    getActivityQueryKey: (input: CompaniesGetActivityInput) =>
+      buildApiQueryKey(defaultApiClient, "/companies/get_activity", input),
+    getActivityQueryOptions: (input: CompaniesGetActivityInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_activity", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.getActivity(input),
+      }),
 
     getFlatWorkMap: (input: CompaniesGetFlatWorkMapInput) =>
       defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input),
     useGetFlatWorkMap: (input: CompaniesGetFlatWorkMapInput) =>
       useQuery<CompaniesGetFlatWorkMapResult>(() => defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input)),
+    getFlatWorkMapQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/get_flat_work_map"),
+    getFlatWorkMapQueryKey: (input: CompaniesGetFlatWorkMapInput) =>
+      buildApiQueryKey(defaultApiClient, "/companies/get_flat_work_map", input),
+    getFlatWorkMapQueryOptions: (input: CompaniesGetFlatWorkMapInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_flat_work_map", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input),
+      }),
 
     list: (input: CompaniesListInput) => defaultApiClient.apiNamespaceCompanies.list(input),
     useList: (input: CompaniesListInput) =>
       useQuery<CompaniesListResult>(() => defaultApiClient.apiNamespaceCompanies.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/list"),
+    listQueryKey: (input: CompaniesListInput) => buildApiQueryKey(defaultApiClient, "/companies/list", input),
+    listQueryOptions: (input: CompaniesListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.list(input),
+      }),
 
     search: (input: CompaniesSearchInput) => defaultApiClient.apiNamespaceCompanies.search(input),
     useSearch: (input: CompaniesSearchInput) =>
       useQuery<CompaniesSearchResult>(() => defaultApiClient.apiNamespaceCompanies.search(input)),
+    searchQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/search"),
+    searchQueryKey: (input: CompaniesSearchInput) => buildApiQueryKey(defaultApiClient, "/companies/search", input),
+    searchQueryOptions: (input: CompaniesSearchInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.search(input),
+      }),
 
     getWorkMap: (input: CompaniesGetWorkMapInput) => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
     useGetWorkMap: (input: CompaniesGetWorkMapInput) =>
       useQuery<CompaniesGetWorkMapResult>(() => defaultApiClient.apiNamespaceCompanies.getWorkMap(input)),
+    getWorkMapQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/get_work_map"),
+    getWorkMapQueryKey: (input: CompaniesGetWorkMapInput) =>
+      buildApiQueryKey(defaultApiClient, "/companies/get_work_map", input),
+    getWorkMapQueryOptions: (input: CompaniesGetWorkMapInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_work_map", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
+      }),
 
     get: (input: CompaniesGetInput) => defaultApiClient.apiNamespaceCompanies.get(input),
     useGet: (input: CompaniesGetInput) =>
       useQuery<CompaniesGetResult>(() => defaultApiClient.apiNamespaceCompanies.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/get"),
+    getQueryKey: (input: CompaniesGetInput) => buildApiQueryKey(defaultApiClient, "/companies/get", input),
+    getQueryOptions: (input: CompaniesGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.get(input),
+      }),
 
     listActivities: (input: CompaniesListActivitiesInput) =>
       defaultApiClient.apiNamespaceCompanies.listActivities(input),
     useListActivities: (input: CompaniesListActivitiesInput) =>
       useQuery<CompaniesListActivitiesResult>(() => defaultApiClient.apiNamespaceCompanies.listActivities(input)),
+    listActivitiesQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/companies/list_activities"),
+    listActivitiesQueryKey: (input: CompaniesListActivitiesInput) =>
+      buildApiQueryKey(defaultApiClient, "/companies/list_activities", input),
+    listActivitiesQueryOptions: (input: CompaniesListActivitiesInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/list_activities", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.listActivities(input),
+      }),
 
     deleteOwner: (input: CompaniesDeleteOwnerInput) => defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
     useDeleteOwner: () =>
       useMutation<CompaniesDeleteOwnerInput, CompaniesDeleteOwnerResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
       ),
+    deleteOwnerMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesDeleteOwnerInput) => defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
+      }),
 
     createAdmins: (input: CompaniesCreateAdminsInput) => defaultApiClient.apiNamespaceCompanies.createAdmins(input),
     useCreateAdmins: () =>
       useMutation<CompaniesCreateAdminsInput, CompaniesCreateAdminsResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.createAdmins(input),
       ),
+    createAdminsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesCreateAdminsInput) => defaultApiClient.apiNamespaceCompanies.createAdmins(input),
+      }),
 
     deleteMember: (input: CompaniesDeleteMemberInput) => defaultApiClient.apiNamespaceCompanies.deleteMember(input),
     useDeleteMember: () =>
       useMutation<CompaniesDeleteMemberInput, CompaniesDeleteMemberResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.deleteMember(input),
       ),
+    deleteMemberMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesDeleteMemberInput) => defaultApiClient.apiNamespaceCompanies.deleteMember(input),
+      }),
 
     createMember: (input: CompaniesCreateMemberInput) => defaultApiClient.apiNamespaceCompanies.createMember(input),
     useCreateMember: () =>
       useMutation<CompaniesCreateMemberInput, CompaniesCreateMemberResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.createMember(input),
       ),
+    createMemberMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesCreateMemberInput) => defaultApiClient.apiNamespaceCompanies.createMember(input),
+      }),
 
     create: (input: CompaniesCreateInput) => defaultApiClient.apiNamespaceCompanies.create(input),
     useCreate: () =>
       useMutation<CompaniesCreateInput, CompaniesCreateResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesCreateInput) => defaultApiClient.apiNamespaceCompanies.create(input),
+      }),
 
     deleteActivity: (input: CompaniesDeleteActivityInput) =>
       defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
@@ -8817,12 +9511,21 @@ export default {
       useMutation<CompaniesDeleteActivityInput, CompaniesDeleteActivityResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
       ),
+    deleteActivityMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesDeleteActivityInput) =>
+          defaultApiClient.apiNamespaceCompanies.deleteActivity(input),
+      }),
 
     inviteGuest: (input: CompaniesInviteGuestInput) => defaultApiClient.apiNamespaceCompanies.inviteGuest(input),
     useInviteGuest: () =>
       useMutation<CompaniesInviteGuestInput, CompaniesInviteGuestResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.inviteGuest(input),
       ),
+    inviteGuestMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesInviteGuestInput) => defaultApiClient.apiNamespaceCompanies.inviteGuest(input),
+      }),
 
     updateMembersPermissions: (input: CompaniesUpdateMembersPermissionsInput) =>
       defaultApiClient.apiNamespaceCompanies.updateMembersPermissions(input),
@@ -8830,6 +9533,11 @@ export default {
       useMutation<CompaniesUpdateMembersPermissionsInput, CompaniesUpdateMembersPermissionsResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.updateMembersPermissions(input),
       ),
+    updateMembersPermissionsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesUpdateMembersPermissionsInput) =>
+          defaultApiClient.apiNamespaceCompanies.updateMembersPermissions(input),
+      }),
 
     convertMemberToGuest: (input: CompaniesConvertMemberToGuestInput) =>
       defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
@@ -8837,12 +9545,21 @@ export default {
       useMutation<CompaniesConvertMemberToGuestInput, CompaniesConvertMemberToGuestResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
       ),
+    convertMemberToGuestMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesConvertMemberToGuestInput) =>
+          defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
+      }),
 
     deleteAdmin: (input: CompaniesDeleteAdminInput) => defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),
     useDeleteAdmin: () =>
       useMutation<CompaniesDeleteAdminInput, CompaniesDeleteAdminResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),
       ),
+    deleteAdminMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesDeleteAdminInput) => defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),
+      }),
 
     deleteTrustedEmailDomain: (input: CompaniesDeleteTrustedEmailDomainInput) =>
       defaultApiClient.apiNamespaceCompanies.deleteTrustedEmailDomain(input),
@@ -8850,18 +9567,31 @@ export default {
       useMutation<CompaniesDeleteTrustedEmailDomainInput, CompaniesDeleteTrustedEmailDomainResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.deleteTrustedEmailDomain(input),
       ),
+    deleteTrustedEmailDomainMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesDeleteTrustedEmailDomainInput) =>
+          defaultApiClient.apiNamespaceCompanies.deleteTrustedEmailDomain(input),
+      }),
 
     update: (input: CompaniesUpdateInput) => defaultApiClient.apiNamespaceCompanies.update(input),
     useUpdate: () =>
       useMutation<CompaniesUpdateInput, CompaniesUpdateResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.update(input),
       ),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesUpdateInput) => defaultApiClient.apiNamespaceCompanies.update(input),
+      }),
 
     restoreMember: (input: CompaniesRestoreMemberInput) => defaultApiClient.apiNamespaceCompanies.restoreMember(input),
     useRestoreMember: () =>
       useMutation<CompaniesRestoreMemberInput, CompaniesRestoreMemberResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.restoreMember(input),
       ),
+    restoreMemberMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesRestoreMemberInput) => defaultApiClient.apiNamespaceCompanies.restoreMember(input),
+      }),
 
     grantResourceAccess: (input: CompaniesGrantResourceAccessInput) =>
       defaultApiClient.apiNamespaceCompanies.grantResourceAccess(input),
@@ -8869,83 +9599,190 @@ export default {
       useMutation<CompaniesGrantResourceAccessInput, CompaniesGrantResourceAccessResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.grantResourceAccess(input),
       ),
+    grantResourceAccessMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CompaniesGrantResourceAccessInput) =>
+          defaultApiClient.apiNamespaceCompanies.grantResourceAccess(input),
+      }),
   },
 
   people: {
     search: (input: PeopleSearchInput) => defaultApiClient.apiNamespacePeople.search(input),
     useSearch: (input: PeopleSearchInput) =>
       useQuery<PeopleSearchResult>(() => defaultApiClient.apiNamespacePeople.search(input)),
+    searchQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/search"),
+    searchQueryKey: (input: PeopleSearchInput) => buildApiQueryKey(defaultApiClient, "/people/search", input),
+    searchQueryOptions: (input: PeopleSearchInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/search", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.search(input),
+      }),
 
     list: (input: PeopleListInput) => defaultApiClient.apiNamespacePeople.list(input),
     useList: (input: PeopleListInput) =>
       useQuery<PeopleListResult>(() => defaultApiClient.apiNamespacePeople.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list"),
+    listQueryKey: (input: PeopleListInput) => buildApiQueryKey(defaultApiClient, "/people/list", input),
+    listQueryOptions: (input: PeopleListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/list", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.list(input),
+      }),
 
     getAccount: (input: PeopleGetAccountInput) => defaultApiClient.apiNamespacePeople.getAccount(input),
     useGetAccount: (input: PeopleGetAccountInput) =>
       useQuery<PeopleGetAccountResult>(() => defaultApiClient.apiNamespacePeople.getAccount(input)),
+    getAccountQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get_account"),
+    getAccountQueryKey: (input: PeopleGetAccountInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/get_account", input),
+    getAccountQueryOptions: (input: PeopleGetAccountInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_account", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getAccount(input),
+      }),
 
     get: (input: PeopleGetInput) => defaultApiClient.apiNamespacePeople.get(input),
     useGet: (input: PeopleGetInput) => useQuery<PeopleGetResult>(() => defaultApiClient.apiNamespacePeople.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get"),
+    getQueryKey: (input: PeopleGetInput) => buildApiQueryKey(defaultApiClient, "/people/get", input),
+    getQueryOptions: (input: PeopleGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.get(input),
+      }),
 
     getBinded: (input: PeopleGetBindedInput) => defaultApiClient.apiNamespacePeople.getBinded(input),
     useGetBinded: (input: PeopleGetBindedInput) =>
       useQuery<PeopleGetBindedResult>(() => defaultApiClient.apiNamespacePeople.getBinded(input)),
+    getBindedQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get_binded"),
+    getBindedQueryKey: (input: PeopleGetBindedInput) => buildApiQueryKey(defaultApiClient, "/people/get_binded", input),
+    getBindedQueryOptions: (input: PeopleGetBindedInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_binded", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getBinded(input),
+      }),
 
     listAssignments: (input: PeopleListAssignmentsInput) => defaultApiClient.apiNamespacePeople.listAssignments(input),
     useListAssignments: (input: PeopleListAssignmentsInput) =>
       useQuery<PeopleListAssignmentsResult>(() => defaultApiClient.apiNamespacePeople.listAssignments(input)),
+    listAssignmentsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/list_assignments"),
+    listAssignmentsQueryKey: (input: PeopleListAssignmentsInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/list_assignments", input),
+    listAssignmentsQueryOptions: (input: PeopleListAssignmentsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/list_assignments", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.listAssignments(input),
+      }),
 
     listPossibleManagers: (input: PeopleListPossibleManagersInput) =>
       defaultApiClient.apiNamespacePeople.listPossibleManagers(input),
     useListPossibleManagers: (input: PeopleListPossibleManagersInput) =>
       useQuery<PeopleListPossibleManagersResult>(() => defaultApiClient.apiNamespacePeople.listPossibleManagers(input)),
+    listPossibleManagersQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/people/list_possible_managers"),
+    listPossibleManagersQueryKey: (input: PeopleListPossibleManagersInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/list_possible_managers", input),
+    listPossibleManagersQueryOptions: (input: PeopleListPossibleManagersInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/list_possible_managers", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.listPossibleManagers(input),
+      }),
 
     getAssignmentsCount: (input: PeopleGetAssignmentsCountInput) =>
       defaultApiClient.apiNamespacePeople.getAssignmentsCount(input),
     useGetAssignmentsCount: (input: PeopleGetAssignmentsCountInput) =>
       useQuery<PeopleGetAssignmentsCountResult>(() => defaultApiClient.apiNamespacePeople.getAssignmentsCount(input)),
+    getAssignmentsCountQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get_assignments_count"),
+    getAssignmentsCountQueryKey: (input: PeopleGetAssignmentsCountInput) =>
+      buildApiQueryKey(defaultApiClient, "/people/get_assignments_count", input),
+    getAssignmentsCountQueryOptions: (input: PeopleGetAssignmentsCountInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_assignments_count", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getAssignmentsCount(input),
+      }),
 
     getMe: (input: PeopleGetMeInput) => defaultApiClient.apiNamespacePeople.getMe(input),
     useGetMe: (input: PeopleGetMeInput) =>
       useQuery<PeopleGetMeResult>(() => defaultApiClient.apiNamespacePeople.getMe(input)),
+    getMeQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/people/get_me"),
+    getMeQueryKey: (input: PeopleGetMeInput) => buildApiQueryKey(defaultApiClient, "/people/get_me", input),
+    getMeQueryOptions: (input: PeopleGetMeInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_me", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getMe(input),
+      }),
 
     update: (input: PeopleUpdateInput) => defaultApiClient.apiNamespacePeople.update(input),
     useUpdate: () =>
       useMutation<PeopleUpdateInput, PeopleUpdateResult>((input) => defaultApiClient.apiNamespacePeople.update(input)),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: PeopleUpdateInput) => defaultApiClient.apiNamespacePeople.update(input),
+      }),
 
     updatePicture: (input: PeopleUpdatePictureInput) => defaultApiClient.apiNamespacePeople.updatePicture(input),
     useUpdatePicture: () =>
       useMutation<PeopleUpdatePictureInput, PeopleUpdatePictureResult>((input) =>
         defaultApiClient.apiNamespacePeople.updatePicture(input),
       ),
+    updatePictureMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: PeopleUpdatePictureInput) => defaultApiClient.apiNamespacePeople.updatePicture(input),
+      }),
 
     updateTheme: (input: PeopleUpdateThemeInput) => defaultApiClient.apiNamespacePeople.updateTheme(input),
     useUpdateTheme: () =>
       useMutation<PeopleUpdateThemeInput, PeopleUpdateThemeResult>((input) =>
         defaultApiClient.apiNamespacePeople.updateTheme(input),
       ),
+    updateThemeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: PeopleUpdateThemeInput) => defaultApiClient.apiNamespacePeople.updateTheme(input),
+      }),
   },
 
   kpis: {
     getKpi: (input: KpisGetKpiInput) => defaultApiClient.apiNamespaceKpis.getKpi(input),
     useGetKpi: (input: KpisGetKpiInput) =>
       useQuery<KpisGetKpiResult>(() => defaultApiClient.apiNamespaceKpis.getKpi(input)),
+    getKpiQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/kpis/get_kpi"),
+    getKpiQueryKey: (input: KpisGetKpiInput) => buildApiQueryKey(defaultApiClient, "/kpis/get_kpi", input),
+    getKpiQueryOptions: (input: KpisGetKpiInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/kpis/get_kpi", input),
+        queryFn: () => defaultApiClient.apiNamespaceKpis.getKpi(input),
+      }),
 
     listKpis: (input: KpisListKpisInput) => defaultApiClient.apiNamespaceKpis.listKpis(input),
     useListKpis: (input: KpisListKpisInput) =>
       useQuery<KpisListKpisResult>(() => defaultApiClient.apiNamespaceKpis.listKpis(input)),
+    listKpisQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/kpis/list_kpis"),
+    listKpisQueryKey: (input: KpisListKpisInput) => buildApiQueryKey(defaultApiClient, "/kpis/list_kpis", input),
+    listKpisQueryOptions: (input: KpisListKpisInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/kpis/list_kpis", input),
+        queryFn: () => defaultApiClient.apiNamespaceKpis.listKpis(input),
+      }),
 
     addKpiAnnotation: (input: KpisAddKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
     useAddKpiAnnotation: () =>
       useMutation<KpisAddKpiAnnotationInput, KpisAddKpiAnnotationResult>((input) =>
         defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
       ),
+    addKpiAnnotationMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisAddKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
+      }),
 
     createKpi: (input: KpisCreateKpiInput) => defaultApiClient.apiNamespaceKpis.createKpi(input),
     useCreateKpi: () =>
       useMutation<KpisCreateKpiInput, KpisCreateKpiResult>((input) =>
         defaultApiClient.apiNamespaceKpis.createKpi(input),
       ),
+    createKpiMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisCreateKpiInput) => defaultApiClient.apiNamespaceKpis.createKpi(input),
+      }),
 
     deleteKpiAnnotation: (input: KpisDeleteKpiAnnotationInput) =>
       defaultApiClient.apiNamespaceKpis.deleteKpiAnnotation(input),
@@ -8953,16 +9790,29 @@ export default {
       useMutation<KpisDeleteKpiAnnotationInput, KpisDeleteKpiAnnotationResult>((input) =>
         defaultApiClient.apiNamespaceKpis.deleteKpiAnnotation(input),
       ),
+    deleteKpiAnnotationMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisDeleteKpiAnnotationInput) =>
+          defaultApiClient.apiNamespaceKpis.deleteKpiAnnotation(input),
+      }),
 
     deleteKpi: (input: KpisDeleteKpiInput) => defaultApiClient.apiNamespaceKpis.deleteKpi(input),
     useDeleteKpi: () =>
       useMutation<KpisDeleteKpiInput, KpisDeleteKpiResult>((input) =>
         defaultApiClient.apiNamespaceKpis.deleteKpi(input),
       ),
+    deleteKpiMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisDeleteKpiInput) => defaultApiClient.apiNamespaceKpis.deleteKpi(input),
+      }),
 
     editKpi: (input: KpisEditKpiInput) => defaultApiClient.apiNamespaceKpis.editKpi(input),
     useEditKpi: () =>
       useMutation<KpisEditKpiInput, KpisEditKpiResult>((input) => defaultApiClient.apiNamespaceKpis.editKpi(input)),
+    editKpiMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisEditKpiInput) => defaultApiClient.apiNamespaceKpis.editKpi(input),
+      }),
 
     editKpiAnnotation: (input: KpisEditKpiAnnotationInput) =>
       defaultApiClient.apiNamespaceKpis.editKpiAnnotation(input),
@@ -8970,12 +9820,20 @@ export default {
       useMutation<KpisEditKpiAnnotationInput, KpisEditKpiAnnotationResult>((input) =>
         defaultApiClient.apiNamespaceKpis.editKpiAnnotation(input),
       ),
+    editKpiAnnotationMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisEditKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.editKpiAnnotation(input),
+      }),
 
     logKpiEntry: (input: KpisLogKpiEntryInput) => defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
     useLogKpiEntry: () =>
       useMutation<KpisLogKpiEntryInput, KpisLogKpiEntryResult>((input) =>
         defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
       ),
+    logKpiEntryMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisLogKpiEntryInput) => defaultApiClient.apiNamespaceKpis.logKpiEntry(input),
+      }),
   },
 
   spaces: {
@@ -8983,33 +9841,93 @@ export default {
       defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input),
     useCountByAccessLevel: (input: SpacesCountByAccessLevelInput) =>
       useQuery<SpacesCountByAccessLevelResult>(() => defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input)),
+    countByAccessLevelQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/count_by_access_level"),
+    countByAccessLevelQueryKey: (input: SpacesCountByAccessLevelInput) =>
+      buildApiQueryKey(defaultApiClient, "/spaces/count_by_access_level", input),
+    countByAccessLevelQueryOptions: (input: SpacesCountByAccessLevelInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/count_by_access_level", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input),
+      }),
 
     get: (input: SpacesGetInput) => defaultApiClient.apiNamespaceSpaces.get(input),
     useGet: (input: SpacesGetInput) => useQuery<SpacesGetResult>(() => defaultApiClient.apiNamespaceSpaces.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/get"),
+    getQueryKey: (input: SpacesGetInput) => buildApiQueryKey(defaultApiClient, "/spaces/get", input),
+    getQueryOptions: (input: SpacesGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.get(input),
+      }),
 
     listDiscussions: (input: SpacesListDiscussionsInput) => defaultApiClient.apiNamespaceSpaces.listDiscussions(input),
     useListDiscussions: (input: SpacesListDiscussionsInput) =>
       useQuery<SpacesListDiscussionsResult>(() => defaultApiClient.apiNamespaceSpaces.listDiscussions(input)),
+    listDiscussionsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/list_discussions"),
+    listDiscussionsQueryKey: (input: SpacesListDiscussionsInput) =>
+      buildApiQueryKey(defaultApiClient, "/spaces/list_discussions", input),
+    listDiscussionsQueryOptions: (input: SpacesListDiscussionsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_discussions", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listDiscussions(input),
+      }),
 
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+    searchQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/search"),
+    searchQueryKey: (input: SpacesSearchInput) => buildApiQueryKey(defaultApiClient, "/spaces/search", input),
+    searchQueryOptions: (input: SpacesSearchInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.search(input),
+      }),
 
     list: (input: SpacesListInput) => defaultApiClient.apiNamespaceSpaces.list(input),
     useList: (input: SpacesListInput) =>
       useQuery<SpacesListResult>(() => defaultApiClient.apiNamespaceSpaces.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/list"),
+    listQueryKey: (input: SpacesListInput) => buildApiQueryKey(defaultApiClient, "/spaces/list", input),
+    listQueryOptions: (input: SpacesListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.list(input),
+      }),
 
     listTools: (input: SpacesListToolsInput) => defaultApiClient.apiNamespaceSpaces.listTools(input),
     useListTools: (input: SpacesListToolsInput) =>
       useQuery<SpacesListToolsResult>(() => defaultApiClient.apiNamespaceSpaces.listTools(input)),
+    listToolsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/list_tools"),
+    listToolsQueryKey: (input: SpacesListToolsInput) => buildApiQueryKey(defaultApiClient, "/spaces/list_tools", input),
+    listToolsQueryOptions: (input: SpacesListToolsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_tools", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listTools(input),
+      }),
 
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
+    listMembersQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/list_members"),
+    listMembersQueryKey: (input: SpacesListMembersInput) =>
+      buildApiQueryKey(defaultApiClient, "/spaces/list_members", input),
+    listMembersQueryOptions: (input: SpacesListMembersInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_members", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listMembers(input),
+      }),
 
     getDiscussion: (input: SpacesGetDiscussionInput) => defaultApiClient.apiNamespaceSpaces.getDiscussion(input),
     useGetDiscussion: (input: SpacesGetDiscussionInput) =>
       useQuery<SpacesGetDiscussionResult>(() => defaultApiClient.apiNamespaceSpaces.getDiscussion(input)),
+    getDiscussionQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/get_discussion"),
+    getDiscussionQueryKey: (input: SpacesGetDiscussionInput) =>
+      buildApiQueryKey(defaultApiClient, "/spaces/get_discussion", input),
+    getDiscussionQueryOptions: (input: SpacesGetDiscussionInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/get_discussion", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.getDiscussion(input),
+      }),
 
     searchPotentialMembers: (input: SpacesSearchPotentialMembersInput) =>
       defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
@@ -9017,10 +9935,26 @@ export default {
       useQuery<SpacesSearchPotentialMembersResult>(() =>
         defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
       ),
+    searchPotentialMembersQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/spaces/search_potential_members"),
+    searchPotentialMembersQueryKey: (input: SpacesSearchPotentialMembersInput) =>
+      buildApiQueryKey(defaultApiClient, "/spaces/search_potential_members", input),
+    searchPotentialMembersQueryOptions: (input: SpacesSearchPotentialMembersInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/search_potential_members", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
+      }),
 
     listTasks: (input: SpacesListTasksInput) => defaultApiClient.apiNamespaceSpaces.listTasks(input),
     useListTasks: (input: SpacesListTasksInput) =>
       useQuery<SpacesListTasksResult>(() => defaultApiClient.apiNamespaceSpaces.listTasks(input)),
+    listTasksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/spaces/list_tasks"),
+    listTasksQueryKey: (input: SpacesListTasksInput) => buildApiQueryKey(defaultApiClient, "/spaces/list_tasks", input),
+    listTasksQueryOptions: (input: SpacesListTasksInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_tasks", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listTasks(input),
+      }),
 
     publishDiscussion: (input: SpacesPublishDiscussionInput) =>
       defaultApiClient.apiNamespaceSpaces.publishDiscussion(input),
@@ -9028,6 +9962,11 @@ export default {
       useMutation<SpacesPublishDiscussionInput, SpacesPublishDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.publishDiscussion(input),
       ),
+    publishDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesPublishDiscussionInput) =>
+          defaultApiClient.apiNamespaceSpaces.publishDiscussion(input),
+      }),
 
     updateMembersPermissions: (input: SpacesUpdateMembersPermissionsInput) =>
       defaultApiClient.apiNamespaceSpaces.updateMembersPermissions(input),
@@ -9035,6 +9974,11 @@ export default {
       useMutation<SpacesUpdateMembersPermissionsInput, SpacesUpdateMembersPermissionsResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateMembersPermissions(input),
       ),
+    updateMembersPermissionsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdateMembersPermissionsInput) =>
+          defaultApiClient.apiNamespaceSpaces.updateMembersPermissions(input),
+      }),
 
     updatePermissions: (input: SpacesUpdatePermissionsInput) =>
       defaultApiClient.apiNamespaceSpaces.updatePermissions(input),
@@ -9042,12 +9986,21 @@ export default {
       useMutation<SpacesUpdatePermissionsInput, SpacesUpdatePermissionsResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updatePermissions(input),
       ),
+    updatePermissionsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdatePermissionsInput) =>
+          defaultApiClient.apiNamespaceSpaces.updatePermissions(input),
+      }),
 
     updateTools: (input: SpacesUpdateToolsInput) => defaultApiClient.apiNamespaceSpaces.updateTools(input),
     useUpdateTools: () =>
       useMutation<SpacesUpdateToolsInput, SpacesUpdateToolsResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateTools(input),
       ),
+    updateToolsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdateToolsInput) => defaultApiClient.apiNamespaceSpaces.updateTools(input),
+      }),
 
     archiveDiscussion: (input: SpacesArchiveDiscussionInput) =>
       defaultApiClient.apiNamespaceSpaces.archiveDiscussion(input),
@@ -9055,40 +10008,73 @@ export default {
       useMutation<SpacesArchiveDiscussionInput, SpacesArchiveDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.archiveDiscussion(input),
       ),
+    archiveDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesArchiveDiscussionInput) =>
+          defaultApiClient.apiNamespaceSpaces.archiveDiscussion(input),
+      }),
 
     update: (input: SpacesUpdateInput) => defaultApiClient.apiNamespaceSpaces.update(input),
     useUpdate: () =>
       useMutation<SpacesUpdateInput, SpacesUpdateResult>((input) => defaultApiClient.apiNamespaceSpaces.update(input)),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdateInput) => defaultApiClient.apiNamespaceSpaces.update(input),
+      }),
 
     create: (input: SpacesCreateInput) => defaultApiClient.apiNamespaceSpaces.create(input),
     useCreate: () =>
       useMutation<SpacesCreateInput, SpacesCreateResult>((input) => defaultApiClient.apiNamespaceSpaces.create(input)),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesCreateInput) => defaultApiClient.apiNamespaceSpaces.create(input),
+      }),
 
     delete: (input: SpacesDeleteInput) => defaultApiClient.apiNamespaceSpaces.delete(input),
     useDelete: () =>
       useMutation<SpacesDeleteInput, SpacesDeleteResult>((input) => defaultApiClient.apiNamespaceSpaces.delete(input)),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesDeleteInput) => defaultApiClient.apiNamespaceSpaces.delete(input),
+      }),
 
     updateKanban: (input: SpacesUpdateKanbanInput) => defaultApiClient.apiNamespaceSpaces.updateKanban(input),
     useUpdateKanban: () =>
       useMutation<SpacesUpdateKanbanInput, SpacesUpdateKanbanResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateKanban(input),
       ),
+    updateKanbanMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdateKanbanInput) => defaultApiClient.apiNamespaceSpaces.updateKanban(input),
+      }),
 
     addMembers: (input: SpacesAddMembersInput) => defaultApiClient.apiNamespaceSpaces.addMembers(input),
     useAddMembers: () =>
       useMutation<SpacesAddMembersInput, SpacesAddMembersResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.addMembers(input),
       ),
+    addMembersMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesAddMembersInput) => defaultApiClient.apiNamespaceSpaces.addMembers(input),
+      }),
 
     join: (input: SpacesJoinInput) => defaultApiClient.apiNamespaceSpaces.join(input),
     useJoin: () =>
       useMutation<SpacesJoinInput, SpacesJoinResult>((input) => defaultApiClient.apiNamespaceSpaces.join(input)),
+    joinMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesJoinInput) => defaultApiClient.apiNamespaceSpaces.join(input),
+      }),
 
     deleteMember: (input: SpacesDeleteMemberInput) => defaultApiClient.apiNamespaceSpaces.deleteMember(input),
     useDeleteMember: () =>
       useMutation<SpacesDeleteMemberInput, SpacesDeleteMemberResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.deleteMember(input),
       ),
+    deleteMemberMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesDeleteMemberInput) => defaultApiClient.apiNamespaceSpaces.deleteMember(input),
+      }),
 
     createDiscussion: (input: SpacesCreateDiscussionInput) =>
       defaultApiClient.apiNamespaceSpaces.createDiscussion(input),
@@ -9096,6 +10082,10 @@ export default {
       useMutation<SpacesCreateDiscussionInput, SpacesCreateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.createDiscussion(input),
       ),
+    createDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesCreateDiscussionInput) => defaultApiClient.apiNamespaceSpaces.createDiscussion(input),
+      }),
 
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
@@ -9103,6 +10093,11 @@ export default {
       useMutation<SpacesUpdateTaskStatusesInput, SpacesUpdateTaskStatusesResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
       ),
+    updateTaskStatusesMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdateTaskStatusesInput) =>
+          defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
+      }),
 
     updateDiscussion: (input: SpacesUpdateDiscussionInput) =>
       defaultApiClient.apiNamespaceSpaces.updateDiscussion(input),
@@ -9110,12 +10105,24 @@ export default {
       useMutation<SpacesUpdateDiscussionInput, SpacesUpdateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateDiscussion(input),
       ),
+    updateDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: SpacesUpdateDiscussionInput) => defaultApiClient.apiNamespaceSpaces.updateDiscussion(input),
+      }),
   },
 
   tasks: {
     listTaskStatuses: (input: TasksListTaskStatusesInput) => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input),
     useListTaskStatuses: (input: TasksListTaskStatusesInput) =>
       useQuery<TasksListTaskStatusesResult>(() => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input)),
+    listTaskStatusesQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/list_task_statuses"),
+    listTaskStatusesQueryKey: (input: TasksListTaskStatusesInput) =>
+      buildApiQueryKey(defaultApiClient, "/tasks/list_task_statuses", input),
+    listTaskStatusesQueryOptions: (input: TasksListTaskStatusesInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list_task_statuses", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input),
+      }),
 
     listPotentialAssignees: (input: TasksListPotentialAssigneesInput) =>
       defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
@@ -9123,28 +10130,63 @@ export default {
       useQuery<TasksListPotentialAssigneesResult>(() =>
         defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
       ),
+    listPotentialAssigneesQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/tasks/list_potential_assignees"),
+    listPotentialAssigneesQueryKey: (input: TasksListPotentialAssigneesInput) =>
+      buildApiQueryKey(defaultApiClient, "/tasks/list_potential_assignees", input),
+    listPotentialAssigneesQueryOptions: (input: TasksListPotentialAssigneesInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list_potential_assignees", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
+      }),
 
     get: (input: TasksGetInput) => defaultApiClient.apiNamespaceTasks.get(input),
     useGet: (input: TasksGetInput) => useQuery<TasksGetResult>(() => defaultApiClient.apiNamespaceTasks.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/get"),
+    getQueryKey: (input: TasksGetInput) => buildApiQueryKey(defaultApiClient, "/tasks/get", input),
+    getQueryOptions: (input: TasksGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.get(input),
+      }),
 
     list: (input: TasksListInput) => defaultApiClient.apiNamespaceTasks.list(input),
     useList: (input: TasksListInput) => useQuery<TasksListResult>(() => defaultApiClient.apiNamespaceTasks.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/tasks/list"),
+    listQueryKey: (input: TasksListInput) => buildApiQueryKey(defaultApiClient, "/tasks/list", input),
+    listQueryOptions: (input: TasksListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.list(input),
+      }),
 
     updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
     useUpdateReminders: () =>
       useMutation<TasksUpdateRemindersInput, TasksUpdateRemindersResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateReminders(input),
       ),
+    updateRemindersMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
+      }),
 
     updateAssignee: (input: TasksUpdateAssigneeInput) => defaultApiClient.apiNamespaceTasks.updateAssignee(input),
     useUpdateAssignee: () =>
       useMutation<TasksUpdateAssigneeInput, TasksUpdateAssigneeResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateAssignee(input),
       ),
+    updateAssigneeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateAssigneeInput) => defaultApiClient.apiNamespaceTasks.updateAssignee(input),
+      }),
 
     create: (input: TasksCreateInput) => defaultApiClient.apiNamespaceTasks.create(input),
     useCreate: () =>
       useMutation<TasksCreateInput, TasksCreateResult>((input) => defaultApiClient.apiNamespaceTasks.create(input)),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksCreateInput) => defaultApiClient.apiNamespaceTasks.create(input),
+      }),
 
     updateMilestoneAndOrdering: (input: TasksUpdateMilestoneAndOrderingInput) =>
       defaultApiClient.apiNamespaceTasks.updateMilestoneAndOrdering(input),
@@ -9152,12 +10194,21 @@ export default {
       useMutation<TasksUpdateMilestoneAndOrderingInput, TasksUpdateMilestoneAndOrderingResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateMilestoneAndOrdering(input),
       ),
+    updateMilestoneAndOrderingMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateMilestoneAndOrderingInput) =>
+          defaultApiClient.apiNamespaceTasks.updateMilestoneAndOrdering(input),
+      }),
 
     updateMilestone: (input: TasksUpdateMilestoneInput) => defaultApiClient.apiNamespaceTasks.updateMilestone(input),
     useUpdateMilestone: () =>
       useMutation<TasksUpdateMilestoneInput, TasksUpdateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateMilestone(input),
       ),
+    updateMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateMilestoneInput) => defaultApiClient.apiNamespaceTasks.updateMilestone(input),
+      }),
 
     updateDescription: (input: TasksUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceTasks.updateDescription(input),
@@ -9165,32 +10216,56 @@ export default {
       useMutation<TasksUpdateDescriptionInput, TasksUpdateDescriptionResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateDescription(input),
       ),
+    updateDescriptionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateDescriptionInput) => defaultApiClient.apiNamespaceTasks.updateDescription(input),
+      }),
 
     delete: (input: TasksDeleteInput) => defaultApiClient.apiNamespaceTasks.delete(input),
     useDelete: () =>
       useMutation<TasksDeleteInput, TasksDeleteResult>((input) => defaultApiClient.apiNamespaceTasks.delete(input)),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksDeleteInput) => defaultApiClient.apiNamespaceTasks.delete(input),
+      }),
 
     updateStatus: (input: TasksUpdateStatusInput) => defaultApiClient.apiNamespaceTasks.updateStatus(input),
     useUpdateStatus: () =>
       useMutation<TasksUpdateStatusInput, TasksUpdateStatusResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateStatus(input),
       ),
+    updateStatusMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateStatusInput) => defaultApiClient.apiNamespaceTasks.updateStatus(input),
+      }),
 
     move: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
     useMove: () =>
       useMutation<TasksMoveInput, TasksMoveResult>((input) => defaultApiClient.apiNamespaceTasks.move(input)),
+    moveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
+      }),
 
     updateDueDate: (input: TasksUpdateDueDateInput) => defaultApiClient.apiNamespaceTasks.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<TasksUpdateDueDateInput, TasksUpdateDueDateResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateDueDate(input),
       ),
+    updateDueDateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateDueDateInput) => defaultApiClient.apiNamespaceTasks.updateDueDate(input),
+      }),
 
     updateName: (input: TasksUpdateNameInput) => defaultApiClient.apiNamespaceTasks.updateName(input),
     useUpdateName: () =>
       useMutation<TasksUpdateNameInput, TasksUpdateNameResult>((input) =>
         defaultApiClient.apiNamespaceTasks.updateName(input),
       ),
+    updateNameMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: TasksUpdateNameInput) => defaultApiClient.apiNamespaceTasks.updateName(input),
+      }),
   },
 
   project_templates: {
@@ -9200,10 +10275,26 @@ export default {
       useQuery<ProjectTemplatesGetDiscussionResult>(() =>
         defaultApiClient.apiNamespaceProjectTemplates.getDiscussion(input),
       ),
+    getDiscussionQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/project_templates/get_discussion"),
+    getDiscussionQueryKey: (input: ProjectTemplatesGetDiscussionInput) =>
+      buildApiQueryKey(defaultApiClient, "/project_templates/get_discussion", input),
+    getDiscussionQueryOptions: (input: ProjectTemplatesGetDiscussionInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/get_discussion", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.getDiscussion(input),
+      }),
 
     list: (input: ProjectTemplatesListInput) => defaultApiClient.apiNamespaceProjectTemplates.list(input),
     useList: (input: ProjectTemplatesListInput) =>
       useQuery<ProjectTemplatesListResult>(() => defaultApiClient.apiNamespaceProjectTemplates.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/project_templates/list"),
+    listQueryKey: (input: ProjectTemplatesListInput) =>
+      buildApiQueryKey(defaultApiClient, "/project_templates/list", input),
+    listQueryOptions: (input: ProjectTemplatesListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.list(input),
+      }),
 
     listComments: (input: ProjectTemplatesListCommentsInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
@@ -9211,10 +10302,26 @@ export default {
       useQuery<ProjectTemplatesListCommentsResult>(() =>
         defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
       ),
+    listCommentsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/project_templates/list_comments"),
+    listCommentsQueryKey: (input: ProjectTemplatesListCommentsInput) =>
+      buildApiQueryKey(defaultApiClient, "/project_templates/list_comments", input),
+    listCommentsQueryOptions: (input: ProjectTemplatesListCommentsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/list_comments", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
+      }),
 
     get: (input: ProjectTemplatesGetInput) => defaultApiClient.apiNamespaceProjectTemplates.get(input),
     useGet: (input: ProjectTemplatesGetInput) =>
       useQuery<ProjectTemplatesGetResult>(() => defaultApiClient.apiNamespaceProjectTemplates.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/project_templates/get"),
+    getQueryKey: (input: ProjectTemplatesGetInput) =>
+      buildApiQueryKey(defaultApiClient, "/project_templates/get", input),
+    getQueryOptions: (input: ProjectTemplatesGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.get(input),
+      }),
 
     createLink: (input: ProjectTemplatesCreateLinkInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createLink(input),
@@ -9222,6 +10329,11 @@ export default {
       useMutation<ProjectTemplatesCreateLinkInput, ProjectTemplatesCreateLinkResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createLink(input),
       ),
+    createLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateLinkInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createLink(input),
+      }),
 
     updateComment: (input: ProjectTemplatesUpdateCommentInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateComment(input),
@@ -9229,6 +10341,11 @@ export default {
       useMutation<ProjectTemplatesUpdateCommentInput, ProjectTemplatesUpdateCommentResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateComment(input),
       ),
+    updateCommentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateCommentInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateComment(input),
+      }),
 
     updatePerson: (input: ProjectTemplatesUpdatePersonInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
@@ -9236,6 +10353,11 @@ export default {
       useMutation<ProjectTemplatesUpdatePersonInput, ProjectTemplatesUpdatePersonResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
       ),
+    updatePersonMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdatePersonInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updatePerson(input),
+      }),
 
     updateDiscussion: (input: ProjectTemplatesUpdateDiscussionInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateDiscussion(input),
@@ -9243,12 +10365,21 @@ export default {
       useMutation<ProjectTemplatesUpdateDiscussionInput, ProjectTemplatesUpdateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateDiscussion(input),
       ),
+    updateDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateDiscussionInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateDiscussion(input),
+      }),
 
     create: (input: ProjectTemplatesCreateInput) => defaultApiClient.apiNamespaceProjectTemplates.create(input),
     useCreate: () =>
       useMutation<ProjectTemplatesCreateInput, ProjectTemplatesCreateResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateInput) => defaultApiClient.apiNamespaceProjectTemplates.create(input),
+      }),
 
     createProject: (input: ProjectTemplatesCreateProjectInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
@@ -9256,6 +10387,11 @@ export default {
       useMutation<ProjectTemplatesCreateProjectInput, ProjectTemplatesCreateProjectResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
       ),
+    createProjectMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateProjectInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createProject(input),
+      }),
 
     createFolder: (input: ProjectTemplatesCreateFolderInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createFolder(input),
@@ -9263,6 +10399,11 @@ export default {
       useMutation<ProjectTemplatesCreateFolderInput, ProjectTemplatesCreateFolderResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createFolder(input),
       ),
+    createFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateFolderInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createFolder(input),
+      }),
 
     createTask: (input: ProjectTemplatesCreateTaskInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
@@ -9270,6 +10411,11 @@ export default {
       useMutation<ProjectTemplatesCreateTaskInput, ProjectTemplatesCreateTaskResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
       ),
+    createTaskMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateTaskInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createTask(input),
+      }),
 
     createFiles: (input: ProjectTemplatesCreateFilesInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createFiles(input),
@@ -9277,12 +10423,22 @@ export default {
       useMutation<ProjectTemplatesCreateFilesInput, ProjectTemplatesCreateFilesResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createFiles(input),
       ),
+    createFilesMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateFilesInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createFiles(input),
+      }),
 
     archive: (input: ProjectTemplatesArchiveInput) => defaultApiClient.apiNamespaceProjectTemplates.archive(input),
     useArchive: () =>
       useMutation<ProjectTemplatesArchiveInput, ProjectTemplatesArchiveResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.archive(input),
       ),
+    archiveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesArchiveInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.archive(input),
+      }),
 
     deleteMilestone: (input: ProjectTemplatesDeleteMilestoneInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
@@ -9290,12 +10446,21 @@ export default {
       useMutation<ProjectTemplatesDeleteMilestoneInput, ProjectTemplatesDeleteMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
       ),
+    deleteMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDeleteMilestoneInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.deleteMilestone(input),
+      }),
 
     delete: (input: ProjectTemplatesDeleteInput) => defaultApiClient.apiNamespaceProjectTemplates.delete(input),
     useDelete: () =>
       useMutation<ProjectTemplatesDeleteInput, ProjectTemplatesDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.delete(input),
       ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDeleteInput) => defaultApiClient.apiNamespaceProjectTemplates.delete(input),
+      }),
 
     moveResource: (input: ProjectTemplatesMoveResourceInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.moveResource(input),
@@ -9303,6 +10468,11 @@ export default {
       useMutation<ProjectTemplatesMoveResourceInput, ProjectTemplatesMoveResourceResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.moveResource(input),
       ),
+    moveResourceMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesMoveResourceInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.moveResource(input),
+      }),
 
     updateFile: (input: ProjectTemplatesUpdateFileInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateFile(input),
@@ -9310,6 +10480,11 @@ export default {
       useMutation<ProjectTemplatesUpdateFileInput, ProjectTemplatesUpdateFileResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateFile(input),
       ),
+    updateFileMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateFileInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateFile(input),
+      }),
 
     createMilestone: (input: ProjectTemplatesCreateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
@@ -9317,6 +10492,11 @@ export default {
       useMutation<ProjectTemplatesCreateMilestoneInput, ProjectTemplatesCreateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
       ),
+    createMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateMilestoneInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createMilestone(input),
+      }),
 
     duplicate: (input: ProjectTemplatesDuplicateInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.duplicate(input),
@@ -9324,6 +10504,11 @@ export default {
       useMutation<ProjectTemplatesDuplicateInput, ProjectTemplatesDuplicateResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.duplicate(input),
       ),
+    duplicateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDuplicateInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.duplicate(input),
+      }),
 
     deleteResource: (input: ProjectTemplatesDeleteResourceInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.deleteResource(input),
@@ -9331,6 +10516,11 @@ export default {
       useMutation<ProjectTemplatesDeleteResourceInput, ProjectTemplatesDeleteResourceResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteResource(input),
       ),
+    deleteResourceMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDeleteResourceInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.deleteResource(input),
+      }),
 
     updateFolder: (input: ProjectTemplatesUpdateFolderInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateFolder(input),
@@ -9338,6 +10528,11 @@ export default {
       useMutation<ProjectTemplatesUpdateFolderInput, ProjectTemplatesUpdateFolderResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateFolder(input),
       ),
+    updateFolderMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateFolderInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateFolder(input),
+      }),
 
     createDiscussion: (input: ProjectTemplatesCreateDiscussionInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createDiscussion(input),
@@ -9345,6 +10540,11 @@ export default {
       useMutation<ProjectTemplatesCreateDiscussionInput, ProjectTemplatesCreateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createDiscussion(input),
       ),
+    createDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateDiscussionInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createDiscussion(input),
+      }),
 
     updateMilestone: (input: ProjectTemplatesUpdateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
@@ -9352,12 +10552,22 @@ export default {
       useMutation<ProjectTemplatesUpdateMilestoneInput, ProjectTemplatesUpdateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
       ),
+    updateMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateMilestoneInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateMilestone(input),
+      }),
 
     restore: (input: ProjectTemplatesRestoreInput) => defaultApiClient.apiNamespaceProjectTemplates.restore(input),
     useRestore: () =>
       useMutation<ProjectTemplatesRestoreInput, ProjectTemplatesRestoreResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.restore(input),
       ),
+    restoreMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesRestoreInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.restore(input),
+      }),
 
     createComment: (input: ProjectTemplatesCreateCommentInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createComment(input),
@@ -9365,6 +10575,11 @@ export default {
       useMutation<ProjectTemplatesCreateCommentInput, ProjectTemplatesCreateCommentResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createComment(input),
       ),
+    createCommentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateCommentInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createComment(input),
+      }),
 
     createPerson: (input: ProjectTemplatesCreatePersonInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createPerson(input),
@@ -9372,12 +10587,21 @@ export default {
       useMutation<ProjectTemplatesCreatePersonInput, ProjectTemplatesCreatePersonResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createPerson(input),
       ),
+    createPersonMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreatePersonInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createPerson(input),
+      }),
 
     update: (input: ProjectTemplatesUpdateInput) => defaultApiClient.apiNamespaceProjectTemplates.update(input),
     useUpdate: () =>
       useMutation<ProjectTemplatesUpdateInput, ProjectTemplatesUpdateResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.update(input),
       ),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateInput) => defaultApiClient.apiNamespaceProjectTemplates.update(input),
+      }),
 
     updateDocument: (input: ProjectTemplatesUpdateDocumentInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateDocument(input),
@@ -9385,6 +10609,11 @@ export default {
       useMutation<ProjectTemplatesUpdateDocumentInput, ProjectTemplatesUpdateDocumentResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateDocument(input),
       ),
+    updateDocumentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateDocumentInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateDocument(input),
+      }),
 
     createFromProject: (input: ProjectTemplatesCreateFromProjectInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
@@ -9392,6 +10621,11 @@ export default {
       useMutation<ProjectTemplatesCreateFromProjectInput, ProjectTemplatesCreateFromProjectResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
       ),
+    createFromProjectMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateFromProjectInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createFromProject(input),
+      }),
 
     deletePerson: (input: ProjectTemplatesDeletePersonInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.deletePerson(input),
@@ -9399,6 +10633,11 @@ export default {
       useMutation<ProjectTemplatesDeletePersonInput, ProjectTemplatesDeletePersonResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deletePerson(input),
       ),
+    deletePersonMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDeletePersonInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.deletePerson(input),
+      }),
 
     updateTask: (input: ProjectTemplatesUpdateTaskInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateTask(input),
@@ -9406,6 +10645,11 @@ export default {
       useMutation<ProjectTemplatesUpdateTaskInput, ProjectTemplatesUpdateTaskResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateTask(input),
       ),
+    updateTaskMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateTaskInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateTask(input),
+      }),
 
     deleteTask: (input: ProjectTemplatesDeleteTaskInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
@@ -9413,6 +10657,11 @@ export default {
       useMutation<ProjectTemplatesDeleteTaskInput, ProjectTemplatesDeleteTaskResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
       ),
+    deleteTaskMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDeleteTaskInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.deleteTask(input),
+      }),
 
     createDocument: (input: ProjectTemplatesCreateDocumentInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.createDocument(input),
@@ -9420,6 +10669,11 @@ export default {
       useMutation<ProjectTemplatesCreateDocumentInput, ProjectTemplatesCreateDocumentResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.createDocument(input),
       ),
+    createDocumentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesCreateDocumentInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.createDocument(input),
+      }),
 
     deleteComment: (input: ProjectTemplatesDeleteCommentInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.deleteComment(input),
@@ -9427,6 +10681,11 @@ export default {
       useMutation<ProjectTemplatesDeleteCommentInput, ProjectTemplatesDeleteCommentResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.deleteComment(input),
       ),
+    deleteCommentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesDeleteCommentInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.deleteComment(input),
+      }),
 
     updateTaskAssignees: (input: ProjectTemplatesUpdateTaskAssigneesInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
@@ -9434,6 +10693,11 @@ export default {
       useMutation<ProjectTemplatesUpdateTaskAssigneesInput, ProjectTemplatesUpdateTaskAssigneesResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
       ),
+    updateTaskAssigneesMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateTaskAssigneesInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateTaskAssignees(input),
+      }),
 
     updateLink: (input: ProjectTemplatesUpdateLinkInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateLink(input),
@@ -9441,6 +10705,11 @@ export default {
       useMutation<ProjectTemplatesUpdateLinkInput, ProjectTemplatesUpdateLinkResult>((input) =>
         defaultApiClient.apiNamespaceProjectTemplates.updateLink(input),
       ),
+    updateLinkMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateLinkInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateLink(input),
+      }),
 
     updateMilestoneAndOrdering: (input: ProjectTemplatesUpdateMilestoneAndOrderingInput) =>
       defaultApiClient.apiNamespaceProjectTemplates.updateMilestoneAndOrdering(input),
@@ -9448,6 +10717,11 @@ export default {
       useMutation<ProjectTemplatesUpdateMilestoneAndOrderingInput, ProjectTemplatesUpdateMilestoneAndOrderingResult>(
         (input) => defaultApiClient.apiNamespaceProjectTemplates.updateMilestoneAndOrdering(input),
       ),
+    updateMilestoneAndOrderingMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectTemplatesUpdateMilestoneAndOrderingInput) =>
+          defaultApiClient.apiNamespaceProjectTemplates.updateMilestoneAndOrdering(input),
+      }),
   },
 
   projects: {
@@ -9457,71 +10731,197 @@ export default {
       useQuery<ProjectsSearchPotentialContributorsResult>(() =>
         defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
       ),
+    searchPotentialContributorsQueryKeyPrefix: () =>
+      buildApiQueryKeyPrefix(defaultApiClient, "/projects/search_potential_contributors"),
+    searchPotentialContributorsQueryKey: (input: ProjectsSearchPotentialContributorsInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/search_potential_contributors", input),
+    searchPotentialContributorsQueryOptions: (input: ProjectsSearchPotentialContributorsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/search_potential_contributors", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
+      }),
 
     countChildren: (input: ProjectsCountChildrenInput) => defaultApiClient.apiNamespaceProjects.countChildren(input),
     useCountChildren: (input: ProjectsCountChildrenInput) =>
       useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
+    countChildrenQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/count_children"),
+    countChildrenQueryKey: (input: ProjectsCountChildrenInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/count_children", input),
+    countChildrenQueryOptions: (input: ProjectsCountChildrenInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/count_children", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.countChildren(input),
+      }),
 
     list: (input: ProjectsListInput) => defaultApiClient.apiNamespaceProjects.list(input),
     useList: (input: ProjectsListInput) =>
       useQuery<ProjectsListResult>(() => defaultApiClient.apiNamespaceProjects.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/list"),
+    listQueryKey: (input: ProjectsListInput) => buildApiQueryKey(defaultApiClient, "/projects/list", input),
+    listQueryOptions: (input: ProjectsListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.list(input),
+      }),
 
     listMilestoneTasks: (input: ProjectsListMilestoneTasksInput) =>
       defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input),
     useListMilestoneTasks: (input: ProjectsListMilestoneTasksInput) =>
       useQuery<ProjectsListMilestoneTasksResult>(() => defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input)),
+    listMilestoneTasksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/list_milestone_tasks"),
+    listMilestoneTasksQueryKey: (input: ProjectsListMilestoneTasksInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/list_milestone_tasks", input),
+    listMilestoneTasksQueryOptions: (input: ProjectsListMilestoneTasksInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_milestone_tasks", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input),
+      }),
 
     getMilestone: (input: ProjectsGetMilestoneInput) => defaultApiClient.apiNamespaceProjects.getMilestone(input),
     useGetMilestone: (input: ProjectsGetMilestoneInput) =>
       useQuery<ProjectsGetMilestoneResult>(() => defaultApiClient.apiNamespaceProjects.getMilestone(input)),
+    getMilestoneQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/get_milestone"),
+    getMilestoneQueryKey: (input: ProjectsGetMilestoneInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/get_milestone", input),
+    getMilestoneQueryOptions: (input: ProjectsGetMilestoneInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_milestone", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getMilestone(input),
+      }),
 
     searchParentGoal: (input: ProjectsSearchParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
     useSearchParentGoal: (input: ProjectsSearchParentGoalInput) =>
       useQuery<ProjectsSearchParentGoalResult>(() => defaultApiClient.apiNamespaceProjects.searchParentGoal(input)),
+    searchParentGoalQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/search_parent_goal"),
+    searchParentGoalQueryKey: (input: ProjectsSearchParentGoalInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/search_parent_goal", input),
+    searchParentGoalQueryOptions: (input: ProjectsSearchParentGoalInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/search_parent_goal", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
+      }),
 
     listContributors: (input: ProjectsListContributorsInput) =>
       defaultApiClient.apiNamespaceProjects.listContributors(input),
     useListContributors: (input: ProjectsListContributorsInput) =>
       useQuery<ProjectsListContributorsResult>(() => defaultApiClient.apiNamespaceProjects.listContributors(input)),
+    listContributorsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/list_contributors"),
+    listContributorsQueryKey: (input: ProjectsListContributorsInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/list_contributors", input),
+    listContributorsQueryOptions: (input: ProjectsListContributorsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_contributors", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listContributors(input),
+      }),
 
     get: (input: ProjectsGetInput) => defaultApiClient.apiNamespaceProjects.get(input),
     useGet: (input: ProjectsGetInput) =>
       useQuery<ProjectsGetResult>(() => defaultApiClient.apiNamespaceProjects.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/get"),
+    getQueryKey: (input: ProjectsGetInput) => buildApiQueryKey(defaultApiClient, "/projects/get", input),
+    getQueryOptions: (input: ProjectsGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.get(input),
+      }),
 
     getContributor: (input: ProjectsGetContributorInput) => defaultApiClient.apiNamespaceProjects.getContributor(input),
     useGetContributor: (input: ProjectsGetContributorInput) =>
       useQuery<ProjectsGetContributorResult>(() => defaultApiClient.apiNamespaceProjects.getContributor(input)),
+    getContributorQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/get_contributor"),
+    getContributorQueryKey: (input: ProjectsGetContributorInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/get_contributor", input),
+    getContributorQueryOptions: (input: ProjectsGetContributorInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_contributor", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getContributor(input),
+      }),
 
     getDiscussion: (input: ProjectsGetDiscussionInput) => defaultApiClient.apiNamespaceProjects.getDiscussion(input),
     useGetDiscussion: (input: ProjectsGetDiscussionInput) =>
       useQuery<ProjectsGetDiscussionResult>(() => defaultApiClient.apiNamespaceProjects.getDiscussion(input)),
+    getDiscussionQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/get_discussion"),
+    getDiscussionQueryKey: (input: ProjectsGetDiscussionInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/get_discussion", input),
+    getDiscussionQueryOptions: (input: ProjectsGetDiscussionInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_discussion", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getDiscussion(input),
+      }),
 
     listCheckIns: (input: ProjectsListCheckInsInput) => defaultApiClient.apiNamespaceProjects.listCheckIns(input),
     useListCheckIns: (input: ProjectsListCheckInsInput) =>
       useQuery<ProjectsListCheckInsResult>(() => defaultApiClient.apiNamespaceProjects.listCheckIns(input)),
+    listCheckInsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/list_check_ins"),
+    listCheckInsQueryKey: (input: ProjectsListCheckInsInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/list_check_ins", input),
+    listCheckInsQueryOptions: (input: ProjectsListCheckInsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_check_ins", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listCheckIns(input),
+      }),
 
     listMilestones: (input: ProjectsListMilestonesInput) => defaultApiClient.apiNamespaceProjects.listMilestones(input),
     useListMilestones: (input: ProjectsListMilestonesInput) =>
       useQuery<ProjectsListMilestonesResult>(() => defaultApiClient.apiNamespaceProjects.listMilestones(input)),
+    listMilestonesQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/list_milestones"),
+    listMilestonesQueryKey: (input: ProjectsListMilestonesInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/list_milestones", input),
+    listMilestonesQueryOptions: (input: ProjectsListMilestonesInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_milestones", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listMilestones(input),
+      }),
 
     getRetrospective: (input: ProjectsGetRetrospectiveInput) =>
       defaultApiClient.apiNamespaceProjects.getRetrospective(input),
     useGetRetrospective: (input: ProjectsGetRetrospectiveInput) =>
       useQuery<ProjectsGetRetrospectiveResult>(() => defaultApiClient.apiNamespaceProjects.getRetrospective(input)),
+    getRetrospectiveQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/get_retrospective"),
+    getRetrospectiveQueryKey: (input: ProjectsGetRetrospectiveInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/get_retrospective", input),
+    getRetrospectiveQueryOptions: (input: ProjectsGetRetrospectiveInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_retrospective", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getRetrospective(input),
+      }),
 
     listDiscussions: (input: ProjectsListDiscussionsInput) =>
       defaultApiClient.apiNamespaceProjects.listDiscussions(input),
     useListDiscussions: (input: ProjectsListDiscussionsInput) =>
       useQuery<ProjectsListDiscussionsResult>(() => defaultApiClient.apiNamespaceProjects.listDiscussions(input)),
+    listDiscussionsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/list_discussions"),
+    listDiscussionsQueryKey: (input: ProjectsListDiscussionsInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/list_discussions", input),
+    listDiscussionsQueryOptions: (input: ProjectsListDiscussionsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_discussions", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listDiscussions(input),
+      }),
 
     search: (input: ProjectsSearchInput) => defaultApiClient.apiNamespaceProjects.search(input),
     useSearch: (input: ProjectsSearchInput) =>
       useQuery<ProjectsSearchResult>(() => defaultApiClient.apiNamespaceProjects.search(input)),
+    searchQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/search"),
+    searchQueryKey: (input: ProjectsSearchInput) => buildApiQueryKey(defaultApiClient, "/projects/search", input),
+    searchQueryOptions: (input: ProjectsSearchInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.search(input),
+      }),
 
     getCheckIn: (input: ProjectsGetCheckInInput) => defaultApiClient.apiNamespaceProjects.getCheckIn(input),
     useGetCheckIn: (input: ProjectsGetCheckInInput) =>
       useQuery<ProjectsGetCheckInResult>(() => defaultApiClient.apiNamespaceProjects.getCheckIn(input)),
+    getCheckInQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/projects/get_check_in"),
+    getCheckInQueryKey: (input: ProjectsGetCheckInInput) =>
+      buildApiQueryKey(defaultApiClient, "/projects/get_check_in", input),
+    getCheckInQueryOptions: (input: ProjectsGetCheckInInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_check_in", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getCheckIn(input),
+      }),
 
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
@@ -9529,12 +10929,21 @@ export default {
       useMutation<ProjectsUpdateParentGoalInput, ProjectsUpdateParentGoalResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
       ),
+    updateParentGoalMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateParentGoalInput) =>
+          defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
+      }),
 
     updateName: (input: ProjectsUpdateNameInput) => defaultApiClient.apiNamespaceProjects.updateName(input),
     useUpdateName: () =>
       useMutation<ProjectsUpdateNameInput, ProjectsUpdateNameResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateName(input),
       ),
+    updateNameMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateNameInput) => defaultApiClient.apiNamespaceProjects.updateName(input),
+      }),
 
     createMilestone: (input: ProjectsCreateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjects.createMilestone(input),
@@ -9542,12 +10951,21 @@ export default {
       useMutation<ProjectsCreateMilestoneInput, ProjectsCreateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createMilestone(input),
       ),
+    createMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateMilestoneInput) =>
+          defaultApiClient.apiNamespaceProjects.createMilestone(input),
+      }),
 
     pause: (input: ProjectsPauseInput) => defaultApiClient.apiNamespaceProjects.pause(input),
     usePause: () =>
       useMutation<ProjectsPauseInput, ProjectsPauseResult>((input) =>
         defaultApiClient.apiNamespaceProjects.pause(input),
       ),
+    pauseMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsPauseInput) => defaultApiClient.apiNamespaceProjects.pause(input),
+      }),
 
     updateDescription: (input: ProjectsUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceProjects.updateDescription(input),
@@ -9555,6 +10973,11 @@ export default {
       useMutation<ProjectsUpdateDescriptionInput, ProjectsUpdateDescriptionResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateDescription(input),
       ),
+    updateDescriptionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateDescriptionInput) =>
+          defaultApiClient.apiNamespaceProjects.updateDescription(input),
+      }),
 
     createContributors: (input: ProjectsCreateContributorsInput) =>
       defaultApiClient.apiNamespaceProjects.createContributors(input),
@@ -9562,6 +10985,11 @@ export default {
       useMutation<ProjectsCreateContributorsInput, ProjectsCreateContributorsResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createContributors(input),
       ),
+    createContributorsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateContributorsInput) =>
+          defaultApiClient.apiNamespaceProjects.createContributors(input),
+      }),
 
     deleteContributor: (input: ProjectsDeleteContributorInput) =>
       defaultApiClient.apiNamespaceProjects.deleteContributor(input),
@@ -9569,18 +10997,31 @@ export default {
       useMutation<ProjectsDeleteContributorInput, ProjectsDeleteContributorResult>((input) =>
         defaultApiClient.apiNamespaceProjects.deleteContributor(input),
       ),
+    deleteContributorMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsDeleteContributorInput) =>
+          defaultApiClient.apiNamespaceProjects.deleteContributor(input),
+      }),
 
     updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateDueDate(input),
       ),
+    updateDueDateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
+      }),
 
     createCheckIn: (input: ProjectsCreateCheckInInput) => defaultApiClient.apiNamespaceProjects.createCheckIn(input),
     useCreateCheckIn: () =>
       useMutation<ProjectsCreateCheckInInput, ProjectsCreateCheckInResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createCheckIn(input),
       ),
+    createCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateCheckInInput) => defaultApiClient.apiNamespaceProjects.createCheckIn(input),
+      }),
 
     createDiscussion: (input: ProjectsCreateDiscussionInput) =>
       defaultApiClient.apiNamespaceProjects.createDiscussion(input),
@@ -9588,6 +11029,11 @@ export default {
       useMutation<ProjectsCreateDiscussionInput, ProjectsCreateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createDiscussion(input),
       ),
+    createDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateDiscussionInput) =>
+          defaultApiClient.apiNamespaceProjects.createDiscussion(input),
+      }),
 
     updateRetrospective: (input: ProjectsUpdateRetrospectiveInput) =>
       defaultApiClient.apiNamespaceProjects.updateRetrospective(input),
@@ -9595,18 +11041,31 @@ export default {
       useMutation<ProjectsUpdateRetrospectiveInput, ProjectsUpdateRetrospectiveResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateRetrospective(input),
       ),
+    updateRetrospectiveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateRetrospectiveInput) =>
+          defaultApiClient.apiNamespaceProjects.updateRetrospective(input),
+      }),
 
     deleteCheckIn: (input: ProjectsDeleteCheckInInput) => defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
     useDeleteCheckIn: () =>
       useMutation<ProjectsDeleteCheckInInput, ProjectsDeleteCheckInResult>((input) =>
         defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
       ),
+    deleteCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsDeleteCheckInInput) => defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
+      }),
 
     moveToSpace: (input: ProjectsMoveToSpaceInput) => defaultApiClient.apiNamespaceProjects.moveToSpace(input),
     useMoveToSpace: () =>
       useMutation<ProjectsMoveToSpaceInput, ProjectsMoveToSpaceResult>((input) =>
         defaultApiClient.apiNamespaceProjects.moveToSpace(input),
       ),
+    moveToSpaceMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsMoveToSpaceInput) => defaultApiClient.apiNamespaceProjects.moveToSpace(input),
+      }),
 
     updateMilestoneOrdering: (input: ProjectsUpdateMilestoneOrderingInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestoneOrdering(input),
@@ -9614,12 +11073,21 @@ export default {
       useMutation<ProjectsUpdateMilestoneOrderingInput, ProjectsUpdateMilestoneOrderingResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneOrdering(input),
       ),
+    updateMilestoneOrderingMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateMilestoneOrderingInput) =>
+          defaultApiClient.apiNamespaceProjects.updateMilestoneOrdering(input),
+      }),
 
     close: (input: ProjectsCloseInput) => defaultApiClient.apiNamespaceProjects.close(input),
     useClose: () =>
       useMutation<ProjectsCloseInput, ProjectsCloseResult>((input) =>
         defaultApiClient.apiNamespaceProjects.close(input),
       ),
+    closeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCloseInput) => defaultApiClient.apiNamespaceProjects.close(input),
+      }),
 
     acknowledgeRetrospective: (input: ProjectsAcknowledgeRetrospectiveInput) =>
       defaultApiClient.apiNamespaceProjects.acknowledgeRetrospective(input),
@@ -9627,6 +11095,11 @@ export default {
       useMutation<ProjectsAcknowledgeRetrospectiveInput, ProjectsAcknowledgeRetrospectiveResult>((input) =>
         defaultApiClient.apiNamespaceProjects.acknowledgeRetrospective(input),
       ),
+    acknowledgeRetrospectiveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsAcknowledgeRetrospectiveInput) =>
+          defaultApiClient.apiNamespaceProjects.acknowledgeRetrospective(input),
+      }),
 
     updateContributor: (input: ProjectsUpdateContributorInput) =>
       defaultApiClient.apiNamespaceProjects.updateContributor(input),
@@ -9634,6 +11107,11 @@ export default {
       useMutation<ProjectsUpdateContributorInput, ProjectsUpdateContributorResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateContributor(input),
       ),
+    updateContributorMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateContributorInput) =>
+          defaultApiClient.apiNamespaceProjects.updateContributor(input),
+      }),
 
     updatePermissions: (input: ProjectsUpdatePermissionsInput) =>
       defaultApiClient.apiNamespaceProjects.updatePermissions(input),
@@ -9641,6 +11119,11 @@ export default {
       useMutation<ProjectsUpdatePermissionsInput, ProjectsUpdatePermissionsResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updatePermissions(input),
       ),
+    updatePermissionsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdatePermissionsInput) =>
+          defaultApiClient.apiNamespaceProjects.updatePermissions(input),
+      }),
 
     updateMilestoneDueDate: (input: ProjectsUpdateMilestoneDueDateInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestoneDueDate(input),
@@ -9648,6 +11131,11 @@ export default {
       useMutation<ProjectsUpdateMilestoneDueDateInput, ProjectsUpdateMilestoneDueDateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneDueDate(input),
       ),
+    updateMilestoneDueDateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateMilestoneDueDateInput) =>
+          defaultApiClient.apiNamespaceProjects.updateMilestoneDueDate(input),
+      }),
 
     updateStartDate: (input: ProjectsUpdateStartDateInput) =>
       defaultApiClient.apiNamespaceProjects.updateStartDate(input),
@@ -9655,6 +11143,11 @@ export default {
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateStartDate(input),
       ),
+    updateStartDateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateStartDateInput) =>
+          defaultApiClient.apiNamespaceProjects.updateStartDate(input),
+      }),
 
     updateMilestoneDescription: (input: ProjectsUpdateMilestoneDescriptionInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestoneDescription(input),
@@ -9662,24 +11155,41 @@ export default {
       useMutation<ProjectsUpdateMilestoneDescriptionInput, ProjectsUpdateMilestoneDescriptionResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneDescription(input),
       ),
+    updateMilestoneDescriptionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateMilestoneDescriptionInput) =>
+          defaultApiClient.apiNamespaceProjects.updateMilestoneDescription(input),
+      }),
 
     resume: (input: ProjectsResumeInput) => defaultApiClient.apiNamespaceProjects.resume(input),
     useResume: () =>
       useMutation<ProjectsResumeInput, ProjectsResumeResult>((input) =>
         defaultApiClient.apiNamespaceProjects.resume(input),
       ),
+    resumeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsResumeInput) => defaultApiClient.apiNamespaceProjects.resume(input),
+      }),
 
     updateKanban: (input: ProjectsUpdateKanbanInput) => defaultApiClient.apiNamespaceProjects.updateKanban(input),
     useUpdateKanban: () =>
       useMutation<ProjectsUpdateKanbanInput, ProjectsUpdateKanbanResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateKanban(input),
       ),
+    updateKanbanMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateKanbanInput) => defaultApiClient.apiNamespaceProjects.updateKanban(input),
+      }),
 
     create: (input: ProjectsCreateInput) => defaultApiClient.apiNamespaceProjects.create(input),
     useCreate: () =>
       useMutation<ProjectsCreateInput, ProjectsCreateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateInput) => defaultApiClient.apiNamespaceProjects.create(input),
+      }),
 
     createMilestoneComment: (input: ProjectsCreateMilestoneCommentInput) =>
       defaultApiClient.apiNamespaceProjects.createMilestoneComment(input),
@@ -9687,6 +11197,11 @@ export default {
       useMutation<ProjectsCreateMilestoneCommentInput, ProjectsCreateMilestoneCommentResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createMilestoneComment(input),
       ),
+    createMilestoneCommentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateMilestoneCommentInput) =>
+          defaultApiClient.apiNamespaceProjects.createMilestoneComment(input),
+      }),
 
     updateMilestoneTitle: (input: ProjectsUpdateMilestoneTitleInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestoneTitle(input),
@@ -9694,12 +11209,21 @@ export default {
       useMutation<ProjectsUpdateMilestoneTitleInput, ProjectsUpdateMilestoneTitleResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneTitle(input),
       ),
+    updateMilestoneTitleMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateMilestoneTitleInput) =>
+          defaultApiClient.apiNamespaceProjects.updateMilestoneTitle(input),
+      }),
 
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>
       useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateReviewer(input),
       ),
+    updateReviewerMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
+      }),
 
     updateTaskStatuses: (input: ProjectsUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceProjects.updateTaskStatuses(input),
@@ -9707,6 +11231,11 @@ export default {
       useMutation<ProjectsUpdateTaskStatusesInput, ProjectsUpdateTaskStatusesResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateTaskStatuses(input),
       ),
+    updateTaskStatusesMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateTaskStatusesInput) =>
+          defaultApiClient.apiNamespaceProjects.updateTaskStatuses(input),
+      }),
 
     updateMilestone: (input: ProjectsUpdateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestone(input),
@@ -9714,12 +11243,21 @@ export default {
       useMutation<ProjectsUpdateMilestoneInput, ProjectsUpdateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestone(input),
       ),
+    updateMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateMilestoneInput) =>
+          defaultApiClient.apiNamespaceProjects.updateMilestone(input),
+      }),
 
     updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
     useUpdateChampion: () =>
       useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateChampion(input),
       ),
+    updateChampionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
+      }),
 
     acknowledgeCheckIn: (input: ProjectsAcknowledgeCheckInInput) =>
       defaultApiClient.apiNamespaceProjects.acknowledgeCheckIn(input),
@@ -9727,12 +11265,21 @@ export default {
       useMutation<ProjectsAcknowledgeCheckInInput, ProjectsAcknowledgeCheckInResult>((input) =>
         defaultApiClient.apiNamespaceProjects.acknowledgeCheckIn(input),
       ),
+    acknowledgeCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsAcknowledgeCheckInInput) =>
+          defaultApiClient.apiNamespaceProjects.acknowledgeCheckIn(input),
+      }),
 
     delete: (input: ProjectsDeleteInput) => defaultApiClient.apiNamespaceProjects.delete(input),
     useDelete: () =>
       useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjects.delete(input),
       ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsDeleteInput) => defaultApiClient.apiNamespaceProjects.delete(input),
+      }),
 
     deleteMilestone: (input: ProjectsDeleteMilestoneInput) =>
       defaultApiClient.apiNamespaceProjects.deleteMilestone(input),
@@ -9740,6 +11287,11 @@ export default {
       useMutation<ProjectsDeleteMilestoneInput, ProjectsDeleteMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjects.deleteMilestone(input),
       ),
+    deleteMilestoneMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsDeleteMilestoneInput) =>
+          defaultApiClient.apiNamespaceProjects.deleteMilestone(input),
+      }),
 
     updateDiscussion: (input: ProjectsUpdateDiscussionInput) =>
       defaultApiClient.apiNamespaceProjects.updateDiscussion(input),
@@ -9747,12 +11299,21 @@ export default {
       useMutation<ProjectsUpdateDiscussionInput, ProjectsUpdateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateDiscussion(input),
       ),
+    updateDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateDiscussionInput) =>
+          defaultApiClient.apiNamespaceProjects.updateDiscussion(input),
+      }),
 
     updateCheckIn: (input: ProjectsUpdateCheckInInput) => defaultApiClient.apiNamespaceProjects.updateCheckIn(input),
     useUpdateCheckIn: () =>
       useMutation<ProjectsUpdateCheckInInput, ProjectsUpdateCheckInResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateCheckIn(input),
       ),
+    updateCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateCheckInInput) => defaultApiClient.apiNamespaceProjects.updateCheckIn(input),
+      }),
 
     updateMilestoneKanban: (input: ProjectsUpdateMilestoneKanbanInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
@@ -9760,6 +11321,11 @@ export default {
       useMutation<ProjectsUpdateMilestoneKanbanInput, ProjectsUpdateMilestoneKanbanResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
       ),
+    updateMilestoneKanbanMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateMilestoneKanbanInput) =>
+          defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
+      }),
 
     updateTasksView: (input: ProjectsUpdateTasksViewInput) =>
       defaultApiClient.apiNamespaceProjects.updateTasksView(input),
@@ -9767,6 +11333,11 @@ export default {
       useMutation<ProjectsUpdateTasksViewInput, ProjectsUpdateTasksViewResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateTasksView(input),
       ),
+    updateTasksViewMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsUpdateTasksViewInput) =>
+          defaultApiClient.apiNamespaceProjects.updateTasksView(input),
+      }),
 
     createContributor: (input: ProjectsCreateContributorInput) =>
       defaultApiClient.apiNamespaceProjects.createContributor(input),
@@ -9774,6 +11345,11 @@ export default {
       useMutation<ProjectsCreateContributorInput, ProjectsCreateContributorResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createContributor(input),
       ),
+    createContributorMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ProjectsCreateContributorInput) =>
+          defaultApiClient.apiNamespaceProjects.createContributor(input),
+      }),
   },
 
   goals: {
@@ -9781,42 +11357,116 @@ export default {
       defaultApiClient.apiNamespaceGoals.listAccessMembers(input),
     useListAccessMembers: (input: GoalsListAccessMembersInput) =>
       useQuery<GoalsListAccessMembersResult>(() => defaultApiClient.apiNamespaceGoals.listAccessMembers(input)),
+    listAccessMembersQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/list_access_members"),
+    listAccessMembersQueryKey: (input: GoalsListAccessMembersInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/list_access_members", input),
+    listAccessMembersQueryOptions: (input: GoalsListAccessMembersInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_access_members", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listAccessMembers(input),
+      }),
 
     getCheckIn: (input: GoalsGetCheckInInput) => defaultApiClient.apiNamespaceGoals.getCheckIn(input),
     useGetCheckIn: (input: GoalsGetCheckInInput) =>
       useQuery<GoalsGetCheckInResult>(() => defaultApiClient.apiNamespaceGoals.getCheckIn(input)),
+    getCheckInQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/get_check_in"),
+    getCheckInQueryKey: (input: GoalsGetCheckInInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/get_check_in", input),
+    getCheckInQueryOptions: (input: GoalsGetCheckInInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/get_check_in", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.getCheckIn(input),
+      }),
 
     list: (input: GoalsListInput) => defaultApiClient.apiNamespaceGoals.list(input),
     useList: (input: GoalsListInput) => useQuery<GoalsListResult>(() => defaultApiClient.apiNamespaceGoals.list(input)),
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/list"),
+    listQueryKey: (input: GoalsListInput) => buildApiQueryKey(defaultApiClient, "/goals/list", input),
+    listQueryOptions: (input: GoalsListInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.list(input),
+      }),
 
     listContributors: (input: GoalsListContributorsInput) => defaultApiClient.apiNamespaceGoals.listContributors(input),
     useListContributors: (input: GoalsListContributorsInput) =>
       useQuery<GoalsListContributorsResult>(() => defaultApiClient.apiNamespaceGoals.listContributors(input)),
+    listContributorsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/list_contributors"),
+    listContributorsQueryKey: (input: GoalsListContributorsInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/list_contributors", input),
+    listContributorsQueryOptions: (input: GoalsListContributorsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_contributors", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listContributors(input),
+      }),
 
     listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
     useListCheckIns: (input: GoalsListCheckInsInput) =>
       useQuery<GoalsListCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.listCheckIns(input)),
+    listCheckInsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/list_check_ins"),
+    listCheckInsQueryKey: (input: GoalsListCheckInsInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/list_check_ins", input),
+    listCheckInsQueryOptions: (input: GoalsListCheckInsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_check_ins", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
+      }),
 
     searchParentGoal: (input: GoalsSearchParentGoalInput) => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
     useSearchParentGoal: (input: GoalsSearchParentGoalInput) =>
       useQuery<GoalsSearchParentGoalResult>(() => defaultApiClient.apiNamespaceGoals.searchParentGoal(input)),
+    searchParentGoalQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/search_parent_goal"),
+    searchParentGoalQueryKey: (input: GoalsSearchParentGoalInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/search_parent_goal", input),
+    searchParentGoalQueryOptions: (input: GoalsSearchParentGoalInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/search_parent_goal", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
+      }),
 
     get: (input: GoalsGetInput) => defaultApiClient.apiNamespaceGoals.get(input),
     useGet: (input: GoalsGetInput) => useQuery<GoalsGetResult>(() => defaultApiClient.apiNamespaceGoals.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/get"),
+    getQueryKey: (input: GoalsGetInput) => buildApiQueryKey(defaultApiClient, "/goals/get", input),
+    getQueryOptions: (input: GoalsGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.get(input),
+      }),
 
     listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
     useListDiscussions: (input: GoalsListDiscussionsInput) =>
       useQuery<GoalsListDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.listDiscussions(input)),
+    listDiscussionsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/list_discussions"),
+    listDiscussionsQueryKey: (input: GoalsListDiscussionsInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/list_discussions", input),
+    listDiscussionsQueryOptions: (input: GoalsListDiscussionsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_discussions", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
+      }),
 
     countChildren: (input: GoalsCountChildrenInput) => defaultApiClient.apiNamespaceGoals.countChildren(input),
     useCountChildren: (input: GoalsCountChildrenInput) =>
       useQuery<GoalsCountChildrenResult>(() => defaultApiClient.apiNamespaceGoals.countChildren(input)),
+    countChildrenQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/goals/count_children"),
+    countChildrenQueryKey: (input: GoalsCountChildrenInput) =>
+      buildApiQueryKey(defaultApiClient, "/goals/count_children", input),
+    countChildrenQueryOptions: (input: GoalsCountChildrenInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/count_children", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.countChildren(input),
+      }),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateName(input),
       ),
+    updateNameMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
+      }),
 
     updateAccessMember: (input: GoalsUpdateAccessMemberInput) =>
       defaultApiClient.apiNamespaceGoals.updateAccessMember(input),
@@ -9824,6 +11474,11 @@ export default {
       useMutation<GoalsUpdateAccessMemberInput, GoalsUpdateAccessMemberResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateAccessMember(input),
       ),
+    updateAccessMemberMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateAccessMemberInput) =>
+          defaultApiClient.apiNamespaceGoals.updateAccessMember(input),
+      }),
 
     updateTargetIndex: (input: GoalsUpdateTargetIndexInput) =>
       defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
@@ -9831,12 +11486,20 @@ export default {
       useMutation<GoalsUpdateTargetIndexInput, GoalsUpdateTargetIndexResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
       ),
+    updateTargetIndexMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateTargetIndexInput) => defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
+      }),
 
     deleteCheckIn: (input: GoalsDeleteCheckInInput) => defaultApiClient.apiNamespaceGoals.deleteCheckIn(input),
     useDeleteCheckIn: () =>
       useMutation<GoalsDeleteCheckInInput, GoalsDeleteCheckInResult>((input) =>
         defaultApiClient.apiNamespaceGoals.deleteCheckIn(input),
       ),
+    deleteCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsDeleteCheckInInput) => defaultApiClient.apiNamespaceGoals.deleteCheckIn(input),
+      }),
 
     updateAccessLevels: (input: GoalsUpdateAccessLevelsInput) =>
       defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
@@ -9844,6 +11507,11 @@ export default {
       useMutation<GoalsUpdateAccessLevelsInput, GoalsUpdateAccessLevelsResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
       ),
+    updateAccessLevelsMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateAccessLevelsInput) =>
+          defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
+      }),
 
     acknowledgeRetrospective: (input: GoalsAcknowledgeRetrospectiveInput) =>
       defaultApiClient.apiNamespaceGoals.acknowledgeRetrospective(input),
@@ -9851,62 +11519,107 @@ export default {
       useMutation<GoalsAcknowledgeRetrospectiveInput, GoalsAcknowledgeRetrospectiveResult>((input) =>
         defaultApiClient.apiNamespaceGoals.acknowledgeRetrospective(input),
       ),
+    acknowledgeRetrospectiveMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsAcknowledgeRetrospectiveInput) =>
+          defaultApiClient.apiNamespaceGoals.acknowledgeRetrospective(input),
+      }),
 
     createDiscussion: (input: GoalsCreateDiscussionInput) => defaultApiClient.apiNamespaceGoals.createDiscussion(input),
     useCreateDiscussion: () =>
       useMutation<GoalsCreateDiscussionInput, GoalsCreateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceGoals.createDiscussion(input),
       ),
+    createDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCreateDiscussionInput) => defaultApiClient.apiNamespaceGoals.createDiscussion(input),
+      }),
 
     changeParent: (input: GoalsChangeParentInput) => defaultApiClient.apiNamespaceGoals.changeParent(input),
     useChangeParent: () =>
       useMutation<GoalsChangeParentInput, GoalsChangeParentResult>((input) =>
         defaultApiClient.apiNamespaceGoals.changeParent(input),
       ),
+    changeParentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsChangeParentInput) => defaultApiClient.apiNamespaceGoals.changeParent(input),
+      }),
 
     create: (input: GoalsCreateInput) => defaultApiClient.apiNamespaceGoals.create(input),
     useCreate: () =>
       useMutation<GoalsCreateInput, GoalsCreateResult>((input) => defaultApiClient.apiNamespaceGoals.create(input)),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCreateInput) => defaultApiClient.apiNamespaceGoals.create(input),
+      }),
 
     updateParentGoal: (input: GoalsUpdateParentGoalInput) => defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
     useUpdateParentGoal: () =>
       useMutation<GoalsUpdateParentGoalInput, GoalsUpdateParentGoalResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
       ),
+    updateParentGoalMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateParentGoalInput) => defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
+      }),
 
     updateTarget: (input: GoalsUpdateTargetInput) => defaultApiClient.apiNamespaceGoals.updateTarget(input),
     useUpdateTarget: () =>
       useMutation<GoalsUpdateTargetInput, GoalsUpdateTargetResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateTarget(input),
       ),
+    updateTargetMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateTargetInput) => defaultApiClient.apiNamespaceGoals.updateTarget(input),
+      }),
 
     close: (input: GoalsCloseInput) => defaultApiClient.apiNamespaceGoals.close(input),
     useClose: () =>
       useMutation<GoalsCloseInput, GoalsCloseResult>((input) => defaultApiClient.apiNamespaceGoals.close(input)),
+    closeMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCloseInput) => defaultApiClient.apiNamespaceGoals.close(input),
+      }),
 
     createTarget: (input: GoalsCreateTargetInput) => defaultApiClient.apiNamespaceGoals.createTarget(input),
     useCreateTarget: () =>
       useMutation<GoalsCreateTargetInput, GoalsCreateTargetResult>((input) =>
         defaultApiClient.apiNamespaceGoals.createTarget(input),
       ),
+    createTargetMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCreateTargetInput) => defaultApiClient.apiNamespaceGoals.createTarget(input),
+      }),
 
     deleteTarget: (input: GoalsDeleteTargetInput) => defaultApiClient.apiNamespaceGoals.deleteTarget(input),
     useDeleteTarget: () =>
       useMutation<GoalsDeleteTargetInput, GoalsDeleteTargetResult>((input) =>
         defaultApiClient.apiNamespaceGoals.deleteTarget(input),
       ),
+    deleteTargetMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsDeleteTargetInput) => defaultApiClient.apiNamespaceGoals.deleteTarget(input),
+      }),
 
     updateCheckIndex: (input: GoalsUpdateCheckIndexInput) => defaultApiClient.apiNamespaceGoals.updateCheckIndex(input),
     useUpdateCheckIndex: () =>
       useMutation<GoalsUpdateCheckIndexInput, GoalsUpdateCheckIndexResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateCheckIndex(input),
       ),
+    updateCheckIndexMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateCheckIndexInput) => defaultApiClient.apiNamespaceGoals.updateCheckIndex(input),
+      }),
 
     updateDueDate: (input: GoalsUpdateDueDateInput) => defaultApiClient.apiNamespaceGoals.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateDueDate(input),
       ),
+    updateDueDateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateDueDateInput) => defaultApiClient.apiNamespaceGoals.updateDueDate(input),
+      }),
 
     createAccessMembers: (input: GoalsCreateAccessMembersInput) =>
       defaultApiClient.apiNamespaceGoals.createAccessMembers(input),
@@ -9914,30 +11627,51 @@ export default {
       useMutation<GoalsCreateAccessMembersInput, GoalsCreateAccessMembersResult>((input) =>
         defaultApiClient.apiNamespaceGoals.createAccessMembers(input),
       ),
+    createAccessMembersMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCreateAccessMembersInput) =>
+          defaultApiClient.apiNamespaceGoals.createAccessMembers(input),
+      }),
 
     createCheck: (input: GoalsCreateCheckInput) => defaultApiClient.apiNamespaceGoals.createCheck(input),
     useCreateCheck: () =>
       useMutation<GoalsCreateCheckInput, GoalsCreateCheckResult>((input) =>
         defaultApiClient.apiNamespaceGoals.createCheck(input),
       ),
+    createCheckMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCreateCheckInput) => defaultApiClient.apiNamespaceGoals.createCheck(input),
+      }),
 
     updateCheck: (input: GoalsUpdateCheckInput) => defaultApiClient.apiNamespaceGoals.updateCheck(input),
     useUpdateCheck: () =>
       useMutation<GoalsUpdateCheckInput, GoalsUpdateCheckResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateCheck(input),
       ),
+    updateCheckMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateCheckInput) => defaultApiClient.apiNamespaceGoals.updateCheck(input),
+      }),
 
     createCheckIn: (input: GoalsCreateCheckInInput) => defaultApiClient.apiNamespaceGoals.createCheckIn(input),
     useCreateCheckIn: () =>
       useMutation<GoalsCreateCheckInInput, GoalsCreateCheckInResult>((input) =>
         defaultApiClient.apiNamespaceGoals.createCheckIn(input),
       ),
+    createCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsCreateCheckInInput) => defaultApiClient.apiNamespaceGoals.createCheckIn(input),
+      }),
 
     updateStartDate: (input: GoalsUpdateStartDateInput) => defaultApiClient.apiNamespaceGoals.updateStartDate(input),
     useUpdateStartDate: () =>
       useMutation<GoalsUpdateStartDateInput, GoalsUpdateStartDateResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateStartDate(input),
       ),
+    updateStartDateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateStartDateInput) => defaultApiClient.apiNamespaceGoals.updateStartDate(input),
+      }),
 
     updateDescription: (input: GoalsUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceGoals.updateDescription(input),
@@ -9945,28 +11679,48 @@ export default {
       useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateDescription(input),
       ),
+    updateDescriptionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateDescriptionInput) => defaultApiClient.apiNamespaceGoals.updateDescription(input),
+      }),
 
     updateSpace: (input: GoalsUpdateSpaceInput) => defaultApiClient.apiNamespaceGoals.updateSpace(input),
     useUpdateSpace: () =>
       useMutation<GoalsUpdateSpaceInput, GoalsUpdateSpaceResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateSpace(input),
       ),
+    updateSpaceMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateSpaceInput) => defaultApiClient.apiNamespaceGoals.updateSpace(input),
+      }),
 
     updateCheckIn: (input: GoalsUpdateCheckInInput) => defaultApiClient.apiNamespaceGoals.updateCheckIn(input),
     useUpdateCheckIn: () =>
       useMutation<GoalsUpdateCheckInInput, GoalsUpdateCheckInResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateCheckIn(input),
       ),
+    updateCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateCheckInInput) => defaultApiClient.apiNamespaceGoals.updateCheckIn(input),
+      }),
 
     toggleCheck: (input: GoalsToggleCheckInput) => defaultApiClient.apiNamespaceGoals.toggleCheck(input),
     useToggleCheck: () =>
       useMutation<GoalsToggleCheckInput, GoalsToggleCheckResult>((input) =>
         defaultApiClient.apiNamespaceGoals.toggleCheck(input),
       ),
+    toggleCheckMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsToggleCheckInput) => defaultApiClient.apiNamespaceGoals.toggleCheck(input),
+      }),
 
     delete: (input: GoalsDeleteInput) => defaultApiClient.apiNamespaceGoals.delete(input),
     useDelete: () =>
       useMutation<GoalsDeleteInput, GoalsDeleteResult>((input) => defaultApiClient.apiNamespaceGoals.delete(input)),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsDeleteInput) => defaultApiClient.apiNamespaceGoals.delete(input),
+      }),
 
     updateTargetValue: (input: GoalsUpdateTargetValueInput) =>
       defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
@@ -9974,24 +11728,40 @@ export default {
       useMutation<GoalsUpdateTargetValueInput, GoalsUpdateTargetValueResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
       ),
+    updateTargetValueMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateTargetValueInput) => defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
+      }),
 
     deleteCheck: (input: GoalsDeleteCheckInput) => defaultApiClient.apiNamespaceGoals.deleteCheck(input),
     useDeleteCheck: () =>
       useMutation<GoalsDeleteCheckInput, GoalsDeleteCheckResult>((input) =>
         defaultApiClient.apiNamespaceGoals.deleteCheck(input),
       ),
+    deleteCheckMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsDeleteCheckInput) => defaultApiClient.apiNamespaceGoals.deleteCheck(input),
+      }),
 
     updateDiscussion: (input: GoalsUpdateDiscussionInput) => defaultApiClient.apiNamespaceGoals.updateDiscussion(input),
     useUpdateDiscussion: () =>
       useMutation<GoalsUpdateDiscussionInput, GoalsUpdateDiscussionResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateDiscussion(input),
       ),
+    updateDiscussionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateDiscussionInput) => defaultApiClient.apiNamespaceGoals.updateDiscussion(input),
+      }),
 
     updateChampion: (input: GoalsUpdateChampionInput) => defaultApiClient.apiNamespaceGoals.updateChampion(input),
     useUpdateChampion: () =>
       useMutation<GoalsUpdateChampionInput, GoalsUpdateChampionResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateChampion(input),
       ),
+    updateChampionMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateChampionInput) => defaultApiClient.apiNamespaceGoals.updateChampion(input),
+      }),
 
     acknowledgeCheckIn: (input: GoalsAcknowledgeCheckInInput) =>
       defaultApiClient.apiNamespaceGoals.acknowledgeCheckIn(input),
@@ -9999,6 +11769,11 @@ export default {
       useMutation<GoalsAcknowledgeCheckInInput, GoalsAcknowledgeCheckInResult>((input) =>
         defaultApiClient.apiNamespaceGoals.acknowledgeCheckIn(input),
       ),
+    acknowledgeCheckInMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsAcknowledgeCheckInInput) =>
+          defaultApiClient.apiNamespaceGoals.acknowledgeCheckIn(input),
+      }),
 
     deleteAccessMember: (input: GoalsDeleteAccessMemberInput) =>
       defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
@@ -10006,16 +11781,29 @@ export default {
       useMutation<GoalsDeleteAccessMemberInput, GoalsDeleteAccessMemberResult>((input) =>
         defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
       ),
+    deleteAccessMemberMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsDeleteAccessMemberInput) =>
+          defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
+      }),
 
     reopen: (input: GoalsReopenInput) => defaultApiClient.apiNamespaceGoals.reopen(input),
     useReopen: () =>
       useMutation<GoalsReopenInput, GoalsReopenResult>((input) => defaultApiClient.apiNamespaceGoals.reopen(input)),
+    reopenMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsReopenInput) => defaultApiClient.apiNamespaceGoals.reopen(input),
+      }),
 
     updateReviewer: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),
     useUpdateReviewer: () =>
       useMutation<GoalsUpdateReviewerInput, GoalsUpdateReviewerResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateReviewer(input),
       ),
+    updateReviewerMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),
+      }),
   },
 
   reactions: {
@@ -10024,11 +11812,19 @@ export default {
       useMutation<ReactionsDeleteInput, ReactionsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceReactions.delete(input),
       ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ReactionsDeleteInput) => defaultApiClient.apiNamespaceReactions.delete(input),
+      }),
 
     create: (input: ReactionsCreateInput) => defaultApiClient.apiNamespaceReactions.create(input),
     useCreate: () =>
       useMutation<ReactionsCreateInput, ReactionsCreateResult>((input) =>
         defaultApiClient.apiNamespaceReactions.create(input),
       ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: ReactionsCreateInput) => defaultApiClient.apiNamespaceReactions.create(input),
+      }),
   },
 };

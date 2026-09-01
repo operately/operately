@@ -26,6 +26,7 @@ defmodule TurboConnect.TsGen do
     #{generate_types(api_module)}
     #{generate_namespaces(api_module)}
     #{generate_api_client_class(api_module)}
+    #{generate_tanstack_helpers()}
     #{generate_default_exports(api_module)}
     """
   end
@@ -46,7 +47,20 @@ defmodule TurboConnect.TsGen do
     """
     import React from "react";
     import axios from "axios";
+    import { mutationOptions, queryOptions } from "@tanstack/react-query";
     import { handleStaleClientError } from "./staleClient";
+    """
+  end
+
+  def generate_tanstack_helpers do
+    """
+    function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
+      return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+    }
+
+    function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
+      return [...buildApiQueryKeyPrefix(client, path), input] as const;
+    }
     """
   end
 
@@ -317,6 +331,8 @@ defmodule TurboConnect.TsGen do
     #{Queries.generate_default_functions(root_queries)}
     #{Mutations.generate_default_functions(root_mutations)}
 
+    #{Queries.generate_tanstack_options(root_queries)}
+    #{Mutations.generate_tanstack_options(root_mutations)}
     #{Queries.generate_hooks(root_queries)}
     #{Mutations.generate_hooks(root_mutations)}
     export default {
@@ -352,10 +368,17 @@ defmodule TurboConnect.TsGen do
 
         input_type = ts_type(fullname) <> "Input"
         result_type = ts_type(fullname) <> "Result"
+        path = "/#{ns}/#{name}"
 
         """
             #{fnName}: (input: #{input_type}) => #{fnCall},
             #{hookName}: (input: #{input_type}) => useQuery<#{result_type}>(() => #{fnCall}),
+            #{fnName}QueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "#{path}"),
+            #{fnName}QueryKey: (input: #{input_type}) => buildApiQueryKey(defaultApiClient, "#{path}", input),
+            #{fnName}QueryOptions: (input: #{input_type}) => queryOptions({
+              queryKey: buildApiQueryKey(defaultApiClient, "#{path}", input),
+              queryFn: () => #{fnCall},
+            }),
         """
       end)
       |> Enum.join("\n")
@@ -376,6 +399,9 @@ defmodule TurboConnect.TsGen do
         """
             #{fnName}: (input: #{input_type}) => #{fnCall}(input),
             #{hookName}: () => useMutation<#{input_type}, #{result_type}>((input) => #{fnCall}(input)),
+            #{fnName}MutationOptions: () => mutationOptions({
+              mutationFn: (input: #{input_type}) => #{fnCall}(input),
+            }),
         """
       end)
       |> Enum.join("\n")

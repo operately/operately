@@ -1,10 +1,18 @@
+import { queryClient } from "@/api/queryClient";
+
 type LogOutResult = "success" | "failure";
 type LogInResult = "success" | "failure";
 
 export async function logOut(): Promise<LogOutResult> {
   const res = await fetch("/accounts/log_out", { method: "DELETE", headers: autheaders() });
 
-  return res.status === 200 ? "success" : "failure";
+  if (res.status !== 200) {
+    return "failure";
+  }
+
+  queryClient.clear();
+
+  return "success";
 }
 
 interface LogInOptions {
@@ -20,6 +28,8 @@ export async function logIn(email: string, password: string, options: LogInOptio
   const res = await fetch("/accounts/log_in", { method: "POST", headers: autheaders(), body: JSON.stringify(data) });
 
   if (res.status === 200) {
+    queryClient.clear();
+
     if (onSuccess) {
       await onSuccess();
     }
