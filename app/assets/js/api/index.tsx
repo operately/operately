@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { handleStaleClientError } from "./staleClient";
+import { queryClient } from "./queryClient";
 
 function toCamel(o: any) {
   var newO: any, origKey: any, newKey: any, value: any;
@@ -8119,6 +8120,13 @@ export function getThemeQueryOptions(input: GetThemeInput) {
   });
 }
 
+export function getThemeQuery(input: GetThemeInput) {
+  return queryClient.query({
+    ...getThemeQueryOptions(input),
+    staleTime: "static",
+  });
+}
+
 export function addCompanyOwnersMutationOptions() {
   return mutationOptions({
     mutationFn: (input: AddCompanyOwnersInput) => defaultApiClient.addCompanyOwners(input),
@@ -8297,6 +8305,7 @@ export default {
   getThemeQueryKeyPrefix,
   getThemeQueryKey,
   getThemeQueryOptions,
+  getThemeQuery,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyOwnersMutationOptions,
@@ -8355,6 +8364,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/list_export_runs", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.listExportRuns(input),
       }),
+    listExportRunsQuery: (input: CompanyTransfersListExportRunsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/list_export_runs", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.listExportRuns(input),
+        staleTime: "static",
+      }),
 
     getImportRun: (input: CompanyTransfersGetImportRunInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
@@ -8369,6 +8384,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/get_import_run", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
+      }),
+    getImportRunQuery: (input: CompanyTransfersGetImportRunInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/get_import_run", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
+        staleTime: "static",
       }),
 
     listImportRuns: (input: CompanyTransfersListImportRunsInput) =>
@@ -8385,6 +8406,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/list_import_runs", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
       }),
+    listImportRunsQuery: (input: CompanyTransfersListImportRunsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/list_import_runs", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
+        staleTime: "static",
+      }),
 
     getExportRun: (input: CompanyTransfersGetExportRunInput) =>
       defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
@@ -8399,6 +8426,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/get_export_run", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
+      }),
+    getExportRunQuery: (input: CompanyTransfersGetExportRunInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/company_transfers/get_export_run", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
+        staleTime: "static",
       }),
 
     createImportArtifactBlobs: (input: CompanyTransfersCreateImportArtifactBlobsInput) =>
@@ -8449,6 +8482,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/cli_auth/status", input),
         queryFn: () => defaultApiClient.apiNamespaceCliAuth.status(input),
       }),
+    statusQuery: (input: CliAuthStatusInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/cli_auth/status", input),
+        queryFn: () => defaultApiClient.apiNamespaceCliAuth.status(input),
+        staleTime: "static",
+      }),
 
     companyCreationStatus: (input: CliAuthCompanyCreationStatusInput) =>
       defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
@@ -8464,6 +8503,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/cli_auth/company_creation_status", input),
         queryFn: () => defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
+      }),
+    companyCreationStatusQuery: (input: CliAuthCompanyCreationStatusInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/cli_auth/company_creation_status", input),
+        queryFn: () => defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
+        staleTime: "static",
       }),
 
     startGoogleSignup: (input: CliAuthStartGoogleSignupInput) =>
@@ -8602,6 +8647,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/mcp_grants/list", input),
         queryFn: () => defaultApiClient.apiNamespaceMcpGrants.list(input),
       }),
+    listQuery: (input: McpGrantsListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/mcp_grants/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceMcpGrants.list(input),
+        staleTime: "static",
+      }),
 
     revoke: (input: McpGrantsRevokeInput) => defaultApiClient.apiNamespaceMcpGrants.revoke(input),
     useRevoke: () =>
@@ -8624,6 +8675,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/api_tokens/list", input),
         queryFn: () => defaultApiClient.apiNamespaceApiTokens.list(input),
+      }),
+    listQuery: (input: ApiTokensListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/api_tokens/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceApiTokens.list(input),
+        staleTime: "static",
       }),
 
     create: (input: ApiTokensCreateInput) => defaultApiClient.apiNamespaceApiTokens.create(input),
@@ -8683,6 +8740,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_by_token", input),
         queryFn: () => defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
       }),
+    getInviteLinkByTokenQuery: (input: InvitationsGetInviteLinkByTokenInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_by_token", input),
+        queryFn: () => defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
+        staleTime: "static",
+      }),
 
     getInvitation: (input: InvitationsGetInvitationInput) =>
       defaultApiClient.apiNamespaceInvitations.getInvitation(input),
@@ -8695,6 +8758,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invitation", input),
         queryFn: () => defaultApiClient.apiNamespaceInvitations.getInvitation(input),
+      }),
+    getInvitationQuery: (input: InvitationsGetInvitationInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invitation", input),
+        queryFn: () => defaultApiClient.apiNamespaceInvitations.getInvitation(input),
+        staleTime: "static",
       }),
 
     getInviteLinkAvailability: (input: InvitationsGetInviteLinkAvailabilityInput) =>
@@ -8711,6 +8780,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_availability", input),
         queryFn: () => defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+      }),
+    getInviteLinkAvailabilityQuery: (input: InvitationsGetInviteLinkAvailabilityInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/invitations/get_invite_link_availability", input),
+        queryFn: () => defaultApiClient.apiNamespaceInvitations.getInviteLinkAvailability(input),
+        staleTime: "static",
       }),
 
     newInvitationToken: (input: InvitationsNewInvitationTokenInput) =>
@@ -8786,6 +8861,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/product_releases/get_latest", input),
         queryFn: () => defaultApiClient.apiNamespaceProductReleases.getLatest(input),
       }),
+    getLatestQuery: (input: ProductReleasesGetLatestInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/product_releases/get_latest", input),
+        queryFn: () => defaultApiClient.apiNamespaceProductReleases.getLatest(input),
+        staleTime: "static",
+      }),
 
     dismiss: (input: ProductReleasesDismissInput) => defaultApiClient.apiNamespaceProductReleases.dismiss(input),
     useDismiss: () =>
@@ -8810,6 +8891,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/site_messages/list_active", input),
         queryFn: () => defaultApiClient.apiNamespaceSiteMessages.listActive(input),
       }),
+    listActiveQuery: (input: SiteMessagesListActiveInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/site_messages/list_active", input),
+        queryFn: () => defaultApiClient.apiNamespaceSiteMessages.listActive(input),
+        staleTime: "static",
+      }),
   },
 
   billing: {
@@ -8824,6 +8911,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_catalog", input),
         queryFn: () => defaultApiClient.apiNamespaceBilling.getCatalog(input),
       }),
+    getCatalogQuery: (input: BillingGetCatalogInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_catalog", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.getCatalog(input),
+        staleTime: "static",
+      }),
 
     get: (input: BillingGetInput) => defaultApiClient.apiNamespaceBilling.get(input),
     useGet: (input: BillingGetInput) =>
@@ -8834,6 +8927,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/billing/get", input),
         queryFn: () => defaultApiClient.apiNamespaceBilling.get(input),
+      }),
+    getQuery: (input: BillingGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.get(input),
+        staleTime: "static",
       }),
 
     getLimitWarnings: (input: BillingGetLimitWarningsInput) =>
@@ -8848,6 +8947,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_limit_warnings", input),
         queryFn: () => defaultApiClient.apiNamespaceBilling.getLimitWarnings(input),
       }),
+    getLimitWarningsQuery: (input: BillingGetLimitWarningsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_limit_warnings", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.getLimitWarnings(input),
+        staleTime: "static",
+      }),
 
     getAccessState: (input: BillingGetAccessStateInput) => defaultApiClient.apiNamespaceBilling.getAccessState(input),
     useGetAccessState: (input: BillingGetAccessStateInput) =>
@@ -8859,6 +8964,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_access_state", input),
         queryFn: () => defaultApiClient.apiNamespaceBilling.getAccessState(input),
+      }),
+    getAccessStateQuery: (input: BillingGetAccessStateInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/billing/get_access_state", input),
+        queryFn: () => defaultApiClient.apiNamespaceBilling.getAccessState(input),
+        staleTime: "static",
       }),
 
     cancel: (input: BillingCancelInput) => defaultApiClient.apiNamespaceBilling.cancel(input),
@@ -8951,6 +9062,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/notifications/is_subscribed", input),
         queryFn: () => defaultApiClient.apiNamespaceNotifications.isSubscribed(input),
       }),
+    isSubscribedQuery: (input: NotificationsIsSubscribedInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/notifications/is_subscribed", input),
+        queryFn: () => defaultApiClient.apiNamespaceNotifications.isSubscribed(input),
+        staleTime: "static",
+      }),
 
     getUnreadCount: (input: NotificationsGetUnreadCountInput) =>
       defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
@@ -8966,6 +9083,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/notifications/get_unread_count", input),
         queryFn: () => defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
       }),
+    getUnreadCountQuery: (input: NotificationsGetUnreadCountInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/notifications/get_unread_count", input),
+        queryFn: () => defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
+        staleTime: "static",
+      }),
 
     list: (input: NotificationsListInput) => defaultApiClient.apiNamespaceNotifications.list(input),
     useList: (input: NotificationsListInput) =>
@@ -8976,6 +9099,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/notifications/list", input),
         queryFn: () => defaultApiClient.apiNamespaceNotifications.list(input),
+      }),
+    listQuery: (input: NotificationsListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/notifications/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceNotifications.list(input),
+        staleTime: "static",
       }),
 
     markAllAsRead: (input: NotificationsMarkAllAsReadInput) =>
@@ -9058,6 +9187,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/files/get", input),
         queryFn: () => defaultApiClient.apiNamespaceFiles.get(input),
       }),
+    getQuery: (input: FilesGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/files/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceFiles.get(input),
+        staleTime: "static",
+      }),
 
     delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
     useDelete: () =>
@@ -9093,6 +9228,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/links/get", input),
         queryFn: () => defaultApiClient.apiNamespaceLinks.get(input),
+      }),
+    getQuery: (input: LinksGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/links/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceLinks.get(input),
+        staleTime: "static",
       }),
 
     create: (input: LinksCreateInput) => defaultApiClient.apiNamespaceLinks.create(input),
@@ -9131,6 +9272,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/documents/get", input),
         queryFn: () => defaultApiClient.apiNamespaceDocuments.get(input),
       }),
+    getQuery: (input: DocumentsGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/documents/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceDocuments.get(input),
+        staleTime: "static",
+      }),
 
     getVersion: (input: DocumentsGetVersionInput) => defaultApiClient.apiNamespaceDocuments.getVersion(input),
     useGetVersion: (input: DocumentsGetVersionInput) =>
@@ -9143,6 +9290,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/documents/get_version", input),
         queryFn: () => defaultApiClient.apiNamespaceDocuments.getVersion(input),
       }),
+    getVersionQuery: (input: DocumentsGetVersionInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/documents/get_version", input),
+        queryFn: () => defaultApiClient.apiNamespaceDocuments.getVersion(input),
+        staleTime: "static",
+      }),
 
     listVersions: (input: DocumentsListVersionsInput) => defaultApiClient.apiNamespaceDocuments.listVersions(input),
     useListVersions: (input: DocumentsListVersionsInput) =>
@@ -9154,6 +9307,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/documents/list_versions", input),
         queryFn: () => defaultApiClient.apiNamespaceDocuments.listVersions(input),
+      }),
+    listVersionsQuery: (input: DocumentsListVersionsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/documents/list_versions", input),
+        queryFn: () => defaultApiClient.apiNamespaceDocuments.listVersions(input),
+        staleTime: "static",
       }),
 
     restoreVersion: (input: DocumentsRestoreVersionInput) =>
@@ -9221,6 +9380,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/search", input),
         queryFn: () => defaultApiClient.apiNamespaceResourceHubs.search(input),
       }),
+    searchQuery: (input: ResourceHubsSearchInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.search(input),
+        staleTime: "static",
+      }),
 
     listNodes: (input: ResourceHubsListNodesInput) => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
     useListNodes: (input: ResourceHubsListNodesInput) =>
@@ -9233,6 +9398,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/list_nodes", input),
         queryFn: () => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
       }),
+    listNodesQuery: (input: ResourceHubsListNodesInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/list_nodes", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
+        staleTime: "static",
+      }),
 
     get: (input: ResourceHubsGetInput) => defaultApiClient.apiNamespaceResourceHubs.get(input),
     useGet: (input: ResourceHubsGetInput) =>
@@ -9243,6 +9414,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/get", input),
         queryFn: () => defaultApiClient.apiNamespaceResourceHubs.get(input),
+      }),
+    getQuery: (input: ResourceHubsGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.get(input),
+        staleTime: "static",
       }),
 
     getFolder: (input: ResourceHubsGetFolderInput) => defaultApiClient.apiNamespaceResourceHubs.getFolder(input),
@@ -9255,6 +9432,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/get_folder", input),
         queryFn: () => defaultApiClient.apiNamespaceResourceHubs.getFolder(input),
+      }),
+    getFolderQuery: (input: ResourceHubsGetFolderInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/get_folder", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.getFolder(input),
+        staleTime: "static",
       }),
 
     deleteFolder: (input: ResourceHubsDeleteFolderInput) =>
@@ -9327,6 +9510,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/comments/list", input),
         queryFn: () => defaultApiClient.apiNamespaceComments.list(input),
       }),
+    listQuery: (input: CommentsListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/comments/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceComments.list(input),
+        staleTime: "static",
+      }),
 
     delete: (input: CommentsDeleteInput) => defaultApiClient.apiNamespaceComments.delete(input),
     useDelete: () =>
@@ -9371,6 +9560,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/quick_search", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.quickSearch(input),
       }),
+    quickSearchQuery: (input: CompaniesQuickSearchInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/quick_search", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.quickSearch(input),
+        staleTime: "static",
+      }),
 
     getActivity: (input: CompaniesGetActivityInput) => defaultApiClient.apiNamespaceCompanies.getActivity(input),
     useGetActivity: (input: CompaniesGetActivityInput) =>
@@ -9382,6 +9577,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_activity", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.getActivity(input),
+      }),
+    getActivityQuery: (input: CompaniesGetActivityInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_activity", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.getActivity(input),
+        staleTime: "static",
       }),
 
     getFlatWorkMap: (input: CompaniesGetFlatWorkMapInput) =>
@@ -9396,6 +9597,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_flat_work_map", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input),
       }),
+    getFlatWorkMapQuery: (input: CompaniesGetFlatWorkMapInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_flat_work_map", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input),
+        staleTime: "static",
+      }),
 
     list: (input: CompaniesListInput) => defaultApiClient.apiNamespaceCompanies.list(input),
     useList: (input: CompaniesListInput) =>
@@ -9407,6 +9614,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/list", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.list(input),
       }),
+    listQuery: (input: CompaniesListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.list(input),
+        staleTime: "static",
+      }),
 
     search: (input: CompaniesSearchInput) => defaultApiClient.apiNamespaceCompanies.search(input),
     useSearch: (input: CompaniesSearchInput) =>
@@ -9417,6 +9630,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/search", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.search(input),
+      }),
+    searchQuery: (input: CompaniesSearchInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.search(input),
+        staleTime: "static",
       }),
 
     getWorkMap: (input: CompaniesGetWorkMapInput) => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
@@ -9430,6 +9649,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_work_map", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
       }),
+    getWorkMapQuery: (input: CompaniesGetWorkMapInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get_work_map", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
+        staleTime: "static",
+      }),
 
     get: (input: CompaniesGetInput) => defaultApiClient.apiNamespaceCompanies.get(input),
     useGet: (input: CompaniesGetInput) =>
@@ -9440,6 +9665,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/get", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.get(input),
+      }),
+    getQuery: (input: CompaniesGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.get(input),
+        staleTime: "static",
       }),
 
     listActivities: (input: CompaniesListActivitiesInput) =>
@@ -9453,6 +9684,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/companies/list_activities", input),
         queryFn: () => defaultApiClient.apiNamespaceCompanies.listActivities(input),
+      }),
+    listActivitiesQuery: (input: CompaniesListActivitiesInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/companies/list_activities", input),
+        queryFn: () => defaultApiClient.apiNamespaceCompanies.listActivities(input),
+        staleTime: "static",
       }),
 
     deleteOwner: (input: CompaniesDeleteOwnerInput) => defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
@@ -9617,6 +9854,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/people/search", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.search(input),
       }),
+    searchQuery: (input: PeopleSearchInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/search", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.search(input),
+        staleTime: "static",
+      }),
 
     list: (input: PeopleListInput) => defaultApiClient.apiNamespacePeople.list(input),
     useList: (input: PeopleListInput) =>
@@ -9627,6 +9870,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/people/list", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.list(input),
+      }),
+    listQuery: (input: PeopleListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/list", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.list(input),
+        staleTime: "static",
       }),
 
     getAccount: (input: PeopleGetAccountInput) => defaultApiClient.apiNamespacePeople.getAccount(input),
@@ -9640,6 +9889,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/people/get_account", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.getAccount(input),
       }),
+    getAccountQuery: (input: PeopleGetAccountInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_account", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getAccount(input),
+        staleTime: "static",
+      }),
 
     get: (input: PeopleGetInput) => defaultApiClient.apiNamespacePeople.get(input),
     useGet: (input: PeopleGetInput) => useQuery<PeopleGetResult>(() => defaultApiClient.apiNamespacePeople.get(input)),
@@ -9649,6 +9904,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/people/get", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.get(input),
+      }),
+    getQuery: (input: PeopleGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.get(input),
+        staleTime: "static",
       }),
 
     getBinded: (input: PeopleGetBindedInput) => defaultApiClient.apiNamespacePeople.getBinded(input),
@@ -9661,6 +9922,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/people/get_binded", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.getBinded(input),
       }),
+    getBindedQuery: (input: PeopleGetBindedInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_binded", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getBinded(input),
+        staleTime: "static",
+      }),
 
     listAssignments: (input: PeopleListAssignmentsInput) => defaultApiClient.apiNamespacePeople.listAssignments(input),
     useListAssignments: (input: PeopleListAssignmentsInput) =>
@@ -9672,6 +9939,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/people/list_assignments", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.listAssignments(input),
+      }),
+    listAssignmentsQuery: (input: PeopleListAssignmentsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/list_assignments", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.listAssignments(input),
+        staleTime: "static",
       }),
 
     listPossibleManagers: (input: PeopleListPossibleManagersInput) =>
@@ -9687,6 +9960,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/people/list_possible_managers", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.listPossibleManagers(input),
       }),
+    listPossibleManagersQuery: (input: PeopleListPossibleManagersInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/list_possible_managers", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.listPossibleManagers(input),
+        staleTime: "static",
+      }),
 
     getAssignmentsCount: (input: PeopleGetAssignmentsCountInput) =>
       defaultApiClient.apiNamespacePeople.getAssignmentsCount(input),
@@ -9700,6 +9979,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/people/get_assignments_count", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.getAssignmentsCount(input),
       }),
+    getAssignmentsCountQuery: (input: PeopleGetAssignmentsCountInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_assignments_count", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getAssignmentsCount(input),
+        staleTime: "static",
+      }),
 
     getMe: (input: PeopleGetMeInput) => defaultApiClient.apiNamespacePeople.getMe(input),
     useGetMe: (input: PeopleGetMeInput) =>
@@ -9710,6 +9995,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/people/get_me", input),
         queryFn: () => defaultApiClient.apiNamespacePeople.getMe(input),
+      }),
+    getMeQuery: (input: PeopleGetMeInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/people/get_me", input),
+        queryFn: () => defaultApiClient.apiNamespacePeople.getMe(input),
+        staleTime: "static",
       }),
 
     update: (input: PeopleUpdateInput) => defaultApiClient.apiNamespacePeople.update(input),
@@ -9752,6 +10043,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/kpis/get_kpi", input),
         queryFn: () => defaultApiClient.apiNamespaceKpis.getKpi(input),
       }),
+    getKpiQuery: (input: KpisGetKpiInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/kpis/get_kpi", input),
+        queryFn: () => defaultApiClient.apiNamespaceKpis.getKpi(input),
+        staleTime: "static",
+      }),
 
     listKpis: (input: KpisListKpisInput) => defaultApiClient.apiNamespaceKpis.listKpis(input),
     useListKpis: (input: KpisListKpisInput) =>
@@ -9762,6 +10059,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/kpis/list_kpis", input),
         queryFn: () => defaultApiClient.apiNamespaceKpis.listKpis(input),
+      }),
+    listKpisQuery: (input: KpisListKpisInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/kpis/list_kpis", input),
+        queryFn: () => defaultApiClient.apiNamespaceKpis.listKpis(input),
+        staleTime: "static",
       }),
 
     addKpiAnnotation: (input: KpisAddKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
@@ -9849,6 +10152,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/count_by_access_level", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input),
       }),
+    countByAccessLevelQuery: (input: SpacesCountByAccessLevelInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/count_by_access_level", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input),
+        staleTime: "static",
+      }),
 
     get: (input: SpacesGetInput) => defaultApiClient.apiNamespaceSpaces.get(input),
     useGet: (input: SpacesGetInput) => useQuery<SpacesGetResult>(() => defaultApiClient.apiNamespaceSpaces.get(input)),
@@ -9858,6 +10167,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/get", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.get(input),
+      }),
+    getQuery: (input: SpacesGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.get(input),
+        staleTime: "static",
       }),
 
     listDiscussions: (input: SpacesListDiscussionsInput) => defaultApiClient.apiNamespaceSpaces.listDiscussions(input),
@@ -9871,6 +10186,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_discussions", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.listDiscussions(input),
       }),
+    listDiscussionsQuery: (input: SpacesListDiscussionsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_discussions", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listDiscussions(input),
+        staleTime: "static",
+      }),
 
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
@@ -9881,6 +10202,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/search", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.search(input),
+      }),
+    searchQuery: (input: SpacesSearchInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.search(input),
+        staleTime: "static",
       }),
 
     list: (input: SpacesListInput) => defaultApiClient.apiNamespaceSpaces.list(input),
@@ -9893,6 +10220,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.list(input),
       }),
+    listQuery: (input: SpacesListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.list(input),
+        staleTime: "static",
+      }),
 
     listTools: (input: SpacesListToolsInput) => defaultApiClient.apiNamespaceSpaces.listTools(input),
     useListTools: (input: SpacesListToolsInput) =>
@@ -9903,6 +10236,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_tools", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.listTools(input),
+      }),
+    listToolsQuery: (input: SpacesListToolsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_tools", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listTools(input),
+        staleTime: "static",
       }),
 
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
@@ -9916,6 +10255,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_members", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.listMembers(input),
       }),
+    listMembersQuery: (input: SpacesListMembersInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_members", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listMembers(input),
+        staleTime: "static",
+      }),
 
     getDiscussion: (input: SpacesGetDiscussionInput) => defaultApiClient.apiNamespaceSpaces.getDiscussion(input),
     useGetDiscussion: (input: SpacesGetDiscussionInput) =>
@@ -9927,6 +10272,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/get_discussion", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.getDiscussion(input),
+      }),
+    getDiscussionQuery: (input: SpacesGetDiscussionInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/get_discussion", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.getDiscussion(input),
+        staleTime: "static",
       }),
 
     searchPotentialMembers: (input: SpacesSearchPotentialMembersInput) =>
@@ -9944,6 +10295,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/search_potential_members", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
       }),
+    searchPotentialMembersQuery: (input: SpacesSearchPotentialMembersInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/search_potential_members", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
+        staleTime: "static",
+      }),
 
     listTasks: (input: SpacesListTasksInput) => defaultApiClient.apiNamespaceSpaces.listTasks(input),
     useListTasks: (input: SpacesListTasksInput) =>
@@ -9954,6 +10311,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_tasks", input),
         queryFn: () => defaultApiClient.apiNamespaceSpaces.listTasks(input),
+      }),
+    listTasksQuery: (input: SpacesListTasksInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/spaces/list_tasks", input),
+        queryFn: () => defaultApiClient.apiNamespaceSpaces.listTasks(input),
+        staleTime: "static",
       }),
 
     publishDiscussion: (input: SpacesPublishDiscussionInput) =>
@@ -10123,6 +10486,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list_task_statuses", input),
         queryFn: () => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input),
       }),
+    listTaskStatusesQuery: (input: TasksListTaskStatusesInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list_task_statuses", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.listTaskStatuses(input),
+        staleTime: "static",
+      }),
 
     listPotentialAssignees: (input: TasksListPotentialAssigneesInput) =>
       defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
@@ -10139,6 +10508,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list_potential_assignees", input),
         queryFn: () => defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
       }),
+    listPotentialAssigneesQuery: (input: TasksListPotentialAssigneesInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list_potential_assignees", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
+        staleTime: "static",
+      }),
 
     get: (input: TasksGetInput) => defaultApiClient.apiNamespaceTasks.get(input),
     useGet: (input: TasksGetInput) => useQuery<TasksGetResult>(() => defaultApiClient.apiNamespaceTasks.get(input)),
@@ -10149,6 +10524,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/tasks/get", input),
         queryFn: () => defaultApiClient.apiNamespaceTasks.get(input),
       }),
+    getQuery: (input: TasksGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.get(input),
+        staleTime: "static",
+      }),
 
     list: (input: TasksListInput) => defaultApiClient.apiNamespaceTasks.list(input),
     useList: (input: TasksListInput) => useQuery<TasksListResult>(() => defaultApiClient.apiNamespaceTasks.list(input)),
@@ -10158,6 +10539,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list", input),
         queryFn: () => defaultApiClient.apiNamespaceTasks.list(input),
+      }),
+    listQuery: (input: TasksListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/tasks/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceTasks.list(input),
+        staleTime: "static",
       }),
 
     updateReminders: (input: TasksUpdateRemindersInput) => defaultApiClient.apiNamespaceTasks.updateReminders(input),
@@ -10283,6 +10670,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/get_discussion", input),
         queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.getDiscussion(input),
       }),
+    getDiscussionQuery: (input: ProjectTemplatesGetDiscussionInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/get_discussion", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.getDiscussion(input),
+        staleTime: "static",
+      }),
 
     list: (input: ProjectTemplatesListInput) => defaultApiClient.apiNamespaceProjectTemplates.list(input),
     useList: (input: ProjectTemplatesListInput) =>
@@ -10294,6 +10687,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/list", input),
         queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.list(input),
+      }),
+    listQuery: (input: ProjectTemplatesListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.list(input),
+        staleTime: "static",
       }),
 
     listComments: (input: ProjectTemplatesListCommentsInput) =>
@@ -10310,6 +10709,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/list_comments", input),
         queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
       }),
+    listCommentsQuery: (input: ProjectTemplatesListCommentsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/list_comments", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.listComments(input),
+        staleTime: "static",
+      }),
 
     get: (input: ProjectTemplatesGetInput) => defaultApiClient.apiNamespaceProjectTemplates.get(input),
     useGet: (input: ProjectTemplatesGetInput) =>
@@ -10321,6 +10726,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/get", input),
         queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.get(input),
+      }),
+    getQuery: (input: ProjectTemplatesGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/project_templates/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjectTemplates.get(input),
+        staleTime: "static",
       }),
 
     createLink: (input: ProjectTemplatesCreateLinkInput) =>
@@ -10740,6 +11151,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/search_potential_contributors", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
       }),
+    searchPotentialContributorsQuery: (input: ProjectsSearchPotentialContributorsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/search_potential_contributors", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
+        staleTime: "static",
+      }),
 
     countChildren: (input: ProjectsCountChildrenInput) => defaultApiClient.apiNamespaceProjects.countChildren(input),
     useCountChildren: (input: ProjectsCountChildrenInput) =>
@@ -10752,6 +11169,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/count_children", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.countChildren(input),
       }),
+    countChildrenQuery: (input: ProjectsCountChildrenInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/count_children", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.countChildren(input),
+        staleTime: "static",
+      }),
 
     list: (input: ProjectsListInput) => defaultApiClient.apiNamespaceProjects.list(input),
     useList: (input: ProjectsListInput) =>
@@ -10762,6 +11185,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/list", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.list(input),
+      }),
+    listQuery: (input: ProjectsListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.list(input),
+        staleTime: "static",
       }),
 
     listMilestoneTasks: (input: ProjectsListMilestoneTasksInput) =>
@@ -10776,6 +11205,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_milestone_tasks", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input),
       }),
+    listMilestoneTasksQuery: (input: ProjectsListMilestoneTasksInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_milestone_tasks", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input),
+        staleTime: "static",
+      }),
 
     getMilestone: (input: ProjectsGetMilestoneInput) => defaultApiClient.apiNamespaceProjects.getMilestone(input),
     useGetMilestone: (input: ProjectsGetMilestoneInput) =>
@@ -10787,6 +11222,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_milestone", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.getMilestone(input),
+      }),
+    getMilestoneQuery: (input: ProjectsGetMilestoneInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_milestone", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getMilestone(input),
+        staleTime: "static",
       }),
 
     searchParentGoal: (input: ProjectsSearchParentGoalInput) =>
@@ -10801,6 +11242,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/search_parent_goal", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
       }),
+    searchParentGoalQuery: (input: ProjectsSearchParentGoalInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/search_parent_goal", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
+        staleTime: "static",
+      }),
 
     listContributors: (input: ProjectsListContributorsInput) =>
       defaultApiClient.apiNamespaceProjects.listContributors(input),
@@ -10814,6 +11261,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_contributors", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.listContributors(input),
       }),
+    listContributorsQuery: (input: ProjectsListContributorsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_contributors", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listContributors(input),
+        staleTime: "static",
+      }),
 
     get: (input: ProjectsGetInput) => defaultApiClient.apiNamespaceProjects.get(input),
     useGet: (input: ProjectsGetInput) =>
@@ -10824,6 +11277,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/get", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.get(input),
+      }),
+    getQuery: (input: ProjectsGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.get(input),
+        staleTime: "static",
       }),
 
     getContributor: (input: ProjectsGetContributorInput) => defaultApiClient.apiNamespaceProjects.getContributor(input),
@@ -10837,6 +11296,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_contributor", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.getContributor(input),
       }),
+    getContributorQuery: (input: ProjectsGetContributorInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_contributor", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getContributor(input),
+        staleTime: "static",
+      }),
 
     getDiscussion: (input: ProjectsGetDiscussionInput) => defaultApiClient.apiNamespaceProjects.getDiscussion(input),
     useGetDiscussion: (input: ProjectsGetDiscussionInput) =>
@@ -10848,6 +11313,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_discussion", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.getDiscussion(input),
+      }),
+    getDiscussionQuery: (input: ProjectsGetDiscussionInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_discussion", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getDiscussion(input),
+        staleTime: "static",
       }),
 
     listCheckIns: (input: ProjectsListCheckInsInput) => defaultApiClient.apiNamespaceProjects.listCheckIns(input),
@@ -10861,6 +11332,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_check_ins", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.listCheckIns(input),
       }),
+    listCheckInsQuery: (input: ProjectsListCheckInsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_check_ins", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listCheckIns(input),
+        staleTime: "static",
+      }),
 
     listMilestones: (input: ProjectsListMilestonesInput) => defaultApiClient.apiNamespaceProjects.listMilestones(input),
     useListMilestones: (input: ProjectsListMilestonesInput) =>
@@ -10872,6 +11349,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_milestones", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.listMilestones(input),
+      }),
+    listMilestonesQuery: (input: ProjectsListMilestonesInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_milestones", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listMilestones(input),
+        staleTime: "static",
       }),
 
     getRetrospective: (input: ProjectsGetRetrospectiveInput) =>
@@ -10886,6 +11369,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_retrospective", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.getRetrospective(input),
       }),
+    getRetrospectiveQuery: (input: ProjectsGetRetrospectiveInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_retrospective", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getRetrospective(input),
+        staleTime: "static",
+      }),
 
     listDiscussions: (input: ProjectsListDiscussionsInput) =>
       defaultApiClient.apiNamespaceProjects.listDiscussions(input),
@@ -10899,6 +11388,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_discussions", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.listDiscussions(input),
       }),
+    listDiscussionsQuery: (input: ProjectsListDiscussionsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/list_discussions", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.listDiscussions(input),
+        staleTime: "static",
+      }),
 
     search: (input: ProjectsSearchInput) => defaultApiClient.apiNamespaceProjects.search(input),
     useSearch: (input: ProjectsSearchInput) =>
@@ -10909,6 +11404,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/search", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.search(input),
+      }),
+    searchQuery: (input: ProjectsSearchInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/search", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.search(input),
+        staleTime: "static",
       }),
 
     getCheckIn: (input: ProjectsGetCheckInInput) => defaultApiClient.apiNamespaceProjects.getCheckIn(input),
@@ -10921,6 +11422,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_check_in", input),
         queryFn: () => defaultApiClient.apiNamespaceProjects.getCheckIn(input),
+      }),
+    getCheckInQuery: (input: ProjectsGetCheckInInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/projects/get_check_in", input),
+        queryFn: () => defaultApiClient.apiNamespaceProjects.getCheckIn(input),
+        staleTime: "static",
       }),
 
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
@@ -11365,6 +11872,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_access_members", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.listAccessMembers(input),
       }),
+    listAccessMembersQuery: (input: GoalsListAccessMembersInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_access_members", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listAccessMembers(input),
+        staleTime: "static",
+      }),
 
     getCheckIn: (input: GoalsGetCheckInInput) => defaultApiClient.apiNamespaceGoals.getCheckIn(input),
     useGetCheckIn: (input: GoalsGetCheckInInput) =>
@@ -11377,6 +11890,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/get_check_in", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.getCheckIn(input),
       }),
+    getCheckInQuery: (input: GoalsGetCheckInInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/get_check_in", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.getCheckIn(input),
+        staleTime: "static",
+      }),
 
     list: (input: GoalsListInput) => defaultApiClient.apiNamespaceGoals.list(input),
     useList: (input: GoalsListInput) => useQuery<GoalsListResult>(() => defaultApiClient.apiNamespaceGoals.list(input)),
@@ -11386,6 +11905,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/list", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.list(input),
+      }),
+    listQuery: (input: GoalsListInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.list(input),
+        staleTime: "static",
       }),
 
     listContributors: (input: GoalsListContributorsInput) => defaultApiClient.apiNamespaceGoals.listContributors(input),
@@ -11399,6 +11924,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_contributors", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.listContributors(input),
       }),
+    listContributorsQuery: (input: GoalsListContributorsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_contributors", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listContributors(input),
+        staleTime: "static",
+      }),
 
     listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
     useListCheckIns: (input: GoalsListCheckInsInput) =>
@@ -11410,6 +11941,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_check_ins", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
+      }),
+    listCheckInsQuery: (input: GoalsListCheckInsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_check_ins", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
+        staleTime: "static",
       }),
 
     searchParentGoal: (input: GoalsSearchParentGoalInput) => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
@@ -11423,6 +11960,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/search_parent_goal", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
       }),
+    searchParentGoalQuery: (input: GoalsSearchParentGoalInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/search_parent_goal", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
+        staleTime: "static",
+      }),
 
     get: (input: GoalsGetInput) => defaultApiClient.apiNamespaceGoals.get(input),
     useGet: (input: GoalsGetInput) => useQuery<GoalsGetResult>(() => defaultApiClient.apiNamespaceGoals.get(input)),
@@ -11432,6 +11975,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/get", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.get(input),
+      }),
+    getQuery: (input: GoalsGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.get(input),
+        staleTime: "static",
       }),
 
     listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
@@ -11445,6 +11994,12 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_discussions", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
       }),
+    listDiscussionsQuery: (input: GoalsListDiscussionsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/list_discussions", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
+        staleTime: "static",
+      }),
 
     countChildren: (input: GoalsCountChildrenInput) => defaultApiClient.apiNamespaceGoals.countChildren(input),
     useCountChildren: (input: GoalsCountChildrenInput) =>
@@ -11456,6 +12011,12 @@ export default {
       queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/goals/count_children", input),
         queryFn: () => defaultApiClient.apiNamespaceGoals.countChildren(input),
+      }),
+    countChildrenQuery: (input: GoalsCountChildrenInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/goals/count_children", input),
+        queryFn: () => defaultApiClient.apiNamespaceGoals.countChildren(input),
+        staleTime: "static",
       }),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),

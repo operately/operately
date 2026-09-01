@@ -115,6 +115,7 @@ defmodule TurboConnect.TsGenTest do
   import axios from "axios";
   import { mutationOptions, queryOptions } from "@tanstack/react-query";
   import { handleStaleClientError } from "./staleClient";
+  import { queryClient } from "./queryClient";
   """
 
   @ts_shared_types """
@@ -324,6 +325,13 @@ defmodule TurboConnect.TsGenTest do
     });
   }
 
+  export function getUserQuery(input: GetUserInput) {
+    return queryClient.query({
+      ...getUserQueryOptions(input),
+      staleTime: "static",
+    });
+  }
+
   export function createUserMutationOptions() {
     return mutationOptions({
       mutationFn: (input: CreateUserInput) => defaultApiClient.createUser(input),
@@ -346,6 +354,7 @@ defmodule TurboConnect.TsGenTest do
     getUserQueryKeyPrefix,
     getUserQueryKey,
     getUserQueryOptions,
+    getUserQuery,
     createUser,
     useCreateUser,
     createUserMutationOptions,
@@ -358,6 +367,11 @@ defmodule TurboConnect.TsGenTest do
       getUserQueryOptions: (input: UsersGetUserInput) => queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
         queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
+      }),
+      getUserQuery: (input: UsersGetUserInput) => queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
+        queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
+        staleTime: "static",
       }),
 
       createUser: (input: UsersCreateUserInput) => defaultApiClient.apiNamespaceUsers.createUser(input),
