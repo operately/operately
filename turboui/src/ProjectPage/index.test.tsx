@@ -90,11 +90,15 @@ function ProjectPageHarness({
   includeQuicktimeFile = false,
   initialEntry = "/projects/project-1",
   search,
+  hasDocsAndFiles = includeDocsAndFiles,
+  tabStates,
 }: {
   includeDocsAndFiles?: boolean;
   includeQuicktimeFile?: boolean;
   initialEntry?: string;
   search?: NonNullable<NonNullable<ProjectPage.Props["docsAndFiles"]>["search"]>["search"];
+  hasDocsAndFiles?: boolean;
+  tabStates?: ProjectPage.Props["tabStates"];
 }) {
   const subscriptions = useMockSubscriptions({ entityType: "project" });
   const [resourceHub] = React.useState(() =>
@@ -287,6 +291,8 @@ function ProjectPageHarness({
         getTaskPageProps={() => ({}) as any}
         subscriptions={subscriptions}
         docsAndFiles={docsAndFiles}
+        hasDocsAndFiles={hasDocsAndFiles}
+        tabStates={tabStates}
         formattedTimePreferences={defaultFormattedTimePreferences}
       />
     </MemoryRouter>
@@ -319,6 +325,33 @@ describe("ProjectPage", () => {
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
+  });
+
+  test("keeps the docs and files tab visible while its data is loading", () => {
+    render(
+      <ProjectPageHarness
+        initialEntry="/projects/project-1?tab=docs-and-files"
+        hasDocsAndFiles
+        tabStates={{ "docs-and-files": { loading: true, error: false } }}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Docs & Files" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Loading…");
+  });
+
+  test("retries a tab whose deferred load failed", () => {
+    const onRetry = jest.fn();
+    render(
+      <ProjectPageHarness
+        initialEntry="/projects/project-1?tab=tasks"
+        tabStates={{ tasks: { loading: false, error: true, onRetry } }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+
+    expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
   test("replaces docs and files with debounced resource hub search results and restores them when cleared", async () => {

@@ -18,7 +18,7 @@ import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
-import { projectPageCacheKey } from "../ProjectPage";
+import { invalidateProjectPageCache } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -105,7 +105,6 @@ function Page() {
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
     pageData,
     refreshPageData,
-    clearProjectCache: true,
   });
 
   const [name, setName] = usePageField({
@@ -191,7 +190,7 @@ function Page() {
       await Api.tasks.delete({ taskId: task.id, type: "project" });
 
       if (task.project) {
-        PageCache.invalidate(projectPageCacheKey(task.project.id));
+        invalidateProjectPageCache(task.project.id);
         navigate(paths.projectPath(task.project.id, { tab: "tasks" }));
       } else {
         navigate(paths.homePath());
@@ -311,7 +310,6 @@ interface usePageFieldProps<T> {
   onError: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
   refreshPageData?: () => Promise<void>;
-  clearProjectCache?: boolean;
 }
 
 function usePageField<T>({
@@ -321,7 +319,6 @@ function usePageField<T>({
   onError,
   validations,
   refreshPageData,
-  clearProjectCache,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { cacheVersion, data } = pageData;
 
@@ -348,6 +345,10 @@ function usePageField<T>({
 
     const oldVal = state;
 
+    if (data.task.project?.id) {
+      invalidateProjectPageCache(data.task.project.id);
+    }
+
     const errorHandler = (error: any) => {
       setState(oldVal);
       onError?.(error);
@@ -368,8 +369,8 @@ function usePageField<T>({
             refreshPageData();
           }
 
-          if (clearProjectCache && data.task.project?.id) {
-            PageCache.invalidate(projectPageCacheKey(data.task.project.id));
+          if (data.task.project?.id) {
+            invalidateProjectPageCache(data.task.project.id);
           }
           return true;
         }
@@ -398,11 +399,11 @@ function useMoveTask(task: Tasks.Task, refreshPageData: (() => Promise<void>) | 
         PageCache.invalidate(pageCacheKey(task.id));
 
         if (task.project?.id) {
-          PageCache.invalidate(projectPageCacheKey(task.project.id));
+          invalidateProjectPageCache(task.project.id);
         }
 
         if (resolvedDestinationType !== "space") {
-          PageCache.invalidate(projectPageCacheKey(resolvedDestinationId));
+          invalidateProjectPageCache(resolvedDestinationId);
         }
 
         if (resolvedDestinationType === "space") {

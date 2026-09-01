@@ -1960,6 +1960,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestone, :milestone, null: true
     field? :project, :project, null: true
     field? :description, :string, null: true
+    field :has_description, :boolean, null: false
     field? :assignees, list_of(:person), null: true
     field? :creator, :person, null: true
     field? :project_space, :space, null: true

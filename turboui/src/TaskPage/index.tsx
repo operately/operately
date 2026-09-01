@@ -1,4 +1,5 @@
 import React from "react";
+import { SecondaryButton } from "../Button";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 
@@ -49,6 +50,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     milestones: props.milestones,
     onMilestoneSearch: props.onMilestoneSearch,
     name: props.name,
+    detailsLoading: props.detailsLoading,
     onNameChange: props.onNameChange,
     description: props.description,
     onDescriptionChange: props.onDescriptionChange,
@@ -133,6 +135,19 @@ export function TaskPage(props: TaskPage.Props) {
 }
 
 export function TaskContent(props: TaskPage.ContentState) {
+  if (props.detailsError) {
+    return (
+      <div className="py-12 text-sm text-content-dimmed" role="alert">
+        <p>Couldn’t load task details.</p>
+        {props.onRetryDetails && <SecondaryButton onClick={props.onRetryDetails} size="xs" className="mt-3">Retry</SecondaryButton>}
+      </div>
+    );
+  }
+
+  if (props.detailsLoading) {
+    return <div className="py-12 text-sm text-content-dimmed" role="status">Loading task…</div>;
+  }
+
   return (
     <>
       <PageHeader {...props} />

@@ -14,16 +14,27 @@ interface FetchParams {
   refreshCache: boolean;
 }
 
+export type PageCacheSource = "cache" | "network";
+
+export interface PageCacheResult<T> {
+  data: T;
+  cacheVersion: number;
+  cacheSource: PageCacheSource;
+}
+
 // Cache writes keep an index so we can evict deterministically later.
 const DEFAULT_MAX_AGE_MS = 1000 * 60 * 5; // 5 minutes
 const CACHE_INDEX_KEY = "PageCache:index";
 const PAGE_CACHE_METADATA_FLAG = "__pageCache";
 const MAX_WRITE_ATTEMPTS = 5;
+const inFlightFetches = new Map<string, Promise<PageCacheResult<unknown>>>();
+const cacheGenerations = new Map<string, number>();
 
 export const PageCache = {
-  fetch: async function getOrSetCache(attrs: FetchParams): Promise<{ data: any; cacheVersion: number }> {
+  fetch: async function getOrSetCache<T = any>(attrs: FetchParams): Promise<PageCacheResult<T>> {
     const { cacheKey, fetchFn, maxAgeMs = DEFAULT_MAX_AGE_MS, refreshCache } = attrs;
     const storage = getLocalStorage();
+    const generation = cacheGenerations.get(cacheKey) ?? 0;
 
     const cached = safeGetItem(storage, cacheKey, "PageCache");
 
@@ -32,7 +43,7 @@ export const PageCache = {
         const { data, timestamp } = parseCachedValue(cached, cacheKey);
 
         if (Date.now() - timestamp < maxAgeMs) {
-          return { data, cacheVersion: timestamp };
+          return { data: data as T, cacheVersion: timestamp, cacheSource: "cache" };
         }
       } catch (error) {
         console.error(error);
@@ -43,14 +54,27 @@ export const PageCache = {
       }
     }
 
-    const data = await fetchFn();
-    const timestamp = Date.now();
+    const activeFetch = inFlightFetches.get(cacheKey) as Promise<PageCacheResult<T>> | undefined;
+    if (activeFetch) return activeFetch;
 
-    if (storage) {
-      safeSetCacheEntry(storage, cacheKey, { data, timestamp, [PAGE_CACHE_METADATA_FLAG]: true });
-    }
+    const request = fetchFn().then((data) => {
+      const timestamp = Date.now();
 
-    return { data, cacheVersion: timestamp };
+      // An invalidated request may finish after a newer request. It must not restore stale data.
+      if (storage && (cacheGenerations.get(cacheKey) ?? 0) === generation) {
+        safeSetCacheEntry(storage, cacheKey, { data, timestamp, [PAGE_CACHE_METADATA_FLAG]: true });
+      }
+
+      return { data, cacheVersion: timestamp, cacheSource: "network" as const };
+    });
+
+    inFlightFetches.set(cacheKey, request as Promise<PageCacheResult<unknown>>);
+
+    return request.finally(() => {
+      if (inFlightFetches.get(cacheKey) === request) {
+        inFlightFetches.delete(cacheKey);
+      }
+    });
   },
 
   useData: function <T>(
@@ -61,7 +85,7 @@ export const PageCache = {
     const loadedData = useLoadedData<T>();
 
     const [data, setData] = React.useState<T>(loadedData);
-    const refreshCache = opts.refreshCache ?? true;
+    const refreshCache = opts.refreshCache ?? shouldRefreshCachedLoaderData(loadedData);
 
     // Use a stable key based on param values
     const paramsKey = React.useMemo(() => JSON.stringify(params), [params]);
@@ -103,6 +127,9 @@ export const PageCache = {
   },
 
   invalidate: function invalidateCache(cacheKey: string): void {
+    cacheGenerations.set(cacheKey, (cacheGenerations.get(cacheKey) ?? 0) + 1);
+    inFlightFetches.delete(cacheKey);
+
     const storage = getLocalStorage();
 
     if (!storage) {
@@ -119,6 +146,15 @@ interface CacheEntry<T> {
   data: T;
   timestamp: number;
   [PAGE_CACHE_METADATA_FLAG]?: true;
+}
+
+function shouldRefreshCachedLoaderData(loadedData: unknown): boolean {
+  return (
+    typeof loadedData === "object" &&
+    loadedData !== null &&
+    "cacheSource" in loadedData &&
+    loadedData.cacheSource === "cache"
+  );
 }
 
 function readCacheIndex(storage: Storage): CacheIndex {

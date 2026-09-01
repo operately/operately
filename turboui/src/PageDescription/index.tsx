@@ -157,7 +157,7 @@ function EditMode({ description, richTextHandlers, onDescriptionChange, setMode,
     <div className="mt-2">
       <Editor editor={editor} />
       <div className="flex gap-2 mt-2">
-        <PrimaryButton size="xs" onClick={save}>
+        <PrimaryButton size="xs" testId="save-description" onClick={save}>
           Save
         </PrimaryButton>
         <SecondaryButton size="xs" onClick={cancel}>

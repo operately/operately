@@ -242,11 +242,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.click_button("New task")
     |> UI.click(testid: "add-more-switch")
-    |> UI.find(UI.query(testid: "add-task-form"), fn el ->
-      Enum.reduce(names, el, fn name, el ->
-        el
+    |> then(fn ctx ->
+      Enum.reduce(names, ctx, fn name, ctx ->
+        ctx
         |> UI.fill(placeholder: "Enter task title", with: name)
         |> UI.click_button("Create task")
+        |> UI.assert_text("", testid: "task-title")
       end)
     end)
     |> UI.click_button("Cancel")
@@ -301,7 +302,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.click_text("Add notes about this task...")
     |> UI.fill_rich_text(description)
     |> UI.click_button("Save")
-    |> UI.sleep(300)
+    |> UI.refute_has(testid: "save-description")
   end
 
   step :edit_task_description_mentioning, ctx, person do

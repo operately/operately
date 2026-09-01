@@ -26,6 +26,9 @@ interface Attrs {
   milestones: TaskBoard.Milestone[];
   setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
   refresh?: () => Promise<void>;
+  invalidateCache?: () => void;
+  invalidateTaskDetails?: () => void;
+  refreshTasks?: () => Promise<void>;
 }
 
 export function useProjectTasksForTurboUi({
@@ -35,12 +38,15 @@ export function useProjectTasksForTurboUi({
   milestones,
   setMilestones,
   refresh,
+  invalidateCache,
+  invalidateTaskDetails,
+  refreshTasks,
 }: Attrs) {
   const paths = usePaths();
-  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
+  const [tasks, setTasks] = React.useState(parseBackendTasks(paths, backendTasks));
 
   React.useEffect(() => {
-    setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
+    setTasks(parseBackendTasks(paths, backendTasks));
   }, [backendTasks, paths]);
 
   React.useEffect(() => {
@@ -103,13 +109,26 @@ export function useProjectTasksForTurboUi({
     [setMilestones],
   );
 
+  const invalidate = React.useCallback(() => {
+    if (invalidateCache) {
+      invalidateCache();
+    } else {
+      PageCache.invalidate(cacheKey);
+    }
+    invalidateTaskDetails?.();
+  }, [cacheKey, invalidateCache, invalidateTaskDetails]);
+
   const invalidateAndRefresh = React.useCallback(async () => {
-    PageCache.invalidate(cacheKey);
+    invalidate();
 
     if (refresh) {
       await refresh();
     }
-  }, [cacheKey, refresh]);
+
+    if (refreshTasks) {
+      await refreshTasks();
+    }
+  }, [invalidate, refresh, refreshTasks]);
 
   const createTask = async (task: TaskBoard.NewTaskPayload) => {
     const snapshot = createSnapshot();
@@ -177,7 +196,9 @@ export function useProjectTasksForTurboUi({
         );
       }
 
-      await invalidateAndRefresh();
+      // The optimistic row is already the server response. Refreshing here remounts the
+      // board and closes the form before a user can create another task.
+      invalidate();
 
       return { success: true };
     } catch (e) {
@@ -491,6 +512,10 @@ export function useProjectTasksForTurboUi({
     updateTaskMilestone,
     deleteTask,
   };
+}
+
+function parseBackendTasks(paths: ReturnType<typeof usePaths>, tasks: Tasks.Task[]) {
+  return Tasks.parseTasksForTurboUi(paths, tasks, { type: "project" });
 }
 
 export function buildProjectTaskCreateInput(task: TaskBoard.NewTaskPayload, projectId: string): TasksCreateInput {

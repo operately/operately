@@ -19,7 +19,7 @@ import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
-import { projectPageCacheKey } from "../ProjectPage";
+import { invalidateProjectPageCache } from "../ProjectPage";
 import { milestoneKanbanPageCacheKey } from "../MilestoneKanbanPage";
 import { spaceKanbanPageCacheKey } from "../SpaceKanbanPage";
 import { useComments } from "./useComments";
@@ -159,7 +159,7 @@ function Page() {
     await Api.projects.deleteMilestone({ milestoneId: milestone.id });
 
     if (milestone.project) {
-      PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      invalidateProjectPageCache(milestone.project.id);
       navigate(paths.projectPath(milestone.project.id, { tab: "tasks" }));
     } else {
       navigate(paths.homePath());
@@ -199,11 +199,11 @@ function Page() {
       PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
 
       if (milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+        invalidateProjectPageCache(milestone.project.id);
       }
 
       if (destinationType === "project") {
-        PageCache.invalidate(projectPageCacheKey(destinationId));
+        invalidateProjectPageCache(destinationId);
       }
 
       if (destinationType === "space") {
@@ -223,7 +223,7 @@ function Page() {
 
       if (!result) return;
 
-      PageCache.invalidate(projectPageCacheKey(projectId));
+      invalidateProjectPageCache(projectId);
       PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
 
       if (nextMilestone?.id) {
@@ -242,7 +242,7 @@ function Page() {
 
       PageCache.invalidate(pageCacheKey(milestone.id));
       PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
-      PageCache.invalidate(projectPageCacheKey(projectId));
+      invalidateProjectPageCache(projectId);
     },
     [deleteTask, milestone.id, projectId],
   );
@@ -395,7 +395,7 @@ function usePageField<T, Command = T>(
         PageCache.invalidate(pageCacheKey(data.milestone.id));
       }
       if (data.milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(data.milestone.project.id));
+        invalidateProjectPageCache(data.milestone.project.id);
       }
 
       // Refresh the page data if requested
