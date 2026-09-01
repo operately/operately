@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { handleStaleClientError } from "./staleClient";
 
 function toCamel(o: any) {
@@ -889,6 +890,14 @@ export class ApiClient {
   }
 }
 
+function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
+  return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+}
+
+function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
+  return [...buildApiQueryKeyPrefix(client, path), input] as const;
+}
+
 const defaultApiClient = new ApiClient();
 
 export async function getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
@@ -1010,6 +1019,297 @@ export async function updateUpdateBadgeSettings(
   input: UpdateUpdateBadgeSettingsInput,
 ): Promise<UpdateUpdateBadgeSettingsResult> {
   return defaultApiClient.updateUpdateBadgeSettings(input);
+}
+
+export function getAccountsQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_accounts");
+}
+
+export function getAccountsQueryKey(input: GetAccountsInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_accounts", input);
+}
+
+export function getAccountsQueryOptions(input: GetAccountsInput) {
+  return queryOptions({
+    queryKey: getAccountsQueryKey(input),
+    queryFn: () => defaultApiClient.getAccounts(input),
+  });
+}
+
+export function getActiveCompaniesQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_active_companies");
+}
+
+export function getActiveCompaniesQueryKey(input: GetActiveCompaniesInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_active_companies", input);
+}
+
+export function getActiveCompaniesQueryOptions(input: GetActiveCompaniesInput) {
+  return queryOptions({
+    queryKey: getActiveCompaniesQueryKey(input),
+    queryFn: () => defaultApiClient.getActiveCompanies(input),
+  });
+}
+
+export function getActivitiesQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_activities");
+}
+
+export function getActivitiesQueryKey(input: GetActivitiesInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_activities", input);
+}
+
+export function getActivitiesQueryOptions(input: GetActivitiesInput) {
+  return queryOptions({
+    queryKey: getActivitiesQueryKey(input),
+    queryFn: () => defaultApiClient.getActivities(input),
+  });
+}
+
+export function getCompaniesQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_companies");
+}
+
+export function getCompaniesQueryKey(input: GetCompaniesInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_companies", input);
+}
+
+export function getCompaniesQueryOptions(input: GetCompaniesInput) {
+  return queryOptions({
+    queryKey: getCompaniesQueryKey(input),
+    queryFn: () => defaultApiClient.getCompanies(input),
+  });
+}
+
+export function getCompanyQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_company");
+}
+
+export function getCompanyQueryKey(input: GetCompanyInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_company", input);
+}
+
+export function getCompanyQueryOptions(input: GetCompanyInput) {
+  return queryOptions({
+    queryKey: getCompanyQueryKey(input),
+    queryFn: () => defaultApiClient.getCompany(input),
+  });
+}
+
+export function getEmailSettingsQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_email_settings");
+}
+
+export function getEmailSettingsQueryKey(input: GetEmailSettingsInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_email_settings", input);
+}
+
+export function getEmailSettingsQueryOptions(input: GetEmailSettingsInput) {
+  return queryOptions({
+    queryKey: getEmailSettingsQueryKey(input),
+    queryFn: () => defaultApiClient.getEmailSettings(input),
+  });
+}
+
+export function getSearchIndexStatusQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_search_index_status");
+}
+
+export function getSearchIndexStatusQueryKey(input: GetSearchIndexStatusInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_search_index_status", input);
+}
+
+export function getSearchIndexStatusQueryOptions(input: GetSearchIndexStatusInput) {
+  return queryOptions({
+    queryKey: getSearchIndexStatusQueryKey(input),
+    queryFn: () => defaultApiClient.getSearchIndexStatus(input),
+  });
+}
+
+export function getUpdateBadgeSettingsQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_update_badge_settings");
+}
+
+export function getUpdateBadgeSettingsQueryKey(input: GetUpdateBadgeSettingsInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_update_badge_settings", input);
+}
+
+export function getUpdateBadgeSettingsQueryOptions(input: GetUpdateBadgeSettingsInput) {
+  return queryOptions({
+    queryKey: getUpdateBadgeSettingsQueryKey(input),
+    queryFn: () => defaultApiClient.getUpdateBadgeSettings(input),
+  });
+}
+
+export function listBillingPlanDefinitionsQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/list_billing_plan_definitions");
+}
+
+export function listBillingPlanDefinitionsQueryKey(input: ListBillingPlanDefinitionsInput) {
+  return buildApiQueryKey(defaultApiClient, "/list_billing_plan_definitions", input);
+}
+
+export function listBillingPlanDefinitionsQueryOptions(input: ListBillingPlanDefinitionsInput) {
+  return queryOptions({
+    queryKey: listBillingPlanDefinitionsQueryKey(input),
+    queryFn: () => defaultApiClient.listBillingPlanDefinitions(input),
+  });
+}
+
+export function listBillingProductsQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/list_billing_products");
+}
+
+export function listBillingProductsQueryKey(input: ListBillingProductsInput) {
+  return buildApiQueryKey(defaultApiClient, "/list_billing_products", input);
+}
+
+export function listBillingProductsQueryOptions(input: ListBillingProductsInput) {
+  return queryOptions({
+    queryKey: listBillingProductsQueryKey(input),
+    queryFn: () => defaultApiClient.listBillingProducts(input),
+  });
+}
+
+export function listSiteMessagesQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/list_site_messages");
+}
+
+export function listSiteMessagesQueryKey(input: ListSiteMessagesInput) {
+  return buildApiQueryKey(defaultApiClient, "/list_site_messages", input);
+}
+
+export function listSiteMessagesQueryOptions(input: ListSiteMessagesInput) {
+  return queryOptions({
+    queryKey: listSiteMessagesQueryKey(input),
+    queryFn: () => defaultApiClient.listSiteMessages(input),
+  });
+}
+
+export function archiveBillingPlanDefinitionMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: ArchiveBillingPlanDefinitionInput) => defaultApiClient.archiveBillingPlanDefinition(input),
+  });
+}
+
+export function archiveBillingProductMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: ArchiveBillingProductInput) => defaultApiClient.archiveBillingProduct(input),
+  });
+}
+
+export function createBillingPlanDefinitionMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateBillingPlanDefinitionInput) => defaultApiClient.createBillingPlanDefinition(input),
+  });
+}
+
+export function createBillingProductMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateBillingProductInput) => defaultApiClient.createBillingProduct(input),
+  });
+}
+
+export function createSiteMessageMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: CreateSiteMessageInput) => defaultApiClient.createSiteMessage(input),
+  });
+}
+
+export function deleteAccountMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: DeleteAccountInput) => defaultApiClient.deleteAccount(input),
+  });
+}
+
+export function deleteSiteMessageMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: DeleteSiteMessageInput) => defaultApiClient.deleteSiteMessage(input),
+  });
+}
+
+export function demoteAccountFromSiteAdminMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: DemoteAccountFromSiteAdminInput) => defaultApiClient.demoteAccountFromSiteAdmin(input),
+  });
+}
+
+export function disableFeaturesMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: DisableFeaturesInput) => defaultApiClient.disableFeatures(input),
+  });
+}
+
+export function enableFeatureMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: EnableFeatureInput) => defaultApiClient.enableFeature(input),
+  });
+}
+
+export function promoteAccountToSiteAdminMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: PromoteAccountToSiteAdminInput) => defaultApiClient.promoteAccountToSiteAdmin(input),
+  });
+}
+
+export function sendTestEmailMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: SendTestEmailInput) => defaultApiClient.sendTestEmail(input),
+  });
+}
+
+export function setActiveBillingProductMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: SetActiveBillingProductInput) => defaultApiClient.setActiveBillingProduct(input),
+  });
+}
+
+export function startSearchIndexMaintenanceMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: StartSearchIndexMaintenanceInput) => defaultApiClient.startSearchIndexMaintenance(input),
+  });
+}
+
+export function syncBillingProductsFromPolarMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: SyncBillingProductsFromPolarInput) => defaultApiClient.syncBillingProductsFromPolar(input),
+  });
+}
+
+export function unarchiveBillingPlanDefinitionMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: UnarchiveBillingPlanDefinitionInput) => defaultApiClient.unarchiveBillingPlanDefinition(input),
+  });
+}
+
+export function updateBillingPlanDefinitionMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: UpdateBillingPlanDefinitionInput) => defaultApiClient.updateBillingPlanDefinition(input),
+  });
+}
+
+export function updateBillingProductMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: UpdateBillingProductInput) => defaultApiClient.updateBillingProduct(input),
+  });
+}
+
+export function updateEmailSettingsMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: UpdateEmailSettingsInput) => defaultApiClient.updateEmailSettings(input),
+  });
+}
+
+export function updateSiteMessageMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: UpdateSiteMessageInput) => defaultApiClient.updateSiteMessage(input),
+  });
+}
+
+export function updateUpdateBadgeSettingsMutationOptions() {
+  return mutationOptions({
+    mutationFn: (input: UpdateUpdateBadgeSettingsInput) => defaultApiClient.updateUpdateBadgeSettings(input),
+  });
 }
 
 export function useGetAccounts(input: GetAccountsInput): UseQueryHookResult<GetAccountsResult> {
@@ -1224,66 +1524,120 @@ export default {
 
   getAccounts,
   useGetAccounts,
+  getAccountsQueryKeyPrefix,
+  getAccountsQueryKey,
+  getAccountsQueryOptions,
   getActiveCompanies,
   useGetActiveCompanies,
+  getActiveCompaniesQueryKeyPrefix,
+  getActiveCompaniesQueryKey,
+  getActiveCompaniesQueryOptions,
   getActivities,
   useGetActivities,
+  getActivitiesQueryKeyPrefix,
+  getActivitiesQueryKey,
+  getActivitiesQueryOptions,
   getCompanies,
   useGetCompanies,
+  getCompaniesQueryKeyPrefix,
+  getCompaniesQueryKey,
+  getCompaniesQueryOptions,
   getCompany,
   useGetCompany,
+  getCompanyQueryKeyPrefix,
+  getCompanyQueryKey,
+  getCompanyQueryOptions,
   getEmailSettings,
   useGetEmailSettings,
+  getEmailSettingsQueryKeyPrefix,
+  getEmailSettingsQueryKey,
+  getEmailSettingsQueryOptions,
   getSearchIndexStatus,
   useGetSearchIndexStatus,
+  getSearchIndexStatusQueryKeyPrefix,
+  getSearchIndexStatusQueryKey,
+  getSearchIndexStatusQueryOptions,
   getUpdateBadgeSettings,
   useGetUpdateBadgeSettings,
+  getUpdateBadgeSettingsQueryKeyPrefix,
+  getUpdateBadgeSettingsQueryKey,
+  getUpdateBadgeSettingsQueryOptions,
   listBillingPlanDefinitions,
   useListBillingPlanDefinitions,
+  listBillingPlanDefinitionsQueryKeyPrefix,
+  listBillingPlanDefinitionsQueryKey,
+  listBillingPlanDefinitionsQueryOptions,
   listBillingProducts,
   useListBillingProducts,
+  listBillingProductsQueryKeyPrefix,
+  listBillingProductsQueryKey,
+  listBillingProductsQueryOptions,
   listSiteMessages,
   useListSiteMessages,
+  listSiteMessagesQueryKeyPrefix,
+  listSiteMessagesQueryKey,
+  listSiteMessagesQueryOptions,
   archiveBillingPlanDefinition,
   useArchiveBillingPlanDefinition,
+  archiveBillingPlanDefinitionMutationOptions,
   archiveBillingProduct,
   useArchiveBillingProduct,
+  archiveBillingProductMutationOptions,
   createBillingPlanDefinition,
   useCreateBillingPlanDefinition,
+  createBillingPlanDefinitionMutationOptions,
   createBillingProduct,
   useCreateBillingProduct,
+  createBillingProductMutationOptions,
   createSiteMessage,
   useCreateSiteMessage,
+  createSiteMessageMutationOptions,
   deleteAccount,
   useDeleteAccount,
+  deleteAccountMutationOptions,
   deleteSiteMessage,
   useDeleteSiteMessage,
+  deleteSiteMessageMutationOptions,
   demoteAccountFromSiteAdmin,
   useDemoteAccountFromSiteAdmin,
+  demoteAccountFromSiteAdminMutationOptions,
   disableFeatures,
   useDisableFeatures,
+  disableFeaturesMutationOptions,
   enableFeature,
   useEnableFeature,
+  enableFeatureMutationOptions,
   promoteAccountToSiteAdmin,
   usePromoteAccountToSiteAdmin,
+  promoteAccountToSiteAdminMutationOptions,
   sendTestEmail,
   useSendTestEmail,
+  sendTestEmailMutationOptions,
   setActiveBillingProduct,
   useSetActiveBillingProduct,
+  setActiveBillingProductMutationOptions,
   startSearchIndexMaintenance,
   useStartSearchIndexMaintenance,
+  startSearchIndexMaintenanceMutationOptions,
   syncBillingProductsFromPolar,
   useSyncBillingProductsFromPolar,
+  syncBillingProductsFromPolarMutationOptions,
   unarchiveBillingPlanDefinition,
   useUnarchiveBillingPlanDefinition,
+  unarchiveBillingPlanDefinitionMutationOptions,
   updateBillingPlanDefinition,
   useUpdateBillingPlanDefinition,
+  updateBillingPlanDefinitionMutationOptions,
   updateBillingProduct,
   useUpdateBillingProduct,
+  updateBillingProductMutationOptions,
   updateEmailSettings,
   useUpdateEmailSettings,
+  updateEmailSettingsMutationOptions,
   updateSiteMessage,
   useUpdateSiteMessage,
+  updateSiteMessageMutationOptions,
   updateUpdateBadgeSettings,
   useUpdateUpdateBadgeSettings,
+  updateUpdateBadgeSettingsMutationOptions,
 };
