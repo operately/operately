@@ -185,6 +185,11 @@ function Page() {
     taskDetailRequests.current.clear();
   }, [project.id]);
 
+  const refreshTaskData = React.useCallback(async () => {
+    setTaskDetails({});
+    await retryTab("tasks");
+  }, [retryTab]);
+
   const {
     tasks: baseTasks,
     setTasks,
@@ -205,7 +210,7 @@ function Page() {
     refresh,
     invalidateCache: () => invalidateProjectPageCache(project.id),
     invalidateTaskDetails: () => setTaskDetails({}),
-    refreshTasks: () => retryTab("tasks"),
+    refreshTasks: refreshTaskData,
   });
 
   const subscriptions = useSubscription({
@@ -227,7 +232,12 @@ function Page() {
     loadInitialResults: false,
   });
 
-  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(
+    project.id,
+    project.taskStatuses,
+    refresh,
+    refreshTaskData,
+  );
 
   const handleTasksViewChange = React.useCallback(
     async (tasksView: "list" | "board") => {

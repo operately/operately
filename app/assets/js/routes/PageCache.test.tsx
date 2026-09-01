@@ -63,6 +63,32 @@ describe("PageCache.fetch", () => {
     expect(fetchFn).toHaveBeenCalledTimes(2);
   });
 
+  it("does not reuse or cache a request that was invalidated while in flight", async () => {
+    let resolveStaleFetch: (value: { name: string }) => void = () => undefined;
+    const staleFetch = jest.fn(
+      () =>
+        new Promise<{ name: string }>((resolve) => {
+          resolveStaleFetch = resolve;
+        }),
+    );
+    const freshFetch = jest.fn().mockResolvedValue({ name: "Fresh" });
+
+    const staleRequest = PageCache.fetch({ cacheKey: "page-cache-test-invalidation", fetchFn: staleFetch, refreshCache: true });
+    PageCache.invalidate("page-cache-test-invalidation");
+    const freshRequest = PageCache.fetch({ cacheKey: "page-cache-test-invalidation", fetchFn: freshFetch, refreshCache: true });
+
+    resolveStaleFetch({ name: "Stale" });
+
+    await expect(freshRequest).resolves.toEqual(expect.objectContaining({ data: { name: "Fresh" } }));
+    await staleRequest;
+
+    await expect(
+      PageCache.fetch({ cacheKey: "page-cache-test-invalidation", fetchFn: freshFetch, refreshCache: false }),
+    ).resolves.toEqual(expect.objectContaining({ cacheSource: "cache", data: { name: "Fresh" } }));
+    expect(staleFetch).toHaveBeenCalledTimes(1);
+    expect(freshFetch).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps in-flight work for different keys independent", async () => {
     const firstFetch = jest.fn().mockResolvedValue({ name: "First" });
     const secondFetch = jest.fn().mockResolvedValue({ name: "Second" });

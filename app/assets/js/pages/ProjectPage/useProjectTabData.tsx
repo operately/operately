@@ -87,6 +87,7 @@ export function useProjectTabData(project: Project) {
       request = loadTab(project, tab, refreshCache)
         .then((result) => {
           if (currentProjectId.current !== requestedProjectId) return;
+
           loadedTabs.current.add(tab);
           setData((current) => ({ ...current, [tabDataKey(tab)]: result }));
           setStates((current) => ({ ...current, [tab]: { loading: false, error: false } }));
@@ -209,7 +210,10 @@ async function loadTab(project: Project, tab: ProjectPageTab, refreshCache: bool
   }
 }
 
-async function loadDocsAndFiles(project: Project, refreshCache: boolean): Promise<ProjectDocsAndFilesData> {
+async function loadDocsAndFiles(
+  project: Project,
+  refreshCache: boolean,
+): Promise<ProjectDocsAndFilesData> {
   const resourceHubId = project.resourceHub?.id;
   if (!resourceHubId) throw new Error("Project resource hub is missing");
 

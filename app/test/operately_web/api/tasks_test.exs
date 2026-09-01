@@ -160,6 +160,19 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert Enum.map(minimal_task.assignees, & &1.id) == [Paths.person_id(ctx.creator)]
       assert minimal_task.subscription_list == nil
       assert minimal_task.priority == nil
+
+      assert {200, _} =
+               mutation(ctx.conn, [:tasks, :update_description], %{
+                 task_id: Paths.task_id(ctx.task),
+                 description: RichText.rich_text("Updated task description", :as_string),
+                 type: "project"
+               })
+
+      assert {200, updated_response} =
+               query(ctx.conn, [:tasks, :list], %{project_id: Paths.project_id(ctx.project), minimal: true})
+
+      updated_task = Enum.find(updated_response.tasks, &(&1.id == Paths.task_id(ctx.task)))
+      assert updated_task.has_description
     end
   end
 

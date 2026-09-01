@@ -105,7 +105,6 @@ function Page() {
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
     pageData,
     refreshPageData,
-    clearProjectCache: true,
   });
 
   const [name, setName] = usePageField({
@@ -311,7 +310,6 @@ interface usePageFieldProps<T> {
   onError: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
   refreshPageData?: () => Promise<void>;
-  clearProjectCache?: boolean;
 }
 
 function usePageField<T>({
@@ -321,7 +319,6 @@ function usePageField<T>({
   onError,
   validations,
   refreshPageData,
-  clearProjectCache,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { cacheVersion, data } = pageData;
 
@@ -348,6 +345,10 @@ function usePageField<T>({
 
     const oldVal = state;
 
+    if (data.task.project?.id) {
+      invalidateProjectPageCache(data.task.project.id);
+    }
+
     const errorHandler = (error: any) => {
       setState(oldVal);
       onError?.(error);
@@ -368,7 +369,7 @@ function usePageField<T>({
             refreshPageData();
           }
 
-          if (clearProjectCache && data.task.project?.id) {
+          if (data.task.project?.id) {
             invalidateProjectPageCache(data.task.project.id);
           }
           return true;

@@ -28,11 +28,13 @@ const CACHE_INDEX_KEY = "PageCache:index";
 const PAGE_CACHE_METADATA_FLAG = "__pageCache";
 const MAX_WRITE_ATTEMPTS = 5;
 const inFlightFetches = new Map<string, Promise<PageCacheResult<unknown>>>();
+const cacheGenerations = new Map<string, number>();
 
 export const PageCache = {
   fetch: async function getOrSetCache<T = any>(attrs: FetchParams): Promise<PageCacheResult<T>> {
     const { cacheKey, fetchFn, maxAgeMs = DEFAULT_MAX_AGE_MS, refreshCache } = attrs;
     const storage = getLocalStorage();
+    const generation = cacheGenerations.get(cacheKey) ?? 0;
 
     const cached = safeGetItem(storage, cacheKey, "PageCache");
 
@@ -58,7 +60,8 @@ export const PageCache = {
     const request = fetchFn().then((data) => {
       const timestamp = Date.now();
 
-      if (storage) {
+      // An invalidated request may finish after a newer request. It must not restore stale data.
+      if (storage && (cacheGenerations.get(cacheKey) ?? 0) === generation) {
         safeSetCacheEntry(storage, cacheKey, { data, timestamp, [PAGE_CACHE_METADATA_FLAG]: true });
       }
 
@@ -124,6 +127,9 @@ export const PageCache = {
   },
 
   invalidate: function invalidateCache(cacheKey: string): void {
+    cacheGenerations.set(cacheKey, (cacheGenerations.get(cacheKey) ?? 0) + 1);
+    inFlightFetches.delete(cacheKey);
+
     const storage = getLocalStorage();
 
     if (!storage) {

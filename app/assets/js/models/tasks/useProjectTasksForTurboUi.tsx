@@ -109,13 +109,17 @@ export function useProjectTasksForTurboUi({
     [setMilestones],
   );
 
-  const invalidateAndRefresh = React.useCallback(async () => {
+  const invalidate = React.useCallback(() => {
     if (invalidateCache) {
       invalidateCache();
     } else {
       PageCache.invalidate(cacheKey);
     }
     invalidateTaskDetails?.();
+  }, [cacheKey, invalidateCache, invalidateTaskDetails]);
+
+  const invalidateAndRefresh = React.useCallback(async () => {
+    invalidate();
 
     if (refresh) {
       await refresh();
@@ -124,7 +128,7 @@ export function useProjectTasksForTurboUi({
     if (refreshTasks) {
       await refreshTasks();
     }
-  }, [cacheKey, invalidateCache, invalidateTaskDetails, refresh, refreshTasks]);
+  }, [invalidate, refresh, refreshTasks]);
 
   const createTask = async (task: TaskBoard.NewTaskPayload) => {
     const snapshot = createSnapshot();
@@ -192,7 +196,9 @@ export function useProjectTasksForTurboUi({
         );
       }
 
-      await invalidateAndRefresh();
+      // The optimistic row is already the server response. Refreshing here remounts the
+      // board and closes the form before a user can create another task.
+      invalidate();
 
       return { success: true };
     } catch (e) {

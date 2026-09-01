@@ -15,6 +15,7 @@ export function useTaskStatuses(
   projectId: string,
   backendStatuses: TaskStatus[] | null | undefined,
   refresh?: () => void,
+  refreshTasks?: () => Promise<void>,
 ) {
   const statuses = React.useMemo(
     () =>
@@ -48,13 +49,14 @@ export function useTaskStatuses(
           return;
         }
 
-        refresh?.();
+        await refresh?.();
+        await refreshTasks?.();
       } catch (error) {
         console.error("Failed to update task statuses", error);
         showErrorToast("Error", "Failed to update task statuses");
       }
     },
-    [projectId, refresh],
+    [projectId, refresh, refreshTasks],
   );
 
   return {
