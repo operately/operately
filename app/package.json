@@ -10,7 +10,7 @@
     "i18next": "^22.4.14",
     "nprogress": "^0.2.0",
     "phoenix": "^1.8.9",
-    "prosemirror-markdown": "^1.13.1",
+    "prosemirror-markdown": "^1.13.6",
     "prosemirror-model": "^1.24.1",
     "react": "^18.3.0",
     "react-datepicker": "^4.14.0",
