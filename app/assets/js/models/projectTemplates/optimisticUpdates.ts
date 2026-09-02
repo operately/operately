@@ -21,15 +21,20 @@ export function applyTaskPatch(
   const nextTask = { ...current, ...updates };
   const tasks = graph.tasks.map((task) => (compareIds(task.id, taskId) ? nextTask : task));
 
-  // Field-only edits keep existing milestone membership and ordering.
-  if (updates.milestoneId === undefined || compareIds(current.milestoneId, nextTask.milestoneId)) {
-    return { ...graph, tasks };
-  }
+  const nextGraph: TemplateTaskGraph =
+    updates.milestoneId === undefined || compareIds(current.milestoneId, nextTask.milestoneId)
+      ? { ...graph, tasks }
+      : {
+          ...graph,
+          tasks,
+          milestones: moveTaskOrdering(graph.milestones, taskId, nextTask.milestoneId),
+        };
+
+  if (!updates.status) return nextGraph;
 
   return {
-    ...graph,
-    tasks,
-    milestones: moveTaskOrdering(graph.milestones, taskId, nextTask.milestoneId),
+    ...nextGraph,
+    tasksKanbanState: moveTaskInKanbanState(nextGraph.tasksKanbanState, nextGraph.statuses, taskId, updates.status),
   };
 }
 
@@ -136,6 +141,32 @@ export function applyKanbanBoardPatch(
     ...applyTaskPatch(graph, taskId, { status }),
     tasksKanbanState,
   };
+}
+
+function moveTaskInKanbanState(
+  current: TemplateProjectPage.Props["template"]["tasksKanbanState"],
+  statuses: TemplateProjectPage.Props["statuses"],
+  taskId: string,
+  status: TemplateProjectPage.Task["status"],
+): TemplateProjectPage.Props["template"]["tasksKanbanState"] {
+  const statusKey = status.value || status.id;
+  const keys = uniqueKanbanKeys(current, statuses, statusKey);
+  const withoutTask = Object.fromEntries(
+    keys.map((key) => [key, (current?.[key] ?? []).filter((id) => !compareIds(id, taskId))]),
+  );
+  const destinationIndex = status.closed ? 0 : (withoutTask[statusKey] ?? []).length;
+  const column = [...(withoutTask[statusKey] ?? [])];
+  column.splice(Math.max(0, Math.min(destinationIndex, column.length)), 0, taskId);
+
+  return { ...withoutTask, [statusKey]: column };
+}
+
+function uniqueKanbanKeys(
+  current: TemplateProjectPage.Props["template"]["tasksKanbanState"],
+  statuses: TemplateProjectPage.Props["statuses"],
+  statusKey: string,
+): string[] {
+  return [...new Set([...statuses.map((item) => item.value || item.id), ...Object.keys(current ?? {}), statusKey])];
 }
 
 function moveId(ids: string[], id: string, destinationIndex: number) {

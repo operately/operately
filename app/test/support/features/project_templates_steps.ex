@@ -453,11 +453,11 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   step :assert_template_task_in_kanban_column, ctx, opts do
     task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     status_value = Keyword.fetch!(opts, :status_value)
+    column_id = UI.testid(["kanban-column", status_value])
+    card_id = UI.testid(["kanban-card", Paths.project_template_task_id(task)])
 
     ctx
-    |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
-      UI.assert_has(ctx, testid: UI.testid(["kanban-card", Paths.project_template_task_id(task)]))
-    end)
+    |> UI.wait_until_has(css: "[data-test-id='#{column_id}'] [data-test-id='#{card_id}']")
   end
 
   step :open_template_kanban_task_slide_in, ctx, task_key do
@@ -486,6 +486,7 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.click(testid: "task-status")
     |> UI.wait_until_has(testid: UI.testid(["status-option", next_status]))
     |> UI.click(testid: UI.testid(["status-option", next_status]))
+    |> UI.refute_has(testid: UI.testid(["status-option", next_status]))
     |> UI.refute_text(prev_status, testid: "task-status")
   end
 
