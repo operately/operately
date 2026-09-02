@@ -322,14 +322,13 @@ defmodule TurboConnect.TsGenTest do
     return queryOptions({
       queryKey: getUserQueryKey(input),
       queryFn: () => defaultApiClient.getUser(input),
+      staleTime: "static",
+      refetchOnMount: true,
     });
   }
 
   export function getUserQuery(input: GetUserInput) {
-    return queryClient.query({
-      ...getUserQueryOptions(input),
-      staleTime: "static",
-    });
+    return queryClient.query(getUserQueryOptions(input));
   }
 
   export function createUserMutationOptions() {
@@ -367,11 +366,14 @@ defmodule TurboConnect.TsGenTest do
       getUserQueryOptions: (input: UsersGetUserInput) => queryOptions({
         queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
         queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
+        staleTime: "static",
+        refetchOnMount: true,
       }),
       getUserQuery: (input: UsersGetUserInput) => queryClient.query({
         queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
         queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
         staleTime: "static",
+        refetchOnMount: true,
       }),
 
       createUser: (input: UsersCreateUserInput) => defaultApiClient.apiNamespaceUsers.createUser(input),

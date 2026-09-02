@@ -89,14 +89,13 @@ defmodule TurboConnect.TsGen.Queries do
         return queryOptions({
           queryKey: #{fn_name}QueryKey(input),
           queryFn: () => defaultApiClient.#{fn_name}(input),
+          staleTime: "static",
+          refetchOnMount: true,
         });
       }
 
       export function #{fn_name}Query(input: #{input_type}) {
-        return queryClient.query({
-          ...#{fn_name}QueryOptions(input),
-          staleTime: "static",
-        });
+        return queryClient.query(#{fn_name}QueryOptions(input));
       }
       """
     end)

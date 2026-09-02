@@ -1034,14 +1034,13 @@ export function getAccountsQueryOptions(input: GetAccountsInput) {
   return queryOptions({
     queryKey: getAccountsQueryKey(input),
     queryFn: () => defaultApiClient.getAccounts(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getAccountsQuery(input: GetAccountsInput) {
-  return queryClient.query({
-    ...getAccountsQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getAccountsQueryOptions(input));
 }
 
 export function getActiveCompaniesQueryKeyPrefix() {
@@ -1056,14 +1055,13 @@ export function getActiveCompaniesQueryOptions(input: GetActiveCompaniesInput) {
   return queryOptions({
     queryKey: getActiveCompaniesQueryKey(input),
     queryFn: () => defaultApiClient.getActiveCompanies(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getActiveCompaniesQuery(input: GetActiveCompaniesInput) {
-  return queryClient.query({
-    ...getActiveCompaniesQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getActiveCompaniesQueryOptions(input));
 }
 
 export function getActivitiesQueryKeyPrefix() {
@@ -1078,14 +1076,13 @@ export function getActivitiesQueryOptions(input: GetActivitiesInput) {
   return queryOptions({
     queryKey: getActivitiesQueryKey(input),
     queryFn: () => defaultApiClient.getActivities(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getActivitiesQuery(input: GetActivitiesInput) {
-  return queryClient.query({
-    ...getActivitiesQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getActivitiesQueryOptions(input));
 }
 
 export function getCompaniesQueryKeyPrefix() {
@@ -1100,14 +1097,13 @@ export function getCompaniesQueryOptions(input: GetCompaniesInput) {
   return queryOptions({
     queryKey: getCompaniesQueryKey(input),
     queryFn: () => defaultApiClient.getCompanies(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getCompaniesQuery(input: GetCompaniesInput) {
-  return queryClient.query({
-    ...getCompaniesQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getCompaniesQueryOptions(input));
 }
 
 export function getCompanyQueryKeyPrefix() {
@@ -1122,14 +1118,13 @@ export function getCompanyQueryOptions(input: GetCompanyInput) {
   return queryOptions({
     queryKey: getCompanyQueryKey(input),
     queryFn: () => defaultApiClient.getCompany(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getCompanyQuery(input: GetCompanyInput) {
-  return queryClient.query({
-    ...getCompanyQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getCompanyQueryOptions(input));
 }
 
 export function getEmailSettingsQueryKeyPrefix() {
@@ -1144,14 +1139,13 @@ export function getEmailSettingsQueryOptions(input: GetEmailSettingsInput) {
   return queryOptions({
     queryKey: getEmailSettingsQueryKey(input),
     queryFn: () => defaultApiClient.getEmailSettings(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getEmailSettingsQuery(input: GetEmailSettingsInput) {
-  return queryClient.query({
-    ...getEmailSettingsQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getEmailSettingsQueryOptions(input));
 }
 
 export function getSearchIndexStatusQueryKeyPrefix() {
@@ -1166,14 +1160,13 @@ export function getSearchIndexStatusQueryOptions(input: GetSearchIndexStatusInpu
   return queryOptions({
     queryKey: getSearchIndexStatusQueryKey(input),
     queryFn: () => defaultApiClient.getSearchIndexStatus(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getSearchIndexStatusQuery(input: GetSearchIndexStatusInput) {
-  return queryClient.query({
-    ...getSearchIndexStatusQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getSearchIndexStatusQueryOptions(input));
 }
 
 export function getUpdateBadgeSettingsQueryKeyPrefix() {
@@ -1188,14 +1181,13 @@ export function getUpdateBadgeSettingsQueryOptions(input: GetUpdateBadgeSettings
   return queryOptions({
     queryKey: getUpdateBadgeSettingsQueryKey(input),
     queryFn: () => defaultApiClient.getUpdateBadgeSettings(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function getUpdateBadgeSettingsQuery(input: GetUpdateBadgeSettingsInput) {
-  return queryClient.query({
-    ...getUpdateBadgeSettingsQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(getUpdateBadgeSettingsQueryOptions(input));
 }
 
 export function listBillingPlanDefinitionsQueryKeyPrefix() {
@@ -1210,14 +1202,13 @@ export function listBillingPlanDefinitionsQueryOptions(input: ListBillingPlanDef
   return queryOptions({
     queryKey: listBillingPlanDefinitionsQueryKey(input),
     queryFn: () => defaultApiClient.listBillingPlanDefinitions(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function listBillingPlanDefinitionsQuery(input: ListBillingPlanDefinitionsInput) {
-  return queryClient.query({
-    ...listBillingPlanDefinitionsQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(listBillingPlanDefinitionsQueryOptions(input));
 }
 
 export function listBillingProductsQueryKeyPrefix() {
@@ -1232,14 +1223,13 @@ export function listBillingProductsQueryOptions(input: ListBillingProductsInput)
   return queryOptions({
     queryKey: listBillingProductsQueryKey(input),
     queryFn: () => defaultApiClient.listBillingProducts(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function listBillingProductsQuery(input: ListBillingProductsInput) {
-  return queryClient.query({
-    ...listBillingProductsQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(listBillingProductsQueryOptions(input));
 }
 
 export function listSiteMessagesQueryKeyPrefix() {
@@ -1254,14 +1244,13 @@ export function listSiteMessagesQueryOptions(input: ListSiteMessagesInput) {
   return queryOptions({
     queryKey: listSiteMessagesQueryKey(input),
     queryFn: () => defaultApiClient.listSiteMessages(input),
+    staleTime: "static",
+    refetchOnMount: true,
   });
 }
 
 export function listSiteMessagesQuery(input: ListSiteMessagesInput) {
-  return queryClient.query({
-    ...listSiteMessagesQueryOptions(input),
-    staleTime: "static",
-  });
+  return queryClient.query(listSiteMessagesQueryOptions(input));
 }
 
 export function archiveBillingPlanDefinitionMutationOptions() {

@@ -379,11 +379,14 @@ defmodule TurboConnect.TsGen do
             #{fnName}QueryOptions: (input: #{input_type}) => queryOptions({
               queryKey: buildApiQueryKey(defaultApiClient, "#{path}", input),
               queryFn: () => #{fnCall},
+              staleTime: "static",
+              refetchOnMount: true,
             }),
             #{fnName}Query: (input: #{input_type}) => queryClient.query({
               queryKey: buildApiQueryKey(defaultApiClient, "#{path}", input),
               queryFn: () => #{fnCall},
               staleTime: "static",
+              refetchOnMount: true,
             }),
         """
       end)
