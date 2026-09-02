@@ -1,6 +1,6 @@
 import Api, { Project } from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { useQuery } from "@tanstack/react-query";
 
 export async function loader({ params }) {
   const queryInput = {
@@ -20,7 +20,7 @@ type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): { project: Project } {
   const { queryInput } = Pages.useLoadedData<LoaderResult>();
-  const { data } = useQuery(Api.projects.getQueryOptions(queryInput));
+  const { data } = useLoadedQuery(Api.projects.getQueryOptions(queryInput));
 
   if (!data?.project) {
     throw new Error(`Project data is unavailable for project "${queryInput.id}"`);
