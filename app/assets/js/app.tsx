@@ -27,6 +27,8 @@ import "@/api/socket";
 import { ToasterBar } from "turboui";
 import { installSentryAxiosInterceptor } from "@/utils/axiosErrorReporting";
 import { configureSentryUser } from "@/utils/sentryContext";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/api/queryClient";
 
 Api.default.setBasePath("/api/v2");
 AdminApi.default.setBasePath("/admin/api/v1");
@@ -63,10 +65,12 @@ const rootElement: HTMLElement | null = document.getElementById("root");
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <ToasterBar />
-    <ThemeProvider>
-      <RouterProvider router={routes} />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToasterBar />
+      <ThemeProvider>
+        <RouterProvider router={routes} />
+      </ThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 
