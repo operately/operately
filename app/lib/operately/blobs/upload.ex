@@ -18,26 +18,19 @@ defmodule Operately.Blobs.Upload do
     file_size = File.stat!(file_path).size
     previous_storage_usage = Billing.company_storage_bytes(company)
 
-    # Create blob record
-    {:ok, blob} =
-      Operately.Blobs.create_blob(%{
-        purpose: :company_file,
-        company_id: company.id,
-        author_id: author.id,
-        status: :pending,
-        filename: filename,
-        size: file_size,
-        content_type: content_type
-      })
-
-    # Upload file to storage
-    {:ok, blob} = upload(blob, file_path)
-
-    # Mark blob as uploaded
-    with {:ok, blob} <- Operately.Blobs.update_blob(blob, %{status: :uploaded}) do
-      Billing.maybe_enqueue_near_limit_warning_email(company, :storage_bytes, previous_storage_usage,
-        current_usage: Billing.company_storage_bytes(company)
-      )
+    with {:ok, blob} <-
+           Operately.Blobs.create_blob(%{
+             purpose: :company_file,
+             company_id: company.id,
+             author_id: author.id,
+             status: :pending,
+             filename: filename,
+             size: file_size,
+             content_type: content_type
+           }),
+         {:ok, blob} <- upload(blob, file_path),
+         {:ok, blob} <- Operately.Blobs.update_blob(blob, %{status: :uploaded}) do
+      Billing.maybe_enqueue_near_limit_warning_email(company, :storage_bytes, previous_storage_usage, current_usage: Billing.company_storage_bytes(company))
 
       {:ok, blob}
     end

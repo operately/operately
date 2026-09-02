@@ -132,6 +132,20 @@ defmodule Operately.CompanyTransfersTest do
     assert run.error_message == "We couldn't create the export package. Please try again. If it keeps failing, contact support."
   end
 
+  test "export worker marks the run as failed when package upload returns an error", ctx do
+    assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+
+    with_mock Operately.CompanyTransfers.BlobIO, [:passthrough], create_and_upload_company_file: fn _company, _person, _path, _content_type -> {:error, :timeout} end do
+      assert :ok = perform_job(ExportWorker, %{export_run_id: run.id})
+    end
+
+    run = CompanyTransfers.get_export_run!(run.id)
+
+    assert run.status == :failed
+    assert run.completed_at != nil
+    assert run.error_message == "We couldn't create the export package. Please try again. If it keeps failing, contact support."
+  end
+
   test "import worker imports a staged relational package", ctx do
     ctx =
       ctx

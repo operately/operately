@@ -3,7 +3,12 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriter do
   During import, scans top-level TipTap documents stored in schema-backed map fields,
   finds blob and person references inside them, and replaces each source ID with the
   destination ID generated for the imported company.
+
+  Blob nodes whose source IDs are missing from the translation plan are stripped so a
+  dangling attachment cannot abort the import. Missing mention translations still fail.
   """
+
+  require Logger
 
   alias Operately.Blobs.Blob
   alias Operately.CompanyTransfers.Import.TranslationPlan
@@ -38,6 +43,9 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriter do
 
   defp apply_rewritten_field(row, field, value, table, %TranslationPlan{} = plan) do
     case rewrite_references(value, table, field, plan) do
+      {:ok, :omit} ->
+        {:cont, {:ok, row}}
+
       {:ok, rewritten} ->
         {:cont, {:ok, Map.put(row, field, rewritten)}}
 
@@ -49,6 +57,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriter do
   defp rewrite_references(value, table, field, %TranslationPlan{} = plan) when is_list(value) do
     Enum.reduce_while(value, {:ok, []}, fn item, {:ok, acc} ->
       case rewrite_references(item, table, field, plan) do
+        {:ok, :omit} -> {:cont, {:ok, acc}}
         {:ok, rewritten} -> {:cont, {:ok, [rewritten | acc]}}
         {:error, _reason} = error -> {:halt, error}
       end
@@ -86,7 +95,8 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriter do
       [source_blob_id | _] ->
         case TranslationPlan.translate(plan, "blobs", source_blob_id) do
           nil ->
-            {:error, {:missing_rich_text_blob_translation, table, field, source_blob_id}}
+            Logger.warning("Removing rich-text blob node with no import translation table=#{table} field=#{field} source_blob_id=#{source_blob_id}")
+            {:ok, :omit}
 
           translated_blob_id ->
             {:ok, put_in(node, ["attrs"], rewrite_blob_attrs(attrs, translated_blob_id))}
@@ -100,6 +110,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriter do
   defp rewrite_references(value, table, field, %TranslationPlan{} = plan) when is_map(value) do
     Enum.reduce_while(value, {:ok, %{}}, fn {key, nested_value}, {:ok, acc} ->
       case rewrite_references(nested_value, table, field, plan) do
+        {:ok, :omit} -> {:cont, {:ok, acc}}
         {:ok, rewritten} -> {:cont, {:ok, Map.put(acc, key, rewritten)}}
         {:error, _reason} = error -> {:halt, error}
       end

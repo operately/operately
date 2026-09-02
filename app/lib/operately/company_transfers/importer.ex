@@ -80,9 +80,9 @@ defmodule Operately.CompanyTransfers.Importer do
 
   defp load_package_from_archive(workspace) do
     entries = Archive.list_entries!(workspace.zip_path)
-    data_json_entry = find_data_json_entry!(entries)
 
-    with :ok <- Limits.validate_value(:max_json_size_bytes, data_json_entry.size) do
+    with {:ok, data_json_entry} <- find_data_json_entry(entries),
+         :ok <- Limits.validate_value(:max_json_size_bytes, data_json_entry.size) do
       workspace.json_path
       |> File.write!(Archive.read_entry!(workspace.zip_path, "data.json"))
 
@@ -90,16 +90,16 @@ defmodule Operately.CompanyTransfers.Importer do
     end
   end
 
-  defp find_data_json_entry!(entries) do
+  defp find_data_json_entry(entries) do
     case Enum.filter(entries, &(&1.path == "data.json")) do
       [entry] ->
-        entry
+        {:ok, entry}
 
       [] ->
-        raise ArgumentError, "Archive does not contain data.json"
+        {:error, {:invalid_archive, "Archive does not contain data.json"}}
 
       duplicate_entries ->
-        raise ArgumentError, "Archive contains duplicate data.json entries: #{inspect(duplicate_entries)}"
+        {:error, {:invalid_archive, "Archive contains duplicate data.json entries: #{inspect(duplicate_entries)}"}}
     end
   end
 

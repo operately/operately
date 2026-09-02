@@ -44,6 +44,7 @@ defmodule Operately.CompanyTransfers.PublicErrorMessage do
 
   def for_import({:validation_failed, _message, errors}), do: import_message_from_validation_errors(errors) || @import_generic
   def for_import({:package_not_found, _reason}), do: @import_damaged_zip
+  def for_import({:invalid_archive, message}) when is_binary(message), do: import_message_from_text(message)
   def for_import({:package_limit_exceeded, _limit, _max, _actual}), do: @import_too_large
   def for_import({:missing_file_blob_translation, _source_blob_id}), do: @import_damaged_zip
   def for_import({:exception, message}) when is_binary(message), do: import_message_from_text(message)

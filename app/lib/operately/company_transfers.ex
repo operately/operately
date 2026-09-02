@@ -125,21 +125,22 @@ defmodule Operately.CompanyTransfers do
     export_run = Repo.preload(export_run, [:company, :requested_by])
     person = Operately.People.get_person!(export_run.requested_by, export_run.company)
 
-    {:ok, package_blob} = BlobIO.create_and_upload_company_file(
-      export_run.company,
-      person,
-      artifact_paths.zip_path,
-      "application/zip"
-    )
+    with {:ok, package_blob} <-
+           BlobIO.create_and_upload_company_file(
+             export_run.company,
+             person,
+             artifact_paths.zip_path,
+             "application/zip"
+           ) do
+      package_size = File.stat!(artifact_paths.zip_path).size
 
-    package_size = File.stat!(artifact_paths.zip_path).size
+      attrs = %{
+        package_blob_id: package_blob.id,
+        package_size_bytes: package_size
+      }
 
-    attrs = %{
-      package_blob_id: package_blob.id,
-      package_size_bytes: package_size
-    }
-
-    update_export_run(export_run, attrs)
+      update_export_run(export_run, attrs)
+    end
   end
 
   def list_import_runs do
