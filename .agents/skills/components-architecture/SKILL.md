@@ -54,8 +54,8 @@ TurboUI components **should**:
 ### Data types
 
 `turboui/src/ApiTypes/index.ts` mirrors the types in `app/assets/js/api/index.tsx`.
-TurboUI components should expect those API shapes — the app fetches data via
-`Api.*` and passes it through with minimal mapping.
+TurboUI components should expect those API shapes — the app fetches via TanStack
+Query and passes data through with minimal mapping.
 
 - **Default**: props use `ApiTypes` directly (e.g. `Project`, `Person`, `Task`)
 - **Custom prop type**: when the UI needs a view-specific shape, define it in
@@ -116,6 +116,12 @@ app/assets/js/pages/SomePage/
 └── page.tsx       # Build props, render TurboUI component
 ```
 
+Loaders and mutations use TanStack Query. Follow
+[`.agents/skills/tanstack-query/SKILL.md`](../tanstack-query/SKILL.md): prefetch
+with generated `*Query` helpers, read with `useLoadedQuery`, wrap mutations in
+`*Lifecycle.ts`. When adding a feature or fix on an existing page, migrate that
+page's API calls to TanStack in the same change.
+
 **Thin bridge** — loader fetches data, page passes it through:
 
 - `app/assets/js/pages/ReviewPage/index.tsx`
@@ -134,8 +140,8 @@ app/assets/js/pages/SomePage/
 
 App-side concerns that stay in the app (not TurboUI):
 
-- Data fetching: loaders, `Api.*`, model hooks
-- Mutations: wire callbacks to `Api.*` (often via `usePageField`)
+- Data fetching: TanStack loaders (`*Query` + `useLoadedQuery`), model hooks
+- Mutations: `*MutationOptions()` plus cache invalidation (often via `*Lifecycle.ts`)
 - Routing: `usePaths()` — pass link strings or path-builder callbacks as props
 - App contexts: locale, timezone, current user — pass as props
 
@@ -152,8 +158,8 @@ Matching TurboUI components to study:
 App work for a new feature:
 
 1. Add or adjust a page in `app/assets/js/pages/` (loader, navigation if needed)
-2. Fetch data in the loader; pass API-shaped data to TurboUI (typed via `ApiTypes`)
-3. Wire callbacks to `Api.*` / model hooks
+2. Prefetch in the loader with TanStack `*Query` helpers; pass API-shaped data to TurboUI (typed via `ApiTypes`)
+3. Wire callbacks to lifecycle `mutateAsync` / model hooks
 4. Render the TurboUI component
 
 ## Scenario 2: Feature Needs an Existing App UI Component
@@ -187,6 +193,7 @@ Use when a full migration would dominate the PR or touch unrelated features.
 - [ ] New or changed UI lives in `turboui/src/`, not in deprecated app UI folders
 - [ ] TurboUI component has no app imports or API calls
 - [ ] App page passes data and callbacks; API and context logic stays in app
+- [ ] Page loaders and mutations on the touched surface use TanStack Query (see tanstack-query skill)
 - [ ] Component exported from `turboui/src/index.tsx`
 - [ ] Storybook story added or updated (`make turboui.build && make turboui.test`)
 - [ ] Props typed with `ApiTypes` or a documented component-specific type — no new app-side parsers
