@@ -1,41 +1,59 @@
+import Api, { ProjectCheckIn } from "@/api";
 import * as Pages from "@/components/Pages";
-import * as ProjectCheckIns from "@/models/projectCheckIns";
-import { isSubscribedToResource } from "@/models/subscriptions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface LoaderResult {
-  checkIn: ProjectCheckIns.ProjectCheckIn;
-  isCurrentUserSubscribed: boolean;
+export async function loader({ params }) {
+  const queryInput = {
+    id: params.id,
+    includeProject: true,
+    includeSpace: true,
+    includeAuthor: true,
+    includeReactions: true,
+    includeAcknowledgedBy: true,
+    includeSubscriptionsList: true,
+    includePotentialSubscribers: true,
+    includeUnreadNotifications: true,
+  };
+
+  const subscriptionInput = {
+    resourceId: params.id,
+    resourceType: "project_check_in" as const,
+  };
+
+  await Promise.all([Api.projects.getCheckInQuery(queryInput), Api.notifications.isSubscribedQuery(subscriptionInput)]);
+
+  return { queryInput, subscriptionInput };
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  const [checkIn, subscriptionStatus] = await Promise.all([
-    ProjectCheckIns.getProjectCheckIn({
-      id: params.id,
-      includeProject: true,
-      includeSpace: true,
-      includeAuthor: true,
-      includeReactions: true,
-      includeAcknowledgedBy: true,
-      includeSubscriptionsList: true,
-      includePotentialSubscribers: true,
-      includeUnreadNotifications: true,
-    }).then((data) => data.projectCheckIn),
-    isSubscribedToResource({
-      resourceId: params.id,
-      resourceType: "project_check_in",
-    }),
-  ]);
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
+
+export function useLoadedData(): { checkIn: ProjectCheckIn; isCurrentUserSubscribed: boolean } {
+  const { queryInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
+  const { data } = useQuery(Api.projects.getCheckInQueryOptions(queryInput));
+  const { data: subscription } = useQuery(Api.notifications.isSubscribedQueryOptions(subscriptionInput));
+
+  if (!data?.projectCheckIn) {
+    throw new Error(`Check-in data is unavailable for check-in "${queryInput.id}"`);
+  }
+
+  if (!subscription) {
+    throw new Error(`Subscription status is unavailable for check-in "${subscriptionInput.resourceId}"`);
+  }
 
   return {
-    checkIn,
-    isCurrentUserSubscribed: subscriptionStatus.subscribed,
+    checkIn: data.projectCheckIn,
+    isCurrentUserSubscribed: subscription.subscribed,
   };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
-}
-
 export function useRefresh() {
-  return Pages.useRefresh();
+  const queryClient = useQueryClient();
+  const { queryInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
+
+  return () => {
+    void Promise.all([
+      queryClient.invalidateQueries({ queryKey: Api.projects.getCheckInQueryKey(queryInput) }),
+      queryClient.invalidateQueries({ queryKey: Api.notifications.isSubscribedQueryKey(subscriptionInput) }),
+    ]);
+  };
 }

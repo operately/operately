@@ -6,7 +6,7 @@ import { PrimaryButton } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 
 export function AckCTA() {
   const me = useMe();
@@ -48,15 +48,12 @@ function showAcknowledgeButton(retrospective: Projects.ProjectRetrospective, me:
 
 function useAcknowledgeHandler(retrospective: Projects.ProjectRetrospective, ackOnLoad: boolean) {
   const me = useMe();
-  const refresh = useRefresh();
-  const [ack] = Projects.useAcknowledgeProjectRetrospective();
+  const ack = Projects.useAcknowledgeProjectRetrospective();
 
   const handleAck = async () => {
     if (!showAcknowledgeButton(retrospective, me!)) return;
 
-    await ack({ projectId: retrospective.project.id });
-
-    refresh();
+    await ack.mutateAsync({ projectId: retrospective.project.id });
   };
 
   React.useEffect(() => {
