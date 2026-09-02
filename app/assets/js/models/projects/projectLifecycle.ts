@@ -66,3 +66,14 @@ export function useEditProjectRetrospective() {
     },
   });
 }
+
+export function useAcknowledgeProjectRetrospective() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.acknowledgeRetrospectiveMutationOptions(),
+    onSuccess: () => {
+      void invalidateProjectRetrospectiveQueries(queryClient);
+    },
+  });
+}

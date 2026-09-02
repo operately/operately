@@ -15,7 +15,7 @@ export function Page() {
   const { project } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [post] = usePostProjectCheckIn();
+  const post = usePostProjectCheckIn();
   const formattedTimePreferences = useFormattedTimePreferences();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id! } });
 
@@ -49,7 +49,7 @@ export function Page() {
     if (!values.status || !values.description) return false;
 
     try {
-      const res = await post({
+      const res = await post.mutateAsync({
         projectId: project.id,
         status: values.status,
         description: JSON.stringify(values.description),
