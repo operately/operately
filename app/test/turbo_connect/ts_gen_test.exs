@@ -328,7 +328,7 @@ defmodule TurboConnect.TsGenTest do
   export function getUserQuery(input: GetUserInput) {
     return queryClient.query({
       ...getUserQueryOptions(input),
-      staleTime: "static",
+      staleTime: Infinity,
     });
   }
 
@@ -371,7 +371,7 @@ defmodule TurboConnect.TsGenTest do
       getUserQuery: (input: UsersGetUserInput) => queryClient.query({
         queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
         queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
-        staleTime: "static",
+        staleTime: Infinity,
       }),
 
       createUser: (input: UsersCreateUserInput) => defaultApiClient.apiNamespaceUsers.createUser(input),

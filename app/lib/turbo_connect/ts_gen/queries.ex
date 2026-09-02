@@ -95,7 +95,7 @@ defmodule TurboConnect.TsGen.Queries do
       export function #{fn_name}Query(input: #{input_type}) {
         return queryClient.query({
           ...#{fn_name}QueryOptions(input),
-          staleTime: "static",
+          staleTime: Infinity,
         });
       }
       """

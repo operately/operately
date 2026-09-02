@@ -1040,7 +1040,7 @@ export function getAccountsQueryOptions(input: GetAccountsInput) {
 export function getAccountsQuery(input: GetAccountsInput) {
   return queryClient.query({
     ...getAccountsQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1062,7 +1062,7 @@ export function getActiveCompaniesQueryOptions(input: GetActiveCompaniesInput) {
 export function getActiveCompaniesQuery(input: GetActiveCompaniesInput) {
   return queryClient.query({
     ...getActiveCompaniesQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1084,7 +1084,7 @@ export function getActivitiesQueryOptions(input: GetActivitiesInput) {
 export function getActivitiesQuery(input: GetActivitiesInput) {
   return queryClient.query({
     ...getActivitiesQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1106,7 +1106,7 @@ export function getCompaniesQueryOptions(input: GetCompaniesInput) {
 export function getCompaniesQuery(input: GetCompaniesInput) {
   return queryClient.query({
     ...getCompaniesQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1128,7 +1128,7 @@ export function getCompanyQueryOptions(input: GetCompanyInput) {
 export function getCompanyQuery(input: GetCompanyInput) {
   return queryClient.query({
     ...getCompanyQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1150,7 +1150,7 @@ export function getEmailSettingsQueryOptions(input: GetEmailSettingsInput) {
 export function getEmailSettingsQuery(input: GetEmailSettingsInput) {
   return queryClient.query({
     ...getEmailSettingsQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1172,7 +1172,7 @@ export function getSearchIndexStatusQueryOptions(input: GetSearchIndexStatusInpu
 export function getSearchIndexStatusQuery(input: GetSearchIndexStatusInput) {
   return queryClient.query({
     ...getSearchIndexStatusQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1194,7 +1194,7 @@ export function getUpdateBadgeSettingsQueryOptions(input: GetUpdateBadgeSettings
 export function getUpdateBadgeSettingsQuery(input: GetUpdateBadgeSettingsInput) {
   return queryClient.query({
     ...getUpdateBadgeSettingsQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1216,7 +1216,7 @@ export function listBillingPlanDefinitionsQueryOptions(input: ListBillingPlanDef
 export function listBillingPlanDefinitionsQuery(input: ListBillingPlanDefinitionsInput) {
   return queryClient.query({
     ...listBillingPlanDefinitionsQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1238,7 +1238,7 @@ export function listBillingProductsQueryOptions(input: ListBillingProductsInput)
 export function listBillingProductsQuery(input: ListBillingProductsInput) {
   return queryClient.query({
     ...listBillingProductsQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 
@@ -1260,7 +1260,7 @@ export function listSiteMessagesQueryOptions(input: ListSiteMessagesInput) {
 export function listSiteMessagesQuery(input: ListSiteMessagesInput) {
   return queryClient.query({
     ...listSiteMessagesQueryOptions(input),
-    staleTime: "static",
+    staleTime: Infinity,
   });
 }
 

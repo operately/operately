@@ -1,6 +1,7 @@
 import Api, { ProjectRetrospective } from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 export async function loader({ params }) {
   const queryInput = {
@@ -35,8 +36,8 @@ type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): { retrospective: ProjectRetrospective; isCurrentUserSubscribed: boolean } {
   const { queryInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
-  const { data } = useQuery(Api.projects.getRetrospectiveQueryOptions(queryInput));
-  const { data: subscription } = useQuery(Api.notifications.isSubscribedQueryOptions(subscriptionInput));
+  const { data } = useLoadedQuery(Api.projects.getRetrospectiveQueryOptions(queryInput));
+  const { data: subscription } = useLoadedQuery(Api.notifications.isSubscribedQueryOptions(subscriptionInput));
 
   if (!data?.retrospective) {
     throw new Error(`Retrospective data is unavailable for project "${queryInput.projectId}"`);
