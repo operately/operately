@@ -19,6 +19,11 @@ export {
   usePauseProject,
   useResumeProject,
 } from "./projectLifecycle";
+export {
+  invalidateProjectDiscussionQueries,
+  useCreateProjectDiscussion,
+  useUpdateProjectDiscussion,
+} from "./projectDiscussionLifecycle";
 
 export type Project = api.Project;
 export type Milestone = api.Milestone;
