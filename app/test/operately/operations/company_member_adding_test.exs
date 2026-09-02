@@ -25,7 +25,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   @member_attrs %{
     :full_name => "John Doe",
     :email => @email,
-    :title => "Developer",
+    :title => "Developer"
   }
 
   setup do
@@ -36,11 +36,13 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates person", ctx do
-    assert Repo.aggregate(Person, :count, :id) == 2 # company creator + company admin
+    # company creator + company admin
+    assert company_people_count(ctx.company.id) == 2
 
     {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
-    assert Repo.aggregate(Person, :count, :id) == 3 # company creator + company admin + new member
+    # company creator + company admin + new member
+    assert company_people_count(ctx.company.id) == 3
     assert People.get_account_by_email(@email)
 
     person = People.get_person_by_email(ctx.company, @email)
@@ -200,6 +202,25 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     end
   end
 
+  test "CompanyMemberAdding operation creates a member who has no title", ctx do
+    attrs = %{full_name: "No Title", email: "no-title@your-company.com", title: nil}
+
+    assert {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, attrs)
+
+    person = People.get_person_by_email(ctx.company, attrs.email)
+
+    assert person.full_name == "No Title"
+    assert person.title == nil
+
+    activity =
+      from(a in Activity, where: a.action == "company_member_added" and a.content["email"] == ^attrs.email)
+      |> Repo.one!()
+
+    assert activity.content["name"] == "No Title"
+    assert activity.content["person_id"] == person.id
+    assert activity.content["title"] == nil
+  end
+
   test "CompanyMemberAdding operation creates activity", ctx do
     {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
 
@@ -271,5 +292,9 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
         billing_interval: :monthly,
         status: :active
       })
+  end
+
+  defp company_people_count(company_id) do
+    from(p in Person, where: p.company_id == ^company_id) |> Repo.aggregate(:count, :id)
   end
 end
