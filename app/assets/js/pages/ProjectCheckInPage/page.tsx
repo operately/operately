@@ -211,7 +211,7 @@ interface DeleteCheckInModalProps {
 function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
   const navigate = useNavigate();
   const { checkIn } = useLoadedData();
-  const [remove] = useDeleteProjectCheckIn();
+  const remove = useDeleteProjectCheckIn();
   const paths = usePaths();
 
   assertPresent(checkIn.project, "Check-in project must be defined");
@@ -220,7 +220,7 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     fields: {},
     cancel: toggleModal,
     submit: async () => {
-      await remove({ checkInId: checkIn.id });
+      await remove.mutateAsync({ checkInId: checkIn.id });
       if (checkIn.state === "draft" || checkIn.state === "scheduled") {
         showSuccessToast("Draft discarded", "The draft has been discarded.");
       } else {

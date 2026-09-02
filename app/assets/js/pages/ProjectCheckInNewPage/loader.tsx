@@ -1,22 +1,30 @@
+import Api, { Project } from "@/api";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/models/projects";
+import { useQuery } from "@tanstack/react-query";
 
-interface LoaderResult {
-  project: Projects.Project;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    project: await Projects.getProject({
-      id: params.projectID,
-      includePotentialSubscribers: true,
-      includeReviewer: true,
-      includeSpace: true,
-      includeLastCheckIn: true,
-    }).then((data) => data.project!),
+export async function loader({ params }) {
+  const queryInput = {
+    id: params.projectID,
+    includePotentialSubscribers: true,
+    includeReviewer: true,
+    includeSpace: true,
+    includeLastCheckIn: true,
   };
+
+  await Api.projects.getQuery(queryInput);
+
+  return { queryInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
+
+export function useLoadedData(): { project: Project } {
+  const { queryInput } = Pages.useLoadedData<LoaderResult>();
+  const { data } = useQuery(Api.projects.getQueryOptions(queryInput));
+
+  if (!data?.project) {
+    throw new Error(`Project data is unavailable for project "${queryInput.id}"`);
+  }
+
+  return { project: data.project };
 }
