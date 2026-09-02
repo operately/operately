@@ -32,7 +32,6 @@ jest.mock("turboui", () => ({
 }));
 
 const mockUseMe = jest.mocked(useMe);
-const personId = "person-1";
 
 const release = {
   __typename: "product_release" as const,
@@ -40,6 +39,10 @@ const release = {
   title: "MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more",
   publishedAt: "2026-07-17T00:00:00Z",
 };
+
+function stubMe(dismissedProductReleaseId: string | null) {
+  mockUseMe.mockReturnValue({ dismissedProductReleaseId } as ReturnType<typeof useMe>);
+}
 
 function renderBanner(productRelease: typeof release | null = release) {
   return renderToStaticMarkup(<ProductReleaseAnnouncementBanner productRelease={productRelease} />);
@@ -51,19 +54,19 @@ describe("ProductReleaseAnnouncementBanner", () => {
   });
 
   it("does not render when there is no release", () => {
-    mockUseMe.mockReturnValue({ id: personId, dismissedProductReleaseId: null });
+    stubMe(null);
 
     expect(renderBanner(null)).toBe("");
   });
 
   it("does not render when the current person already dismissed the release", () => {
-    mockUseMe.mockReturnValue({ id: personId, dismissedProductReleaseId: release.id });
+    stubMe(release.id);
 
     expect(renderBanner()).toBe("");
   });
 
   it("renders the toast when the release has not been dismissed", () => {
-    mockUseMe.mockReturnValue({ id: personId, dismissedProductReleaseId: null });
+    stubMe(null);
 
     const markup = renderBanner();
 
