@@ -12,7 +12,7 @@ defmodule Operately.Activities.Content.CompanyMemberRemoved do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required([:company_id, :name, :email])
   end
 
   def build(params) do

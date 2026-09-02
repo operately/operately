@@ -41,4 +41,14 @@ defmodule Operately.ActivitiesTest do
       assert length(all_enqueued(worker: NotificationDispatcher)) == 1
     end)
   end
+
+  test "insert_sync/5 returns a changeset error instead of raising when content is invalid", ctx do
+    result =
+      Ecto.Multi.new()
+      |> Activities.insert_sync(ctx.admin.id, :company_member_removed, fn _changes -> %{} end, include_notification: false)
+      |> Repo.transaction()
+
+    assert {:error, :activity, changeset, %{}} = result
+    assert changeset.errors != []
+  end
 end

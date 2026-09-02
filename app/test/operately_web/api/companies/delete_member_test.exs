@@ -50,6 +50,18 @@ defmodule OperatelyWeb.Api.Companies.DeleteMemberTest do
       assert res.person.id == Paths.person_id(member)
     end
 
+    test "admin can remove members who have no title", ctx do
+      set_caller_access_level(ctx, :full_access)
+      member = person_fixture_with_account(%{company_id: ctx.company.id, title: nil, has_open_invitation: false})
+
+      assert {200, res} = mutation(ctx.conn, [:companies, :delete_member], %{person_id: Paths.person_id(member)})
+
+      member = Repo.get(Operately.People.Person, member.id)
+
+      assert member.suspended
+      assert res.person.id == Paths.person_id(member)
+    end
+
     test "admin can remove members with used accounts", ctx do
       set_caller_access_level(ctx, :full_access)
       member = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: false})

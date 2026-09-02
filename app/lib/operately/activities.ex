@@ -43,16 +43,19 @@ defmodule Operately.Activities do
     {activity_name, updated_activity_name, notification_name} = activity_operation_names(opts)
 
     multi
-    |> Ecto.Multi.insert(activity_name, fn changes ->
-      {:ok, content} = build_content(Atom.to_string(action), callback.(changes))
+    |> Ecto.Multi.run(activity_name, fn repo, changes ->
       comment_thread_id = Keyword.get(opts, :comment_thread_id, nil)
 
-      Activity.changeset(%{
-        author_id: author_id,
-        action: Atom.to_string(action),
-        content: content,
-        comment_thread_id: comment_thread_id,
-      })
+      with {:ok, content} <- build_content(Atom.to_string(action), callback.(changes)) do
+        repo.insert(
+          Activity.changeset(%{
+            author_id: author_id,
+            action: Atom.to_string(action),
+            content: content,
+            comment_thread_id: comment_thread_id
+          })
+        )
+      end
     end)
     |> assign_context(activity_name, updated_activity_name)
     |> dispatch_notification(opts, activity_name, notification_name)
