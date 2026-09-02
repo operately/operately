@@ -1,17 +1,67 @@
 defmodule Operately.Blobs.S3Http do
+  require Logger
+
   alias Operately.Blobs.S3Config
 
   @download_recv_timeout_ms 60_000
+  @upload_connect_timeout_ms 30_000
+  @upload_recv_timeout_ms 3_600_000
+  @upload_request_opts [
+    {:connect_timeout, @upload_connect_timeout_ms},
+    {:recv_timeout, @upload_recv_timeout_ms}
+  ]
 
   def put_file(path, source_path, headers) when is_binary(path) and is_binary(source_path) and is_list(headers) do
-    with {:ok, url} <- S3Config.presigned_url(:put, path, headers, [], expires_in: 3600),
-         {:ok, status, _resp_headers, body} <- :hackney.request(:put, url, headers, {:file, source_path}, []) do
-      case status do
-        status when status in 200..299 -> :ok
-        status -> {:error, {:http_error, status, body}}
-      end
+    with {:ok, url} <- S3Config.presigned_url(:put, path, headers, [], expires_in: 3600) do
+      put_with_retry(url, source_path, headers)
     end
   end
+
+  defp put_with_retry(url, source_path, headers) do
+    case request_put(url, source_path, headers) do
+      :ok ->
+        :ok
+
+      {:error, reason} = error ->
+        if retryable_put_error?(reason) do
+          Logger.warning("Retrying S3 file upload after transient failure: #{retry_log_reason(reason)}")
+          request_put(url, source_path, headers)
+        else
+          error
+        end
+    end
+  end
+
+  defp request_put(url, source_path, headers) do
+    try do
+      case :hackney.request(:put, url, headers, {:file, source_path}, @upload_request_opts) do
+        {:ok, status, _resp_headers, _body} when status in 200..299 ->
+          :ok
+
+        {:ok, status, _resp_headers, body} ->
+          {:error, {:http_error, status, body}}
+
+        {:error, reason} ->
+          {:error, reason}
+      end
+    catch
+      :exit, reason ->
+        {:error, {:request_exit, root_exit_reason(reason)}}
+    end
+  end
+
+  defp retryable_put_error?({:request_exit, _reason}), do: true
+  defp retryable_put_error?({:http_error, status, _body}) when status in [408, 429], do: true
+  defp retryable_put_error?({:http_error, status, _body}) when status in 500..599, do: true
+  defp retryable_put_error?(reason) when reason in [:timeout, :connect_timeout, :closed, :econnreset], do: true
+  defp retryable_put_error?(_reason), do: false
+
+  defp root_exit_reason({reason, {:gen_statem, :call, _args}}), do: reason
+  defp root_exit_reason(reason), do: reason
+
+  defp retry_log_reason({:request_exit, _reason}), do: "request_exit"
+  defp retry_log_reason({:http_error, status, _body}), do: "http_status=#{status}"
+  defp retry_log_reason(reason), do: inspect(reason)
 
   def download_to_file(path, dest_path) when is_binary(path) and is_binary(dest_path) do
     File.mkdir_p!(Path.dirname(dest_path))

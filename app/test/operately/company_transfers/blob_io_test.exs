@@ -106,6 +106,17 @@ defmodule Operately.CompanyTransfers.BlobIOTest do
       end
     end
 
+    test "create_and_upload_company_file/4 propagates an S3 upload failure", ctx do
+      source_path = temp_path("blob-io-s3-upload-failure.txt")
+      File.write!(source_path, "blob io upload content")
+
+      on_exit(fn -> cleanup_paths([source_path]) end)
+
+      with_mock Operately.Blobs.S3Http, put_file: fn _path, _source_path, _headers -> {:error, :timeout} end do
+        assert {:error, :timeout} = BlobIO.create_and_upload_company_file(ctx.company, ctx.creator, source_path, "text/plain")
+      end
+    end
+
     test "upload_to_blob/2 uploads through the S3 HTTP wrapper", ctx do
       source_path = temp_path("blob-io-s3-existing-source.txt")
       File.write!(source_path, "existing blob content")

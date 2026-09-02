@@ -1,6 +1,7 @@
 defmodule Operately.Blobs.S3HttpTest do
   use ExUnit.Case
 
+  import ExUnit.CaptureLog
   import Mock
 
   alias Operately.Blobs.S3Http
@@ -16,9 +17,137 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [], [request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, [] -> {:ok, 200, [], ""} end]}
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, opts ->
+           assert Keyword.get(opts, :connect_timeout) == 30_000
+           assert Keyword.get(opts, :recv_timeout) == 3_600_000
+           {:ok, 200, [], ""}
+         end
+       ]}
     ]) do
       assert :ok = S3Http.put_file("some/path", source_path, headers)
+    end
+  end
+
+  test "put_file/3 retries once and preserves the reason when hackney exits" do
+    source_path = temp_path("s3-http-upload-exit.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+    request_url = "https://storage.example/put?X-Amz-Signature=secret"
+
+    on_exit(fn ->
+      cleanup_paths([source_path])
+    end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           Agent.update(attempts, &(&1 + 1))
+           exit({{:noproc, :gen_statem}, {:gen_statem, :call, [self(), {:request, "PUT", request_url}]}})
+         end
+       ]}
+    ]) do
+      log =
+        capture_log(fn ->
+          assert {:error, {:request_exit, {:noproc, :gen_statem}}} = S3Http.put_file("some/path", source_path, headers)
+        end)
+
+      assert Agent.get(attempts, & &1) == 2
+      assert log =~ "Retrying S3 file upload after transient failure"
+      assert log =~ "request_exit"
+      refute log =~ request_url
+    end
+  end
+
+  test "put_file/3 retries known transient transport errors once" do
+    Enum.each([:timeout, :connect_timeout, :closed, :econnreset], &assert_retries_transport_error/1)
+  end
+
+  test "put_file/3 does not retry HTTP client errors" do
+    source_path = temp_path("s3-http-upload-400.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    on_exit(fn ->
+      cleanup_paths([source_path])
+    end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           Agent.update(attempts, &(&1 + 1))
+           {:ok, 403, [], "forbidden"}
+         end
+       ]}
+    ]) do
+      assert {:error, {:http_error, 403, "forbidden"}} = S3Http.put_file("some/path", source_path, headers)
+      assert Agent.get(attempts, & &1) == 1
+    end
+  end
+
+  test "put_file/3 retries retryable HTTP responses once" do
+    Enum.each([408, 429, 503], &assert_retries_http_status/1)
+  end
+
+  test "put_file/3 does not retry redirects or unknown transport errors" do
+    Enum.each([{:http_error, 302, "redirect"}, :invalid_request], &assert_does_not_retry/1)
+  end
+
+  test "put_file/3 does not catch or retry raised errors" do
+    source_path = temp_path("s3-http-upload-raise.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    on_exit(fn -> cleanup_paths([source_path]) end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           Agent.update(attempts, &(&1 + 1))
+           raise ArgumentError, "invalid upload request"
+         end
+       ]}
+    ]) do
+      assert_raise ArgumentError, "invalid upload request", fn ->
+        S3Http.put_file("some/path", source_path, headers)
+      end
+
+      assert Agent.get(attempts, & &1) == 1
+    end
+  end
+
+  test "put_file/3 returns the error when the retry also fails" do
+    source_path = temp_path("s3-http-upload-timeout.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    on_exit(fn ->
+      cleanup_paths([source_path])
+    end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           Agent.update(attempts, &(&1 + 1))
+           {:error, :timeout}
+         end
+       ]}
+    ]) do
+      capture_log(fn -> assert {:error, :timeout} = S3Http.put_file("some/path", source_path, headers) end)
+      assert Agent.get(attempts, & &1) == 2
     end
   end
 
@@ -96,6 +225,85 @@ defmodule Operately.Blobs.S3HttpTest do
 
   defp temp_path(filename) do
     Path.join(System.tmp_dir!(), "#{System.unique_integer([:positive])}-#{filename}")
+  end
+
+  defp assert_retries_http_status(status) do
+    source_path = temp_path("s3-http-upload-#{status}.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           case Agent.get_and_update(attempts, fn count -> {count + 1, count + 1} end) do
+             1 -> {:ok, status, [], "retryable"}
+             2 -> {:ok, 200, [], ""}
+           end
+         end
+       ]}
+    ]) do
+      capture_log(fn -> assert :ok = S3Http.put_file("some/path", source_path, headers) end)
+      assert Agent.get(attempts, & &1) == 2
+    end
+
+    cleanup_paths([source_path])
+  end
+
+  defp assert_retries_transport_error(reason) do
+    source_path = temp_path("s3-http-upload-#{reason}.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           case Agent.get_and_update(attempts, fn count -> {count + 1, count + 1} end) do
+             1 -> {:error, reason}
+             2 -> {:ok, 200, [], ""}
+           end
+         end
+       ]}
+    ]) do
+      capture_log(fn -> assert :ok = S3Http.put_file("some/path", source_path, headers) end)
+      assert Agent.get(attempts, & &1) == 2
+    end
+
+    cleanup_paths([source_path])
+  end
+
+  defp assert_does_not_retry(reason) do
+    source_path = temp_path("s3-http-upload-non-retryable.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    response =
+      case reason do
+        {:http_error, status, body} -> {:ok, status, [], body}
+        transport_reason -> {:error, transport_reason}
+      end
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {:hackney, [],
+       [
+         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+           Agent.update(attempts, &(&1 + 1))
+           response
+         end
+       ]}
+    ]) do
+      assert {:error, ^reason} = S3Http.put_file("some/path", source_path, headers)
+      assert Agent.get(attempts, & &1) == 1
+    end
+
+    cleanup_paths([source_path])
   end
 
   defp cleanup_paths(paths) do

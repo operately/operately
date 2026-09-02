@@ -23,6 +23,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.Projects.Project
   alias Operately.ResourceHubs.Document
   alias Operately.ResourceHubs.DocumentVersion
+  alias Operately.ResourceHubs.File, as: ResourceHubFile
   alias Operately.Repo
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
   alias OperatelyWeb.Paths, as: WebPaths
@@ -406,8 +407,20 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert {:ok, import_run} = stage_package_blob(import_run, ctx.account, workspace.zip_path)
     assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
 
-    assert {:error, {:exception, message}} = Importer.run(import_run)
-    assert message =~ "Archive does not contain data.json"
+    assert {:error, {:invalid_archive, "Archive does not contain data.json"}} = Importer.run(import_run)
+  end
+
+  test "run/1 fails when the package contains duplicate data.json entries", ctx do
+    assert {:ok, import_run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+    assert {:ok, import_run, workspace} = CompanyTransfers.prepare_import_workspace(import_run)
+
+    create_zip_with_duplicate_data_json!(workspace.zip_path)
+
+    assert {:ok, import_run} = stage_package_blob(import_run, ctx.account, workspace.zip_path)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:invalid_archive, message}} = Importer.run(import_run)
+    assert message =~ "Archive contains duplicate data.json entries"
   end
 
   test "run/1 fails when data.json is invalid JSON", ctx do
@@ -820,6 +833,28 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     _ = File.rm(storage_path(imported_blob))
   end
 
+  test "run/1 copies resource file names from the related node when the file name is blank", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_file(:file, :hub)
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               package
+               |> Transfers.update_row("resource_files", ctx.file.id, &Map.put(&1, "name", nil))
+               |> Transfers.update_row("resource_nodes", ctx.file.node_id, &Map.put(&1, "name", "Launch artwork"))
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_file = imported_resource_file!(completed_run.company_id)
+
+    assert imported_file.name == "Launch artwork"
+  end
+
   test "run/1 round-trips document versions including historical-only blobs", ctx do
     ctx =
       ctx
@@ -1105,6 +1140,23 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     Enum.each(blobs, fn blob ->
       _ = File.rm(storage_path(blob))
     end)
+  end
+
+  defp imported_resource_file!(company_id) do
+    Repo.one!(
+      from f in ResourceHubFile,
+        join: n in assoc(f, :node),
+        join: h in assoc(n, :resource_hub),
+        join: s in assoc(h, :space),
+        where: s.company_id == ^company_id
+    )
+  end
+
+  defp create_zip_with_duplicate_data_json!(zip_path) do
+    {:ok, {_name, archive}} =
+      :zip.create(~c"duplicate-data-json.zip", [{~c"data.json", "{}"}, {~c"data.json", "{}"}], [:memory])
+
+    File.write!(zip_path, archive)
   end
 
   defp storage_path(%Blob{} = blob) do

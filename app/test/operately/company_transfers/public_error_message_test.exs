@@ -5,12 +5,13 @@ defmodule Operately.CompanyTransfers.PublicErrorMessageTest do
 
   test "maps import validation errors to public messages and deduplicates them" do
     reason =
-      {:validation_failed, "raw validation message", [
-        %{"code" => "duplicate_account_emails"},
-        %{"code" => "invalid_goal_update_authors"},
-        %{"code" => "file_count_mismatch"},
-        %{"code" => "file_count_mismatch"}
-      ]}
+      {:validation_failed, "raw validation message",
+       [
+         %{"code" => "duplicate_account_emails"},
+         %{"code" => "invalid_goal_update_authors"},
+         %{"code" => "file_count_mismatch"},
+         %{"code" => "file_count_mismatch"}
+       ]}
 
     assert PublicErrorMessage.for_import(reason) ==
              "This package contains duplicate email addresses and can't be imported until that is fixed. " <>
@@ -47,5 +48,12 @@ defmodule Operately.CompanyTransfers.PublicErrorMessageTest do
              "This ZIP file looks incomplete or damaged. Export the company again and try again."
 
     assert PublicErrorMessage.for_export(export_run) == "This company is no longer available to export."
+  end
+
+  test "maps invalid archive errors to the damaged zip message" do
+    expected = "This ZIP file looks incomplete or damaged. Export the company again and try again."
+
+    assert PublicErrorMessage.for_import({:invalid_archive, "Archive does not contain data.json"}) == expected
+    assert PublicErrorMessage.for_import({:invalid_archive, "Archive contains duplicate data.json entries"}) == expected
   end
 end
