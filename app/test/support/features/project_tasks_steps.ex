@@ -434,6 +434,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :assert_only_destination_project_shown, ctx do
     destination_project_result =
       UI.testid(["move-task-project-field-search-result", ctx.destination_project.name])
+
     original_project_result =
       UI.testid(["move-task-project-field-search-result", ctx.project.name])
 
@@ -502,7 +503,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     assert task.task_status.color == :green
   end
 
-   step :assert_task_status_in_header, ctx, label do
+  step :assert_task_status_in_header, ctx, label do
     ctx
     |> UI.assert_text(label)
   end
@@ -1110,11 +1111,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :assert_task_in_kanban_column, ctx, opts do
     task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     status_value = Keyword.fetch!(opts, :status_value)
+    column_id = UI.testid(["kanban-column", status_value])
+    card_id = UI.testid(["kanban-card", Paths.task_id(task)])
 
     ctx
-    |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
-      UI.assert_has(ctx, testid: UI.testid(["kanban-card", Paths.task_id(task)]))
-    end)
+    |> UI.wait_until_has(css: "[data-test-id='#{column_id}'] [data-test-id='#{card_id}']")
   end
 
   step :open_kanban_task_slide_in, ctx, task_key do

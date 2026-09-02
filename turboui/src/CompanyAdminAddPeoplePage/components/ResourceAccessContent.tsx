@@ -160,7 +160,11 @@ function TypeSelector({
   onChange: (type: CompanyAdminAddPeoplePage.ResourceType) => void;
   testId?: string;
 }) {
-  const typeItems = RESOURCE_TYPE_OPTIONS.map((opt) => ({ id: opt.value, name: opt.label }));
+  const typeItems = RESOURCE_TYPE_OPTIONS.map((opt) => ({
+    id: opt.value,
+    name: opt.label,
+    testId: `resource-type-option-${opt.value}`,
+  }));
 
   return (
     <Dropdown

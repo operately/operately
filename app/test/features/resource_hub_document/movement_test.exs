@@ -9,24 +9,26 @@ defmodule Operately.Features.ResourceHubDocument.MovementTest do
   setup ctx, do: Steps.setup(ctx)
 
   describe "Move" do
-    @resource_name "Document"
+    @resource_name "Q3 Planning Brief"
 
     feature "Moving document to child folder", ctx do
       ctx
       |> Steps.given_nested_folders_exist()
-      |> Steps.given_document_within_resource_hub_root_exists(:hub)
+      |> Factory.add_document(:document, :hub, name: @resource_name)
       |> move_resource_to_child_folder(resource_name: @resource_name, type: :document)
     end
 
     feature "Moving document to parent folder", ctx do
       ctx
-      |> Steps.given_document_within_nested_folders_exists()
+      |> Steps.given_nested_folders_exist()
+      |> Factory.add_document(:document, :hub, folder: :five, name: @resource_name)
       |> move_resource_to_parent_folder(resource_name: @resource_name, type: :document)
     end
 
     feature "Moving document to resource hub root", ctx do
       ctx
-      |> Steps.given_document_within_nested_folders_exists()
+      |> Steps.given_nested_folders_exist()
+      |> Factory.add_document(:document, :hub, folder: :five, name: @resource_name)
       |> move_resource_to_hub_root(resource_name: @resource_name, type: :document)
     end
   end
