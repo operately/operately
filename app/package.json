@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "@types/nprogress": "^0.2.0",
+    "@types/nprogress": "^0.2.3",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
