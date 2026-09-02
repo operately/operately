@@ -4,7 +4,6 @@ import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
-import Api from "@/api";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
@@ -51,8 +50,8 @@ function Form() {
   const me = useMe()!;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [add] = Projects.useCreateProject();
-  const [createFromTemplate] = Api.project_templates.useCreateProject();
+  const add = Projects.useCreateProject();
+  const createFromTemplate = Projects.useCreateProjectFromTemplate();
   const { space, spaces, spaceOptions, goal, goals, templates } = useLoadedData();
   const search = People.usePeopleSearch(People.CompanyWideSearchScope);
   const initialTemplateID = templates.find(
@@ -102,7 +101,7 @@ function Form() {
         spaceAccessLevel: form.values.access.spaceMembers,
       };
       const res = form.values.template
-        ? await createFromTemplate({
+        ? await createFromTemplate.mutateAsync({
             name: projectInput.name,
             spaceId: projectInput.spaceId,
             goalId: projectInput.goalId,
@@ -112,7 +111,7 @@ function Form() {
             templateId: form.values.template,
             startDate: form.values.startDate,
           })
-        : await add(projectInput);
+        : await add.mutateAsync(projectInput);
 
       navigate(paths.projectPath(res.project.id!));
     },

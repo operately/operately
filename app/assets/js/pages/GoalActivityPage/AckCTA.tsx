@@ -1,14 +1,13 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
-import * as Pages from "@/components/Pages";
 import * as Activities from "@/models/activities";
 
 import { PrimaryButton, IconSquareCheckFilled } from "turboui";
 
-import { useLoaderData } from "./loader";
+import { useLoadedData } from "./loader";
 
 export function AckCTA() {
-  const { activity, goal } = useLoaderData();
+  const { activity, goal } = useLoadedData();
 
   if (activity.action !== "goal_closing") return null;
 
@@ -28,7 +27,7 @@ export function AckCTA() {
 }
 
 export function AcknowledgementStatus() {
-  const { activity } = useLoaderData();
+  const { activity } = useLoadedData();
 
   if (activity.action !== "goal_closing") return null;
 
@@ -50,16 +49,13 @@ function showAcknowledgeButton(activity: Activities.Activity) {
 }
 
 function useAcknowledgeHandler(activity: Activities.Activity, goal: Goals.Goal, ackOnLoad: boolean) {
-  const refresh = Pages.useRefresh();
-  const [ack] = Goals.useAcknowledgeGoalRetrospective();
+  const ack = Goals.useAcknowledgeGoalRetrospective();
 
   const handleAck = async () => {
     if (activity.commentThread?.acknowledgedAt) return;
     if (!activity.permissions?.canAcknowledge) return;
 
-    await ack({ goalId: goal.id });
-
-    refresh();
+    await ack.mutateAsync({ goalId: goal.id });
   };
 
   React.useEffect(() => {

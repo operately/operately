@@ -8,6 +8,7 @@ export type Check = api.GoalCheck;
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
+export { invalidateGoalRetrospectiveQueries, useAcknowledgeGoalRetrospective } from "./goalLifecycle";
 
 export const createGoalDiscussion = Api.goals.createDiscussion;
 export const useEditGoalDiscussion = Api.goals.useUpdateDiscussion;
@@ -16,7 +17,6 @@ export const getGoal = Api.goals.get;
 export const getGoals = Api.goals.list;
 export const useCloseGoal = Api.goals.useClose;
 export const useReopenGoal = Api.goals.useReopen;
-export const useAcknowledgeGoalRetrospective = Api.goals.useAcknowledgeRetrospective;
 
 export function targetProgressPercentage(
   target: Pick<Target, "from" | "to" | "value">,

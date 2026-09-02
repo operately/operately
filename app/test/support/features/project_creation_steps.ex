@@ -264,7 +264,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   end
 
   step :assert_project_created_feed, ctx, creator \\ nil do
-    project = Repo.one(Project)
+    project = Repo.get_by!(Project, company_id: ctx.company.id)
     creator = creator || ctx.champion
 
     ctx
