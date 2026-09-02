@@ -1,19 +1,27 @@
+import Api, { ProjectRetrospective } from "@/api";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/models/projects";
+import { useQuery } from "@tanstack/react-query";
 
-interface LoaderResult {
-  retrospective: Projects.ProjectRetrospective;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    retrospective: await Projects.getProjectRetrospective({
-      projectId: params.projectID,
-      includeProject: true,
-    }).then((data) => data.retrospective!),
+export async function loader({ params }) {
+  const queryInput = {
+    projectId: params.projectID,
+    includeProject: true,
   };
+
+  await Api.projects.getRetrospectiveQuery(queryInput);
+
+  return { queryInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
+
+export function useLoadedData(): { retrospective: ProjectRetrospective } {
+  const { queryInput } = Pages.useLoadedData<LoaderResult>();
+  const { data } = useQuery(Api.projects.getRetrospectiveQueryOptions(queryInput));
+
+  if (!data?.retrospective) {
+    throw new Error(`Retrospective data is unavailable for project "${queryInput.projectId}"`);
+  }
+
+  return { retrospective: data.retrospective };
 }

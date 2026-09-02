@@ -6,7 +6,7 @@ import { PrimaryButton } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 
 //
 // There are two ways in which the AckCTA component is used:
@@ -66,15 +66,12 @@ function showAcknowledgeButton(checkIn: ProjectCheckIns.ProjectCheckIn, me: Peop
 
 function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoad: boolean) {
   const me = useMe();
-  const refresh = useRefresh();
-  const [ack] = ProjectCheckIns.useAcknowledgeProjectCheckIn();
+  const ack = ProjectCheckIns.useAcknowledgeProjectCheckIn();
 
   const handleAck = async () => {
     if (!showAcknowledgeButton(checkIn, me!)) return;
 
-    await ack({ id: checkIn.id });
-
-    refresh();
+    await ack.mutateAsync({ id: checkIn.id });
   };
 
   //

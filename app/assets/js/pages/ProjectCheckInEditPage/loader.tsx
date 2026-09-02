@@ -1,12 +1,9 @@
+import Api, { ProjectCheckIn } from "@/api";
 import * as Pages from "@/components/Pages";
-import * as ProjectCheckIns from "@/models/projectCheckIns";
+import { useQuery } from "@tanstack/react-query";
 
-interface LoaderResult {
-  checkIn: ProjectCheckIns.ProjectCheckIn;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  const checkInPromise = ProjectCheckIns.getProjectCheckIn({
+export async function loader({ params }) {
+  const queryInput = {
     id: params.id,
     includeAuthor: true,
     includeProject: true,
@@ -14,13 +11,22 @@ export async function loader({ params }): Promise<LoaderResult> {
     includeReactions: true,
     includePotentialSubscribers: true,
     includeSubscriptionsList: true,
-  });
-
-  return {
-    checkIn: await checkInPromise.then((data) => data.projectCheckIn!),
   };
+
+  await Api.projects.getCheckInQuery(queryInput);
+
+  return { queryInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
+
+export function useLoadedData(): { checkIn: ProjectCheckIn } {
+  const { queryInput } = Pages.useLoadedData<LoaderResult>();
+  const { data } = useQuery(Api.projects.getCheckInQueryOptions(queryInput));
+
+  if (!data?.projectCheckIn) {
+    throw new Error(`Check-in data is unavailable for check-in "${queryInput.id}"`);
+  }
+
+  return { checkIn: data.projectCheckIn };
 }

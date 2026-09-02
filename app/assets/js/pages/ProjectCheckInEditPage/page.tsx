@@ -18,7 +18,7 @@ export function Page() {
   const { checkIn } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = useEditProjectCheckIn();
+  const edit = useEditProjectCheckIn();
   const formattedTimePreferences = useFormattedTimePreferences();
 
   assertPresent(checkIn.project, "project must be present in checkIn");
@@ -64,7 +64,7 @@ export function Page() {
     if (!values.status || !values.description) return false;
 
     try {
-      const res = await edit({
+      const res = await edit.mutateAsync({
         checkInId: checkIn.id,
         status: values.status,
         description: JSON.stringify(values.description),

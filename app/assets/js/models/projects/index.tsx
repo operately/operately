@@ -13,6 +13,7 @@ export {
   invalidateClosedProjectQueries,
   invalidateProjectLifecycleQueries,
   invalidateProjectRetrospectiveQueries,
+  useAcknowledgeProjectRetrospective,
   useCloseProject,
   useEditProjectRetrospective,
   usePauseProject,
@@ -27,9 +28,7 @@ export type ProjectChildrenCount = api.ProjectChildrenCount;
 
 export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
-export const getProjectRetrospective = Api.projects.getRetrospective;
 export const useCreateProject = Api.projects.useCreate;
-export const useAcknowledgeProjectRetrospective = Api.projects.useAcknowledgeRetrospective;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");
