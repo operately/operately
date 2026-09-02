@@ -28,7 +28,6 @@ export type ProjectChildrenCount = api.ProjectChildrenCount;
 
 export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
-export const getProjectRetrospective = Api.projects.getRetrospective;
 export const useCreateProject = Api.projects.useCreate;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {

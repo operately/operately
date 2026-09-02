@@ -1,4 +1,3 @@
-import Api from "@/api";
 import * as api from "@/api";
 import { Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -8,7 +7,6 @@ import { displayDate } from "turboui";
 
 export type ProjectCheckIn = api.ProjectCheckIn;
 
-export const getProjectCheckIn = Api.projects.getCheckIn;
 export {
   invalidateProjectCheckInQueries,
   useAcknowledgeProjectCheckIn,
