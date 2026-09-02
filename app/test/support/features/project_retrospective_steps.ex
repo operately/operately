@@ -42,16 +42,11 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :submit_retrospective, ctx do
     ctx
     |> UI.click(testid: "submit")
-    |> UI.sleep(300)
-    |> then(fn ctx ->
-      case Operately.Projects.Retrospective.get(:system, project_id: ctx.project.id) do
-        {:ok, retrospective} ->
-          Map.put(ctx, :retrospective, retrospective)
+    |> wait_for_retrospective()
+  end
 
-        {:error, _} ->
-          ctx
-      end
-    end)
+  step :submit_invalid_retrospective, ctx do
+    UI.click(ctx, testid: "submit")
   end
 
   step :edit_project_retrospective, ctx, notes do
@@ -154,5 +149,20 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
 
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.retrospective.id, :project_retrospective) |> List.last()
+  end
+
+  defp wait_for_retrospective(ctx, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    case Operately.Projects.Retrospective.get(:system, project_id: ctx.project.id) do
+      {:ok, retrospective} ->
+        Map.put(ctx, :retrospective, retrospective)
+
+      {:error, _} when attempts == [] ->
+        flunk("Timed out waiting for project retrospective to be created")
+
+      {:error, _} ->
+        [delay | remaining_attempts] = attempts
+        :timer.sleep(delay)
+        wait_for_retrospective(ctx, remaining_attempts)
+    end
   end
 end

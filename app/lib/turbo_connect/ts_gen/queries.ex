@@ -68,6 +68,40 @@ defmodule TurboConnect.TsGen.Queries do
     end)
   end
 
+  def generate_tanstack_options(queries) do
+    queries
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, query} ->
+      input_type = ts_type(name) <> "Input"
+      fn_name = ts_function_name(name)
+      path = endpoint_path(query)
+
+      """
+      export function #{fn_name}QueryKeyPrefix() {
+        return buildApiQueryKeyPrefix(defaultApiClient, "#{path}");
+      }
+
+      export function #{fn_name}QueryKey(input: #{input_type}) {
+        return buildApiQueryKey(defaultApiClient, "#{path}", input);
+      }
+
+      export function #{fn_name}QueryOptions(input: #{input_type}) {
+        return queryOptions({
+          queryKey: #{fn_name}QueryKey(input),
+          queryFn: () => defaultApiClient.#{fn_name}(input),
+        });
+      }
+
+      export function #{fn_name}Query(input: #{input_type}) {
+        return queryClient.query({
+          ...#{fn_name}QueryOptions(input),
+          staleTime: "static",
+        });
+      }
+      """
+    end)
+  end
+
   def generate_default_functions(queries) do
     queries
     |> Enum.sort_by(&elem(&1, 0))
@@ -87,8 +121,18 @@ defmodule TurboConnect.TsGen.Queries do
     queries
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _query} ->
-      "  #{ts_function_name(name)},\n  use#{ts_type(name)},"
+      fn_name = ts_function_name(name)
+
+      "  #{fn_name},\n  use#{ts_type(name)},\n  #{fn_name}QueryKeyPrefix,\n  #{fn_name}QueryKey,\n  #{fn_name}QueryOptions,\n  #{fn_name}Query,"
     end)
+  end
+
+  defp endpoint_path(query) do
+    if query.namespace == nil do
+      "/#{query.name}"
+    else
+      "/#{query.namespace}/#{query.name}"
+    end
   end
 
   def define_generic_use_query_hook do
