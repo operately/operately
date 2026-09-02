@@ -1,6 +1,7 @@
 import Api, { ProjectCheckIn } from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 export async function loader({ params }) {
   const queryInput = {
@@ -29,8 +30,8 @@ type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): { checkIn: ProjectCheckIn; isCurrentUserSubscribed: boolean } {
   const { queryInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
-  const { data } = useQuery(Api.projects.getCheckInQueryOptions(queryInput));
-  const { data: subscription } = useQuery(Api.notifications.isSubscribedQueryOptions(subscriptionInput));
+  const { data } = useLoadedQuery(Api.projects.getCheckInQueryOptions(queryInput));
+  const { data: subscription } = useLoadedQuery(Api.notifications.isSubscribedQueryOptions(subscriptionInput));
 
   if (!data?.projectCheckIn) {
     throw new Error(`Check-in data is unavailable for check-in "${queryInput.id}"`);
