@@ -1,16 +1,14 @@
 import * as React from "react";
 
-import Api, { type ProductRelease } from "@/api";
+import { type ProductRelease } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useDismissProductRelease } from "@/models/productReleases/productReleaseLifecycle";
 import { ProductReleaseAnnouncement } from "turboui";
-
-export async function persistDismissedProductRelease(id: string) {
-  await Api.product_releases.dismiss({ id });
-}
 
 export function ProductReleaseAnnouncementBanner({ productRelease }: { productRelease: ProductRelease | null }) {
   const me = useMe();
   const [hidden, setHidden] = React.useState(false);
+  const dismissProductRelease = useDismissProductRelease();
 
   if (hidden || !productRelease?.id) {
     return null;
@@ -23,7 +21,7 @@ export function ProductReleaseAnnouncementBanner({ productRelease }: { productRe
   const releaseId = productRelease.id;
 
   const onDismiss = async () => {
-    await persistDismissedProductRelease(releaseId);
+    await dismissProductRelease.mutateAsync({ id: releaseId });
     setHidden(true);
   };
 

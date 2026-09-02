@@ -23,6 +23,9 @@ defmodule OperatelyWeb.Api.ProductReleases.DismissTest do
 
       assert Operately.People.Person.dismissed_product_release_id(creator) == "v1.8"
       assert Operately.People.Person.dismissed_product_release_id(member) == nil
+
+      assert {200, %{me: me}} = query(ctx.conn, [:people, :get_me], %{})
+      assert me.dismissed_product_release_id == "v1.8"
     end
 
     test "rejects a missing id", ctx do

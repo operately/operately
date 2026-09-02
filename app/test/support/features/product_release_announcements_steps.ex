@@ -18,6 +18,9 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
   }
 
   step :setup, ctx do
+    Cache.clear()
+    on_exit(fn -> Cache.clear() end)
+
     ctx
     |> Factory.setup()
     |> Factory.log_in_person(:creator)
@@ -36,6 +39,12 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
   step :visit_company_home, ctx do
     ctx
     |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.assert_has(testid: "company-home")
+  end
+
+  step :reload_company_home, ctx do
+    ctx
+    |> UI.visit(Paths.home_path(ctx.company) <> "?reloaded=1")
     |> UI.assert_has(testid: "company-home")
   end
 
@@ -61,5 +70,6 @@ defmodule Operately.Support.Features.ProductReleaseAnnouncementsSteps do
     ctx
     |> UI.wait_until_testid(testid: "product-release-toast-dismiss")
     |> UI.click(testid: "product-release-toast-dismiss")
+    |> UI.refute_has(testid: "product-release-toast")
   end
 end
