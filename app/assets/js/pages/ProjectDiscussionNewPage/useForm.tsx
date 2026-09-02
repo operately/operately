@@ -1,6 +1,5 @@
 import * as Projects from "@/models/projects";
 
-import Api from "@/api";
 import { useNavigate } from "react-router";
 
 import { Forms } from "turboui";
@@ -17,6 +16,7 @@ interface UseFormProps {
 export function useForm({ project, subscriptionsState }: UseFormProps) {
   const paths = usePaths();
   const navigate = useNavigate();
+  const createDiscussion = Projects.useCreateProjectDiscussion();
 
   const form = Forms.useForm({
     fields: {
@@ -29,7 +29,7 @@ export function useForm({ project, subscriptionsState }: UseFormProps) {
       }
     },
     submit: async () => {
-      const res = await Api.projects.createDiscussion({
+      const res = await createDiscussion.mutateAsync({
         projectId: project.id,
         title: form.values.title,
         message: JSON.stringify(form.values.message),
