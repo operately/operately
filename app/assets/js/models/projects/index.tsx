@@ -15,6 +15,8 @@ export {
   invalidateProjectRetrospectiveQueries,
   useAcknowledgeProjectRetrospective,
   useCloseProject,
+  useCreateProject,
+  useCreateProjectFromTemplate,
   useEditProjectRetrospective,
   usePauseProject,
   useResumeProject,
@@ -33,7 +35,6 @@ export type ProjectChildrenCount = api.ProjectChildrenCount;
 
 export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
-export const useCreateProject = Api.projects.useCreate;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");

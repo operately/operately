@@ -16,14 +16,13 @@ import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
-import { loader, useLoaderData } from "./loader";
+import { loader, useLoadedData, useRefresh } from "./loader";
 import { AckCTA, AcknowledgementStatus } from "./AckCTA";
 
 export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
 function Page() {
-  const { activity } = useLoaderData();
-  const goal = Activities.getGoal(activity);
+  const { activity, goal } = useLoadedData();
 
   assertPresent(activity.notifications, "Activity notifications must be defined");
   useClearNotificationsOnLoad(activity.notifications);
@@ -53,7 +52,7 @@ function Page() {
 
 function Nav() {
   const paths = usePaths();
-  const { goal, activity } = useLoaderData();
+  const { goal, activity } = useLoadedData();
 
   const isDiscussion = activity.action === "goal_discussion_creation";
   const items: Array<{ to: string; label: string }> = [];
@@ -98,7 +97,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
 }
 
 function ActivityReactions() {
-  const { activity } = useLoaderData();
+  const { activity } = useLoadedData();
 
   assertPresent(
     activity.commentThread?.reactions,
@@ -114,7 +113,7 @@ function ActivityReactions() {
 }
 
 function Comments({ goal }: { goal: Goals.Goal }) {
-  const { activity } = useLoaderData();
+  const { activity } = useLoadedData();
 
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
@@ -136,8 +135,8 @@ function Comments({ goal }: { goal: Goals.Goal }) {
 }
 
 function Subscriptions() {
-  const refresh = Pages.useRefresh();
-  const { activity, goal, isCurrentUserSubscribed } = useLoaderData();
+  const refresh = useRefresh();
+  const { activity, goal, isCurrentUserSubscribed } = useLoadedData();
 
   if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
     return null;

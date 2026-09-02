@@ -15,12 +15,12 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
-import { loader, useLoaderData } from "./loader";
+import { loader, useLoadedData, useRefresh } from "./loader";
 
 export default { name: "ProjectActivityPage", loader, Page } as PageModule;
 
 function Page() {
-  const { activity, project } = useLoaderData();
+  const { activity, project } = useLoadedData();
 
   useClearNotificationsOnLoad(activity.notifications || []);
 
@@ -48,7 +48,7 @@ function Page() {
 
 function Nav() {
   const paths = usePaths();
-  const { project } = useLoaderData();
+  const { project } = useLoadedData();
 
   const items: Array<{ to: string; label: string }> = [];
 
@@ -90,7 +90,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
 }
 
 function ActivityReactions() {
-  const { activity } = useLoaderData();
+  const { activity } = useLoadedData();
   const { commentThread, permissions } = activity;
 
   if (!commentThread?.reactions || !commentThread.id || !permissions) {
@@ -105,7 +105,7 @@ function ActivityReactions() {
 }
 
 function Comments({ project }: { project: Projects.Project }) {
-  const { activity } = useLoaderData();
+  const { activity } = useLoadedData();
   const { commentThread, permissions } = activity;
 
   if (!commentThread || !permissions) {
@@ -128,8 +128,8 @@ function Comments({ project }: { project: Projects.Project }) {
 }
 
 function Subscriptions() {
-  const refresh = Pages.useRefresh();
-  const { activity, project, isCurrentUserSubscribed } = useLoaderData();
+  const refresh = useRefresh();
+  const { activity, project, isCurrentUserSubscribed } = useLoadedData();
 
   if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
     return null;

@@ -77,3 +77,25 @@ export function useAcknowledgeProjectRetrospective() {
     },
   });
 }
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.createMutationOptions(),
+    onSuccess: () => {
+      void invalidateProjectLifecycleQueries(queryClient);
+    },
+  });
+}
+
+export function useCreateProjectFromTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.project_templates.createProjectMutationOptions(),
+    onSuccess: () => {
+      void invalidateProjectLifecycleQueries(queryClient);
+    },
+  });
+}
