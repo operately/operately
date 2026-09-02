@@ -1,24 +1,17 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import Api from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import {
-  persistDismissedProductRelease,
-  ProductReleaseAnnouncementBanner,
-} from "./ProductReleaseAnnouncementBanner";
+import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
 
 jest.mock("@/contexts/CurrentCompanyContext", () => ({
   useMe: jest.fn(),
 }));
 
-jest.mock("@/api", () => ({
-  __esModule: true,
-  default: {
-    product_releases: {
-      dismiss: jest.fn(),
-    },
-  },
+jest.mock("@/models/productReleases/productReleaseLifecycle", () => ({
+  useDismissProductRelease: () => ({
+    mutateAsync: jest.fn(),
+  }),
 }));
 
 jest.mock("turboui", () => ({
@@ -38,8 +31,7 @@ jest.mock("turboui", () => ({
   ),
 }));
 
-const mockUseMe = useMe as jest.Mock;
-const mockDismiss = Api.product_releases.dismiss as jest.Mock;
+const mockUseMe = jest.mocked(useMe);
 
 const release = {
   __typename: "product_release" as const,
@@ -47,6 +39,10 @@ const release = {
   title: "MCP Connections, Scheduled Posts, Retrospective Acknowledgements, and more",
   publishedAt: "2026-07-17T00:00:00Z",
 };
+
+function stubMe(dismissedProductReleaseId: string | null) {
+  mockUseMe.mockReturnValue({ dismissedProductReleaseId } as ReturnType<typeof useMe>);
+}
 
 function renderBanner(productRelease: typeof release | null = release) {
   return renderToStaticMarkup(<ProductReleaseAnnouncementBanner productRelease={productRelease} />);
@@ -58,31 +54,23 @@ describe("ProductReleaseAnnouncementBanner", () => {
   });
 
   it("does not render when there is no release", () => {
-    mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
+    stubMe(null);
 
     expect(renderBanner(null)).toBe("");
   });
 
   it("does not render when the current person already dismissed the release", () => {
-    mockUseMe.mockReturnValue({ dismissedProductReleaseId: release.id });
+    stubMe(release.id);
 
     expect(renderBanner()).toBe("");
   });
 
   it("renders the toast when the release has not been dismissed", () => {
-    mockUseMe.mockReturnValue({ dismissedProductReleaseId: null });
+    stubMe(null);
 
     const markup = renderBanner();
 
     expect(markup).toContain("product-release-toast");
     expect(markup).toContain(release.title);
-  });
-
-  it("persists the dismissed release id through the API", async () => {
-    mockDismiss.mockResolvedValue({ success: true });
-
-    await persistDismissedProductRelease(release.id);
-
-    expect(mockDismiss).toHaveBeenCalledWith({ id: release.id });
   });
 });

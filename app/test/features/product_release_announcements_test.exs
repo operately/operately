@@ -1,9 +1,13 @@
 defmodule Operately.Features.ProductReleaseAnnouncementsTest do
   use Operately.FeatureCase
+  import Mock
 
+  alias Operately.ProductReleases.Fetcher
   alias Operately.Support.Features.ProductReleaseAnnouncementsSteps, as: Steps
 
-  setup ctx, do: Steps.setup(ctx)
+  setup_with_mocks([{Fetcher, [], [fetch: fn -> {:error, :skipped} end]}], ctx) do
+    Steps.setup(ctx)
+  end
 
   feature "shows the toast when a release is available", ctx do
     ctx
@@ -19,7 +23,7 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
     |> Steps.assert_toast_visible()
     |> Steps.dismiss_toast()
     |> Steps.refute_toast_visible()
-    |> Steps.visit_company_home()
+    |> Steps.reload_company_home()
     |> Steps.refute_toast_visible()
   end
 
@@ -29,7 +33,7 @@ defmodule Operately.Features.ProductReleaseAnnouncementsTest do
     |> Steps.visit_company_home()
     |> Steps.dismiss_toast()
     |> Steps.given_a_newer_cached_release()
-    |> Steps.visit_company_home()
+    |> Steps.reload_company_home()
     |> Steps.assert_newer_toast_visible()
   end
 end
