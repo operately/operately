@@ -14,7 +14,7 @@ defmodule Operately.Activities.Content.CompanyMemberAdded do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required([:name, :email, :title, :company_id, :person_id])
+    |> validate_required([:name, :email, :company_id, :person_id])
   end
 
   def build(params) do
