@@ -2,6 +2,7 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 import Api from "@/api";
+import { useQuery } from "@tanstack/react-query";
 import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
@@ -16,9 +17,12 @@ export const getPerson = Api.people.get;
 export const updateProfile = Api.people.update;
 export const updateProfilePicture = Api.people.updatePicture;
 export const getMe = Api.people.getMe;
-export const useGetMe = Api.people.useGetMe;
 export const useGetPeople = Api.people.useList;
 export const updateTheme = Api.people.updateTheme;
+
+export function useGetMe(input: api.PeopleGetMeInput) {
+  return useQuery(Api.people.getMeQueryOptions(input));
+}
 
 export type SearchScope =
   | { type: "company"; id?: undefined }
