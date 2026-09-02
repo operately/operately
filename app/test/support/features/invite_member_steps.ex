@@ -438,7 +438,8 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     ctx
     |> UI.click(testid: "add-more-resources")
     |> UI.click(testid: "resource-type-selector-1")
-    |> UI.click_text("Project")
+    |> UI.wait_until_has(testid: "resource-type-option-project")
+    |> UI.click(testid: "resource-type-option-project")
     |> UI.click(testid: "resource-selector-1")
     |> UI.click_text(ctx.project3.name)
   end
@@ -447,7 +448,8 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     ctx
     |> UI.click(testid: "add-more-resources")
     |> UI.click(testid: "resource-type-selector-2")
-    |> UI.click_text("Goal")
+    |> UI.wait_until_has(testid: "resource-type-option-goal")
+    |> UI.click(testid: "resource-type-option-goal")
     |> UI.click(testid: "resource-selector-2")
     |> UI.click_text(ctx.goal4.name)
   end

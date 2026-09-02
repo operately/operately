@@ -278,6 +278,39 @@ test("keeps status, due offset, and assignees in the graph before persist", asyn
   });
 });
 
+test("moves the task between kanban columns when status changes", async () => {
+  updateTask.mockResolvedValue({ task: { id: "task-1" } });
+  updateTemplate.mockResolvedValue({ template: { id: "template-1" } });
+  const session = graphSession(
+    mapTemplateTaskGraph(
+      template({
+        taskStatuses: [taskStatus, doneStatus],
+        tasksKanbanState: JSON.stringify({ todo: ["task-1", "task-2"], done: [] }),
+      }),
+      (personId) => `/people/${personId}`,
+      (milestoneId) => `/milestones/${milestoneId}`,
+    ),
+  );
+
+  await expect(
+    performTemplateTaskUpdate({
+      ...session,
+      taskId: "task-1",
+      updates: { status: { ...doneStatus, icon: "circleDashed" } },
+    }),
+  ).resolves.toBe(true);
+
+  expect(session.current.tasksKanbanState).toEqual({ todo: ["task-2"], done: ["task-1"] });
+  expect(updateTask).toHaveBeenCalledWith(
+    expect.objectContaining({
+      templateId: "template-1",
+      taskId: "task-1",
+      taskStatus: { id: "done" },
+    }),
+  );
+  expect(updateTemplate).not.toHaveBeenCalled();
+});
+
 test("restores the task when status persistence fails", async () => {
   const session = graphSession(mappedGraph(), jest.fn().mockResolvedValue(false));
 
