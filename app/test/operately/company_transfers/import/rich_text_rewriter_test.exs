@@ -1,6 +1,8 @@
 defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
   use ExUnit.Case, async: true
 
+  import ExUnit.CaptureLog
+
   alias Operately.CompanyTransfers.Import.{RichTextRewriter, TranslationPlan}
   alias Operately.CompanyTransfers.Schema.AppSchemas
   alias Operately.Blobs.Blob
@@ -225,26 +227,61 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
              RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}), map_fields_for("resource_documents"))
   end
 
-  test "fails when a decoded blob id has no translation" do
-    source_blob_id = Ecto.UUID.generate()
+  test "strips blob nodes whose ids have no translation" do
+    missing_blob_id = Ecto.UUID.generate()
+    translated_blob_id = Ecto.UUID.generate()
+    destination_blob_id = Ecto.UUID.generate()
 
     row = %{
-      "content" => %{
+      "description" => %{
         "type" => "doc",
         "content" => [
+          %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "before"}]},
           %{
             "type" => "blob",
             "attrs" => %{
-              "id" => Paths.blob_id(%Blob{id: source_blob_id}),
-              "src" => Blob.url(%Blob{id: source_blob_id})
+              "id" => Paths.blob_id(%Blob{id: missing_blob_id}),
+              "src" => Blob.url(%Blob{id: missing_blob_id})
             }
-          }
+          },
+          %{
+            "type" => "blob",
+            "attrs" => %{
+              "id" => Paths.blob_id(%Blob{id: translated_blob_id}),
+              "src" => Blob.url(%Blob{id: translated_blob_id})
+            }
+          },
+          %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "after"}]}
         ]
       }
     }
 
-    assert {:error, {:missing_rich_text_blob_translation, "resource_documents", "content", ^source_blob_id}} =
-             RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}), map_fields_for("resource_documents"))
+    plan = translation_plan(%{blobs: %{translated_blob_id => destination_blob_id}})
+
+    log =
+      capture_log(fn ->
+        assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "tasks", plan, map_fields_for("tasks"))
+        send(self(), {:rewritten, rewritten})
+      end)
+
+    assert_received {:rewritten, rewritten}
+
+    assert rewritten["description"]["content"] == [
+             %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "before"}]},
+             %{
+               "type" => "blob",
+               "attrs" => %{
+                 "id" => ShortUuid.encode!(destination_blob_id),
+                 "src" => Blob.url(%Blob{id: destination_blob_id})
+               }
+             },
+             %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "after"}]}
+           ]
+
+    assert log =~ "Removing rich-text blob node with no import translation"
+    assert log =~ "table=tasks"
+    assert log =~ "field=description"
+    assert log =~ "source_blob_id=#{missing_blob_id}"
   end
 
   defp person(full_name) do

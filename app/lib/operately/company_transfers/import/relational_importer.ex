@@ -14,6 +14,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     PackageOrder,
     PolymorphicReferenceTranslator,
     PolymorphicRowPruner,
+    ResourceFileNameNormalizer,
     RichTextRewriter,
     RowDeserializer,
     TranslationPlan
@@ -49,6 +50,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
     package =
       package
+      |> ResourceFileNameNormalizer.normalize()
       |> PolymorphicRowPruner.prune()
       |> PackageOrder.reorder_for_insert(schema)
 
