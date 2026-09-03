@@ -17,6 +17,11 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert {401, _} = query(ctx.conn, [:projects, :get], %{})
     end
 
+    test "returns 400 for extra query keys that are not existing atoms", ctx do
+      assert {400, result} = query(ctx.conn, [:projects, :get], %{"zzq_unknown_input_field" => "1", id: "1"})
+      assert result.message == "Unknown input field: zzq_unknown_input_field"
+    end
+
     test "it is not possible to get a project from another company", ctx do
       ctx = register_and_log_in_account(ctx)
       project = create_project(ctx)
