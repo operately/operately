@@ -23,9 +23,24 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
   end
 
   def call(_conn, inputs) do
-    case AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs.code, inputs[:invite_token]) do
+    case AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs[:code], inputs[:invite_token]) do
       {:ok, _account, invite_context} ->
         {:ok, build_response(invite_context)}
+
+      {:error, :signup_not_allowed} ->
+        {:error, :forbidden}
+
+      {:error, :email_taken} ->
+        {:error, :bad_request, "Email is already registered"}
+
+      {:error, :invalid_code} ->
+        {:error, :bad_request, "Invalid activation code"}
+
+      {:error, :not_found} ->
+        {:error, :bad_request, "Invalid activation code"}
+
+      {:error, :invalid} ->
+        {:error, :bad_request, "Activation code has expired"}
 
       {:error, error} ->
         Logger.error("Failed to create account. error: #{inspect(error)}")

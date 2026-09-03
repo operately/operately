@@ -140,6 +140,94 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
     end
   end
 
+  describe "create_account client errors" do
+    test "returns bad_request when the activation code has expired", ctx do
+      {:ok, activation} = People.EmailActivationCode.create("expired@test.com")
+      expire_activation!(activation)
+
+      assert {400, result} =
+               mutation(ctx.conn, [:create_account], %{
+                 code: activation.code,
+                 email: "expired@test.com",
+                 password: "password1234",
+                 full_name: "Expired Code User"
+               })
+
+      assert result.message =~ "expired"
+    end
+
+    test "returns bad_request for an unknown activation code", ctx do
+      assert {400, result} =
+               mutation(ctx.conn, [:create_account], %{
+                 code: "ZZZZZZ",
+                 email: "unknown-code@test.com",
+                 password: "password1234",
+                 full_name: "Unknown Code User"
+               })
+
+      assert result.message == "Invalid activation code"
+    end
+
+    test "returns bad_request for a malformed activation code", ctx do
+      assert {400, result} =
+               mutation(ctx.conn, [:create_account], %{
+                 code: "AB",
+                 email: "malformed-code@test.com",
+                 password: "password1234",
+                 full_name: "Malformed Code User"
+               })
+
+      assert result.message == "Invalid activation code"
+    end
+
+    test "returns bad_request when the code is missing", ctx do
+      assert {400, result} =
+               mutation(ctx.conn, [:create_account], %{
+                 email: "missing-code@test.com",
+                 password: "password1234",
+                 full_name: "Missing Code User"
+               })
+
+      assert result.message == "Invalid activation code"
+    end
+
+    test "returns bad_request when the email is already registered", ctx do
+      {:ok, activation} = People.EmailActivationCode.create("taken@test.com")
+
+      assert {200, _} =
+               mutation(ctx.conn, [:create_account], %{
+                 code: activation.code,
+                 email: "taken@test.com",
+                 password: "password1234",
+                 full_name: "Taken Email User"
+               })
+
+      {:ok, activation2} = People.EmailActivationCode.create("taken@test.com")
+
+      assert {400, result} =
+               mutation(ctx.conn, [:create_account], %{
+                 code: activation2.code,
+                 email: "taken@test.com",
+                 password: "password1234",
+                 full_name: "Taken Email User"
+               })
+
+      assert result.message =~ "already registered"
+    end
+
+    test "returns forbidden when email signup is disabled", ctx do
+      Application.put_env(:operately, :allow_signup_with_email, false)
+
+      assert {403, _result} =
+               mutation(ctx.conn, [:create_account], %{
+                 code: "ABCDEF",
+                 email: "disabled@test.com",
+                 password: "password1234",
+                 full_name: "Disabled Signup User"
+               })
+    end
+  end
+
   defp enable_billing(company) do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
@@ -153,6 +241,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
     })
 
     company
+  end
+
+  defp expire_activation!(activation) do
+    activation
+    |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(-1, :second))
+    |> Repo.update!()
   end
 
   defp fill_company_to_member_limit(company) do
