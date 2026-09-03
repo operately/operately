@@ -79,9 +79,18 @@ defmodule Operately.InviteLinks.InviteLink do
   def build_token(opts \\ []) do
     length = Keyword.get(opts, :length, 32)
 
-    :crypto.strong_rand_bytes(length)
-    |> Base.url_encode64()
-    |> binary_part(0, length)
+    token =
+      :crypto.strong_rand_bytes(length)
+      |> Base.url_encode64()
+      |> binary_part(0, length)
+
+    # url_encode64 can start with `--`. The CLI flag parser then treats
+    # `--invite-token TOKEN` as a boolean flag with no value.
+    if String.starts_with?(token, "-") do
+      build_token(opts)
+    else
+      token
+    end
   end
 
   def is_valid?(%__MODULE__{is_active: is_active}) do

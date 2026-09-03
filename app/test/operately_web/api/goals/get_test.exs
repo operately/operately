@@ -18,6 +18,11 @@ defmodule OperatelyWeb.Api.Goals.GetTest do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:goals, :get], %{})
     end
+
+    test "returns 400 for extra query keys that are not existing atoms", ctx do
+      assert {400, result} = query(ctx.conn, [:goals, :get], %{"zzq_unknown_input_field" => "1", id: "1"})
+      assert result.message == "Unknown input field: zzq_unknown_input_field"
+    end
   end
 
   describe "permissions" do
