@@ -37,13 +37,15 @@ config :operately, :posthog_api_key, System.get_env("POSTHOG_API_KEY")
 dsn = Operately.Sentry.configured_dsn()
 
 if dsn do
+  env = config_env()
+
   config :sentry,
     dsn: dsn,
-    environment_name: Mix.env(),
+    environment_name: env,
     enable_source_code_context: true,
     root_source_code_paths: [File.cwd!()],
     tags: %{
-      env: "#{Mix.env()}"
+      env: "#{env}"
     },
     included_environments: [:dev, :prod]
 end

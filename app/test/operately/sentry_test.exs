@@ -90,6 +90,14 @@ defmodule Operately.SentryTest do
       refute source =~ ~s[System.get_env("SENTRY_DSN")]
     end
 
+    test "runtime sentry config uses config_env instead of Mix.env" do
+      source = read_app_file("config/runtime.exs")
+
+      refute source =~ "Mix.env()"
+      assert source =~ "env = config_env()"
+      assert source =~ "environment_name: env"
+    end
+
     test "application starts Sentry from the frontend config" do
       source = read_app_file("lib/operately/application.ex")
 
