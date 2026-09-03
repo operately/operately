@@ -40,7 +40,7 @@ defmodule Operately.Blobs.S3Http do
     request_opts =
       @upload_request_opts
       |> Keyword.put(:headers, headers)
-      |> Keyword.put(:body, File.stream!(source_path, [], @upload_chunk_size_bytes))
+      |> Keyword.put(:body, File.stream!(source_path, @upload_chunk_size_bytes))
 
     try do
       case Req.put(url, request_opts) do
