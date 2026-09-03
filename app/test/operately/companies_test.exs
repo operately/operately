@@ -47,10 +47,10 @@ defmodule Operately.CompaniesTest do
       assert company.name == "some name"
     end
 
-    test "create_company/1 with invalid data returns error changeset", ctx do
+    test "create_company/1 with invalid data returns error", ctx do
       invalid_attrs = %{mission: nil, company_name: nil}
 
-      assert {:error, :company, _, _} = Companies.create_company(invalid_attrs, ctx.account)
+      assert {:error, :bad_request} = Companies.create_company(invalid_attrs, ctx.account)
     end
 
     test "update_company/2 with valid data updates the company", ctx do

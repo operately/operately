@@ -155,6 +155,22 @@ defmodule OperatelyWeb.Api.Companies.CreateTest do
       assert Operately.Companies.get_company_by_name("Acme Co.") == nil
     end
 
+    test "rejects blank company name", ctx do
+      account = Operately.PeopleFixtures.account_fixture()
+      conn = log_in_account(ctx.conn, account)
+
+      assert {400, _} = mutation(conn, [:companies, :create], %{company_name: "", title: "Founder"})
+      assert Operately.Companies.get_company_by_name("") == nil
+    end
+
+    test "rejects company name shorter than three characters", ctx do
+      account = Operately.PeopleFixtures.account_fixture()
+      conn = log_in_account(ctx.conn, account)
+
+      assert {400, _} = mutation(conn, [:companies, :create], %{company_name: "ab", title: "Founder"})
+      assert Operately.Companies.get_company_by_name("ab") == nil
+    end
+
     test "rejects unsupported billing period params", ctx do
       account = Operately.PeopleFixtures.account_fixture()
       conn = log_in_account(ctx.conn, account)
