@@ -245,8 +245,19 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def atomize_keys(map) when is_map(map), do: Map.new(map, &atomize_keys/1)
   def atomize_keys(list) when is_list(list), do: Enum.map(list, &atomize_keys/1)
 
-  def atomize_keys({key, val}) when is_binary(key), do: atomize_keys({String.to_existing_atom(key), val})
+  def atomize_keys({key, val}) when is_binary(key) do
+    case existing_atom(key) do
+      {:ok, atom} -> atomize_keys({atom, val})
+      :error -> {key, atomize_keys(val)}
+    end
+  end
 
   def atomize_keys({key, val}), do: {key, atomize_keys(val)}
   def atomize_keys(term), do: term
+
+  defp existing_atom(key) do
+    {:ok, String.to_existing_atom(key)}
+  rescue
+    ArgumentError -> :error
+  end
 end
