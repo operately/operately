@@ -4,11 +4,15 @@ defmodule Operately.Blobs.S3Http do
   alias Operately.Blobs.S3Config
 
   @download_recv_timeout_ms 60_000
+  @upload_chunk_size_bytes 64 * 1024
   @upload_connect_timeout_ms 30_000
   @upload_recv_timeout_ms 3_600_000
   @upload_request_opts [
-    {:connect_timeout, @upload_connect_timeout_ms},
-    {:recv_timeout, @upload_recv_timeout_ms}
+    connect_options: [timeout: @upload_connect_timeout_ms],
+    pool_timeout: @upload_connect_timeout_ms,
+    receive_timeout: @upload_recv_timeout_ms,
+    retry: false,
+    redirect: false
   ]
 
   def put_file(path, source_path, headers) when is_binary(path) and is_binary(source_path) and is_list(headers) do
@@ -33,20 +37,32 @@ defmodule Operately.Blobs.S3Http do
   end
 
   defp request_put(url, source_path, headers) do
+    request_opts =
+      @upload_request_opts
+      |> Keyword.put(:headers, headers)
+      |> Keyword.put(:body, File.stream!(source_path, @upload_chunk_size_bytes))
+
     try do
-      case :hackney.request(:put, url, headers, {:file, source_path}, @upload_request_opts) do
-        {:ok, status, _resp_headers, _body} when status in 200..299 ->
+      case Req.put(url, request_opts) do
+        {:ok, %Req.Response{status: status}} when status in 200..299 ->
           :ok
 
-        {:ok, status, _resp_headers, body} ->
+        {:ok, %Req.Response{status: status, body: body}} ->
           {:error, {:http_error, status, body}}
+
+        {:error, %Req.TransportError{reason: reason}} ->
+          {:error, reason}
 
         {:error, reason} ->
           {:error, reason}
       end
     catch
       :exit, reason ->
-        {:error, {:request_exit, root_exit_reason(reason)}}
+        if transient_request_exit?(reason) do
+          {:error, {:request_exit, root_exit_reason(reason)}}
+        else
+          exit(reason)
+        end
     end
   end
 
@@ -56,7 +72,15 @@ defmodule Operately.Blobs.S3Http do
   defp retryable_put_error?(reason) when reason in [:timeout, :connect_timeout, :closed, :econnreset], do: true
   defp retryable_put_error?(_reason), do: false
 
-  defp root_exit_reason({reason, {:gen_statem, :call, _args}}), do: reason
+  defp transient_request_exit?(reason) do
+    case root_exit_reason(reason) do
+      reason when reason in [:noproc, :normal, :shutdown, :timeout] -> true
+      {reason, _detail} when reason in [:noproc, :shutdown] -> true
+      _reason -> false
+    end
+  end
+
+  defp root_exit_reason({reason, {module, :call, _args}}) when module in [:gen_statem, GenServer], do: reason
   defp root_exit_reason(reason), do: reason
 
   defp retry_log_reason({:request_exit, _reason}), do: "request_exit"
