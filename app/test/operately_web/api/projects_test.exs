@@ -599,6 +599,20 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.message == "Task not found"
     end
 
+    test "it returns 404 when the task has no project with use_task_id", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {404, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.task_id(ctx.space_task),
+        use_task_id: true
+      })
+
+      assert res.message == "Project not found"
+    end
+
     test "it returns 404 when milestone does not exist with use_milestone_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
