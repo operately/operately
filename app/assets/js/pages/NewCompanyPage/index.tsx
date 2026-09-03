@@ -65,7 +65,13 @@ function Page() {
 
           <Forms.Form form={form}>
             <Forms.FieldGroup>
-              <Forms.TextInput field="companyName" label="Name of the company" placeholder="e.g. Acme Co." />
+              <Forms.TextInput
+                field="companyName"
+                label="Name of the company"
+                placeholder="e.g. Acme Co."
+                required
+                minLength={3}
+              />
               <Forms.TextInput field="title" label="What's your title in the company?" placeholder="e.g. Founder" />
 
               {window.appConfig.demoBuilder && (

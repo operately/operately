@@ -17,6 +17,15 @@ defmodule Operately.Features.CompaniesTest do
     |> Steps.assert_first_project_defaults()
   end
 
+  feature "creating a company requires a name", ctx do
+    ctx
+    |> Steps.given_a_user_is_logged_in_that_belongs_to_a_company()
+    |> Steps.navigate_to_the_loby()
+    |> Steps.click_on_the_add_company_button()
+    |> Steps.submit_company_form_without_name()
+    |> Steps.assert_company_name_is_required()
+  end
+
   feature "creating another company remembers billing intent from query params", ctx do
     ctx
     |> Steps.given_a_user_is_logged_in_that_belongs_to_a_company()

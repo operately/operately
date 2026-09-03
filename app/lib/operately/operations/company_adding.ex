@@ -12,7 +12,8 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.Activities
 
   def run(attrs, account \\ nil) do
-    with :ok <- validate_billing_intent(attrs) do
+    with :ok <- validate_billing_intent(attrs),
+         :ok <- validate_company_name(attrs) do
       Multi.new()
       |> insert_company(attrs)
       |> insert_access_context()
@@ -25,9 +26,25 @@ defmodule Operately.Operations.CompanyAdding do
       |> insert_activity()
       |> send_discord_notification()
       |> Repo.transaction()
-      |> Repo.extract_result(:updated_company)
+      |> extract_company()
     end
   end
+
+  defp validate_company_name(attrs) do
+    name = Map.get(attrs, :company_name)
+
+    cond do
+      not is_binary(name) -> {:error, :bad_request}
+      String.trim(name) == "" -> {:error, :bad_request}
+      true -> :ok
+    end
+  end
+
+  defp extract_company({:ok, %{updated_company: company}}), do: {:ok, company}
+  defp extract_company({:error, :company, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
+  defp extract_company({:error, _operation, %Ecto.Changeset{}, _changes}), do: {:error, :bad_request}
+  defp extract_company({:error, _operation, reason, _changes}), do: {:error, reason}
+  defp extract_company({:error, reason}), do: {:error, reason}
 
   defp insert_company(multi, attrs) do
     attrs = Map.merge(%{
