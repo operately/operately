@@ -40,11 +40,16 @@ defmodule Prosemirror2Html do
     |> wrap("ul")
   end
 
-  def convert_node(%{"type" => "orderedList", "content" => content, "attrs" => %{"start" => 1}}, opts) do
-    content
-    |> Enum.map(fn node -> convert_node(node, opts) end)
-    |> Enum.join("")
-    |> wrap("ol")
+  def convert_node(%{"type" => "orderedList", "content" => content} = node, opts) do
+    html =
+      content
+      |> Enum.map(fn child -> convert_node(child, opts) end)
+      |> Enum.join("")
+
+    case get_in(node, ["attrs", "start"]) do
+      start when is_integer(start) and start != 1 -> wrap(html, "ol", start: start)
+      _ -> wrap(html, "ol")
+    end
   end
 
   def convert_node(%{"type" => "heading", "attrs" => %{"level" => level}, "content" => content}, opts) do
@@ -95,6 +100,15 @@ defmodule Prosemirror2Html do
     "<div>&#128206; <a href=\"#{opts.domain}#{src}\">#{title}</a></div>"
   end
 
+  def convert_node(%{"content" => content}, opts) when is_list(content) do
+    content
+    |> Enum.map(&convert_node(&1, opts))
+    |> Enum.join("")
+  end
+
+  def convert_node(%{"text" => text}, _opts) when is_binary(text), do: text
+  def convert_node(_node, _opts), do: ""
+
   #
   # Marks
   #
@@ -119,11 +133,17 @@ defmodule Prosemirror2Html do
     wrap(text, "strike")
   end
 
+  def convert_mark(text, %{"type" => "underline"}, _opts) do
+    wrap(text, "u")
+  end
+
   def convert_mark(text, %{"attrs" => %{"highlight" => highlight}, "type" => "highlight"}, opts) do
     style = opts.highlights[highlight] || ""
 
     wrap(text, "mark", [{"style", style}])
   end
+
+  def convert_mark(text, _mark, _opts), do: text
 
   defp wrap(html, tag) do
     wrap(html, tag, [])
