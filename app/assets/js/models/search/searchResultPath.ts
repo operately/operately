@@ -20,7 +20,10 @@ export function searchResultPath(paths: Paths, result: SearchResult): string | n
     case "milestone":
       return target.milestoneId ? paths.projectMilestonePath(target.milestoneId) : null;
     case "task":
-      return target.taskId ? paths.taskPath(target.taskId) : null;
+      if (!target.taskId) return null;
+      if (target.projectId) return paths.taskPath(target.taskId);
+      if (target.spaceId) return paths.spaceKanbanPath(target.spaceId, { taskId: target.taskId });
+      return paths.taskPath(target.taskId);
     case "person":
       return target.personId ? paths.profilePath(target.personId) : null;
     case "discussion":

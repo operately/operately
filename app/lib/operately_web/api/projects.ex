@@ -603,7 +603,10 @@ defmodule OperatelyWeb.Api.Projects do
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
-        {:ok, task.project}
+        case task.project do
+          %Operately.Projects.Project{} = project -> {:ok, project}
+          _ -> {:error, {:not_found, "Project not found"}}
+        end
       end)
     end
 
@@ -630,7 +633,10 @@ defmodule OperatelyWeb.Api.Projects do
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
-        {:ok, milestone.project}
+        case milestone.project do
+          %Operately.Projects.Project{} = project -> {:ok, project}
+          _ -> {:error, {:not_found, "Project not found"}}
+        end
       end)
     end
 
