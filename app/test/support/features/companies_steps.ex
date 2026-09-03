@@ -45,6 +45,22 @@ defmodule Operately.Support.Features.CompaniesSteps do
     |> UI.assert_text("Acme Co.")
   end
 
+  step :submit_company_form_without_name, ctx do
+    ctx
+    |> UI.fill(testid: "title", with: "System Administrator")
+    |> UI.click(testid: "submit")
+  end
+
+  step :assert_company_name_is_required, ctx do
+    ctx
+    |> UI.assert_text("Can't be empty")
+    |> UI.assert_page("/new")
+
+    assert Companies.get_company_by_name("Acme Co.") == nil
+
+    ctx
+  end
+
   step :assert_first_project_setup_is_shown, ctx do
     ctx
     |> UI.assert_page(Paths.work_map_path(ctx.company))
