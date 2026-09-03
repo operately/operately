@@ -33,11 +33,12 @@ config :operately, :beacon_enabled, System.get_env("OPERATELY_BEACON_ENABLED", "
 config :operately, :beacon_collector_enabled, System.get_env("OPERATELY_BEACON_COLLECTOR_ENABLED", "false") == "true"
 config :operately, :posthog_api_key, System.get_env("POSTHOG_API_KEY")
 
-# Sentry configuration for backend error reporting
-# SENTRY_DSN - DSN URL for streaming backend errors (including background jobs) to Sentry
-if System.get_env("SENTRY_DSN") do
+# Backend Sentry uses the same DSN as the frontend (OPERATELY_JS_SENTRY_*).
+dsn = Operately.Sentry.configured_dsn()
+
+if dsn do
   config :sentry,
-    dsn: System.get_env("SENTRY_DSN"),
+    dsn: dsn,
     environment_name: Mix.env(),
     enable_source_code_context: true,
     root_source_code_paths: [File.cwd!()],
