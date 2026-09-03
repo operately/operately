@@ -13,23 +13,15 @@ defmodule OperatelyWeb.Api.Queries.GetInvitation do
   end
 
   def call(_conn, inputs) do
-    invite_link = fetch_invitation(inputs[:token])
-
-    {:ok, %{
-      invite_link: Serializer.serialize(invite_link, level: :full),
-      member: Serializer.serialize(invite_link.person, level: :full),
-    }}
-  end
-
-  defp fetch_invitation(token) do
-    with(
-      {:ok, invite_link} <- InviteLinks.get_personal_invite_link_by_token(token, preload: [:author, :company, person: [:account]]),
-      {:ok, _invite_link} <- InviteLinks.validate_personal_invite_link(invite_link),
-      true <- not is_nil(invite_link.person)
-    ) do
-      invite_link
+    with {:ok, invite_link} <- InviteLinks.get_personal_invite_link_by_token(inputs[:token], preload: [:author, :company, person: [:account]]),
+         {:ok, invite_link} <- InviteLinks.validate_personal_invite_link(invite_link),
+         %{} = person <- invite_link.person do
+      {:ok, %{
+        invite_link: Serializer.serialize(invite_link, level: :full),
+        member: Serializer.serialize(person, level: :full)
+      }}
     else
-      _ -> nil
+      _ -> {:error, :not_found}
     end
   end
 end
