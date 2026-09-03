@@ -283,4 +283,73 @@ defmodule Prosemirror2HtmlTest do
     assert html == "<div>&#128206; <a href=\"https://example.com/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5\">Authentication Failed message</a></div>"
   end
 
+  test "ordered list with start other than 1" do
+    content = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "orderedList",
+          "attrs" => %{"start" => 6, "type" => nil},
+          "content" => [
+            %{
+              "type" => "listItem",
+              "content" => [
+                %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Sixth"}]}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+
+    html = Prosemirror2Html.convert(content, @opts)
+    assert html == "<ol start=\"6\"><li><p>Sixth</p></li></ol>"
+  end
+
+  test "underline mark" do
+    content = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "text",
+          "text" => "Hello",
+          "marks" => [%{"type" => "underline"}]
+        }
+      ]
+    }
+
+    html = Prosemirror2Html.convert(content, @opts)
+    assert html == "<u>Hello</u>"
+  end
+
+  test "unknown node keeps inner text" do
+    content = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "unknownCustomNode",
+          "content" => [%{"type" => "text", "text" => "Survives"}]
+        }
+      ]
+    }
+
+    html = Prosemirror2Html.convert(content, @opts)
+    assert html == "Survives"
+  end
+
+  test "unknown mark keeps plain text" do
+    content = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "text",
+          "text" => "Hello",
+          "marks" => [%{"type" => "unknownMark"}]
+        }
+      ]
+    }
+
+    html = Prosemirror2Html.convert(content, @opts)
+    assert html == "Hello"
+  end
 end
