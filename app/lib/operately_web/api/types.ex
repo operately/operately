@@ -2496,23 +2496,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :acknowledged_by, :person, null: true
   end
 
-  enum(:comment_parent_type,
-    values: [
-      :project_check_in,
-      :project_retrospective,
-      :project_discussion,
-      :goal_update,
-      :goal_discussion,
-      :message,
-      :resource_hub_document,
-      :resource_hub_file,
-      :resource_hub_link,
-      :space_task,
-      :project_task,
-      :milestone,
-      :kpi_entry
-    ]
-  )
+  enum(:comment_parent_type, values: Operately.Updates.Comment.parent_types())
+  enum(:comment_list_entity_type, values: Operately.Updates.Comment.list_entity_types())
 
   object :comment, for: Operately.Updates.Comment do
     field? :id, :string, null: true

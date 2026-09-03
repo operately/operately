@@ -2,25 +2,43 @@ defmodule Operately.Updates.Comment do
   use Operately.Schema
   import Ecto.Changeset
 
+  @entity_types [
+    :project_check_in,
+    :project_milestone,
+    :goal_update,
+    :message,
+    :update,
+    :comment_thread,
+    :project_retrospective,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+    :project_task,
+    :space_task,
+    :kpi_entry
+  ]
+
+  @parent_types [
+    :project_check_in,
+    :project_retrospective,
+    :project_discussion,
+    :goal_update,
+    :goal_discussion,
+    :message,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+    :space_task,
+    :project_task,
+    :milestone,
+    :kpi_entry
+  ]
+
   schema "comments" do
     belongs_to :author, Operately.People.Person
 
     field :entity_id, Ecto.UUID
-    field :entity_type, Ecto.Enum, values: [
-      :project_check_in,
-      :project_milestone,
-      :goal_update,
-      :message,
-      :update,
-      :comment_thread,
-      :project_retrospective,
-      :resource_hub_document,
-      :resource_hub_file,
-      :resource_hub_link,
-      :project_task,
-      :space_task,
-      :kpi_entry,
-    ]
+    field :entity_type, Ecto.Enum, values: @entity_types
 
     field :content, :map
 
@@ -32,6 +50,10 @@ defmodule Operately.Updates.Comment do
     timestamps()
     requester_access_level()
   end
+
+  def entity_types, do: @entity_types
+  def parent_types, do: @parent_types
+  def list_entity_types, do: @parent_types -- [:milestone]
 
   def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
