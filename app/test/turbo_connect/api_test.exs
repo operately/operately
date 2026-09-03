@@ -247,11 +247,20 @@ defmodule TurboConnect.ApiTest do
       assert conn.status == 404
     end
 
-    test "return 400 for invalid queries" do
-      conn = conn(:get, "")
+    test "return 400 for extra query keys that are not existing atoms" do
+      conn = conn(:get, "/get_user", %{"zzq_unknown_input_field" => "1"})
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 400
+      assert Jason.decode!(conn.resp_body) == %{"error" => "Bad request", "message" => "Unknown input field: zzq_unknown_input_field"}
+    end
+
+    test "return 400 for extra query keys that are existing atoms but not fields" do
+      conn = conn(:get, "/get_user", %{"name" => "1"})
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 400
+      assert Jason.decode!(conn.resp_body) == %{"error" => "Bad request", "message" => "Unknown input field: name"}
     end
   end
 
