@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
+import { OperatelyNotificationRow } from "./OperatelyNotificationRow";
 import { NotificationRow } from ".";
 
 const meta = {
@@ -46,8 +47,32 @@ export const Read: Story = {
   },
 };
 
+const operatelyNotificationProps: React.ComponentProps<typeof OperatelyNotificationRow> = {
+  title: "New: Faster search",
+  insertedAt: "2026-08-10T12:00:00Z",
+  formattedTimePreferences: defaultFormattedTimePreferences,
+  read: false,
+  testId: "notification-item-operately-update",
+  onOpen: () => undefined,
+  onMarkAsRead: () => undefined,
+};
+
+export const OperatelyUnread: Story = {
+  render: () => <InteractiveOperatelyUnreadRow />,
+};
+
+export const OperatelyRead: Story = {
+  render: () => <OperatelyNotificationRow {...operatelyNotificationProps} read />,
+};
+
 function InteractiveUnreadRow(props: React.ComponentProps<typeof NotificationRow>) {
   const [read, setRead] = React.useState(false);
 
   return <NotificationRow {...props} read={read} onMarkAsRead={() => setRead(true)} />;
+}
+
+function InteractiveOperatelyUnreadRow() {
+  const [read, setRead] = React.useState(false);
+
+  return <OperatelyNotificationRow {...operatelyNotificationProps} read={read} onMarkAsRead={() => setRead(true)} />;
 }

@@ -1,0 +1,25 @@
+<%= title(@product_update.title) %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <div style="font-family: sans-serif; font-size: 16px; color: #475569; line-height: 1.5;">
+    <%= @product_update.description %>
+  </div>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@product_update.url, @product_update.cta_label) %>
+<% end %>
+
+<%= spacer() %>
+<%= line() %>
+<%= spacer() %>
+
+<%= row do %>
+  <div style="font-family: sans-serif; font-size: 12px; color: #94a3b8; text-align: center;">
+    <%= link(@settings_url, "Manage email settings") %>
+  </div>
+<% end %>
