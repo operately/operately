@@ -6,10 +6,11 @@ defmodule Operately.Blobs.S3HttpTest do
 
   alias Operately.Blobs.S3Http
 
-  test "put_file/3 uploads through a presigned PUT url" do
-    source_path = temp_path("s3-http-upload.txt")
-    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
-    File.write!(source_path, "hello world!")
+  test "put_file/3 streams a file with a Unicode name through a presigned PUT url" do
+    source_path = temp_path("Κωδικός QR για SCIROCCO AE.png")
+    payload = <<0, 255, 1, 2, 3>>
+    headers = [{"Content-Type", "image/png"}, {"Content-Length", Integer.to_string(byte_size(payload))}]
+    File.write!(source_path, payload)
 
     on_exit(fn ->
       cleanup_paths([source_path])
@@ -17,12 +18,19 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, opts ->
-           assert Keyword.get(opts, :connect_timeout) == 30_000
-           assert Keyword.get(opts, :recv_timeout) == 3_600_000
-           {:ok, 200, [], ""}
+         put: fn "https://storage.example/put", opts ->
+           assert opts[:headers] == headers
+           assert %File.Stream{} = opts[:body]
+           assert opts[:body] |> Enum.to_list() |> IO.iodata_to_binary() == payload
+           assert opts[:connect_options] == [timeout: 30_000]
+           assert opts[:pool_timeout] == 30_000
+           assert opts[:receive_timeout] == 3_600_000
+           assert opts[:retry] == false
+           assert opts[:redirect] == false
+
+           {:ok, %Req.Response{status: 200, body: ""}}
          end
        ]}
     ]) do
@@ -30,7 +38,7 @@ defmodule Operately.Blobs.S3HttpTest do
     end
   end
 
-  test "put_file/3 retries once and preserves the reason when hackney exits" do
+  test "put_file/3 retries once and preserves recognized request-process exits" do
     source_path = temp_path("s3-http-upload-exit.txt")
     headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
     File.write!(source_path, "hello world!")
@@ -43,9 +51,9 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+         put: fn "https://storage.example/put", _opts ->
            Agent.update(attempts, &(&1 + 1))
            exit({{:noproc, :gen_statem}, {:gen_statem, :call, [self(), {:request, "PUT", request_url}]}})
          end
@@ -79,11 +87,11 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+         put: fn "https://storage.example/put", _opts ->
            Agent.update(attempts, &(&1 + 1))
-           {:ok, 403, [], "forbidden"}
+           {:ok, %Req.Response{status: 403, body: "forbidden"}}
          end
        ]}
     ]) do
@@ -110,9 +118,9 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+         put: fn "https://storage.example/put", _opts ->
            Agent.update(attempts, &(&1 + 1))
            raise ArgumentError, "invalid upload request"
          end
@@ -126,7 +134,33 @@ defmodule Operately.Blobs.S3HttpTest do
     end
   end
 
-  test "put_file/3 returns the error when the retry also fails" do
+  test "put_file/3 does not catch or retry programming-error exits" do
+    source_path = temp_path("s3-http-upload-programming-exit.txt")
+    headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
+    File.write!(source_path, "hello world!")
+    {:ok, attempts} = Agent.start_link(fn -> 0 end)
+
+    function_clause = {:function_clause, [{:hackney_conn, :send_body, [:hackney_ssl, :socket, {:file, source_path}], []}]}
+    exit_reason = {function_clause, {:gen_statem, :call, [self(), :request]}}
+
+    on_exit(fn -> cleanup_paths([source_path]) end)
+
+    with_mocks([
+      {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
+      {Req, [],
+       [
+         put: fn "https://storage.example/put", _opts ->
+           Agent.update(attempts, &(&1 + 1))
+           exit(exit_reason)
+         end
+       ]}
+    ]) do
+      assert catch_exit(S3Http.put_file("some/path", source_path, headers)) == exit_reason
+      assert Agent.get(attempts, & &1) == 1
+    end
+  end
+
+  test "put_file/3 returns the final error when the retry also fails" do
     source_path = temp_path("s3-http-upload-timeout.txt")
     headers = [{"Content-Type", "text/plain"}, {"Content-Length", "12"}]
     File.write!(source_path, "hello world!")
@@ -138,15 +172,20 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
-           Agent.update(attempts, &(&1 + 1))
-           {:error, :timeout}
+         put: fn "https://storage.example/put", _opts ->
+           case Agent.get_and_update(attempts, fn count -> {count + 1, count + 1} end) do
+             1 -> {:error, %Req.TransportError{reason: :timeout}}
+             2 -> {:ok, %Req.Response{status: 503, body: "still unavailable"}}
+           end
          end
        ]}
     ]) do
-      capture_log(fn -> assert {:error, :timeout} = S3Http.put_file("some/path", source_path, headers) end)
+      capture_log(fn ->
+        assert {:error, {:http_error, 503, "still unavailable"}} = S3Http.put_file("some/path", source_path, headers)
+      end)
+
       assert Agent.get(attempts, & &1) == 2
     end
   end
@@ -235,12 +274,15 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+         put: fn "https://storage.example/put", opts ->
+           assert %File.Stream{} = opts[:body]
+           assert opts[:body] |> Enum.to_list() |> IO.iodata_to_binary() == "hello world!"
+
            case Agent.get_and_update(attempts, fn count -> {count + 1, count + 1} end) do
-             1 -> {:ok, status, [], "retryable"}
-             2 -> {:ok, 200, [], ""}
+             1 -> {:ok, %Req.Response{status: status, body: "retryable"}}
+             2 -> {:ok, %Req.Response{status: 200, body: ""}}
            end
          end
        ]}
@@ -260,12 +302,15 @@ defmodule Operately.Blobs.S3HttpTest do
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+         put: fn "https://storage.example/put", opts ->
+           assert %File.Stream{} = opts[:body]
+           assert opts[:body] |> Enum.to_list() |> IO.iodata_to_binary() == "hello world!"
+
            case Agent.get_and_update(attempts, fn count -> {count + 1, count + 1} end) do
-             1 -> {:error, reason}
-             2 -> {:ok, 200, [], ""}
+             1 -> {:error, %Req.TransportError{reason: reason}}
+             2 -> {:ok, %Req.Response{status: 200, body: ""}}
            end
          end
        ]}
@@ -285,15 +330,15 @@ defmodule Operately.Blobs.S3HttpTest do
 
     response =
       case reason do
-        {:http_error, status, body} -> {:ok, status, [], body}
+        {:http_error, status, body} -> {:ok, %Req.Response{status: status, body: body}}
         transport_reason -> {:error, transport_reason}
       end
 
     with_mocks([
       {Operately.Blobs.S3Config, [], [presigned_url: fn :put, "some/path", ^headers, [], [expires_in: 3600] -> {:ok, "https://storage.example/put"} end]},
-      {:hackney, [],
+      {Req, [],
        [
-         request: fn :put, "https://storage.example/put", ^headers, {:file, ^source_path}, _opts ->
+         put: fn "https://storage.example/put", _opts ->
            Agent.update(attempts, &(&1 + 1))
            response
          end

@@ -217,6 +217,21 @@ defmodule Operately.CompanyTransfersTest do
     assert run.error_message == "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
   end
 
+  test "import worker marks the run as failed when a file upload fails", ctx do
+    assert {:ok, run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+    reason = {:file_upload_failed, "source-blob-id", :timeout}
+
+    with_mock Importer, run: fn _run -> {:error, reason} end do
+      assert :ok = perform_job(ImportWorker, %{import_run_id: run.id})
+    end
+
+    run = CompanyTransfers.get_import_run!(run.id)
+
+    assert run.status == :failed
+    assert run.completed_at != nil
+    assert run.error_message == "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
+  end
+
   test "import worker logs account creation failures with the underlying changeset details", ctx do
     assert {:ok, run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
 
