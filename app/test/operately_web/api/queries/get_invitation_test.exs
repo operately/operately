@@ -79,6 +79,13 @@ defmodule OperatelyWeb.Api.Queries.GetInvitationTest do
       assert {404, _} = query(conn, [:invitations, :get_invitation], %{"token" => invite_link.token})
     end
 
+    test "returns not found for a personal invite with no person", %{conn: conn} do
+      invite_link = personal_invite_link_fixture()
+      {:ok, invite_link} = InviteLinks.update_invite_link(invite_link, %{person_id: nil})
+
+      assert {404, _} = query(conn, [:invitations, :get_invitation], %{"token" => invite_link.token})
+    end
+
     test "returns not found for a company-wide invite token", %{conn: conn} do
       personal_link = personal_invite_link_fixture()
 
