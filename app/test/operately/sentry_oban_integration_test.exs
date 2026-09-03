@@ -42,7 +42,7 @@ defmodule Operately.SentryObanIntegrationTest do
       end
     end
 
-    test "creates proper context for Sentry error reporting" do
+    test "creates proper tags and extra for Sentry error reporting" do
       job = %Oban.Job{
         id: 456,
         queue: "mailer",
@@ -65,13 +65,14 @@ defmodule Operately.SentryObanIntegrationTest do
       with_mock Sentry,
                 capture_exception: fn exc, opts ->
                   assert exc == error
+                  refute Keyword.has_key?(opts, :contexts)
 
-                  contexts = Keyword.get(opts, :contexts, %{})
-                  assert contexts[:tags][:worker] == "Operately.Notifications.EmailWorker"
-                  assert contexts[:tags][:queue] == "mailer"
-                  assert contexts[:tags][:oban_job] == true
+                  tags = Keyword.get(opts, :tags, %{})
+                  assert tags[:worker] == "Operately.Notifications.EmailWorker"
+                  assert tags[:queue] == "mailer"
+                  assert tags[:oban_job] == true
 
-                  extra = contexts[:extra]
+                  extra = Keyword.get(opts, :extra, %{})
                   assert extra[:job_id] == 456
                   assert extra[:attempt] == 2
                   assert extra[:max_attempts] == 5
@@ -97,6 +98,31 @@ defmodule Operately.SentryObanIntegrationTest do
 
         :telemetry.detach("test-sentry-oban-errors-context")
       end
+    end
+
+    test "capture_exception options pass Sentry validation" do
+      job = %Oban.Job{
+        id: 789,
+        queue: "default",
+        worker: "TestWorker",
+        args: %{},
+        attempt: 1,
+        max_attempts: 3
+      }
+
+      measurements = %{duration: 100, queue_time: 50}
+      error = %RuntimeError{message: "validation check"}
+      metadata = %{job: job, error: error, stacktrace: []}
+
+      # Call the real Sentry API so NimbleOptions validates option keys.
+      # Without a DSN this returns :ignored instead of sending an event.
+      assert :ignored ==
+               Operately.Application.handle_oban_exception(
+                 [:oban, :job, :exception],
+                 measurements,
+                 metadata,
+                 %{}
+               )
     end
   end
 end

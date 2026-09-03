@@ -77,19 +77,15 @@ defmodule Operately.Application do
       queue_time: Map.get(measurements, :queue_time)
     }
 
-    context = %{
+    Sentry.capture_exception(
+      Map.get(metadata, :error, RuntimeError.exception("Unknown Oban job error")),
+      stacktrace: Map.get(metadata, :stacktrace, []),
       tags: %{
         worker: job.worker,
         queue: job.queue,
         oban_job: true
       },
       extra: extra
-    }
-
-    Sentry.capture_exception(
-      Map.get(metadata, :error, RuntimeError.exception("Unknown Oban job error")),
-      stacktrace: Map.get(metadata, :stacktrace, []),
-      contexts: context
     )
   end
 end
