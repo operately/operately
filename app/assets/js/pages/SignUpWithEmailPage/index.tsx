@@ -58,6 +58,8 @@ function Page() {
         await Api.createEmailActivationCode({ email: form.values.email });
         setPageState("code-verification");
       } else {
+        setSubmitError(null);
+
         const result = await Api.createAccount({
           inviteToken: form.values.inviteToken,
           code: form.values.code,
@@ -94,7 +96,7 @@ function Page() {
 
   return match(pageState)
     .with("form", () => <Form form={form} submitError={submitError} />)
-    .with("code-verification", () => <CodeVerification form={form} />)
+    .with("code-verification", () => <CodeVerification form={form} submitError={submitError} />)
     .exhaustive();
 }
 
@@ -182,7 +184,13 @@ function WhatHappensNext() {
   );
 }
 
-function CodeVerification({ form }: { form: ReturnType<typeof Forms.useForm> }) {
+function CodeVerification({
+  form,
+  submitError,
+}: {
+  form: ReturnType<typeof Forms.useForm>;
+  submitError: string | null;
+}) {
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
       <Paper.Root size="tiny">
@@ -192,6 +200,12 @@ function CodeVerification({ form }: { form: ReturnType<typeof Forms.useForm> }) 
               <OperatelyLogo width="32px" height="32px" />
               <h1 className="text-3xl font-bold mt-4 mb-4">Check your email for a code</h1>
               <CodeMessage />
+
+              {submitError && (
+                <div className="mb-4 w-60" role="alert">
+                  <Forms.ErrorMessage error={submitError} />
+                </div>
+              )}
 
               <div className="flex flex-col items-center">
                 <CodeInput field={"code"} />
