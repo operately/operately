@@ -2979,6 +2979,20 @@ export type CheckInState = "draft" | "scheduled" | "published";
 
 export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
 
+export type CommentListEntityType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "project_discussion"
+  | "goal_update"
+  | "goal_discussion"
+  | "message"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link"
+  | "space_task"
+  | "project_task"
+  | "kpi_entry";
+
 export type CommentParentType =
   | "project_check_in"
   | "project_retrospective"
@@ -3226,7 +3240,7 @@ export interface CliAuthStatusResult {
 
 export interface CommentsListInput {
   entityId: Id;
-  entityType: CommentParentType;
+  entityType: CommentListEntityType;
 }
 
 export interface CommentsListResult {

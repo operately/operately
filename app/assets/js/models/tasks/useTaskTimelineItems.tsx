@@ -7,7 +7,7 @@ import * as Comments from "@/models/comments";
 
 export function useTaskTimelineItems(
   taskId: string | null,
-  commentEntityType: Comments.CommentParentType,
+  commentEntityType: "project_task" | "space_task",
   refreshVersion = 0,
 ) {
   const [activities, setActivities] = React.useState<Activities.Activity[]>([]);

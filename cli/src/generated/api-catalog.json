@@ -363,6 +363,20 @@
       "milestone_status": [
         "pending",
         "done"
+      ],
+      "comment_list_entity_type": [
+        "project_check_in",
+        "project_retrospective",
+        "project_discussion",
+        "goal_update",
+        "goal_discussion",
+        "message",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link",
+        "space_task",
+        "project_task",
+        "kpi_entry"
       ]
     },
     "int_enums": {
@@ -23110,7 +23124,7 @@
           "default": null,
           "name": "entity_type",
           "type": {
-            "name": "comment_parent_type",
+            "name": "comment_list_entity_type",
             "kind": "named"
           },
           "optional": false,

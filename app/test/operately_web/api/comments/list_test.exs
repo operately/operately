@@ -162,6 +162,27 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
     end
   end
 
+  describe "validation" do
+    test "rejects entity types that comments/list does not support", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_milestone(:milestone, :project)
+
+      assert {400, res} =
+               query(ctx.conn, [:comments, :list], %{
+                 entity_id: Paths.milestone_id(ctx.milestone),
+                 entity_type: "milestone"
+               })
+
+      assert res.message ==
+               "Invalid value for enum comment_list_entity_type: milestone. Allowed values: project_check_in, project_retrospective, project_discussion, goal_update, goal_discussion, message, resource_hub_document, resource_hub_file, resource_hub_link, space_task, project_task, kpi_entry"
+    end
+  end
+
   describe "resource hub documents" do
     test "lists comments on space-backed documents", ctx do
       ctx =

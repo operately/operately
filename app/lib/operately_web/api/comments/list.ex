@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Comments.List do
 
   inputs do
     field :entity_id, :id, null: false
-    field :entity_type, :comment_parent_type, null: false
+    field :entity_type, :comment_list_entity_type, null: false
   end
 
   outputs do
