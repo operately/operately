@@ -359,7 +359,6 @@ export const Default: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        showMilestoneKanbanLink={true}
         project={{ id: "project-1", name: "Mobile App Redesign" }}
         childrenCount={{
           tasksCount: tasks.length,
@@ -1382,7 +1381,6 @@ export const ProjectWithoutSpace: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        showMilestoneKanbanLink={true}
         project={{ id: "project-no-space", name: "Project Without Space" }}
         childrenCount={{
           tasksCount: tasks.length,

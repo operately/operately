@@ -40,7 +40,6 @@ export function TaskBoard({
   tasks: externalTasks,
   milestones: externalMilestones = [],
   searchableMilestones,
-  showMilestoneKanbanLink,
   onTaskCreate,
   onMilestoneCreate,
   onTaskAssigneeChange,
@@ -354,7 +353,6 @@ export function TaskBoard({
                   milestone={milestoneData.milestone}
                   tasks={groupedTasks[milestoneData.milestone.id] || []}
                   showHiddenTasksToggle={showHiddenTasksToggle}
-                  showKanbanLink={showMilestoneKanbanLink}
                   stats={milestoneData.stats}
                   onTaskCreate={onTaskCreate}
                   onTaskAssigneeChange={onTaskAssigneeChange}

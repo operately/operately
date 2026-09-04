@@ -1,4 +1,4 @@
-import { MilestoneKanbanPage } from "turboui";
+import { TaskBoard } from "turboui";
 
 import { compareIds, includesId } from "@/routes/paths";
 
@@ -6,8 +6,8 @@ export type KanbanState = Record<string, string[]>;
 
 export function parseKanbanState(
   raw: unknown,
-  statuses: MilestoneKanbanPage.StatusOption[],
-  tasks?: MilestoneKanbanPage.Task[],
+  statuses: TaskBoard.Status[],
+  tasks?: TaskBoard.Task[],
 ): KanbanState {
   const statusKeys = statuses.map((s) => s.value);
   const parsedState = parseRawKanbanState(raw, statusKeys);
@@ -49,7 +49,7 @@ function parseRawKanbanState(raw: unknown, statusKeys: string[]): KanbanState {
 
 function buildKanbanStateFromTasks(
   parsedState: KanbanState,
-  tasks: MilestoneKanbanPage.Task[],
+  tasks: TaskBoard.Task[],
   statusKeys: string[],
 ): KanbanState {
   const presentTaskIds = collectPresentTaskIds(parsedState, tasks, statusKeys);
@@ -58,7 +58,7 @@ function buildKanbanStateFromTasks(
   statusKeys.forEach((status) => {
     const orderedTasks = (parsedState[status] || [])
       .map((rawId) => tasks.find((task) => compareIds(task.id, rawId)))
-      .filter((task): task is MilestoneKanbanPage.Task => Boolean(task))
+      .filter((task): task is TaskBoard.Task => Boolean(task))
       .filter((task) => resolveTaskKanbanStatus(task, statusKeys) === status);
 
     const orderedIds = orderedTasks.map((task) => task.id);
@@ -75,7 +75,7 @@ function buildKanbanStateFromTasks(
 
 function collectPresentTaskIds(
   parsedState: KanbanState,
-  tasks: MilestoneKanbanPage.Task[],
+  tasks: TaskBoard.Task[],
   statusKeys: string[],
 ): string[] {
   const presentTaskIds: string[] = [];
@@ -97,7 +97,7 @@ function toCamelCaseStatusKey(key: string): string {
   return key.replace(/_([a-z])/g, (_match, group: string) => group.toUpperCase());
 }
 
-function resolveTaskKanbanStatus(task: MilestoneKanbanPage.Task, statusKeys: string[]): string {
+function resolveTaskKanbanStatus(task: TaskBoard.Task, statusKeys: string[]): string {
   const value = (task.status as any)?.value || (task.status as any)?.id;
 
   if (value && statusKeys.includes(value)) return value;

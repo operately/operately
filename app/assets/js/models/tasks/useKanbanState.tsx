@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import Api, { type TaskStatus } from "@/api";
-import { MilestoneKanbanPage, SpaceKanbanPage, showErrorToast } from "turboui";
+import { TaskBoard, showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
 import { serializeTaskStatus } from "./index";
@@ -14,8 +14,8 @@ interface TaskKanbanChangeEvent {
   updatedKanbanState: KanbanState;
 }
 
-type StatusOption = MilestoneKanbanPage.StatusOption | SpaceKanbanPage.StatusOption;
-type Task = MilestoneKanbanPage.Task | SpaceKanbanPage.Task;
+type StatusOption = TaskBoard.Status;
+type Task = TaskBoard.Task;
 
 interface BaseKanbanStateOptions {
   initialRawState: unknown;
@@ -26,10 +26,6 @@ interface BaseKanbanStateOptions {
 }
 
 type UseKanbanStateOptions =
-  | (BaseKanbanStateOptions & {
-      type: "milestone";
-      milestoneId: string;
-    })
   | (BaseKanbanStateOptions & {
       type: "space";
       spaceId: string;
@@ -73,14 +69,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
       applyOptimisticTaskStatusUpdate(event.taskId, statusOption, setTasks);
 
       try {
-        if (type === "milestone") {
-          await Api.projects.updateMilestoneKanban({
-            milestoneId: options.milestoneId,
-            taskId: event.taskId,
-            status: backendStatus,
-            kanbanState: serializeKanbanState(event.updatedKanbanState),
-          });
-        } else if (type === "project") {
+        if (type === "project") {
           await Api.projects.updateKanban({
             projectId: options.projectId,
             taskId: event.taskId,
