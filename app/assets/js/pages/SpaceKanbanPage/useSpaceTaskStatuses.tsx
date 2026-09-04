@@ -1,9 +1,7 @@
 import * as React from "react";
 
-import Api from "@/api";
 import * as Tasks from "@/models/tasks";
-
-import { PageCache } from "@/routes/PageCache";
+import * as Spaces from "@/models/spaces";
 
 import { SpaceKanbanPage } from "turboui";
 
@@ -11,11 +9,11 @@ interface UseSpaceTaskStatusesOptions {
   spaceId: string;
   tasks: SpaceKanbanPage.Task[];
   setTasks: React.Dispatch<React.SetStateAction<SpaceKanbanPage.Task[]>>;
-  refresh?: () => Promise<void> | void;
-  cacheKey: string;
 }
 
-export function useSpaceTaskStatuses({ spaceId, tasks, setTasks, refresh, cacheKey }: UseSpaceTaskStatusesOptions) {
+export function useSpaceTaskStatuses({ spaceId, tasks, setTasks }: UseSpaceTaskStatusesOptions) {
+  const updateTaskStatuses = Spaces.useUpdateSpaceTaskStatuses();
+
   const handleStatusesChange = React.useCallback(
     async (payload: {
       nextStatuses: SpaceKanbanPage.StatusOption[];
@@ -58,23 +56,17 @@ export function useSpaceTaskStatuses({ spaceId, tasks, setTasks, refresh, cacheK
       );
 
       try {
-        await Api.spaces.updateTaskStatuses({
+        await updateTaskStatuses.mutateAsync({
           spaceId,
           taskStatuses,
           deletedStatusReplacements,
         });
-
-        PageCache.invalidate(cacheKey);
-
-        if (refresh) {
-          await refresh();
-        }
       } catch (e) {
         setTasks(previousTasks);
         throw e;
       }
     },
-    [cacheKey, refresh, setTasks, spaceId, tasks],
+    [setTasks, spaceId, tasks, updateTaskStatuses],
   );
 
   return { handleStatusesChange };
