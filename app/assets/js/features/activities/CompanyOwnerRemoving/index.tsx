@@ -28,9 +28,13 @@ const CompanyOwnerRemoving: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const name = firstName(content(activity).person!);
+    const person = content(activity).person;
 
-    return feedTitle(activity, `removed ${name} as an account owner`);
+    if (person) {
+      return feedTitle(activity, `removed ${firstName(person)} as an account owner`);
+    }
+
+    return feedTitle(activity, "removed an account owner");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

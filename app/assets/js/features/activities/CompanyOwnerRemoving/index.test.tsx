@@ -1,0 +1,34 @@
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+
+import ActivityHandler, { DISPLAYED_IN_FEED } from "..";
+
+jest.mock("turboui", () => ({
+  Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
+}));
+
+describe("company_owner_removing activities", () => {
+  const activity: any = {
+    action: "company_owner_removing",
+    author: { fullName: "Jo Smith" },
+    content: {
+      person: { id: "person-1", fullName: "Alex Rivera" },
+    },
+  };
+
+  it("renders the removed owner in the feed", () => {
+    const title = renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ activity, page: "feed" })}</>);
+
+    expect(DISPLAYED_IN_FEED).toContain("company_owner_removing");
+    expect(title).toContain("Jo removed Alex as an account owner");
+  });
+
+  it("renders without crashing when the removed person is missing", () => {
+    const activityWithoutPerson = { ...activity, content: { person: null } };
+    const title = renderToStaticMarkup(
+      <>{ActivityHandler.FeedItemTitle({ activity: activityWithoutPerson, page: "feed" })}</>,
+    );
+
+    expect(title).toContain("Jo removed an account owner");
+  });
+});
