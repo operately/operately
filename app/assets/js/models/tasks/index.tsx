@@ -1,4 +1,4 @@
-import Api, { Task as BackendTask, TaskReminder, TaskStatus } from "@/api";
+import { Task as BackendTask, TaskReminder, TaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
 import * as Time from "@/utils/time";
 import { Paths } from "@/routes/paths";
@@ -17,8 +17,18 @@ export { parseKanbanState, type KanbanState } from "./parseKanbanState";
 export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
-
-export const getTask = Api.tasks.get;
+export {
+  invalidateTaskLifecycleQueries,
+  useDeleteTask,
+  useMoveTask,
+  useUpdateTaskAssignee,
+  useUpdateTaskDescription,
+  useUpdateTaskDueDate,
+  useUpdateTaskMilestone,
+  useUpdateTaskName,
+  useUpdateTaskReminders,
+  useUpdateTaskStatus,
+} from "./taskLifecycle";
 
 type ParserOptions = { type: "project" } | { type: "space"; space: Space };
 
