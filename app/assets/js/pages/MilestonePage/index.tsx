@@ -20,7 +20,6 @@ import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch }
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { projectPageCacheKey } from "../ProjectPage";
-import { milestoneKanbanPageCacheKey } from "../MilestoneKanbanPage";
 import { spaceKanbanPageCacheKey } from "../SpaceKanbanPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -196,7 +195,6 @@ function Page() {
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
       PageCache.invalidate(pageCacheKey(milestone.id));
-      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
 
       if (milestone.project?.id) {
         PageCache.invalidate(projectPageCacheKey(milestone.project.id));
@@ -224,14 +222,12 @@ function Page() {
       if (!result) return;
 
       PageCache.invalidate(projectPageCacheKey(projectId));
-      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
 
       if (nextMilestone?.id) {
         PageCache.invalidate(pageCacheKey(nextMilestone.id));
-        PageCache.invalidate(milestoneKanbanPageCacheKey(nextMilestone.id));
       }
     },
-    [milestone.id, projectId, updateTaskMilestone],
+    [projectId, updateTaskMilestone],
   );
 
   const handleTaskDelete = React.useCallback(
@@ -241,7 +237,6 @@ function Page() {
       if (!result?.success) return;
 
       PageCache.invalidate(pageCacheKey(milestone.id));
-      PageCache.invalidate(milestoneKanbanPageCacheKey(milestone.id));
       PageCache.invalidate(projectPageCacheKey(projectId));
     },
     [deleteTask, milestone.id, projectId],

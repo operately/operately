@@ -184,7 +184,6 @@ export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
   searchableMilestones: Milestone[]; // Filtered milestones for task creation modal
-  showMilestoneKanbanLink?: boolean;
   onTaskCreate: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;

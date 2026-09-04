@@ -149,7 +149,6 @@ export function ProjectPageWithDocsAndFilesStory({
       closeLink="#"
       reopenLink="#"
       pauseLink="#"
-      showMilestoneKanbanLink={true}
       project={{ id: "project-1", name: "Mobile App Redesign" }}
       childrenCount={{
         tasksCount: tasks.length,
