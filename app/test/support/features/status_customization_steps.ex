@@ -32,10 +32,23 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
 
   step :visit_project_kanban, ctx do
     ctx
-    |> visit_project_tasks()
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-tasks")
+    |> switch_to_board_view()
+  end
+
+  step :switch_to_board_view, ctx do
+    ctx
     |> UI.click(testid: "display-menu-trigger")
     |> UI.click(testid: "display-menu-option-board")
     |> UI.assert_has(testid: "kanban-board")
+  end
+
+  step :switch_to_list_view, ctx do
+    ctx
+    |> UI.click(testid: "display-menu-trigger")
+    |> UI.click(testid: "display-menu-option-list")
+    |> UI.assert_has(testid: "tasks-board")
   end
 
   step :open_manage_statuses, ctx do

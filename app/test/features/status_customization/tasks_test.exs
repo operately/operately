@@ -65,7 +65,7 @@ defmodule Operately.Features.StatusCustomization.TasksTest do
     |> Steps.visit_project_kanban()
     |> Steps.refute_kanban_column_visible(status: "unknown-status")
     |> Steps.assert_task_in_kanban_column(task: task_name, column: "in-progress")
-    |> Steps.visit_project_tasks()
+    |> Steps.switch_to_list_view()
     # Delete "In progress" status
     |> Steps.open_manage_statuses()
     |> Steps.remove_status_at_index(index: 1)
