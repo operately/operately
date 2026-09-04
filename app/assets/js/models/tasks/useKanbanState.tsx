@@ -5,7 +5,7 @@ import { TaskBoard, showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
 import { serializeTaskStatus } from "./index";
-import { parseKanbanState, type KanbanState } from "./parseKanbanState";
+import { areKanbanStatesEqual, parseKanbanState, type KanbanState } from "./parseKanbanState";
 
 interface TaskKanbanChangeEvent {
   taskId: string;
@@ -54,7 +54,11 @@ export function useKanbanState(options: UseKanbanStateOptions) {
       hasOptimisticUpdateRef.current = false;
       return;
     }
-    setKanbanState(parseKanbanState(initialRawState, statuses, tasks));
+
+    setKanbanState((previous) => {
+      const next = parseKanbanState(initialRawState, statuses, tasks);
+      return areKanbanStatesEqual(previous, next) ? previous : next;
+    });
   }, [initialRawState, statuses, tasks]);
 
   const persistTaskKanbanChange = React.useCallback(

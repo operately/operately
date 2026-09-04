@@ -43,7 +43,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
 
   React.useEffect(() => {
     setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "space", space }));
-  }, [backendTasks, paths, space]);
+  }, [backendTasks, paths, space.id]);
 
   const createSnapshot = React.useCallback(
     (): TasksSnapshot => ({
