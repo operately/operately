@@ -1,4 +1,4 @@
-import Api, { Task as BackendTask, TaskReminder, TaskStatus } from "@/api";
+import { Task as BackendTask, TaskReminder, TaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
 import * as Time from "@/utils/time";
 import { Paths } from "@/routes/paths";
@@ -29,8 +29,6 @@ export {
   useUpdateTaskReminders,
   useUpdateTaskStatus,
 } from "./taskLifecycle";
-
-export const getTask = Api.tasks.get;
 
 type ParserOptions = { type: "project" } | { type: "space"; space: Space };
 
