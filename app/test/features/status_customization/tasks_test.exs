@@ -62,17 +62,17 @@ defmodule Operately.Features.StatusCustomization.TasksTest do
     # Assert task is in "In progress" column
     |> Steps.open_task_from_tasks_board()
     |> Steps.change_task_status_on_task_page(current_label: "Not started", new_value: "in-progress")
-    |> Steps.visit_milestone_kanban()
+    |> Steps.visit_project_kanban()
     |> Steps.refute_kanban_column_visible(status: "unknown-status")
     |> Steps.assert_task_in_kanban_column(task: task_name, column: "in-progress")
-    |> Steps.visit_project_tasks()
+    |> Steps.switch_to_list_view()
     # Delete "In progress" status
     |> Steps.open_manage_statuses()
     |> Steps.remove_status_at_index(index: 1)
     |> Steps.select_replacement_for_deleted_status(deleted_label: "In progress", replacement_value: "pending")
     |> Steps.save_status_changes()
     # Assert task moved to "Not started" column
-    |> Steps.visit_milestone_kanban()
+    |> Steps.visit_project_kanban()
     |> Steps.refute_kanban_column_visible(status: "unknown-status")
     |> Steps.refute_kanban_column_visible(status: "in-progress")
     |> Steps.assert_task_in_kanban_column(task: task_name, column: "pending")

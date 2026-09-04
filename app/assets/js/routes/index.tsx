@@ -185,7 +185,6 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("project-activities/:id", pages.ProjectActivityPage),
 
         pageRoute("milestones/:id", pages.MilestonePage),
-        pageRoute("milestones/:id/kanban", pages.MilestoneKanbanPage),
 
         pageRoute("*", pages.NotFoundPage),
       ],
