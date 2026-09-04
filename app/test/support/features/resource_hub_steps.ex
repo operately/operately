@@ -20,7 +20,11 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :visit_folder_page, ctx, folder_name do
-    UI.visit(ctx, Paths.folder_path(ctx.company, ctx[folder_name]))
+    path = Paths.folder_path(ctx.company, ctx[folder_name])
+
+    ctx
+    |> UI.visit(path)
+    |> UI.assert_page(path)
   end
 
   step :navigate_back, ctx, name do

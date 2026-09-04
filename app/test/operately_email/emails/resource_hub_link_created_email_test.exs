@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.ResourceHubLinkCreatedEmailTest do
+defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmailTest do
   use Operately.DataCase
 
   alias Operately.Access.Binding

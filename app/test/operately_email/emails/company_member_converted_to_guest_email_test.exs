@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.CompanyMemberConvertedToGuestEmailTest do
+defmodule OperatelyEmail.Emails.CompanyMemberConvertedToGuestEmailTest do
   use Operately.DataCase
 
   import Ecto.Query, only: [from: 2]
