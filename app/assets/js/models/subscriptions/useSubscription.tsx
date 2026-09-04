@@ -8,7 +8,7 @@ interface UseSubscriptionOptions {
   subscriptionList?: SubscriptionList | null;
   entityId: string;
   entityType: "project" | "milestone" | "project_task" | "space_task" | "kpi";
-  cacheKey: string;
+  cacheKey?: string;
   onRefresh?: () => Promise<void>;
 }
 
@@ -61,7 +61,9 @@ export function useSubscription({
           await Api.notifications.unsubscribe({ subscriptionListId: subscriptionList.id });
         }
 
-        PageCache.invalidate(cacheKey);
+        if (cacheKey) {
+          PageCache.invalidate(cacheKey);
+        }
 
         await onRefresh?.();
       } catch (error) {

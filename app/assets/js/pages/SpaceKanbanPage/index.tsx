@@ -1,57 +1,27 @@
 import * as React from "react";
 
-import Api from "@/api";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 import * as Projects from "@/models/projects";
 
-import { PageCache } from "@/routes/PageCache";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { fetchAll } from "@/utils/async";
-import { assertPresent } from "@/utils/assertions";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { SpaceKanbanPage } from "turboui";
 import { useSpaceTaskStatuses } from "./useSpaceTaskStatuses";
+import { loader, useLoadedData, useRefresh } from "./loader";
 
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
-export { pageCacheKey as spaceKanbanPageCacheKey };
-
-type LoaderResult = {
-  data: {
-    space: Spaces.Space;
-    tasks: Tasks.Task[];
-  };
-  cacheVersion: number;
-};
-
-async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  return await PageCache.fetch({
-    cacheKey: pageCacheKey(params.id),
-    refreshCache,
-    fetchFn: () =>
-      fetchAll({
-        space: Api.spaces.get({ id: params.id, includePermissions: true }).then((d) => d.space!),
-        tasks: Api.spaces.listTasks({ spaceId: params.id }).then((d) => d.tasks),
-      }),
-  });
-}
-
-function pageCacheKey(id: string): string {
-  return `v1-SpaceKanbanPage-${id}`;
-}
 
 function Page() {
   const paths = usePaths();
-  const pageData = PageCache.useData(loader);
-  const { data } = pageData;
-  const { space, tasks: backendTasks } = data;
+  const { space, tasks: backendTasks } = useLoadedData();
+  const refreshPageData = useRefresh();
   const currentUser = useMe();
-
-  assertPresent(space, "Space must be present");
+  const { mutateAsync: updateKanban } = Spaces.useUpdateSpaceKanban();
 
   const transformPerson = React.useCallback((p: People.Person) => People.parsePersonForTurboUi(paths, p)!, [paths]);
   const assigneeSearch = Tasks.useTaskAssigneeSearch({
@@ -77,9 +47,7 @@ function Page() {
     updateTaskDescription,
   } = Tasks.useSpaceTasksForTurboUi({
     backendTasks,
-    space: space,
-    cacheKey: pageCacheKey(space.id),
-    refresh: pageData.refresh,
+    space,
   });
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id } });
@@ -91,20 +59,13 @@ function Page() {
     type: "space",
     tasks,
     setTasks,
-    onSuccess: async () => {
-      PageCache.invalidate(pageCacheKey(space.id));
-      if (pageData.refresh) {
-        await pageData.refresh();
-      }
-    },
+    updateKanban,
   });
 
   const { handleStatusesChange } = useSpaceTaskStatuses({
     spaceId: space.id,
     tasks,
     setTasks,
-    refresh: pageData.refresh,
-    cacheKey: pageCacheKey(space.id),
   });
 
   const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access", activeOnly: true });
@@ -114,20 +75,9 @@ function Page() {
     withTasksEnabledOnly: true,
   });
 
-  const handleMoveTaskSuccess = React.useCallback(
-    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
-      PageCache.invalidate(pageCacheKey(space.id));
-
-      if (destinationType === "space") {
-        PageCache.invalidate(pageCacheKey(destinationId));
-      }
-
-      if (pageData.refresh) {
-        await pageData.refresh();
-      }
-    },
-    [space.id, pageData],
-  );
+  const handleMoveTaskSuccess = React.useCallback(async () => {
+    await refreshPageData();
+  }, [refreshPageData]);
 
   const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
@@ -135,8 +85,7 @@ function Page() {
     currentUser,
     tasks,
     commentEntityType: "space_task",
-    cacheKey: pageCacheKey(space.id),
-    onRefresh: pageData.refresh,
+    onRefresh: refreshPageData,
     canEdit: Boolean(space.permissions?.canEdit),
     canComment: Boolean(space.permissions?.canComment),
     variant: "space-task",

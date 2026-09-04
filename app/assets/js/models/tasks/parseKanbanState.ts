@@ -4,6 +4,20 @@ import { compareIds, includesId } from "@/routes/paths";
 
 export type KanbanState = Record<string, string[]>;
 
+export function areKanbanStatesEqual(left: KanbanState, right: KanbanState): boolean {
+  const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+
+  for (const key of keys) {
+    const leftIds = left[key] ?? [];
+    const rightIds = right[key] ?? [];
+
+    if (leftIds.length !== rightIds.length) return false;
+    if (leftIds.some((id, index) => !compareIds(id, rightIds[index]))) return false;
+  }
+
+  return true;
+}
+
 export function parseKanbanState(
   raw: unknown,
   statuses: TaskBoard.Status[],

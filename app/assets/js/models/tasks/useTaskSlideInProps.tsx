@@ -7,9 +7,10 @@ import { compareIds, Paths } from "@/routes/paths";
 
 import { useTaskTimelineItems } from "./useTaskTimelineItems";
 import { prepareTaskTimelineItems, sortTaskTimelineItems } from "./prepareTaskTimelineItems";
-import Api, { type Person as ApiPerson, type Task as BackendTask } from "@/api";
+import { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useMoveTask } from "./taskLifecycle";
 
 type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
@@ -20,7 +21,7 @@ export function useTaskSlideInProps(opts: {
   tasks: TaskBoard.Task[];
 
   commentEntityType: "project_task" | "space_task";
-  cacheKey: string;
+  cacheKey?: string;
   onRefresh?: () => Promise<void>;
 
   canEdit: boolean;
@@ -39,6 +40,7 @@ export function useTaskSlideInProps(opts: {
 }) {
   const { backendTasks, paths, currentUser, tasks, canEdit, canComment, variant, commentEntityType } = opts;
   const formattedTimePreferences = useFormattedTimePreferences();
+  const { mutateAsync: moveTask } = useMoveTask();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
@@ -365,7 +367,7 @@ export function useTaskSlideInProps(opts: {
         },
         onMoveTask: async ({ destinationType, destinationId }) => {
           try {
-            const res = await Api.tasks.move({ taskId, destinationType, destinationId });
+            const res = await moveTask({ taskId, destinationType, destinationId });
             const movedTaskId = res.task?.id ?? taskId;
             const resolvedDestinationType = res.destinationType ?? destinationType;
             const resolvedDestinationId = res.destinationId ?? destinationId;
@@ -438,6 +440,7 @@ export function useTaskSlideInProps(opts: {
       activities,
       comments,
       opts.onMoveTaskSuccess,
+      moveTask,
       subscriptions,
       opts.projectSearch,
       opts.spaceSearch,

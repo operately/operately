@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import Api, { type TaskStatus } from "@/api";
+import Api, { type SpacesUpdateKanbanInput, type TaskStatus } from "@/api";
 import { TaskBoard, showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
 import { serializeTaskStatus } from "./index";
-import { parseKanbanState, type KanbanState } from "./parseKanbanState";
+import { areKanbanStatesEqual, parseKanbanState, type KanbanState } from "./parseKanbanState";
 
 interface TaskKanbanChangeEvent {
   taskId: string;
@@ -29,6 +29,7 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "space";
       spaceId: string;
+      updateKanban: (input: SpacesUpdateKanbanInput) => Promise<unknown>;
     })
   | (BaseKanbanStateOptions & {
       type: "project";
@@ -53,7 +54,11 @@ export function useKanbanState(options: UseKanbanStateOptions) {
       hasOptimisticUpdateRef.current = false;
       return;
     }
-    setKanbanState(parseKanbanState(initialRawState, statuses, tasks));
+
+    setKanbanState((previous) => {
+      const next = parseKanbanState(initialRawState, statuses, tasks);
+      return areKanbanStatesEqual(previous, next) ? previous : next;
+    });
   }, [initialRawState, statuses, tasks]);
 
   const persistTaskKanbanChange = React.useCallback(
@@ -87,7 +92,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
             tasksKanbanState: serializeKanbanState(event.updatedKanbanState),
           });
         } else {
-          await Api.spaces.updateKanban({
+          await options.updateKanban({
             spaceId: options.spaceId,
             taskId: event.taskId,
             status: backendStatus,
