@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.ProjectCreatedEmailTest do
+defmodule OperatelyEmail.Emails.ProjectCreatedEmailTest do
   use Operately.DataCase
 
   import Swoosh.TestAssertions

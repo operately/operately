@@ -31,22 +31,14 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
   defp construct_cta_text_and_url(person, project, author) do
     url = Paths.project_retrospective_path(project.company, project) |> Paths.to_url()
 
-    if can_acknowledge?(person, project, author) do
-      {"Acknowledge", url <> "?acknowledge=true"}
-    else
-      {"View Retrospective", url}
-    end
+    OperatelyEmail.AcknowledgeCta.build(
+      person,
+      author.id,
+      [project.reviewer, project.champion],
+      url,
+      "View Retrospective"
+    )
   end
-
-  defp can_acknowledge?(person, project, author) do
-    person.id != author.id and (reviewer?(person, project) or champion?(person, project))
-  end
-
-  defp reviewer?(person, %{reviewer: %{id: id}}), do: person.id == id
-  defp reviewer?(_, _), do: false
-
-  defp champion?(person, %{champion: %{id: id}}), do: person.id == id
-  defp champion?(_, _), do: false
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
