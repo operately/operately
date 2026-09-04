@@ -96,7 +96,6 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         tasks={tasks}
         milestones={state.milestones}
         searchableMilestones={state.searchableMilestones}
-        showMilestoneKanbanLink={state.showMilestoneKanbanLink}
         onTaskCreate={state.onTaskCreate}
         onMilestoneCreate={state.onMilestoneCreate}
         onTaskAssigneeChange={state.onTaskAssigneeChange}

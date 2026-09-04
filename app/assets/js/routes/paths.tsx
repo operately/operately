@@ -288,10 +288,6 @@ export class Paths {
     return this.createCompanyPath(["milestones", milestoneId]);
   }
 
-  projectMilestoneKanbanPath(milestoneId: string) {
-    return this.createCompanyPath(["milestones", milestoneId, "kanban"]);
-  }
-
   pauseProjectPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "pause"]);
   }

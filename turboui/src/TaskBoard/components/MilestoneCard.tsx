@@ -1,9 +1,8 @@
-import { IconFileText, IconFlagFilled, IconLayoutKanban, IconMessageCircle, IconPlus } from "../../icons";
+import { IconFileText, IconFlagFilled, IconMessageCircle, IconPlus } from "../../icons";
 import React, { useState } from "react";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
-import { Tooltip } from "../../Tooltip";
 import * as Types from "../types";
 import { PersonField } from "../../PersonField";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
@@ -24,7 +23,6 @@ export interface MilestoneCardProps {
   milestone: Types.Milestone;
   tasks: Types.Task[];
   showHiddenTasksToggle?: boolean;
-  showKanbanLink?: boolean;
   onTaskCreate: (task: Types.NewTaskPayload) => void;
   onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -56,7 +54,6 @@ export function MilestoneCard({
   milestone,
   tasks,
   showHiddenTasksToggle = false,
-  showKanbanLink = false,
   onTaskCreate,
   onTaskAssigneeChange,
   onTaskDueDateChange,
@@ -207,19 +204,6 @@ export function MilestoneCard({
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {showKanbanLink && milestone.kanbanLink && (
-              <Tooltip content="Open Kanban" size="sm">
-                <BlackLink
-                  to={milestone.kanbanLink}
-                  className="flex items-center text-content-dimmed md:hover:text-content-base transition-colors"
-                  underline="hover"
-                >
-                  <IconLayoutKanban size={18} className="text-content-dimmed" />
-                  <span className="sr-only">Open Kanban</span>
-                </BlackLink>
-              </Tooltip>
-            )}
-
             <SecondaryButton
               size="xs"
               icon={IconPlus}

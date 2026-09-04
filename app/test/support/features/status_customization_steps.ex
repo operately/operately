@@ -30,10 +30,12 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
     |> UI.assert_has(testid: "tasks-board")
   end
 
-  step :visit_milestone_kanban, ctx do
+  step :visit_project_kanban, ctx do
     ctx
-    |> UI.visit(Paths.project_milestone_kanban_path(ctx.company, ctx.milestone))
-    |> UI.assert_text(ctx.milestone.title)
+    |> visit_project_tasks()
+    |> UI.click(testid: "display-menu-trigger")
+    |> UI.click(testid: "display-menu-option-board")
+    |> UI.assert_has(testid: "kanban-board")
   end
 
   step :open_manage_statuses, ctx do
