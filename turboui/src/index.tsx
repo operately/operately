@@ -131,7 +131,6 @@ export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
 export { CompanyAdminPage } from "./CompanyAdminPage";
 export { CompanyNavigation } from "./CompanyNavigation";
 export { CompanyExportPage } from "./CompanyExportPage";
-export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
 export { MilestoneList } from "./MilestoneList";
 export type {
   MilestoneListProps,

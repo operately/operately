@@ -525,7 +525,6 @@ function Page() {
     getTaskPageProps: slideInModel.getTaskPageProps,
     milestones,
     searchableMilestones: filteredMilestones,
-    showMilestoneKanbanLink: false,
     onMilestoneSearch: searchMilestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,

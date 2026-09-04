@@ -153,7 +153,6 @@ export namespace ProjectPage {
     tasks: TaskBoardTypes.Task[];
     milestones: Milestone[];
     searchableMilestones: Milestone[]; // Filtered milestones for task creation
-    showMilestoneKanbanLink?: boolean;
 
     // Kanban props
     kanbanState: KanbanState;
