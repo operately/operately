@@ -19,6 +19,7 @@ export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 export {
   invalidateTaskLifecycleQueries,
+  useCreateTask,
   useDeleteTask,
   useMoveTask,
   useUpdateTaskAssignee,

@@ -2,6 +2,8 @@ import Api, * as api from "@/api";
 import { SpaceField } from "turboui/src/SpaceField";
 import { Paths, usePaths } from "../../routes/paths";
 
+export { invalidateSpaceTaskQueries, useUpdateSpaceKanban, useUpdateSpaceTaskStatuses } from "./spaceTaskLifecycle";
+
 export type { Space, SpaceTools } from "@/api";
 
 export const listSpaceTools = Api.spaces.listTools;

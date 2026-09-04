@@ -1,11 +1,20 @@
 import * as React from "react";
 
-import Api, { type TaskStatus, type TasksCreateInput } from "@/api";
+import { type TaskStatus, type TasksCreateInput } from "@/api";
 import * as Tasks from "./index";
 import * as Spaces from "../spaces";
+import {
+  useCreateTask,
+  useDeleteTask,
+  useUpdateTaskAssignee,
+  useUpdateTaskDescription,
+  useUpdateTaskDueDate,
+  useUpdateTaskName,
+  useUpdateTaskReminders,
+  useUpdateTaskStatus,
+} from "./taskLifecycle";
 
 import { usePaths } from "@/routes/paths";
-import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 
 import { DateField, showErrorToast, TaskBoard, TaskPage } from "turboui";
@@ -14,21 +23,27 @@ import { serializeTaskDescription } from "./descriptionSerialization";
 interface Attrs {
   backendTasks: Tasks.Task[];
   space: Spaces.Space;
-  cacheKey: string;
-  refresh?: () => Promise<void>;
 }
 
 interface TasksSnapshot {
   tasks: TaskBoard.Task[];
 }
 
-export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh }: Attrs) {
+export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
   const paths = usePaths();
+  const createTaskMutation = useCreateTask();
+  const updateTaskNameMutation = useUpdateTaskName();
+  const updateTaskDueDateMutation = useUpdateTaskDueDate();
+  const updateTaskRemindersMutation = useUpdateTaskReminders();
+  const updateTaskAssigneeMutation = useUpdateTaskAssignee();
+  const updateTaskStatusMutation = useUpdateTaskStatus();
+  const deleteTaskMutation = useDeleteTask("active");
+  const updateTaskDescriptionMutation = useUpdateTaskDescription();
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "space", space }));
 
   React.useEffect(() => {
     setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "space", space }));
-  }, [backendTasks, paths, space]);
+  }, [backendTasks, paths, space.id]);
 
   const createSnapshot = React.useCallback(
     (): TasksSnapshot => ({
@@ -40,14 +55,6 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
   const restoreSnapshot = React.useCallback((snapshot: TasksSnapshot) => {
     setTasks(snapshot.tasks);
   }, []);
-
-  const invalidateAndRefresh = React.useCallback(async () => {
-    PageCache.invalidate(cacheKey);
-
-    if (refresh) {
-      await refresh();
-    }
-  }, [cacheKey, refresh]);
 
   const createTask = async (task: TaskBoard.NewTaskPayload) => {
     const snapshot = createSnapshot();
@@ -88,12 +95,10 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
         input.status = backendStatus;
       }
 
-      const res = await Api.tasks.create(input);
+      const res = await createTaskMutation.mutateAsync(input);
 
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task, { type: "space", space });
       setTasks((prev) => prev.map((t) => (t.id === tempId ? realTask : t)));
-
-      await invalidateAndRefresh();
 
       return { success: true };
     } catch (e) {
@@ -117,8 +122,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     );
 
     try {
-      await Api.tasks.updateName({ taskId, name, type: "space" });
-      await invalidateAndRefresh();
+      await updateTaskNameMutation.mutateAsync({ taskId, name, type: "space" });
 
       return true;
     } catch (e) {
@@ -142,8 +146,11 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     );
 
     try {
-      await Api.tasks.updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate), type: "space" });
-      await invalidateAndRefresh();
+      await updateTaskDueDateMutation.mutateAsync({
+        taskId,
+        dueDate: serializeContextualDate(dueDate),
+        type: "space",
+      });
 
       return true;
     } catch (e) {
@@ -167,8 +174,11 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     );
 
     try {
-      await Api.tasks.updateReminders({ taskId, reminders: Tasks.serializeTaskReminders(reminders), type: "space" });
-      await invalidateAndRefresh();
+      await updateTaskRemindersMutation.mutateAsync({
+        taskId,
+        reminders: Tasks.serializeTaskReminders(reminders),
+        type: "space",
+      });
 
       return true;
     } catch (e) {
@@ -192,8 +202,11 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     );
 
     try {
-      await Api.tasks.updateAssignee({ taskId, assigneeIds: assignees.map((assignee) => assignee.id), type: "space" });
-      await invalidateAndRefresh();
+      await updateTaskAssigneeMutation.mutateAsync({
+        taskId,
+        assigneeIds: assignees.map((assignee) => assignee.id),
+        type: "space",
+      });
 
       return true;
     } catch (e) {
@@ -218,14 +231,12 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     );
 
     try {
-      const response = await Api.tasks.updateStatus({ taskId, status: backendStatus, type: "space" });
+      const response = await updateTaskStatusMutation.mutateAsync({ taskId, status: backendStatus, type: "space" });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, { type: "space", space });
       setTasks((prev) =>
         prev.map((t) => (t.id === taskId ? { ...t, status: updatedTask.status, closedAt: updatedTask.closedAt } : t)),
       );
-
-      await invalidateAndRefresh();
 
       return true;
     } catch (e) {
@@ -242,9 +253,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
 
     try {
-      await Api.tasks.delete({ taskId, type: "space" });
-
-      await invalidateAndRefresh();
+      await deleteTaskMutation.mutateAsync({ taskId, type: "space" });
     } catch (e) {
       console.error("Failed to delete task", e);
       showErrorToast("Error", "Failed to delete task");
@@ -253,6 +262,8 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
   };
 
   const updateTaskDescription = async (taskId: string, description: any) => {
+    const snapshot = createSnapshot();
+
     try {
       const serializedDescription = serializeTaskDescription(description);
 
@@ -265,13 +276,13 @@ export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh
         }),
       );
 
-      await Api.tasks.updateDescription({ taskId, description: serializedDescription, type: "space" });
-      await invalidateAndRefresh();
+      await updateTaskDescriptionMutation.mutateAsync({ taskId, description: serializedDescription, type: "space" });
 
       return true;
     } catch (e) {
       console.error("Failed to update task description", e);
       showErrorToast("Error", "Failed to update task description");
+      restoreSnapshot(snapshot);
       return false;
     }
   };
