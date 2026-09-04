@@ -8,7 +8,7 @@ describe("task lifecycle queries", () => {
     Api.default.setHeaders({ "x-company-id": "company-1" });
   });
 
-  it("invalidates task detail, comments, activities, and child count queries", async () => {
+  it("invalidates task detail and affected space task queries", async () => {
     const queryClient = createQueryClient();
     const taskKey = Api.tasks.getQueryKey({ id: "task-1", includeProject: true });
     const commentsKey = Api.comments.listQueryKey({ entityId: "task-1", entityType: "project_task" });
@@ -18,11 +18,15 @@ describe("task lifecycle queries", () => {
       actions: ["task_name_updating"],
     });
     const childrenCountKey = Api.projects.countChildrenQueryKey({ id: "task-1", useTaskId: true });
+    const spaceKey = Api.spaces.getQueryKey({ id: "space-1", includePermissions: true });
+    const spaceTasksKey = Api.spaces.listTasksQueryKey({ spaceId: "space-1" });
     const unrelatedKey = Api.tasks.listQueryKey({ projectId: "project-1" });
 
-    [taskKey, commentsKey, activitiesKey, childrenCountKey, unrelatedKey].forEach((queryKey) => {
-      queryClient.setQueryData(queryKey, {});
-    });
+    [taskKey, commentsKey, activitiesKey, childrenCountKey, spaceKey, spaceTasksKey, unrelatedKey].forEach(
+      (queryKey) => {
+        queryClient.setQueryData(queryKey, {});
+      },
+    );
 
     await invalidateTaskLifecycleQueries(queryClient);
 
@@ -30,6 +34,8 @@ describe("task lifecycle queries", () => {
     expect(queryClient.getQueryState(commentsKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(activitiesKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(childrenCountKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(spaceKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(spaceTasksKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
   });
 });

@@ -20,7 +20,6 @@ import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch }
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { projectPageCacheKey } from "../ProjectPage";
-import { spaceKanbanPageCacheKey } from "../SpaceKanbanPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -202,10 +201,6 @@ function Page() {
 
       if (destinationType === "project") {
         PageCache.invalidate(projectPageCacheKey(destinationId));
-      }
-
-      if (destinationType === "space") {
-        PageCache.invalidate(spaceKanbanPageCacheKey(destinationId));
       }
 
       if (refresh) {

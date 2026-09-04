@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api, { type TaskStatus } from "@/api";
+import Api, { type SpacesUpdateKanbanInput, type TaskStatus } from "@/api";
 import { TaskBoard, showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
@@ -29,6 +29,7 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "space";
       spaceId: string;
+      updateKanban: (input: SpacesUpdateKanbanInput) => Promise<unknown>;
     })
   | (BaseKanbanStateOptions & {
       type: "project";
@@ -87,7 +88,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
             tasksKanbanState: serializeKanbanState(event.updatedKanbanState),
           });
         } else {
-          await Api.spaces.updateKanban({
+          await options.updateKanban({
             spaceId: options.spaceId,
             taskId: event.taskId,
             status: backendStatus,

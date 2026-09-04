@@ -16,7 +16,6 @@ import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
 import { assertPresent } from "@/utils/assertions";
 import { projectPageCacheKey } from "../ProjectPage";
-import { spaceKanbanPageCacheKey } from "../SpaceKanbanPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -365,7 +364,6 @@ function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<voi
         }
 
         if (resolvedDestinationType === "space") {
-          PageCache.invalidate(spaceKanbanPageCacheKey(resolvedDestinationId));
           navigate(paths.spaceKanbanPath(resolvedDestinationId, { taskId: movedTaskId }));
         } else {
           await refreshPageData();
