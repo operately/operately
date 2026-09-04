@@ -1,7 +1,6 @@
 defmodule OperatelyEmail.Emails.GoalClosingEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
-  alias Operately.Access.Binding
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
@@ -11,7 +10,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     space = Operately.Groups.get_group!(goal.group_id)
     activity = Operately.Repo.preload(activity, :comment_thread)
 
-    {cta_text, cta_url} = construct_cta_text_and_url(person, company, activity, author)
+    {cta_text, cta_url} = construct_cta_text_and_url(person, company, activity, goal, author)
 
     success = activity.content["success"]
     message = activity.comment_thread.message
@@ -30,25 +29,16 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     |> render("goal_closing")
   end
 
-  defp construct_cta_text_and_url(person, company, activity, author) do
+  defp construct_cta_text_and_url(person, company, activity, goal, author) do
     url = Paths.goal_activity_path(company, activity) |> Paths.to_url()
 
-    if can_acknowledge?(person, activity, author) do
-      {"Acknowledge", url <> "?acknowledge=true"}
-    else
-      {"View Retrospective", url}
-    end
-  end
-
-  defp can_acknowledge?(person, activity, author) do
-    person.id != author.id and has_edit_access?(person, activity)
-  end
-
-  defp has_edit_access?(person, activity) do
-    case Operately.Activities.Activity.get(person, id: activity.id) do
-      {:ok, loaded} -> loaded.request_info.access_level >= Binding.edit_access()
-      _ -> false
-    end
+    OperatelyEmail.AcknowledgeCta.build(
+      person,
+      author.id,
+      [goal.reviewer_id, goal.champion_id],
+      url,
+      "View Retrospective"
+    )
   end
 
   def buffered_item(_person, activity) do

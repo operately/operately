@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.ProjectPausingEmailTest do
+defmodule OperatelyEmail.Emails.ProjectPausingEmailTest do
   use Operately.DataCase
 
   import Operately.ActivitiesFixtures

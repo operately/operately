@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.BillingLimitReachedEmailTest do
+defmodule OperatelyEmail.Emails.BillingLimitReachedEmailTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
