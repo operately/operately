@@ -2,7 +2,6 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Goals.Update
-  alias Operately.Goals.Update.Permissions
   alias Operately.ContextualDates.Timeframe
 
   alias OperatelyWeb.Paths
@@ -37,20 +36,21 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
   defp construct_cta_text_and_url(company, update, person) do
     url = Paths.goal_check_in_path(company, update) |> Paths.to_url()
-    access_level = update.request_info.access_level
 
-    if Permissions.can_acknowledge(access_level, update, person.id) do
-      {"Acknowledge", url <> "?acknowledge=true"}
-    else
-      {"View Check-In", url}
-    end
+    OperatelyEmail.AcknowledgeCta.build(
+      person,
+      update.author_id,
+      [update.goal.reviewer, update.goal.champion],
+      url,
+      "View Check-In"
+    )
   end
 
   defp load_update(update_id, person) do
     Update.get(person,
       id: update_id,
       opts: [
-        preload: [goal: [:company, :reviewer, :targets, :checks], author: []]
+        preload: [goal: [:company, :reviewer, :champion, :targets, :checks], author: []]
       ]
     )
   end
