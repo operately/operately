@@ -28,9 +28,13 @@ const CompanyMemberRestoring: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity }) {
-    const name = People.firstName(content(activity).person!) + "'s";
+    const person = content(activity).person;
 
-    return feedTitle(activity, "restored", name, "account");
+    if (person) {
+      return feedTitle(activity, "restored", People.firstName(person) + "'s", "account");
+    }
+
+    return feedTitle(activity, "restored a member's account");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
