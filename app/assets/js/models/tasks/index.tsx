@@ -17,6 +17,18 @@ export { parseKanbanState, type KanbanState } from "./parseKanbanState";
 export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
+export {
+  invalidateTaskLifecycleQueries,
+  useDeleteTask,
+  useMoveTask,
+  useUpdateTaskAssignee,
+  useUpdateTaskDescription,
+  useUpdateTaskDueDate,
+  useUpdateTaskMilestone,
+  useUpdateTaskName,
+  useUpdateTaskReminders,
+  useUpdateTaskStatus,
+} from "./taskLifecycle";
 
 export const getTask = Api.tasks.get;
 
