@@ -89,8 +89,11 @@ export function parsePersonForTurboUi(paths: Paths, person: Person | null | unde
   }
 }
 
-export function firstName(person: Pick<Person, "fullName">): string {
-  return person.fullName!.split(" ")[0]!;
+export function firstName(person: Pick<Person, "fullName"> | null | undefined): string {
+  const name = person?.fullName?.trim();
+  if (!name) return "";
+
+  return name.split(" ")[0]!;
 }
 
 export function shortName(person: Pick<Person, "fullName">): string {

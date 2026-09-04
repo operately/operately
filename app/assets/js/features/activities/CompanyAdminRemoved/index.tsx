@@ -25,9 +25,13 @@ const CompanyAdminRemoved: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const name = firstName(content(activity).person!);
+    const person = content(activity).person;
 
-    return feedTitle(activity, `has revoked ${name}'s admin privileges`);
+    if (person) {
+      return feedTitle(activity, `has revoked ${firstName(person)}'s admin privileges`);
+    }
+
+    return feedTitle(activity, "has revoked a member's admin privileges");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

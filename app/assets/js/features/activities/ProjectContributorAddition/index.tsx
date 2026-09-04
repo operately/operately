@@ -28,13 +28,14 @@ const ProjectContributorAddition: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const person = People.firstName(content(activity).person!);
-    const project = projectLink(content(activity).project!);
+    const { person, project } = content(activity);
+    const personName = person ? People.firstName(person) : "a contributor";
 
     if (page === "project") {
-      return feedTitle(activity, "added", person, "to the project");
+      return feedTitle(activity, "added", personName, "to the project");
     } else {
-      return feedTitle(activity, "added", person, "to the", project, "project");
+      const projectParts = project ? ["the", projectLink(project), "project"] : ["a project"];
+      return feedTitle(activity, "added", personName, "to", ...projectParts);
     }
   },
 
