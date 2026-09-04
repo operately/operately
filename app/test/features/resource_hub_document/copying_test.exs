@@ -30,16 +30,18 @@ defmodule Operately.Features.ResourceHubDocument.CopyingTest do
   end
 
   feature "copy document into another folder", ctx do
-    document_name = "Document"
+    document_name = "Q3 Planning Brief"
 
     new_doc = %{
-      name: "Document - Copy",
+      name: "Q3 Planning Brief - Copy",
       content: "Content"
     }
 
     ctx
-    |> Steps.given_document_within_nested_folders_exists()
+    |> Steps.given_nested_folders_exist()
+    |> Factory.add_document(:document, :hub, folder: :five, name: document_name)
     |> Steps.visit_folder_page(:three)
+    |> Steps.assert_document_present_in_files_list("four")
     |> Steps.refute_document_present_in_files_list(document_name)
     |> Steps.visit_folder_page(:five)
     |> Steps.assert_document_present_in_files_list(document_name)
