@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.TaskAssigneeUpdatingEmailTest do
+defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmailTest do
   use Operately.DataCase
 
   import Operately.ActivitiesFixtures

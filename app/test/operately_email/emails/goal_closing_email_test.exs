@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.GoalClosingEmailTest do
+defmodule OperatelyEmail.Emails.GoalClosingEmailTest do
   use Operately.DataCase
 
   import Ecto.Query, only: [from: 2]

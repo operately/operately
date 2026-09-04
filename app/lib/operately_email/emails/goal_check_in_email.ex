@@ -40,7 +40,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     OperatelyEmail.AcknowledgeCta.build(
       person,
       update.author_id,
-      [update.goal.reviewer, update.goal.champion],
+      [update.goal.reviewer_id, update.goal.champion_id],
       url,
       "View Check-In"
     )
@@ -50,7 +50,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     Update.get(person,
       id: update_id,
       opts: [
-        preload: [goal: [:company, :reviewer, :champion, :targets, :checks], author: []]
+        preload: [goal: [:company, :reviewer, :targets, :checks], author: []]
       ]
     )
   end

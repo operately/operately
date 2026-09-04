@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.ProjectCheckInSubmittedEmailTest do
+defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
   use Operately.DataCase
 
   import Operately.ActivitiesFixtures

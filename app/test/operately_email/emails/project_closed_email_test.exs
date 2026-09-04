@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.ProjectClosedEmailTest do
+defmodule OperatelyEmail.Emails.ProjectClosedEmailTest do
   use Operately.DataCase
 
   import Ecto.Query, only: [from: 2]

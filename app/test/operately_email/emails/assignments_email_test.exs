@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.AssignmentsEmailTest do
+defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
   use Operately.DataCase
 
   import Swoosh.TestAssertions
