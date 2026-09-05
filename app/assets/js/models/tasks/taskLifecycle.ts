@@ -12,6 +12,8 @@ export async function invalidateTaskLifecycleQueries(
     queryClient.invalidateQueries({ queryKey: Api.comments.listQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.countChildrenQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.projects.getMilestoneQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.projects.listMilestoneTasksQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.spaces.getQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.spaces.listTasksQueryKeyPrefix(), refetchType }),
   ]);
@@ -47,6 +49,10 @@ export function useUpdateTaskAssignee() {
 
 export function useUpdateTaskMilestone() {
   return useTaskMutation(Api.tasks.updateMilestoneMutationOptions());
+}
+
+export function useUpdateTaskMilestoneAndOrdering() {
+  return useTaskMutation(Api.tasks.updateMilestoneAndOrderingMutationOptions());
 }
 
 export function useDeleteTask(refetchType: RefetchType = "none") {
