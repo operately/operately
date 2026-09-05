@@ -25,7 +25,6 @@ export {
 
 export type ParsedMilestoneForTurboUi = ReturnType<typeof parseMilestoneForTurboUi>;
 
-export const getMilestone = Api.projects.getMilestone;
 export const usePostMilestoneComment = Api.projects.useCreateMilestoneComment;
 
 export function parseMilestonesForTurboUi(
