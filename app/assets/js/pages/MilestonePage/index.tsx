@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router";
-import Api from "@/api";
+import type { ProjectsCreateMilestoneCommentInput, ProjectsCreateMilestoneCommentResult } from "@/api";
 
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
@@ -8,12 +8,11 @@ import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
-import { parseActivitiesForTurboUi, MILESTONE_ACTIVITY_TYPES } from "@/models/activities/feed";
+import { parseActivitiesForTurboUi } from "@/models/activities/feed";
 
 import { showErrorToast, MilestonePage, Timeline } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
-import { fetchAll } from "@/utils/async";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
@@ -25,66 +24,27 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useSubscription } from "@/models/subscriptions";
 import { useMilestones as useProjectMilestones } from "@/models/milestones/useMilestones";
+import { loader, useLoadedData, useRefresh } from "./loader";
 
 export default { name: "MilestonePage", loader, Page } as PageModule;
 
 type TurboUiComment = Timeline.Comment | Timeline.MilestoneActivity;
-
-type LoaderResult = {
-  data: {
-    milestone: Milestones.Milestone;
-    tasks: Tasks.Task[];
-    childrenCount: Projects.ProjectChildrenCount;
-    activities: Activities.Activity[];
-  };
-  cacheVersion: number;
-};
-
-async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  return await PageCache.fetch({
-    cacheKey: pageCacheKey(params.id),
-    refreshCache,
-    fetchFn: () =>
-      fetchAll({
-        milestone: Milestones.getMilestone({
-          id: params.id,
-          includeProject: true,
-          includeCreator: true,
-          includeSpace: true,
-          includePermissions: true,
-          includeComments: true,
-          includeSubscriptionList: true,
-          includeAvailableStatuses: true,
-        }).then((d) => d.milestone),
-        tasks: Api.projects.listMilestoneTasks({ milestoneId: params.id }).then((d) => d.tasks),
-        childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
-        activities: Api.companies
-          .listActivities({
-            scopeId: params.id,
-            scopeType: "milestone",
-            actions: MILESTONE_ACTIVITY_TYPES,
-          })
-          .then((d) => d.activities!),
-      }),
-  });
-}
-
-function pageCacheKey(id: string): string {
-  return `v13-MilestoneV2Page.task-${id}`;
-}
 
 function Page() {
   const paths = usePaths();
   const currentUser = useMe();
   const navigate = useNavigate();
 
-  const pageData = PageCache.useData(loader);
-  const { data, refresh } = pageData;
-  const { milestone, childrenCount, activities, tasks: backendTasks } = data;
+  const { milestone, childrenCount, activities, tasks: backendTasks } = useLoadedData();
+  const refreshPageData = useRefresh();
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.permissions, "Milestone must have permissions");
   const projectId = milestone.project.id;
+  const updateProjectName = Projects.useUpdateProjectName();
+  const updateMilestoneDescription = Milestones.useUpdateMilestoneDescription();
+  const updateMilestoneDueDate = Milestones.useUpdateMilestoneDueDate();
+  const deleteMilestone = Milestones.useDeleteMilestone();
 
   const spaceProps = milestone.space
     ? {
@@ -93,28 +53,37 @@ function Page() {
       }
     : { homeLink: paths.homePath() };
 
-  const [projectName, setProjectName] = usePageField(pageData, {
-    value: ({ milestone }) => milestone.project?.name!,
-    update: (v) => Api.projects.updateName({ projectId: milestone.project?.id || "", name: v }),
-    onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
+  const [projectName, setProjectName] = usePageField({
+    queryData: milestone,
+    value: () => milestone.project?.name ?? "",
+    update: async (name) => {
+      await updateProjectName.mutateAsync({ projectId, name });
+      await refreshPageData();
+    },
+    onError: (e) => showErrorToast(errorMessage(e), "Reverted the project name to its previous value."),
     validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
+    projectIdToInvalidate: projectId,
   });
 
-  const [description, setDescription] = usePageField(pageData, {
-    value: ({ milestone }) => milestone.description && JSON.parse(milestone.description),
+  const [description, setDescription] = usePageField({
+    queryData: milestone,
+    value: () => milestone.description && JSON.parse(milestone.description),
     update: (v) =>
-      Api.projects.updateMilestoneDescription({ milestoneId: milestone.id, description: JSON.stringify(v) }),
+      updateMilestoneDescription.mutateAsync({ milestoneId: milestone.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
+    projectIdToInvalidate: projectId,
   });
 
-  const [dueDate, setDueDate] = usePageField(pageData, {
-    value: ({ milestone }) => parseContextualDate(milestone.timeframe?.contextualEndDate),
+  const [dueDate, setDueDate] = usePageField({
+    queryData: milestone,
+    value: () => parseContextualDate(milestone.timeframe?.contextualEndDate),
     update: (v) =>
-      Api.projects.updateMilestoneDueDate({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
-    onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
+      updateMilestoneDueDate.mutateAsync({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
+    onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone due date."),
+    projectIdToInvalidate: projectId,
   });
 
-  const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(pageData, milestone);
+  const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(milestone, projectId);
 
   const {
     tasks,
@@ -130,10 +99,8 @@ function Page() {
   } = Tasks.useProjectTasksForTurboUi({
     backendTasks,
     projectId: milestone.project.id,
-    cacheKey: pageCacheKey(milestone.id),
     milestones: milestones,
     setMilestones: setMilestones,
-    refresh,
   });
   const {
     comments,
@@ -143,10 +110,8 @@ function Page() {
     handleDeleteComment,
     handleAddReaction,
     handleRemoveReaction,
-  } = useComments(paths, milestone, () => {
-    PageCache.invalidate(pageCacheKey(milestone.id));
-  });
-  const [status, setStatus] = useStatusField(paths, pageData, setComments);
+  } = useComments(paths, milestone, refreshPageData);
+  const [status, setStatus] = useStatusField(paths, milestone, setComments, projectId);
 
   const timelineItems = React.useMemo(
     () => prepareTimelineItems(paths, activities, comments),
@@ -154,7 +119,7 @@ function Page() {
   );
 
   const handleDelete = React.useCallback(async () => {
-    await Api.projects.deleteMilestone({ milestoneId: milestone.id });
+    await deleteMilestone.mutateAsync({ milestoneId: milestone.id });
 
     if (milestone.project) {
       PageCache.invalidate(projectPageCacheKey(milestone.project.id));
@@ -162,7 +127,7 @@ function Page() {
     } else {
       navigate(paths.homePath());
     }
-  }, [milestone.id]);
+  }, [deleteMilestone, milestone.id, milestone.project, navigate, paths]);
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -187,14 +152,11 @@ function Page() {
     subscriptionList: milestone.subscriptionList,
     entityId: milestone.id,
     entityType: "milestone",
-    cacheKey: pageCacheKey(milestone.id),
-    onRefresh: refresh,
+    onRefresh: refreshPageData,
   });
 
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
-      PageCache.invalidate(pageCacheKey(milestone.id));
-
       if (milestone.project?.id) {
         PageCache.invalidate(projectPageCacheKey(milestone.project.id));
       }
@@ -203,11 +165,9 @@ function Page() {
         PageCache.invalidate(projectPageCacheKey(destinationId));
       }
 
-      if (refresh) {
-        await refresh();
-      }
+      await refreshPageData();
     },
-    [milestone.id, milestone.project?.id, refresh],
+    [milestone.project?.id, refreshPageData],
   );
 
   const handleTaskMilestoneChange = React.useCallback(
@@ -217,10 +177,6 @@ function Page() {
       if (!result) return;
 
       PageCache.invalidate(projectPageCacheKey(projectId));
-
-      if (nextMilestone?.id) {
-        PageCache.invalidate(pageCacheKey(nextMilestone.id));
-      }
     },
     [projectId, updateTaskMilestone],
   );
@@ -231,10 +187,9 @@ function Page() {
 
       if (!result?.success) return;
 
-      PageCache.invalidate(pageCacheKey(milestone.id));
       PageCache.invalidate(projectPageCacheKey(projectId));
     },
-    [deleteTask, milestone.id, projectId],
+    [deleteTask, projectId],
   );
 
   const slideInModel = Tasks.useTaskSlideInProps({
@@ -243,8 +198,7 @@ function Page() {
     currentUser,
     tasks,
     commentEntityType: "project_task",
-    cacheKey: pageCacheKey(milestone.id),
-    onRefresh: refresh,
+    onRefresh: refreshPageData,
     canEdit: Boolean(milestone.permissions.canEdit),
     canComment: Boolean(milestone.permissions.canComment),
     variant: "project-task",
@@ -335,33 +289,33 @@ function Page() {
   return <MilestonePage key={milestone.id!} {...props} />;
 }
 
-function usePageField<T, Command = T>(
-  pageData: LoaderResult & { refresh?: () => Promise<void> },
-  {
-    value,
-    update,
-    optimisticValue,
-    onError,
-    validations,
-  }: {
-    value: (data: { milestone: Milestones.Milestone }) => T;
-    update: (command: Command) => Promise<any>;
-    optimisticValue?: (command: Command) => T;
-    onError?: (error: string) => void;
-    validations?: ((value: T) => string | null)[];
-  },
-): [T, (command: Command) => Promise<boolean>] {
-  const { cacheVersion, data, refresh: refreshPageData } = pageData;
+interface UsePageFieldProps<T, Command> {
+  queryData: Milestones.Milestone;
+  value: () => T;
+  update: (command: Command) => Promise<any>;
+  optimisticValue?: (command: Command) => T;
+  onError?: (error: unknown) => void;
+  validations?: ((value: T) => string | null)[];
+  projectIdToInvalidate?: string;
+}
 
-  const [state, setState] = React.useState<T>(() => value(data));
-  const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
+function usePageField<T, Command = T>({
+  queryData,
+  value,
+  update,
+  optimisticValue,
+  onError,
+  validations,
+  projectIdToInvalidate,
+}: UsePageFieldProps<T, Command>): [T, (command: Command) => Promise<boolean>] {
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const [state, setState] = React.useState<T>(() => value());
 
   React.useEffect(() => {
-    if (cacheVersion !== stateVersion) {
-      setState(value(data));
-      setStateVersion(cacheVersion);
-    }
-  }, [value, cacheVersion, stateVersion, data]);
+    setState(valueRef.current());
+  }, [queryData]);
 
   const updateState = async (command: Command): Promise<boolean> => {
     const newVal = optimisticValue ? optimisticValue(command) : (command as unknown as T);
@@ -376,27 +330,19 @@ function usePageField<T, Command = T>(
       }
     }
 
+    const previousValue = state;
+    setState(newVal);
+
     try {
-      setState(newVal);
       await update(command);
-
-      // Invalidate the cache for this entity
-      if (data.milestone.id) {
-        PageCache.invalidate(pageCacheKey(data.milestone.id));
-      }
-      if (data.milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(data.milestone.project.id));
-      }
-
-      // Refresh the page data if requested
-      if (refreshPageData) {
-        await refreshPageData();
+      if (projectIdToInvalidate) {
+        PageCache.invalidate(projectPageCacheKey(projectIdToInvalidate));
       }
 
       return true;
-    } catch (e) {
-      setState(value(data));
-      onError?.(e instanceof Error ? e.message : String(e));
+    } catch (error) {
+      setState(previousValue);
+      onError?.(error);
       return false;
     }
   };
@@ -439,25 +385,34 @@ function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], c
 
 function useStatusField(
   paths: Paths,
-  pageData: LoaderResult,
+  milestone: Milestones.Milestone,
   setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>>,
+  projectId: string,
 ) {
   const me = useMe()!;
-
-  const { data } = pageData;
-  const milestone = data.milestone;
+  const createMilestoneComment = Milestones.useCreateMilestoneComment();
 
   type StatusUpdate = {
     status: MilestonePage.Status;
     resolution?: MilestonePage.OpenTasksResolution;
   };
 
-  const [status, updateStatus] = usePageField<MilestonePage.Status, StatusUpdate>(pageData, {
-    value: ({ milestone }) => milestone.status,
+  const [status, updateStatus] = usePageField<MilestonePage.Status, StatusUpdate>({
+    queryData: milestone,
+    value: () => milestone.status,
     optimisticValue: (command) => command.status,
     update: ({ status: nextStatus, resolution }) =>
-      updateMilestoneStatus({ paths, milestone, me, setComments, nextStatus, resolution }),
-    onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
+      updateMilestoneStatus({
+        paths,
+        milestone,
+        me,
+        setComments,
+        nextStatus,
+        resolution,
+        createComment: (input) => createMilestoneComment.mutateAsync(input),
+      }),
+    onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone status."),
+    projectIdToInvalidate: projectId,
   });
 
   const setStatus = (nextStatus: MilestonePage.Status, resolution?: MilestonePage.OpenTasksResolution) =>
@@ -473,6 +428,7 @@ interface UpdateMilestoneStatusParams {
   setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>>;
   nextStatus: MilestonePage.Status;
   resolution?: MilestonePage.OpenTasksResolution;
+  createComment: (input: ProjectsCreateMilestoneCommentInput) => Promise<ProjectsCreateMilestoneCommentResult>;
 }
 
 export async function updateMilestoneStatus({
@@ -482,6 +438,7 @@ export async function updateMilestoneStatus({
   setComments,
   nextStatus,
   resolution,
+  createComment,
 }: UpdateMilestoneStatusParams): Promise<void> {
   const tmpId = `temp-${crypto.randomUUID()}`;
   const optimisticComment: Milestones.MilestoneComment = {
@@ -498,14 +455,12 @@ export async function updateMilestoneStatus({
   setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
 
   try {
-    const res = await Api.projects.createMilestoneComment({
+    const res = await createComment({
       milestoneId: milestone.id,
       content: null,
       action: nextStatus === "done" ? "complete" : "reopen",
       openTasksResolution: serializeOpenTasksResolution(resolution),
     });
-
-    PageCache.invalidate(pageCacheKey(milestone.id));
 
     setComments((prev) =>
       prev.map((comment) => {
@@ -533,19 +488,26 @@ function serializeOpenTasksResolution(resolution?: MilestonePage.OpenTasksResolu
   return { action: resolution.action, statusId: resolution.status.id };
 }
 
-function useMilestones(pageData, milestone: Milestones.Milestone) {
+function useMilestones(milestone: Milestones.Milestone, projectId: string) {
   const paths = usePaths();
+  const updateMilestoneTitle = Milestones.useUpdateMilestoneTitle();
   const [milestones, setMilestones] = React.useState<MilestonePage.Milestone[]>(
     Milestones.parseMilestonesForTurboUi(paths, [milestone]).orderedMilestones,
   );
 
+  React.useEffect(() => {
+    setMilestones(Milestones.parseMilestonesForTurboUi(paths, [milestone]).orderedMilestones);
+  }, [milestone, paths]);
+
   const parsedMilestone = milestones[0]!;
 
-  const [title, setTitle] = usePageField(pageData, {
-    value: ({ milestone }) => milestone.title,
-    update: (v) => Api.projects.updateMilestoneTitle({ milestoneId: milestone.id, title: v }),
-    onError: (e: string) => showErrorToast(e, "Failed to update milestone name."),
+  const [title, setTitle] = usePageField({
+    queryData: milestone,
+    value: () => milestone.title,
+    update: (v) => updateMilestoneTitle.mutateAsync({ milestoneId: milestone.id, title: v }),
+    onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone name."),
     validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
+    projectIdToInvalidate: projectId,
   });
 
   return {
@@ -555,4 +517,8 @@ function useMilestones(pageData, milestone: Milestones.Milestone) {
     milestones,
     setMilestones,
   };
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }

@@ -14,9 +14,17 @@ interface ParsedMilestonesForTurboUi {
 
 export type { Milestone, MilestoneComment };
 
+export {
+  invalidateMilestoneLifecycleQueries,
+  useCreateMilestoneComment,
+  useDeleteMilestone,
+  useUpdateMilestoneDescription,
+  useUpdateMilestoneDueDate,
+  useUpdateMilestoneTitle,
+} from "./milestoneLifecycle";
+
 export type ParsedMilestoneForTurboUi = ReturnType<typeof parseMilestoneForTurboUi>;
 
-export const getMilestone = Api.projects.getMilestone;
 export const usePostMilestoneComment = Api.projects.useCreateMilestoneComment;
 
 export function parseMilestonesForTurboUi(

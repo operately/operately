@@ -26,6 +26,7 @@ export {
   useUpdateTaskDescription,
   useUpdateTaskDueDate,
   useUpdateTaskMilestone,
+  useUpdateTaskMilestoneAndOrdering,
   useUpdateTaskName,
   useUpdateTaskReminders,
   useUpdateTaskStatus,
