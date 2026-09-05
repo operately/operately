@@ -56,10 +56,12 @@ function Page() {
   const [projectName, setProjectName] = usePageField({
     queryData: milestone,
     value: () => milestone.project?.name ?? "",
-    update: (v) => updateProjectName.mutateAsync({ projectId, name: v }),
+    update: async (name) => {
+      await updateProjectName.mutateAsync({ projectId, name });
+      await refreshPageData();
+    },
     onError: (e) => showErrorToast(errorMessage(e), "Reverted the project name to its previous value."),
     validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
-    refreshPageData,
     projectIdToInvalidate: projectId,
   });
 
@@ -69,7 +71,6 @@ function Page() {
     update: (v) =>
       updateMilestoneDescription.mutateAsync({ milestoneId: milestone.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
-    refreshPageData,
     projectIdToInvalidate: projectId,
   });
 
@@ -79,15 +80,10 @@ function Page() {
     update: (v) =>
       updateMilestoneDueDate.mutateAsync({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
     onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone due date."),
-    refreshPageData,
     projectIdToInvalidate: projectId,
   });
 
-  const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(
-    milestone,
-    refreshPageData,
-    projectId,
-  );
+  const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(milestone, projectId);
 
   const {
     tasks,
@@ -115,7 +111,7 @@ function Page() {
     handleAddReaction,
     handleRemoveReaction,
   } = useComments(paths, milestone, refreshPageData);
-  const [status, setStatus] = useStatusField(paths, milestone, setComments, refreshPageData, projectId);
+  const [status, setStatus] = useStatusField(paths, milestone, setComments, projectId);
 
   const timelineItems = React.useMemo(
     () => prepareTimelineItems(paths, activities, comments),
@@ -300,7 +296,6 @@ interface UsePageFieldProps<T, Command> {
   optimisticValue?: (command: Command) => T;
   onError?: (error: unknown) => void;
   validations?: ((value: T) => string | null)[];
-  refreshPageData: () => Promise<void>;
   projectIdToInvalidate?: string;
 }
 
@@ -311,7 +306,6 @@ function usePageField<T, Command = T>({
   optimisticValue,
   onError,
   validations,
-  refreshPageData,
   projectIdToInvalidate,
 }: UsePageFieldProps<T, Command>): [T, (command: Command) => Promise<boolean>] {
   const valueRef = React.useRef(value);
@@ -341,8 +335,6 @@ function usePageField<T, Command = T>({
 
     try {
       await update(command);
-      await refreshPageData();
-
       if (projectIdToInvalidate) {
         PageCache.invalidate(projectPageCacheKey(projectIdToInvalidate));
       }
@@ -395,7 +387,6 @@ function useStatusField(
   paths: Paths,
   milestone: Milestones.Milestone,
   setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>>,
-  refreshPageData: () => Promise<void>,
   projectId: string,
 ) {
   const me = useMe()!;
@@ -421,7 +412,6 @@ function useStatusField(
         createComment: (input) => createMilestoneComment.mutateAsync(input),
       }),
     onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone status."),
-    refreshPageData,
     projectIdToInvalidate: projectId,
   });
 
@@ -498,7 +488,7 @@ function serializeOpenTasksResolution(resolution?: MilestonePage.OpenTasksResolu
   return { action: resolution.action, statusId: resolution.status.id };
 }
 
-function useMilestones(milestone: Milestones.Milestone, refreshPageData: () => Promise<void>, projectId: string) {
+function useMilestones(milestone: Milestones.Milestone, projectId: string) {
   const paths = usePaths();
   const updateMilestoneTitle = Milestones.useUpdateMilestoneTitle();
   const [milestones, setMilestones] = React.useState<MilestonePage.Milestone[]>(
@@ -517,7 +507,6 @@ function useMilestones(milestone: Milestones.Milestone, refreshPageData: () => P
     update: (v) => updateMilestoneTitle.mutateAsync({ milestoneId: milestone.id, title: v }),
     onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone name."),
     validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
-    refreshPageData,
     projectIdToInvalidate: projectId,
   });
 

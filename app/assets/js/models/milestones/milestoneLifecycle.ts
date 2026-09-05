@@ -43,8 +43,6 @@ function useMilestoneMutation<TData, TError, TVariables, TContext>(
 
   return useMutation({
     ...mutationOptions,
-    onSuccess: () => {
-      void invalidateMilestoneLifecycleQueries(queryClient, refetchType);
-    },
+    onSuccess: () => invalidateMilestoneLifecycleQueries(queryClient, refetchType),
   });
 }

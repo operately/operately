@@ -69,7 +69,6 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, refre
               }
             });
           });
-          await refreshPageData();
           return true;
         }
         return false;
@@ -79,7 +78,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, refre
         return false;
       }
     },
-    [createMilestoneComment, paths, me, milestone.id, refreshPageData],
+    [createMilestoneComment, paths, me, milestone.id],
   );
 
   return {
