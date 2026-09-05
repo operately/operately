@@ -1,4 +1,4 @@
-import Api, { Person } from "@/api";
+import { Person, ProjectsCreateMilestoneCommentResult } from "@/api";
 import * as Milestones from "@/models/milestones";
 import { Paths } from "@/routes/paths";
 import type React from "react";
@@ -19,9 +19,6 @@ jest.mock("@/contexts/CurrentCompanyContext", () => ({
   useMe: () => currentPerson,
 }));
 
-const createMilestoneComment = jest.spyOn(Api.projects, "createMilestoneComment");
-
-type CreateMilestoneCommentResponse = Awaited<ReturnType<typeof Api.projects.createMilestoneComment>>;
 type TurboUiComment = Timeline.Comment | Timeline.MilestoneActivity;
 
 const paths = new Paths({ companyId: "company-1" });
@@ -36,6 +33,7 @@ const milestone: Milestones.Milestone = {
 };
 
 let comments: TurboUiComment[] = [];
+const createMilestoneComment = jest.fn<Promise<ProjectsCreateMilestoneCommentResult>, [unknown]>();
 const setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>> = (update) => {
   comments = typeof update === "function" ? update(comments) : update;
 };
@@ -53,6 +51,7 @@ function updateStatus() {
     setComments,
     nextStatus: "done",
     resolution: { action: "move_to_no_milestone" },
+    createComment: (input) => createMilestoneComment(input),
   });
 }
 
@@ -78,7 +77,7 @@ test("keeps concurrent optimistic activities isolated when timestamps match", as
   const rejectRequests: Array<(error: Error) => void> = [];
   createMilestoneComment.mockImplementation(
     () =>
-      new Promise<CreateMilestoneCommentResponse>((_resolve, reject) => {
+      new Promise<ProjectsCreateMilestoneCommentResult>((_resolve, reject) => {
         rejectRequests.push(reject);
       }),
   );

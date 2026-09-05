@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api, { type TaskStatus, type TasksCreateInput } from "@/api";
+import { type TaskStatus, type TasksCreateInput } from "@/api";
 import * as Milestones from "../milestones";
 import * as Tasks from "./index";
 
@@ -13,6 +13,17 @@ import { DateField, showErrorToast, TaskBoard, TaskPage } from "turboui";
 import { serializeTaskDescription } from "./descriptionSerialization";
 import { applyTaskMove } from "./listOrdering";
 import { isTaskVisible, normalizeMilestonesOrderingState } from "./milestoneOrdering";
+import {
+  useCreateTask,
+  useDeleteTask,
+  useUpdateTaskAssignee,
+  useUpdateTaskDescription,
+  useUpdateTaskDueDate,
+  useUpdateTaskMilestoneAndOrdering,
+  useUpdateTaskName,
+  useUpdateTaskReminders,
+  useUpdateTaskStatus,
+} from "./taskLifecycle";
 
 interface TasksSnapshot {
   tasks: TaskBoard.Task[];
@@ -22,7 +33,7 @@ interface TasksSnapshot {
 interface Attrs {
   backendTasks: Tasks.Task[];
   projectId: string;
-  cacheKey: string;
+  cacheKey?: string;
   milestones: TaskBoard.Milestone[];
   setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
   refresh?: () => Promise<void>;
@@ -37,6 +48,15 @@ export function useProjectTasksForTurboUi({
   refresh,
 }: Attrs) {
   const paths = usePaths();
+  const createTaskMutation = useCreateTask();
+  const updateTaskDueDateMutation = useUpdateTaskDueDate();
+  const updateTaskRemindersMutation = useUpdateTaskReminders();
+  const updateTaskAssigneeMutation = useUpdateTaskAssignee();
+  const updateTaskNameMutation = useUpdateTaskName();
+  const updateTaskDescriptionMutation = useUpdateTaskDescription();
+  const updateTaskStatusMutation = useUpdateTaskStatus();
+  const updateTaskMilestoneMutation = useUpdateTaskMilestoneAndOrdering();
+  const deleteTaskMutation = useDeleteTask("active");
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
 
   React.useEffect(() => {
@@ -104,7 +124,9 @@ export function useProjectTasksForTurboUi({
   );
 
   const invalidateAndRefresh = React.useCallback(async () => {
-    PageCache.invalidate(cacheKey);
+    if (cacheKey) {
+      PageCache.invalidate(cacheKey);
+    }
 
     if (refresh) {
       await refresh();
@@ -152,7 +174,7 @@ export function useProjectTasksForTurboUi({
         input.status = backendStatus;
       }
 
-      const res = await Api.tasks.create(input);
+      const res = await createTaskMutation.mutateAsync(input);
 
       // Replace temporary task with real task
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task, { type: "project" });
@@ -189,8 +211,8 @@ export function useProjectTasksForTurboUi({
   };
 
   const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
-    return Api.tasks
-      .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate), type: "project" })
+    return updateTaskDueDateMutation
+      .mutateAsync({ taskId, dueDate: serializeContextualDate(dueDate), type: "project" })
       .then(() => {
         invalidateAndRefresh();
 
@@ -226,7 +248,11 @@ export function useProjectTasksForTurboUi({
     );
 
     try {
-      await Api.tasks.updateReminders({ taskId, reminders: Tasks.serializeTaskReminders(reminders), type: "project" });
+      await updateTaskRemindersMutation.mutateAsync({
+        taskId,
+        reminders: Tasks.serializeTaskReminders(reminders),
+        type: "project",
+      });
       await invalidateAndRefresh();
 
       return true;
@@ -239,8 +265,8 @@ export function useProjectTasksForTurboUi({
   };
 
   const updateTaskAssignee = async (taskId: string, assignees: TaskBoard.Person[]) => {
-    return Api.tasks
-      .updateAssignee({ taskId, assigneeIds: assignees.map((assignee) => assignee.id), type: "project" })
+    return updateTaskAssigneeMutation
+      .mutateAsync({ taskId, assigneeIds: assignees.map((assignee) => assignee.id), type: "project" })
       .then(() => {
         invalidateAndRefresh();
 
@@ -282,7 +308,7 @@ export function useProjectTasksForTurboUi({
       );
 
       try {
-        await Api.tasks.updateName({ taskId, name: title, type: "project" });
+        await updateTaskNameMutation.mutateAsync({ taskId, name: title, type: "project" });
         await invalidateAndRefresh();
         return true;
       } catch (e) {
@@ -310,7 +336,7 @@ export function useProjectTasksForTurboUi({
       );
 
       try {
-        await Api.tasks.updateDescription({ taskId, description: serialized, type: "project" });
+        await updateTaskDescriptionMutation.mutateAsync({ taskId, description: serialized, type: "project" });
         await invalidateAndRefresh();
         return true;
       } catch (e) {
@@ -338,7 +364,7 @@ export function useProjectTasksForTurboUi({
     );
 
     try {
-      const response = await Api.tasks.updateStatus({ taskId, status: backendStatus, type: "project" });
+      const response = await updateTaskStatusMutation.mutateAsync({ taskId, status: backendStatus, type: "project" });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, { type: "project" });
       setTasks((prev) =>
@@ -412,7 +438,7 @@ export function useProjectTasksForTurboUi({
         );
       }
 
-      const res = await Api.tasks.updateMilestoneAndOrdering({
+      const res = await updateTaskMilestoneMutation.mutateAsync({
         taskId,
         milestoneId: normalizedMilestoneId,
         index: indexInMilestone,
@@ -462,7 +488,7 @@ export function useProjectTasksForTurboUi({
     }
 
     try {
-      const response = await Api.tasks.delete({ taskId, type: "project" });
+      const response = await deleteTaskMutation.mutateAsync({ taskId, type: "project" });
 
       updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 

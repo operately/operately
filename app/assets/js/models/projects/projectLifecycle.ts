@@ -99,3 +99,14 @@ export function useCreateProjectFromTemplate() {
     },
   });
 }
+
+export function useUpdateProjectName() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.updateNameMutationOptions(),
+    onSuccess: () => {
+      void invalidateProjectLifecycleQueries(queryClient);
+    },
+  });
+}

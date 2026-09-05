@@ -20,6 +20,7 @@ export {
   useEditProjectRetrospective,
   usePauseProject,
   useResumeProject,
+  useUpdateProjectName,
 } from "./projectLifecycle";
 export {
   invalidateProjectDiscussionQueries,

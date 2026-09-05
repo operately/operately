@@ -1,6 +1,5 @@
 import React from "react";
 
-import Api from "@/api";
 import * as Milestones from "@/models/milestones";
 import * as Comments from "@/models/comments";
 import * as Reactions from "@/models/reactions";
@@ -9,22 +8,29 @@ import { Paths } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { showErrorToast } from "turboui";
 
-export function useComments(paths: Paths, milestone: Milestones.Milestone, invalidateCache: () => void) {
+export function useComments(paths: Paths, milestone: Milestones.Milestone, refreshPageData: () => Promise<void>) {
   const me = useMe()!;
+  const createMilestoneComment = Milestones.useCreateMilestoneComment();
 
   const [comments, setComments] = React.useState(
     Milestones.parseMilestoneCommentsForTurboUi(paths, milestone.comments),
   );
 
-  const { handleAddReaction, handleRemoveReaction } = Reactions.useReactionHandlers(
-    setComments,
-    "milestone",
-    invalidateCache,
-  );
+  React.useEffect(() => {
+    setComments(Milestones.parseMilestoneCommentsForTurboUi(paths, milestone.comments));
+  }, [milestone.comments, paths]);
 
-  const { handleEditComment } = Comments.useEditCommentHandler(comments, setComments, "milestone", invalidateCache);
+  const { handleAddReaction, handleRemoveReaction } = Reactions.useReactionHandlers(setComments, "milestone", () => {
+    void refreshPageData();
+  });
 
-  const { handleDeleteComment } = Comments.useDeleteCommentHandler(comments, setComments, "milestone", invalidateCache);
+  const { handleEditComment } = Comments.useEditCommentHandler(comments, setComments, "milestone", () => {
+    void refreshPageData();
+  });
+
+  const { handleDeleteComment } = Comments.useDeleteCommentHandler(comments, setComments, "milestone", () => {
+    void refreshPageData();
+  });
 
   const handleCreateComment = React.useCallback(
     async (content: any) => {
@@ -46,7 +52,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
 
         setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
 
-        const res = await Api.projects.createMilestoneComment({
+        const res = await createMilestoneComment.mutateAsync({
           milestoneId: milestone.id!,
           action: "none",
           content: Comments.stringifyCommentContent(content),
@@ -63,7 +69,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
               }
             });
           });
-          invalidateCache();
+          await refreshPageData();
           return true;
         }
         return false;
@@ -73,7 +79,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
         return false;
       }
     },
-    [paths, me, milestone.id],
+    [createMilestoneComment, paths, me, milestone.id, refreshPageData],
   );
 
   return {
