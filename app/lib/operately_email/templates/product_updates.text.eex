@@ -1,0 +1,8 @@
+<%= @product_update.title %>
+
+<%= @product_update.description %>
+
+<%= @product_update.cta_label %>: <%= @product_update.url %>
+
+---
+Manage email settings: <%= @settings_url %>
