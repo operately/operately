@@ -41,7 +41,7 @@ export function DeleteEntryDialog({ entry, unit, onClose, onDelete }: DeleteEntr
       title="Delete this update?"
       message={
         entry
-          ? `Delete ${formatValue(entry.value, unit)} recorded on ${formatShortDate(entry.recordedAt)}? This permanently removes its edit history and comments.`
+          ? `${formatValue(entry.value, unit)} recorded on ${formatShortDate(entry.recordedAt)} will be permanently removed.`
           : ""
       }
       confirmText="Delete update"
