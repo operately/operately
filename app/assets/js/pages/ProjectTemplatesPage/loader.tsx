@@ -1,7 +1,7 @@
 import Api, { type ProjectTemplate, type Space } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-export interface LoadedData {
+interface LoadedData {
   templates: ProjectTemplate[];
   spaces: Space[];
   fixedSpace: Space | null;

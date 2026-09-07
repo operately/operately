@@ -8,6 +8,7 @@ import { ProjectTemplatesPage, showErrorToast } from "turboui";
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { loader, useLoadedData } from "./loader";
+import { updateTemplateCreationSearchParams } from "./templateCreationUrl";
 
 export default { name: "ProjectTemplatesPage", loader, Page } as PageModule;
 
@@ -15,7 +16,7 @@ function Page() {
   const data = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const createTemplate = ProjectTemplateModel.useCreateProjectTemplate();
   const duplicateTemplate = ProjectTemplateModel.useDuplicateProjectTemplate();
   const archiveTemplate = ProjectTemplateModel.useArchiveProjectTemplate();
@@ -39,10 +40,17 @@ function Page() {
       delete: deleteTemplate.mutateAsync,
     },
   });
+  const handleCreatingChange = React.useCallback(
+    (isCreating: boolean) => {
+      setSearchParams(updateTemplateCreationSearchParams(searchParams, isCreating), { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
 
   async function onCreate({ name, spaceId }: ProjectTemplatesPage.CreateInput) {
     try {
       const result = await createTemplate.mutateAsync({ name, spaceId });
+      setSearchParams(updateTemplateCreationSearchParams(searchParams, false), { replace: true });
       navigate(paths.projectTemplatePath(result.template.id));
       return { success: true };
     } catch (_error) {
@@ -83,6 +91,7 @@ function Page() {
       onCreate={onCreate}
       canEdit={(template) => !readOnly && editableSpaceIds.has(template.space.id)}
       startCreating={searchParams.get("new") === "true"}
+      onCreatingChange={handleCreatingChange}
       {...lifecycleHandlers}
     />
   );

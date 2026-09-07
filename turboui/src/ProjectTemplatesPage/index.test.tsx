@@ -190,11 +190,39 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.getByRole("heading", { name: "New project template" })).toBeInTheDocument();
   });
 
-  it("can open directly in template creation", () => {
-    renderPage({ scope: "space", fixedSpace: spaces[0], templates: [], startCreating: true });
+  it("keeps template creation synchronized with its external state", () => {
+    const { props, rerender } = renderPage({ scope: "space", fixedSpace: spaces[0], templates: [] });
+
+    expect(screen.queryByRole("heading", { name: "New project template" })).not.toBeInTheDocument();
+
+    rerender(
+      <MemoryRouter>
+        <ProjectTemplatesPage {...props} startCreating />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByRole("heading", { name: "New project template" })).toBeInTheDocument();
     expect(screen.queryByTestId("new-project-template-space")).not.toBeInTheDocument();
+
+    rerender(
+      <MemoryRouter>
+        <ProjectTemplatesPage {...props} startCreating={false} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByRole("heading", { name: "New project template" })).not.toBeInTheDocument();
+  });
+
+  it("reports template creation opening and cancellation", async () => {
+    const user = userEvent.setup();
+    const onCreatingChange = jest.fn();
+    renderPage({ onCreatingChange });
+
+    await user.click(screen.getByRole("button", { name: "New template" }));
+    expect(onCreatingChange).toHaveBeenLastCalledWith(true);
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(onCreatingChange).toHaveBeenLastCalledWith(false);
   });
 
   it("shows a read-only empty state without a creation action", () => {

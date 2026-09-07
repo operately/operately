@@ -49,6 +49,7 @@ export namespace ProjectTemplatesPage {
     canCreate: boolean;
     canEdit: (template: ProjectTemplate) => boolean;
     startCreating?: boolean;
+    onCreatingChange?: (isCreating: boolean) => void;
   }
 }
 
@@ -63,6 +64,20 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
     action: ProjectTemplateLifecycleAction;
   } | null>(null);
   React.useEffect(() => setTemplates(props.templates), [props.templates]);
+  React.useEffect(
+    () => setIsCreating(Boolean(props.canCreate && props.startCreating)),
+    [props.canCreate, props.startCreating],
+  );
+
+  const openCreateModal = React.useCallback(() => {
+    setIsCreating(true);
+    props.onCreatingChange?.(true);
+  }, [props.onCreatingChange]);
+  const closeCreateModal = React.useCallback(() => {
+    setIsCreating(false);
+    props.onCreatingChange?.(false);
+  }, [props.onCreatingChange]);
+  const finishCreateModal = React.useCallback(() => setIsCreating(false), []);
 
   const filterSpaceSearch = React.useCallback(
     async ({ query }: { query: string }) => filterSpaces(props.spaces, query),
@@ -114,7 +129,7 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
           title="Project Templates"
           actions={
             props.canCreate ? (
-              <PrimaryButton onClick={() => setIsCreating(true)} testId="new-project-template">
+              <PrimaryButton onClick={openCreateModal} testId="new-project-template">
                 New template
               </PrimaryButton>
             ) : undefined
@@ -194,7 +209,8 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
 
       <CreateTemplateModal
         isOpen={isCreating}
-        onClose={() => setIsCreating(false)}
+        onClose={closeCreateModal}
+        onCreated={finishCreateModal}
         fixedSpace={props.fixedSpace}
         editableSpaces={props.editableSpaces}
         spaceSearch={createSpaceSearch}
@@ -340,6 +356,7 @@ function matchesArchiveStatus(template: ProjectTemplate, archiveStatus: ArchiveS
 function CreateTemplateModal({
   isOpen,
   onClose,
+  onCreated,
   fixedSpace,
   editableSpaces,
   spaceSearch,
@@ -347,6 +364,7 @@ function CreateTemplateModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onCreated: () => void;
   fixedSpace?: ProjectTemplatesPage.Space;
   editableSpaces: ProjectTemplatesPage.Space[];
   spaceSearch: SpaceField.SearchSpaceFn;
@@ -365,7 +383,7 @@ function CreateTemplateModal({
       if (!result.success) throw new Error(result.error ?? "The template could not be created. Try again.");
       form.actions.reset();
       setSpace(fixedSpace ?? null);
-      onClose();
+      onCreated();
     },
     cancel: async () => {
       setSpace(fixedSpace ?? null);

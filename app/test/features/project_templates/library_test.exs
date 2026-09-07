@@ -12,6 +12,12 @@ defmodule Operately.Features.ProjectTemplates.LibraryTest do
     |> Steps.create_blank_template("Blank kit")
   end
 
+  feature "cancelling template creation removes the creation state from the URL", ctx do
+    ctx
+    |> Steps.visit_space_library_with_template_creation()
+    |> Steps.cancel_template_creation()
+  end
+
   feature "company library search and Space filtering", ctx do
     ctx
     |> Steps.given_templates_exist()

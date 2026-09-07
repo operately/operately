@@ -108,6 +108,23 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     UI.visit(ctx, Paths.space_project_templates_path(ctx.company, ctx.space))
   end
 
+  step :visit_space_library_with_template_creation, ctx do
+    path = Paths.space_project_templates_path(ctx.company, ctx.space)
+
+    ctx
+    |> UI.visit(path <> "?new=true")
+    |> UI.assert_has(testid: "new-project-template-form")
+  end
+
+  step :cancel_template_creation, ctx do
+    path = Paths.space_project_templates_path(ctx.company, ctx.space)
+
+    ctx
+    |> UI.click_button("Cancel")
+    |> UI.refute_has(testid: "new-project-template-form")
+    |> UI.assert_location(path)
+  end
+
   step :visit_space_page, ctx do
     UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
   end
