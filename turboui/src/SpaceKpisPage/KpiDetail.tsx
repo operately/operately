@@ -1,3 +1,4 @@
+import * as Popover from "@radix-ui/react-popover";
 import React from "react";
 
 import { ActionList } from "../ActionList";
@@ -11,7 +12,7 @@ import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
-import { IconFlag, IconLink, IconMessage, IconTrash } from "../icons";
+import { IconDotsVertical, IconFlag, IconLink, IconMessage, IconPencil, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -27,6 +28,7 @@ interface KpiDetailProps {
   onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
   onOpenNewAnnotation: () => void;
   onOpenAnnotation: (annotation: SpaceKpisPage.KpiAnnotation) => void;
+  onEditEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   onDelete: () => void;
   richTextHandlers: RichEditorHandlers;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
@@ -46,6 +48,7 @@ export function KpiDetail({
   onDescriptionChange,
   onOpenNewAnnotation,
   onOpenAnnotation,
+  onEditEntry,
   onDelete,
   richTextHandlers,
   renderEntryComments,
@@ -107,7 +110,9 @@ export function KpiDetail({
           entries={kpi.entries}
           unit={fields.unit}
           kpiName={fields.name}
+          canManage={canManage}
           canComment={canComment}
+          onEditEntry={onEditEntry}
           renderEntryComments={renderEntryComments}
         />
       </div>
@@ -356,13 +361,17 @@ function EntriesTable({
   entries,
   unit,
   kpiName,
+  canManage,
   canComment,
+  onEditEntry,
   renderEntryComments,
 }: {
   entries: SpaceKpisPage.KpiEntry[];
   unit: string;
   kpiName: string;
+  canManage: boolean;
   canComment: boolean;
+  onEditEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
 }) {
   const [openEntryId, setOpenEntryId] = React.useState<string | null>(null);
@@ -383,6 +392,9 @@ function EntriesTable({
               <th className="px-4 py-2 font-medium">Recorded by</th>
               <th className="px-4 py-2 text-right font-medium">Value</th>
               <th className="px-4 py-2 text-right font-medium">Comments</th>
+              <th className="w-10 px-2 py-2">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -398,7 +410,10 @@ function EntriesTable({
                   data-test-id={`entry-row-${entry.id}`}
                 >
                   <td className="whitespace-nowrap px-4 py-2.5 text-content-base">
-                    {formatShortDate(entry.recordedAt)}
+                    <div className="flex items-center gap-1.5">
+                      <span>{formatShortDate(entry.recordedAt)}</span>
+                      <EntryEditedHistory entry={entry} unit={unit} />
+                    </div>
                   </td>
                   <td className="px-4 py-2.5">
                     {entry.recordedBy ? (
@@ -433,6 +448,32 @@ function EntriesTable({
                       </span>
                     ) : null}
                   </td>
+                  <td className="px-2 py-2.5 text-right">
+                    {canManage && (
+                      <Menu
+                        size="tiny"
+                        align="end"
+                        testId={`entry-menu-${entry.id}`}
+                        customTrigger={
+                          <button
+                            type="button"
+                            className="rounded p-1 text-content-dimmed hover:bg-surface-dimmed hover:text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
+                            aria-label="Update options"
+                          >
+                            <IconDotsVertical size={16} />
+                          </button>
+                        }
+                      >
+                        <MenuActionItem
+                          icon={IconPencil}
+                          onClick={() => onEditEntry(entry)}
+                          testId={`edit-entry-${entry.id}`}
+                        >
+                          Edit
+                        </MenuActionItem>
+                      </Menu>
+                    )}
+                  </td>
                 </tr>
               );
             })}
@@ -454,6 +495,45 @@ function EntriesTable({
         )}
       </SlideIn>
     </Section>
+  );
+}
+
+function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; unit: string }) {
+  if (entry.edits.length === 0) return null;
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button
+          type="button"
+          className="rounded px-1 py-0.5 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
+          data-test-id={`entry-edited-${entry.id}`}
+        >
+          Edited
+        </button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content
+          align="start"
+          sideOffset={6}
+          className="z-[100] w-72 rounded-lg border border-stroke-base bg-surface-base p-3 shadow-xl"
+        >
+          <div className="text-xs font-medium uppercase tracking-wide text-content-dimmed">Previous values</div>
+          <ol className="mt-2 space-y-2" data-test-id={`entry-edit-history-${entry.id}`}>
+            {entry.edits.map((edit) => (
+              <li key={edit.id} className="text-sm text-content-base" data-test-id={`entry-edit-${edit.id}`}>
+                <div className="font-medium text-content-accent">{formatValue(edit.previousValue, unit)}</div>
+                <div className="mt-0.5 text-xs text-content-dimmed">
+                  on {formatShortDate(edit.previousPeriod)}
+                  {edit.editedBy ? `, replaced by ${edit.editedBy.fullName}` : ""} on {formatShortDate(edit.editedAt)}
+                </div>
+              </li>
+            ))}
+          </ol>
+          <Popover.Arrow className="fill-surface-outline" />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 

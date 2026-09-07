@@ -1,13 +1,16 @@
 import * as React from "react";
 import { Navigate, useNavigate } from "react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { showErrorToast, SpaceKpisPage } from "turboui";
 import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/types";
 
+import Api from "@/api";
 import * as Comments from "@/models/comments";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
+import { invalidateKpiQueries } from "@/models/kpis/kpiLifecycle";
 import { useSubscription } from "@/models/subscriptions";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -20,20 +23,27 @@ export function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const refresh = useRefresh();
+  const queryClient = useQueryClient();
   const { company } = useCompanyLoaderData();
   const { space, kpis, kpi } = useLoadedData();
 
   const peopleSearch = People.usePeopleSearch({ type: "space", id: space.id! });
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id! } });
 
-  const [createKpi] = Kpis.useCreateKpi();
-  const [editKpi] = Kpis.useEditKpi();
-  const [deleteKpi] = Kpis.useDeleteKpi();
-  const [logKpiEntry] = Kpis.useLogKpiEntry();
-  const [addKpiAnnotation] = Kpis.useAddKpiAnnotation();
-  const [editKpiAnnotation] = Kpis.useEditKpiAnnotation();
-  const [deleteKpiAnnotation] = Kpis.useDeleteKpiAnnotation();
-  const [createComment] = Comments.useCreateComment();
+  const createKpi = Kpis.useCreateKpi();
+  const editKpi = Kpis.useEditKpi();
+  const deleteKpi = Kpis.useDeleteKpi();
+  const logKpiEntry = Kpis.useLogKpiEntry();
+  const editKpiEntry = Kpis.useEditKpiEntry();
+  const addKpiAnnotation = Kpis.useAddKpiAnnotation();
+  const editKpiAnnotation = Kpis.useEditKpiAnnotation();
+  const deleteKpiAnnotation = Kpis.useDeleteKpiAnnotation();
+  const createComment = useMutation({
+    ...Api.comments.createMutationOptions(),
+    onSuccess: () => {
+      void invalidateKpiQueries(queryClient);
+    },
+  });
 
   const kpisLink = paths.spaceKpisPath(space.id!);
   const parsedKpis = React.useMemo(() => kpis.map((k) => Kpis.parseKpiForTurboUi(paths, k)), [kpis, paths]);
@@ -60,34 +70,34 @@ export function Page() {
 
   const onCreateKpi = async (input: SpaceKpisPageTypes.NewKpiInput) =>
     run(async () => {
-      const res = await createKpi({
+      const res = await createKpi.mutateAsync({
         spaceId: space.id!,
         name: input.name,
         unit: input.unit,
         cadence: input.cadence,
         championId: input.championId,
       });
-      refresh();
+      await refresh();
       return res.kpi.id;
     });
 
   const onEditKpi = async (input: SpaceKpisPageTypes.EditKpiInput) =>
     run(async () => {
-      await editKpi({
+      await editKpi.mutateAsync({
         kpiId: input.id,
         name: input.name,
         unit: input.unit,
         cadence: input.cadence,
         championId: input.championId,
       });
-      refresh();
+      await refresh();
       return input.id;
     });
 
   const onDescriptionChange = async (kpiId: string, description: Record<string, unknown>) => {
     const result = await run(async () => {
-      await editKpi({ kpiId, description: JSON.stringify(description) });
-      refresh();
+      await editKpi.mutateAsync({ kpiId, description: JSON.stringify(description) });
+      await refresh();
       return kpiId;
     });
 
@@ -102,9 +112,9 @@ export function Page() {
   // to the list instead of refreshing into a missing KPI.
   const onDeleteKpi = async (kpiId: string) =>
     run(async () => {
-      await deleteKpi({ kpiId });
+      await deleteKpi.mutateAsync({ kpiId });
       if (kpiId === selectedKpi?.id) navigate(kpisLink);
-      else refresh();
+      else await refresh();
     });
 
   // The value is recorded first and the note is a comment on it, so a failed
@@ -112,11 +122,11 @@ export function Page() {
   // same value twice.
   const onRecordEntry = async (input: SpaceKpisPageTypes.RecordEntryInput) =>
     run(async () => {
-      const res = await logKpiEntry({ kpiId: input.kpiId, value: input.value, period: input.period });
+      const res = await logKpiEntry.mutateAsync({ kpiId: input.kpiId, value: input.value, period: input.period });
 
       if (input.comment) {
         try {
-          await createComment({
+          await createComment.mutateAsync({
             entityId: res.entry.id,
             entityType: "kpi_entry",
             content: Comments.stringifyCommentContent(input.comment),
@@ -126,33 +136,44 @@ export function Page() {
         }
       }
 
-      refresh();
+      await refresh();
+    });
+
+  const onEditEntry = async (input: SpaceKpisPageTypes.EditEntryInput) =>
+    run(async () => {
+      await editKpiEntry.mutateAsync({
+        entryId: input.entryId,
+        value: input.value,
+        period: input.period,
+      });
+      await refresh();
+      return input.entryId;
     });
 
   const onAddAnnotation = async (input: SpaceKpisPageTypes.AnnotationInput) =>
     run(async () => {
-      await addKpiAnnotation({
+      await addKpiAnnotation.mutateAsync({
         kpiId: input.kpiId,
         date: input.date,
         title: input.title,
       });
-      refresh();
+      await refresh();
     });
 
   const onEditAnnotation = async (input: SpaceKpisPageTypes.EditAnnotationInput) =>
     run(async () => {
-      await editKpiAnnotation({
+      await editKpiAnnotation.mutateAsync({
         annotationId: input.id,
         date: input.date,
         title: input.title,
       });
-      refresh();
+      await refresh();
     });
 
   const onDeleteAnnotation = async (annotationId: string) =>
     run(async () => {
-      await deleteKpiAnnotation({ annotationId });
-      refresh();
+      await deleteKpiAnnotation.mutateAsync({ annotationId });
+      await refresh();
     });
 
   return (
@@ -172,6 +193,7 @@ export function Page() {
       onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      onEditEntry={onEditEntry}
       onAddAnnotation={onAddAnnotation}
       onEditAnnotation={onEditAnnotation}
       onDeleteAnnotation={onDeleteAnnotation}

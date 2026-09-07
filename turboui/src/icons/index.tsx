@@ -57,6 +57,7 @@ import IconCopy from "@tabler/icons-react/dist/esm/icons/IconCopy.mjs";
 import IconDeviceLaptop from "@tabler/icons-react/dist/esm/icons/IconDeviceLaptop.mjs";
 import IconDoorExit from "@tabler/icons-react/dist/esm/icons/IconDoorExit.mjs";
 import IconDots from "@tabler/icons-react/dist/esm/icons/IconDots.mjs";
+import IconDotsVertical from "@tabler/icons-react/dist/esm/icons/IconDotsVertical.mjs";
 import IconDownload from "@tabler/icons-react/dist/esm/icons/IconDownload.mjs";
 import IconEdit from "@tabler/icons-react/dist/esm/icons/IconEdit.mjs";
 import IconExchange from "@tabler/icons-react/dist/esm/icons/IconExchange.mjs";
@@ -221,6 +222,7 @@ export {
   IconDeviceLaptop,
   IconDoorExit,
   IconDots,
+  IconDotsVertical,
   IconDownload,
   IconEdit,
   IconExchange,
