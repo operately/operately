@@ -46,6 +46,15 @@ defmodule Operately.Features.WorkMap.ProjectTemplatesTest do
       |> Steps.submit_work_map_item_without_start_date()
     end
 
+    feature "quick add can start creating a project template", ctx do
+      ctx
+      |> Steps.setup_company_work_map_with_templates()
+      |> Steps.visit_company_work_map()
+      |> Steps.open_add_new_item_modal()
+      |> Steps.select_add_item_type_project()
+      |> Steps.start_project_template_creation_from_work_map()
+    end
+
     feature "template picker is hidden when adding a goal", ctx do
       ctx
       |> Steps.setup_work_map_project_templates()

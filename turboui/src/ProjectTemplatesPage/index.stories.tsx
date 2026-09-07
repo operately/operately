@@ -94,6 +94,17 @@ export const SpaceLibrary: Story = {
   ),
 };
 export const Empty: Story = { render: () => <StoryPage templates={[]} /> };
+export const NewTemplate: Story = {
+  render: () => (
+    <StoryPage
+      scope="space"
+      navigation={[{ to: spaces[0]!.link, label: spaces[0]!.name }]}
+      fixedSpace={spaces[0]}
+      templates={[]}
+      startCreating
+    />
+  ),
+};
 export const EmptyReadOnly: Story = { render: () => <StoryPage templates={[]} canCreate={false} /> };
 export const ArchivedOnly: Story = {
   render: () => (

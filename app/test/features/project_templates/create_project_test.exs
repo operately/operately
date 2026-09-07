@@ -25,4 +25,11 @@ defmodule Operately.Features.ProjectTemplates.CreateProjectTest do
     |> Steps.select_new_project_template("Growth playbook")
     |> Steps.submit_new_project_without_start_date()
   end
+
+  feature "New Project offers template creation when the selected Space has no templates", ctx do
+    ctx
+    |> Steps.start_new_project_from_menu()
+    |> Steps.select_new_project_space("Product Space")
+    |> Steps.create_blank_template_from_new_project("First project template")
+  end
 end

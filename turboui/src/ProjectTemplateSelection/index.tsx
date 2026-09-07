@@ -3,6 +3,7 @@ import Select from "react-select";
 
 import { DateField } from "../DateField";
 import * as Forms from "../Forms";
+import { IconPlus } from "../icons";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 import { toDateWithoutTime } from "../utils/time";
@@ -23,6 +24,7 @@ export namespace ProjectTemplateSelection {
   export interface Props {
     spaceId?: string | null;
     templates: Template[];
+    onCreateTemplate?: () => void;
   }
 }
 
@@ -37,10 +39,19 @@ export namespace ProjectTemplateFields {
     startDate: string;
     onStartDateChange: (startDate: string) => void;
     startDateError?: string;
+    onCreateTemplate?: () => void;
   }
 }
 
-export function ProjectTemplateSelection({ spaceId, templates }: ProjectTemplateSelection.Props) {
+const CREATE_TEMPLATE_OPTION = "create-project-template";
+
+type TemplateOption = {
+  value: string;
+  label: string;
+  kind: "none" | "template" | "create";
+};
+
+export function ProjectTemplateSelection({ spaceId, templates, onCreateTemplate }: ProjectTemplateSelection.Props) {
   const [templateId, setTemplateId] = Forms.useFieldValue<string>("template");
   const [startDate, setStartDate] = Forms.useFieldValue<string>("startDate");
 
@@ -53,6 +64,7 @@ export function ProjectTemplateSelection({ spaceId, templates }: ProjectTemplate
       startDate={startDate ?? ""}
       onStartDateChange={setStartDate}
       startDateField="startDate"
+      onCreateTemplate={onCreateTemplate}
     />
   );
 }
@@ -66,6 +78,7 @@ export function ProjectTemplateFields({
   onStartDateChange,
   startDateError,
   startDateField,
+  onCreateTemplate,
 }: ProjectTemplateFields.Props & { startDateField?: string }) {
   const compatibleTemplates = React.useMemo(
     () => templates.filter((template) => template.spaceId === spaceId),
@@ -82,10 +95,22 @@ export function ProjectTemplateFields({
 
   if (!spaceId) return null;
 
-  const options = [
-    { value: "", label: "No template" },
-    ...compatibleTemplates.map((template) => ({ value: template.id, label: template.name })),
+  const options: TemplateOption[] = [
+    { value: "", label: "No template", kind: "none" },
+    ...compatibleTemplates.map((template) => ({ value: template.id, label: template.name, kind: "template" as const })),
+    ...(onCreateTemplate
+      ? [{ value: CREATE_TEMPLATE_OPTION, label: "Create a project template", kind: "create" as const }]
+      : []),
   ];
+
+  const handleTemplateChange = (value: string) => {
+    if (value === CREATE_TEMPLATE_OPTION) {
+      onCreateTemplate?.();
+      return;
+    }
+
+    onTemplateIdChange(value);
+  };
 
   return (
     <>
@@ -98,8 +123,18 @@ export function ProjectTemplateFields({
             aria-label="Template"
             classNames={selectBoxClassNames(false)}
             value={options.find(({ value }) => value === templateId)}
-            onChange={(option) => onTemplateIdChange(option?.value ?? "")}
+            onChange={(option) => handleTemplateChange(option?.value ?? "")}
             options={options}
+            formatOptionLabel={(option, { context }) =>
+              context === "menu" && option.kind === "create" ? (
+                <span className="flex items-center gap-2">
+                  <IconPlus size={16} aria-hidden />
+                  {option.label}
+                </span>
+              ) : (
+                option.label
+              )
+            }
             styles={selectBoxStyles()}
           />
         </div>
@@ -148,11 +183,7 @@ function SelectedTemplateFields({
           requiredMessage="Select a project start date."
         />
       ) : (
-        <ControlledStartDateField
-          startDate={startDate}
-          onStartDateChange={onStartDateChange}
-          error={startDateError}
-        />
+        <ControlledStartDateField startDate={startDate} onStartDateChange={onStartDateChange} error={startDateError} />
       )}
     </>
   );
@@ -278,10 +309,15 @@ function selectBoxControlStyles(isFocused: boolean, error: boolean) {
   return "bg-surface-base placeholder-content-dimmed border border-surface-outline rounded-lg px-3 flex-1";
 }
 
-function selectBoxOptionStyles({ isFocused }: { isFocused: boolean }) {
+function selectBoxOptionStyles({ isFocused, data }: { isFocused: boolean; data: TemplateOption }) {
+  const isCreateAction = data.kind === "create";
+
   return classNames({
     "px-3 py-2 hover:bg-surface-accent cursor-pointer": true,
     "bg-surface-accent": isFocused,
+    "text-content-dimmed": data.kind === "none" && !isFocused,
+    "sticky bottom-0 z-10 mt-1 border-t border-surface-outline font-medium text-link-base": isCreateAction,
+    "bg-surface-base": isCreateAction && !isFocused,
   });
 }
 

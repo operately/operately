@@ -2,6 +2,7 @@ import Api, { WorkMapItem } from "@/api";
 import { Paths, usePaths } from "@/routes/paths";
 import React from "react";
 import { WorkMap } from "turboui";
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import { accessLevelAsNumber } from "../goals";
 import { parseContextualDate } from "../contextualDates";
 import { parseTaskStatusForTurboUi } from "../tasks";
@@ -51,6 +52,10 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
 
 export type { WorkMapItem };
 
+export async function invalidateWorkMapQueries(queryClient: QueryClient): Promise<void> {
+  await queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() });
+}
+
 interface WorkMapItemOptions {
   projectChampionId?: string;
 }
@@ -60,13 +65,23 @@ export function useWorkMapItems(
   options: WorkMapItemOptions = {},
 ): [WorkMapItem[], WorkMap.AddNewItemFn] {
   const paths = usePaths();
+  const queryClient = useQueryClient();
 
   const [items, setItems] = React.useState<WorkMapItem[]>(initialItems);
   const inject = useItemInjector(setItems);
 
-  const [saveGoal] = Api.goals.useCreate();
-  const [saveProject] = Api.projects.useCreate();
-  const [createFromTemplate] = Api.project_templates.useCreateProject();
+  const saveGoal = useMutation({
+    ...Api.goals.createMutationOptions(),
+    onSuccess: () => void invalidateWorkMapQueries(queryClient),
+  });
+  const saveProject = useMutation({
+    ...Api.projects.createMutationOptions(),
+    onSuccess: () => void invalidateWorkMapQueries(queryClient),
+  });
+  const createFromTemplate = useMutation({
+    ...Api.project_templates.createProjectMutationOptions(),
+    onSuccess: () => void invalidateWorkMapQueries(queryClient),
+  });
 
   // If props change, update the items state
   React.useEffect(() => {
@@ -74,7 +89,7 @@ export function useWorkMapItems(
   }, [initialItems]);
 
   const addNewGoal: WorkMap.AddNewItemFn = async (props) => {
-    const res = await saveGoal({
+    const res = await saveGoal.mutateAsync({
       name: props.name,
       spaceId: props.space.id,
       anonymousAccessLevel: 0,
@@ -130,7 +145,7 @@ export function useWorkMapItems(
     };
 
     const res = props.templateId
-      ? await createFromTemplate({
+      ? await createFromTemplate.mutateAsync({
           name: props.name,
           spaceId: props.space.id,
           goalId: props.parentId || null,
@@ -138,7 +153,7 @@ export function useWorkMapItems(
           startDate: props.startDate!,
           ...accessLevels,
         })
-      : await saveProject({
+      : await saveProject.mutateAsync({
           name: props.name,
           spaceId: props.space.id,
           goalId: props.parentId || null,

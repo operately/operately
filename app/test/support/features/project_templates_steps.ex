@@ -108,6 +108,23 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     UI.visit(ctx, Paths.space_project_templates_path(ctx.company, ctx.space))
   end
 
+  step :visit_space_library_with_template_creation, ctx do
+    path = Paths.space_project_templates_path(ctx.company, ctx.space)
+
+    ctx
+    |> UI.visit(path <> "?new=true")
+    |> UI.assert_has(testid: "new-project-template-form")
+  end
+
+  step :cancel_template_creation, ctx do
+    path = Paths.space_project_templates_path(ctx.company, ctx.space)
+
+    ctx
+    |> UI.click_button("Cancel")
+    |> UI.refute_has(testid: "new-project-template-form")
+    |> UI.assert_location(path)
+  end
+
   step :visit_space_page, ctx do
     UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
   end
@@ -141,6 +158,19 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   step :create_blank_template, ctx, name do
     ctx
     |> UI.click(testid: "new-project-template")
+    |> complete_blank_template_creation(name)
+  end
+
+  step :create_blank_template_from_new_project, ctx, name do
+    ctx
+    |> UI.click(testid: "template")
+    |> UI.click_text("Create a project template")
+    |> UI.assert_has(testid: "new-project-template-form")
+    |> complete_blank_template_creation(name)
+  end
+
+  defp complete_blank_template_creation(ctx, name) do
+    ctx
     |> UI.fill(testid: "name", with: name)
     |> maybe_select_create_space()
     |> UI.click(testid: "create-project-template")

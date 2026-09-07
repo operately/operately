@@ -24,6 +24,7 @@ interface Props {
   spaceSearch?: SpaceField.SearchSpaceFn;
   hideCompanyAccess?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }
 
 export function ItemNameCell({
@@ -37,6 +38,7 @@ export function ItemNameCell({
   spaceSearch,
   hideCompanyAccess,
   projectTemplates,
+  onCreateProjectTemplate,
 }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative" data-test-id={createTestId("work-item", item.name)}>
@@ -54,6 +56,7 @@ export function ItemNameCell({
             spaceSearch={spaceSearch!}
             hideCompanyAccess={hideCompanyAccess}
             projectTemplates={projectTemplates}
+            onCreateProjectTemplate={onCreateProjectTemplate}
           />
         )}
       </div>
@@ -180,12 +183,14 @@ function AddButton({
   spaceSearch,
   hideCompanyAccess,
   projectTemplates,
+  onCreateProjectTemplate,
 }: {
   item: WorkMap.Item;
   addItem: WorkMap.AddNewItemFn;
   spaceSearch: SpaceField.SearchSpaceFn;
   hideCompanyAccess?: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }) {
   if (item.type !== "goal") return null;
   if (!item.space) return null;
@@ -209,6 +214,7 @@ function AddButton({
         space={item.space}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
         templates={projectTemplates}
+        onCreateProjectTemplate={onCreateProjectTemplate}
       />
     </div>
   );

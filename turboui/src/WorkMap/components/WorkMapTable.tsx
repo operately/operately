@@ -30,6 +30,7 @@ interface Props {
   onItemCreated?: WorkMap.ItemCreatedFn;
   formattedTimePreferences: FormattedTimePreferences;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }
 
 export function WorkMapTable({
@@ -49,6 +50,7 @@ export function WorkMapTable({
   onItemCreated,
   formattedTimePreferences,
   projectTemplates,
+  onCreateProjectTemplate,
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
@@ -110,6 +112,7 @@ export function WorkMapTable({
           variant={emptyStateVariant}
           onItemCreated={onItemCreated}
           projectTemplates={projectTemplates}
+          onCreateProjectTemplate={onCreateProjectTemplate}
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">
@@ -133,6 +136,7 @@ export function WorkMapTable({
                 profileUser={profileUser}
                 formattedTimePreferences={formattedTimePreferences}
                 projectTemplates={projectTemplates}
+                onCreateProjectTemplate={onCreateProjectTemplate}
               />
             ))}
 
@@ -144,6 +148,7 @@ export function WorkMapTable({
                 addItemDefaultSpace={addItemDefaultSpace!}
                 hideCompanyAccess={hideCompanyAccessInQuickAdd}
                 projectTemplates={projectTemplates}
+                onCreateProjectTemplate={onCreateProjectTemplate}
               />
             )}
           </tbody>
@@ -252,6 +257,7 @@ function AddNewRow({
   addItemDefaultSpace,
   hideCompanyAccess,
   projectTemplates,
+  onCreateProjectTemplate,
 }: {
   addingEnabled: boolean;
   spaceSearch: SpaceField.SearchSpaceFn;
@@ -259,6 +265,7 @@ function AddNewRow({
   addItemDefaultSpace: SpaceField.Space;
   hideCompanyAccess: boolean;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }) {
   if (!addingEnabled) return null;
 
@@ -287,6 +294,7 @@ function AddNewRow({
           space={addItemDefaultSpace}
           hideCompanyAccess={hideCompanyAccess}
           templates={projectTemplates}
+          onCreateProjectTemplate={onCreateProjectTemplate}
         />
       </td>
     </tr>
