@@ -270,6 +270,13 @@ defmodule OperatelyWeb.Api.Types do
     field :new_period, :date, null: false
   end
 
+  object :activity_content_kpi_entry_deleted, for: Operately.Activities.Content.KpiEntryDeleted do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field :value, :float, null: false
+    field :period, :date, null: false
+  end
+
   object :activity_content_kpi_annotation_added, for: Operately.Activities.Content.KpiAnnotationAdded do
     field :space, :space, null: false
     field :kpi, :kpi, null: true
@@ -1200,6 +1207,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_kpi_created,
       :activity_content_kpi_entry_commented,
       :activity_content_kpi_entry_edited,
+      :activity_content_kpi_entry_deleted,
       :activity_content_kpi_annotation_added,
       :activity_content_kpi_annotation_edited,
       :activity_content_kpi_annotation_deleted,

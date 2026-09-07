@@ -32,6 +32,22 @@ defmodule Operately.Support.Features.KpiEntriesSteps do
     |> UI.refute_has(testid: "edit-entry-modal")
   end
 
+  step :delete_latest_update, ctx do
+    entry_id = Paths.kpi_entry_id(ctx.entry)
+
+    ctx
+    |> UI.assert_has(testid: "kpi-detail")
+    |> UI.click(testid: "entry-menu-#{entry_id}")
+    |> UI.click(testid: "delete-entry-#{entry_id}")
+    |> UI.assert_has(testid: "delete-entry-dialog")
+    |> UI.click_button("Delete update")
+    |> UI.refute_has(testid: "delete-entry-dialog")
+  end
+
+  step :assert_update_deleted, ctx do
+    UI.refute_has(ctx, testid: "entry-row-#{Paths.kpi_entry_id(ctx.entry)}")
+  end
+
   step :assert_latest_value, ctx, value do
     UI.assert_text(ctx, value, testid: "kpi-current-value")
   end

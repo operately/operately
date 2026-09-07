@@ -469,6 +469,10 @@
           "kind": "named"
         },
         {
+          "name": "activity_content_kpi_entry_deleted",
+          "kind": "named"
+        },
+        {
           "name": "activity_content_kpi_annotation_added",
           "kind": "named"
         },
@@ -23139,6 +23143,65 @@
             "has_default": false
           }
         ]
+      },
+      "activity_content_kpi_entry_deleted": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "space",
+            "type": {
+              "name": "space",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "kpi",
+            "type": {
+              "name": "kpi",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "value",
+            "type": {
+              "name": "float",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "period",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
       }
     }
   },
@@ -23160,7 +23223,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 253,
+  "endpoint_count": 254,
   "endpoints": [
     {
       "name": "create",
@@ -29930,6 +29993,43 @@
       "method": "POST",
       "namespace": "kpis",
       "docstring": "Removes a KPI chart annotation.",
+      "hidden": true
+    },
+    {
+      "name": "delete_kpi_entry",
+      "type": "mutation",
+      "path": "/api/external/v1/kpis/delete_kpi_entry",
+      "handler": "OperatelyWeb.Api.Kpis.DeleteKpiEntry",
+      "outputs": [
+        {
+          "default": null,
+          "name": "entry",
+          "type": {
+            "name": "kpi_entry",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "entry_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "kpis/delete_kpi_entry",
+      "method": "POST",
+      "namespace": "kpis",
+      "docstring": "Deletes a logged KPI value. Any space member with edit access may delete one.",
       "hidden": true
     },
     {
@@ -40184,6 +40284,6 @@
     }
   ],
   "query_count": 75,
-  "mutation_count": 178,
+  "mutation_count": 179,
   "schema_version": 1
 }

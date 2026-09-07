@@ -10,6 +10,7 @@ defmodule Operately.Kpis do
     "kpi_deleted",
     "kpi_entry_logged",
     "kpi_entry_edited",
+    "kpi_entry_deleted",
     "kpi_entry_commented",
     "kpi_annotation_added",
     "kpi_annotation_edited",
@@ -106,6 +107,7 @@ defmodule Operately.Kpis do
   defdelegate delete_kpi(author, kpi), to: Operately.Operations.KpiDeleting, as: :run
   defdelegate log_entry(author, kpi, attrs), to: Operately.Operations.KpiEntryLogging, as: :run
   defdelegate edit_entry(author, kpi, entry, attrs), to: Operately.Operations.KpiEntryEditing, as: :run
+  defdelegate delete_entry(author, kpi, entry), to: Operately.Operations.KpiEntryDeleting, as: :run
   defdelegate add_annotation(author, kpi, attrs), to: Operately.Operations.KpiAnnotationAdding, as: :run
   defdelegate edit_annotation(author, kpi, annotation, attrs), to: Operately.Operations.KpiAnnotationEditing, as: :run
   defdelegate delete_annotation(author, kpi, annotation), to: Operately.Operations.KpiAnnotationDeleting, as: :run
