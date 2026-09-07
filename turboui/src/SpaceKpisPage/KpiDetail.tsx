@@ -3,7 +3,7 @@ import React from "react";
 
 import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
-import { SecondaryButton } from "../Button";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
 import { PageDescription } from "../PageDescription";
 import { PersonField } from "../PersonField";
@@ -26,6 +26,7 @@ interface KpiDetailProps {
   canComment?: boolean;
   championSearch: (query: string) => Promise<SpaceKpisPage.Person[]>;
   onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
+  onLogUpdate: () => void;
   onOpenNewAnnotation: () => void;
   onOpenAnnotation: (annotation: SpaceKpisPage.KpiAnnotation) => void;
   onEditEntry: (entry: SpaceKpisPage.KpiEntry) => void;
@@ -39,7 +40,7 @@ interface KpiDetailProps {
 // The KPI's name leads its page, with the current reading beside it, so the two
 // questions a KPI answers — which metric is this, and where does it stand — are
 // answered before the description, chart and recorded-updates log below.
-// Back navigation and the "Log update" action live in the page header (index.tsx).
+// Back navigation lives in the page header (index.tsx).
 export function KpiDetail({
   kpi,
   fields,
@@ -47,6 +48,7 @@ export function KpiDetail({
   canComment = false,
   championSearch,
   onDescriptionChange,
+  onLogUpdate,
   onOpenNewAnnotation,
   onOpenAnnotation,
   onEditEntry,
@@ -94,10 +96,19 @@ export function KpiDetail({
         >
           <div className="flex items-start justify-between gap-4">
             <CurrentValue kpi={kpi} unit={fields.unit} />
+
             {canManage && (
-              <SecondaryButton size="xxs" icon={IconFlag} onClick={onOpenNewAnnotation} testId="add-kpi-annotation">
-                Add annotation
-              </SecondaryButton>
+              // Keep the chart's actions against its right edge even when there is
+              // no reading yet to sit opposite them.
+              <div className="ml-auto flex shrink-0 items-center gap-2">
+                <SecondaryButton size="xxs" icon={IconFlag} onClick={onOpenNewAnnotation} testId="add-kpi-annotation">
+                  Add annotation
+                </SecondaryButton>
+
+                <PrimaryButton size="xxs" onClick={onLogUpdate} testId="chart-log-update">
+                  Log update
+                </PrimaryButton>
+              </div>
             )}
           </div>
           <KpiLineChart

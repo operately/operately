@@ -89,6 +89,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             openKpi={openKpi}
             onOpenNew={() => setIsNewOpen(true)}
             onOpenDelete={() => setIsDeleteOpen(true)}
+            onLogUpdate={() => selectedKpi && setLogKpiId(selectedKpi.id)}
             onOpenNewAnnotation={() => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation: null })}
             onOpenAnnotation={(annotation) => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation })}
             onOpenEditEntry={setEditingEntry}
@@ -249,6 +250,7 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   openKpi: KpiFields | null;
   onOpenNew: () => void;
   onOpenDelete: () => void;
+  onLogUpdate: () => void;
   onOpenNewAnnotation: () => void;
   onOpenAnnotation: (annotation: SpaceKpisPageNS.KpiAnnotation) => void;
   onOpenEditEntry: (entry: SpaceKpisPageNS.KpiEntry) => void;
@@ -275,6 +277,7 @@ function KpisContent(props: KpisContentProps) {
         canComment={props.canComment}
         championSearch={props.championSearch}
         onDescriptionChange={props.onDescriptionChange}
+        onLogUpdate={props.onLogUpdate}
         onOpenNewAnnotation={props.onOpenNewAnnotation}
         onOpenAnnotation={props.onOpenAnnotation}
         onEditEntry={props.onOpenEditEntry}
