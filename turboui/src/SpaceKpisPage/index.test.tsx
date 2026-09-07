@@ -48,6 +48,7 @@ function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPag
     onDeleteKpi: async () => ({ success: true }),
     onRecordEntry: async () => ({ success: true }),
     onEditEntry: async () => ({ success: true }),
+    onDeleteEntry: async () => ({ success: true }),
     onAddAnnotation: async () => ({ success: true }),
     onEditAnnotation: async () => ({ success: true }),
     onDeleteAnnotation: async () => ({ success: true }),
@@ -750,5 +751,22 @@ describe("SpaceKpisPage edit logged updates", () => {
 
     expect(container.querySelector(`[data-test-id="entry-menu-${entry.id}"]`)).not.toBeInTheDocument();
     expect(container.querySelector(`[data-test-id="entry-edited-${entry.id}"]`)).toBeInTheDocument();
+  });
+
+  test("editors can confirm deleting a recorded update", async () => {
+    const user = userEvent.setup();
+    const onDeleteEntry = jest.fn().mockResolvedValue({ success: true });
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({ selectedKpi: target, onDeleteEntry });
+
+    await user.click(await findByTestId(`entry-menu-${entry.id}`));
+    await user.click(await findByTestId(`delete-entry-${entry.id}`));
+
+    const dialog = await findByTestId("delete-entry-dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Delete update" }));
+
+    await waitFor(() => expect(onDeleteEntry).toHaveBeenCalledWith(entry.id));
   });
 });

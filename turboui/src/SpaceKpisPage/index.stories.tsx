@@ -216,6 +216,29 @@ function Harness(args: HarnessArgs) {
     return { success: true, id: input.entryId };
   };
 
+  const onDeleteEntry = async (entryId: string): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("deleteKpiEntry", entryId);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to delete this update." };
+    }
+
+    setKpis((prev) =>
+      prev.map((kpi) => {
+        const entries = kpi.entries.filter((entry) => entry.id !== entryId);
+
+        return {
+          ...kpi,
+          entries,
+          latestEntry: entries.length > 0 ? entries[entries.length - 1]! : null,
+        };
+      }),
+    );
+
+    return { success: true, id: entryId };
+  };
+
   const onAddAnnotation = async (input: SpaceKpisPageNS.AnnotationInput): Promise<SpaceKpisPageNS.MutationResult> => {
     console.log("addKpiAnnotation", input);
     await delay(400);
@@ -299,6 +322,7 @@ function Harness(args: HarnessArgs) {
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
       onEditEntry={onEditEntry}
+      onDeleteEntry={onDeleteEntry}
       onAddAnnotation={onAddAnnotation}
       onEditAnnotation={onEditAnnotation}
       onDeleteAnnotation={onDeleteAnnotation}

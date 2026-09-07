@@ -432,6 +432,14 @@ export interface ActivityContentKpiEntryCommented {
   comment: Comment | null;
 }
 
+export interface ActivityContentKpiEntryDeleted {
+  __typename: "activity_content_kpi_entry_deleted";
+  space: Space;
+  kpi: Kpi | null;
+  value: number;
+  period: string;
+}
+
 export interface ActivityContentKpiEntryEdited {
   __typename: "activity_content_kpi_entry_edited";
   space: Space;
@@ -2746,6 +2754,7 @@ export type ActivityContent =
   | ActivityContentKpiCreated
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
+  | ActivityContentKpiEntryDeleted
   | ActivityContentKpiAnnotationAdded
   | ActivityContentKpiAnnotationEdited
   | ActivityContentKpiAnnotationDeleted
