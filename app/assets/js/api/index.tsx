@@ -554,6 +554,17 @@ export interface ActivityContentKpiEntryCommented {
   comment: Comment | null;
 }
 
+export interface ActivityContentKpiEntryEdited {
+  __typename: "activity_content_kpi_entry_edited";
+  space: Space;
+  kpi: Kpi | null;
+  entry: KpiEntry | null;
+  oldValue: number;
+  newValue: number;
+  oldPeriod: string;
+  newPeriod: string;
+}
+
 export interface ActivityContentMessageArchiving {
   __typename: "activity_content_message_archiving";
   companyId?: string | null;
@@ -1817,8 +1828,18 @@ export interface KpiEntry {
   period: string;
   recordedBy?: Person | null;
   commentsCount?: number | null;
+  edits?: KpiEntryEdit[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
+}
+
+export interface KpiEntryEdit {
+  __typename: "kpi_entry_edit";
+  id: Id;
+  previousValue: number;
+  previousPeriod: string;
+  editedBy?: Person | null;
+  insertedAt?: string | null;
 }
 
 export interface McpGrant {
@@ -2846,6 +2867,7 @@ export type ActivityContent =
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
   | ActivityContentKpiEntryCommented
+  | ActivityContentKpiEntryEdited
   | ActivityContentKpiAnnotationAdded
   | ActivityContentKpiAnnotationEdited
   | ActivityContentKpiAnnotationDeleted
@@ -5210,6 +5232,16 @@ export interface KpisEditKpiAnnotationResult {
   annotation: KpiAnnotation;
 }
 
+export interface KpisEditKpiEntryInput {
+  entryId: Id;
+  value?: number | null;
+  period?: string | null;
+}
+
+export interface KpisEditKpiEntryResult {
+  entry: KpiEntry;
+}
+
 export interface KpisLogKpiEntryInput {
   kpiId: Id;
   value: number;
@@ -7134,6 +7166,10 @@ class ApiNamespaceKpis {
 
   async editKpiAnnotation(input: KpisEditKpiAnnotationInput): Promise<KpisEditKpiAnnotationResult> {
     return this.client.post("/kpis/edit_kpi_annotation", input);
+  }
+
+  async editKpiEntry(input: KpisEditKpiEntryInput): Promise<KpisEditKpiEntryResult> {
+    return this.client.post("/kpis/edit_kpi_entry", input);
   }
 
   async logKpiEntry(input: KpisLogKpiEntryInput): Promise<KpisLogKpiEntryResult> {
@@ -10079,6 +10115,16 @@ export default {
         queryKey: buildApiQueryKey(defaultApiClient, "/kpis/list_kpis", input),
         queryFn: () => defaultApiClient.apiNamespaceKpis.listKpis(input),
         staleTime: Infinity,
+      }),
+
+    editKpiEntry: (input: KpisEditKpiEntryInput) => defaultApiClient.apiNamespaceKpis.editKpiEntry(input),
+    useEditKpiEntry: () =>
+      useMutation<KpisEditKpiEntryInput, KpisEditKpiEntryResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.editKpiEntry(input),
+      ),
+    editKpiEntryMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisEditKpiEntryInput) => defaultApiClient.apiNamespaceKpis.editKpiEntry(input),
       }),
 
     addKpiAnnotation: (input: KpisAddKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
