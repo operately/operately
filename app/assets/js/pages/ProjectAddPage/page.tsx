@@ -121,6 +121,7 @@ function Form() {
       });
     },
   });
+  const selectedSpaceId = form.values.space;
 
   return (
     <Forms.Form form={form}>
@@ -130,6 +131,9 @@ function Form() {
           <Forms.SelectBox label="Space" field="space" options={spaceOptions} required />
           <ProjectTemplateSelection
             spaceId={form.values.space}
+            onCreateTemplate={
+              selectedSpaceId ? () => navigate(paths.newProjectTemplatePath(selectedSpaceId)) : undefined
+            }
             templates={templates.map((template) => ({
               id: template.id,
               name: template.name,

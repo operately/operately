@@ -39,6 +39,7 @@ describe("project template paths", () => {
   it("builds company, Space, and editor paths", () => {
     expect(paths.projectTemplatesPath()).toBe("/acme/project-templates");
     expect(paths.spaceProjectTemplatesPath("growth")).toBe("/acme/spaces/growth/project-templates");
+    expect(paths.newProjectTemplatePath("growth")).toBe("/acme/spaces/growth/project-templates?new=true");
     expect(paths.projectTemplatePath("launch")).toBe("/acme/project-templates/launch");
     expect(paths.projectTemplateMilestonePath("launch", "kickoff")).toBe(
       "/acme/project-templates/launch/milestones/kickoff",

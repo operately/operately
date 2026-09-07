@@ -4,13 +4,13 @@ import { loader } from "./loader";
 jest.mock("@/api", () => ({
   __esModule: true,
   default: {
-    project_templates: { list: jest.fn() },
-    spaces: { list: jest.fn() },
+    project_templates: { listQuery: jest.fn() },
+    spaces: { listQuery: jest.fn() },
   },
 }));
 
-const listTemplates = Api.project_templates.list as jest.Mock;
-const listSpaces = Api.spaces.list as jest.Mock;
+const listTemplates = Api.project_templates.listQuery as jest.Mock;
+const listSpaces = Api.spaces.listQuery as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -20,18 +20,18 @@ beforeEach(() => {
   });
 });
 
-test("loads all company templates and Spaces with effective permissions", async () => {
+test("prefetches all company templates and Spaces with effective permissions", async () => {
   const result = await loader({ params: { companyId: "acme" } } as any);
 
   expect(listTemplates).toHaveBeenCalledWith({ spaceId: null, archiveStatus: "all" });
   expect(listSpaces).toHaveBeenCalledTimes(1);
   expect(listSpaces).toHaveBeenCalledWith({ includePermissions: true });
-  expect(result.fixedSpace).toBeNull();
+  expect(result.spaceId).toBeNull();
 });
 
-test("loads a Space-scoped library and resolves the fixed Space", async () => {
+test("prefetches a Space-scoped library", async () => {
   const result = await loader({ params: { companyId: "acme", id: "space-1" } } as any);
 
   expect(listTemplates).toHaveBeenCalledWith({ spaceId: "space-1", archiveStatus: "all" });
-  expect(result.fixedSpace).toEqual({ id: "space-1", name: "Marketing", permissions: { canEdit: true } });
+  expect(result.spaceId).toBe("space-1");
 });

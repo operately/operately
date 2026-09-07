@@ -14,3 +14,11 @@ export {
   type Mutate,
 } from "./operations";
 export { useTemplateTasksForTurboUi } from "./useTemplateTasksForTurboUi";
+export {
+  invalidateProjectTemplateListQueries,
+  useArchiveProjectTemplate,
+  useCreateProjectTemplate,
+  useDeleteProjectTemplate,
+  useDuplicateProjectTemplate,
+  useRestoreProjectTemplate,
+} from "./projectTemplateLifecycle";

@@ -21,6 +21,7 @@ interface Props {
   setItemExpanded: SetItemExpandedFn;
   formattedTimePreferences: FormattedTimePreferences;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }
 
 export function ChildRows({ item, level, isLast, expanded, isExpanded, setItemExpanded, ...rest }: Props) {

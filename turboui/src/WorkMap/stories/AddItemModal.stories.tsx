@@ -47,6 +47,7 @@ export const WithProjectTemplates: Story = {
       { id: "tpl-1", name: "Campaign launch", spaceId: "space1" },
       { id: "tpl-2", name: "Other space template", spaceId: "space2" },
     ],
+    onCreateProjectTemplate: () => undefined,
   },
 };
 

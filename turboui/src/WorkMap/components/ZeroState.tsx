@@ -19,6 +19,7 @@ interface ZeroStateProps {
   variant?: WorkMap.EmptyStateVariant;
   onItemCreated?: WorkMap.ItemCreatedFn;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }
 
 export function ZeroState(props: ZeroStateProps) {
@@ -46,6 +47,7 @@ export function ZeroStateCanAdd({
   addItemDefaultSpace,
   hideCompanyAccess,
   projectTemplates,
+  onCreateProjectTemplate,
 }: ZeroStateProps) {
   const [modalState, setModalState] = React.useState<{
     isOpen: boolean;
@@ -99,6 +101,7 @@ export function ZeroStateCanAdd({
         hideTypeSelector={true}
         hideCompanyAccess={Boolean(hideCompanyAccess)}
         templates={projectTemplates}
+        onCreateProjectTemplate={onCreateProjectTemplate}
       />
     </div>
   );
@@ -110,6 +113,7 @@ function FirstProjectZeroState({
   addItemDefaultSpace,
   onItemCreated,
   projectTemplates,
+  onCreateProjectTemplate,
 }: ZeroStateProps) {
   const [navigationPending, setNavigationPending] = React.useState(false);
   const [goalModalOpen, setGoalModalOpen] = React.useState(false);
@@ -128,9 +132,7 @@ function FirstProjectZeroState({
         space: addItemDefaultSpace,
         parentId: null,
         accessLevels: { company: "edit", space: "edit" },
-        ...(form.values.template
-          ? { templateId: form.values.template, startDate: form.values.startDate }
-          : {}),
+        ...(form.values.template ? { templateId: form.values.template, startDate: form.values.startDate } : {}),
       });
 
       if (onItemCreated) {
@@ -170,6 +172,9 @@ function FirstProjectZeroState({
               <ProjectTemplateSelection
                 spaceId={addItemDefaultSpace.id}
                 templates={projectTemplates ?? []}
+                onCreateTemplate={
+                  onCreateProjectTemplate ? () => onCreateProjectTemplate(addItemDefaultSpace.id) : undefined
+                }
               />
             </Forms.FieldGroup>
 
@@ -206,6 +211,7 @@ function FirstProjectZeroState({
         keepOpenAfterSave={Boolean(onItemCreated)}
         onSaved={onItemCreated}
         templates={projectTemplates}
+        onCreateProjectTemplate={onCreateProjectTemplate}
       />
     </div>
   );

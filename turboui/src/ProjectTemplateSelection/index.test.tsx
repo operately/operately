@@ -10,10 +10,14 @@ jest.mock("react-select", () => {
     options,
     value,
     onChange,
+    classNames,
   }: {
-    options: { label: string; value: string }[];
-    value?: { label: string; value: string };
-    onChange: (option: { label: string; value: string } | null) => void;
+    options: { label: string; value: string; kind?: string }[];
+    value?: { label: string; value: string; kind?: string };
+    onChange: (option: { label: string; value: string; kind?: string } | null) => void;
+    classNames?: {
+      option?: (props: { isFocused: boolean; data: { label: string; value: string; kind?: string } }) => string;
+    };
   }) {
     return (
       <select
@@ -22,7 +26,11 @@ jest.mock("react-select", () => {
         onChange={(event) => onChange(options.find((option) => option.value === event.target.value) ?? null)}
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option
+            key={option.value}
+            value={option.value}
+            className={classNames?.option?.({ isFocused: false, data: option })}
+          >
             {option.label}
           </option>
         ))}
@@ -43,12 +51,20 @@ const templates = [
   { id: "product", name: "Launch", spaceId: "space-2" },
 ];
 
-function Harness({ spaceId = "space-1" }: { spaceId?: string }) {
+function Harness({
+  spaceId = "space-1",
+  availableTemplates = templates,
+  onCreateTemplate,
+}: {
+  spaceId?: string;
+  availableTemplates?: typeof templates;
+  onCreateTemplate?: () => void;
+}) {
   const form = Forms.useForm({ fields: { template: "", startDate: "" }, submit: async () => undefined });
 
   return (
     <Forms.Form form={form}>
-      <ProjectTemplateSelection spaceId={spaceId} templates={templates} />
+      <ProjectTemplateSelection spaceId={spaceId} templates={availableTemplates} onCreateTemplate={onCreateTemplate} />
       <Forms.Submit />
     </Forms.Form>
   );
@@ -87,6 +103,30 @@ function ControlledHarness({ spaceId = "space-1" }: { spaceId?: string }) {
 }
 
 describe("ProjectTemplateSelection", () => {
+  it("keeps template creation as the last option after available templates", () => {
+    const onCreateTemplate = jest.fn();
+    render(<Harness onCreateTemplate={onCreateTemplate} />);
+
+    const options = screen.getAllByRole("option");
+    const createOption = screen.getByRole("option", { name: "Create a project template" });
+    const noTemplateOption = screen.getByRole("option", { name: "No template" });
+
+    expect(options[options.length - 1]).toBe(createOption);
+    expect(createOption).toHaveClass("border-t", "sticky", "text-link-base");
+    expect(noTemplateOption).toHaveClass("text-content-dimmed");
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: createOption.getAttribute("value") } });
+    expect(onCreateTemplate).toHaveBeenCalledTimes(1);
+  });
+
+  it("offers template creation when the selected Space has no templates", () => {
+    render(<Harness availableTemplates={[]} onCreateTemplate={jest.fn()} />);
+
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+      "No template",
+      "Create a project template",
+    ]);
+  });
+
   it("shows only templates from the selected Space and requires a date after selection", async () => {
     render(<Harness />);
 
@@ -129,10 +169,18 @@ describe("ProjectTemplateSelection", () => {
     expect(screen.queryByText(/discussion.*attributed to you/i)).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Template"), { target: { value: "discussion-singular" } });
-    expect(screen.getByText("1 discussion in this template will be attributed to you because its original author is no longer active.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "1 discussion in this template will be attributed to you because its original author is no longer active.",
+      ),
+    ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Template"), { target: { value: "discussion-plural" } });
-    expect(screen.getByText("2 discussions in this template will be attributed to you because their original authors are no longer active.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "2 discussions in this template will be attributed to you because their original authors are no longer active.",
+      ),
+    ).toBeInTheDocument();
   });
 });
 

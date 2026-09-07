@@ -34,6 +34,7 @@ export namespace AddItemModal {
     keepOpenAfterSave?: boolean;
     onSaved?: (type: ItemType, id: string) => void | Promise<void>;
     templates?: ProjectTemplateSelection.Template[];
+    onCreateProjectTemplate?: (spaceId: string) => void;
   }
 
   export type ItemType = "goal" | "project";
@@ -55,11 +56,21 @@ export namespace AddItemModal {
 
 export function AddItemModal(props: AddItemModal.Props) {
   const state = useAddItemModalState(props);
-  const showTemplates =
-    state.itemType === "project" && Boolean(state.space?.id);
+  const selectedSpaceId = state.space?.id;
+  const showTemplates = state.itemType === "project" && Boolean(selectedSpaceId);
+  const handleCreateTemplate =
+    props.onCreateProjectTemplate && selectedSpaceId
+      ? () => props.onCreateProjectTemplate?.(selectedSpaceId)
+      : undefined;
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.close} size="large" closeOnBackdropClick={false} testId="add-item-modal">
+    <Modal
+      isOpen={props.isOpen}
+      onClose={props.close}
+      size="large"
+      closeOnBackdropClick={false}
+      testId="add-item-modal"
+    >
       <div className="p-4">
         <h1 className="font-bold text-xl w-52">Add {state.itemType === "goal" ? "goal" : "project"}</h1>
 
@@ -123,13 +134,14 @@ export function AddItemModal(props: AddItemModal.Props) {
 
             {showTemplates && (
               <ProjectTemplateFields
-                spaceId={state.space!.id}
+                spaceId={selectedSpaceId}
                 templates={props.templates ?? []}
                 templateId={state.templateId}
                 onTemplateIdChange={state.setTemplateId}
                 startDate={state.startDate}
                 onStartDateChange={state.setStartDate}
                 startDateError={state.startDateError}
+                onCreateTemplate={handleCreateTemplate}
               />
             )}
 
@@ -261,9 +273,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
         space: space!,
         accessLevels: props.hideCompanyAccess ? { ...accessLevels, company: "no_access" } : accessLevels,
         parentId: props.parentGoal ? props.parentGoal.id : null,
-        ...(itemType === "project" && templateId
-          ? { templateId, startDate }
-          : {}),
+        ...(itemType === "project" && templateId ? { templateId, startDate } : {}),
       });
 
       setName("");

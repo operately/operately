@@ -1,42 +1,46 @@
-import { getSpace, Space } from "@/models/spaces";
-import { getWorkMap, WorkMapItem } from "@/models/workMap";
-import { PageCache } from "@/routes/PageCache";
-import { fetchAll } from "@/utils/async";
-import Api, { Company, type ProjectTemplate } from "@/api";
+import Api, { type ProjectTemplate, type Space, type WorkMapItem } from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
+import * as Pages from "@/components/Pages";
 
-interface LoaderResult {
+interface LoadedData {
   data: {
     workMap: WorkMapItem[];
     space: Space;
-    company: Company;
     templates: ProjectTemplate[];
   };
-  cacheVersion: number;
 }
 
-export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  return PageCache.fetch({
-    cacheKey: `v7-SpaceWorkMap.space-${params.id}`,
-    refreshCache,
-    fetchFn: async () => {
-      const company = await Api.companies.get({}).then((d) => d.company!);
+export async function loader({ params }) {
+  const workMapInput = { spaceId: params.id };
+  const spaceInput = { id: params.id, includeAccessLevels: true, includePermissions: true };
+  const templatesInput = { archiveStatus: "active" as const };
 
-      const { workMap, space, templates } = await fetchAll({
-        workMap: getWorkMap({ spaceId: params.id }).then((d) => d.workMap),
-        space: getSpace({ id: params.id, includeAccessLevels: true, includePermissions: true }),
-        templates: Api.project_templates.list({ archiveStatus: "active" }).then((data) => data.templates ?? []),
-      });
+  await Promise.all([
+    Api.companies.getWorkMapQuery(workMapInput),
+    Api.spaces.getQuery(spaceInput),
+    Api.project_templates.listQuery(templatesInput),
+  ]);
 
-      return {
-        workMap,
-        space,
-        company,
-        templates,
-      };
+  return { workMapInput, spaceInput, templatesInput };
+}
+
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
+
+export function useLoadedData(): LoadedData {
+  const { workMapInput, spaceInput, templatesInput } = Pages.useLoadedData<LoaderResult>();
+  const { data: workMapData } = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
+  const { data: spaceData } = useLoadedQuery(Api.spaces.getQueryOptions(spaceInput));
+  const { data: templatesData } = useLoadedQuery(Api.project_templates.listQueryOptions(templatesInput));
+
+  if (!workMapData || !spaceData?.space || !templatesData) {
+    throw new Error(`Work Map data is unavailable for space "${spaceInput.id}"`);
+  }
+
+  return {
+    data: {
+      workMap: workMapData.workMap,
+      space: spaceData.space,
+      templates: templatesData.templates ?? [],
     },
-  });
-}
-
-export function useLoadedData(): LoaderResult {
-  return PageCache.useData(loader);
+  };
 }

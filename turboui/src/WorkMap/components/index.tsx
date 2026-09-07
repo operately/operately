@@ -48,6 +48,7 @@ export function WorkMap({
   onItemCreated,
   formattedTimePreferences,
   projectTemplates,
+  onCreateProjectTemplate,
 }: WorkMap.Props) {
   const location = useLocation();
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
@@ -92,6 +93,7 @@ export function WorkMap({
             onItemCreated={onItemCreated}
             formattedTimePreferences={formattedTimePreferences}
             projectTemplates={projectTemplates}
+            onCreateProjectTemplate={onCreateProjectTemplate}
           />
         )}
       </div>
@@ -240,5 +242,6 @@ export namespace WorkMap {
     onItemCreated?: ItemCreatedFn;
     formattedTimePreferences: FormattedTimePreferences;
     projectTemplates?: ProjectTemplateSelection.Template[];
+    onCreateProjectTemplate?: (spaceId: string) => void;
   }
 }
