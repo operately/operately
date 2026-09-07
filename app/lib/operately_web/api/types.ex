@@ -260,6 +260,16 @@ defmodule OperatelyWeb.Api.Types do
     field :comment, :comment, null: true
   end
 
+  object :activity_content_kpi_entry_edited, for: Operately.Activities.Content.KpiEntryEdited do
+    field :space, :space, null: false
+    field :kpi, :kpi, null: true
+    field :entry, :kpi_entry, null: true
+    field :old_value, :float, null: false
+    field :new_value, :float, null: false
+    field :old_period, :date, null: false
+    field :new_period, :date, null: false
+  end
+
   object :activity_content_kpi_annotation_added, for: Operately.Activities.Content.KpiAnnotationAdded do
     field :space, :space, null: false
     field :kpi, :kpi, null: true
@@ -1102,8 +1112,17 @@ defmodule OperatelyWeb.Api.Types do
     field :period, :date, null: false
     field? :recorded_by, :person, null: true
     field? :comments_count, :integer, null: true
+    field? :edits, list_of(:kpi_entry_edit), null: true
     field? :inserted_at, :datetime, null: true
     field? :updated_at, :datetime, null: true
+  end
+
+  object :kpi_entry_edit, for: Operately.Kpis.KpiEntryEdit do
+    field :id, :id, null: false
+    field :previous_value, :float, null: false
+    field :previous_period, :date, null: false
+    field? :edited_by, :person, null: true
+    field? :inserted_at, :datetime, null: true
   end
 
   object :kpi_annotation, for: Operately.Kpis.KpiAnnotation do
@@ -1180,6 +1199,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_discussion_posting,
       :activity_content_kpi_created,
       :activity_content_kpi_entry_commented,
+      :activity_content_kpi_entry_edited,
       :activity_content_kpi_annotation_added,
       :activity_content_kpi_annotation_edited,
       :activity_content_kpi_annotation_deleted,

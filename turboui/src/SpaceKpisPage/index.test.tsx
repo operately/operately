@@ -47,6 +47,7 @@ function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPag
     onDescriptionChange: async () => true,
     onDeleteKpi: async () => ({ success: true }),
     onRecordEntry: async () => ({ success: true }),
+    onEditEntry: async () => ({ success: true }),
     onAddAnnotation: async () => ({ success: true }),
     onEditAnnotation: async () => ({ success: true }),
     onDeleteAnnotation: async () => ({ success: true }),
@@ -369,7 +370,7 @@ describe("SpaceKpisPage list latest value", () => {
       champion: null,
       insertedAt: new Date(),
       link: `${kpisLink}/kpi-throughput`,
-      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null, commentsCount: 0 },
+      latestEntry: { id: "e1", value: 123, recordedAt: new Date(), recordedBy: null, commentsCount: 0, edits: [] },
       entries: [],
       annotations: [],
     };
@@ -586,6 +587,7 @@ describe("SpaceKpisPage create & log", () => {
           recordedAt: new Date(),
           recordedBy: null,
           commentsCount: 0,
+          edits: [],
         };
         setKpi((current) => ({ ...current, entries: [...current.entries, entry] }));
 
@@ -704,5 +706,48 @@ describe("SpaceKpisPage annotations", () => {
 
     const modal = await findByTestId("kpi-annotation-modal");
     expect(modal).toHaveTextContent("Edit annotation");
+  });
+});
+
+describe("SpaceKpisPage edit logged updates", () => {
+  test("editors can open a recorded update and submit a corrected value", async () => {
+    const user = userEvent.setup();
+    const onEditEntry = jest.fn().mockResolvedValue({ success: true });
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({ selectedKpi: target, onEditEntry });
+
+    await user.click(await findByTestId(`edit-entry-${entry.id}`));
+    await findByTestId("edit-entry-modal");
+
+    fireEvent.change(await findByTestId("value"), { target: { value: "1500000" } });
+    await user.click(await findByTestId("submit"));
+
+    await waitFor(() =>
+      expect(onEditEntry).toHaveBeenCalledWith(expect.objectContaining({ entryId: entry.id, value: 1500000 })),
+    );
+  });
+
+  test("an edited update shows the previous value when Edited is opened", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+
+    renderPage({ selectedKpi: target });
+
+    await user.click(await findByTestId(`entry-edited-${entry.id}`));
+
+    const history = await findByTestId(`entry-edit-history-${entry.id}`);
+    expect(history).toHaveTextContent("1.3M USD");
+  });
+
+  test("read-only viewers cannot edit a recorded update", () => {
+    const target = mockKpis[0]!;
+    const entry = target.entries[target.entries.length - 1]!;
+    const { container } = renderPage({ selectedKpi: target, canManage: false });
+
+    expect(container.querySelector(`[data-test-id="edit-entry-${entry.id}"]`)).not.toBeInTheDocument();
+    expect(container.querySelector(`[data-test-id="entry-edited-${entry.id}"]`)).toBeInTheDocument();
   });
 });
