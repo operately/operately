@@ -1,4 +1,4 @@
-import Api, { Kpi as ApiKpi, KpiAnnotation as ApiKpiAnnotation, KpiEntry as ApiKpiEntry } from "@/api";
+import { Kpi as ApiKpi, KpiAnnotation as ApiKpiAnnotation, KpiEntry as ApiKpiEntry } from "@/api";
 import { Paths } from "@/routes/paths";
 import { parsePersonForTurboUi } from "@/models/people";
 import type { SpaceKpisPage } from "turboui/SpaceKpisPage/types";

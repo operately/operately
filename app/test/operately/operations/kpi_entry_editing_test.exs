@@ -51,6 +51,22 @@ defmodule Operately.Operations.KpiEntryEditingTest do
     refute Repo.one(from(a in Activity, where: a.action == "kpi_entry_edited" and a.content["entry_id"] == ^entry.id))
   end
 
+  test "records the value it actually replaced when the caller's entry is stale", ctx do
+    {:ok, _} = Kpis.edit_entry(ctx.creator, ctx.kpi, ctx.entry, %{value: 41.0})
+
+    # ctx.entry still carries the original 40.0, as an overlapping request would.
+    {:ok, entry} = Kpis.edit_entry(ctx.creator, ctx.kpi, ctx.entry, %{value: 42.0})
+
+    assert entry.value == 42.0
+
+    previous_values =
+      from(e in KpiEntryEdit, where: e.kpi_entry_id == ^entry.id, order_by: e.previous_value)
+      |> Repo.all()
+      |> Enum.map(& &1.previous_value)
+
+    assert previous_values == [40.0, 41.0]
+  end
+
   test "records a kpi_entry_edited activity", ctx do
     {:ok, entry} = Kpis.edit_entry(ctx.creator, ctx.kpi, ctx.entry, %{value: 42.0})
 

@@ -741,20 +741,17 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_name, :string, null: true
   end
 
-  enum(:project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses())
-  enum(:project_template_person_role, values: Operately.ProjectTemplates.Person.roles())
+  enum :project_template_archive_status, values: Operately.ProjectTemplates.archive_statuses()
+  enum :project_template_person_role, values: Operately.ProjectTemplates.Person.roles()
 
-  enum(:project_template_schedule_resource_type,
+  enum :project_template_schedule_resource_type,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.resource_types()
-  )
 
-  enum(:project_template_schedule_field,
+  enum :project_template_schedule_field,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.fields()
-  )
 
-  enum(:project_template_schedule_reason,
+  enum :project_template_schedule_reason,
     values: Operately.Operations.ProjectTemplateCreationFromProject.ScheduleValidator.reasons()
-  )
 
   object :project_template_schedule_issue do
     field :resource_type, :project_template_schedule_resource_type, null: false
@@ -868,7 +865,7 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :datetime, null: false
   end
 
-  enum(:project_template_comment_parent_type, values: Operately.ProjectTemplates.Comment.parent_types())
+  enum :project_template_comment_parent_type, values: Operately.ProjectTemplates.Comment.parent_types()
 
   object :project_template_comment, for: Operately.ProjectTemplates.Comment do
     field :id, :string, null: false
@@ -1143,7 +1140,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:milestone_comment_action, values: Operately.Comments.MilestoneComment.valid_actions())
-  enum(:milestone_open_tasks_resolution_action, values: Operately.Projects.Milestone.valid_open_tasks_resolution_actions())
+  enum :milestone_open_tasks_resolution_action, values: Operately.Projects.Milestone.valid_open_tasks_resolution_actions()
 
   object :milestone_open_tasks_resolution_input do
     field :action, :milestone_open_tasks_resolution_action, null: false
@@ -1869,7 +1866,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :url, :string
   end
 
-  enum(:search_result_type,
+  enum :search_result_type,
     values: [
       :resource_hub_folder,
       :resource_hub_document,
@@ -1885,12 +1882,11 @@ defmodule OperatelyWeb.Api.Types do
       :goal_check_in,
       :project_retrospective
     ]
-  )
 
-  enum(:search_matched_field, values: [:title, :name, :content, :description, :message])
-  enum(:search_result_state, values: [:closed, :completed, :archived, :paused])
-  enum(:search_time_range, values: Operately.Search.CompanyQuery.Filters.time_ranges())
-  enum(:search_sort, values: Operately.Search.CompanyQuery.Filters.sorts())
+  enum :search_matched_field, values: [:title, :name, :content, :description, :message]
+  enum :search_result_state, values: [:closed, :completed, :archived, :paused]
+  enum :search_time_range, values: Operately.Search.CompanyQuery.Filters.time_ranges()
+  enum :search_sort, values: Operately.Search.CompanyQuery.Filters.sorts()
 
   object :search_navigation_target do
     field? :resource_hub_id, :string, null: true
