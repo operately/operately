@@ -1,20 +1,27 @@
-import Api, { type Space } from "@/api";
-import * as Pages from "@/components/Pages";
+import type { Space } from "@/api";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import * as ProjectTemplateModel from "@/models/projectTemplates";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { ProjectTemplatesPage, showErrorToast } from "turboui";
 import React from "react";
-import { useNavigate } from "react-router";
-import { loader, type LoadedData } from "./loader";
+import { useNavigate, useSearchParams } from "react-router";
+import { loader, useLoadedData } from "./loader";
+import { updateTemplateCreationSearchParams } from "./templateCreationUrl";
 
 export default { name: "ProjectTemplatesPage", loader, Page } as PageModule;
 
 function Page() {
-  const data = Pages.useLoadedData<LoadedData>();
+  const data = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const createTemplate = ProjectTemplateModel.useCreateProjectTemplate();
+  const duplicateTemplate = ProjectTemplateModel.useDuplicateProjectTemplate();
+  const archiveTemplate = ProjectTemplateModel.useArchiveProjectTemplate();
+  const restoreTemplate = ProjectTemplateModel.useRestoreProjectTemplate();
+  const deleteTemplate = ProjectTemplateModel.useDeleteProjectTemplate();
   const { billingAccessState } = useCompanyLoaderData();
   const fixedSpace = data.fixedSpace ? toSpace(data.fixedSpace, paths) : undefined;
   const editableSpaces = data.spaces
@@ -26,11 +33,24 @@ function Page() {
   const lifecycleHandlers = createProjectTemplateLifecycleHandlers({
     navigate,
     paths,
+    mutations: {
+      duplicate: duplicateTemplate.mutateAsync,
+      archive: archiveTemplate.mutateAsync,
+      restore: restoreTemplate.mutateAsync,
+      delete: deleteTemplate.mutateAsync,
+    },
   });
+  const handleCreatingChange = React.useCallback(
+    (isCreating: boolean) => {
+      setSearchParams(updateTemplateCreationSearchParams(searchParams, isCreating), { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
 
   async function onCreate({ name, spaceId }: ProjectTemplatesPage.CreateInput) {
     try {
-      const result = await Api.project_templates.create({ name, spaceId });
+      const result = await createTemplate.mutateAsync({ name, spaceId });
+      setSearchParams(updateTemplateCreationSearchParams(searchParams, false), { replace: true });
       navigate(paths.projectTemplatePath(result.template.id));
       return { success: true };
     } catch (_error) {
@@ -70,6 +90,8 @@ function Page() {
       canCreate={!readOnly && (fixedSpace ? Boolean(data.fixedSpace?.permissions?.canEdit) : editableSpaces.length > 0)}
       onCreate={onCreate}
       canEdit={(template) => !readOnly && editableSpaceIds.has(template.space.id)}
+      startCreating={searchParams.get("new") === "true"}
+      onCreatingChange={handleCreatingChange}
       {...lifecycleHandlers}
     />
   );
@@ -78,15 +100,22 @@ function Page() {
 function createProjectTemplateLifecycleHandlers({
   navigate,
   paths,
+  mutations,
 }: {
   navigate: (path: string) => void;
   paths: Pick<Paths, "projectTemplatePath">;
+  mutations: {
+    duplicate: (input: { id: string; name: string }) => Promise<{ template: { id: string } }>;
+    archive: (input: { id: string }) => Promise<unknown>;
+    restore: (input: { id: string }) => Promise<unknown>;
+    delete: (input: { id: string }) => Promise<unknown>;
+  };
 }): Pick<ProjectTemplatesPage.Props, "onDuplicate" | "onArchive" | "onRestore" | "onDelete"> {
   async function onDuplicate(id: string, name: string) {
     let result;
 
     try {
-      result = await Api.project_templates.duplicate({ id, name });
+      result = await mutations.duplicate({ id, name });
     } catch (_error) {
       showErrorToast("Template not duplicated", "Restore archived templates before duplicating them, then try again.");
       return { success: false, error: "The template could not be duplicated. Refresh the page and try again." };
@@ -108,9 +137,9 @@ function createProjectTemplateLifecycleHandlers({
 
   return {
     onDuplicate,
-    onArchive: (id) => lifecycleMutation("Template not archived", () => Api.project_templates.archive({ id })),
-    onRestore: (id) => lifecycleMutation("Template not restored", () => Api.project_templates.restore({ id })),
-    onDelete: (id) => lifecycleMutation("Template not deleted", () => Api.project_templates.delete({ id })),
+    onArchive: (id) => lifecycleMutation("Template not archived", () => mutations.archive({ id })),
+    onRestore: (id) => lifecycleMutation("Template not restored", () => mutations.restore({ id })),
+    onDelete: (id) => lifecycleMutation("Template not deleted", () => mutations.delete({ id })),
   };
 }
 

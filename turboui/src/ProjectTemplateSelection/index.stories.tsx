@@ -15,7 +15,17 @@ const templates = [
   { id: "release", name: "Product release", spaceId: "product" },
 ];
 
-function Story({ template = "", startDate = "" }: { template?: string; startDate?: string }) {
+function Story({
+  template = "",
+  startDate = "",
+  availableTemplates = templates,
+  onCreateTemplate = () => undefined,
+}: {
+  template?: string;
+  startDate?: string;
+  availableTemplates?: typeof templates;
+  onCreateTemplate?: () => void;
+}) {
   const form = Forms.useForm({
     fields: { template, startDate },
     submit: async () => undefined,
@@ -25,7 +35,11 @@ function Story({ template = "", startDate = "" }: { template?: string; startDate
     <div className="mx-auto max-w-lg p-8">
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <ProjectTemplateSelection spaceId="marketing" templates={templates} />
+          <ProjectTemplateSelection
+            spaceId="marketing"
+            templates={availableTemplates}
+            onCreateTemplate={onCreateTemplate}
+          />
         </Forms.FieldGroup>
         <Forms.Submit saveText="Create project" />
       </Forms.Form>
@@ -41,6 +55,9 @@ export default meta;
 type StoryType = StoryObj;
 
 export const NoTemplate: StoryType = { render: () => <Story /> };
+export const NoTemplatesAvailable: StoryType = {
+  render: () => <Story availableTemplates={[]} />,
+};
 export const TemplateSelected: StoryType = {
   render: () => <Story template="campaign" />,
 };

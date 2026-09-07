@@ -578,6 +578,13 @@ defmodule Operately.Support.Features.WorkMapSteps do
     |> UI.assert_text(name)
   end
 
+  step :start_project_template_creation_from_work_map, ctx do
+    ctx
+    |> UI.click(testid: "template")
+    |> UI.click_text("Create a project template")
+    |> UI.assert_has(testid: "new-project-template-form")
+  end
+
   step :select_work_map_start_date, ctx, date \\ nil do
     date = date || Date.add(Date.utc_today(), 7)
     UI.select_day_in_date_field(ctx, testid: "startdate", date: date)

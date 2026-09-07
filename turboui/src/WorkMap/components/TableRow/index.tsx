@@ -37,6 +37,7 @@ interface Props {
   profileUser?: WorkMap.Person;
   formattedTimePreferences: FormattedTimePreferences;
   projectTemplates?: ProjectTemplateSelection.Template[];
+  onCreateProjectTemplate?: (spaceId: string) => void;
 }
 
 export function TableRow(props: Props) {
@@ -64,6 +65,7 @@ export function TableRow(props: Props) {
           addItem={props.addItem}
           hideCompanyAccess={props.hideCompanyAccessInQuickAdd}
           projectTemplates={props.projectTemplates}
+          onCreateProjectTemplate={props.onCreateProjectTemplate}
         />
         <StatusCell item={item} hide={columnOptions?.hideStatus} />
         <ProgressCell item={item} hide={tab === "completed" || columnOptions?.hideProgress} />

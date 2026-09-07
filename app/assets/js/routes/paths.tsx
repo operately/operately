@@ -396,6 +396,10 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "project-templates"]);
   }
 
+  newProjectTemplatePath(spaceId: string) {
+    return this.spaceProjectTemplatesPath(spaceId) + "?new=true";
+  }
+
   projectTemplateMilestonePath(templateId: string, milestoneId: string) {
     return this.createCompanyPath(["project-templates", templateId, "milestones", milestoneId]);
   }
