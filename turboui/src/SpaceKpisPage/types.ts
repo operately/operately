@@ -169,6 +169,7 @@ export namespace SpaceKpisPage {
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
     onEditEntry: (input: EditEntryInput) => Promise<MutationResult>;
+    onDeleteEntry: (entryId: string) => Promise<MutationResult>;
     onAddAnnotation: (input: AnnotationInput) => Promise<MutationResult>;
     onEditAnnotation: (input: EditAnnotationInput) => Promise<MutationResult>;
     onDeleteAnnotation: (annotationId: string) => Promise<MutationResult>;

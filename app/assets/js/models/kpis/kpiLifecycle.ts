@@ -63,6 +63,17 @@ export function useEditKpiEntry() {
   });
 }
 
+export function useDeleteKpiEntry() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.kpis.deleteKpiEntryMutationOptions(),
+    onSuccess: () => {
+      void invalidateKpiQueries(queryClient);
+    },
+  });
+}
+
 export function useAddKpiAnnotation() {
   const queryClient = useQueryClient();
 

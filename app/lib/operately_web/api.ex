@@ -220,6 +220,7 @@ defmodule OperatelyWeb.Api do
         mutation(:delete_kpi, OperatelyWeb.Api.Kpis.DeleteKpi)
         mutation(:log_kpi_entry, OperatelyWeb.Api.Kpis.LogKpiEntry)
         mutation(:edit_kpi_entry, OperatelyWeb.Api.Kpis.EditKpiEntry)
+        mutation(:delete_kpi_entry, OperatelyWeb.Api.Kpis.DeleteKpiEntry)
         mutation(:add_kpi_annotation, OperatelyWeb.Api.Kpis.AddKpiAnnotation)
         mutation(:edit_kpi_annotation, OperatelyWeb.Api.Kpis.EditKpiAnnotation)
         mutation(:delete_kpi_annotation, OperatelyWeb.Api.Kpis.DeleteKpiAnnotation)

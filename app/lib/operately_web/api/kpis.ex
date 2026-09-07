@@ -354,6 +354,53 @@ defmodule OperatelyWeb.Api.Kpis do
     end
   end
 
+  defmodule DeleteKpiEntry do
+    @moduledoc "Deletes a logged KPI value. Any space member with edit access may delete one."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Kpis.KpiEntry
+
+    inputs do
+      field :entry_id, :id, null: false
+    end
+
+    outputs do
+      field :entry, :kpi_entry, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:entry, fn -> load_entry(inputs.entry_id) end)
+      |> run(:kpi, fn ctx -> {:ok, ctx.entry.kpi} end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx -> Kpis.delete_entry(ctx.me, ctx.kpi, ctx.entry) end)
+      |> run(:serialized, fn ctx -> {:ok, %{entry: Serializer.serialize(ctx.operation, level: :essential)}} end)
+      |> respond()
+    end
+
+    defp load_entry(entry_id) do
+      case Kpis.get_entry(entry_id) do
+        nil -> {:error, :not_found}
+        %KpiEntry{} = entry -> {:ok, Repo.preload(entry, :kpi)}
+      end
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, ctx} -> {:ok, ctx.serialized}
+        {:error, :entry, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
+        {:error, :operation, _} -> {:error, :internal_server_error}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
   defmodule AddKpiAnnotation do
     @moduledoc "Marks a date on a KPI chart with a short event title."
 

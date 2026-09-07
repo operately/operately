@@ -29,6 +29,7 @@ interface KpiDetailProps {
   onOpenNewAnnotation: () => void;
   onOpenAnnotation: (annotation: SpaceKpisPage.KpiAnnotation) => void;
   onEditEntry: (entry: SpaceKpisPage.KpiEntry) => void;
+  onDeleteEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   onDelete: () => void;
   richTextHandlers: RichEditorHandlers;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
@@ -49,6 +50,7 @@ export function KpiDetail({
   onOpenNewAnnotation,
   onOpenAnnotation,
   onEditEntry,
+  onDeleteEntry,
   onDelete,
   richTextHandlers,
   renderEntryComments,
@@ -113,6 +115,7 @@ export function KpiDetail({
           canManage={canManage}
           canComment={canComment}
           onEditEntry={onEditEntry}
+          onDeleteEntry={onDeleteEntry}
           renderEntryComments={renderEntryComments}
         />
       </div>
@@ -364,6 +367,7 @@ function EntriesTable({
   canManage,
   canComment,
   onEditEntry,
+  onDeleteEntry,
   renderEntryComments,
 }: {
   entries: SpaceKpisPage.KpiEntry[];
@@ -372,6 +376,7 @@ function EntriesTable({
   canManage: boolean;
   canComment: boolean;
   onEditEntry: (entry: SpaceKpisPage.KpiEntry) => void;
+  onDeleteEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
 }) {
   const [openEntryId, setOpenEntryId] = React.useState<string | null>(null);
@@ -470,6 +475,14 @@ function EntriesTable({
                           testId={`edit-entry-${entry.id}`}
                         >
                           Edit
+                        </MenuActionItem>
+                        <MenuActionItem
+                          icon={IconTrash}
+                          onClick={() => onDeleteEntry(entry)}
+                          testId={`delete-entry-${entry.id}`}
+                          danger
+                        >
+                          Delete
                         </MenuActionItem>
                       </Menu>
                     )}
