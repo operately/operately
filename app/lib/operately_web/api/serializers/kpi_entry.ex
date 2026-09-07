@@ -8,8 +8,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Kpis.KpiEntry do
       period: Serializer.serialize(entry.period),
       recorded_by: Serializer.serialize(entry.recorded_by),
       comments_count: Map.get(entry, :comments_count) || 0,
+      edits: Serializer.serialize(loaded_edits(entry)),
       inserted_at: Serializer.serialize(entry.inserted_at),
       updated_at: Serializer.serialize(entry.updated_at)
     }
   end
+
+  defp loaded_edits(%{edits: %Ecto.Association.NotLoaded{}}), do: []
+  defp loaded_edits(%{edits: edits}) when is_list(edits), do: edits
 end

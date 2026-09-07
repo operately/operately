@@ -64,7 +64,7 @@ type Story = StoryObj<HarnessArgs>;
 function clone(kpis: SpaceKpisPageNS.Kpi[]): SpaceKpisPageNS.Kpi[] {
   return kpis.map((kpi) => ({
     ...kpi,
-    entries: kpi.entries.map((e) => ({ ...e })),
+    entries: kpi.entries.map((e) => ({ ...e, edits: e.edits.map((edit) => ({ ...edit })) })),
     annotations: kpi.annotations.map((a) => ({ ...a })),
   }));
 }
@@ -163,6 +163,7 @@ function Harness(args: HarnessArgs) {
                 recordedBy: mockCurrentUser,
                 // The app posts the note as the update's first comment.
                 commentsCount: input.comment ? 1 : 0,
+                edits: [],
               };
               return { ...kpi, latestEntry: entry, entries: [...kpi.entries, entry] };
             })()
@@ -171,6 +172,48 @@ function Harness(args: HarnessArgs) {
     );
 
     return { success: true };
+  };
+
+  const onEditEntry = async (input: SpaceKpisPageNS.EditEntryInput): Promise<SpaceKpisPageNS.MutationResult> => {
+    console.log("editKpiEntry", input);
+    await delay(400);
+
+    if (args.failMutations) {
+      return { success: false, error: "You don't have permission to edit this update." };
+    }
+
+    setKpis((prev) =>
+      prev
+        .map((kpi) => ({
+          ...kpi,
+          entries: kpi.entries.map((entry) => {
+            if (entry.id !== input.entryId) return entry;
+
+            const edit: SpaceKpisPageNS.KpiEntryEdit = {
+              id: `edit-${crypto.randomUUID()}`,
+              previousValue: entry.value,
+              previousPeriod: entry.recordedAt,
+              editedBy: mockCurrentUser,
+              editedAt: new Date(),
+            };
+
+            const next = {
+              ...entry,
+              value: input.value,
+              recordedAt: new Date(`${input.period}T12:00:00`),
+              edits: [edit, ...entry.edits],
+            };
+
+            return next;
+          }),
+        }))
+        .map((kpi) => ({
+          ...kpi,
+          latestEntry: kpi.entries.length > 0 ? kpi.entries[kpi.entries.length - 1]! : null,
+        })),
+    );
+
+    return { success: true, id: input.entryId };
   };
 
   const onAddAnnotation = async (input: SpaceKpisPageNS.AnnotationInput): Promise<SpaceKpisPageNS.MutationResult> => {
@@ -255,6 +298,7 @@ function Harness(args: HarnessArgs) {
       onDescriptionChange={onDescriptionChange}
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
+      onEditEntry={onEditEntry}
       onAddAnnotation={onAddAnnotation}
       onEditAnnotation={onEditAnnotation}
       onDeleteAnnotation={onDeleteAnnotation}

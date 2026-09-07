@@ -2,13 +2,14 @@ defmodule Operately.Kpis do
   import Ecto.Query, warn: false
 
   alias Operately.Repo
-  alias Operately.Kpis.{Kpi, KpiAnnotation, KpiEntry}
+  alias Operately.Kpis.{Kpi, KpiAnnotation, KpiEntry, KpiEntryEdit}
 
   @kpi_actions [
     "kpi_created",
     "kpi_edited",
     "kpi_deleted",
     "kpi_entry_logged",
+    "kpi_entry_edited",
     "kpi_entry_commented",
     "kpi_annotation_added",
     "kpi_annotation_edited",
@@ -36,9 +37,19 @@ defmodule Operately.Kpis do
   def get_kpi(id), do: Repo.get(Kpi, id)
   def get_kpi!(id), do: Repo.get!(Kpi, id)
 
+  def get_entry(id), do: Repo.get(KpiEntry, id)
+
   def list_entries(kpi_id) do
     from(e in KpiEntry, where: e.kpi_id == ^kpi_id, order_by: e.period)
     |> Repo.all()
+  end
+
+  def preload_entry_history(entries) when is_list(entries) do
+    edits_query = from(edit in KpiEntryEdit, order_by: [desc: edit.inserted_at])
+
+    entries
+    |> Repo.preload(:recorded_by)
+    |> Repo.preload(edits: {edits_query, [:edited_by]})
   end
 
   def list_annotations(kpi_id) do
@@ -94,6 +105,7 @@ defmodule Operately.Kpis do
   defdelegate edit_kpi(author, kpi, attrs), to: Operately.Operations.KpiEditing, as: :run
   defdelegate delete_kpi(author, kpi), to: Operately.Operations.KpiDeleting, as: :run
   defdelegate log_entry(author, kpi, attrs), to: Operately.Operations.KpiEntryLogging, as: :run
+  defdelegate edit_entry(author, kpi, entry, attrs), to: Operately.Operations.KpiEntryEditing, as: :run
   defdelegate add_annotation(author, kpi, attrs), to: Operately.Operations.KpiAnnotationAdding, as: :run
   defdelegate edit_annotation(author, kpi, annotation, attrs), to: Operately.Operations.KpiAnnotationEditing, as: :run
   defdelegate delete_annotation(author, kpi, annotation), to: Operately.Operations.KpiAnnotationDeleting, as: :run

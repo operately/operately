@@ -8,6 +8,7 @@ defmodule Operately.Kpis.KpiEntry do
 
     has_one(:access_context, through: [:kpi, :access_context])
     has_many(:comments, Operately.Updates.Comment, where: [entity_type: :kpi_entry], foreign_key: :entity_id)
+    has_many(:edits, Operately.Kpis.KpiEntryEdit)
 
     field(:value, :float)
     field(:period, :date)

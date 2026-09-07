@@ -432,6 +432,17 @@ export interface ActivityContentKpiEntryCommented {
   comment: Comment | null;
 }
 
+export interface ActivityContentKpiEntryEdited {
+  __typename: "activity_content_kpi_entry_edited";
+  space: Space;
+  kpi: Kpi | null;
+  entry: KpiEntry | null;
+  oldValue: number;
+  newValue: number;
+  oldPeriod: string;
+  newPeriod: string;
+}
+
 export interface ActivityContentMessageArchiving {
   __typename: "activity_content_message_archiving";
   companyId?: string | null;
@@ -1695,8 +1706,18 @@ export interface KpiEntry {
   period: string;
   recordedBy?: Person | null;
   commentsCount?: number | null;
+  edits?: KpiEntryEdit[] | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
+}
+
+export interface KpiEntryEdit {
+  __typename: "kpi_entry_edit";
+  id: Id;
+  previousValue: number;
+  previousPeriod: string;
+  editedBy?: Person | null;
+  insertedAt?: string | null;
 }
 
 export interface McpGrant {
@@ -2724,6 +2745,7 @@ export type ActivityContent =
   | ActivityContentDiscussionPosting
   | ActivityContentKpiCreated
   | ActivityContentKpiEntryCommented
+  | ActivityContentKpiEntryEdited
   | ActivityContentKpiAnnotationAdded
   | ActivityContentKpiAnnotationEdited
   | ActivityContentKpiAnnotationDeleted
