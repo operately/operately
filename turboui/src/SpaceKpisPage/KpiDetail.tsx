@@ -516,16 +516,21 @@ function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; un
         <Popover.Content
           align="start"
           sideOffset={6}
-          className="z-[100] w-72 rounded-lg border border-stroke-base bg-surface-base p-3 shadow-xl"
+          className="z-[100] w-80 rounded-lg border border-stroke-base bg-surface-base p-3 shadow-xl"
         >
           <div className="text-xs font-medium uppercase tracking-wide text-content-dimmed">Previous values</div>
           <ol className="mt-2 space-y-2" data-test-id={`entry-edit-history-${entry.id}`}>
             {entry.edits.map((edit) => (
               <li key={edit.id} className="text-sm text-content-base" data-test-id={`entry-edit-${edit.id}`}>
-                <div className="font-medium text-content-accent">{formatValue(edit.previousValue, unit)}</div>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="font-medium text-content-accent">{formatValue(edit.previousValue, unit)}</span>
+                  <span className="whitespace-nowrap text-xs text-content-dimmed">
+                    {formatShortDate(edit.previousPeriod)}
+                  </span>
+                </div>
                 <div className="mt-0.5 text-xs text-content-dimmed">
-                  on {formatShortDate(edit.previousPeriod)}
-                  {edit.editedBy ? `, replaced by ${edit.editedBy.fullName}` : ""} on {formatShortDate(edit.editedAt)}
+                  {edit.editedBy ? `Replaced by ${edit.editedBy.fullName} on ` : "Replaced on "}
+                  <span className="whitespace-nowrap">{formatShortDate(edit.editedAt)}</span>
                 </div>
               </li>
             ))}
