@@ -190,6 +190,13 @@ describe("ProjectTemplatesPage", () => {
     expect(screen.getByRole("heading", { name: "New project template" })).toBeInTheDocument();
   });
 
+  it("can open directly in template creation", () => {
+    renderPage({ scope: "space", fixedSpace: spaces[0], templates: [], startCreating: true });
+
+    expect(screen.getByRole("heading", { name: "New project template" })).toBeInTheDocument();
+    expect(screen.queryByTestId("new-project-template-space")).not.toBeInTheDocument();
+  });
+
   it("shows a read-only empty state without a creation action", () => {
     renderPage({ templates: [], canCreate: false, scope: "space", fixedSpace: spaces[0] });
 

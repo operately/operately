@@ -99,6 +99,32 @@ describe("AddItemModal", () => {
     expect(screen.queryByRole("option", { name: "Other space template" })).not.toBeInTheDocument();
   });
 
+  it("shows template creation last and uses the selected space", () => {
+    const onCreateProjectTemplate = jest.fn();
+
+    render(
+      <AddItemModal
+        isOpen
+        close={jest.fn()}
+        parentGoal={null}
+        spaceSearch={jest.fn().mockResolvedValue([generalSpace])}
+        save={jest.fn()}
+        space={generalSpace}
+        initialItemType="project"
+        hideTypeSelector
+        templates={templates}
+        onCreateProjectTemplate={onCreateProjectTemplate}
+      />,
+    );
+
+    const options = screen.getAllByRole("option");
+    expect(options.at(-1)).toHaveTextContent("Create a project template");
+
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "create-project-template" } });
+
+    expect(onCreateProjectTemplate).toHaveBeenCalledWith("general");
+  });
+
   it("requires a start date when a template is selected", async () => {
     const user = userEvent.setup();
     const save = jest.fn();

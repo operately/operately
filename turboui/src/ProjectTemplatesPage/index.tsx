@@ -48,6 +48,7 @@ export namespace ProjectTemplatesPage {
     formattedTimePreferences: FormattedTimePreferences;
     canCreate: boolean;
     canEdit: (template: ProjectTemplate) => boolean;
+    startCreating?: boolean;
   }
 }
 
@@ -56,7 +57,7 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   const [search, setSearch] = React.useState("");
   const [selectedSpace, setSelectedSpace] = React.useState<ProjectTemplatesPage.Space | null>(props.fixedSpace ?? null);
   const [archiveStatus, setArchiveStatus] = React.useState<ArchiveStatus>("active");
-  const [isCreating, setIsCreating] = React.useState(false);
+  const [isCreating, setIsCreating] = React.useState(Boolean(props.canCreate && props.startCreating));
   const [lifecycle, setLifecycle] = React.useState<{
     template: ProjectTemplate;
     action: ProjectTemplateLifecycleAction;

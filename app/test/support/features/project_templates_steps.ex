@@ -141,6 +141,19 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   step :create_blank_template, ctx, name do
     ctx
     |> UI.click(testid: "new-project-template")
+    |> complete_blank_template_creation(name)
+  end
+
+  step :create_blank_template_from_new_project, ctx, name do
+    ctx
+    |> UI.click(testid: "template")
+    |> UI.click_text("Create a project template")
+    |> UI.assert_has(testid: "new-project-template-form")
+    |> complete_blank_template_creation(name)
+  end
+
+  defp complete_blank_template_creation(ctx, name) do
+    ctx
     |> UI.fill(testid: "name", with: name)
     |> maybe_select_create_space()
     |> UI.click(testid: "create-project-template")

@@ -7,9 +7,11 @@ import { usePaths } from "@/routes/paths";
 import { useSpaceSearch } from "../../models/spaces";
 import { convertToWorkMapItems, useWorkMapItems } from "../../models/workMap";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useNavigate } from "react-router";
 
 export function Page() {
   const paths = usePaths();
+  const navigate = useNavigate();
 
   const { workMap, space, templates } = useLoadedData().data;
   const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
@@ -30,6 +32,11 @@ export function Page() {
     [templates],
   );
 
+  const handleCreateProjectTemplate = React.useCallback(
+    (spaceId: string) => navigate(paths.newProjectTemplatePath(spaceId)),
+    [navigate, paths],
+  );
+
   return (
     <WorkMapPage
       title="Work Map"
@@ -47,6 +54,7 @@ export function Page() {
         link: paths.spacePath(space.id),
       }}
       projectTemplates={projectTemplates}
+      onCreateProjectTemplate={handleCreateProjectTemplate}
     />
   );
 }

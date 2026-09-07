@@ -39,7 +39,10 @@ const templates = [{ id: "tpl-general", name: "General campaign", spaceId: "gene
 function renderFirstProjectState(
   addItem = jest.fn().mockResolvedValue({ id: "project-1" }),
   onItemCreated = jest.fn(),
-  options: { projectTemplates?: typeof templates } = {},
+  options: {
+    projectTemplates?: typeof templates;
+    onCreateProjectTemplate?: (spaceId: string) => void;
+  } = {},
 ) {
   render(
     <MemoryRouter>
@@ -51,6 +54,7 @@ function renderFirstProjectState(
         variant="first-project"
         onItemCreated={onItemCreated}
         projectTemplates={options.projectTemplates ?? templates}
+        onCreateProjectTemplate={options.onCreateProjectTemplate}
       />
     </MemoryRouter>,
   );
@@ -149,6 +153,18 @@ describe("Work Map first-project state", () => {
 
     expect(screen.getByLabelText("Template")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "General campaign" })).toBeInTheDocument();
+  });
+
+  it("can start creating a template in General", () => {
+    const onCreateProjectTemplate = jest.fn();
+    renderFirstProjectState(undefined, undefined, { onCreateProjectTemplate });
+
+    const options = screen.getAllByRole("option");
+    expect(options.at(-1)).toHaveTextContent("Create a project template");
+
+    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "create-project-template" } });
+
+    expect(onCreateProjectTemplate).toHaveBeenCalledWith("general");
   });
 
   it("passes templateId and startDate when creating from a template", async () => {
