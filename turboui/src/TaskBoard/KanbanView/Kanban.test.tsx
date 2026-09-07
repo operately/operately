@@ -73,7 +73,7 @@ const canceledStatus: StatusSelector.StatusOption = {
 };
 
 describe("Kanban", () => {
-  it("controls closed-status visibility without changing the configured column order", async () => {
+  it("shows closed statuses by default and lets users hide them without changing the configured column order", async () => {
     const user = userEvent.setup();
     const { container } = render(
       <Kanban
@@ -100,9 +100,12 @@ describe("Kanban", () => {
     const addStatusButton = screen.getByRole("button", { name: "Add status" });
 
     expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
+    expect(getKanbanColumn(container, "done")).toBeInTheDocument();
     expect(getKanbanColumn(container, "follow-up")).toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="kanban-column-done"]')).not.toBeInTheDocument();
-    expect(container.querySelector('[data-test-id="kanban-column-canceled"]')).not.toBeInTheDocument();
+    expect(getKanbanColumn(container, "canceled")).toBeInTheDocument();
+    expect(getKanbanColumn(container, "pending")).toAppearBefore(getKanbanColumn(container, "done"));
+    expect(getKanbanColumn(container, "done")).toAppearBefore(getKanbanColumn(container, "follow-up"));
+    expect(getKanbanColumn(container, "follow-up")).toAppearBefore(getKanbanColumn(container, "canceled"));
     expect(toolbar).toHaveTextContent("Viewing tasks");
     expect(toolbar).toContainElement(screen.getByRole("button", { name: "Display options" }));
     expect(columns).toContainElement(addStatusButton);
@@ -116,22 +119,18 @@ describe("Kanban", () => {
     const closedStatusesSwitch = screen.getByRole("switch", { name: "Show closed statuses" });
     const displayMenu = getTestElement(document.body, "display-menu");
 
-    expect(closedStatusesSwitch).not.toBeChecked();
+    expect(closedStatusesSwitch).toBeChecked();
     expect(within(displayMenu).getByText("2")).toBeInTheDocument();
 
     await user.click(closedStatusesSwitch);
 
-    expect(closedStatusesSwitch).toBeChecked();
+    expect(closedStatusesSwitch).not.toBeChecked();
     const pendingColumn = getKanbanColumn(container, "pending");
-    const doneColumn = getKanbanColumn(container, "done");
     const followUpColumn = getKanbanColumn(container, "follow-up");
-    const canceledColumn = getKanbanColumn(container, "canceled");
 
-    expect(columns).toContainElement(doneColumn);
-    expect(columns).toContainElement(canceledColumn);
-    expect(pendingColumn).toAppearBefore(doneColumn);
-    expect(doneColumn).toAppearBefore(followUpColumn);
-    expect(followUpColumn).toAppearBefore(canceledColumn);
+    expect(container.querySelector('[data-test-id="kanban-column-done"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="kanban-column-canceled"]')).not.toBeInTheDocument();
+    expect(pendingColumn).toAppearBefore(followUpColumn);
     expect(within(columns).queryByText("Closed statuses")).not.toBeInTheDocument();
   });
 
