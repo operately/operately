@@ -7,7 +7,7 @@ import type { SpaceKpisPage } from "./types";
 import { formatShortDate } from "./utils";
 
 function entry(id: string, value: number): SpaceKpisPage.KpiEntry {
-  return { id, value, recordedAt: new Date(`2026-01-0${id}`), recordedBy: null, commentsCount: 0 };
+  return { id, value, recordedAt: new Date(`2026-01-0${id}`), recordedBy: null, commentsCount: 0, edits: [] };
 }
 
 describe("KpiLineChart y-axis", () => {
@@ -42,7 +42,7 @@ describe("KpiLineChart y-axis", () => {
 
 describe("KpiLineChart x-axis", () => {
   function entryOn(id: string, date: Date): SpaceKpisPage.KpiEntry {
-    return { id, value: 100, recordedAt: date, recordedBy: null, commentsCount: 0 };
+    return { id, value: 100, recordedAt: date, recordedBy: null, commentsCount: 0, edits: [] };
   }
 
   function axisLabels(entries: SpaceKpisPage.KpiEntry[]): string[] {

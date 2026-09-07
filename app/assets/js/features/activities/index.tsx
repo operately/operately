@@ -66,6 +66,7 @@ export default ActivityHandler;
 export const DISPLAYED_IN_FEED = [
   "kpi_created",
   "kpi_entry_commented",
+  "kpi_entry_edited",
   "kpi_annotation_added",
   "goal_check_toggled",
   "goal_check_removing",
@@ -211,6 +212,7 @@ import GoalClosing from "@/features/activities/GoalClosing";
 import GoalCreated from "@/features/activities/GoalCreated";
 import KpiCreated from "@/features/activities/KpiCreated";
 import KpiEntryCommented from "@/features/activities/KpiEntryCommented";
+import KpiEntryEdited from "@/features/activities/KpiEntryEdited";
 import KpiAnnotationAdded from "@/features/activities/KpiAnnotationAdded";
 import KpiAnnotationEdited from "@/features/activities/KpiAnnotationEdited";
 import KpiAnnotationDeleted from "@/features/activities/KpiAnnotationDeleted";
@@ -331,6 +333,7 @@ function handler(activity: Activity) {
     .with("goal_created", () => GoalCreated)
     .with("kpi_created", () => KpiCreated)
     .with("kpi_entry_commented", () => KpiEntryCommented)
+    .with("kpi_entry_edited", () => KpiEntryEdited)
     .with("kpi_annotation_added", () => KpiAnnotationAdded)
     .with("kpi_annotation_edited", () => KpiAnnotationEdited)
     .with("kpi_annotation_deleted", () => KpiAnnotationDeleted)

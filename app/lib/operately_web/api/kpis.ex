@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Api.Kpis do
 
         kpi ->
           # Entries are ordered by period so the chart renders history in order.
-          entries = Kpis.list_entries(kpi_id) |> Repo.preload(:recorded_by) |> Operately.Updates.Comment.load_comments_count()
+          entries = Kpis.list_entries(kpi_id) |> Kpis.preload_entry_history() |> Operately.Updates.Comment.load_comments_count()
           annotations = Kpis.list_annotations(kpi_id) |> Repo.preload(:created_by)
 
           {:ok,
@@ -288,6 +288,64 @@ defmodule OperatelyWeb.Api.Kpis do
       case result do
         {:ok, ctx} -> {:ok, ctx.serialized}
         {:error, :kpi, _} -> {:error, :not_found}
+        {:error, :space, _} -> {:error, :not_found}
+        {:error, :check_permissions, _} -> {:error, :forbidden}
+        {:error, :operation, _} -> {:error, :bad_request}
+        _ -> {:error, :internal_server_error}
+      end
+    end
+  end
+
+  defmodule EditKpiEntry do
+    @moduledoc "Edits a logged KPI value. Previous values are kept so the change is visible."
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Kpis.KpiEntry
+
+    inputs do
+      field :entry_id, :id, null: false
+      field? :value, :float, null: true
+      field? :period, :date, null: true
+    end
+
+    outputs do
+      field :entry, :kpi_entry, null: false
+    end
+
+    def call(conn, inputs) do
+      Action.new()
+      |> run(:me, fn -> find_me(conn) end)
+      |> run(:entry, fn -> load_entry(inputs.entry_id) end)
+      |> run(:kpi, fn ctx -> {:ok, ctx.entry.kpi} end)
+      |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.kpi.space_id) end)
+      |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
+      |> run(:operation, fn ctx -> Kpis.edit_entry(ctx.me, ctx.kpi, ctx.entry, edit_attrs(inputs)) end)
+      |> run(:serialized, fn ctx ->
+        [entry] = Kpis.preload_entry_history([ctx.operation])
+        {:ok, %{entry: Serializer.serialize(entry, level: :essential)}}
+      end)
+      |> respond()
+    end
+
+    defp load_entry(entry_id) do
+      case Kpis.get_entry(entry_id) do
+        nil -> {:error, :not_found}
+        %KpiEntry{} = entry -> {:ok, Repo.preload(entry, :kpi)}
+      end
+    end
+
+    defp edit_attrs(inputs) do
+      [:value, :period]
+      |> Enum.filter(&Map.has_key?(inputs, &1))
+      |> Map.new(fn key -> {key, inputs[key]} end)
+    end
+
+    defp respond(result) do
+      case result do
+        {:ok, ctx} -> {:ok, ctx.serialized}
+        {:error, :entry, _} -> {:error, :not_found}
         {:error, :space, _} -> {:error, :not_found}
         {:error, :check_permissions, _} -> {:error, :forbidden}
         {:error, :operation, _} -> {:error, :bad_request}
