@@ -210,6 +210,28 @@ describe("SpaceKpisPage layout", () => {
     expect(value).toHaveTextContent(formatShortDate(latest.recordedAt));
   });
 
+  // Logging an update is what the chart is for, so the action sits on the chart
+  // as well as in the page header.
+  test("logs an update from the chart's own action", async () => {
+    const user = userEvent.setup();
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target });
+    const history = container.querySelector<HTMLElement>('[data-test-id="kpi-history"]')!;
+
+    await user.click(history.querySelector('[data-test-id="chart-log-update"]')!);
+
+    expect(await findByTestId("log-update-modal")).toBeInTheDocument();
+  });
+
+  test("does not offer the chart's actions to read-only viewers", () => {
+    const target = mockKpis[0]!;
+    const { container } = renderPage({ selectedKpi: target, canManage: false });
+    const history = container.querySelector<HTMLElement>('[data-test-id="kpi-history"]')!;
+
+    expect(history.querySelector('[data-test-id="chart-log-update"]')).not.toBeInTheDocument();
+    expect(history.querySelector('[data-test-id="add-kpi-annotation"]')).not.toBeInTheDocument();
+  });
+
   // The value alone doesn't say whether the KPI is moving, so it carries the
   // signed change against the entry before it.
   test("shows the change against the previous entry beside the current value", () => {
