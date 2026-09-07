@@ -7,6 +7,7 @@ import type { Navigation } from "../Page/Navigation";
 import { IconChartColumn, IconChevronRight } from "../icons";
 
 import { AnnotationForm } from "./AnnotationForm";
+import { DeleteEntryDialog } from "./DeleteEntryDialog";
 import { DeleteKpiModal } from "./DeleteKpiModal";
 import { EditEntryForm } from "./EditEntryForm";
 import { KpiDetail } from "./KpiDetail";
@@ -26,6 +27,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [logKpiId, setLogKpiId] = React.useState<string | null>(null);
   const [editingEntry, setEditingEntry] = React.useState<SpaceKpisPageNS.KpiEntry | null>(null);
+  const [deletingEntry, setDeletingEntry] = React.useState<SpaceKpisPageNS.KpiEntry | null>(null);
   const [annotationState, setAnnotationState] = React.useState<{
     kpi: SpaceKpisPageNS.Kpi;
     annotation: SpaceKpisPageNS.KpiAnnotation | null;
@@ -90,6 +92,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
             onOpenNewAnnotation={() => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation: null })}
             onOpenAnnotation={(annotation) => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation })}
             onOpenEditEntry={setEditingEntry}
+            onOpenDeleteEntry={setDeletingEntry}
           />
         </div>
       </div>
@@ -122,6 +125,13 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
         isOpen={editingEntry !== null}
         onClose={() => setEditingEntry(null)}
         onEdit={props.onEditEntry}
+      />
+
+      <DeleteEntryDialog
+        entry={deletingEntry}
+        unit={selectedKpi?.unit ?? ""}
+        onClose={() => setDeletingEntry(null)}
+        onDelete={props.onDeleteEntry}
       />
 
       <AnnotationForm
@@ -242,6 +252,7 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
   onOpenNewAnnotation: () => void;
   onOpenAnnotation: (annotation: SpaceKpisPageNS.KpiAnnotation) => void;
   onOpenEditEntry: (entry: SpaceKpisPageNS.KpiEntry) => void;
+  onOpenDeleteEntry: (entry: SpaceKpisPageNS.KpiEntry) => void;
 }
 
 function KpisContent(props: KpisContentProps) {
@@ -267,6 +278,7 @@ function KpisContent(props: KpisContentProps) {
         onOpenNewAnnotation={props.onOpenNewAnnotation}
         onOpenAnnotation={props.onOpenAnnotation}
         onEditEntry={props.onOpenEditEntry}
+        onDeleteEntry={props.onOpenDeleteEntry}
         onDelete={props.onOpenDelete}
         richTextHandlers={props.richTextHandlers}
         renderEntryComments={props.renderEntryComments}

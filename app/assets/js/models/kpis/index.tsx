@@ -10,6 +10,7 @@ export {
   useCreateKpi,
   useDeleteKpi,
   useDeleteKpiAnnotation,
+  useDeleteKpiEntry,
   useEditKpi,
   useEditKpiAnnotation,
   useEditKpiEntry,
