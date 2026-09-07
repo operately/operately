@@ -102,6 +102,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "kpi_deleted",
     "kpi_entry_logged",
     "kpi_entry_edited",
+    "kpi_entry_deleted",
     "kpi_annotation_added",
     "kpi_annotation_edited",
     "kpi_annotation_deleted",

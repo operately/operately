@@ -554,6 +554,14 @@ export interface ActivityContentKpiEntryCommented {
   comment: Comment | null;
 }
 
+export interface ActivityContentKpiEntryDeleted {
+  __typename: "activity_content_kpi_entry_deleted";
+  space: Space;
+  kpi: Kpi | null;
+  value: number;
+  period: string;
+}
+
 export interface ActivityContentKpiEntryEdited {
   __typename: "activity_content_kpi_entry_edited";
   space: Space;
@@ -2868,6 +2876,7 @@ export type ActivityContent =
   | ActivityContentKpiCreated
   | ActivityContentKpiEntryCommented
   | ActivityContentKpiEntryEdited
+  | ActivityContentKpiEntryDeleted
   | ActivityContentKpiAnnotationAdded
   | ActivityContentKpiAnnotationEdited
   | ActivityContentKpiAnnotationDeleted
@@ -5209,6 +5218,14 @@ export interface KpisDeleteKpiAnnotationResult {
   annotation: KpiAnnotation;
 }
 
+export interface KpisDeleteKpiEntryInput {
+  entryId: Id;
+}
+
+export interface KpisDeleteKpiEntryResult {
+  entry: KpiEntry;
+}
+
 export interface KpisEditKpiInput {
   kpiId: Id;
   name?: string | null;
@@ -7158,6 +7175,10 @@ class ApiNamespaceKpis {
 
   async deleteKpiAnnotation(input: KpisDeleteKpiAnnotationInput): Promise<KpisDeleteKpiAnnotationResult> {
     return this.client.post("/kpis/delete_kpi_annotation", input);
+  }
+
+  async deleteKpiEntry(input: KpisDeleteKpiEntryInput): Promise<KpisDeleteKpiEntryResult> {
+    return this.client.post("/kpis/delete_kpi_entry", input);
   }
 
   async editKpi(input: KpisEditKpiInput): Promise<KpisEditKpiResult> {
@@ -10135,6 +10156,16 @@ export default {
     addKpiAnnotationMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: KpisAddKpiAnnotationInput) => defaultApiClient.apiNamespaceKpis.addKpiAnnotation(input),
+      }),
+
+    deleteKpiEntry: (input: KpisDeleteKpiEntryInput) => defaultApiClient.apiNamespaceKpis.deleteKpiEntry(input),
+    useDeleteKpiEntry: () =>
+      useMutation<KpisDeleteKpiEntryInput, KpisDeleteKpiEntryResult>((input) =>
+        defaultApiClient.apiNamespaceKpis.deleteKpiEntry(input),
+      ),
+    deleteKpiEntryMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: KpisDeleteKpiEntryInput) => defaultApiClient.apiNamespaceKpis.deleteKpiEntry(input),
       }),
 
     createKpi: (input: KpisCreateKpiInput) => defaultApiClient.apiNamespaceKpis.createKpi(input),

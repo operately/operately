@@ -35,6 +35,7 @@ export function Page() {
   const deleteKpi = Kpis.useDeleteKpi();
   const logKpiEntry = Kpis.useLogKpiEntry();
   const editKpiEntry = Kpis.useEditKpiEntry();
+  const deleteKpiEntry = Kpis.useDeleteKpiEntry();
   const addKpiAnnotation = Kpis.useAddKpiAnnotation();
   const editKpiAnnotation = Kpis.useEditKpiAnnotation();
   const deleteKpiAnnotation = Kpis.useDeleteKpiAnnotation();
@@ -150,6 +151,13 @@ export function Page() {
       return input.entryId;
     });
 
+  const onDeleteEntry = async (entryId: string) =>
+    run(async () => {
+      await deleteKpiEntry.mutateAsync({ entryId });
+      await refresh();
+      return entryId;
+    });
+
   const onAddAnnotation = async (input: SpaceKpisPageTypes.AnnotationInput) =>
     run(async () => {
       await addKpiAnnotation.mutateAsync({
@@ -194,6 +202,7 @@ export function Page() {
       onDeleteKpi={onDeleteKpi}
       onRecordEntry={onRecordEntry}
       onEditEntry={onEditEntry}
+      onDeleteEntry={onDeleteEntry}
       onAddAnnotation={onAddAnnotation}
       onEditAnnotation={onEditAnnotation}
       onDeleteAnnotation={onDeleteAnnotation}
