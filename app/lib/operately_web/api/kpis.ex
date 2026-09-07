@@ -395,6 +395,7 @@ defmodule OperatelyWeb.Api.Kpis do
         {:error, :entry, _} -> {:error, :not_found}
         {:error, :space, _} -> {:error, :not_found}
         {:error, :check_permissions, _} -> {:error, :forbidden}
+        {:error, :operation, :not_found} -> {:error, :not_found}
         {:error, :operation, _} -> {:error, :internal_server_error}
         _ -> {:error, :internal_server_error}
       end

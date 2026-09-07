@@ -51,6 +51,26 @@ defmodule Operately.Operations.KpiEntryDeletingTest do
     assert Repo.get(Reaction, reaction.id) == nil
   end
 
+  test "reports the entry as missing when it is already gone", ctx do
+    assert {:ok, _} = Kpis.delete_entry(ctx.creator, ctx.kpi, ctx.entry)
+
+    # ctx.entry still points at the deleted row, as an overlapping request would.
+    assert {:error, :not_found} = Kpis.delete_entry(ctx.creator, ctx.kpi, ctx.entry)
+  end
+
+  test "records the value the entry held at deletion time", ctx do
+    {:ok, _} = Kpis.edit_entry(ctx.creator, ctx.kpi, ctx.entry, %{value: 42.0})
+
+    # ctx.entry still carries the original 40.0, as an overlapping request would.
+    assert {:ok, _} = Kpis.delete_entry(ctx.creator, ctx.kpi, ctx.entry)
+
+    activity =
+      from(a in Activity, where: a.action == "kpi_entry_deleted" and a.content["entry_id"] == ^ctx.entry.id)
+      |> Repo.one()
+
+    assert activity.content["value"] == 42.0
+  end
+
   test "records a kpi_entry_deleted activity", ctx do
     assert {:ok, _} = Kpis.delete_entry(ctx.creator, ctx.kpi, ctx.entry)
 
