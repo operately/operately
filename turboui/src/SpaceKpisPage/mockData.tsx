@@ -41,7 +41,12 @@ function daysAgo(n: number): Date {
 }
 
 function makeEntries(
-  samples: { value: number; daysAgo: number; by: SpaceKpisPage.Person | null }[],
+  samples: {
+    value: number;
+    daysAgo: number;
+    by: SpaceKpisPage.Person | null;
+    edits?: SpaceKpisPage.KpiEntryEdit[];
+  }[],
 ): SpaceKpisPage.KpiEntry[] {
   return samples
     .map((sample, index) => ({
@@ -50,6 +55,7 @@ function makeEntries(
       recordedAt: daysAgo(sample.daysAgo),
       recordedBy: sample.by,
       commentsCount: 0,
+      edits: sample.edits ?? [],
     }))
     .sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime());
 }
@@ -96,7 +102,20 @@ export const mockKpis: SpaceKpisPage.Kpi[] = (
         { value: 985000, daysAgo: 90, by: bob! },
         { value: 1120000, daysAgo: 60, by: carol! },
         { value: 1240000, daysAgo: 30, by: bob! },
-        { value: 1385000, daysAgo: 2, by: bob! },
+        {
+          value: 1385000,
+          daysAgo: 2,
+          by: bob!,
+          edits: [
+            {
+              id: "edit-mrr-latest",
+              previousValue: 1320000,
+              previousPeriod: daysAgo(2),
+              editedBy: bob!,
+              editedAt: daysAgo(1),
+            },
+          ],
+        },
       ]),
       annotations: makeAnnotations([
         { title: "Launched enterprise plan", daysAgo: 90, by: bob! },

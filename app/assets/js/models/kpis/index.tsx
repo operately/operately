@@ -5,16 +5,16 @@ import type { SpaceKpisPage } from "turboui/SpaceKpisPage/types";
 import { fromIsoDate } from "turboui/SpaceKpisPage/utils";
 
 export type { Kpi } from "@/api";
-
-export const listKpis = Api.kpis.listKpis;
-export const getKpi = Api.kpis.getKpi;
-export const useCreateKpi = Api.kpis.useCreateKpi;
-export const useEditKpi = Api.kpis.useEditKpi;
-export const useDeleteKpi = Api.kpis.useDeleteKpi;
-export const useLogKpiEntry = Api.kpis.useLogKpiEntry;
-export const useAddKpiAnnotation = Api.kpis.useAddKpiAnnotation;
-export const useEditKpiAnnotation = Api.kpis.useEditKpiAnnotation;
-export const useDeleteKpiAnnotation = Api.kpis.useDeleteKpiAnnotation;
+export {
+  useAddKpiAnnotation,
+  useCreateKpi,
+  useDeleteKpi,
+  useDeleteKpiAnnotation,
+  useEditKpi,
+  useEditKpiAnnotation,
+  useEditKpiEntry,
+  useLogKpiEntry,
+} from "./kpiLifecycle";
 
 // Map the API KPI shape onto the presentational turboui shape. Date-only
 // `period` / annotation values arrive as `YYYY-MM-DD` and are parsed as local
@@ -42,6 +42,13 @@ function parseKpiEntryForTurboUi(paths: Paths, entry: ApiKpiEntry): SpaceKpisPag
     recordedAt: fromIsoDate(entry.period),
     recordedBy: parsePersonForTurboUi(paths, entry.recordedBy),
     commentsCount: entry.commentsCount ?? 0,
+    edits: (entry.edits ?? []).map((edit) => ({
+      id: edit.id,
+      previousValue: edit.previousValue,
+      previousPeriod: fromIsoDate(edit.previousPeriod),
+      editedBy: parsePersonForTurboUi(paths, edit.editedBy),
+      editedAt: edit.insertedAt ? new Date(edit.insertedAt) : new Date(),
+    })),
   };
 }
 

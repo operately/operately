@@ -3,7 +3,8 @@
 //
 // This mirrors the backend bounded context `Operately.Kpis` described in the POC:
 //   - Kpi:      company_id + group_id scoped, name, unit, cadence, champion, creator
-//   - KpiEntry: append-only value samples (value + recorded_at + recorded_by)
+//   - KpiEntry: recorded values (value + period + recorded_by), with an edit
+//     history when a logged value is corrected
 //
 // Intentionally simpler than Goals/Targets: raw value + unit only, no
 // target/threshold fields.
@@ -31,13 +32,24 @@ export namespace SpaceKpisPage {
     link: string;
   }
 
-  // Append-only sample of a KPI's value at a point in time.
+  // A recorded sample of a KPI's value at a point in time. Editing keeps the
+  // previous values on `edits` so a correction is visible, the way a GitHub
+  // comment still shows what was there before.
+  export interface KpiEntryEdit {
+    id: string;
+    previousValue: number;
+    previousPeriod: Date;
+    editedBy: Person | null;
+    editedAt: Date;
+  }
+
   export interface KpiEntry {
     id: string;
     value: number;
     recordedAt: Date;
     recordedBy: Person | null;
     commentsCount: number;
+    edits: KpiEntryEdit[];
   }
 
   // A date marked on the KPI chart, typically a launch, pricing change, or
@@ -84,8 +96,7 @@ export namespace SpaceKpisPage {
   }
 
   // Payload for the `updateKpi` mutation / `KpiUpdating` operation. Same shape
-  // as NewKpiInput plus the id of the KPI being edited. Entries are never edited
-  // here — they are append-only samples managed via recordKpiEntry.
+  // as NewKpiInput plus the id of the KPI being edited.
   export interface EditKpiInput {
     id: string;
     name: string;
@@ -105,6 +116,12 @@ export namespace SpaceKpisPage {
     // Optional note explaining the value, posted as the update's first comment.
     // Absent when the author left the note blank.
     comment?: Record<string, unknown>;
+  }
+
+  export interface EditEntryInput {
+    entryId: string;
+    value: number;
+    period: string;
   }
 
   export interface AnnotationInput {
@@ -151,6 +168,7 @@ export namespace SpaceKpisPage {
     onDescriptionChange: (kpiId: string, description: Record<string, unknown>) => Promise<boolean>;
     onDeleteKpi: (kpiId: string) => Promise<MutationResult>;
     onRecordEntry: (input: RecordEntryInput) => Promise<MutationResult>;
+    onEditEntry: (input: EditEntryInput) => Promise<MutationResult>;
     onAddAnnotation: (input: AnnotationInput) => Promise<MutationResult>;
     onEditAnnotation: (input: EditAnnotationInput) => Promise<MutationResult>;
     onDeleteAnnotation: (annotationId: string) => Promise<MutationResult>;
