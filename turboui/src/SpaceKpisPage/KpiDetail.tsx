@@ -12,7 +12,7 @@ import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
-import { IconFlag, IconLink, IconMessage, IconPencil, IconTrash } from "../icons";
+import { IconDotsVertical, IconFlag, IconLink, IconMessage, IconPencil, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
@@ -392,6 +392,9 @@ function EntriesTable({
               <th className="px-4 py-2 font-medium">Recorded by</th>
               <th className="px-4 py-2 text-right font-medium">Value</th>
               <th className="px-4 py-2 text-right font-medium">Comments</th>
+              <th className="w-10 px-2 py-2">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -423,21 +426,7 @@ function EntriesTable({
                     )}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-right font-medium text-content-accent">
-                    <div className="flex items-center justify-end gap-2">
-                      <span>{formatValue(entry.value, unit)}</span>
-                      {canManage && (
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1 rounded px-1.5 py-1 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
-                          onClick={() => onEditEntry(entry)}
-                          data-test-id={`edit-entry-${entry.id}`}
-                          aria-label="Edit this update"
-                        >
-                          <IconPencil size={14} />
-                          Edit
-                        </button>
-                      )}
-                    </div>
+                    {formatValue(entry.value, unit)}
                   </td>
                   <td className="px-4 py-2.5 text-right">
                     {canOpenComments ? (
@@ -458,6 +447,32 @@ function EntriesTable({
                         {commentsCount}
                       </span>
                     ) : null}
+                  </td>
+                  <td className="px-2 py-2.5 text-right">
+                    {canManage && (
+                      <Menu
+                        size="tiny"
+                        align="end"
+                        testId={`entry-menu-${entry.id}`}
+                        customTrigger={
+                          <button
+                            type="button"
+                            className="rounded p-1 text-content-dimmed hover:bg-surface-dimmed hover:text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
+                            aria-label="Update options"
+                          >
+                            <IconDotsVertical size={16} />
+                          </button>
+                        }
+                      >
+                        <MenuActionItem
+                          icon={IconPencil}
+                          onClick={() => onEditEntry(entry)}
+                          testId={`edit-entry-${entry.id}`}
+                        >
+                          Edit
+                        </MenuActionItem>
+                      </Menu>
+                    )}
                   </td>
                 </tr>
               );

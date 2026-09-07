@@ -718,6 +718,7 @@ describe("SpaceKpisPage edit logged updates", () => {
 
     renderPage({ selectedKpi: target, onEditEntry });
 
+    await user.click(await findByTestId(`entry-menu-${entry.id}`));
     await user.click(await findByTestId(`edit-entry-${entry.id}`));
     await findByTestId("edit-entry-modal");
 
@@ -747,7 +748,7 @@ describe("SpaceKpisPage edit logged updates", () => {
     const entry = target.entries[target.entries.length - 1]!;
     const { container } = renderPage({ selectedKpi: target, canManage: false });
 
-    expect(container.querySelector(`[data-test-id="edit-entry-${entry.id}"]`)).not.toBeInTheDocument();
+    expect(container.querySelector(`[data-test-id="entry-menu-${entry.id}"]`)).not.toBeInTheDocument();
     expect(container.querySelector(`[data-test-id="entry-edited-${entry.id}"]`)).toBeInTheDocument();
   });
 });

@@ -24,6 +24,7 @@ defmodule Operately.Support.Features.KpiEntriesSteps do
   step :edit_latest_update, ctx, opts do
     ctx
     |> UI.assert_has(testid: "kpi-detail")
+    |> UI.click(testid: "entry-menu-#{Paths.kpi_entry_id(ctx.entry)}")
     |> UI.click(testid: "edit-entry-#{Paths.kpi_entry_id(ctx.entry)}")
     |> UI.assert_has(testid: "edit-entry-modal")
     |> UI.fill(testid: "value", with: opts[:value])
