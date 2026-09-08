@@ -1,0 +1,110 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import React, { act } from "react";
+import { createRoot, Root } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Api, { Activity } from "@/api";
+import { useFeedItemsQuery } from "./useFeedItemsQuery";
+import { DISPLAYED_IN_FEED } from "@/features/activities";
+import { useDeleteFeedActivity } from "@/models/activities/activityLifecycle";
+
+jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
+jest.mock("@/features/activities", () => ({ DISPLAYED_IN_FEED: ["project_created"] }));
+const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+const activity = (id: string) => ({ __typename: "activity", id, action: "project_created" }) as Activity;
+
+describe("shared activity feed", () => {
+  let root: Root;
+  let client: QueryClient;
+  let scope: Parameters<typeof useFeedItemsQuery>[0];
+  let hook: ReturnType<typeof useFeedItemsQuery>;
+  let deletion: ReturnType<typeof useDeleteFeedActivity>;
+  let list: jest.Mock;
+  function Harness() {
+    hook = useFeedItemsQuery(scope, "resource-1");
+    deletion = useDeleteFeedActivity();
+    return null;
+  }
+  async function render() {
+    await act(async () => {
+      root.render(
+        <QueryClientProvider client={client}>
+          <Harness />
+        </QueryClientProvider>,
+      );
+      await tick();
+    });
+    await act(async () => {
+      await tick();
+    });
+  }
+  beforeEach(() => {
+    (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    Api.default.setBasePath("/api/v2");
+    Api.default.setHeaders({ "x-company-id": "company-1" });
+    client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+    root = createRoot(document.createElement("div"));
+    scope = "company";
+    list = jest.fn(async () => ({ activities: [activity("one"), activity("two")] }));
+    const options = Api.companies.listActivitiesQueryOptions;
+    jest
+      .spyOn(Api.companies, "listActivitiesQueryOptions")
+      .mockImplementation((input) => ({ ...options(input), queryFn: () => list(input) }));
+  });
+  afterEach(async () => {
+    await act(async () => root.unmount());
+    client.clear();
+    jest.restoreAllMocks();
+  });
+
+  it.each(["company", "project", "goal", "space", "person"] as const)(
+    "loads the %s feed with the shared filters",
+    async (type) => {
+      scope = type;
+      await render();
+      expect(list).toHaveBeenCalledWith({ scopeType: type, scopeId: "resource-1", actions: DISPLAYED_IN_FEED });
+      expect(hook.loading).toBe(false);
+      expect(hook.error).toBeNull();
+      expect(hook.data?.activities).toHaveLength(2);
+    },
+  );
+
+  it("keeps cached entries visible during background fetching", async () => {
+    await render();
+    let resolve!: (data: { activities: Activity[] }) => void;
+    list.mockReturnValue(
+      new Promise((done) => {
+        resolve = done;
+      }),
+    );
+    let fetching = Promise.resolve();
+    await act(async () => {
+      fetching = client.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix() });
+      await tick();
+    });
+    expect(hook.loading).toBe(false);
+    expect(hook.data?.activities).toHaveLength(2);
+    await act(async () => {
+      resolve({ activities: [activity("two")] });
+      await fetching;
+      await tick();
+    });
+    expect(hook.data?.activities).toHaveLength(1);
+  });
+
+  it("does not resurrect a deleted item from cached data after remounting", async () => {
+    jest
+      .spyOn(Api.companies, "deleteActivityMutationOptions")
+      .mockReturnValue({ mutationFn: async () => ({ success: true }) });
+    await render();
+    list.mockRejectedValue(new Error("refresh offline"));
+    await act(async () => {
+      await deletion.mutateAsync({ activityId: "one" });
+      await tick();
+    });
+    expect(hook.data?.activities.map((a) => a.id)).toEqual(["two"]);
+    await act(async () => root.unmount());
+    root = createRoot(document.createElement("div"));
+    await render();
+    expect(hook.data?.activities.map((a) => a.id)).toEqual(["two"]);
+  });
+});

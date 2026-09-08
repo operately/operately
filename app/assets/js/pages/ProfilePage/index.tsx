@@ -2,7 +2,7 @@ import React from "react";
 
 import * as People from "@/models/people";
 
-import { Feed, useItemsQuery } from "@/features/Feed";
+import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { PageModule } from "@/routes/types";
 import { assertPresentOr404 } from "@/utils/assertions";
 import { ProfilePage } from "turboui";
@@ -54,7 +54,7 @@ function Page() {
 }
 
 function ActivityFeed({ personId }: { personId: string }) {
-  const { data, loading, error } = useItemsQuery("person", personId);
+  const { data, loading, error } = useFeedItemsQuery("person", personId);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;

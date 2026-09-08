@@ -1,17 +1,32 @@
 import * as React from "react";
-import Api, { SubscriptionList } from "@/api";
+import { type SubscriptionList } from "@/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { showErrorToast, SidebarNotificationSection } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageCache } from "@/routes/PageCache";
+import {
+  invalidateSubscriptionQueries,
+  useSubscribeToResource,
+  useUnsubscribeFromResource,
+  type SubscriptionEntityType,
+} from "./subscriptionLifecycle";
 
 interface UseSubscriptionOptions {
   subscriptionList?: SubscriptionList | null;
   entityId: string;
-  entityType: "project" | "milestone" | "project_task" | "space_task" | "kpi";
+  entityType: SubscriptionEntityType;
   cacheKey?: string;
   onRefresh?: () => Promise<void>;
 }
 
+interface SubscriptionWrite {
+  value: boolean;
+  observedConfirmation: boolean;
+}
+
+/** Queues writes per resource while showing the latest toggle. Only server-confirmed
+ * state is used for rollback; late responses cannot change another resource's UI.
+ */
 export function useSubscription({
   subscriptionList,
   entityId,
@@ -20,71 +35,123 @@ export function useSubscription({
   onRefresh,
 }: UseSubscriptionOptions): SidebarNotificationSection.Props {
   const currentUser = useMe();
-  const hidden = Boolean(!subscriptionList?.subscriptions || !currentUser);
-  const subscribedPeople =
-    subscriptionList?.subscriptions
-      ?.filter((subscription) => subscription.canceled !== true && subscription.person)
-      .map((subscription) => subscription.person!) ?? [];
-
-  const [isSubscribed, setIsSubscribed] = React.useState(() => {
-    if (!subscriptionList?.subscriptions || !currentUser) return false;
-
-    return subscriptionList.subscriptions.some(
-      (subscription) => subscription.person?.id === currentUser.id && subscription.canceled !== true,
-    );
-  });
-
-  React.useEffect(() => {
-    if (!subscriptionList?.subscriptions || !currentUser) {
-      setIsSubscribed(false);
-      return;
-    }
-
-    setIsSubscribed(
-      subscriptionList.subscriptions.some(
+  const queryClient = useQueryClient();
+  const { mutateAsync: subscribe } = useSubscribeToResource();
+  const { mutateAsync: unsubscribe } = useUnsubscribeFromResource();
+  const serverIsSubscribed = Boolean(
+    currentUser &&
+      subscriptionList?.subscriptions?.some(
         (subscription) => subscription.person?.id === currentUser.id && subscription.canceled !== true,
       ),
-    );
-  }, [currentUser, subscriptionList?.subscriptions]);
+  );
+  const session = React.useMemo(
+    () => ({
+      confirmed: serverIsSubscribed,
+      serverIsSubscribed,
+      currentWrite: null as SubscriptionWrite | null,
+      pending: 0,
+      queue: Promise.resolve(),
+      changed: false,
+      awaitingConfirmation: false,
+    }),
+    // A session survives refreshed props but never follows the user to another resource.
+    [entityId, entityType, subscriptionList?.id, currentUser?.id],
+  );
+  const currentSession = React.useRef(session);
+  currentSession.current = session;
+  const mounted = React.useRef(false);
+  const [optimistic, setOptimistic] = React.useState({ session, value: serverIsSubscribed });
 
-  const onToggle = React.useCallback(
-    async (nextIsSubscribed: boolean) => {
-      if (!subscriptionList?.id) return;
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
-      const prevValue = isSubscribed;
-      setIsSubscribed(nextIsSubscribed);
+  React.useEffect(() => {
+    // Retain server observations even while the UI shows a queued toggle.
+    session.serverIsSubscribed = serverIsSubscribed;
+    if (session.currentWrite?.value === serverIsSubscribed) {
+      session.currentWrite.observedConfirmation = true;
+    }
+    if (session.pending !== 0) return;
 
+    // Parent props can still contain the pre-mutation subscription list.
+    if (session.awaitingConfirmation && serverIsSubscribed !== session.confirmed) return;
+
+    session.awaitingConfirmation = false;
+
+    session.confirmed = serverIsSubscribed;
+    setOptimistic({ session, value: serverIsSubscribed });
+  }, [session, serverIsSubscribed, subscriptionList]);
+
+  const isCurrent = () => mounted.current && currentSession.current === session;
+
+  const onToggle = async (nextIsSubscribed: boolean) => {
+    const subscriptionListId = subscriptionList?.id;
+    if (!subscriptionListId || !currentUser) return;
+
+    session.pending += 1;
+    if (isCurrent()) setOptimistic({ session, value: nextIsSubscribed });
+
+    const result = session.queue.then(async () => {
+      const write: SubscriptionWrite = { value: nextIsSubscribed, observedConfirmation: false };
+      session.currentWrite = write;
       try {
         if (nextIsSubscribed) {
-          await Api.notifications.subscribe({ subscriptionListId: subscriptionList.id, type: entityType });
+          await subscribe({ subscriptionListId, type: entityType });
         } else {
-          await Api.notifications.unsubscribe({ subscriptionListId: subscriptionList.id });
+          await unsubscribe({ subscriptionListId });
         }
 
-        if (cacheKey) {
-          PageCache.invalidate(cacheKey);
-        }
-
-        await onRefresh?.();
+        // An early confirmation may already have been followed by another server change.
+        session.confirmed = write.observedConfirmation ? session.serverIsSubscribed : nextIsSubscribed;
+        session.awaitingConfirmation = session.serverIsSubscribed !== session.confirmed;
+        session.changed = true;
       } catch (error) {
-        setIsSubscribed(prevValue);
-
-        console.error(`Failed to toggle ${entityType} subscription`, error);
-        showErrorToast(
-          "Error",
-          nextIsSubscribed
-            ? `Failed to subscribe to ${entityType} notifications.`
-            : `Failed to unsubscribe from ${entityType} notifications.`,
-        );
+        if (isCurrent()) {
+          console.error(`Failed to toggle ${entityType} subscription`, error);
+          showErrorToast(
+            "Error",
+            nextIsSubscribed
+              ? `Failed to subscribe to ${entityType} notifications.`
+              : `Failed to unsubscribe from ${entityType} notifications.`,
+          );
+        }
+      } finally {
+        session.currentWrite = null;
       }
-    },
-    [subscriptionList?.id, entityId, entityType, cacheKey, onRefresh, isSubscribed],
+
+      session.pending -= 1;
+
+      if (session.pending !== 0) return;
+      if (isCurrent()) setOptimistic({ session, value: session.confirmed });
+      if (!session.changed) return;
+
+      session.changed = false;
+
+      try {
+        if (cacheKey) PageCache.invalidate(cacheKey);
+        await invalidateSubscriptionQueries(queryClient, entityType);
+        if (isCurrent()) await onRefresh?.();
+      } catch (error) {
+        // The server accepted the toggle; refresh failures must not undo it.
+        console.error("Failed to refresh subscriptions after saving", error);
+      }
+    });
+    session.queue = result;
+    await result;
+  };
+
+  const subscribedPeople = (subscriptionList?.subscriptions ?? []).flatMap((subscription) =>
+    subscription.canceled !== true && subscription.person ? [subscription.person] : [],
   );
 
   return {
-    isSubscribed,
+    isSubscribed: optimistic.session === session ? optimistic.value : serverIsSubscribed,
     onToggle,
-    hidden,
+    hidden: Boolean(!subscriptionList?.subscriptions || !currentUser),
     entityType,
     subscribedPeople,
   };

@@ -59,6 +59,13 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     end)
   end
 
+  step :assert_goal_activity_visible, ctx do
+    ctx
+    |> visit_goal_page()
+    |> UI.click(testid: "tab-activity")
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='goal-feed'] [data-activity-id]", minimum: 1))
+  end
+
   step :assert_check_added_feed_posted, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))

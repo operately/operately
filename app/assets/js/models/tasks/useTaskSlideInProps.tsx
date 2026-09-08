@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 
 import { DateField, TaskBoard, TaskPage, showErrorToast } from "turboui";
@@ -5,14 +6,12 @@ import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import * as People from "@/models/people";
 import { compareIds, Paths } from "@/routes/paths";
 
-import { useTaskTimelineItems } from "./useTaskTimelineItems";
-import { prepareTaskTimelineItems, sortTaskTimelineItems } from "./prepareTaskTimelineItems";
+import { useTaskTimelineItems, invalidateTaskTimelineQueries } from "./useTaskTimelineItems";
+import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 import { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 import { useSubscription } from "@/models/subscriptions";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMoveTask } from "./taskLifecycle";
-
-type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
 export function useTaskSlideInProps(opts: {
   backendTasks: BackendTask[];
@@ -38,14 +37,14 @@ export function useTaskSlideInProps(opts: {
   projectSearch: TaskPage.ContentProps["projectSearch"];
   spaceSearch: TaskPage.ContentProps["spaceSearch"];
 }) {
-  const { backendTasks, paths, currentUser, tasks, canEdit, canComment, variant, commentEntityType } = opts;
+  const { backendTasks, paths, currentUser, canEdit, canComment, variant, commentEntityType } = opts;
+  const queryClient = useQueryClient();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mutateAsync: moveTask } = useMoveTask();
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
-  const [timelineRefreshVersion, setTimelineRefreshVersion] = React.useState(0);
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
   const activeBackendTask = React.useMemo(
     () => backendTasks.find((task) => activeTaskId && compareIds(task.id, activeTaskId)) ?? null,
@@ -64,7 +63,7 @@ export function useTaskSlideInProps(opts: {
     activities,
     comments: fetchedComments,
     isLoading: isTimelineLoading,
-  } = useTaskTimelineItems(activeTaskId, commentEntityType, timelineRefreshVersion);
+  } = useTaskTimelineItems(activeTaskId, commentEntityType);
 
   const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } = useOptimisticComments({
     taskId: activeTaskId,
@@ -72,218 +71,65 @@ export function useTaskSlideInProps(opts: {
     initialComments: fetchedComments,
   });
 
-  const [appendedByTaskId, setAppendedByTaskId] = React.useState<Record<string, TaskPage.TimelineItemType[]>>({});
-
-  React.useEffect(() => {
-    if (!activeTaskId) return;
-
-    setAppendedByTaskId((prev) => {
-      if (prev[activeTaskId]) return prev;
-      return { ...prev, [activeTaskId]: [] };
-    });
-  }, [activeTaskId]);
-
-  const appendTimelineItem = React.useCallback((taskId: string, item: TaskPage.TimelineItemType) => {
-    setAppendedByTaskId((prev) => ({
-      ...prev,
-      [taskId]: [...(prev[taskId] ?? []), item],
-    }));
-  }, []);
-
-  const findTask = React.useCallback((taskId: string) => tasks.find((t) => compareIds(t.id, taskId)) ?? null, [tasks]);
-
-  const refreshTimelineAfterInactiveChange = React.useCallback(() => {
-    setTimelineRefreshVersion((version) => version + 1);
-  }, []);
+  const refreshTimeline = React.useCallback(
+    async (taskId: string) => {
+      await invalidateTaskTimelineQueries(queryClient, taskId, commentEntityType);
+    },
+    [queryClient, commentEntityType],
+  );
 
   const wrapNameChange = React.useCallback(
-    async (taskId: string, newName: string) => {
-      const prevTask = findTask(taskId);
-      const prevName = prevTask?.title ?? "";
-
-      const res = await Promise.resolve(opts.onTaskNameChange(taskId, newName));
-
-      if (!res) return false;
-
-      if (activeTaskId !== taskId) {
-        refreshTimelineAfterInactiveChange();
-        return res;
-      }
-      if (!parsedCurrentUser) return res;
-
-      appendTimelineItem(taskId, {
-        type: "task-activity",
-        value: {
-          id: `temp-task_name_updating-${Date.now()}`,
-          type: "task_name_updating",
-          author: parsedCurrentUser,
-          insertedAt: new Date().toISOString(),
-          fromTitle: prevName,
-          toTitle: newName,
-          page: "task",
-        },
-      });
-
-      return res;
+    async (taskId: string, name: string) => {
+      const saved = await opts.onTaskNameChange(taskId, name);
+      if (saved) await refreshTimeline(taskId);
+      return saved;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
+    [opts.onTaskNameChange, refreshTimeline],
   );
 
   const wrapAssigneeChange = React.useCallback(
     async (taskId: string, assignees: TaskBoard.Person[]) => {
-      const prevTask = findTask(taskId);
-      const prevAssignees = prevTask?.assignees || [];
-      const newAssigneeIds = new Set(assignees.map((assignee) => assignee.id));
-      const prevAssigneeIds = new Set(prevAssignees.map((assignee) => assignee.id));
-
-      const res = await Promise.resolve(opts.onTaskAssigneeChange(taskId, assignees));
-
-      if (!res) return false;
-
-      if (activeTaskId !== taskId) {
-        refreshTimelineAfterInactiveChange();
-        return res;
-      }
-      if (!parsedCurrentUser) return res;
-
-      const addedAssignee = assignees.find((assignee) => !prevAssigneeIds.has(assignee.id));
-      const removedAssignee = prevAssignees.find((assignee) => !newAssigneeIds.has(assignee.id));
-      const activityAssignee = addedAssignee
-        ? toTimelinePerson(paths, addedAssignee)
-        : removedAssignee
-          ? toTimelinePerson(paths, removedAssignee)
-          : null;
-      if (!activityAssignee) return res;
-
-      appendTimelineItem(taskId, {
-        type: "task-activity",
-        value: {
-          id: `temp-task_assignee_updating-${Date.now()}`,
-          type: "task_assignee_updating",
-          author: parsedCurrentUser,
-          insertedAt: new Date().toISOString(),
-          assignee: activityAssignee,
-          action: addedAssignee ? "assigned" : "unassigned",
-          taskName: prevTask?.title ?? "a task",
-          page: "task",
-        },
-      });
-
-      return res;
+      const saved = await opts.onTaskAssigneeChange(taskId, assignees);
+      if (saved) await refreshTimeline(taskId);
+      return saved;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, paths, refreshTimelineAfterInactiveChange],
+    [opts.onTaskAssigneeChange, refreshTimeline],
   );
 
   const wrapDueDateChange = React.useCallback(
     async (taskId: string, dueDate: DateField.ContextualDate | null) => {
-      const prevTask = findTask(taskId);
-      const fromDueDate = prevTask?.dueDate ?? null;
-
-      const res = await Promise.resolve(opts.onTaskDueDateChange(taskId, dueDate));
-
-      if (!res) return false;
-
-      if (activeTaskId !== taskId) {
-        refreshTimelineAfterInactiveChange();
-        return res;
-      }
-      if (!parsedCurrentUser) return res;
-
-      appendTimelineItem(taskId, {
-        type: "task-activity",
-        value: {
-          id: `temp-task_due_date_updating-${Date.now()}`,
-          type: "task_due_date_updating",
-          author: parsedCurrentUser,
-          insertedAt: new Date().toISOString(),
-          fromDueDate,
-          toDueDate: dueDate,
-          taskName: prevTask?.title ?? "",
-          page: "task",
-        },
-      });
-
-      return res;
+      const saved = await opts.onTaskDueDateChange(taskId, dueDate);
+      if (saved) await refreshTimeline(taskId);
+      return saved;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
+    [opts.onTaskDueDateChange, refreshTimeline],
   );
 
   const wrapRemindersChange = React.useCallback(
     async (taskId: string, reminders: TaskPage.Reminder[]) => {
-      const res = await Promise.resolve(opts.onTaskRemindersChange(taskId, reminders));
-
-      if (res && activeTaskId !== taskId) {
-        refreshTimelineAfterInactiveChange();
-      }
-
-      return res;
+      const saved = await opts.onTaskRemindersChange(taskId, reminders);
+      if (saved) await refreshTimeline(taskId);
+      return saved;
     },
-    [activeTaskId, opts, refreshTimelineAfterInactiveChange],
+    [opts.onTaskRemindersChange, refreshTimeline],
   );
 
   const wrapStatusChange = React.useCallback(
-    async (taskId: string, newStatus: TaskBoard.Status | null) => {
-      const prevTask = findTask(taskId);
-      const fromStatus = prevTask?.status ?? null;
-
-      const res = await Promise.resolve(opts.onTaskStatusChange(taskId, newStatus));
-
-      if (!res) return false;
-
-      if (activeTaskId !== taskId) {
-        refreshTimelineAfterInactiveChange();
-        return res;
-      }
-      if (!parsedCurrentUser) return res;
-
-      appendTimelineItem(taskId, {
-        type: "task-activity",
-        value: {
-          id: `temp-task_status_updating-${Date.now()}`,
-          type: "task_status_updating",
-          author: parsedCurrentUser,
-          insertedAt: new Date().toISOString(),
-          fromStatus,
-          toStatus: newStatus,
-          taskName: prevTask?.title ?? "",
-          page: "task",
-        },
-      });
-
-      return res;
+    async (taskId: string, status: TaskBoard.Status | null) => {
+      const saved = await opts.onTaskStatusChange(taskId, status);
+      if (saved) await refreshTimeline(taskId);
+      return saved;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
+    [opts.onTaskStatusChange, refreshTimeline],
   );
 
   const wrapDescriptionChange = React.useCallback(
-    async (taskId: string, content: any) => {
-      const prevTask = findTask(taskId);
-
-      const res = await opts.onTaskDescriptionChange(taskId, content);
-
-      if (!res) return res;
-      if (activeTaskId !== taskId) {
-        refreshTimelineAfterInactiveChange();
-        return res;
-      }
-      if (!parsedCurrentUser) return res;
-
-      appendTimelineItem(taskId, {
-        type: "task-activity",
-        value: {
-          id: `temp-task_description_change-${Date.now()}`,
-          type: "task_description_change",
-          author: parsedCurrentUser,
-          insertedAt: new Date().toISOString(),
-          hasContent: !!content,
-          taskName: prevTask?.title ?? "a task",
-          page: "task",
-        },
-      });
-
-      return res;
+    async (taskId: string, content: unknown) => {
+      const saved = await opts.onTaskDescriptionChange(taskId, content);
+      if (saved) await refreshTimeline(taskId);
+      return saved;
     },
-    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser, refreshTimelineAfterInactiveChange],
+    [opts.onTaskDescriptionChange, refreshTimeline],
   );
 
   const getTaskPageProps = React.useCallback(
@@ -292,19 +138,8 @@ export function useTaskSlideInProps(opts: {
       if (!task) return null;
 
       if (lastSeenTaskIdRef.current !== taskId) {
-        const prevTaskId = lastSeenTaskIdRef.current;
         lastSeenTaskIdRef.current = taskId;
-        setTimeout(() => {
-          if (prevTaskId) {
-            setAppendedByTaskId((prev) => {
-              const existing = prev[prevTaskId] ?? [];
-              if (existing.length === 0) return prev;
-              return { ...prev, [prevTaskId]: [] };
-            });
-          }
-
-          setActiveTaskId(taskId);
-        }, 0);
+        setTimeout(() => setActiveTaskId(taskId), 0);
       }
 
       const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
@@ -324,10 +159,7 @@ export function useTaskSlideInProps(opts: {
 
       const createdBy = backendTask?.creator ? People.parsePersonForTurboUi(paths, backendTask.creator) : null;
 
-      const appended = activeTaskId === taskId ? (appendedByTaskId[taskId] ?? []) : [];
-      const fetchedTimelineItems = activeTaskId === taskId ? prepareTaskTimelineItems(paths, activities, comments) : [];
-      const currentTimelineItems =
-        activeTaskId === taskId ? sortTaskTimelineItems([...fetchedTimelineItems, ...appended]) : [];
+      const currentTimelineItems = activeTaskId === taskId ? prepareTaskTimelineItems(paths, activities, comments) : [];
       const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
 
       const milestoneProps = buildMilestoneProps({ variant, taskId, ctx, taskMilestone: task.milestone });
@@ -424,7 +256,6 @@ export function useTaskSlideInProps(opts: {
     },
     [
       activeTaskId,
-      appendedByTaskId,
       backendTasks,
       canComment,
       canEdit,
@@ -468,15 +299,6 @@ export function useTaskSlideInProps(opts: {
       wrapStatusChange,
     ],
   );
-}
-
-function toTimelinePerson(paths: Paths, person: TaskBoard.Person): TimelinePerson {
-  return {
-    id: person.id,
-    fullName: person.fullName,
-    avatarUrl: person.avatarUrl ?? null,
-    profileLink: paths.profilePath(person.id),
-  };
 }
 
 type MilestoneProps = Pick<

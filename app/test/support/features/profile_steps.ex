@@ -61,6 +61,12 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.visit(ctx, Paths.account_notification_settings_path(ctx.company))
   end
 
+  step :assert_recent_activity_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-activity")
+    |> UI.assert_has(css: "[data-test-id='profile-feed'] a[href='#{Paths.project_path(ctx.company, ctx.project1)}']")
+  end
+
   step :assert_contact_email_visible, ctx do
     UI.assert_text(ctx, ctx.person.email)
   end

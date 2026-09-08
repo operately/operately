@@ -1,64 +1,41 @@
-import * as React from "react";
-
-import Api from "@/api";
+import Api, { type Activity, type Comment } from "@/api";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
-import * as Activities from "@/models/activities";
-import * as Comments from "@/models/comments";
 
-export function useTaskTimelineItems(
-  taskId: string | null,
-  commentEntityType: "project_task" | "space_task",
-  refreshVersion = 0,
+type CommentEntityType = "project_task" | "space_task";
+const EMPTY_ACTIVITIES: Activity[] = [];
+const EMPTY_COMMENTS: Comment[] = [];
+
+function timelineQueries(taskId: string, commentEntityType: CommentEntityType) {
+  return {
+    activities: Api.companies.listActivitiesQueryOptions({
+      scopeId: taskId,
+      scopeType: "task",
+      actions: TASK_ACTIVITY_TYPES,
+    }),
+    comments: Api.comments.listQueryOptions({ entityId: taskId, entityType: commentEntityType }),
+  };
+}
+
+export async function invalidateTaskTimelineQueries(
+  queryClient: QueryClient,
+  taskId: string,
+  commentEntityType: CommentEntityType,
 ) {
-  const [activities, setActivities] = React.useState<Activities.Activity[]>([]);
-  const [comments, setComments] = React.useState<Comments.Comment[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const queries = timelineQueries(taskId, commentEntityType);
+  await Promise.all(
+    Object.values(queries).map(({ queryKey }) => queryClient.invalidateQueries({ queryKey, exact: true })),
+  );
+}
 
-  React.useEffect(() => {
-    if (!taskId) {
-      setActivities([]);
-      setComments([]);
-      setIsLoading(false);
-      return;
-    }
+export function useTaskTimelineItems(taskId: string | null, commentEntityType: CommentEntityType) {
+  const queries = timelineQueries(taskId ?? "", commentEntityType);
+  const activities = useQuery({ ...queries.activities, enabled: Boolean(taskId) });
+  const comments = useQuery({ ...queries.comments, enabled: Boolean(taskId) });
 
-    let canceled = false;
-    setIsLoading(true);
-
-    Promise.all([
-      Api.companies
-        .listActivities({
-          scopeId: taskId,
-          scopeType: "task",
-          actions: TASK_ACTIVITY_TYPES,
-        })
-        .then((d) => d.activities ?? []),
-      Api.comments
-        .list({
-          entityId: taskId,
-          entityType: commentEntityType,
-        })
-        .then((d) => d.comments ?? []),
-    ])
-      .then(([nextActivities, nextComments]) => {
-        if (canceled) return;
-        setActivities(nextActivities);
-        setComments(nextComments);
-      })
-      .catch(() => {
-        if (canceled) return;
-        setActivities([]);
-        setComments([]);
-      })
-      .finally(() => {
-        if (canceled) return;
-        setIsLoading(false);
-      });
-
-    return () => {
-      canceled = true;
-    };
-  }, [taskId, commentEntityType, refreshVersion]);
-
-  return { activities, comments, isLoading };
+  return {
+    activities: taskId ? (activities.data?.activities ?? EMPTY_ACTIVITIES) : EMPTY_ACTIVITIES,
+    comments: taskId ? (comments.data?.comments ?? EMPTY_COMMENTS) : EMPTY_COMMENTS,
+    isLoading: Boolean(taskId) && (activities.isLoading || comments.isLoading),
+  };
 }

@@ -21,7 +21,7 @@ import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
-import { Feed, useItemsQuery } from "@/features/Feed";
+import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -451,7 +451,7 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
 }
 
 function GoalFeedItems({ goalId }: { goalId: string }) {
-  const { data, loading, error } = useItemsQuery("goal", goalId);
+  const { data, loading, error } = useFeedItemsQuery("goal", goalId);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
