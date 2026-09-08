@@ -11,13 +11,13 @@ export type { AccountTheme, InviteLink } from "@/api";
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
+export { useCompanyPeople } from "./useCompanyPeople";
 
 export const getPeople = Api.people.list;
 export const getPerson = Api.people.get;
 export const updateProfile = Api.people.update;
 export const updateProfilePicture = Api.people.updatePicture;
 export const getMe = Api.people.getMe;
-export const useGetPeople = Api.people.useList;
 export const updateTheme = Api.people.updateTheme;
 
 export function useGetMe(input: api.PeopleGetMeInput) {

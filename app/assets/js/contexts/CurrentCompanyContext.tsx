@@ -18,20 +18,16 @@ const CurrentCompanyContext = React.createContext<CurrentCompanyContextProps | n
 
 export function CurrentCompanyProvider({ children }) {
   const { data: meData, refetch: meRefetch } = People.useGetMe({ includeManager: true });
-  const {
-    data: peopleData,
-    loading: peopleLoading,
-    refetch: peopleRefetch,
-  } = People.useGetPeople({ includeSuspended: true });
+  const { data: peopleData, isPending: peopleLoading, refetch: peopleRefetch } = People.useCompanyPeople();
+  const throttledPeopleRefetch = React.useMemo(() => throttle(peopleRefetch, 60 * 1000), [peopleRefetch]);
 
   useProfileUpdatedSignal(meRefetch);
-  useRevalidateStalePeopleCache(peopleRefetch);
 
   const ctx = {
     me: meData?.me || null,
-    people: peopleData?.people?.map((p) => p!) || null,
+    people: peopleData?.people ?? null,
     peopleLoading,
-    peopleRefetch: throttle(peopleRefetch, 60 * 1000),
+    peopleRefetch: throttledPeopleRefetch,
   };
 
   if (!ctx.me) return null;
@@ -68,16 +64,4 @@ export function useMentionedPersonLookupFn(): (
     ctx.peopleRefetch();
     return null;
   };
-}
-
-const THREE_HOURS = 3 * 60 * 60 * 1000;
-
-function useRevalidateStalePeopleCache(peopleRefetch: () => void) {
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      peopleRefetch();
-    }, THREE_HOURS);
-
-    return () => clearInterval(interval);
-  }, [peopleRefetch]);
 }
