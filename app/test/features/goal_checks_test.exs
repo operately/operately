@@ -18,6 +18,7 @@ defmodule Operately.Features.GoalChecksTest do
     |> Steps.add_goal_check()
     |> Steps.assert_goal_check_added()
     |> Steps.assert_check_added_feed_posted()
+    |> Steps.assert_goal_activity_visible()
   end
 
   feature "deleting a goal check", ctx do

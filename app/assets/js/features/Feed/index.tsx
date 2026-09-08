@@ -6,8 +6,7 @@ import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ConfirmDialog, DivLink, FormattedTime, IconDots, IconTrash, Menu, MenuActionItem } from "turboui";
 
-import Api from "@/api";
-import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
+import ActivityHandler from "@/features/activities";
 import { FeedZeroState } from "@/features/Feed/FeedZeroState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import classNames from "classnames";
@@ -15,15 +14,7 @@ import { Avatar } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 type Page = "company" | "project" | "goal" | "space" | "profile";
-type ScopeType = "company" | "project" | "goal" | "space" | "person";
-
-export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
-  return Api.companies.useListActivities({
-    scopeType: scopeType,
-    scopeId: scopeId,
-    actions: DISPLAYED_IN_FEED,
-  });
-}
+export { useFeedItemsQuery } from "./useFeedItemsQuery";
 
 interface FeedConfig {
   page: Page;

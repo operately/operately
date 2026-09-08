@@ -44,6 +44,9 @@ defmodule Operately.Features.HomeTest do
     |> UI.assert_has(testid: "delete-feed-activity-dialog")
     |> UI.click_button("Delete")
     |> UI.refute_text("Feed Menu Project")
+    |> UI.visit(Paths.profile_path(ctx.company, ctx.creator))
+    |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.refute_has(css: "[data-activity-id='#{Paths.activity_id(ctx.activity)}']")
   end
 
   defp create_project_with_activity(ctx, name) do
