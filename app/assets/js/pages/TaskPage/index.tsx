@@ -1,5 +1,4 @@
 import React, { useMemo, useCallback } from "react";
-import Api from "@/api";
 
 import { useNavigate } from "react-router";
 import * as Tasks from "@/models/tasks";
@@ -28,10 +27,6 @@ import { loader, useLoadedData, useRefresh } from "./loader";
 
 export default { name: "TaskPage", loader, Page } as PageModule;
 
-function pageCacheKey(id: string): string {
-  return `v9-TaskV2Page.task-${id}`;
-}
-
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
@@ -40,6 +35,7 @@ function Page() {
   const { task, childrenCount, activities, comments: initialComments } = useLoadedData();
   const refreshPageData = useRefresh();
 
+  const updateProjectName = Projects.useUpdateProjectName();
   const updateTaskName = Tasks.useUpdateTaskName();
   const updateTaskDescription = Tasks.useUpdateTaskDescription();
   const updateTaskStatus = Tasks.useUpdateTaskStatus();
@@ -63,7 +59,7 @@ function Page() {
   const [projectName, setProjectName] = usePageField({
     queryData: task,
     value: () => project.name,
-    update: (v) => Api.projects.updateName({ projectId: project.id, name: v }),
+    update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
     refreshPageData,
@@ -198,7 +194,6 @@ function Page() {
     subscriptionList: task.subscriptionList,
     entityType: "project_task",
     entityId: task.id,
-    cacheKey: pageCacheKey(task.id),
     onRefresh: refreshPageData,
   });
 
