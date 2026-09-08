@@ -35,7 +35,7 @@ function Page() {
   const { task, childrenCount, activities, comments: initialComments } = useLoadedData();
   const refreshPageData = useRefresh();
 
-  const updateProjectName = Projects.useUpdateProjectName();
+  const updateProjectName = Projects.useUpdateProjectName("none");
   const updateTaskName = Tasks.useUpdateTaskName();
   const updateTaskDescription = Tasks.useUpdateTaskDescription();
   const updateTaskStatus = Tasks.useUpdateTaskStatus();

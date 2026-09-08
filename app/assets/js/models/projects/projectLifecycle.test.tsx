@@ -4,7 +4,7 @@ import { createRoot, Root } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Lifecycle from "./projectLifecycle";
 import Api from "@/api";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryObserver } from "@tanstack/react-query";
 import {
   invalidateClosedProjectQueries,
   invalidateProjectLifecycleQueries,
@@ -214,6 +214,39 @@ describe("project detail mutations", () => {
         expect(await mutate()).toEqual({ success: false });
       });
       Object.values(keys).forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+    },
+  );
+
+  it.each(["active", "none"] as const)(
+    "rename supports %s refetching without duplicate requests",
+    async (refetchType) => {
+      const testCase = { ...cases[0], hook: () => Lifecycle.useUpdateProjectName(refetchType) };
+      const mutate = await mount(testCase, jest.fn().mockResolvedValue(testCase.result));
+      const keys = seed();
+      const request = jest.fn().mockResolvedValue({});
+      const refreshedKeys = [keys.detail, keys.task, keys.feed];
+      const unsubscribe = refreshedKeys.map((queryKey) => {
+        const observer = new QueryObserver(client, { queryKey, queryFn: request, staleTime: Infinity });
+        return observer.subscribe(() => {});
+      });
+      try {
+        await act(async () => {
+          await mutate();
+        });
+        expect(request).toHaveBeenCalledTimes(refetchType === "active" ? refreshedKeys.length : 0);
+        if (refetchType === "none") {
+          refreshedKeys.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+          // Task and Milestone pages explicitly refresh their own queries after saving.
+          await act(async () => {
+            await Promise.all(refreshedKeys.map((queryKey) => client.invalidateQueries({ queryKey })));
+          });
+          expect(request).toHaveBeenCalledTimes(refreshedKeys.length);
+        }
+        expect(client.getQueryState(keys.list)?.isInvalidated).toBe(true);
+        expect(client.getQueryState(keys.unrelated)?.isInvalidated).toBe(false);
+      } finally {
+        unsubscribe.forEach((stop) => stop());
+      }
     },
   );
 

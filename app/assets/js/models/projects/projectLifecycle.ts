@@ -1,11 +1,16 @@
 import Api from "@/api";
 import { QueryClient, type QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export async function invalidateProjectLifecycleQueries(queryClient: QueryClient): Promise<void> {
+type RefetchType = "active" | "none";
+
+export async function invalidateProjectLifecycleQueries(
+  queryClient: QueryClient,
+  refetchType: RefetchType = "active",
+): Promise<void> {
   await Promise.all([
-    queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix() }),
-    queryClient.invalidateQueries({ queryKey: Api.projects.listQueryKeyPrefix() }),
-    queryClient.invalidateQueries({ queryKey: Api.projects.searchQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.projects.listQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.projects.searchQueryKeyPrefix(), refetchType }),
   ]);
 }
 
@@ -102,25 +107,30 @@ export function useCreateProjectFromTemplate() {
 
 // These fields still have legacy PageCache callers. Refresh failures must not
 // turn a successful write into a failed save and roll back their optimistic UI.
-async function invalidateProjectDetailsQueries(queryClient: QueryClient, additionalKeys: QueryKey[] = []) {
+async function invalidateProjectDetailsQueries(
+  queryClient: QueryClient,
+  additionalKeys: QueryKey[] = [],
+  refetchType: RefetchType = "active",
+) {
   try {
     await Promise.all([
-      invalidateProjectLifecycleQueries(queryClient),
-      queryClient.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix() }),
-      ...additionalKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+      invalidateProjectLifecycleQueries(queryClient, refetchType),
+      queryClient.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix(), refetchType }),
+      ...additionalKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey, refetchType })),
     ]);
   } catch (error) {
     console.error("Failed to refresh project queries", error);
   }
 }
 
-export function useUpdateProjectName() {
+// Callers that refresh their page after saving use "none" to avoid fetching twice.
+export function useUpdateProjectName(refetchType: RefetchType = "active") {
   const queryClient = useQueryClient();
 
   return useMutation({
     ...Api.projects.updateNameMutationOptions(),
     onSuccess: () => {
-      void invalidateProjectDetailsQueries(queryClient, [Api.tasks.getQueryKeyPrefix()]);
+      void invalidateProjectDetailsQueries(queryClient, [Api.tasks.getQueryKeyPrefix()], refetchType);
     },
   });
 }
