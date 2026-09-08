@@ -1,4 +1,5 @@
 import Api, { Activity, CompaniesGetActivityInput } from "@/api";
+export { useDeleteFeedActivity } from "./activityLifecycle";
 export type { Activity, ActivityContentGoalCheckIn, ActivityContentGoalTimeframeEditing, CommentThread } from "@/api";
 
 import * as api from "@/api";

@@ -7,6 +7,13 @@ defmodule Operately.Features.ProfileTest do
     Operately.Support.Features.UI.login_as(ctx, ctx.person)
   end
 
+  feature "view recent activity", ctx do
+    ctx
+    |> Steps.given_projects_exist_for_person()
+    |> Steps.visit_profile_page()
+    |> Steps.assert_recent_activity_visible()
+  end
+
   feature "view how to contact the person", ctx do
     ctx
     |> Steps.visit_profile_page()
