@@ -45,7 +45,6 @@ export function useSubscription({
       pending: 0,
       queue: Promise.resolve(),
       changed: false,
-      refreshing: false,
       awaitingConfirmation: false,
     }),
     // A session survives refreshed props but never follows the user to another resource.
@@ -70,8 +69,6 @@ export function useSubscription({
     if (session.awaitingConfirmation && serverIsSubscribed !== session.confirmed) return;
 
     session.awaitingConfirmation = false;
-
-    if (session.refreshing) return;
 
     session.confirmed = serverIsSubscribed;
     setOptimistic({ session, value: serverIsSubscribed });
@@ -116,7 +113,6 @@ export function useSubscription({
       if (!session.changed) return;
 
       session.changed = false;
-      session.refreshing = true;
 
       try {
         if (cacheKey) PageCache.invalidate(cacheKey);
@@ -125,8 +121,6 @@ export function useSubscription({
       } catch (error) {
         // The server accepted the toggle; refresh failures must not undo it.
         console.error("Failed to refresh subscriptions after saving", error);
-      } finally {
-        session.refreshing = false;
       }
     });
     session.queue = result;

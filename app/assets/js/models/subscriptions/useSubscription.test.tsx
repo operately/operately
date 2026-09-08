@@ -152,6 +152,39 @@ describe("useSubscription", () => {
     expect(hook.isSubscribed).toBe(false);
   });
 
+  it.each([true, false])("reconciles server updates during refresh after toggling to %s", async (subscribed) => {
+    subscribe.mockResolvedValue({});
+    unsubscribe.mockResolvedValue({});
+    const refresh = deferred();
+    await render({
+      subscriptionList: list("list-1", !subscribed),
+      onRefresh: async () => {
+        await refresh.promise;
+      },
+    });
+    const pending = await toggle(subscribed);
+
+    // Ignore old props until the parent confirms the saved toggle.
+    await render({ subscriptionList: list("list-1", !subscribed) });
+    expect(hook.isSubscribed).toBe(subscribed);
+    await render({ subscriptionList: list("list-1", subscribed) });
+
+    // A subsequent server change arrives before the refresh callback finishes.
+    await render({ subscriptionList: list("list-1", !subscribed) });
+    await act(async () => {
+      refresh.resolve({});
+      await pending.promise;
+    });
+    expect(hook.isSubscribed).toBe(!subscribed);
+
+    // Failed writes must also roll back to the newly confirmed server state.
+    (subscribed ? subscribe : unsubscribe).mockRejectedValue(new Error("offline"));
+    await act(async () => {
+      await hook.onToggle(subscribed);
+    });
+    expect(hook.isSubscribed).toBe(!subscribed);
+  });
+
   it("serializes overlapping toggles and rolls both failures back to confirmed state", async () => {
     const a = deferred();
     const b = deferred();
