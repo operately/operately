@@ -4,6 +4,7 @@ defmodule OperatelyWeb.AccountAuth do
 
   alias Operately.People
   alias Operately.Billing
+  alias Operately.Companies.Company
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -106,13 +107,14 @@ defmodule OperatelyWeb.AccountAuth do
       [company_id] ->
         id = OperatelyWeb.Api.Helpers.id_without_comments(company_id)
 
-        case Operately.Companies.ShortId.decode(id) do
-          {:ok, id} ->
-            company = Operately.Companies.get_company!(id) |> Billing.attach_access_state()
-            assign(conn, :current_company, company)
-
+        with {:ok, short_id} <- Operately.Companies.ShortId.decode(id),
+             {:ok, company} <- Company.get(:system, short_id: short_id) do
+          assign(conn, :current_company, Billing.attach_access_state(company))
+        else
           {:error, _} ->
             conn
+            |> send_resp(404, "Not Found")
+            |> halt()
         end
 
       _ ->

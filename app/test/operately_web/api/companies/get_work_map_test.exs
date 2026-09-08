@@ -8,6 +8,21 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:companies, :get_work_map], %{})
     end
+
+    test "returns 404 when the requested company does not exist", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      company_id = Operately.Companies.ShortId.generate() |> Operately.Companies.ShortId.encode!()
+      conn = put_req_header(ctx.conn, "x-company-id", "missing-company-#{company_id}")
+
+      assert {404, _} = query(conn, [:companies, :get_work_map], %{})
+    end
+
+    test "returns 404 when the company ID is invalid", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      conn = put_req_header(ctx.conn, "x-company-id", "invalid")
+
+      assert {404, _} = query(conn, [:companies, :get_work_map], %{})
+    end
   end
 
   describe "permissions - query root items" do

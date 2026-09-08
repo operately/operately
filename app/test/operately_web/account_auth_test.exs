@@ -2,6 +2,8 @@ defmodule OperatelyWeb.AccountAuthTest do
   use OperatelyWeb.ConnCase, async: true
 
   alias Operately.People
+  alias Operately.Companies.ShortId
+  alias Operately.Support.Factory
   alias OperatelyWeb.AccountAuth
   import Operately.PeopleFixtures
 
@@ -96,6 +98,53 @@ defmodule OperatelyWeb.AccountAuthTest do
       conn = AccountAuth.fetch_current_account(conn, [])
       refute get_session(conn, :account_token)
       refute conn.assigns.current_account
+    end
+  end
+
+  describe "fetch_current_company/2" do
+    test "assigns the company and its billing access state", ctx do
+      ctx = Factory.add_company(ctx, :company, ctx.account)
+
+      conn =
+        ctx.conn
+        |> put_req_header("x-company-id", OperatelyWeb.Paths.company_id(ctx.company))
+        |> AccountAuth.fetch_current_company([])
+
+      refute conn.halted
+      assert conn.assigns.current_company.id == ctx.company.id
+      assert conn.assigns.current_company.billing_access_state == :normal
+      refute conn.assigns.current_company.billing_read_only
+    end
+
+    test "returns 404 and halts for a nonexistent company", %{conn: conn} do
+      company_id = ShortId.generate() |> ShortId.encode!()
+
+      conn =
+        conn
+        |> put_req_header("x-company-id", company_id)
+        |> AccountAuth.fetch_current_company([])
+
+      assert conn.halted
+      assert conn.status == 404
+      refute conn.assigns[:current_company]
+    end
+
+    test "leaves the company unassigned when the header is absent", %{conn: conn} do
+      conn = AccountAuth.fetch_current_company(conn, [])
+
+      refute conn.halted
+      refute conn.assigns[:current_company]
+    end
+
+    test "returns 404 and halts when the ID is invalid", %{conn: conn} do
+      conn =
+        conn
+        |> put_req_header("x-company-id", "invalid")
+        |> AccountAuth.fetch_current_company([])
+
+      assert conn.halted
+      assert conn.status == 404
+      refute conn.assigns[:current_company]
     end
   end
 
