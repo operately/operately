@@ -19,6 +19,11 @@ interface UseSubscriptionOptions {
   onRefresh?: () => Promise<void>;
 }
 
+interface SubscriptionWrite {
+  value: boolean;
+  observedConfirmation: boolean;
+}
+
 /** Queues writes per resource while showing the latest toggle. Only server-confirmed
  * state is used for rollback; late responses cannot change another resource's UI.
  */
@@ -42,6 +47,8 @@ export function useSubscription({
   const session = React.useMemo(
     () => ({
       confirmed: serverIsSubscribed,
+      serverIsSubscribed,
+      currentWrite: null as SubscriptionWrite | null,
       pending: 0,
       queue: Promise.resolve(),
       changed: false,
@@ -63,6 +70,11 @@ export function useSubscription({
   }, []);
 
   React.useEffect(() => {
+    // Retain server observations even while the UI shows a queued toggle.
+    session.serverIsSubscribed = serverIsSubscribed;
+    if (session.currentWrite?.value === serverIsSubscribed) {
+      session.currentWrite.observedConfirmation = true;
+    }
     if (session.pending !== 0) return;
 
     // Parent props can still contain the pre-mutation subscription list.
@@ -84,6 +96,8 @@ export function useSubscription({
     if (isCurrent()) setOptimistic({ session, value: nextIsSubscribed });
 
     const result = session.queue.then(async () => {
+      const write: SubscriptionWrite = { value: nextIsSubscribed, observedConfirmation: false };
+      session.currentWrite = write;
       try {
         if (nextIsSubscribed) {
           await subscribe({ subscriptionListId, type: entityType });
@@ -91,8 +105,9 @@ export function useSubscription({
           await unsubscribe({ subscriptionListId });
         }
 
-        session.confirmed = nextIsSubscribed;
-        session.awaitingConfirmation = true;
+        // An early confirmation may already have been followed by another server change.
+        session.confirmed = write.observedConfirmation ? session.serverIsSubscribed : nextIsSubscribed;
+        session.awaitingConfirmation = session.serverIsSubscribed !== session.confirmed;
         session.changed = true;
       } catch (error) {
         if (isCurrent()) {
@@ -104,6 +119,8 @@ export function useSubscription({
               : `Failed to unsubscribe from ${entityType} notifications.`,
           );
         }
+      } finally {
+        session.currentWrite = null;
       }
 
       session.pending -= 1;

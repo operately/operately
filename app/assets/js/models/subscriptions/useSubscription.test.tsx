@@ -185,6 +185,74 @@ describe("useSubscription", () => {
     expect(hook.isSubscribed).toBe(!subscribed);
   });
 
+  it.each([true, false])("retains confirmation received before the %s mutation resolves", async (subscribed) => {
+    const request = deferred();
+    subscribe.mockReturnValue(request.promise);
+    unsubscribe.mockReturnValue(request.promise);
+    await render({ subscriptionList: list("list-1", !subscribed) });
+    const pending = await toggle(subscribed);
+    const confirmedList = list("list-1", subscribed);
+    await render({ subscriptionList: confirmedList });
+    await act(async () => {
+      request.resolve({});
+      await pending.promise;
+    });
+    expect(hook.isSubscribed).toBe(subscribed);
+
+    // An unchanged refetch can retain the same object through structural sharing.
+    await render({ subscriptionList: confirmedList });
+    await render({ subscriptionList: list("list-1", !subscribed) });
+    expect(hook.isSubscribed).toBe(!subscribed);
+  });
+
+  it("retains later server changes after early confirmation without replacing a pending toggle", async () => {
+    const request = deferred();
+    subscribe.mockReturnValue(request.promise);
+    await render();
+    const pending = await toggle(true);
+    await render({ subscriptionList: list("list-1", true) });
+    await render({ subscriptionList: list("list-1", false) });
+    expect(hook.isSubscribed).toBe(true);
+    await act(async () => {
+      request.resolve({});
+      await pending.promise;
+    });
+    expect(hook.isSubscribed).toBe(false);
+
+    subscribe.mockRejectedValue(new Error("offline"));
+    await act(async () => {
+      await hook.onToggle(true);
+    });
+    expect(hook.isSubscribed).toBe(false);
+  });
+
+  it("keeps confirmations separate for queued writes and protects the latest toggle", async () => {
+    const firstRequest = deferred();
+    const secondRequest = deferred();
+    subscribe.mockReturnValue(firstRequest.promise);
+    unsubscribe.mockReturnValue(secondRequest.promise);
+    await render();
+    const first = await toggle(true);
+    const second = await toggle(false);
+    await render({ subscriptionList: list("list-1", true) });
+    expect(hook.isSubscribed).toBe(false);
+    await act(async () => {
+      firstRequest.resolve({});
+      await first.promise;
+    });
+    expect(hook.isSubscribed).toBe(false);
+    await act(async () => {
+      secondRequest.resolve({});
+      await second.promise;
+    });
+    // Confirmation of the first write must not unlock stale props for the second.
+    await render({ subscriptionList: list("list-1", true) });
+    expect(hook.isSubscribed).toBe(false);
+    await render({ subscriptionList: list("list-1", false) });
+    await render({ subscriptionList: list("list-1", true) });
+    expect(hook.isSubscribed).toBe(true);
+  });
+
   it("serializes overlapping toggles and rolls both failures back to confirmed state", async () => {
     const a = deferred();
     const b = deferred();
