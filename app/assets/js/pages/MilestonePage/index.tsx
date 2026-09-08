@@ -41,7 +41,7 @@ function Page() {
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.permissions, "Milestone must have permissions");
   const projectId = milestone.project.id;
-  const updateProjectName = Projects.useUpdateProjectName();
+  const updateProjectName = Projects.useUpdateProjectName("none");
   const updateMilestoneDescription = Milestones.useUpdateMilestoneDescription();
   const updateMilestoneDueDate = Milestones.useUpdateMilestoneDueDate();
   const deleteMilestone = Milestones.useDeleteMilestone();

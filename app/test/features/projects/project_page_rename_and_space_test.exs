@@ -18,6 +18,8 @@ defmodule Operately.Features.Projects.ProjectPageRenameAndSpaceTest do
     |> Steps.rename_project(new_name: "New Name")
     |> Steps.assert_project_renamed(new_name: "New Name")
     |> Steps.assert_project_renamed_visible_on_feed()
+    |> Steps.reload_project_page()
+    |> Steps.assert_project_renamed(new_name: "New Name")
   end
 
   @tag login_as: :champion
