@@ -18,6 +18,7 @@ export {
   invalidateProjectTemplateListQueries,
   useArchiveProjectTemplate,
   useCreateProjectTemplate,
+  useCreateProjectTemplateFromProject,
   useDeleteProjectTemplate,
   useDuplicateProjectTemplate,
   useRestoreProjectTemplate,

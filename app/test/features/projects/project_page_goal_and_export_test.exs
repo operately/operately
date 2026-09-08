@@ -22,6 +22,8 @@ defmodule Operately.Features.Projects.ProjectPageGoalAndExportTest do
     |> Steps.assert_goal_connected(goal_name: goal_name)
     |> Steps.assert_goal_link_on_project_page(goal_name: goal_name)
     |> Steps.assert_project_goal_connection_visible_on_feed(goal_name: goal_name)
+    |> Steps.reload_project_page()
+    |> Steps.assert_goal_link_on_project_page(goal_name: goal_name)
     |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: goal_name)
   end
 
