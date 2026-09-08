@@ -5,7 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Spaces from "@/models/spaces";
 
-import { Feed, useItemsQuery } from "@/features/Feed";
+import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import {
   AvatarList,
   DangerButton,
@@ -105,7 +105,7 @@ function SpaceFooter({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceActivity({ space }: { space: Spaces.Space }) {
-  const { data, loading, error } = useItemsQuery("space", space.id!);
+  const { data, loading, error } = useFeedItemsQuery("space", space.id!);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;

@@ -1,6 +1,7 @@
+import { useDeleteFeedActivity } from "@/models/activities/activityLifecycle";
 import React from "react";
 
-import Api, { Activity } from "@/api";
+import { Activity } from "@/api";
 import { PageModule } from "@/routes/types";
 
 import * as Pages from "@/components/Pages";
@@ -12,7 +13,7 @@ import { getWorkMap } from "@/models/workMap";
 export default { name: "HomePage", loader, Page } as PageModule;
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { Feed, useItemsQuery } from "@/features/Feed";
+import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
 import { HomePage, showErrorToast } from "turboui";
 import { Navigate } from "react-router";
@@ -93,21 +94,15 @@ function Page() {
 
 function ActivityFeed() {
   const { company } = useLoadedData();
-  const { data, loading, error } = useItemsQuery("company", company.id!);
+  const { data, loading, error } = useFeedItemsQuery("company", company.id!);
   const canDeleteFeedItems = useCanDeleteFeedItems();
-  const [deleteActivity] = Api.companies.useDeleteActivity();
-  const [activities, setActivities] = React.useState(data?.activities || []);
-
-  React.useEffect(() => {
-    setActivities(data?.activities || []);
-  }, [data?.activities]);
+  const { mutateAsync: deleteActivity } = useDeleteFeedActivity();
 
   const handleDeleteActivity = async (activity: Activity) => {
     if (!activity.id) return;
 
     try {
       await deleteActivity({ activityId: activity.id });
-      setActivities((activities) => activities.filter((item) => item.id !== activity.id));
     } catch {
       showErrorToast("Could not delete feed item", "Please try again.");
     }
@@ -118,7 +113,7 @@ function ActivityFeed() {
 
   return (
     <Feed
-      items={activities}
+      items={data?.activities ?? []}
       testId="company-feed"
       page="company"
       hideTopBorder
