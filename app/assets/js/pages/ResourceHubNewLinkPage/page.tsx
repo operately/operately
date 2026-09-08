@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import { links, resourceHubLandingPath } from "@/models/resourceHubs";
+import { resourceHubLandingPath, useCreateLink } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
@@ -16,7 +16,7 @@ export function Page() {
   const { resourceHub, folder, linkType } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [post] = links.useCreate();
+  const { mutateAsync: post } = useCreateLink();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 

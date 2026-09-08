@@ -26,6 +26,17 @@ export {
   useUpdateProjectDueDate,
   useUpdateProjectParentGoal,
   useDeleteProject,
+  useUpdateProjectPermissions,
+  useMoveProjectToSpace,
+  useUpdateProjectChampion,
+  useUpdateProjectReviewer,
+  useUpdateProjectTasksView,
+  useCreateProjectMilestone,
+  useUpdateProjectMilestone,
+  useUpdateProjectMilestoneOrdering,
+  useCreateProjectContributor,
+  useUpdateProjectContributor,
+  useDeleteProjectContributor,
 } from "./projectLifecycle";
 export {
   invalidateProjectDiscussionQueries,

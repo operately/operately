@@ -5,10 +5,11 @@ import { useLoadedData, useRefresh } from "./loader";
 
 import { ResourceHubFolderPage } from "turboui";
 import {
-  folders,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
+  useCreateFolder,
+  useRenameFolder,
 } from "@/models/resourceHubs";
 import { buildFolderPageNavigation } from "./navigation";
 import { usePaths } from "@/routes/paths";
@@ -32,8 +33,8 @@ export function Page() {
     folder,
     onUploaded: refresh,
   });
-  const [createFolder] = folders.useCreate();
-  const [renameFolder] = folders.useRename();
+  const { mutateAsync: createFolder } = useCreateFolder();
+  const { mutateAsync: renameFolder } = useRenameFolder();
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
   const props: ResourceHubFolderPage.Props = {
     title: folder.name || "Folder",

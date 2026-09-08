@@ -12,9 +12,8 @@ import * as Time from "@/utils/time";
 import { usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
 import { PageModule } from "../../routes/types";
-import { PageCache } from "@/routes/PageCache";
 import { assertPresent } from "@/utils/assertions";
-import { projectPageCacheKey } from "../ProjectPage";
+import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -28,6 +27,7 @@ import { loader, useLoadedData, useRefresh } from "./loader";
 export default { name: "TaskPage", loader, Page } as PageModule;
 
 function Page() {
+  const invalidateProjectPage = useInvalidateProjectPage();
   const paths = usePaths();
   const navigate = useNavigate();
   const currentUser = useMe();
@@ -160,7 +160,7 @@ function Page() {
       await deleteTask.mutateAsync({ taskId: task.id, type: "project" });
 
       if (task.project) {
-        PageCache.invalidate(projectPageCacheKey(task.project.id));
+        void invalidateProjectPage(task.project.id);
         navigate(paths.projectPath(task.project.id, { tab: "tasks" }));
       } else {
         navigate(paths.homePath());
@@ -287,6 +287,7 @@ function usePageField<T>({
   refreshPageData,
   projectIdToInvalidate,
 }: UsePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
+  const invalidateProjectPage = useInvalidateProjectPage();
   const valueRef = React.useRef(value);
   valueRef.current = value;
 
@@ -323,7 +324,7 @@ function usePageField<T>({
       await refreshPageData();
 
       if (projectIdToInvalidate) {
-        PageCache.invalidate(projectPageCacheKey(projectIdToInvalidate));
+        void invalidateProjectPage(projectIdToInvalidate);
       }
 
       return true;
@@ -338,6 +339,7 @@ function usePageField<T>({
 }
 
 function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<void>) {
+  const invalidateProjectPage = useInvalidateProjectPage();
   const navigate = useNavigate();
   const paths = usePaths();
   const moveTask = Tasks.useMoveTask();
@@ -351,11 +353,11 @@ function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<voi
         const resolvedDestinationId = res.destinationId ?? destinationId;
 
         if (task.project?.id) {
-          PageCache.invalidate(projectPageCacheKey(task.project.id));
+          void invalidateProjectPage(task.project.id);
         }
 
         if (resolvedDestinationType !== "space") {
-          PageCache.invalidate(projectPageCacheKey(resolvedDestinationId));
+          void invalidateProjectPage(resolvedDestinationId);
         }
 
         if (resolvedDestinationType === "space") {

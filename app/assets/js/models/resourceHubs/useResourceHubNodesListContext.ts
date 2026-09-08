@@ -1,4 +1,15 @@
+import {
+  useDeleteDocument,
+  useDeleteFile,
+  useDeleteFolder,
+  useDeleteLink,
+  useRenameFolder,
+  useMoveResource,
+  useCreateDocument,
+  useCopyFolder,
+} from "./resourceHubLifecycle";
 import { useMemo } from "react";
+import Api from "@/api";
 import { useNavigate } from "react-router";
 
 import * as Hub from "@/models/resourceHubs";
@@ -45,14 +56,14 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
   const navigate = useNavigate();
   const parent = props?.type === "resource_hub" ? props.resourceHub : props?.folder;
 
-  const [deleteDocument] = Hub.documents.useDelete();
-  const [deleteFile] = Hub.files.useDelete();
-  const [deleteFolder] = Hub.folders.useDelete();
-  const [deleteLink] = Hub.links.useDelete();
-  const [renameFolder] = Hub.folders.useRename();
-  const [moveResource] = Hub.resource_hubs.useUpdateParentFolder();
-  const [createDocument] = Hub.documents.useCreate();
-  const [copyFolder] = Hub.folders.useCopy();
+  const { mutateAsync: deleteDocument } = useDeleteDocument();
+  const { mutateAsync: deleteFile } = useDeleteFile();
+  const { mutateAsync: deleteFolder } = useDeleteFolder();
+  const { mutateAsync: deleteLink } = useDeleteLink();
+  const { mutateAsync: renameFolder } = useRenameFolder();
+  const { mutateAsync: moveResource } = useMoveResource();
+  const { mutateAsync: createDocument } = useCreateDocument();
+  const { mutateAsync: copyFolder } = useCopyFolder();
 
   const subscriptionsState = useSubscriptionsAdapter(parent?.potentialSubscribers || [], {
     ignoreMe: true,
@@ -69,7 +80,7 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
 
     const folderSelect: ResourceHubNodesListContextValue["folderSelect"] = {
       loadFolder: async (id: string): Promise<FolderSelectLoadResult> => {
-        const res = await Hub.folders.get({
+        const res = await Api.resource_hubs.getFolderQuery({
           id,
           includeNodes: true,
           includePathToFolder: true,
@@ -85,7 +96,7 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
         };
       },
       loadResourceHub: async (id: string): Promise<FolderSelectLoadResult> => {
-        const res = await Hub.resource_hubs.get({
+        const res = await Api.resource_hubs.getQuery({
           id,
           includeNodes: true,
           includeGoal: true,
@@ -148,7 +159,11 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
             copiedDocumentId: args.documentId,
           });
 
-          navigate(paths.resourceHubDocumentPath(res.document.id));
+          const document: unknown = res.document;
+          if (!document || typeof document !== "object" || !("id" in document) || typeof document.id !== "string") {
+            throw new Error("Created document is missing its id");
+          }
+          navigate(paths.resourceHubDocumentPath(document.id));
         },
         copyFolder: async (args) => {
           const res = await copyFolder({

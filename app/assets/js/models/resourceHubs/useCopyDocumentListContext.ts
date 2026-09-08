@@ -1,4 +1,6 @@
+import { useCreateDocument } from "./resourceHubLifecycle";
 import { useMemo } from "react";
+import Api from "@/api";
 import { useNavigate } from "react-router";
 
 import * as Hub from "@/models/resourceHubs";
@@ -13,7 +15,7 @@ export function useCopyDocumentListContext(
 ): ResourceHubNodesListContextValue {
   const paths = usePaths();
   const navigate = useNavigate();
-  const [createDocument] = Hub.documents.useCreate();
+  const { mutateAsync: createDocument } = useCreateDocument();
 
   assertPresent(parent.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
 
@@ -45,12 +47,16 @@ export function useCopyDocumentListContext(
             copiedDocumentId: args.documentId,
           });
 
-          navigate(paths.resourceHubDocumentPath(res.document.id));
+          const document: unknown = res.document;
+          if (!document || typeof document !== "object" || !("id" in document) || typeof document.id !== "string") {
+            throw new Error("Created document is missing its id");
+          }
+          navigate(paths.resourceHubDocumentPath(document.id));
         },
       },
       folderSelect: {
         loadFolder: async (id: string): Promise<FolderSelectLoadResult> => {
-          const res = await Hub.folders.get({
+          const res = await Api.resource_hubs.getFolderQuery({
             id,
             includeNodes: true,
             includePathToFolder: true,
@@ -66,7 +72,7 @@ export function useCopyDocumentListContext(
           };
         },
         loadResourceHub: async (id: string): Promise<FolderSelectLoadResult> => {
-          const res = await Hub.resource_hubs.get({
+          const res = await Api.resource_hubs.getQuery({
             id,
             includeNodes: true,
             includeGoal: true,

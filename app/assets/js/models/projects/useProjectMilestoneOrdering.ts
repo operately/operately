@@ -1,13 +1,11 @@
 import * as React from "react";
 
-import Api from "@/api";
-import { PageCache } from "@/routes/PageCache";
+import { useUpdateProjectMilestoneOrdering } from "./projectLifecycle";
 import { showErrorToast, TaskBoard } from "turboui";
 import { normalizeOrderingState } from "@/models/milestones";
 
 interface UseProjectMilestoneOrderingOptions {
   projectId: string;
-  cacheKey: string;
   refresh?: () => Promise<void>;
   initialMilestones: TaskBoard.Milestone[];
   initialOrderingState: string[];
@@ -30,11 +28,11 @@ interface UseProjectMilestoneOrderingResult {
 //       when successful.
 export function useProjectMilestoneOrdering({
   projectId,
-  cacheKey,
   refresh,
   initialMilestones,
   initialOrderingState,
 }: UseProjectMilestoneOrderingOptions): UseProjectMilestoneOrderingResult {
+  const { mutateAsync: updateOrdering } = useUpdateProjectMilestoneOrdering();
   const initialDataRef = React.useRef<{ milestones: TaskBoard.Milestone[]; ordering: string[] } | null>(null);
 
   if (!initialDataRef.current) {
@@ -52,6 +50,21 @@ export function useProjectMilestoneOrdering({
   const [orderingState, setOrderingState] = React.useState<string[]>(initialDataRef.current.ordering);
 
   const orderingRef = React.useRef(orderingState);
+  const previousInitial = React.useRef({ initialMilestones, initialOrderingState });
+  React.useEffect(() => {
+    if (
+      previousInitial.current.initialMilestones === initialMilestones &&
+      previousInitial.current.initialOrderingState === initialOrderingState
+    )
+      return;
+    previousInitial.current = { initialMilestones, initialOrderingState };
+    const order = normalizeOrderingState(
+      initialOrderingState,
+      initialMilestones.map((m) => m.id),
+    );
+    setOrderingState(order);
+    setMilestonesState(reorderMilestonesByIds(initialMilestones, order));
+  }, [initialMilestones, initialOrderingState]);
 
   React.useEffect(() => {
     orderingRef.current = orderingState;
@@ -95,7 +108,7 @@ export function useProjectMilestoneOrdering({
       });
 
       try {
-        const response = await Api.projects.updateMilestoneOrdering({
+        const response = await updateOrdering({
           projectId,
           orderingState: updatedOrder,
         });
@@ -111,8 +124,6 @@ export function useProjectMilestoneOrdering({
           return reorderMilestonesByIds(prev, normalized);
         });
 
-        PageCache.invalidate(cacheKey);
-
         if (refresh) {
           await refresh();
         }
@@ -122,7 +133,7 @@ export function useProjectMilestoneOrdering({
         setMilestonesState(snapshotMilestones);
       }
     },
-    [cacheKey, projectId, refresh],
+    [updateOrdering, projectId, refresh],
   );
 
   return {

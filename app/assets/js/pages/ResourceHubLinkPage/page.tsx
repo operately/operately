@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import * as Pages from "@/components/Pages";
 import * as ReactionsModel from "@/models/reactions";
-import { links, resourceHubLandingPath } from "@/models/resourceHubs";
+import { resourceHubLandingPath, useDeleteLink } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { useComments, useCommentSectionProps } from "@/features/CommentSection";
@@ -27,7 +27,7 @@ export function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const [remove] = links.useDelete();
+  const { mutateAsync: remove } = useDeleteLink();
   const options = useLinkPageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(link.notifications, "notifications must be present in link");

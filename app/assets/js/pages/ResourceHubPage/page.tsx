@@ -2,11 +2,11 @@ import React from "react";
 
 import { ResourceHubPage } from "turboui";
 import {
-  folders,
   getDraftEditPath,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
+  useCreateFolder,
 } from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 
@@ -24,7 +24,7 @@ export function Page() {
 
   const newFileModalsContext = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
-  const [createFolder] = folders.useCreate();
+  const { mutateAsync: createFolder } = useCreateFolder();
   const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
 
   const props: ResourceHubPage.Props = {

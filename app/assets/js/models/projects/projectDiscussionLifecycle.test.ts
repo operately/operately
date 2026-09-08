@@ -12,6 +12,8 @@ describe("project discussion lifecycle queries", () => {
     const queryClient = createQueryClient();
     const discussionKey = Api.projects.getDiscussionQueryKey({ id: "discussion-1" });
     const listDiscussionsKey = Api.projects.listDiscussionsQueryKey({ projectId: "project-1" });
+    const countKey = Api.projects.countChildrenQueryKey({ id: "project-1" });
+    queryClient.setQueryData(countKey, {});
     const projectKey = Api.projects.getQueryKey({ id: "project-1" });
     const listProjectsKey = Api.projects.listQueryKey({});
 
@@ -23,6 +25,7 @@ describe("project discussion lifecycle queries", () => {
 
     expect(queryClient.getQueryState(discussionKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(listDiscussionsKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(countKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(projectKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(listProjectsKey)?.isInvalidated).toBe(false);
   });

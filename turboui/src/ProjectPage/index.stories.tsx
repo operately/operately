@@ -14,7 +14,10 @@ import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { ProjectPage } from "./index";
-import { ProjectPageWithDocsAndFilesStory, type ProjectPageWithDocsAndFilesStoryData } from "./ProjectPageWithDocsAndFilesStory";
+import {
+  ProjectPageWithDocsAndFilesStory,
+  type ProjectPageWithDocsAndFilesStoryData,
+} from "./ProjectPageWithDocsAndFilesStory";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { generatePermissions } from "../utils/storybook/permissions";
@@ -242,7 +245,6 @@ const workMapsRolloutDescription = asRichTextWithList(
   ],
 );
 
-
 const docsAndFilesStoryData: ProjectPageWithDocsAndFilesStoryData = {
   currentViewer,
   defaultSpace,
@@ -256,7 +258,7 @@ const docsAndFilesStoryData: ProjectPageWithDocsAndFilesStoryData = {
 };
 
 export const Default: Story = {
-  render: () => {
+  render: (args) => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
     const [tasks, setTasks] = useState([...mockTasks("project")]);
@@ -425,7 +427,6 @@ export const Default: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -436,6 +437,7 @@ export const Default: Story = {
         discussions={mockDiscussions}
         onProjectDelete={() => {}}
         subscriptions={subscriptions}
+        {...args}
       />
     );
   },
@@ -553,7 +555,6 @@ export const OverdueCheckIn: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -664,7 +665,6 @@ export const ReadOnly: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -787,7 +787,6 @@ export const EmptyTasks: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -909,7 +908,6 @@ export const EmptyProject: Story = {
         contributors={[]}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1010,7 +1008,6 @@ export const EmptyProjectReadOnly: Story = {
         contributors={[]}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1155,7 +1152,6 @@ export const PausedProject: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1271,7 +1267,6 @@ export const ClosedProject: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         championSearch={championSearch}
         reviewerSearch={reviewerSearch}
@@ -1442,7 +1437,6 @@ export const ProjectWithoutSpace: Story = {
         contributors={mockContributors}
         accessLevels={defaultProjectAccessLevels}
         setAccessLevels={() => undefined}
-
         otherPeopleWithAccess={{ people: [], loading: false, onRequestLoad: () => undefined }}
         newCheckInLink="#"
         checkIns={mockCheckIns}
