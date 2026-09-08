@@ -1,4 +1,5 @@
 import * as React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { useAddFileWidgetProps } from "./useAddFileWidgetProps";
@@ -100,7 +101,11 @@ describe("resource hub nullable hooks", () => {
   });
 
   test("return inert values when resource hub data is unavailable", () => {
-    const html = renderToStaticMarkup(<NullHooksHarness />);
+    const html = renderToStaticMarkup(
+      <QueryClientProvider client={new QueryClient()}>
+        <NullHooksHarness />
+      </QueryClientProvider>,
+    );
 
     expect(html).toContain('data-testid="subscribers">0<');
     expect(html).toContain('data-testid="nodes">0<');

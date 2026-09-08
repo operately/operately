@@ -22,7 +22,11 @@ describe("task lifecycle queries", () => {
     const milestoneTasksKey = Api.projects.listMilestoneTasksQueryKey({ milestoneId: "milestone-1" });
     const spaceKey = Api.spaces.getQueryKey({ id: "space-1", includePermissions: true });
     const spaceTasksKey = Api.spaces.listTasksQueryKey({ spaceId: "space-1" });
-    const unrelatedKey = Api.tasks.listQueryKey({ projectId: "project-1" });
+    const projectKey = Api.projects.getQueryKey({ id: "project-1" });
+    const projectTasksKey = Api.tasks.listQueryKey({ projectId: "project-1" });
+    queryClient.setQueryData(projectKey, {});
+    queryClient.setQueryData(projectTasksKey, {});
+    const unrelatedKey = Api.people.getQueryKey({ id: "person-1" });
 
     [
       taskKey,
@@ -48,6 +52,8 @@ describe("task lifecycle queries", () => {
     expect(queryClient.getQueryState(milestoneTasksKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(spaceKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(spaceTasksKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(projectKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(projectTasksKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
   });
 });

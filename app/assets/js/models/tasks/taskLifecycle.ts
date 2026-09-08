@@ -8,6 +8,8 @@ export async function invalidateTaskLifecycleQueries(
   refetchType: RefetchType = "active",
 ): Promise<void> {
   await Promise.all([
+    queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.tasks.listQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.tasks.getQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.comments.listQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix(), refetchType }),

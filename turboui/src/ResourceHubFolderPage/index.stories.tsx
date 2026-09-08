@@ -34,7 +34,15 @@ function StoryPage({ empty = false }: { empty?: boolean }) {
       resourceHubId: resourceHub.id,
       resourceHub,
       permissions: createMockPermissions({ canRenameFolder: true }),
-      pathToFolder: [{ id: "parent-folder", name: "People Ops", resourceHubId: resourceHub.id, resourceHub }],
+      pathToFolder: [
+        {
+          __typename: "resource_hub_folder",
+          id: "parent-folder",
+          name: "People Ops",
+          resourceHubId: resourceHub.id,
+          resourceHub,
+        },
+      ],
     }),
   );
   const [nodes, setNodes] = React.useState(() =>

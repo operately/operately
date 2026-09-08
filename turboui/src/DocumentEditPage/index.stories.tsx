@@ -6,7 +6,7 @@ import type { DocumentEditPage as DocumentEditPageTypes } from "./types";
 import { SubscribersSelector } from "../Subscriptions";
 import { emptyContent } from "../RichContent/contentOps";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
 const meta = {
   title: "Pages/DocumentEditPage",
@@ -25,12 +25,9 @@ type Story = StoryObj<typeof meta>;
 
 const mockPeople = genPeople(6);
 
-const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => ({
-  person,
-  isSubscribed: false,
-  priority: false,
-  role: null,
-}));
+const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) =>
+  asSubscriber(person, { isSubscribed: false }),
+);
 
 const navigation = [
   { to: "/spaces/space-1", label: "Product" },

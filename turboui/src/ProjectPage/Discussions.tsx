@@ -1,15 +1,22 @@
 import React from "react";
 
 import { ProjectPage } from ".";
+import { ContentListState } from "./ContentListState";
 import { PrimaryButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";
 
 export function Discussions(props: ProjectPage.State) {
-  if (props.discussions.length === 0 && !props.permissions.canEdit) return null;
+  if (
+    props.discussions.length === 0 &&
+    !props.permissions.canEdit &&
+    !props.discussionsLoading &&
+    !props.discussionsError
+  )
+    return null;
 
   const showNewDiscussionButton = props.permissions.canEdit && props.state !== "closed";
-  const isZeroState = props.discussions.length === 0 && props.state !== "closed";
+  const isZeroState = props.discussions.length === 0 && props.state !== "closed" && !props.discussionsError;
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
@@ -26,8 +33,15 @@ export function Discussions(props: ProjectPage.State) {
       </div>
 
       <div className="mt-8" data-test-id="project-discussions-section">
-        {isZeroState && <DiscussionsZeroState />}
-        {!isZeroState && <DiscussionsList props={props} />}
+        <ContentListState
+          name="discussions"
+          loading={props.discussionsLoading}
+          error={props.discussionsError}
+          onRetry={props.onRetryDiscussions}
+        >
+          {isZeroState && <DiscussionsZeroState />}
+          {!isZeroState && <DiscussionsList props={props} />}
+        </ContentListState>
       </div>
     </div>
   );

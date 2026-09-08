@@ -3,6 +3,7 @@ import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 
 export async function invalidateProjectDiscussionQueries(queryClient: QueryClient): Promise<void> {
   await Promise.all([
+    queryClient.invalidateQueries({ queryKey: Api.projects.countChildrenQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getDiscussionQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.projects.listDiscussionsQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix() }),

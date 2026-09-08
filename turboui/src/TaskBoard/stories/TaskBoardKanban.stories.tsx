@@ -394,7 +394,7 @@ export const WithStatusManagement: Story = {
             const base = emptyKanbanState(nextStatuses);
             (Object.keys(base) as KanbanStatus[]).forEach((status) => {
               if (prev[status]) {
-                base[status] = prev[status];
+                base[status] = prev[status] ?? [];
               }
             });
             return base;

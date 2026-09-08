@@ -3,7 +3,7 @@ import React from "react";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 
-import { PageDocsAndFilesTab, type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
+import { type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
@@ -18,6 +18,7 @@ import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection } from "../SidebarSection";
+import { DocsAndFilesSection } from "./DocsAndFilesSection";
 import { TasksSection } from "./TasksSection";
 import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
@@ -151,6 +152,9 @@ export namespace ProjectPage {
 
     // TaskBoard props
     tasks: TaskBoardTypes.Task[];
+    tasksLoading?: boolean;
+    tasksError?: boolean;
+    onRetryTasks?: () => void;
     milestones: Milestone[];
     searchableMilestones: Milestone[]; // Filtered milestones for task creation
 
@@ -195,6 +199,12 @@ export namespace ProjectPage {
     ) => void | boolean | Promise<void | boolean>;
     onContributorDelete?: (contributorId: string) => void | Promise<void>;
 
+    checkInsLoading?: boolean;
+    checkInsError?: boolean;
+    onRetryCheckIns?: () => void;
+    discussionsLoading?: boolean;
+    discussionsError?: boolean;
+    onRetryDiscussions?: () => void;
     checkIns: CheckIn[];
     discussions: Discussion[];
 
@@ -209,6 +219,10 @@ export namespace ProjectPage {
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
     docsAndFiles?: DocsAndFiles;
+    docsAndFilesAvailable?: boolean;
+    docsAndFilesLoading?: boolean;
+    docsAndFilesError?: boolean;
+    onRetryDocsAndFiles?: () => void;
     formattedTimePreferences: FormattedTimePreferences;
     saveAsTemplate?: {
       canSave: boolean;
@@ -264,9 +278,10 @@ export function ProjectPage(props: ProjectPage.Props) {
   const tabs = useProjectPageTabs({
     defaultTab: "overview",
     childrenCount: state.childrenCount,
-    showDocsAndFiles: Boolean(state.docsAndFiles),
+    showDocsAndFiles: Boolean(state.docsAndFiles || state.docsAndFilesAvailable),
   });
-  const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
+  const activeTab =
+    !state.docsAndFiles && !state.docsAndFilesAvailable && tabs.active === "docs-and-files" ? "overview" : tabs.active;
 
   return (
     <ProjectPageLayout
@@ -282,12 +297,7 @@ export function ProjectPage(props: ProjectPage.Props) {
         {activeTab === "tasks" && <TasksSection state={state} />}
         {activeTab === "check-ins" && <CheckIns {...state} />}
         {activeTab === "discussions" && <Discussions {...state} />}
-        {activeTab === "docs-and-files" && state.docsAndFiles && (
-          <PageDocsAndFilesTab
-            docsAndFiles={state.docsAndFiles}
-            formattedTimePreferences={state.formattedTimePreferences}
-          />
-        )}
+        {activeTab === "docs-and-files" && <DocsAndFilesSection state={state} />}
         {activeTab === "activity" && <Activity {...state} />}
       </div>
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import * as Pages from "@/components/Pages";
 import * as ReactionsModel from "@/models/reactions";
-import { files, resourceHubLandingPath } from "@/models/resourceHubs";
+import { resourceHubLandingPath, useDeleteFile } from "@/models/resourceHubs";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { usePaths } from "@/routes/paths";
 
@@ -27,7 +27,7 @@ export function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const [remove] = files.useDelete();
+  const { mutateAsync: remove } = useDeleteFile();
   const options = useFilePageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(file.name, "name must be present in file");

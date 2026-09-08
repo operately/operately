@@ -20,7 +20,6 @@ export function useTaskSlideInProps(opts: {
   tasks: TaskBoard.Task[];
 
   commentEntityType: "project_task" | "space_task";
-  cacheKey?: string;
   onRefresh?: () => Promise<void>;
 
   canEdit: boolean;
@@ -55,7 +54,6 @@ export function useTaskSlideInProps(opts: {
     subscriptionList: activeBackendTask?.subscriptionList,
     entityId: activeBackendTask?.id ?? "",
     entityType: commentEntityType,
-    cacheKey: opts.cacheKey,
     onRefresh: opts.onRefresh,
   });
 

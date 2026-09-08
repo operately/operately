@@ -74,7 +74,7 @@ function buildRefineFilters(selections: Record<string, string[]>): SearchPage.Re
       label: "All spaces",
       icon: IconWorld,
       selectionMode: "multiple",
-      selectedOptionIds: selections.spaces,
+      selectedOptionIds: selections.spaces ?? [],
       options: [
         { id: "product", label: "Product" },
         { id: "marketing", label: "Marketing" },
@@ -86,7 +86,7 @@ function buildRefineFilters(selections: Record<string, string[]>): SearchPage.Re
       label: "All types",
       icon: IconLayoutGrid,
       selectionMode: "multiple",
-      selectedOptionIds: selections.types,
+      selectedOptionIds: selections.types ?? [],
       options: SEARCH_TYPE_FILTER_OPTIONS,
     },
     {
@@ -94,7 +94,7 @@ function buildRefineFilters(selections: Record<string, string[]>): SearchPage.Re
       label: "All time",
       icon: IconCalendar,
       selectionMode: "single",
-      selectedOptionIds: selections.time,
+      selectedOptionIds: selections.time ?? [],
       options: SEARCH_TIME_FILTER_OPTIONS,
     },
   ];
@@ -253,7 +253,15 @@ export const HistoricalStates: Story = {
         result({ id: "completed", title: "Completed goal", type: "goal", state: "completed", link: "/completed" }),
         result({ id: "milestone", title: "Launch beta", type: "milestone", state: "completed", link: "/milestone" }),
         result({ id: "task", title: "Interview customers", type: "task", state: "paused", link: "/task" }),
-        result({ id: "person", title: "Taylor Reed", type: "person", matchedField: "title", snippet: "VP of Product", state: null, link: "/person" }),
+        result({
+          id: "person",
+          title: "Taylor Reed",
+          type: "person",
+          matchedField: "title",
+          snippet: "VP of Product",
+          state: null,
+          link: "/person",
+        }),
         result({
           id: "archived",
           title: "Archived discussion",

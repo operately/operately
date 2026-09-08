@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import { files } from "@/models/resourceHubs";
+import { useUpdateFile } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -15,7 +15,7 @@ export function Page() {
   const { file } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = files.useUpdate();
+  const { mutateAsync: edit } = useUpdateFile();
 
   assertPresent(file.name, "name must be present in file");
   assertPresent(file.description, "description must be present in file");

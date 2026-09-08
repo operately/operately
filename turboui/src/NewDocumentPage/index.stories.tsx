@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { NewDocumentPage } from "./index";
 import { SubscribersSelector } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
 const meta = {
   title: "Pages/NewDocumentPage",
@@ -23,12 +23,9 @@ type Story = StoryObj<typeof meta>;
 
 const mockPeople = genPeople(6);
 
-const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => ({
-  person,
-  isSubscribed: false,
-  priority: false,
-  role: null,
-}));
+const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) =>
+  asSubscriber(person, { isSubscribed: false }),
+);
 
 const navigation = [
   { to: "/spaces/space-1", label: "Product" },

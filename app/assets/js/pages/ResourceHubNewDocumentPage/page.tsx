@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import { documents, resourceHubLandingPath } from "@/models/resourceHubs";
+import { resourceHubLandingPath, useCreateDocument } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
@@ -15,7 +15,7 @@ export function Page() {
   const { resourceHub, folder } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [post] = documents.useCreate();
+  const { mutateAsync: post } = useCreateDocument();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 
@@ -38,7 +38,11 @@ export function Page() {
         subscriberIds: subscriptionsState.currentSubscribersList,
         postAsDraft: meta.isDraft,
       });
-      navigate(paths.resourceHubDocumentPath(res.document!.id!));
+      const document: unknown = res.document;
+      if (!document || typeof document !== "object" || !("id" in document) || typeof document.id !== "string") {
+        throw new Error("Created document is missing its id");
+      }
+      navigate(paths.resourceHubDocumentPath(document.id));
       return true;
     } catch {
       showErrorToast("Document not created", "Check the form and try again.");

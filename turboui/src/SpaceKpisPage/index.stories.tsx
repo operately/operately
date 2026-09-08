@@ -385,7 +385,7 @@ export const DetailView: Story = {
 // "Recorded updates" log. Guards against the composer overflowing the panel.
 export const UpdateComments: Story = {
   parameters: kpiRoute("kpi-mrr"),
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const toggle = canvasElement.querySelector<HTMLButtonElement>('[data-test-id^="entry-comments-toggle-"]');
     toggle?.click();
   },
@@ -395,7 +395,7 @@ export const UpdateComments: Story = {
 // update's first comment.
 export const LogUpdate: Story = {
   parameters: kpiRoute("kpi-mrr"),
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     canvasElement.querySelector<HTMLButtonElement>('[data-test-id="kpi-detail-log-update"]')?.click();
   },
 };

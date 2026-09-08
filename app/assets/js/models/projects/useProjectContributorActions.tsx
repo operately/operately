@@ -1,10 +1,13 @@
 import * as React from "react";
 
-import Api, { type Project, type ProjectContributor } from "@/api";
+import { type Project, type ProjectContributor } from "@/api";
 import { accessLevelAsEnumValue } from "@/features/Permissions";
 import * as People from "@/models/people";
-import * as ProjectContributors from "@/models/projectContributors";
-import { PageCache } from "@/routes/PageCache";
+import {
+  useCreateProjectContributor,
+  useUpdateProjectContributor,
+  useDeleteProjectContributor,
+} from "./projectLifecycle";
 import { Paths, usePaths } from "@/routes/paths";
 import { ProjectPage, showErrorToast } from "turboui";
 
@@ -17,14 +20,13 @@ type ContributorFormValues = {
 
 interface UseProjectContributorActionsOptions {
   project: Project;
-  cacheKey: string;
 }
 
-export function useProjectContributorActions({ project, cacheKey }: UseProjectContributorActionsOptions) {
+export function useProjectContributorActions({ project }: UseProjectContributorActionsOptions) {
   const paths = usePaths();
-  const [createContributor] = ProjectContributors.useAddProjectContributor();
-  const [updateContributor] = ProjectContributors.useUpdateContributor();
-  const [deleteContributor] = Api.projects.useDeleteContributor();
+  const { mutateAsync: createContributor } = useCreateProjectContributor();
+  const { mutateAsync: updateContributor } = useUpdateProjectContributor();
+  const { mutateAsync: deleteContributor } = useDeleteProjectContributor();
 
   const canEdit = Boolean(project.permissions?.canEdit);
 
@@ -92,7 +94,6 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
         setContributors((prev) =>
           prev.map((contributor) => (contributor.id === tempId ? { ...optimistic, id: realId } : contributor)),
         );
-        PageCache.invalidate(cacheKey);
         return true;
       } catch (error) {
         console.error("Failed to add contributor", error);
@@ -101,7 +102,7 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
         return false;
       }
     },
-    [cacheKey, createContributor, paths, project.id],
+    [createContributor, paths, project.id],
   );
 
   const onContributorUpdate = React.useCallback(
@@ -139,10 +140,8 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
           contribId: contributorId,
           personId: updates.person?.id,
           responsibility: updates.responsibility ?? undefined,
-          permissions:
-            updates.accessLevel !== undefined ? accessLevelAsEnumValue(updates.accessLevel) : undefined,
+          permissions: updates.accessLevel !== undefined ? accessLevelAsEnumValue(updates.accessLevel) : undefined,
         });
-        PageCache.invalidate(cacheKey);
         return true;
       } catch (error) {
         console.error("Failed to update contributor", error);
@@ -151,7 +150,7 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
         return false;
       }
     },
-    [cacheKey, paths, updateContributor],
+    [paths, updateContributor],
   );
 
   const onContributorDelete = React.useCallback(
@@ -165,14 +164,13 @@ export function useProjectContributorActions({ project, cacheKey }: UseProjectCo
 
       try {
         await deleteContributor({ contribId: contributorId });
-        PageCache.invalidate(cacheKey);
       } catch (error) {
         console.error("Failed to remove contributor", error);
         setContributors(snapshot);
         showErrorToast("Contributor not removed", "Something went wrong. Please try again.");
       }
     },
-    [cacheKey, deleteContributor],
+    [deleteContributor],
   );
 
   const includeDemotedContributor = React.useCallback(

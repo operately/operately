@@ -3,6 +3,7 @@ import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 
 export async function invalidateProjectCheckInQueries(queryClient: QueryClient): Promise<void> {
   await Promise.all([
+    queryClient.invalidateQueries({ queryKey: Api.projects.countChildrenQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getCheckInQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.projects.listCheckInsQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix() }),

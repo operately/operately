@@ -32,3 +32,21 @@ export const folders = {
   useRename: Api.resource_hubs.useRenameFolder,
 };
 export const links = Api.links;
+
+export {
+  useCreateDocument,
+  useUpdateDocument,
+  usePublishDocument,
+  useDeleteDocument,
+  useCreateFiles,
+  useUpdateFile,
+  useDeleteFile,
+  useCreateLink,
+  useUpdateLink,
+  useDeleteLink,
+  useCreateFolder,
+  useRenameFolder,
+  useDeleteFolder,
+  useCopyFolder,
+  useMoveResource,
+} from "./resourceHubLifecycle";

@@ -3,10 +3,12 @@ import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Api from "@/api";
-import { PageCache } from "@/routes/PageCache";
+import { useLoadedData } from "./loader";
 import { ProjectPage, showErrorToast } from "turboui";
-import PageModule, { projectPageCacheKey } from "./index";
+import PageModule from "./index";
 
+const mockRefresh = jest.fn();
+jest.mock("./loader", () => ({ loader: jest.fn(), useLoadedData: jest.fn(), useRefreshCore: () => mockRefresh }));
 const mockNavigate = jest.fn();
 const mockEmpty: [] = [];
 const mockPaths = new Proxy({}, { get: (_, name) => (id: string) => `/${String(name)}/${id ?? ""}` });
@@ -20,8 +22,7 @@ jest.mock("turboui", () => ({
   },
 }));
 jest.mock("react-router", () => ({ useNavigate: () => mockNavigate }));
-jest.mock("@/routes/paths", () => ({ usePaths: () => mockPaths }));
-jest.mock("@/routes/PageCache", () => ({ PageCache: { useData: jest.fn(), invalidate: jest.fn() } }));
+jest.mock("@/routes/paths", () => ({ compareIds: (a: string, b: string) => a === b, usePaths: () => mockPaths }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => null }));
 jest.mock("@/models/projects", () => ({
   ...jest.requireActual("@/models/projects/projectLifecycle"),
@@ -51,7 +52,7 @@ jest.mock("@/models/milestones", () => ({
 jest.mock("@/models/projectCheckIns", () => ({ parseCheckInsForTurboUi: () => mockEmpty }));
 jest.mock("@/models/subscriptions", () => ({ useSubscription: () => ({}) }));
 jest.mock("@/models/resourceHubs", () => ({
-  folders: { useCreate: () => [jest.fn()] },
+  useCreateFolder: () => ({ mutateAsync: jest.fn() }),
   useNewFileModalsContextValue: () => ({}),
   useAddFileWidgetProps: () => ({}),
   useResourceHubNodesListProps: () => ({}),
@@ -59,6 +60,15 @@ jest.mock("@/models/resourceHubs", () => ({
 jest.mock("@/models/search/resourceHub", () => ({ useResourceHubSearchProps: () => ({}) }));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: () => ({}) }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
+jest.mock("./contentQueries", () => ({
+  useProjectContentQueries: () => ({
+    checkIns: mockEmpty,
+    discussions: mockEmpty,
+    backendTasks: mockEmpty,
+    tasksLoaded: true,
+    refresh: jest.fn(),
+  }),
+}));
 jest.mock("@/features/Feed", () => ({ Feed: () => null, useFeedItemsQuery: () => ({}) }));
 
 function deferred() {
@@ -115,7 +125,6 @@ describe("Project Page detail actions", () => {
       .spyOn(Api.project_templates, "createFromProjectMutationOptions")
       .mockReturnValue({ mutationFn: requests.template });
     const loadedData = {
-      cacheVersion: 1,
       data: {
         project: {
           id: "project-1",
@@ -124,17 +133,14 @@ describe("Project Page detail actions", () => {
           goal: null,
           timeframe: null,
         },
-        checkIns: [],
-        discussions: [],
-        backendTasks: [],
         childrenCount: {},
-        docsAndFiles: null,
         space: null,
       },
       refresh: jest.fn(),
     };
-    jest.mocked(PageCache.useData).mockReturnValue(loadedData);
+    jest.mocked(useLoadedData).mockReturnValue(loadedData as unknown as ReturnType<typeof useLoadedData>);
     client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    client.setQueryData(Api.projects.getQueryKey({ id: "project-1" }), {});
     root = createRoot(document.createElement("div"));
     const Page = PageModule.Page;
     await act(async () =>
@@ -152,17 +158,17 @@ describe("Project Page detail actions", () => {
     jest.restoreAllMocks();
   });
 
-  it("shows the new name before saving and invalidates the legacy cache after success", async () => {
+  it("shows the new name before saving and invalidates the project query cache after success", async () => {
     const save = deferred();
     requests.updateNameMutationOptions.mockReturnValue(save.promise);
     await act(async () => {
       void mockProps.updateProjectName("Renamed");
     });
     expect(mockProps.project.name).toBe("Renamed");
-    expect(PageCache.invalidate).not.toHaveBeenCalled();
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(false);
     await act(async () => save.resolve({ project: { id: "project-1", name: "Renamed" } }));
     expect(mockProps.project.name).toBe("Renamed");
-    expect(PageCache.invalidate).toHaveBeenCalledWith(projectPageCacheKey("project-1"));
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(true);
     expect(requests.updateNameMutationOptions).toHaveBeenCalledWith(
       { projectId: "project-1", name: "Renamed" },
       expect.anything(),
@@ -175,7 +181,7 @@ describe("Project Page detail actions", () => {
     });
     expect(mockProps.project.name).toBe("Original");
     expect(requests.updateNameMutationOptions).not.toHaveBeenCalled();
-    expect(PageCache.invalidate).not.toHaveBeenCalled();
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(false);
     expect(showErrorToast).toHaveBeenCalled();
   });
 
@@ -188,8 +194,31 @@ describe("Project Page detail actions", () => {
     expect(mockProps.project.name).toBe("Renamed");
     await act(async () => save.reject(new Error("Save failed")));
     expect(mockProps.project.name).toBe("Original");
-    expect(PageCache.invalidate).not.toHaveBeenCalled();
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(false);
     expect(showErrorToast).toHaveBeenCalled();
+  });
+
+  it("preserves a pending optimistic name during an unrelated core refresh", async () => {
+    const save = deferred();
+    requests.updateNameMutationOptions.mockReturnValue(save.promise);
+    await act(async () => {
+      void mockProps.updateProjectName("Renamed");
+    });
+    const loaded = jest.mocked(useLoadedData).mock.results.at(-1)?.value as ReturnType<typeof useLoadedData>;
+    jest
+      .mocked(useLoadedData)
+      .mockReturnValue({ ...loaded, data: { ...loaded.data, project: { ...loaded.data.project, description: "{}" } } });
+    const Page = PageModule.Page;
+    await act(async () =>
+      root.render(
+        <QueryClientProvider client={client}>
+          <Page />
+        </QueryClientProvider>,
+      ),
+    );
+    expect(mockProps.project.name).toBe("Renamed");
+    await act(async () => save.resolve({ project: { id: "project-1", name: "Renamed" } }));
+    expect(mockProps.project.name).toBe("Renamed");
   });
 
   const fields = [
@@ -233,7 +262,7 @@ describe("Project Page detail actions", () => {
       expect(await result).toBe(false);
     });
     expect(field.value()).toEqual(previous);
-    expect(PageCache.invalidate).not.toHaveBeenCalled();
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(false);
   });
 
   it.each(fields.filter((field) => field.name !== "description"))(
@@ -245,11 +274,11 @@ describe("Project Page detail actions", () => {
         expect(await field.change()).toBe(false);
       });
       expect(field.value()).toEqual(previous);
-      expect(PageCache.invalidate).not.toHaveBeenCalled();
+      expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(false);
     },
   );
 
-  it("deletes, invalidates the legacy cache, and navigates only after success", async () => {
+  it("deletes, invalidates the project query cache, and navigates only after success", async () => {
     const save = deferred();
     requests.deleteMutationOptions.mockReturnValue(save.promise);
     let result: ReturnType<ProjectPage.Props["onProjectDelete"]>;
@@ -261,7 +290,7 @@ describe("Project Page detail actions", () => {
       save.resolve({ project: { id: "project-1" } });
       expect(await result).toEqual({ success: true });
     });
-    expect(PageCache.invalidate).toHaveBeenCalledWith(projectPageCacheKey("project-1"));
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(true);
     expect(mockNavigate).toHaveBeenCalledWith("/homePath/");
   });
 
@@ -272,7 +301,7 @@ describe("Project Page detail actions", () => {
       expect(await mockProps.onProjectDelete()).toEqual({ success: false });
     });
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(PageCache.invalidate).not.toHaveBeenCalled();
+    expect(client.getQueryState(Api.projects.getQueryKey({ id: "project-1" }))?.isInvalidated).toBe(false);
     expect(showErrorToast).toHaveBeenCalled();
   });
 });

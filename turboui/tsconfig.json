@@ -38,6 +38,9 @@
 
     // Paths for dependencies — app paths first for local dev parity, turboui paths as CI fallback
     "paths": {
+      "@storybook/react-vite": ["./node_modules/@storybook/react-vite/dist/index.d.ts"],
+      "@storybook/react": ["./node_modules/@storybook/react/dist/index.d.ts"],
+      "storybook/*": ["./node_modules/storybook/dist/*/index.d.ts"],
       "react-router": ["./node_modules/react-router", "../app/node_modules/react-router"],
       "*": ["../app/node_modules/*", "./node_modules/*"],
       "react": [
@@ -56,5 +59,5 @@
     "typeRoots": ["../app/node_modules/@types", "./node_modules/@types", "./src/types"]
   },
   "include": ["src/**/*", "src/types/**/*.d.ts", "jest.setup.ts"],
-  "exclude": ["node_modules/**/*", "dist", "**/*.stories.tsx", "src/WorkMap/tests/**"]
+  "exclude": ["node_modules/**/*", "dist"]
 }
