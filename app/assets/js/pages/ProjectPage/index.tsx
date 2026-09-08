@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { accessLevelsAsNumbers, accessLevelsAsStrings, parseParentGoalForTurboUi } from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
+import { useCreateProjectTemplateFromProject } from "@/models/projectTemplates";
 import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
@@ -159,6 +160,13 @@ function Page() {
   const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles, space } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
+  const updateProjectName = Projects.useUpdateProjectName();
+  const updateProjectDescription = Projects.useUpdateProjectDescription();
+  const updateProjectStartDate = Projects.useUpdateProjectStartDate();
+  const updateProjectDueDate = Projects.useUpdateProjectDueDate();
+  const updateProjectParentGoal = Projects.useUpdateProjectParentGoal();
+  const deleteProjectMutation = Projects.useDeleteProject();
+  const createTemplateFromProject = useCreateProjectTemplateFromProject();
 
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
   const { spaceProps, champion, reviewer, updateChampion, updateReviewer } = useSpaceProps({
@@ -170,7 +178,7 @@ function Page() {
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
-    update: (v) => Api.projects.updateName({ projectId: project.id, name: v }).then(() => true),
+    update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }).then(() => true),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
   });
@@ -178,14 +186,14 @@ function Page() {
   const [description, setDescription] = usePageField({
     value: (data: { project: Projects.Project }) => data.project.description && JSON.parse(data.project.description),
     update: (v) =>
-      Api.projects.updateDescription({ projectId: project.id, description: JSON.stringify(v) }).then(() => true),
+      updateProjectDescription.mutateAsync({ projectId: project.id, description: JSON.stringify(v) }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
     value: (data: { project: Projects.Project }) => parseParentGoalForTurboUi(paths, data.project.goal),
     update: (v) =>
-      Api.projects.updateParentGoal({
+      updateProjectParentGoal.mutateAsync({
         projectId: project.id,
         goalId: v && v.id,
       }),
@@ -209,13 +217,13 @@ function Page() {
 
   const [dueDate, setDueDate] = usePageField({
     value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualEndDate),
-    update: (v) => Api.projects.updateDueDate({ projectId: project.id, dueDate: serializeContextualDate(v) }),
+    update: (v) => updateProjectDueDate.mutateAsync({ projectId: project.id, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
   });
 
   const [startedDate, setStartedDate] = usePageField({
     value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualStartDate),
-    update: (v) => Api.projects.updateStartDate({ projectId: project.id, startDate: serializeContextualDate(v) }),
+    update: (v) => updateProjectStartDate.mutateAsync({ projectId: project.id, startDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
@@ -355,8 +363,8 @@ function Page() {
   });
 
   const deleteProject = async () => {
-    return Api.projects
-      .delete({ projectId: project.id })
+    return deleteProjectMutation
+      .mutateAsync({ projectId: project.id })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         navigate(backLink);
@@ -453,7 +461,7 @@ function Page() {
     onSave: Projects.createSaveProjectAsTemplateHandler({
       projectId: project.id,
       paths,
-      createFromProject: Api.project_templates.createFromProject,
+      createFromProject: createTemplateFromProject.mutateAsync,
       navigate,
     }),
   };

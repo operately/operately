@@ -21,6 +21,11 @@ export {
   usePauseProject,
   useResumeProject,
   useUpdateProjectName,
+  useUpdateProjectDescription,
+  useUpdateProjectStartDate,
+  useUpdateProjectDueDate,
+  useUpdateProjectParentGoal,
+  useDeleteProject,
 } from "./projectLifecycle";
 export {
   invalidateProjectDiscussionQueries,

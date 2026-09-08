@@ -1,5 +1,5 @@
 import Api from "@/api";
-import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, type QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export async function invalidateProjectLifecycleQueries(queryClient: QueryClient): Promise<void> {
   await Promise.all([
@@ -100,13 +100,85 @@ export function useCreateProjectFromTemplate() {
   });
 }
 
+// These fields still have legacy PageCache callers. Refresh failures must not
+// turn a successful write into a failed save and roll back their optimistic UI.
+async function invalidateProjectDetailsQueries(queryClient: QueryClient, additionalKeys: QueryKey[] = []) {
+  try {
+    await Promise.all([
+      invalidateProjectLifecycleQueries(queryClient),
+      queryClient.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix() }),
+      ...additionalKeys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+    ]);
+  } catch (error) {
+    console.error("Failed to refresh project queries", error);
+  }
+}
+
 export function useUpdateProjectName() {
   const queryClient = useQueryClient();
 
   return useMutation({
     ...Api.projects.updateNameMutationOptions(),
     onSuccess: () => {
-      void invalidateProjectLifecycleQueries(queryClient);
+      void invalidateProjectDetailsQueries(queryClient, [Api.tasks.getQueryKeyPrefix()]);
+    },
+  });
+}
+
+export function useUpdateProjectDescription() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.updateDescriptionMutationOptions(),
+    onSuccess: () => {
+      void invalidateProjectDetailsQueries(queryClient);
+    },
+  });
+}
+
+export function useUpdateProjectStartDate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.updateStartDateMutationOptions(),
+    onSuccess: (data) => {
+      if (data.success === false) return;
+      void invalidateProjectDetailsQueries(queryClient);
+    },
+  });
+}
+
+export function useUpdateProjectDueDate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.updateDueDateMutationOptions(),
+    onSuccess: (data) => {
+      if (data.success === false) return;
+      void invalidateProjectDetailsQueries(queryClient);
+    },
+  });
+}
+
+export function useUpdateProjectParentGoal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.updateParentGoalMutationOptions(),
+    onSuccess: (data) => {
+      if (data.success === false) return;
+      void invalidateProjectDetailsQueries(queryClient, [Api.goals.getQueryKeyPrefix()]);
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.projects.deleteMutationOptions(),
+    onSuccess: () => {
+      void invalidateProjectDetailsQueries(queryClient, [Api.goals.getQueryKeyPrefix()]);
     },
   });
 }

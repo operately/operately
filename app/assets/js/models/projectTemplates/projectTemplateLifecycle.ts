@@ -49,3 +49,17 @@ export function useDeleteProjectTemplate() {
     onSuccess: () => void invalidateProjectTemplateListQueries(queryClient),
   });
 }
+
+export function useCreateProjectTemplateFromProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.project_templates.createFromProjectMutationOptions(),
+    onSuccess: (data) => {
+      if (!data.template || data.scheduleIssues.length > 0) return;
+      void invalidateProjectTemplateListQueries(queryClient).catch((error) => {
+        console.error("Failed to refresh project template queries", error);
+      });
+    },
+  });
+}

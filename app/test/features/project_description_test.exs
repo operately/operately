@@ -31,6 +31,8 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.edit_project_description(description: "New description")
     |> Steps.assert_project_description_present(description: "New description")
     |> Steps.assert_project_description_feed_item(description: "New description")
+    |> Steps.reload_project_page()
+    |> Steps.assert_project_description_present(description: "New description")
   end
 
   @tag login_as: :contributor
