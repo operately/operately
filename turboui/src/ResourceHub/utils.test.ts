@@ -1,4 +1,4 @@
-import { sortNodesWithFoldersFirst } from "./utils";
+import { createFileItemId, sortNodesWithFoldersFirst } from "./utils";
 
 // Mock data for testing
 const mockNodes = [
@@ -49,6 +49,14 @@ const mockNodes = [
     updatedAt: "2024-01-04T08:00:00Z",
   },
 ] as any[];
+
+describe("createFileItemId", () => {
+  test("returns a unique id on every call", () => {
+    const ids = new Set(Array.from({ length: 50 }, () => createFileItemId()));
+
+    expect(ids.size).toBe(50);
+  });
+});
 
 describe("sortNodesWithFoldersFirst", () => {
   test("sorts by name ascending", () => {

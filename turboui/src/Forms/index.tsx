@@ -10,7 +10,7 @@ export { NumberInput } from "./NumberInput";
 export { CheckboxInput } from "./CheckboxInput";
 export { RadioButtons } from "./RadioButtons";
 export { TitleInput } from "./TitleInput";
-export { RichTextArea } from "./RichTextArea";
+export { RichTextArea, clearRichTextAreaDraft } from "./RichTextArea";
 export { SelectBox } from "./SelectBox";
 export { SelectGoal } from "./SelectGoal";
 export { SelectPerson } from "./SelectPerson";

@@ -208,6 +208,17 @@ export interface RichTextAreaProps {
   showToolbarTopBorder?: boolean;
   readonly?: boolean;
   hideToolbar?: boolean;
+  /**
+   * Overrides the identifier used for the local-draft storage key (crash/reload
+   * recovery). By default the draft key is derived from `field`, which works
+   * fine for a stable, page-scoped field path.
+   *
+   * Use this when `field` is a positional path that gets reused for different
+   * underlying records over time (e.g. `items[0].description` in a list whose
+   * rows are rebuilt/re-indexed), so a leftover draft from one record can't
+   * leak into another record that happens to share the same field path.
+   */
+  draftKey?: string;
 }
 
 export interface PasswordInputProps {

@@ -55,6 +55,17 @@ describe("local rich text drafts", () => {
     expect(readLocalDraft({ key: "task:1:description", ttlMs: 1_000 }, baseDoc)).toBeNull();
   });
 
+  it("never leaks a draft across different keys, even when baseContent is identical", () => {
+    // Two unrelated editors (e.g. two different uploaded files) can easily share
+    // the same empty baseContent. Restoring drafts must be scoped strictly by
+    // `key`, not by `baseContent` alone, or a draft typed for one record could
+    // be silently restored for a completely different record.
+    writeLocalDraft({ key: "file-item:a:description" }, draftDoc, baseDoc);
+
+    expect(readLocalDraft({ key: "file-item:b:description" }, baseDoc)).toBeNull();
+    expect(readLocalDraft({ key: "file-item:a:description" }, baseDoc)).toEqual(draftDoc);
+  });
+
   it("clears a draft explicitly", () => {
     writeLocalDraft({ key: "task:1:description" }, draftDoc, baseDoc);
     clearLocalDraft({ key: "task:1:description" });

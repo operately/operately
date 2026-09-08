@@ -2,6 +2,7 @@ import * as React from "react";
 
 import RichContent from "../RichContent";
 import { Editor, useEditor } from "../RichEditor";
+import { clearLocalDraft as clearStoredLocalDraft } from "../RichEditor/localDrafts";
 import classNames from "../utils/classnames";
 import { useFieldError, useFieldValue, useFormContext } from "./context";
 import { InputField } from "./FieldGroup";
@@ -67,7 +68,7 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
     placeholder: props.placeholder,
     className: contentClassName(props),
     handlers: props.richTextHandlers,
-    localDraft: { key: localDraftKey(props.field) },
+    localDraft: { key: localDraftKey(props.field, props.draftKey) },
     onBlur: ({ json }) => {
       skipNextContentSync.current = true;
       setValue(json);
@@ -139,14 +140,31 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
   );
 }
 
-function localDraftKey(field: string): string | undefined {
+function localDraftKey(field: string, overrideKey?: string): string | undefined {
   if (typeof window === "undefined") {
     return undefined;
   }
 
-  return `form:${window.location.pathname}:${field}`;
+  return `form:${window.location.pathname}:${overrideKey ?? field}`;
 }
 
-function contentClassName(props: Pick<ResolvedRichTextAreaProps, "horizontalPadding" | "verticalPadding" | "fontSize" | "fontWeight" | "height">) {
+/**
+ * Clears a local draft previously stored for a `RichTextArea` field, without
+ * having to mount the field/editor. Useful for callers that manage a list of
+ * rows (e.g. `AddFileWidget`) and need to proactively purge a specific row's
+ * draft when it's discarded (cancelled) or successfully submitted, instead of
+ * relying on the field being mounted long enough for its own cleanup effects
+ * to run.
+ */
+export function clearRichTextAreaDraft({ field, draftKey }: { field: string; draftKey?: string }): void {
+  clearStoredLocalDraft({ key: localDraftKey(field, draftKey) });
+}
+
+function contentClassName(
+  props: Pick<
+    ResolvedRichTextAreaProps,
+    "horizontalPadding" | "verticalPadding" | "fontSize" | "fontWeight" | "height"
+  >,
+) {
   return classNames(props.horizontalPadding, props.verticalPadding, props.fontSize, props.fontWeight, props.height);
 }

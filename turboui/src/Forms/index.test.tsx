@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { emptyContent } from "../RichContent/contentOps";
+import { clearLocalDraft as clearStoredLocalDraft, readLocalDraft, writeLocalDraft } from "../RichEditor/localDrafts";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import {
   AccessSelectors,
@@ -19,6 +20,7 @@ import {
   Submit,
   SubmitButton,
   TextInput,
+  clearRichTextAreaDraft,
   useForm,
   validateIsNumber,
   validateTextLength,
@@ -28,6 +30,7 @@ const richEditorMockState = {
   localDraftRestored: false,
   restoredDraft: null as unknown,
   fallbackContent: null as unknown,
+  lastLocalDraftKey: undefined as string | undefined,
   editor: {
     commands: { setContent: jest.fn() },
     getJSON: () => richEditorMockState.restoredDraft ?? richEditorMockState.fallbackContent ?? null,
@@ -38,8 +41,9 @@ jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
     <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
-  useEditor: (props: { content?: unknown }) => {
+  useEditor: (props: { content?: unknown; localDraft?: { key?: string } }) => {
     richEditorMockState.fallbackContent = props.content ?? null;
+    richEditorMockState.lastLocalDraftKey = props.localDraft?.key;
 
     return {
       editor: richEditorMockState.editor,
@@ -818,6 +822,82 @@ describe("Forms", () => {
     expect(screen.getByTestId("rich-editor")).toHaveAttribute("data-hide-border", "false");
   });
 
+  test("forwards a custom draftKey into the editor's local draft key", () => {
+    function Harness({ draftKey }: { draftKey?: string }) {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea
+            field="items[0].description"
+            draftKey={draftKey}
+            richTextHandlers={createMockRichEditorHandlers()}
+          />
+        </Form>
+      );
+    }
+
+    const { unmount } = render(<Harness />);
+    const keyWithoutOverride = richEditorMockState.lastLocalDraftKey;
+    expect(keyWithoutOverride).toContain("items[0].description");
+    unmount();
+
+    render(<Harness draftKey="resource-hub-add-file:file-item-1" />);
+    const keyWithOverride = richEditorMockState.lastLocalDraftKey;
+
+    expect(keyWithOverride).toContain("resource-hub-add-file:file-item-1");
+    expect(keyWithOverride).not.toContain("items[0].description");
+    expect(keyWithOverride).not.toEqual(keyWithoutOverride);
+  });
+
+  describe("clearRichTextAreaDraft", () => {
+    beforeEach(() => {
+      window.localStorage.clear();
+    });
+
+    it("removes a draft stored under the field's default key", () => {
+      const baseContent = emptyContent();
+      const draftContent = {
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "text", text: "Draft" }] }],
+      };
+      const key = `form:${window.location.pathname}:description`;
+
+      writeLocalDraft({ key }, draftContent, baseContent);
+      expect(readLocalDraft({ key }, baseContent)).toEqual(draftContent);
+
+      clearRichTextAreaDraft({ field: "description" });
+
+      expect(readLocalDraft({ key }, baseContent)).toBeNull();
+    });
+
+    it("removes a draft stored under a custom draftKey, scoped independently from the field path", () => {
+      const baseContent = emptyContent();
+      const draftContent = {
+        type: "doc",
+        content: [{ type: "paragraph", content: [{ type: "text", text: "Draft for row A" }] }],
+      };
+      const key = `form:${window.location.pathname}:resource-hub-add-file:file-item-a`;
+
+      writeLocalDraft({ key }, draftContent, baseContent);
+
+      // A different row reusing the same positional field path has its own draftKey,
+      // so it must be unaffected by clearing row A's draft.
+      const unrelatedKey = `form:${window.location.pathname}:resource-hub-add-file:file-item-b`;
+      writeLocalDraft({ key: unrelatedKey }, draftContent, baseContent);
+
+      clearRichTextAreaDraft({ field: "items[0].description", draftKey: "resource-hub-add-file:file-item-a" });
+
+      expect(readLocalDraft({ key }, baseContent)).toBeNull();
+      expect(readLocalDraft({ key: unrelatedKey }, baseContent)).toEqual(draftContent);
+
+      clearStoredLocalDraft({ key: unrelatedKey });
+    });
+  });
+
   test("shows required validation errors for rich text areas", async () => {
     const onSubmit = jest.fn();
 
@@ -1234,7 +1314,11 @@ describe("Forms", () => {
 
 function selectCurrentDate(label: string) {
   const date = new Date();
-  const isoDate = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+  const isoDate = [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 
   fireEvent.click(screen.getByLabelText(label));
 
