@@ -9,7 +9,7 @@ import * as Projects from "@/models/projects";
 import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
-import { Feed, useItemsQuery } from "@/features/Feed";
+import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
 import { ProjectPage, showErrorToast } from "turboui";
 import { fetchAll } from "../../utils/async";
@@ -630,7 +630,7 @@ function useProjectDocsAndFilesProps({
 }
 
 function ProjectFeedItems({ projectId }: { projectId: string }) {
-  const { data, loading, error } = useItemsQuery("project", projectId);
+  const { data, loading, error } = useFeedItemsQuery("project", projectId);
 
   if (loading) return null;
   if (error) return null;
