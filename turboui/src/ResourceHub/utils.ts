@@ -12,6 +12,18 @@ export function sortNodesWithFoldersFirst<T extends SortableResourceHubNode>(
   return sortWithFoldersFirst(nodes, sortBy, sortOrder);
 }
 
+let nextFileItemId = 0;
+
+/**
+ * Generates a stable identifier for a dropped-file row in `AddFileWidget`.
+ * Uniqueness only needs to hold within a single browser session/tab, so a
+ * module-scoped counter combined with the current time is sufficient — no
+ * need for crypto.randomUUID.
+ */
+export function createFileItemId(): string {
+  return `file-item-${Date.now()}-${nextFileItemId++}`;
+}
+
 export function findNameAndExtension(fileName: string) {
   const lastDotIndex = fileName.lastIndexOf(".");
 

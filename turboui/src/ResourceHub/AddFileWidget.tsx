@@ -8,7 +8,7 @@ import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import { IconX } from "../icons";
 import { SubscribersSelector } from "../Subscriptions";
 import { FileIcon } from "./NodeIcon";
-import { findNameAndExtension } from "./utils";
+import { createFileItemId, findNameAndExtension } from "./utils";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
 export interface AddFileUploadItem {
@@ -28,6 +28,23 @@ export interface AddFileWidgetProps {
   onUpload: (items: AddFileUploadItem[], onProgress: (progress: number) => void) => Promise<void>;
 }
 
+function descriptionDraftKey(item: PayloadItem): string {
+  return `resource-hub-add-file:${item.id}`;
+}
+
+// Explicitly purges any local drafts for the given rows' description fields.
+// This is defense-in-depth on top of `PayloadItem.id`-scoped draft keys: even
+// if this cleanup were ever skipped, a newly dropped file always gets a fresh
+// id (and therefore a fresh draft key), so it can never inherit another
+// file's leftover note. Doing this explicitly also means the note disappears
+// immediately (Cancel / successful upload) rather than only after the local
+// draft's TTL expires.
+function clearDescriptionDrafts(items: PayloadItem[]): void {
+  items.forEach((item, idx) => {
+    Forms.clearRichTextAreaDraft({ field: `items[${idx}].description`, draftKey: descriptionDraftKey(item) });
+  });
+}
+
 export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize, onUpload }: AddFileWidgetProps) {
   const { files, setFiles, filesSelected } = useNewFileModalsContext();
   const [progress, setProgress] = useState(0);
@@ -43,10 +60,17 @@ export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize,
         }
       });
     },
-    cancel: () => setFiles(undefined),
+    cancel: () => {
+      clearDescriptionDrafts(form.values.items as PayloadItem[]);
+      setFiles(undefined);
+    },
     submit: async () => {
-      const items = (form.values.items as PayloadItem[]).map((item) => item.toUploadItem());
+      const currentItems = form.values.items as PayloadItem[];
+      const items = currentItems.map((item) => item.toUploadItem());
+
       await onUpload(items, setProgress);
+
+      clearDescriptionDrafts(currentItems);
       setFiles(undefined);
     },
   });
@@ -137,6 +161,7 @@ function FileForm({
 
           <Forms.RichTextArea
             field={`items[${index}].description`}
+            draftKey={descriptionDraftKey(item)}
             placeholder="Leave notes here..."
             richTextHandlers={richTextHandlers}
             height="min-h-[80px]"
@@ -181,6 +206,7 @@ function UploadingModal({ progress, isOpen }: { progress: number; isOpen: boolea
 }
 
 class PayloadItem {
+  readonly id: string = createFileItemId();
   mainFile: File;
   previewFile?: File;
   name: string;
