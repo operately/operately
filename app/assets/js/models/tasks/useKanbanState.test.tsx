@@ -1,5 +1,16 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import { act, renderHook } from "@/__tests__/renderHook";
+import Api from "@/api";
+import { useKanbanState } from "./useKanbanState";
 import { buildTaskStatusChangeKanbanEvent } from "./useKanbanState";
 import type { KanbanState } from "./parseKanbanState";
+
+jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
+jest.mock("@/routes/paths", () => ({
+  compareIds: (a: string, b: string) => a === b,
+  includesId: (ids: string[], id: string) => ids.includes(id),
+}));
+jest.mock("./index", () => ({ serializeTaskStatus: (status: unknown) => status }));
 
 describe("buildTaskStatusChangeKanbanEvent", () => {
   test("puts a task completed from the board at the top of the done column", () => {
@@ -67,3 +78,40 @@ function status(value: string, label: string, closed: boolean, color: string) {
     index: 0,
   } as any;
 }
+
+it.each(["space", "template", "project"] as const)("keeps %s Kanban persistence compatible", async (type) => {
+  const save = jest.fn().mockResolvedValue({});
+  const templateTask = jest.spyOn(Api.project_templates, "updateTask").mockImplementation(save);
+  const templateBoard = jest.spyOn(Api.project_templates, "update").mockImplementation(save);
+  const options = {
+    initialRawState: { pending: ["a"], done: [] },
+    statuses: [status("pending", "Pending", false, "gray"), status("done", "Done", true, "green")],
+    tasks: [task("a", "pending")],
+  };
+  const { result } = renderHook(
+    () =>
+      useKanbanState(
+        type === "project"
+          ? { ...options, type, projectId: "p1", updateKanban: save }
+          : type === "space"
+            ? { ...options, type, spaceId: "s1", updateKanban: save }
+            : { ...options, type, templateId: "t1" },
+      ),
+    { initialProps: {} },
+  );
+  try {
+    await act(async () => {
+      expect(await result.current.handleTaskStatusChange("a", options.statuses[1])).toBe(true);
+    });
+    expect(save).toHaveBeenCalledTimes(type === "template" ? 2 : 1);
+    if (type === "project")
+      expect(save.mock.calls[0][0]).toMatchObject({
+        projectId: "p1",
+        taskId: "a",
+        kanbanState: '{"pending":[],"done":["a"]}',
+      });
+  } finally {
+    templateTask.mockRestore();
+    templateBoard.mockRestore();
+  }
+});

@@ -92,4 +92,18 @@ defmodule Operately.Features.Projects.ProjectPageContentTest do
     |> Steps.assert_content_loaded("docs-and-files")
     |> Steps.create_document_and_return_to_project("New project document")
   end
+
+  feature "uploaded files persist after returning to the project tab", ctx do
+    ctx
+    |> Steps.visit_work_map()
+    |> Steps.open_project()
+    |> Steps.assert_overview_loaded()
+    |> Steps.open_tab("docs-and-files")
+    |> Steps.assert_content_loaded("docs-and-files")
+    |> Steps.upload_project_file()
+    |> Steps.visit_work_map()
+    |> Steps.open_project()
+    |> Steps.open_tab("docs-and-files")
+    |> Steps.assert_uploaded_project_file()
+  end
 end

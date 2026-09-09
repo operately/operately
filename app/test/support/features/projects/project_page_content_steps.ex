@@ -115,4 +115,39 @@ defmodule Operately.Support.Features.Projects.ProjectPageContentSteps do
       end)
     end)
   end
+
+  step :upload_project_file, ctx do
+    # The picker creates a detached input; expose it to WebDriver without opening
+    # the operating system file dialog. The real upload pipeline still runs.
+    script = """
+    const original = HTMLInputElement.prototype.click;
+    HTMLInputElement.prototype.click = function() {
+      if (this.type !== "file") return original.call(this);
+      HTMLInputElement.prototype.click = original;
+      this.dataset.testId = "project-file-upload";
+      this.style.display = "none";
+      document.body.appendChild(this);
+    };
+    """
+
+    ctx
+    |> then(fn ctx -> UI.execute("prepare_file_picker", ctx, fn session -> Wallaby.Browser.execute_script(session, script) end) end)
+    |> UI.click(testid: "add-options")
+    |> UI.click(testid: "upload-files")
+    |> UI.upload_file(testid: "project-file-upload", path: "/home/dev/app/README.md")
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "submit")
+    |> assert_uploaded_project_file()
+  end
+
+  step :assert_uploaded_project_file, ctx do
+    ctx = UI.assert_text(ctx, "README.md")
+
+    attempts(ctx, 5, fn ->
+      file = Operately.Repo.get_by!(Operately.ResourceHubs.File, author_id: ctx.creator.id, name: "README.md") |> Operately.Repo.preload(:node)
+      assert file.node.resource_hub_id == ctx.hub.id
+      blob = Operately.Repo.get!(Operately.Blobs.Blob, file.blob_id)
+      assert blob.status == :uploaded
+    end)
+  end
 end
