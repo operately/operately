@@ -31,6 +31,8 @@ export {
   useUpdateProjectChampion,
   useUpdateProjectReviewer,
   useUpdateProjectTasksView,
+  useUpdateProjectTaskStatuses,
+  useUpdateProjectKanban,
   useCreateProjectMilestone,
   useUpdateProjectMilestone,
   useUpdateProjectMilestoneOrdering,
