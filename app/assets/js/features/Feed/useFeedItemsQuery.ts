@@ -6,7 +6,7 @@ import { DISPLAYED_IN_FEED } from "@/features/activities";
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
 export function useFeedItemsQuery(scopeType: ScopeType, scopeId: string) {
-  const input = { scopeType, scopeId, actions: DISPLAYED_IN_FEED };
+  const input = { scopeType, scopeId, actions: DISPLAYED_IN_FEED, paginate: true };
 
   const query = useInfiniteQuery({
     // Share endpoint invalidation without sharing ordinary queries' data shape.

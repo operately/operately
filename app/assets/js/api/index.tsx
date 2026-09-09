@@ -3350,6 +3350,7 @@ export interface CompaniesListActivitiesInput {
   scopeType: ActivityScopeType;
   actions: string[];
   cursor?: string | null;
+  paginate?: boolean;
 }
 
 export interface CompaniesListActivitiesResult {

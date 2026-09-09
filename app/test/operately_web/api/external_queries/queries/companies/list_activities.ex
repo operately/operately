@@ -19,7 +19,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.ListActivities do
     %{
       scope_type: :company,
       scope_id: Paths.company_id(ctx.company),
-      actions: []
+      actions: [],
+      paginate: false
     }
   end
 

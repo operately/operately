@@ -58,7 +58,12 @@ describe("shared activity feed", () => {
     async (type) => {
       scope = type;
       await render();
-      expect(list).toHaveBeenCalledWith({ scopeType: type, scopeId: "resource-1", actions: DISPLAYED_IN_FEED });
+      expect(list).toHaveBeenCalledWith({
+        scopeType: type,
+        scopeId: "resource-1",
+        actions: DISPLAYED_IN_FEED,
+        paginate: true,
+      });
       expect(hook.loading).toBe(false);
       expect(hook.error).toBeNull();
       expect(hook.data?.activities).toHaveLength(2);
@@ -103,6 +108,7 @@ describe("shared activity feed", () => {
       scopeId: "resource-1",
       actions: DISPLAYED_IN_FEED,
       cursor: "older",
+      paginate: true,
     });
     expect(hook.data?.activities.map((item) => item.id)).toEqual(["one", "two"]);
     expect(hook.pagination.targetActivityId).toBe("two");
@@ -134,6 +140,7 @@ describe("shared activity feed", () => {
       scopeType: "company",
       scopeId: "resource-1",
       actions: DISPLAYED_IN_FEED,
+      paginate: true,
     });
     client.setQueryData(key, { activities: [activity("ordinary")] });
     await render();

@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Api.Companies.ListActivities do
   @moduledoc """
   Lists activities for a company.
+
+  Returns all matching activities by default. Set paginate to true for 20-item
+  pages, passing next_cursor as cursor to fetch older activities.
   """
 
   use TurboConnect.Query
@@ -33,6 +36,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
     field :scope_type, :activity_scope_type, null: false
     field :actions, list_of(:string), null: false
     field? :cursor, :string, null: true
+    field? :paginate, :boolean, default: false, null: false
   end
 
   outputs do
@@ -43,7 +47,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
   def call(conn, inputs) do
     with {:ok, cursor} <- decode_cursor(inputs[:cursor]) do
       {:ok, scope_id} = decode_scope_id(inputs)
-      {activities, next_cursor} = load_activities(me(conn), inputs.scope_type, scope_id, inputs[:actions] || [], cursor)
+      {activities, next_cursor} = load_activities(me(conn), scope_id, inputs, cursor)
 
       {:ok, %{activities: OperatelyWeb.Api.Serializers.Activity.serialize(activities), next_cursor: next_cursor}}
     end
@@ -67,21 +71,17 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
   # Loading data
   #
 
-  defp load_activities(person, scope_type, scope_id, actions, cursor) do
-    results =
+  defp load_activities(person, scope_id, inputs, cursor) do
+    {page, next_cursor} =
       Activity
       |> limit_search_to_current_company(person.company_id)
-      |> scope_query(scope_type, scope_id)
-      |> filter_by_action(actions)
+      |> scope_query(inputs.scope_type, scope_id)
+      |> filter_by_action(inputs[:actions] || [])
       |> filter_deleted_resource_hub_resources()
       |> filter_by_view_access(person.id)
       |> before_cursor(cursor)
       |> order_desc()
-      |> limit(@page_size + 1)
-      |> Repo.all()
-
-    {page, remaining} = Enum.split(results, @page_size)
-    next_cursor = if remaining != [], do: encode_cursor(List.last(page))
+      |> fetch_activities(inputs[:paginate] == true)
 
     activities =
       page
@@ -90,6 +90,15 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
       |> Preloader.preload()
 
     {activities, next_cursor}
+  end
+
+  defp fetch_activities(query, false), do: {Repo.all(query), nil}
+
+  defp fetch_activities(query, true) do
+    results = query |> limit(@page_size + 1) |> Repo.all()
+    {page, remaining} = Enum.split(results, @page_size)
+    next_cursor = if remaining != [], do: encode_cursor(List.last(page))
+    {page, next_cursor}
   end
 
   defp before_cursor(query, nil), do: query

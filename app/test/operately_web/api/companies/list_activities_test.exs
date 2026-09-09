@@ -228,6 +228,22 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
       assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
     end
 
+    for scope <- [:task, :milestone] do
+      test "#{scope} timelines return more than 100 activities without pagination", ctx do
+        activity = Repo.get_by!(Activity, author_id: ctx.creator.id, action: "task_adding")
+        activities = populate_activities(activity, 101)
+
+        assert {200, response} = query(ctx.conn, [:companies, :list_activities], %{
+          scope_type: unquote(scope),
+          scope_id: scope_id(ctx, unquote(scope)),
+          actions: ["task_adding"]
+        })
+
+        assert Enum.map(response.activities, & &1.id) == Enum.map(activities, &Paths.activity_id/1)
+        assert response.next_cursor == nil
+      end
+    end
+
     test "task assignee activity with assignee id arrays can be listed", ctx do
       attrs = %{
         action: "task_assignee_updating",
@@ -335,7 +351,17 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
     setup ctx do
       ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
       activity = Repo.get_by!(Activity, author_id: ctx.creator.id, action: "goal_created")
-      Map.merge(ctx, %{activity: activity, attrs: %{scope_type: :company, scope_id: Paths.company_id(ctx.company), actions: ["goal_created"]}})
+      Map.merge(ctx, %{activity: activity, attrs: %{scope_type: :company, scope_id: Paths.company_id(ctx.company), actions: ["goal_created"], paginate: true}})
+    end
+
+    test "returns all activities when pagination is omitted or disabled", ctx do
+      activities = populate_activities(ctx.activity, 101)
+
+      for attrs <- [Map.delete(ctx.attrs, :paginate), Map.put(ctx.attrs, :paginate, false)] do
+        assert {200, response} = query(ctx.conn, [:companies, :list_activities], attrs)
+        assert Enum.map(response.activities, & &1.id) == Enum.map(activities, &Paths.activity_id/1)
+        assert response.next_cursor == nil
+      end
     end
 
     test "empty results have no continuation", ctx do
@@ -433,7 +459,8 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
 
   defp cursor(value), do: value |> Jason.encode!() |> Base.url_encode64(padding: false)
 
-
+  defp scope_id(ctx, :task), do: Paths.task_id(ctx.task)
+  defp scope_id(ctx, :milestone), do: Paths.milestone_id(ctx.milestone)
 
   defp create_milestone(ctx) do
     ctx =

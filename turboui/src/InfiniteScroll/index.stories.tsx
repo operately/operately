@@ -9,7 +9,9 @@ const meta = {
     observationKey: "page-1",
     hasNextPage: true,
     isFetching: false,
-    onLoadMore: async () => {},
+    onLoadMore: async () => {
+      console.log("Load more activities");
+    },
     children: (ref) => (
       <div ref={ref} className="p-4 border border-stroke-base">
         Previously loaded activities remain visible.
@@ -34,6 +36,7 @@ function ProgressionExample() {
   const [fetching, setFetching] = React.useState(false);
 
   const loadMore = async () => {
+    console.log("Load activity page", pages + 1);
     setFetching(true);
     await new Promise((resolve) => setTimeout(resolve, 300));
     setPages((count) => count + 1);
