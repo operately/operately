@@ -105,12 +105,12 @@ function SpaceFooter({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceActivity({ space }: { space: Spaces.Space }) {
-  const { data, loading, error } = useFeedItemsQuery("space", space.id!);
+  const { data, loading, error, pagination } = useFeedItemsQuery("space", space.id!);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data?.activities || []} testId="space-feed" page="space" />;
+  return <Feed pagination={pagination} items={data?.activities || []} testId="space-feed" page="space" />;
 }
 
 function JoinButton({ space }) {

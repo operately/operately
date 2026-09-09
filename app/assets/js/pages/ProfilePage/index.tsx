@@ -54,12 +54,12 @@ function Page() {
 }
 
 function ActivityFeed({ personId }: { personId: string }) {
-  const { data, loading, error } = useFeedItemsQuery("person", personId);
+  const { data, loading, error, pagination } = useFeedItemsQuery("person", personId);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data?.activities || []} testId="profile-feed" page="profile" />;
+  return <Feed pagination={pagination} items={data?.activities || []} testId="profile-feed" page="profile" />;
 }
 
 function canEditProfile(person: People.Person, me?: People.Person | null) {

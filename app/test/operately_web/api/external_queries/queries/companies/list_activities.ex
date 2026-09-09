@@ -26,5 +26,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.ListActivities do
   @impl true
   def assert(response, _ctx) do
     assert is_list(response.activities)
+    assert Map.has_key?(response, :next_cursor)
+    assert response.next_cursor == nil
   end
 end

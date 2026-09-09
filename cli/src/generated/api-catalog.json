@@ -24574,6 +24574,17 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "next_cursor",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "inputs": [
@@ -24611,6 +24622,17 @@
           },
           "optional": false,
           "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "cursor",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         }
       ],

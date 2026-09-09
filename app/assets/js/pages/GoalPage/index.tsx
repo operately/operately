@@ -451,12 +451,12 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
 }
 
 function GoalFeedItems({ goalId }: { goalId: string }) {
-  const { data, loading, error } = useFeedItemsQuery("goal", goalId);
+  const { data, loading, error, pagination } = useFeedItemsQuery("goal", goalId);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  return <Feed items={data?.activities || []} page="goal" testId="goal-feed" />;
+  return <Feed pagination={pagination} items={data?.activities || []} page="goal" testId="goal-feed" />;
 }
 
 function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["targets"] {

@@ -13,6 +13,7 @@ export * from "./Circle";
 export * from "./CopyToClipboard";
 export * from "./ConfirmDialog";
 export * from "./FormattedTime";
+export * from "./InfiniteScroll";
 export * as Forms from "./Forms";
 export { ProjectTemplateFields, ProjectTemplateSelection } from "./ProjectTemplateSelection";
 export * from "./BrandIcons";

@@ -1,5 +1,11 @@
 import Api, { type CompaniesListActivitiesResult } from "@/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, type InfiniteData } from "@tanstack/react-query";
+
+type FeedCache = CompaniesListActivitiesResult | InfiniteData<CompaniesListActivitiesResult>;
+
+function removeActivity(page: CompaniesListActivitiesResult, activityId: string): CompaniesListActivitiesResult {
+  return { ...page, activities: page.activities.filter((activity) => activity.id !== activityId) };
+}
 
 export function useDeleteFeedActivity() {
   const queryClient = useQueryClient();
@@ -9,14 +15,13 @@ export function useDeleteFeedActivity() {
       const queryKey = Api.companies.listActivitiesQueryKeyPrefix();
       await queryClient.cancelQueries({ queryKey });
 
-      queryClient.setQueriesData<CompaniesListActivitiesResult>({ queryKey }, (data) =>
-        data
-          ? {
-              ...data,
-              activities: data.activities.filter((activity) => activity.id !== activityId),
-            }
-          : data,
-      );
+      queryClient.setQueriesData<FeedCache>({ queryKey }, (data) => {
+        if (!data) return data;
+        if ("pages" in data) {
+          return { ...data, pages: data.pages.map((page) => removeActivity(page, activityId)) };
+        }
+        return removeActivity(data, activityId);
+      });
       await queryClient.invalidateQueries({ queryKey });
     },
   });

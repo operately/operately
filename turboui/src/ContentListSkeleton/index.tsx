@@ -5,6 +5,7 @@ export interface ContentListSkeletonProps {
   leadingShape?: "avatar" | "document";
   label?: string;
   testId?: string;
+  variant?: "list" | "feed";
 }
 
 export function ContentListSkeleton({
@@ -12,17 +13,23 @@ export function ContentListSkeleton({
   leadingShape = "avatar",
   label = "Loading items",
   testId = "content-list-skeleton",
+  variant = "list",
 }: ContentListSkeletonProps) {
   return (
     <div role="status" aria-label={label} data-test-id={testId}>
       <span className="sr-only">{label}</span>
       <div aria-hidden="true" className="motion-safe:animate-pulse">
         {Array.from({ length: count }, (_, index) => (
-          <div key={index} className="flex gap-4 px-3 py-4 border-t last:border-b border-stroke-base">
+          <div
+            key={index}
+            className={
+              variant === "feed" ? "flex gap-3 pb-4" : "flex gap-4 px-3 py-4 border-t last:border-b border-stroke-base"
+            }
+          >
             <div
               className={
                 leadingShape === "avatar"
-                  ? "h-10 w-10 shrink-0 rounded-full bg-surface-highlight"
+                  ? `${variant === "feed" ? "h-8 w-8" : "h-10 w-10"} shrink-0 rounded-full bg-surface-highlight`
                   : "h-12 w-9 shrink-0 rounded bg-surface-highlight"
               }
             />
