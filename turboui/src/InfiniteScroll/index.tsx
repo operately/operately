@@ -15,7 +15,7 @@ export interface InfiniteScrollProps {
 
 export function InfiniteScroll(props: InfiniteScrollProps) {
   const [target, setTarget] = React.useState<HTMLDivElement | null>(null);
-  const [visibleKey, setVisibleKey] = React.useState<string | null>(null);
+  const [reachedKey, setReachedKey] = React.useState<string | null>(null);
   const [failedKey, setFailedKey] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
   const attemptedKey = React.useRef<string | null>(null);
@@ -23,18 +23,55 @@ export function InfiniteScroll(props: InfiniteScrollProps) {
   const supportsObserver = typeof IntersectionObserver !== "undefined";
   const failed = props.hasError || failedKey === props.observationKey;
 
+  const checkPosition = React.useCallback(() => {
+    if (!target || !supportsObserver || !props.hasNextPage) return;
+
+    const rect = target.getBoundingClientRect();
+    // A fast scroll can skip intersection entirely. Keep loading if the row
+    // has already passed above the viewport, ignoring hidden or offscreen columns.
+    if (rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.left < window.innerWidth && rect.bottom <= 0) {
+      setReachedKey(props.observationKey);
+    }
+  }, [target, supportsObserver, props.hasNextPage, props.observationKey]);
+
   React.useEffect(() => {
     if (!target || !supportsObserver || !props.hasNextPage) return;
 
+    let active = true;
+    let frame: number | null = null;
+    const schedulePositionCheck = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        if (active) checkPosition();
+      });
+    };
+
     // Reobserve for each page, including when aggregation reuses the same row.
-    setVisibleKey(null);
     const observer = new IntersectionObserver(
-      ([entry]) => setVisibleKey(entry?.isIntersecting ? props.observationKey : null),
+      (entries) => {
+        if (!active) return;
+        // Remember reaching the row even if it leaves while another fetch runs.
+        if (entries.some((entry) => entry.isIntersecting)) setReachedKey(props.observationKey);
+        checkPosition();
+      },
       { root: null, rootMargin: "0px", threshold: 0 },
     );
     observer.observe(target);
-    return () => observer.disconnect();
-  }, [target, supportsObserver, props.observationKey, props.hasNextPage]);
+    window.addEventListener("scroll", schedulePositionCheck, { capture: true, passive: true });
+    window.addEventListener("resize", schedulePositionCheck);
+    return () => {
+      active = false;
+      observer.disconnect();
+      window.removeEventListener("scroll", schedulePositionCheck, true);
+      window.removeEventListener("resize", schedulePositionCheck);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
+  }, [target, supportsObserver, props.observationKey, props.hasNextPage, checkPosition]);
+
+  React.useEffect(() => {
+    checkPosition();
+  }, [checkPosition, props.isFetching, pending]);
 
   const loadMore = React.useCallback(async () => {
     if (!props.hasNextPage || props.isFetching || inFlight.current) return;
@@ -55,10 +92,10 @@ export function InfiniteScroll(props: InfiniteScrollProps) {
   }, [props.hasNextPage, props.isFetching, props.observationKey, props.onLoadMore]);
 
   React.useEffect(() => {
-    if (!target || visibleKey !== props.observationKey || attemptedKey.current === props.observationKey || failed)
+    if (!target || reachedKey !== props.observationKey || attemptedKey.current === props.observationKey || failed)
       return;
     void loadMore();
-  }, [target, visibleKey, props.observationKey, failed, loadMore, pending]);
+  }, [target, reachedKey, props.observationKey, failed, loadMore, pending]);
 
   return (
     <>
