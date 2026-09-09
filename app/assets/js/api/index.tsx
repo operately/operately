@@ -3349,10 +3349,13 @@ export interface CompaniesListActivitiesInput {
   scopeId: string;
   scopeType: ActivityScopeType;
   actions: string[];
+  cursor?: string | null;
+  paginate?: boolean;
 }
 
 export interface CompaniesListActivitiesResult {
   activities: Activity[];
+  nextCursor: string | null;
 }
 
 export interface CompaniesQuickSearchInput {

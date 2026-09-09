@@ -556,12 +556,12 @@ function useProjectDocsAndFilesProps({
 }
 
 function ProjectFeedItems({ projectId }: { projectId: string }) {
-  const { data, loading, error } = useFeedItemsQuery("project", projectId);
+  const { data, loading, error, pagination } = useFeedItemsQuery("project", projectId);
 
   if (loading) return null;
   if (error) return null;
 
-  return <Feed items={data?.activities || []} page="project" testId="project-feed" />;
+  return <Feed pagination={pagination} items={data?.activities || []} page="project" testId="project-feed" />;
 }
 
 interface usePageFieldProps<T> {

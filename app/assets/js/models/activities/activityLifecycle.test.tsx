@@ -1,7 +1,7 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, InfiniteData } from "@tanstack/react-query";
 import Api, { Activity, CompaniesListActivitiesResult } from "@/api";
 import { useDeleteFeedActivity } from "./activityLifecycle";
 
@@ -71,5 +71,26 @@ describe("feed activity deletion", () => {
       expect(client.getQueryData<CompaniesListActivitiesResult>(key)?.activities).toHaveLength(2);
       expect(client.getQueryState(key)?.isInvalidated).toBe(false);
     });
+  });
+
+  it("removes activities from all infinite pages without changing their cursors", async () => {
+    const firstKey = feedKeys()[0];
+    if (!firstKey) throw new Error("Expected a feed query key");
+    const key = [...firstKey, "infinite"];
+    client.setQueryData(key, {
+      pages: [
+        { activities: [activity("deleted"), activity("first")], nextCursor: "older" },
+        { activities: [activity("second"), activity("deleted")], nextCursor: null },
+      ],
+      pageParams: [null, "older"],
+    });
+    await act(async () => {
+      await deletion.mutateAsync({ activityId: "deleted" });
+    });
+    const cached = client.getQueryData<InfiniteData<CompaniesListActivitiesResult>>(key);
+    expect(cached?.pages.map((page) => page.activities.map((item) => item.id))).toEqual([["first"], ["second"]]);
+    expect(cached?.pageParams).toEqual([null, "older"]);
+    expect(cached?.pages.map((page) => page.nextCursor)).toEqual(["older", null]);
+    expect(client.getQueryState(key)?.isInvalidated).toBe(true);
   });
 });

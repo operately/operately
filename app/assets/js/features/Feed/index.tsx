@@ -4,7 +4,18 @@ import * as React from "react";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ConfirmDialog, DivLink, FormattedTime, IconDots, IconTrash, Menu, MenuActionItem } from "turboui";
+import {
+  ConfirmDialog,
+  ContentListSkeleton,
+  DivLink,
+  FormattedTime,
+  IconDots,
+  IconTrash,
+  InfiniteScroll,
+  type InfiniteScrollProps,
+  Menu,
+  MenuActionItem,
+} from "turboui";
 
 import ActivityHandler from "@/features/activities";
 import { FeedZeroState } from "@/features/Feed/FeedZeroState";
@@ -27,6 +38,7 @@ interface FeedProps extends FeedConfig {
   testId?: string;
   canDeleteItems?: boolean;
   onDeleteItem?: (activity: Activity) => Promise<void> | void;
+  pagination: Omit<InfiniteScrollProps, "children"> & { targetActivityId?: string | null };
 }
 
 const FEED_PROP_DEFAULTS = {
@@ -39,6 +51,11 @@ export function Feed(props: FeedProps) {
   const groupedActivities = Activities.groupByDate(items);
   const [activityToDelete, setActivityToDelete] = React.useState<Activity | null>(null);
   const [deleting, setDeleting] = React.useState(false);
+
+  // A page can start inside a row aggregated with activities from an earlier page.
+  const targetActivityId = items.find((activity) =>
+    Activities.getAggregatedActivities(activity).some((item) => item.id === props.pagination.targetActivityId),
+  )?.id;
 
   const handleConfirmDelete = async () => {
     if (!activityToDelete || !props.onDeleteItem || deleting) return;
@@ -53,26 +70,43 @@ export function Feed(props: FeedProps) {
     }
   };
 
+  const renderActivities = (targetRef: React.RefCallback<HTMLDivElement>) => (
+    <div className="w-full" data-test-id={props.testId}>
+      {groupedActivities.length === 0 ? (
+        <FeedZeroState page={props.page} />
+      ) : (
+        groupedActivities.map((group, index) => (
+          <ActivityGroup
+            key={index}
+            group={group}
+            page={props.page}
+            hideTopBorder={props.hideTopBorder}
+            paddedGroups={props.paddedGroups}
+            canDeleteItems={props.canDeleteItems}
+            onDeleteItem={setActivityToDelete}
+            targetActivityId={targetActivityId}
+            targetRef={targetRef}
+          />
+        ))
+      )}
+    </div>
+  );
+
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
-      <div className="w-full" data-test-id={props.testId}>
-        {groupedActivities.length === 0 ? (
-          <FeedZeroState page={props.page} />
-        ) : (
-          groupedActivities.map((group, index) => (
-            <ActivityGroup
-              key={index}
-              group={group}
-              page={props.page}
-              hideTopBorder={props.hideTopBorder}
-              paddedGroups={props.paddedGroups}
-              canDeleteItems={props.canDeleteItems}
-              onDeleteItem={setActivityToDelete}
-            />
-          ))
-        )}
-      </div>
-
+      <InfiniteScroll
+        {...props.pagination}
+        loadingIndicator={
+          <div className={classNames("w-full flex flex-col sm:flex-row gap-2", props.paddedGroups ? "p-8" : "py-4")}>
+            <div className="hidden sm:block w-1/5 shrink-0" aria-hidden="true" />
+            <div className="w-full min-w-0 flex-1">
+              <ContentListSkeleton variant="feed" label="Loading more activities" testId="feed-loading-more" />
+            </div>
+          </div>
+        }
+      >
+        {renderActivities}
+      </InfiniteScroll>
       <ConfirmDialog
         isOpen={!!activityToDelete}
         onConfirm={handleConfirmDelete}
@@ -92,6 +126,8 @@ function ActivityGroup(
     group: Activities.ActivityGroup;
     canDeleteItems?: boolean;
     onDeleteItem?: (activity: Activity) => void;
+    targetActivityId?: string | null;
+    targetRef: React.RefCallback<HTMLDivElement>;
   },
 ) {
   const className = classNames("w-full border-stroke-base flex flex-col sm:flex-row items-start gap-2", {
@@ -109,6 +145,8 @@ function ActivityGroup(
         page={props.page}
         canDeleteItems={props.canDeleteItems}
         onDeleteItem={props.onDeleteItem}
+        targetActivityId={props.targetActivityId}
+        targetRef={props.targetRef}
       />
     </div>
   );
@@ -132,11 +170,15 @@ function ActivityGroupItems({
   page,
   canDeleteItems,
   onDeleteItem,
+  targetActivityId,
+  targetRef,
 }: {
   group: Activities.ActivityGroup;
   page: string;
   canDeleteItems?: boolean;
   onDeleteItem?: (activity: Activity) => void;
+  targetActivityId?: string | null;
+  targetRef: React.RefCallback<HTMLDivElement>;
 }) {
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -145,6 +187,7 @@ function ActivityGroupItems({
           <ActivityItem
             key={activity.id}
             activity={activity}
+            targetRef={activity.id === targetActivityId ? targetRef : undefined}
             page={page}
             canDeleteItem={canDeleteItems}
             onDeleteItem={onDeleteItem}
@@ -160,11 +203,13 @@ function ActivityItem({
   page,
   canDeleteItem,
   onDeleteItem,
+  targetRef,
 }: {
   activity: Activities.Activity;
   page: string;
   canDeleteItem?: boolean;
   onDeleteItem?: (activity: Activity) => void;
+  targetRef?: React.RefCallback<HTMLDivElement>;
 }) {
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -180,6 +225,7 @@ function ActivityItem({
       className={classNames("group flex flex-1 gap-3", alignement)}
       data-test-id="feed-activity-item"
       data-activity-id={activity.id}
+      ref={targetRef}
     >
       <DivLink to={profilePath}>
         <Avatar person={author!} size="small" />

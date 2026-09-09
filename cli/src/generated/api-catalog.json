@@ -24574,6 +24574,17 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "next_cursor",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": true,
+          "has_default": false
         }
       ],
       "inputs": [
@@ -24612,12 +24623,34 @@
           "optional": false,
           "nullable": false,
           "has_default": false
+        },
+        {
+          "default": null,
+          "name": "cursor",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
+          "has_default": false
+        },
+        {
+          "default": "false",
+          "name": "paginate",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": false,
+          "has_default": true
         }
       ],
       "full_name": "companies/list_activities",
       "method": "GET",
       "namespace": "companies",
-      "docstring": "Lists activities for a company."
+      "docstring": "Lists activities for a company.\n\nReturns all matching activities by default. Set paginate to true for 20-item\npages, passing next_cursor as cursor to fetch older activities."
     },
     {
       "name": "quick_search",
