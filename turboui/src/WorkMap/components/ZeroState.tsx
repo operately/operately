@@ -4,7 +4,7 @@ import type { WorkMap } from "..";
 import { PrimaryButton } from "../../Button";
 import * as Forms from "../../Forms";
 import { ActionLink } from "../../Link";
-import { ProjectTemplateSelection } from "../../ProjectTemplateSelection";
+import type { ProjectTemplateSelection } from "../../ProjectTemplateSelection";
 import { SpaceField } from "../../SpaceField";
 import { IconGoal, IconGrowth, IconProject } from "../../icons";
 import { AddItemModal } from "./AddItemModal";
@@ -107,19 +107,12 @@ export function ZeroStateCanAdd({
   );
 }
 
-function FirstProjectZeroState({
-  spaceSearch,
-  addItem,
-  addItemDefaultSpace,
-  onItemCreated,
-  projectTemplates,
-  onCreateProjectTemplate,
-}: ZeroStateProps) {
+function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onItemCreated }: ZeroStateProps) {
   const [navigationPending, setNavigationPending] = React.useState(false);
   const [goalModalOpen, setGoalModalOpen] = React.useState(false);
 
   const form = Forms.useForm({
-    fields: { name: "", template: "", startDate: "" },
+    fields: { name: "" },
     validate: (addError) => {
       if (!form.values.name.trim()) {
         addError("name", "Enter a project name.");
@@ -132,7 +125,6 @@ function FirstProjectZeroState({
         space: addItemDefaultSpace,
         parentId: null,
         accessLevels: { company: "edit", space: "edit" },
-        ...(form.values.template ? { templateId: form.values.template, startDate: form.values.startDate } : {}),
       });
 
       if (onItemCreated) {
@@ -169,13 +161,6 @@ function FirstProjectZeroState({
                 placeholder="e.g. Launch the new website"
                 testId="first-project-name"
               />
-              <ProjectTemplateSelection
-                spaceId={addItemDefaultSpace.id}
-                templates={projectTemplates ?? []}
-                onCreateTemplate={
-                  onCreateProjectTemplate ? () => onCreateProjectTemplate(addItemDefaultSpace.id) : undefined
-                }
-              />
             </Forms.FieldGroup>
 
             <PrimaryButton className="w-full" type="submit" loading={submitting} testId="create-first-project">
@@ -210,8 +195,6 @@ function FirstProjectZeroState({
         hideCreateMore
         keepOpenAfterSave={Boolean(onItemCreated)}
         onSaved={onItemCreated}
-        templates={projectTemplates}
-        onCreateProjectTemplate={onCreateProjectTemplate}
       />
     </div>
   );
