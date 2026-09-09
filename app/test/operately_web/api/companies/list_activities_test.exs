@@ -331,6 +331,110 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
     end
   end
 
+  describe "pagination" do
+    setup ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      activity = Repo.get_by!(Activity, author_id: ctx.creator.id, action: "goal_created")
+      Map.merge(ctx, %{activity: activity, attrs: %{scope_type: :company, scope_id: Paths.company_id(ctx.company), actions: ["goal_created"]}})
+    end
+
+    test "empty results have no continuation", ctx do
+      assert {200, %{activities: [], next_cursor: nil}} = query(ctx.conn, [:companies, :list_activities], %{ctx.attrs | actions: ["goal_closing"]})
+    end
+
+    for count <- [1, 19, 20] do
+      test "#{count} activities fit in one page", ctx do
+        populate_activities(ctx.activity, unquote(count))
+        assert {200, page} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
+        assert length(page.activities) == unquote(count)
+        assert page.next_cursor == nil
+      end
+    end
+
+    test "pages through tied timestamps without omissions or duplicates", ctx do
+      activities = populate_activities(ctx.activity, 41, tied: true)
+      assert {200, first} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
+      assert {200, second} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, first.next_cursor))
+      assert {200, last} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, second.next_cursor))
+
+      assert Enum.map([first, second, last], &length(&1.activities)) == [20, 20, 1]
+      assert last.next_cursor == nil
+      expected = activities |> Enum.sort_by(& &1.id, :desc) |> Enum.map(&Paths.activity_id/1)
+      assert Enum.map(first.activities ++ second.activities ++ last.activities, & &1.id) == expected
+    end
+
+    test "new activities and deletion of the cursor activity do not shift the next page", ctx do
+      activities = populate_activities(ctx.activity, 21)
+      assert {200, first} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
+      boundary = Enum.at(activities, 19)
+      Repo.delete!(boundary)
+      copy_activity(ctx.activity, NaiveDateTime.add(ctx.activity.inserted_at, 60))
+
+      assert {200, second} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, first.next_cursor))
+      assert Enum.map(second.activities, & &1.id) == [Paths.activity_id(List.last(activities))]
+      assert second.next_cursor == nil
+    end
+
+    test "subsequent pages still apply scope, action, company, and access filters", ctx do
+      activities = populate_activities(ctx.activity, 21)
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:member)
+      attrs = %{ctx.attrs | scope_type: :goal, scope_id: Paths.goal_id(ctx.goal)}
+      assert {200, first} = query(ctx.conn, [:companies, :list_activities], attrs)
+
+      ctx = Factory.add_goal(ctx, :private_goal, :space, company_access: Binding.no_access(), space_access: Binding.no_access())
+      private_activity = Repo.all(Activity) |> Enum.find(&(&1.content["goal_id"] == ctx.private_goal.id))
+      older = NaiveDateTime.add(ctx.activity.inserted_at, -200)
+      copy_activity(private_activity, older)
+      copy_activity(%{ctx.activity | action: "goal_closing"}, older)
+      copy_activity(%{ctx.activity | content: Map.put(ctx.activity.content, "company_id", Ecto.UUID.generate())}, older)
+
+      assert {200, second} = query(ctx.conn, [:companies, :list_activities], Map.put(attrs, :cursor, first.next_cursor))
+      assert Enum.map(second.activities, & &1.id) == [Paths.activity_id(List.last(activities))]
+      assert {200, company_page} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, first.next_cursor))
+      assert Enum.map(company_page.activities, & &1.id) == [Paths.activity_id(List.last(activities))]
+    end
+
+    test "rejects malformed cursors", ctx do
+      invalid = [
+        "not-base64!",
+        Base.url_encode64("not-json", padding: false),
+        cursor(%{}),
+        cursor(%{inserted_at: "bad", id: ctx.activity.id}),
+        cursor(%{inserted_at: NaiveDateTime.to_iso8601(ctx.activity.inserted_at), id: "bad"})
+      ]
+
+      for value <- invalid do
+        assert {400, _} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, value))
+      end
+    end
+  end
+
+  defp populate_activities(activity, count, opts \\ []) do
+    copies =
+      for index <- Enum.drop(0..(count - 1), 1) do
+        timestamp = if opts[:tied], do: activity.inserted_at, else: NaiveDateTime.add(activity.inserted_at, -index)
+        copy_activity(activity, timestamp)
+      end
+
+    [activity | copies]
+  end
+
+  defp copy_activity(activity, timestamp) do
+    %Activity{
+      author_id: activity.author_id,
+      action: activity.action,
+      content: activity.content,
+      access_context_id: activity.access_context_id,
+      inserted_at: timestamp,
+      updated_at: timestamp
+    }
+    |> Repo.insert!()
+  end
+
+  defp cursor(value), do: value |> Jason.encode!() |> Base.url_encode64(padding: false)
+
+
+
   defp create_milestone(ctx) do
     ctx =
       ctx

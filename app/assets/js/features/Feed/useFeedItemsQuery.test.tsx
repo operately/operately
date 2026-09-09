@@ -45,10 +45,7 @@ describe("shared activity feed", () => {
     root = createRoot(document.createElement("div"));
     scope = "company";
     list = jest.fn(async () => ({ activities: [activity("one"), activity("two")] }));
-    const options = Api.companies.listActivitiesQueryOptions;
-    jest
-      .spyOn(Api.companies, "listActivitiesQueryOptions")
-      .mockImplementation((input) => ({ ...options(input), queryFn: () => list(input) }));
+    jest.spyOn(Api.companies, "listActivities").mockImplementation((input) => list(input));
   });
   afterEach(async () => {
     await act(async () => root.unmount());
@@ -89,6 +86,82 @@ describe("shared activity feed", () => {
       await tick();
     });
     expect(hook.data?.activities).toHaveLength(1);
+  });
+
+  it("appends older pages and identifies the first activity of the latest page", async () => {
+    list.mockResolvedValueOnce({ activities: [activity("one")], nextCursor: "older" });
+    await render();
+    expect(hook.pagination.targetActivityId).toBe("one");
+    expect(hook.pagination.hasNextPage).toBe(true);
+    list.mockResolvedValueOnce({ activities: [activity("two")], nextCursor: null });
+    await act(async () => {
+      await hook.pagination.onLoadMore();
+      await tick();
+    });
+    expect(list).toHaveBeenLastCalledWith({
+      scopeType: "company",
+      scopeId: "resource-1",
+      actions: DISPLAYED_IN_FEED,
+      cursor: "older",
+    });
+    expect(hook.data?.activities.map((item) => item.id)).toEqual(["one", "two"]);
+    expect(hook.pagination.targetActivityId).toBe("two");
+    expect(hook.pagination.hasNextPage).toBe(false);
+  });
+
+  it("keeps loaded activities visible when the next page fails and supports retry", async () => {
+    list.mockResolvedValueOnce({ activities: [activity("one")], nextCursor: "older" });
+    await render();
+    list.mockRejectedValueOnce(new Error("offline"));
+    await act(async () => {
+      await hook.pagination.onLoadMore();
+      await tick();
+    });
+    expect(hook.error).toBeNull();
+    expect(hook.data?.activities).toHaveLength(1);
+    expect(hook.pagination.hasError).toBe(true);
+    list.mockResolvedValueOnce({ activities: [activity("two")], nextCursor: null });
+    await act(async () => {
+      await hook.pagination.onLoadMore();
+      await tick();
+    });
+    expect(hook.pagination.hasError).toBe(false);
+    expect(hook.data?.activities).toHaveLength(2);
+  });
+
+  it("does not reuse an ordinary query's cache entry", async () => {
+    const key = Api.companies.listActivitiesQueryKey({
+      scopeType: "company",
+      scopeId: "resource-1",
+      actions: DISPLAYED_IN_FEED,
+    });
+    client.setQueryData(key, { activities: [activity("ordinary")] });
+    await render();
+    expect(hook.data?.activities.map((item) => item.id)).toEqual(["one", "two"]);
+    expect(client.getQueryData(key)).toEqual({ activities: [activity("ordinary")] });
+  });
+
+  it("retargets the previous nonempty page when deletion empties the latest page", async () => {
+    jest
+      .spyOn(Api.companies, "deleteActivityMutationOptions")
+      .mockReturnValue({ mutationFn: async () => ({ success: true }) });
+    list.mockResolvedValueOnce({ activities: [activity("one")], nextCursor: "older" });
+    await render();
+    list.mockResolvedValueOnce({ activities: [activity("two")], nextCursor: "oldest" });
+    await act(async () => {
+      await hook.pagination.onLoadMore();
+      await tick();
+    });
+    expect(hook.pagination.targetActivityId).toBe("two");
+    list.mockRejectedValue(new Error("refresh offline"));
+    await act(async () => {
+      await deletion.mutateAsync({ activityId: "two" });
+      await tick();
+    });
+    expect(hook.data?.activities.map((item) => item.id)).toEqual(["one"]);
+    expect(hook.pagination.targetActivityId).toBe("one");
+    expect(hook.pagination.hasNextPage).toBe(true);
+    expect(hook.error).toBeNull();
   });
 
   it("does not resurrect a deleted item from cached data after remounting", async () => {

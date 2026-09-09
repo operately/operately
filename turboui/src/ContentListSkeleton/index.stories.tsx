@@ -18,4 +18,5 @@ type Story = StoryObj<typeof meta>;
 
 export const CheckIns: Story = { args: { label: "Loading check-ins" } };
 export const Discussions: Story = { args: { label: "Loading discussions" } };
+export const Feed: Story = { args: { variant: "feed", label: "Loading more activities" } };
 export const Documents: Story = { args: { leadingShape: "document", label: "Loading documents", count: 4 } };
