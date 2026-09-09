@@ -12,6 +12,8 @@ describe("project check-in lifecycle queries", () => {
     const queryClient = createQueryClient();
     const checkInKey = Api.projects.getCheckInQueryKey({ id: "check-in-1" });
     const listCheckInsKey = Api.projects.listCheckInsQueryKey({ projectId: "project-1" });
+    const countKey = Api.projects.countChildrenQueryKey({ id: "project-1" });
+    queryClient.setQueryData(countKey, {});
     const projectKey = Api.projects.getQueryKey({ id: "project-1" });
     const listProjectsKey = Api.projects.listQueryKey({});
 
@@ -23,6 +25,7 @@ describe("project check-in lifecycle queries", () => {
 
     expect(queryClient.getQueryState(checkInKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(listCheckInsKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(countKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(projectKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(listProjectsKey)?.isInvalidated).toBe(false);
   });

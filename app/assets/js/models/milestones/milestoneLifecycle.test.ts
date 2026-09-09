@@ -18,7 +18,11 @@ describe("milestone lifecycle queries", () => {
       scopeType: "milestone",
       actions: ["milestone_description_updating"],
     });
-    const unrelatedKey = Api.projects.getQueryKey({ id: "project-1" });
+    const projectKey = Api.projects.getQueryKey({ id: "project-1" });
+    const projectTasksKey = Api.tasks.listQueryKey({ projectId: "project-1" });
+    queryClient.setQueryData(projectKey, {});
+    queryClient.setQueryData(projectTasksKey, {});
+    const unrelatedKey = Api.people.getQueryKey({ id: "person-1" });
 
     [milestoneKey, tasksKey, childrenCountKey, activitiesKey, unrelatedKey].forEach((queryKey) => {
       queryClient.setQueryData(queryKey, {});
@@ -30,6 +34,8 @@ describe("milestone lifecycle queries", () => {
     expect(queryClient.getQueryState(tasksKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(childrenCountKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(activitiesKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(projectKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(projectTasksKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
   });
 });

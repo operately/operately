@@ -1,8 +1,9 @@
+import { useCreateFiles } from "./resourceHubLifecycle";
 import { useMemo } from "react";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { findFileSize, uploadFilesWithPreviews } from "@/models/blobs";
-import { files, type ResourceHub, type ResourceHubFolder } from "@/models/resourceHubs";
+import { type ResourceHub, type ResourceHubFolder } from "@/models/resourceHubs";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import type { AddFileUploadItem, AddFileWidgetProps } from "turboui";
 
@@ -20,6 +21,7 @@ export function useAddFileWidgetProps({
   AddFileWidgetProps,
   "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload"
 > {
+  const { mutateAsync: createFiles } = useCreateFiles();
   const potentialSubscribers = folder?.potentialSubscribers || resourceHub?.potentialSubscribers || [];
 
   const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, {
@@ -42,7 +44,7 @@ export function useAddFileWidgetProps({
           items,
           setProgress,
           persist: (uploaded) =>
-            files.create({
+            createFiles({
               files: uploaded.map((file) => ({
                 name: file.name,
                 description: JSON.stringify(file.description),
@@ -58,6 +60,6 @@ export function useAddFileWidgetProps({
         onUploaded();
       },
     }),
-    [resourceHub?.id, resourceHub?.name, folder?.id, subscriptionsState, richTextHandlers, onUploaded],
+    [createFiles, resourceHub?.id, resourceHub?.name, folder?.id, subscriptionsState, richTextHandlers, onUploaded],
   );
 }

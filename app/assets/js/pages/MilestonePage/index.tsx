@@ -12,13 +12,12 @@ import { parseActivitiesForTurboUi } from "@/models/activities/feed";
 
 import { showErrorToast, MilestonePage, Timeline } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
-import { PageCache } from "@/routes/PageCache";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
-import { projectPageCacheKey } from "../ProjectPage";
+import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -31,6 +30,7 @@ export default { name: "MilestonePage", loader, Page } as PageModule;
 type TurboUiComment = Timeline.Comment | Timeline.MilestoneActivity;
 
 function Page() {
+  const invalidateProjectPage = useInvalidateProjectPage();
   const paths = usePaths();
   const currentUser = useMe();
   const navigate = useNavigate();
@@ -122,7 +122,7 @@ function Page() {
     await deleteMilestone.mutateAsync({ milestoneId: milestone.id });
 
     if (milestone.project) {
-      PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      void invalidateProjectPage(milestone.project.id);
       navigate(paths.projectPath(milestone.project.id, { tab: "tasks" }));
     } else {
       navigate(paths.homePath());
@@ -158,11 +158,11 @@ function Page() {
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
       if (milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+        void invalidateProjectPage(milestone.project.id);
       }
 
       if (destinationType === "project") {
-        PageCache.invalidate(projectPageCacheKey(destinationId));
+        void invalidateProjectPage(destinationId);
       }
 
       await refreshPageData();
@@ -176,7 +176,7 @@ function Page() {
 
       if (!result) return;
 
-      PageCache.invalidate(projectPageCacheKey(projectId));
+      void invalidateProjectPage(projectId);
     },
     [projectId, updateTaskMilestone],
   );
@@ -187,7 +187,7 @@ function Page() {
 
       if (!result?.success) return;
 
-      PageCache.invalidate(projectPageCacheKey(projectId));
+      void invalidateProjectPage(projectId);
     },
     [deleteTask, projectId],
   );
@@ -308,6 +308,7 @@ function usePageField<T, Command = T>({
   validations,
   projectIdToInvalidate,
 }: UsePageFieldProps<T, Command>): [T, (command: Command) => Promise<boolean>] {
+  const invalidateProjectPage = useInvalidateProjectPage();
   const valueRef = React.useRef(value);
   valueRef.current = value;
 
@@ -336,7 +337,7 @@ function usePageField<T, Command = T>({
     try {
       await update(command);
       if (projectIdToInvalidate) {
-        PageCache.invalidate(projectPageCacheKey(projectIdToInvalidate));
+        void invalidateProjectPage(projectIdToInvalidate);
       }
 
       return true;

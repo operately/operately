@@ -5,7 +5,6 @@ import * as Milestones from "../milestones";
 import * as Tasks from "./index";
 
 import { compareIds, usePaths } from "@/routes/paths";
-import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 import * as Signals from "@/signals";
 
@@ -32,8 +31,8 @@ interface TasksSnapshot {
 
 interface Attrs {
   backendTasks: Tasks.Task[];
+  tasksLoaded?: boolean;
   projectId: string;
-  cacheKey?: string;
   milestones: TaskBoard.Milestone[];
   setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
   refresh?: () => Promise<void>;
@@ -41,8 +40,8 @@ interface Attrs {
 
 export function useProjectTasksForTurboUi({
   backendTasks,
+  tasksLoaded = true,
   projectId,
-  cacheKey,
   milestones,
   setMilestones,
   refresh,
@@ -59,18 +58,22 @@ export function useProjectTasksForTurboUi({
   const deleteTaskMutation = useDeleteTask("active");
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
 
+  const [parsedBackendTasks, setParsedBackendTasks] = React.useState(backendTasks);
+
   React.useEffect(() => {
+    setParsedBackendTasks(backendTasks);
     setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
   }, [backendTasks, paths]);
 
   React.useEffect(() => {
-    if (!setMilestones) return;
+    // Wait for the task query and its parsed state before pruning saved ordering.
+    if (!setMilestones || !tasksLoaded || parsedBackendTasks !== backendTasks) return;
 
     const normalized = normalizeMilestonesOrderingState(milestones, tasks);
     if (normalized !== milestones) {
       setMilestones(normalized);
     }
-  }, [milestones, setMilestones, tasks]);
+  }, [milestones, setMilestones, tasks, tasksLoaded, parsedBackendTasks, backendTasks]);
 
   const createSnapshot = React.useCallback(
     (): TasksSnapshot => ({
@@ -122,16 +125,6 @@ export function useProjectTasksForTurboUi({
     },
     [setMilestones],
   );
-
-  const invalidateAndRefresh = React.useCallback(async () => {
-    if (cacheKey) {
-      PageCache.invalidate(cacheKey);
-    }
-
-    if (refresh) {
-      await refresh();
-    }
-  }, [cacheKey, refresh]);
 
   const createTask = async (task: TaskBoard.NewTaskPayload) => {
     const snapshot = createSnapshot();
@@ -199,7 +192,7 @@ export function useProjectTasksForTurboUi({
         );
       }
 
-      await invalidateAndRefresh();
+      await refresh?.();
 
       return { success: true };
     } catch (e) {
@@ -214,7 +207,7 @@ export function useProjectTasksForTurboUi({
     return updateTaskDueDateMutation
       .mutateAsync({ taskId, dueDate: serializeContextualDate(dueDate), type: "project" })
       .then(() => {
-        invalidateAndRefresh();
+        refresh?.();
 
         setTasks((prev) =>
           prev.map((t) => {
@@ -253,7 +246,7 @@ export function useProjectTasksForTurboUi({
         reminders: Tasks.serializeTaskReminders(reminders),
         type: "project",
       });
-      await invalidateAndRefresh();
+      await refresh?.();
 
       return true;
     } catch (e) {
@@ -268,7 +261,7 @@ export function useProjectTasksForTurboUi({
     return updateTaskAssigneeMutation
       .mutateAsync({ taskId, assigneeIds: assignees.map((assignee) => assignee.id), type: "project" })
       .then(() => {
-        invalidateAndRefresh();
+        refresh?.();
 
         setTasks((prev) =>
           prev.map((t) => {
@@ -309,7 +302,7 @@ export function useProjectTasksForTurboUi({
 
       try {
         await updateTaskNameMutation.mutateAsync({ taskId, name: title, type: "project" });
-        await invalidateAndRefresh();
+        await refresh?.();
         return true;
       } catch (e) {
         console.error("Failed to update task name", e);
@@ -318,7 +311,7 @@ export function useProjectTasksForTurboUi({
         return false;
       }
     },
-    [createSnapshot, invalidateAndRefresh, restoreSnapshot],
+    [createSnapshot, refresh, restoreSnapshot],
   );
 
   const updateTaskDescription = React.useCallback(
@@ -337,7 +330,7 @@ export function useProjectTasksForTurboUi({
 
       try {
         await updateTaskDescriptionMutation.mutateAsync({ taskId, description: serialized, type: "project" });
-        await invalidateAndRefresh();
+        await refresh?.();
         return true;
       } catch (e) {
         console.error("Failed to update task description", e);
@@ -346,7 +339,7 @@ export function useProjectTasksForTurboUi({
         return false;
       }
     },
-    [createSnapshot, invalidateAndRefresh, restoreSnapshot],
+    [createSnapshot, refresh, restoreSnapshot],
   );
 
   const updateTaskStatus = async (taskId: string, status: TaskBoard.Status | null) => {
@@ -375,7 +368,7 @@ export function useProjectTasksForTurboUi({
 
       updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 
-      await invalidateAndRefresh();
+      await refresh?.();
 
       return true;
     } catch (e) {
@@ -446,7 +439,7 @@ export function useProjectTasksForTurboUi({
 
       updateMilestonesFromServer(null, res.updatedMilestones);
 
-      await invalidateAndRefresh();
+      await refresh?.();
 
       return true;
     } catch (e) {
@@ -492,7 +485,7 @@ export function useProjectTasksForTurboUi({
 
       updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 
-      await invalidateAndRefresh();
+      await refresh?.();
       Signals.publish(Signals.LocalSignal.RefreshReviewCount);
 
       return { success: true };

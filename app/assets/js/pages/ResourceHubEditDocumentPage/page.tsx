@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import { documents } from "@/models/resourceHubs";
+import { useUpdateDocument, usePublishDocument } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
@@ -16,8 +16,8 @@ export function Page() {
   const { document } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = documents.useUpdate();
-  const [publish] = documents.usePublish();
+  const { mutateAsync: edit } = useUpdateDocument();
+  const { mutateAsync: publish } = usePublishDocument();
 
   const isDraft = document.state === "draft";
 

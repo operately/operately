@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SubscribersSelector } from "./SubscribersSelector";
 import { CurrentSubscriptions } from "./CurrentSubscriptions";
-import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
 const meta = {
   title: "Components/Subscriptions",
@@ -23,77 +23,76 @@ export default meta;
 // Mock data
 const mockPeople = genPeople(6);
 
-const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) => ({
-  person,
-  isSubscribed: false,
-  priority: false,
-  role: null,
-}));
+const mockSubscribers: SubscribersSelector.Subscriber[] = mockPeople.map((person) =>
+  asSubscriber(person, { isSubscribed: false }),
+);
 
-const mockSubscribedPeople: SubscribersSelector.Subscriber[] = [
-  { person: mockPeople[0], isSubscribed: true, priority: false, role: null },
-  { person: mockPeople[1], isSubscribed: true, priority: false, role: null },
-  { person: mockPeople[2], isSubscribed: true, priority: false, role: null },
-];
+const mockSubscribedPeople = mockPeople.slice(0, 3).map((person) => asSubscriber(person, { isSubscribed: true }));
 
-const mockPrioritySubscribers: SubscribersSelector.Subscriber[] = [
-  { person: mockPeople[0], isSubscribed: true, priority: true, role: "owner" },
-];
+const mockPrioritySubscribers = mockPeople
+  .slice(0, 1)
+  .map((person) => asSubscriber(person, { isSubscribed: true, priority: true, role: "owner" }));
 
-const mockAllPrioritySubscribers: SubscribersSelector.Subscriber[] = [
-  { person: mockPeople[0], isSubscribed: true, priority: true, role: "Champion" },
-  { person: mockPeople[1], isSubscribed: true, priority: true, role: "Reviewer" },
-];
+const mockAllPrioritySubscribers = mockPeople
+  .slice(0, 2)
+  .map((person, index) =>
+    asSubscriber(person, { isSubscribed: true, priority: true, role: index === 0 ? "Champion" : "Reviewer" }),
+  );
 
 // SubscribersSelector Stories
 type SubscribersSelectorStory = StoryObj<typeof SubscribersSelector>;
 
 export const SubscribersSelectorDefault: SubscribersSelectorStory = {
   render: () => {
-    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(SubscribersSelector.SubscriptionOption.ALL);
+    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(
+      SubscribersSelector.SubscriptionOption.ALL,
+    );
     const [selectedSubscribers, setSelectedSubscribers] = useState<SubscribersSelector.Subscriber[]>([]);
 
     return (
       <SubscribersSelector
-          subscribers={mockSubscribers}
-          selectedSubscribers={selectedSubscribers}
-          onSelectedSubscribersChange={(subs) => {
-            console.log("Selected subscribers changed:", subs);
-            setSelectedSubscribers(subs);
-          }}
-          subscriptionType={subscriptionType}
-          onSubscriptionTypeChange={(type) => {
-            console.log("Subscription type changed:", type);
-            setSubscriptionType(type);
-          }}
-          alwaysNotify={[]}
-          allSubscribersLabel="All 6 people who have access to this resource"
-        />
+        subscribers={mockSubscribers}
+        selectedSubscribers={selectedSubscribers}
+        onSelectedSubscribersChange={(subs) => {
+          console.log("Selected subscribers changed:", subs);
+          setSelectedSubscribers(subs);
+        }}
+        subscriptionType={subscriptionType}
+        onSubscriptionTypeChange={(type) => {
+          console.log("Subscription type changed:", type);
+          setSubscriptionType(type);
+        }}
+        alwaysNotify={[]}
+        allSubscribersLabel="All 6 people who have access to this resource"
+      />
     );
   },
 };
 
 export const SubscribersSelectorWithPrioritySubscribers: SubscribersSelectorStory = {
   render: () => {
-    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(SubscribersSelector.SubscriptionOption.ALL);
-    const [selectedSubscribers, setSelectedSubscribers] = useState<SubscribersSelector.Subscriber[]>(mockPrioritySubscribers);
+    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(
+      SubscribersSelector.SubscriptionOption.ALL,
+    );
+    const [selectedSubscribers, setSelectedSubscribers] =
+      useState<SubscribersSelector.Subscriber[]>(mockPrioritySubscribers);
 
     return (
       <SubscribersSelector
-          subscribers={mockSubscribers}
-          selectedSubscribers={selectedSubscribers}
-          onSelectedSubscribersChange={(subs) => {
-            console.log("Selected subscribers changed:", subs);
-            setSelectedSubscribers(subs);
-          }}
-          subscriptionType={subscriptionType}
-          onSubscriptionTypeChange={(type) => {
-            console.log("Subscription type changed:", type);
-            setSubscriptionType(type);
-          }}
-          alwaysNotify={mockPrioritySubscribers}
-          allSubscribersLabel="All 6 people contributing to Project Alpha"
-        />
+        subscribers={mockSubscribers}
+        selectedSubscribers={selectedSubscribers}
+        onSelectedSubscribersChange={(subs) => {
+          console.log("Selected subscribers changed:", subs);
+          setSelectedSubscribers(subs);
+        }}
+        subscriptionType={subscriptionType}
+        onSubscriptionTypeChange={(type) => {
+          console.log("Subscription type changed:", type);
+          setSubscriptionType(type);
+        }}
+        alwaysNotify={mockPrioritySubscribers}
+        allSubscribersLabel="All 6 people contributing to Project Alpha"
+      />
     );
   },
 };
@@ -102,25 +101,27 @@ export const SubscribersSelectorAllPrioritySubscribers: SubscribersSelectorStory
   render: () => {
     return (
       <SubscribersSelector
-          subscribers={mockAllPrioritySubscribers}
-          selectedSubscribers={mockAllPrioritySubscribers}
-          onSelectedSubscribersChange={(subs) => {
-            console.log("Selected subscribers changed:", subs);
-          }}
-          subscriptionType={SubscribersSelector.SubscriptionOption.NONE}
-          onSubscriptionTypeChange={(type) => {
-            console.log("Subscription type changed:", type);
-          }}
-          alwaysNotify={mockAllPrioritySubscribers}
-          allSubscribersLabel="All 2 people contributing to Launch customer referral program"
-        />
+        subscribers={mockAllPrioritySubscribers}
+        selectedSubscribers={mockAllPrioritySubscribers}
+        onSelectedSubscribersChange={(subs) => {
+          console.log("Selected subscribers changed:", subs);
+        }}
+        subscriptionType={SubscribersSelector.SubscriptionOption.NONE}
+        onSubscriptionTypeChange={(type) => {
+          console.log("Subscription type changed:", type);
+        }}
+        alwaysNotify={mockAllPrioritySubscribers}
+        allSubscribersLabel="All 2 people contributing to Launch customer referral program"
+      />
     );
   },
 };
 
 export const SubscribersSelectorSelectedPeople: SubscribersSelectorStory = {
   render: () => {
-    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(SubscribersSelector.SubscriptionOption.SELECTED);
+    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(
+      SubscribersSelector.SubscriptionOption.SELECTED,
+    );
     const initialSelected = [mockSubscribers[0], mockSubscribers[2], mockSubscribers[4]].filter(
       (s): s is SubscribersSelector.Subscriber => s !== undefined,
     );
@@ -128,45 +129,47 @@ export const SubscribersSelectorSelectedPeople: SubscribersSelectorStory = {
 
     return (
       <SubscribersSelector
-          subscribers={mockSubscribers}
-          selectedSubscribers={selectedSubscribers}
-          onSelectedSubscribersChange={(subs) => {
-            console.log("Selected subscribers changed:", subs);
-            setSelectedSubscribers(subs);
-          }}
-          subscriptionType={subscriptionType}
-          onSubscriptionTypeChange={(type) => {
-            console.log("Subscription type changed:", type);
-            setSubscriptionType(type);
-          }}
-          alwaysNotify={[]}
-          allSubscribersLabel="All 6 people who are members of the Engineering space"
-        />
+        subscribers={mockSubscribers}
+        selectedSubscribers={selectedSubscribers}
+        onSelectedSubscribersChange={(subs) => {
+          console.log("Selected subscribers changed:", subs);
+          setSelectedSubscribers(subs);
+        }}
+        subscriptionType={subscriptionType}
+        onSubscriptionTypeChange={(type) => {
+          console.log("Subscription type changed:", type);
+          setSubscriptionType(type);
+        }}
+        alwaysNotify={[]}
+        allSubscribersLabel="All 6 people who are members of the Engineering space"
+      />
     );
   },
 };
 
 export const SubscribersSelectorNone: SubscribersSelectorStory = {
   render: () => {
-    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(SubscribersSelector.SubscriptionOption.NONE);
+    const [subscriptionType, setSubscriptionType] = useState<SubscribersSelector.SubscriptionOption>(
+      SubscribersSelector.SubscriptionOption.NONE,
+    );
     const [selectedSubscribers, setSelectedSubscribers] = useState<SubscribersSelector.Subscriber[]>([]);
 
     return (
       <SubscribersSelector
-          subscribers={mockSubscribers}
-          selectedSubscribers={selectedSubscribers}
-          onSelectedSubscribersChange={(subs) => {
-            console.log("Selected subscribers changed:", subs);
-            setSelectedSubscribers(subs);
-          }}
-          subscriptionType={subscriptionType}
-          onSubscriptionTypeChange={(type) => {
-            console.log("Subscription type changed:", type);
-            setSubscriptionType(type);
-          }}
-          alwaysNotify={[]}
-          allSubscribersLabel="All 6 people who have access"
-        />
+        subscribers={mockSubscribers}
+        selectedSubscribers={selectedSubscribers}
+        onSelectedSubscribersChange={(subs) => {
+          console.log("Selected subscribers changed:", subs);
+          setSelectedSubscribers(subs);
+        }}
+        subscriptionType={subscriptionType}
+        onSubscriptionTypeChange={(type) => {
+          console.log("Subscription type changed:", type);
+          setSubscriptionType(type);
+        }}
+        alwaysNotify={[]}
+        allSubscribersLabel="All 6 people who have access"
+      />
     );
   },
 };
@@ -181,25 +184,25 @@ export const CurrentSubscriptionsSubscribed: CurrentSubscriptionsStory = {
 
     return (
       <CurrentSubscriptions
-          subscribers={mockSubscribers}
-          subscribedPeople={subscribedPeople}
-          isCurrentUserSubscribed={isSubscribed}
-          resourceName="document"
-          onSubscribe={() => {
-            console.log("Subscribe clicked");
-            setIsSubscribed(true);
-          }}
-          onUnsubscribe={() => {
-            console.log("Unsubscribe clicked");
-            setIsSubscribed(false);
-          }}
-          onEditSubscribers={(ids) => {
-            console.log("Edit subscribers:", ids);
-            const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
-            setSubscribedPeople(updated);
-          }}
-          canEditSubscribers={true}
-        />
+        subscribers={mockSubscribers}
+        subscribedPeople={subscribedPeople}
+        isCurrentUserSubscribed={isSubscribed}
+        resourceName="document"
+        onSubscribe={() => {
+          console.log("Subscribe clicked");
+          setIsSubscribed(true);
+        }}
+        onUnsubscribe={() => {
+          console.log("Unsubscribe clicked");
+          setIsSubscribed(false);
+        }}
+        onEditSubscribers={(ids) => {
+          console.log("Edit subscribers:", ids);
+          const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
+          setSubscribedPeople(updated);
+        }}
+        canEditSubscribers={true}
+      />
     );
   },
 };
@@ -211,25 +214,25 @@ export const CurrentSubscriptionsNotSubscribed: CurrentSubscriptionsStory = {
 
     return (
       <CurrentSubscriptions
-          subscribers={mockSubscribers}
-          subscribedPeople={subscribedPeople}
-          isCurrentUserSubscribed={isSubscribed}
-          resourceName="check-in"
-          onSubscribe={() => {
-            console.log("Subscribe clicked");
-            setIsSubscribed(true);
-          }}
-          onUnsubscribe={() => {
-            console.log("Unsubscribe clicked");
-            setIsSubscribed(false);
-          }}
-          onEditSubscribers={(ids) => {
-            console.log("Edit subscribers:", ids);
-            const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
-            setSubscribedPeople(updated);
-          }}
-          canEditSubscribers={true}
-        />
+        subscribers={mockSubscribers}
+        subscribedPeople={subscribedPeople}
+        isCurrentUserSubscribed={isSubscribed}
+        resourceName="check-in"
+        onSubscribe={() => {
+          console.log("Subscribe clicked");
+          setIsSubscribed(true);
+        }}
+        onUnsubscribe={() => {
+          console.log("Unsubscribe clicked");
+          setIsSubscribed(false);
+        }}
+        onEditSubscribers={(ids) => {
+          console.log("Edit subscribers:", ids);
+          const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
+          setSubscribedPeople(updated);
+        }}
+        canEditSubscribers={true}
+      />
     );
   },
 };
@@ -241,25 +244,25 @@ export const CurrentSubscriptionsNoSubscribers: CurrentSubscriptionsStory = {
 
     return (
       <CurrentSubscriptions
-          subscribers={mockSubscribers}
-          subscribedPeople={subscribedPeople}
-          isCurrentUserSubscribed={isSubscribed}
-          resourceName="discussion"
-          onSubscribe={() => {
-            console.log("Subscribe clicked");
-            setIsSubscribed(true);
-          }}
-          onUnsubscribe={() => {
-            console.log("Unsubscribe clicked");
-            setIsSubscribed(false);
-          }}
-          onEditSubscribers={(ids) => {
-            console.log("Edit subscribers:", ids);
-            const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
-            setSubscribedPeople(updated);
-          }}
-          canEditSubscribers={true}
-        />
+        subscribers={mockSubscribers}
+        subscribedPeople={subscribedPeople}
+        isCurrentUserSubscribed={isSubscribed}
+        resourceName="discussion"
+        onSubscribe={() => {
+          console.log("Subscribe clicked");
+          setIsSubscribed(true);
+        }}
+        onUnsubscribe={() => {
+          console.log("Unsubscribe clicked");
+          setIsSubscribed(false);
+        }}
+        onEditSubscribers={(ids) => {
+          console.log("Edit subscribers:", ids);
+          const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
+          setSubscribedPeople(updated);
+        }}
+        canEditSubscribers={true}
+      />
     );
   },
 };
@@ -268,16 +271,16 @@ export const CurrentSubscriptionsLoading: CurrentSubscriptionsStory = {
   render: () => {
     return (
       <CurrentSubscriptions
-          subscribers={mockSubscribers}
-          subscribedPeople={mockSubscribedPeople}
-          isCurrentUserSubscribed={false}
-          resourceName="update"
-          onSubscribe={() => console.log("Subscribe clicked")}
-          onUnsubscribe={() => console.log("Unsubscribe clicked")}
-          onEditSubscribers={(ids) => console.log("Edit subscribers:", ids)}
-          isSubscribeLoading={true}
-          canEditSubscribers={true}
-        />
+        subscribers={mockSubscribers}
+        subscribedPeople={mockSubscribedPeople}
+        isCurrentUserSubscribed={false}
+        resourceName="update"
+        onSubscribe={() => console.log("Subscribe clicked")}
+        onUnsubscribe={() => console.log("Unsubscribe clicked")}
+        onEditSubscribers={(ids) => console.log("Edit subscribers:", ids)}
+        isSubscribeLoading={true}
+        canEditSubscribers={true}
+      />
     );
   },
 };

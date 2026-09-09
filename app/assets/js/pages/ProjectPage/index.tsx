@@ -11,12 +11,15 @@ import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
 import { Feed, useFeedItemsQuery } from "@/features/Feed";
-import { PageCache } from "@/routes/PageCache";
+import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { ProjectPage, showErrorToast } from "turboui";
-import { fetchAll } from "../../utils/async";
+import { loader, useLoadedData, useRefreshCore } from "./loader";
+import { useProjectDocsQueries, type ProjectDocsAndFilesData } from "./docsQueries";
+import { useProjectContentQueries } from "./contentQueries";
+import { shouldRevalidate } from "./navigation";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
-import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
+import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
 import * as Spaces from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
@@ -24,142 +27,44 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import {
-  folders,
   getDraftEditPath,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
+  useCreateFolder,
 } from "@/models/resourceHubs";
 import { useSubscription } from "@/models/subscriptions";
-import type * as Hub from "@/models/resourceHubs";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 
-export default { name: "ProjectPage", loader, Page } as PageModule;
-export { pageCacheKey as projectPageCacheKey };
-
-function pageCacheKey(id: string): string {
-  return `v11-ProjectV2Page.project-${id}`;
-}
-
-type ProjectDocsAndFilesData = {
-  resourceHub: Hub.ResourceHub;
-  nodes: Hub.ResourceHubNode[];
-  draftNodes: Hub.ResourceHubNode[];
-};
-
-type LoaderResult = {
-  data: {
-    project: Projects.Project;
-    checkIns: ProjectCheckIn[];
-    discussions: Projects.Discussion[];
-    backendTasks: Tasks.Task[];
-    childrenCount: Projects.ProjectChildrenCount;
-    docsAndFiles: ProjectDocsAndFilesData | null;
-    space: Spaces.Space | null;
-  };
-  cacheVersion: number;
-};
-
-async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  return await PageCache.fetch({
-    cacheKey: pageCacheKey(params.id),
-    refreshCache,
-    fetchFn: async () => {
-      const data = await fetchAll({
-        project: Projects.getProject({
-          id: params.id,
-          includeGoal: true,
-          includeChampion: true,
-          includeReviewer: true,
-          includePermissions: true,
-          includeContributors: true,
-          includeContributorsAccessLevels: true,
-          includeMilestones: true,
-          includeLastCheckIn: true,
-          includePrivacy: true,
-          includeAccessLevels: true,
-          includeRetrospective: true,
-          includeUnreadNotifications: true,
-          includeSubscriptionList: true,
-          includeResourceHub: true,
-        }).then((d) => d.project!),
-        checkIns: Api.projects
-          .listCheckIns({ projectId: params.id, includeAuthor: true })
-          .then((d) => d.projectCheckIns!),
-        discussions: Api.projects.listDiscussions({ projectId: params.id }).then((d) => d.discussions!),
-        backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
-        childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
-      });
-
-      const [space, docsAndFiles] = await Promise.all([
-        loadSpaceWithPermissions(data.project),
-        loadProjectDocsAndFiles(data.project),
-      ]);
-
-      return {
-        ...data,
-        space,
-        docsAndFiles,
-      };
-    },
-  });
-}
-
-async function loadSpaceWithPermissions(project: Projects.Project): Promise<Spaces.Space | null> {
-  const spaceId = project.spaceId;
-
-  if (!spaceId) {
-    return null;
-  }
-
-  try {
-    return await Spaces.getSpace({ id: spaceId, includePermissions: true });
-  } catch {
-    return null;
-  }
-}
-
-async function loadProjectDocsAndFiles(project: Projects.Project): Promise<ProjectDocsAndFilesData | null> {
-  const resourceHubId = project.resourceHub?.id;
-
-  if (!resourceHubId) {
-    return null;
-  }
-
-  try {
-    const [resourceHub, nodes] = await Promise.all([
-      Api.resource_hubs
-        .get({
-          id: resourceHubId,
-          includeSpace: true,
-          includeProject: true,
-          includePermissions: true,
-          includePotentialSubscribers: true,
-        })
-        .then((res) => res.resourceHub!),
-      Api.resource_hubs.listNodes({
-        resourceHubId,
-        includeCommentsCount: true,
-        includeChildrenCount: true,
-      }),
-    ]);
-
-    return {
-      resourceHub,
-      nodes: nodes.nodes || [],
-      draftNodes: nodes.draftNodes || [],
-    };
-  } catch {
-    return null;
-  }
-}
+export default { name: "ProjectPage", loader, Page, shouldRevalidate } as PageModule;
 
 function Page() {
-  const paths = usePaths();
-  const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount, docsAndFiles, space } = data;
+  const { data } = useLoadedData();
+  return <LoadedPage key={data.project.id} />;
+}
+
+function LoadedPage() {
   const navigate = useNavigate();
+  const paths = usePaths();
   const currentUser = useMe();
+  const { data, checkInsInput, discussionsInput, tasksInput } = useLoadedData();
+  const { project, childrenCount, space } = data;
+
+  const refreshCore = useRefreshCore();
+  const invalidateProjectPage = useInvalidateProjectPage();
+
+  const docs = useProjectDocsQueries(data.project.resourceHub?.id);
+  const docsAndFiles = docs.data;
+
+  const content = useProjectContentQueries({ checkInsInput, discussionsInput, tasksInput });
+  const { checkIns, discussions, backendTasks } = content;
+
+  const refresh = React.useCallback(async () => {
+    await Promise.all([refreshCore(), content.refresh(), docs.refresh()]);
+  }, [refreshCore, content.refresh, docs.refresh]);
+
+  const updatePermissions = Projects.useUpdateProjectPermissions();
+  const updateTasksView = Projects.useUpdateProjectTasksView();
   const updateProjectName = Projects.useUpdateProjectName();
   const updateProjectDescription = Projects.useUpdateProjectDescription();
   const updateProjectStartDate = Projects.useUpdateProjectStartDate();
@@ -203,8 +108,8 @@ function Page() {
   const [accessLevels, setAccessLevels] = usePageField({
     value: (data) => accessLevelsAsStrings(data.project.accessLevels!),
     update: (v) =>
-      Api.projects
-        .updatePermissions({
+      updatePermissions
+        .mutateAsync({
           projectId: project.id,
           accessLevels: {
             ...accessLevelsAsNumbers(v),
@@ -250,8 +155,8 @@ function Page() {
     deleteTask,
   } = Tasks.useProjectTasksForTurboUi({
     backendTasks,
+    tasksLoaded: content.tasksLoaded,
     projectId: project.id,
-    cacheKey: pageCacheKey(project.id),
     milestones,
     setMilestones,
     refresh,
@@ -261,7 +166,6 @@ function Page() {
     subscriptionList: project.subscriptionList,
     entityId: project.id,
     entityType: "project",
-    cacheKey: pageCacheKey(project.id),
     onRefresh: refresh,
   });
 
@@ -280,12 +184,12 @@ function Page() {
   const handleTasksViewChange = React.useCallback(
     async (tasksView: "list" | "board") => {
       try {
-        await Api.projects.updateTasksView({
+        await updateTasksView.mutateAsync({
           projectId: project.id,
           tasksView,
         });
 
-        PageCache.invalidate(pageCacheKey(project.id));
+        void invalidateProjectPage(project.id);
 
         if (refresh) {
           await refresh();
@@ -311,10 +215,10 @@ function Page() {
 
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
-      PageCache.invalidate(pageCacheKey(project.id));
+      void invalidateProjectPage(project.id);
 
       if (destinationType === "project") {
-        PageCache.invalidate(pageCacheKey(destinationId));
+        void invalidateProjectPage(destinationId);
       }
 
       if (refresh) {
@@ -332,7 +236,7 @@ function Page() {
     tasks: baseTasks,
     setTasks,
     onSuccess: async () => {
-      PageCache.invalidate(pageCacheKey(project.id));
+      void invalidateProjectPage(project.id);
 
       if (refresh) {
         await refresh();
@@ -346,7 +250,6 @@ function Page() {
     currentUser,
     tasks: baseTasks,
     commentEntityType: "project_task",
-    cacheKey: pageCacheKey(project.id),
     onRefresh: refresh,
     canEdit: Boolean(project.permissions?.canEdit),
     canComment: Boolean(project.permissions?.canComment),
@@ -366,7 +269,7 @@ function Page() {
     return deleteProjectMutation
       .mutateAsync({ projectId: project.id })
       .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
+        void invalidateProjectPage(project.id);
         navigate(backLink);
 
         return { success: true };
@@ -381,15 +284,10 @@ function Page() {
 
   const contributorActions = Projects.useProjectContributorActions({
     project,
-    cacheKey: pageCacheKey(project.id),
   });
 
-  const {
-    includeDemotedContributor,
-    excludePromotedContributor,
-    restoreContributor,
-    ...contributorPageActions
-  } = contributorActions;
+  const { includeDemotedContributor, excludePromotedContributor, restoreContributor, ...contributorPageActions } =
+    contributorActions;
 
   const setChampion = React.useCallback(
     async (person: ProjectPage.Person | null) => {
@@ -538,11 +436,29 @@ function Page() {
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
     ...contributorPageActions,
+
+    docsAndFilesAvailable: docs.available,
+    docsAndFilesLoading: docs.loading,
+    docsAndFilesError: docs.error,
+
+    onRetryDocsAndFiles: docs.retry,
+    tasksLoading: content.tasksLoading,
+    tasksError: content.tasksError,
+    onRetryTasks: content.retryTasks,
+
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
-    discussions: prepareDiscussions(paths, discussions),
+    checkInsLoading: content.checkInsLoading,
+    checkInsError: content.checkInsError,
+    onRetryCheckIns: content.retryCheckIns,
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     nextCheckInScheduledAt: Time.parse(project.nextCheckInScheduledAt),
+
+    discussions: prepareDiscussions(paths, discussions),
+    discussionsLoading: content.discussionsLoading,
+    discussionsError: content.discussionsError,
+    onRetryDiscussions: content.retryDiscussions,
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
+
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
     assigneePersonSearch: assigneePersonSearch,
 
@@ -580,7 +496,7 @@ function useProjectDocsAndFilesProps({
   }, [onRefresh]);
   const newFileModals = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
-  const [createFolder] = folders.useCreate();
+  const { mutateAsync: createFolder } = useCreateFolder();
   const nodesListProps = useResourceHubNodesListProps(
     resourceHub
       ? {
@@ -647,7 +563,7 @@ function ProjectFeedItems({ projectId }: { projectId: string }) {
 }
 
 interface usePageFieldProps<T> {
-  value: (LoaderResult) => T;
+  value: (data: ReturnType<typeof useLoadedData>["data"]) => T;
   update: (newValue: T) => Promise<{ success?: boolean | null } | boolean | null | undefined>;
   onError?: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
@@ -659,17 +575,15 @@ function usePageField<T>({
   onError,
   validations,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
-
+  const { data } = useLoadedData();
+  const invalidateProjectPage = useInvalidateProjectPage();
+  const pendingSaves = React.useRef(0);
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
   const [state, setState] = React.useState<T>(() => value(data));
-  const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
-
   React.useEffect(() => {
-    if (cacheVersion !== stateVersion) {
-      setState(value(data));
-      setStateVersion(cacheVersion);
-    }
-  }, [value, cacheVersion, stateVersion]);
+    if (pendingSaves.current === 0) setState(valueRef.current(data));
+  }, [data]);
 
   const updateState = (newVal: T): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -685,13 +599,16 @@ function usePageField<T>({
       }
 
       const oldVal = state;
+      pendingSaves.current += 1;
 
       const successHandler = () => {
-        PageCache.invalidate(pageCacheKey(data.project.id!));
+        pendingSaves.current -= 1;
+        void invalidateProjectPage(data.project.id);
         resolve(true);
       };
 
       const errorHandler = (error: any) => {
+        pendingSaves.current -= 1;
         setState(oldVal);
         onError?.(error);
         resolve(false);
@@ -729,21 +646,24 @@ function useSpaceProps({
   updateChampion: (person: ProjectPage.Person | null) => Promise<boolean>;
   updateReviewer: (person: ProjectPage.Person | null) => Promise<boolean>;
 } {
+  const moveProject = Projects.useMoveProjectToSpace();
+  const updateChampionMutation = Projects.useUpdateProjectChampion();
+  const updateReviewerMutation = Projects.useUpdateProjectReviewer();
   const [space, setSpace] = usePageField({
     value: (data) => (data.space ? Spaces.parseSpaceForTurboUI(paths, data.space) : null),
-    update: (v) => Api.projects.moveToSpace({ projectId: project.id, spaceId: v!.id }).then(() => true),
+    update: (v) => moveProject.mutateAsync({ projectId: project.id, spaceId: v!.id }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
   const [champion, updateChampion] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
-    update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
+    update: (v) => updateChampionMutation.mutateAsync({ projectId: project.id, championId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, updateReviewer] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
-    update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
+    update: (v) => updateReviewerMutation.mutateAsync({ projectId: project.id, reviewerId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
@@ -840,15 +760,16 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
 }
 
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
-  const parsedMilestones = parseMilestonesForTurboUi(
-    paths,
-    project.milestones || [],
-    project.milestonesOrderingState || [],
+  const invalidateProjectPage = useInvalidateProjectPage();
+  const createMilestoneMutation = Projects.useCreateProjectMilestone();
+  const updateMilestoneMutation = Projects.useUpdateProjectMilestone();
+  const parsedMilestones = React.useMemo(
+    () => parseMilestonesForTurboUi(paths, project.milestones || [], project.milestonesOrderingState || []),
+    [paths, project.milestones, project.milestonesOrderingState],
   );
 
   const { milestones, setMilestones, reorderMilestones, orderingState } = Projects.useProjectMilestoneOrdering({
     projectId: project.id,
-    cacheKey: pageCacheKey(project.id),
     refresh,
     initialMilestones: parsedMilestones.orderedMilestones,
     initialOrderingState: parsedMilestones.orderingState,
@@ -863,8 +784,8 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
   }, [milestones]);
 
   const createMilestone = async (milestone: ProjectPage.NewMilestonePayload) => {
-    return Api.projects
-      .createMilestone({
+    return createMilestoneMutation
+      .mutateAsync({
         projectId: project.id,
         name: milestone.name,
         dueDate: serializeContextualDate(milestone.dueDate),
@@ -872,7 +793,7 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
       .then((data) => {
         const createdMilestone = parseMilestoneForTurboUi(paths, data.milestone);
 
-        PageCache.invalidate(pageCacheKey(project.id));
+        void invalidateProjectPage(project.id);
         setMilestones((prev) => [...prev, createdMilestone]);
 
         return { success: true, milestone: createdMilestone };
@@ -886,15 +807,15 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
   };
 
   const updateMilestone = async (milestoneId: string, updates: ProjectPage.UpdateMilestonePayload) => {
-    return Api.projects
-      .updateMilestone({
+    return updateMilestoneMutation
+      .mutateAsync({
         projectId: project.id,
         milestoneId: milestoneId,
         name: updates.name,
         dueDate: serializeContextualDate(updates.dueDate),
       })
       .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
+        void invalidateProjectPage(project.id);
         setMilestones((prev) =>
           prev.map((m) => {
             if (m.id === milestoneId) {

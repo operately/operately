@@ -141,16 +141,6 @@ const Component = (
   return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
 };
 
-const NullStatusComponent = (
-  args: {
-    statusOptions: ReadonlyArray<StatusSelector.StatusOption>;
-  } & Partial<Omit<React.ComponentProps<typeof StatusSelector>, "statusOptions" | "status" | "onChange">>,
-) => {
-  const [status, setStatus] = React.useState<StatusSelector.StatusOption | null>(null);
-
-  return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
-};
-
 export const AllStates: Story = {
   render: () => {
     return (

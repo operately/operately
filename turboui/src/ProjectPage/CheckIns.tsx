@@ -1,5 +1,6 @@
 import React from "react";
 import { ProjectPage } from ".";
+import { ContentListState } from "./ContentListState";
 import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
 import { CheckInOverdueCallout } from "./CheckInOverdueCallout";
@@ -28,15 +29,22 @@ export function CheckIns(props: ProjectPage.State) {
       <CheckInOverdueCallout {...props} className="mt-6" />
 
       <div className="mt-8">
-        {props.checkIns.map((checkIn) => (
-          <CheckInCard
-            key={checkIn.id}
-            checkIn={checkIn}
-            mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
-            type="project"
-            formattedTimePreferences={props.formattedTimePreferences}
-          />
-        ))}
+        <ContentListState
+          name="check-ins"
+          loading={props.checkInsLoading}
+          error={props.checkInsError}
+          onRetry={props.onRetryCheckIns}
+        >
+          {props.checkIns.map((checkIn) => (
+            <CheckInCard
+              key={checkIn.id}
+              checkIn={checkIn}
+              mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+              type="project"
+              formattedTimePreferences={props.formattedTimePreferences}
+            />
+          ))}
+        </ContentListState>
       </div>
     </div>
   );
