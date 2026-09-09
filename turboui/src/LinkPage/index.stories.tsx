@@ -9,7 +9,7 @@ import { IconEdit } from "../icons";
 import { CurrentSubscriptions, SubscribersSelector } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
-import { genPeople } from "../utils/storybook/genPeople";
+import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
 const meta = {
   title: "Pages/LinkPage",
@@ -31,12 +31,9 @@ const author = people[0]!;
 const commentAuthor = people[1]!;
 const richTextHandlers = createMockRichEditorHandlers();
 
-const mockSubscribers: SubscribersSelector.Subscriber[] = people.map((person) => ({
-  person,
-  isSubscribed: true,
-  priority: false,
-  role: null,
-}));
+const mockSubscribers: SubscribersSelector.Subscriber[] = people.map((person) =>
+  asSubscriber(person, { isSubscribed: true }),
+);
 
 const navigation = [
   { to: "/spaces/space-1", label: "Product" },

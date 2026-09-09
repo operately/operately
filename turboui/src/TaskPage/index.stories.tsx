@@ -58,11 +58,15 @@ function Component(props: Partial<TaskPage.Props>) {
     const baseOptions = props.statusOptions ?? DEFAULT_STATUS_OPTIONS;
     if (!props.status) return baseOptions[0];
 
-    return baseOptions.find((option) => option.value === props.status?.value || option.id === props.status?.id) ?? props.status;
+    return (
+      baseOptions.find((option) => option.value === props.status?.value || option.id === props.status?.id) ??
+      props.status
+    );
   }, [props.status, props.statusOptions]);
 
   const [status, setStatus] = React.useState<typeof initialStatusOption | null>(initialStatusOption);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
+  const [dueOffsetDays, setDueOffsetDays] = React.useState(props.variant === "template" ? props.dueOffsetDays : null);
   const [reminders, setReminders] = React.useState<TaskPage.Reminder[]>(
     props.reminders ?? [{ type: "before_due", days: 1, date: null }],
   );
@@ -87,7 +91,7 @@ function Component(props: Partial<TaskPage.Props>) {
 
   const defaults: TaskPage.Props = {
     ...restProps,
-    variant: props.variant ?? "project-task",
+    variant: "project-task",
 
     // Navigation
     projectName: props.projectName ?? "Mobile App V2",
@@ -214,7 +218,18 @@ function Component(props: Partial<TaskPage.Props>) {
     statusOptions: props.statusOptions ?? DEFAULT_STATUS_OPTIONS,
   };
 
-  return <TaskPage {...defaults} />;
+  if (props.variant === "template") {
+    return (
+      <TaskPage
+        {...defaults}
+        variant="template"
+        dueOffsetDays={dueOffsetDays}
+        onDueOffsetDaysChange={props.onDueOffsetDaysChange ?? setDueOffsetDays}
+      />
+    );
+  }
+
+  return <TaskPage {...defaults} variant={props.variant ?? "project-task"} />;
 }
 
 /**
@@ -327,13 +342,7 @@ export const InProjectContext: Story = {
   },
 };
 
-function TemplateTaskContentStory({
-  canEdit = true,
-  description = null,
-}: {
-  canEdit?: boolean;
-  description?: any;
-}) {
+function TemplateTaskContentStory({ canEdit = true, description = null }: { canEdit?: boolean; description?: any }) {
   const personSearch = usePersonFieldSearch(mockTaskPeople);
   const [name, setName] = React.useState("Publish announcement");
   const [taskDescription, setTaskDescription] = React.useState(description);

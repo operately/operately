@@ -213,7 +213,9 @@ export const GoalProgressHoverSummary: Story = {
         const summaries = screen.getAllByTestId("goal-progress-summary-content");
         expect(summaries.length).toBeGreaterThan(0);
 
-        const summary = within(summaries[0]);
+        const firstSummary = summaries[0];
+        if (!firstSummary) throw new Error("Goal progress summary is missing");
+        const summary = within(firstSummary);
         expect(summary.getByText("Targets")).toBeInTheDocument();
         expect(summary.getByText("Revenue")).toBeInTheDocument();
         expect(summary.getByText("Checklist")).toBeInTheDocument();
@@ -255,7 +257,9 @@ export const ProjectProgressHoverSummary: Story = {
         const summaries = screen.getAllByTestId("project-progress-summary-content");
         expect(summaries.length).toBeGreaterThan(0);
 
-        const summary = within(summaries[0]);
+        const firstSummary = summaries[0];
+        if (!firstSummary) throw new Error("Goal progress summary is missing");
+        const summary = within(firstSummary);
         expect(summary.getByText("Milestones")).toBeInTheDocument();
         expect(summary.getByText("1/2 completed (50%)")).toBeInTheDocument();
         expect(summary.getByText("Ship design")).toBeInTheDocument();

@@ -3,9 +3,25 @@ import React from "react";
 import { TaskBoard, TasksBoardView, useMilestoneFilter, useTaskDisplayMode } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 
+import { ContentListState } from "./ContentListState";
+
 import type { ProjectPage } from "./index";
 
 export function TasksSection({ state }: { state: ProjectPage.State }) {
+  return (
+    <ContentListState
+      className="flex flex-1 flex-col min-h-0"
+      name="tasks"
+      loading={state.tasksLoading}
+      error={state.tasksError}
+      onRetry={state.onRetryTasks}
+    >
+      {(!state.tasksError || state.tasks.length > 0) && <LoadedTasksSection state={state} />}
+    </ContentListState>
+  );
+}
+
+function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
   const { selectedMilestone, tasks, onMilestoneFilterChange } = useMilestoneFilter({
     milestones: state.milestones,
     tasks: state.tasks,

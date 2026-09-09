@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import { links } from "@/models/resourceHubs";
+import { useUpdateLink } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -15,7 +15,7 @@ export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = links.useUpdate();
+  const { mutateAsync: edit } = useUpdateLink();
 
   assertPresent(link.name, "name must be present in link");
   assertPresent(link.url, "url must be present in link");

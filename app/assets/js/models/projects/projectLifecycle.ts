@@ -1,5 +1,11 @@
 import Api from "@/api";
-import { QueryClient, type QueryKey, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  type QueryKey,
+  type UseMutationOptions,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 type RefetchType = "active" | "none";
 
@@ -105,8 +111,8 @@ export function useCreateProjectFromTemplate() {
   });
 }
 
-// These fields still have legacy PageCache callers. Refresh failures must not
-// turn a successful write into a failed save and roll back their optimistic UI.
+// Refresh failures must not turn a successful write into a failed save
+// and roll back optimistic UI.
 async function invalidateProjectDetailsQueries(
   queryClient: QueryClient,
   additionalKeys: QueryKey[] = [],
@@ -191,4 +197,68 @@ export function useDeleteProject() {
       void invalidateProjectDetailsQueries(queryClient, [Api.goals.getQueryKeyPrefix()]);
     },
   });
+}
+
+// Project Page mutations share the same subscribed project data and related lists.
+function useProjectPageMutation<TData, TError, TVariables, TContext>(
+  options: UseMutationOptions<TData, TError, TVariables, TContext>,
+) {
+  const client = useQueryClient();
+  return useMutation({
+    ...options,
+    onSuccess: (data) => {
+      if (data && typeof data === "object" && "success" in data && data.success === false) return;
+      void invalidateProjectDetailsQueries(client, [
+        Api.projects.countChildrenQueryKeyPrefix(),
+        Api.tasks.listQueryKeyPrefix(),
+        Api.tasks.getQueryKeyPrefix(),
+        Api.projects.getMilestoneQueryKeyPrefix(),
+        Api.people.getBindedQueryKeyPrefix(),
+      ]);
+    },
+  });
+}
+
+export function useUpdateProjectPermissions() {
+  return useProjectPageMutation(Api.projects.updatePermissionsMutationOptions());
+}
+
+export function useMoveProjectToSpace() {
+  return useProjectPageMutation(Api.projects.moveToSpaceMutationOptions());
+}
+
+export function useUpdateProjectChampion() {
+  return useProjectPageMutation(Api.projects.updateChampionMutationOptions());
+}
+
+export function useUpdateProjectReviewer() {
+  return useProjectPageMutation(Api.projects.updateReviewerMutationOptions());
+}
+
+export function useUpdateProjectTasksView() {
+  return useProjectPageMutation(Api.projects.updateTasksViewMutationOptions());
+}
+
+export function useCreateProjectMilestone() {
+  return useProjectPageMutation(Api.projects.createMilestoneMutationOptions());
+}
+
+export function useUpdateProjectMilestone() {
+  return useProjectPageMutation(Api.projects.updateMilestoneMutationOptions());
+}
+
+export function useUpdateProjectMilestoneOrdering() {
+  return useProjectPageMutation(Api.projects.updateMilestoneOrderingMutationOptions());
+}
+
+export function useCreateProjectContributor() {
+  return useProjectPageMutation(Api.projects.createContributorMutationOptions());
+}
+
+export function useUpdateProjectContributor() {
+  return useProjectPageMutation(Api.projects.updateContributorMutationOptions());
+}
+
+export function useDeleteProjectContributor() {
+  return useProjectPageMutation(Api.projects.deleteContributorMutationOptions());
 }

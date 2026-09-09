@@ -3,7 +3,12 @@ import { useNavigate } from "react-router";
 
 import * as Pages from "@/components/Pages";
 import * as ReactionsModel from "@/models/reactions";
-import { documents, resourceHubLandingPath, useCopyDocumentListContext } from "@/models/resourceHubs";
+import {
+  resourceHubLandingPath,
+  useCopyDocumentListContext,
+  useDeleteDocument,
+  usePublishDocument,
+} from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { useComments, useCommentSectionProps } from "@/features/CommentSection";
@@ -28,8 +33,8 @@ export function Page() {
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
-  const [remove] = documents.useDelete();
-  const [publish] = documents.usePublish();
+  const { mutateAsync: remove } = useDeleteDocument();
+  const { mutateAsync: publish } = usePublishDocument();
 
   const navigationDocument = buildNavigationDocument(document, resourceHub);
   const pageResourceHub = navigationDocument.resourceHub;

@@ -26,6 +26,17 @@ export {
   useUpdateProjectDueDate,
   useUpdateProjectParentGoal,
   useDeleteProject,
+  useUpdateProjectPermissions,
+  useMoveProjectToSpace,
+  useUpdateProjectChampion,
+  useUpdateProjectReviewer,
+  useUpdateProjectTasksView,
+  useCreateProjectMilestone,
+  useUpdateProjectMilestone,
+  useUpdateProjectMilestoneOrdering,
+  useCreateProjectContributor,
+  useUpdateProjectContributor,
+  useDeleteProjectContributor,
 } from "./projectLifecycle";
 export {
   invalidateProjectDiscussionQueries,
@@ -37,9 +48,7 @@ export type Project = api.Project;
 export type Milestone = api.Milestone;
 export type ProjectRetrospective = api.ProjectRetrospective;
 export type Discussion = api.CommentThread;
-export type ProjectChildrenCount = api.ProjectChildrenCount;
 
-export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
