@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { WorkMapPage } from "turboui";
+import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
@@ -13,8 +13,33 @@ export function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const { workMap, space, templates } = useLoadedData().data;
+  const { data, creationData } = useLoadedData();
+  const { workMap, space, templates } = data;
   const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
+  const canAddItem = !creationData.isLoading && !creationData.error && Boolean(space.permissions?.canEdit);
+
+  const creationFailed = Boolean(creationData.error);
+  const retryCreation = React.useRef(creationData.retry);
+
+  React.useEffect(() => {
+    retryCreation.current = creationData.retry;
+  }, [creationData.retry]);
+
+  React.useEffect(() => {
+    if (!creationFailed) return;
+
+    const id = showErrorToast("Couldn't load options for adding goals and projects.", "Try loading them again.", {
+      id: `space-work-map-creation-${space.id}`,
+      duration: Infinity,
+      action: {
+        label: "Try again",
+        onClick: () => {
+          void retryCreation.current();
+        },
+      },
+    });
+    return () => dismissToast(id);
+  }, [space.id, creationFailed]);
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
@@ -40,7 +65,9 @@ export function Page() {
   return (
     <WorkMapPage
       title="Work Map"
-      addingEnabled={space.permissions?.canEdit}
+      addingEnabled={canAddItem}
+      creationLoading={creationData.isLoading}
+      creationError={creationFailed}
       items={convertToWorkMapItems(paths, items)}
       addItem={addItem}
       spaceSearch={spaceSearch}
