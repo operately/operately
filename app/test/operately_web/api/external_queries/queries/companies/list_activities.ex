@@ -19,12 +19,15 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.ListActivities do
     %{
       scope_type: :company,
       scope_id: Paths.company_id(ctx.company),
-      actions: []
+      actions: [],
+      paginate: false
     }
   end
 
   @impl true
   def assert(response, _ctx) do
     assert is_list(response.activities)
+    assert Map.has_key?(response, :next_cursor)
+    assert response.next_cursor == nil
   end
 end

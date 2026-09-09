@@ -94,7 +94,7 @@ function Page() {
 
 function ActivityFeed() {
   const { company } = useLoadedData();
-  const { data, loading, error } = useFeedItemsQuery("company", company.id!);
+  const { data, loading, error, pagination } = useFeedItemsQuery("company", company.id!);
   const canDeleteFeedItems = useCanDeleteFeedItems();
   const { mutateAsync: deleteActivity } = useDeleteFeedActivity();
 
@@ -113,6 +113,7 @@ function ActivityFeed() {
 
   return (
     <Feed
+      pagination={pagination}
       items={data?.activities ?? []}
       testId="company-feed"
       page="company"
