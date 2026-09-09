@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { expect, within } from "storybook/test";
+import { dismissToast, showErrorToast } from "../../Toasts";
 import { WorkMapPage, WorkMap } from "../components";
 import { closedParentWithOngoingChildren, mockItems, mockSingleItem } from "../tests/mockData";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
@@ -95,6 +97,48 @@ export const Empty: Story = {
     columnOptions: {
       hideProject: true,
     },
+  },
+};
+
+export const CreationLoading: Story = {
+  args: { ...Default.args, creationLoading: true },
+};
+
+export const EmptyCreationLoading: Story = {
+  args: { ...Empty.args, creationLoading: true },
+};
+
+export const CreationError: Story = {
+  args: { ...Default.args, creationError: true },
+  render: (args) => {
+    const [recovered, setRecovered] = React.useState(false);
+    const hasError = Boolean(args.creationError) && !recovered;
+
+    React.useEffect(() => {
+      if (!hasError) return;
+
+      const id = showErrorToast("Couldn't load options for adding goals and projects.", "Try loading them again.", {
+        id: "work-map-creation-error-story",
+        duration: Infinity,
+        action: { label: "Try again", onClick: () => setRecovered(true) },
+      });
+      return () => dismissToast(id);
+    }, [hasError]);
+
+    return <WorkMapPage {...args} creationError={hasError} />;
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement.ownerDocument.body);
+    await expect(await canvas.findByRole("button", { name: "Try again" })).toBeVisible();
+    await expect(await canvas.findByRole("button", { name: "Close notification" })).toBeVisible();
+  },
+};
+
+export const EmptyCreationError: Story = {
+  ...CreationError,
+  args: { ...Empty.args, creationError: true },
+  play: async (context) => {
+    await CreationError.play?.(context);
   },
 };
 
