@@ -1,3 +1,4 @@
+import { invalidateTaskLifecycleQueries } from "../tasks/taskLifecycle";
 import Api from "@/api";
 import {
   QueryClient,
@@ -111,6 +112,10 @@ export function useCreateProjectFromTemplate() {
   });
 }
 
+function isFailedMutationResult(data: unknown): boolean {
+  return Boolean(data && typeof data === "object" && "success" in data && data.success === false);
+}
+
 // Refresh failures must not turn a successful write into a failed save
 // and roll back optimistic UI.
 async function invalidateProjectDetailsQueries(
@@ -158,7 +163,7 @@ export function useUpdateProjectStartDate() {
   return useMutation({
     ...Api.projects.updateStartDateMutationOptions(),
     onSuccess: (data) => {
-      if (data.success === false) return;
+      if (isFailedMutationResult(data)) return;
       void invalidateProjectDetailsQueries(queryClient);
     },
   });
@@ -170,7 +175,7 @@ export function useUpdateProjectDueDate() {
   return useMutation({
     ...Api.projects.updateDueDateMutationOptions(),
     onSuccess: (data) => {
-      if (data.success === false) return;
+      if (isFailedMutationResult(data)) return;
       void invalidateProjectDetailsQueries(queryClient);
     },
   });
@@ -182,7 +187,7 @@ export function useUpdateProjectParentGoal() {
   return useMutation({
     ...Api.projects.updateParentGoalMutationOptions(),
     onSuccess: (data) => {
-      if (data.success === false) return;
+      if (isFailedMutationResult(data)) return;
       void invalidateProjectDetailsQueries(queryClient, [Api.goals.getQueryKeyPrefix()]);
     },
   });
@@ -207,7 +212,7 @@ function useProjectPageMutation<TData, TError, TVariables, TContext>(
   return useMutation({
     ...options,
     onSuccess: (data) => {
-      if (data && typeof data === "object" && "success" in data && data.success === false) return;
+      if (isFailedMutationResult(data)) return;
       void invalidateProjectDetailsQueries(client, [
         Api.projects.countChildrenQueryKeyPrefix(),
         Api.tasks.listQueryKeyPrefix(),
@@ -261,4 +266,27 @@ export function useUpdateProjectContributor() {
 
 export function useDeleteProjectContributor() {
   return useProjectPageMutation(Api.projects.deleteContributorMutationOptions());
+}
+
+export function useUpdateProjectTaskStatuses() {
+  return useProjectTaskMutation(Api.projects.updateTaskStatusesMutationOptions());
+}
+
+export function useUpdateProjectKanban() {
+  return useProjectTaskMutation(Api.projects.updateKanbanMutationOptions());
+}
+
+function useProjectTaskMutation<TData, TError, TVariables, TContext>(
+  options: UseMutationOptions<TData, TError, TVariables, TContext>,
+) {
+  const client = useQueryClient();
+  return useMutation({
+    ...options,
+    onSuccess: (data) => {
+      if (isFailedMutationResult(data)) return;
+      void Promise.all([invalidateProjectLifecycleQueries(client), invalidateTaskLifecycleQueries(client)]).catch(
+        (error) => console.error("Failed to refresh project task queries", error),
+      );
+    },
+  });
 }

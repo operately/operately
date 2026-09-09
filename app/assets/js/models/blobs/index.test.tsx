@@ -1,21 +1,16 @@
 import { showErrorToast } from "turboui";
 import { uploadFile } from "./index";
-import { createBlob } from "@/api";
+import { createFileBlobs } from "./blobLifecycle";
 
 jest.mock("turboui", () => ({
   showErrorToast: jest.fn(),
 }));
 
-jest.mock("@/api", () => ({
-  __esModule: true,
-  default: {
-    company_transfers: {
-      createImportArtifactBlobs: jest.fn(),
-    },
-  },
-  createBlob: jest.fn(),
-  createAvatarBlob: jest.fn(),
-  markBlobUploaded: jest.fn(),
+jest.mock("./blobLifecycle", () => ({
+  createFileBlobs: jest.fn(),
+  createAvatarBlobs: jest.fn(),
+  createImportArtifactBlobs: jest.fn(),
+  confirmBlobUpload: jest.fn(),
 }));
 
 describe("blob upload model", () => {
@@ -46,7 +41,7 @@ describe("blob upload model", () => {
       },
     };
 
-    jest.mocked(createBlob).mockRejectedValue(error);
+    jest.mocked(createFileBlobs).mockRejectedValue(error);
 
     await expect(uploadFile(new File(["hello"], "test.txt", { type: "text/plain" }), jest.fn())).rejects.toBe(error);
 
@@ -74,7 +69,7 @@ describe("blob upload model", () => {
       },
     };
 
-    jest.mocked(createBlob).mockRejectedValue(error);
+    jest.mocked(createFileBlobs).mockRejectedValue(error);
 
     await expect(uploadFile(new File(["hello"], "test.txt", { type: "text/plain" }), jest.fn())).rejects.toBe(error);
 

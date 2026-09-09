@@ -64,6 +64,7 @@ function LoadedPage() {
   }, [refreshCore, content.refresh, docs.refresh]);
 
   const updatePermissions = Projects.useUpdateProjectPermissions();
+  const updateKanban = Projects.useUpdateProjectKanban();
   const updateTasksView = Projects.useUpdateProjectTasksView();
   const updateProjectName = Projects.useUpdateProjectName();
   const updateProjectDescription = Projects.useUpdateProjectDescription();
@@ -230,6 +231,7 @@ function LoadedPage() {
 
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
     initialRawState: project.tasksKanbanState,
+    updateKanban: updateKanban.mutateAsync,
     statuses,
     projectId: project.id,
     type: "project",

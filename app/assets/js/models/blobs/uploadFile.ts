@@ -4,7 +4,8 @@ import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 import { showErrorToast } from "turboui";
 import { formatStorageBytes } from "turboui/CompanyBilling";
 
-import Api, { BlobCreationInput, BlobCreationOutput, createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
+import type { BlobCreationInput, BlobCreationOutput } from "@/api";
+import { createFileBlobs, createAvatarBlobs, createImportArtifactBlobs, confirmBlobUpload } from "./blobLifecycle";
 import { extractLimitError } from "@/models/billing/limitError";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
@@ -12,15 +13,15 @@ type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  return uploadWithCreator(file, progressCallback, createBlob);
+  return uploadWithCreator(file, progressCallback, createFileBlobs);
 }
 
 export async function uploadAvatarFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  return uploadWithCreator(file, progressCallback, createAvatarBlob);
+  return uploadWithCreator(file, progressCallback, createAvatarBlobs);
 }
 
 export async function uploadImportArtifactFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
-  return uploadWithCreator(file, progressCallback, Api.company_transfers.createImportArtifactBlobs);
+  return uploadWithCreator(file, progressCallback, createImportArtifactBlobs);
 }
 
 async function uploadWithCreator(
@@ -60,12 +61,11 @@ async function uploadWithCreator(
     throw error;
   }
 
-  if (!res.blobs || res.blobs!.length === 0) {
-    throw Error("Failed to create blobs");
+  const blob = res.blobs?.[0];
+  if (!blob?.id || !blob.signedUploadUrl || !blob.url) {
+    throw new Error("Created blob is missing its id or upload URLs");
   }
-
-  const blob = res.blobs[0]!;
-  const url = blob.signedUploadUrl!;
+  const url = blob.signedUploadUrl;
 
   if (blob.uploadStrategy === "direct") {
     await directUpload(file, url, progressCallback);
@@ -73,9 +73,10 @@ async function uploadWithCreator(
     await multipartUpload(file, url, progressCallback);
   }
 
-  await markBlobUploaded({ blobId: blob.id! });
+  const confirmation = await confirmBlobUpload({ blobId: blob.id });
+  if (!confirmation.blob?.id) throw new Error("Failed to confirm blob upload");
 
-  return { id: blob.id!, url: blob.url! };
+  return { id: blob.id, url: blob.url };
 }
 
 async function directUpload(file: File, url: string, progressCallback: ProgressCallback) {

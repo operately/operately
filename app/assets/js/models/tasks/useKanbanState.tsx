@@ -1,6 +1,7 @@
+import { useProjectKanbanState } from "./useProjectKanbanState";
 import * as React from "react";
 
-import Api, { type SpacesUpdateKanbanInput, type TaskStatus } from "@/api";
+import Api, { type ProjectsUpdateKanbanInput, type SpacesUpdateKanbanInput, type TaskStatus } from "@/api";
 import { TaskBoard, showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
@@ -34,6 +35,7 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "project";
       projectId: string;
+      updateKanban: (input: ProjectsUpdateKanbanInput) => Promise<unknown>;
     })
   | (BaseKanbanStateOptions & {
       type: "template";
@@ -43,13 +45,17 @@ type UseKanbanStateOptions =
 export function useKanbanState(options: UseKanbanStateOptions) {
   const { initialRawState, statuses, tasks, type, setTasks, onSuccess } = options;
 
-  const [kanbanState, setKanbanState] = React.useState<KanbanState>(() =>
+  const projectState = useProjectKanbanState(options.type === "project" ? options : null);
+  const [legacyKanbanState, setKanbanState] = React.useState<KanbanState>(() =>
     parseKanbanState(initialRawState, statuses, tasks),
   );
+
+  const kanbanState = type === "project" ? projectState.kanbanState : legacyKanbanState;
 
   const hasOptimisticUpdateRef = React.useRef(false);
 
   React.useEffect(() => {
+    if (type === "project") return;
     if (hasOptimisticUpdateRef.current) {
       hasOptimisticUpdateRef.current = false;
       return;
@@ -59,7 +65,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
       const next = parseKanbanState(initialRawState, statuses, tasks);
       return areKanbanStatesEqual(previous, next) ? previous : next;
     });
-  }, [initialRawState, statuses, tasks]);
+  }, [initialRawState, statuses, tasks, type]);
 
   const persistTaskKanbanChange = React.useCallback(
     async (event: TaskKanbanChangeEvent): Promise<boolean> => {
@@ -69,19 +75,16 @@ export function useKanbanState(options: UseKanbanStateOptions) {
 
       if (!backendStatus) return false;
 
+      if (type === "project" && statusOption) {
+        return projectState.move({ taskId: event.taskId, status: statusOption, index: event.to.index });
+      }
+
       hasOptimisticUpdateRef.current = true;
       setKanbanState(event.updatedKanbanState);
       applyOptimisticTaskStatusUpdate(event.taskId, statusOption, setTasks);
 
       try {
-        if (type === "project") {
-          await Api.projects.updateKanban({
-            projectId: options.projectId,
-            taskId: event.taskId,
-            status: backendStatus,
-            kanbanState: serializeKanbanState(event.updatedKanbanState),
-          });
-        } else if (type === "template") {
+        if (type === "template") {
           await Api.project_templates.updateTask({
             templateId: options.templateId,
             taskId: event.taskId,
@@ -91,7 +94,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
             id: options.templateId,
             tasksKanbanState: serializeKanbanState(event.updatedKanbanState),
           });
-        } else {
+        } else if (options.type === "space") {
           await options.updateKanban({
             spaceId: options.spaceId,
             taskId: event.taskId,
@@ -112,7 +115,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
         return false;
       }
     },
-    [kanbanState, onSuccess, options, setTasks, statuses, type],
+    [kanbanState, onSuccess, options, setTasks, statuses, type, projectState.move],
   );
 
   const handleTaskKanbanChange = React.useCallback(
