@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentProjectClosed } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -29,12 +28,11 @@ const ProjectClosed: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const retroId = content(activity).project!.id!;
     const retroPath = paths.projectRetrospectivePath(retroId!);
     const retroLink = <Link to={retroPath}>retrospective</Link>;
-    const project = projectLink(content(activity).project!);
+    const project = projectLink(paths, content(activity).project!);
 
     if (page === "project") {
       return feedTitle(activity, "closed the project and submitted a", retroLink);

@@ -1,3 +1,4 @@
+import { Paths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -17,7 +18,9 @@ describe("company_owner_removing activities", () => {
   };
 
   it("renders the removed owner in the feed", () => {
-    const title = renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ activity, page: "feed" })}</>);
+    const title = renderToStaticMarkup(
+      <>{ActivityHandler.FeedItemTitle({ paths: new Paths({ companyId: "company" }), activity, page: "feed" })}</>,
+    );
 
     expect(DISPLAYED_IN_FEED).toContain("company_owner_removing");
     expect(title).toContain("Jo removed Alex as an account owner");
@@ -26,7 +29,13 @@ describe("company_owner_removing activities", () => {
   it("renders without crashing when the removed person is missing", () => {
     const activityWithoutPerson = { ...activity, content: { person: null } };
     const title = renderToStaticMarkup(
-      <>{ActivityHandler.FeedItemTitle({ activity: activityWithoutPerson, page: "feed" })}</>,
+      <>
+        {ActivityHandler.FeedItemTitle({
+          paths: new Paths({ companyId: "company" }),
+          activity: activityWithoutPerson,
+          page: "feed",
+        })}
+      </>,
     );
 
     expect(title).toContain("Jo removed an account owner");

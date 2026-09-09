@@ -3,7 +3,7 @@ import type { ActivityContentMilestoneDescriptionUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -34,9 +34,9 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, milestone, milestoneName, hasDescription } = content(activity);
-    const title = milestone ? milestoneLink(milestone, milestoneName) : `"${milestoneName}"`;
+    const title = milestone ? milestoneLink(paths, milestone, milestoneName) : `"${milestoneName}"`;
 
     const message = hasDescription
       ? ["updated milestone", title, "description"]
@@ -45,7 +45,7 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     if (page === "project") {
       return feedTitle(activity, ...message);
     } else {
-      return feedTitle(activity, ...message, "in", projectLink(project));
+      return feedTitle(activity, ...message, "in", projectLink(paths, project));
     }
   },
 

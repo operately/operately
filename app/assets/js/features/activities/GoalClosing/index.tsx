@@ -3,10 +3,9 @@ import * as React from "react";
 import { ActivityContentGoalClosing } from "@/api";
 import { Activity } from "@/models/activities";
 
-import { usePaths } from "@/routes/paths";
 import { isContentEmpty, Link, RichContent, StatusBadge, Summary } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalClosing: ActivityHandler = {
@@ -72,15 +71,14 @@ const GoalClosing: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>closed</Link>;
 
     if (page === "goal") {
       return feedTitle(activity, link, "the goal");
     } else {
-      return feedTitle(activity, link, "the", goalLink(content(activity).goal!), "goal");
+      return feedTitle(activity, link, "the", goalLink(paths, content(activity).goal!), "goal");
     }
   },
 

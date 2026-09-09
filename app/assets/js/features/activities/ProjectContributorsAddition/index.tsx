@@ -3,7 +3,7 @@ import React from "react";
 
 import type { ActivityContentProjectContributorsAddition, ProjectContributorsAdditionContributor } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Avatar } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
@@ -31,10 +31,10 @@ const ProjectContributorsAddition: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project } = content(activity);
 
-    const projectLinkOrName = project ? ["the", projectLink(project), "project"] : ["a project"];
+    const projectLinkOrName = project ? ["the", projectLink(paths, project), "project"] : ["a project"];
 
     if (page === "project") {
       return feedTitle(activity, "added new contributors to the project");

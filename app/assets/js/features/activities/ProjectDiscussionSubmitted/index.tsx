@@ -1,9 +1,8 @@
 import React from "react";
 
 import { Activity, ActivityContentProjectDiscussionSubmitted } from "@/api";
-import { usePaths } from "@/routes/paths";
 import { isContentEmpty, Link, Summary } from "turboui";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -44,15 +43,21 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.projectDiscussionPath(activity.commentThread!.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "project") {
       return feedTitle(activity, "posted ", link);
     } else {
-      return feedTitle(activity, "posted ", link, " on the ", projectLink(content(activity).project!), " project");
+      return feedTitle(
+        activity,
+        "posted ",
+        link,
+        " on the ",
+        projectLink(paths, content(activity).project!),
+        " project",
+      );
     }
   },
 

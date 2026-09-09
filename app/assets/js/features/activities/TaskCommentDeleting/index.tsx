@@ -1,10 +1,10 @@
 import type { ActivityContentTaskCommentDeleting } from "@/api";
 import type { Activity } from "@/models/activities";
-import { Paths, usePaths } from "@/routes/paths";
+import { Paths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
 import { feedTitle, projectLink, spaceLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskCommentDeleting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -41,8 +41,7 @@ const TaskCommentDeleting: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, space, task, taskName } = content(activity);
     const taskLink = task ? <Link to={taskPath(paths, activity)}>{task.name}</Link> : `"${taskName}"`;
 
@@ -55,10 +54,10 @@ const TaskCommentDeleting: ActivityHandler = {
     }
 
     if (project) {
-      return feedTitle(activity, "deleted a comment on", taskLink, "in the", projectLink(project), "project");
+      return feedTitle(activity, "deleted a comment on", taskLink, "in the", projectLink(paths, project), "project");
     }
 
-    return feedTitle(activity, "deleted a comment on", taskLink, "in the", spaceLink(space), "space");
+    return feedTitle(activity, "deleted a comment on", taskLink, "in the", spaceLink(paths, space), "space");
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

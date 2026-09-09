@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import React from "react";
 
 import { feedTitle } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
@@ -34,10 +34,10 @@ const ResourceHubDocumentEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const resources = <EditedResourceList activity={activity} />;
-    const parent = visibleParentDescriptor(page, data);
+    const resources = <EditedResourceList activity={activity} paths={paths} />;
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (!parent) {
       return feedTitle(activity, "edited", resources);

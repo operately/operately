@@ -1,3 +1,4 @@
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -40,8 +41,8 @@ function activity(content: Record<string, unknown>) {
 
 function renderFeedItem(activity: any, page: "feed" | "project" = "feed") {
   return {
-    title: renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ activity, page })}</>),
-    content: renderToStaticMarkup(<>{ActivityHandler.FeedItemContent({ activity, page })}</>),
+    title: renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity, page })}</>),
+    content: renderToStaticMarkup(<>{ActivityHandler.FeedItemContent({ paths: usePaths(), activity, page })}</>),
   };
 }
 

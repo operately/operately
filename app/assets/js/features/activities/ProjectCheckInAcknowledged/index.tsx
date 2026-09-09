@@ -1,6 +1,6 @@
 import type { ActivityContentProjectCheckInAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
 
@@ -31,14 +31,14 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
-    const checkInLink = projectCheckInLink(content(activity).checkIn);
+    const checkInLink = projectCheckInLink(paths, content(activity).checkIn);
 
     if (page === "project") {
       return feedTitle(activity, "acknowledged a", checkInLink);
     } else {
-      return feedTitle(activity, "acknowledged a", checkInLink, " in the", projectLink(project), "project");
+      return feedTitle(activity, "acknowledged a", checkInLink, " in the", projectLink(paths, project), "project");
     }
   },
 

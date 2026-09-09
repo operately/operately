@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { Activity, ActivityContentGroupEdited } from "@/api";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, spaceLink } from "../feedItemLinks";
@@ -32,7 +32,7 @@ const GroupEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
 
     assertPresent(data.space, "space must be present in GroupEdited activity content");
@@ -41,7 +41,7 @@ const GroupEdited: ActivityHandler = {
       return feedTitle(activity, "updated this space");
     }
 
-    return feedTitle(activity, "updated the", spaceLink(data.space), "space");
+    return feedTitle(activity, "updated the", spaceLink(paths, data.space), "space");
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

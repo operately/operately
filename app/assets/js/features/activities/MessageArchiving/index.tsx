@@ -1,11 +1,10 @@
 import type { ActivityContentMessageArchiving } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { usePaths } from "@/routes/paths";
 import React from "react";
 import { Link } from "react-router";
 import { feedTitle } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const MessageArchiving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,8 +27,7 @@ const MessageArchiving: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const title = content(activity).title!;
     const space = content(activity).space!;
     const spaceLink = <Link to={paths.spacePath(space.id!)}>{space.name!}</Link>;

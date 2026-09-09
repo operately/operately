@@ -4,7 +4,7 @@ import { ActivityContentProjectMilestoneUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { DateField } from "turboui";
 import { parseContextualDate } from "@/models/contextualDates";
 
@@ -29,7 +29,8 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const project = content(props.activity).project!;
     const oldName = content(props.activity).oldMilestoneName!;
     const newName = content(props.activity).newMilestoneName!;
@@ -44,7 +45,7 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     if (props.page === "project") {
       return feedTitle(props.activity, message);
     } else {
-      return feedTitle(props.activity, message, "in", projectLink(project));
+      return feedTitle(props.activity, message, "in", projectLink(paths, project));
     }
   },
 

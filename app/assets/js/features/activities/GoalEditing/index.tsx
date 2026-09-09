@@ -3,7 +3,7 @@ import * as React from "react";
 
 import type { ActivityContentGoalEditing } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { compareIds } from "@/routes/paths";
 import { feedTitle, goalLink } from "../feedItemLinks";
@@ -29,11 +29,11 @@ const GoalEditing: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "goal") {
       return feedTitle(activity, "edited the goal");
     } else {
-      return feedTitle(activity, "edited the", goalLink(content(activity).goal!), "goal");
+      return feedTitle(activity, "edited the", goalLink(paths, content(activity).goal!), "goal");
     }
   },
 

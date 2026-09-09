@@ -4,7 +4,7 @@ import type { ActivityContentMilestoneTitleUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const MilestoneTitleUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,15 +27,15 @@ const MilestoneTitleUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, milestone, newTitle } = content(activity);
-    const title = milestone ? milestoneLink(milestone, newTitle) : `"${newTitle}"`;
+    const title = milestone ? milestoneLink(paths, milestone, newTitle) : `"${newTitle}"`;
     const message = `renamed milestone to`;
 
     if (page === "project") {
       return feedTitle(activity, message, title);
     } else {
-      return feedTitle(activity, message, title, "in", projectLink(project));
+      return feedTitle(activity, message, title, "in", projectLink(paths, project));
     }
   },
 

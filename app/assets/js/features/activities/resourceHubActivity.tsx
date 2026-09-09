@@ -19,18 +19,18 @@ type ParentDescriptor = {
   page: "goal" | "project" | "space";
 };
 
-export function resourceHubParentParts(page: string, data: ParentData): Array<string | JSX.Element> {
-  const parent = visibleParentDescriptor(page, data);
+export function resourceHubParentParts(paths: Paths, page: string, data: ParentData): Array<string | JSX.Element> {
+  const parent = visibleParentDescriptor(paths, page, data);
 
   if (!parent) return [];
 
   return ["in the", parent.link, parent.label];
 }
 
-function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null {
+function resourceHubParentDescriptor(paths: Paths, data: ParentData): ParentDescriptor | null {
   if (data.project) {
     return {
-      link: projectLink(data.project),
+      link: projectLink(paths, data.project),
       label: "project",
       page: "project",
     };
@@ -38,7 +38,7 @@ function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null 
 
   if (data.goal) {
     return {
-      link: goalDocsAndFilesLink(data.goal),
+      link: goalDocsAndFilesLink(paths, data.goal),
       label: "goal",
       page: "goal",
     };
@@ -46,7 +46,7 @@ function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null 
 
   if (data.space) {
     return {
-      link: spaceLink(data.space),
+      link: spaceLink(paths, data.space),
       label: "space",
       page: "space",
     };
@@ -55,8 +55,8 @@ function resourceHubParentDescriptor(data: ParentData): ParentDescriptor | null 
   return null;
 }
 
-export function visibleParentDescriptor(page: string, data: ParentData): ParentDescriptor | null {
-  const parent = resourceHubParentDescriptor(data);
+export function visibleParentDescriptor(paths: Paths, page: string, data: ParentData): ParentDescriptor | null {
+  const parent = resourceHubParentDescriptor(paths, data);
 
   if (!parent) return null;
   if (page === parent.page) return null;

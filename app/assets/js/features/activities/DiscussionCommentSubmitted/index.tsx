@@ -1,8 +1,7 @@
 import type { ActivityContentDiscussionCommentSubmitted } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import React from "react";
 import { Link, Summary } from "turboui";
 import { commentPath, commentedLink, feedTitle } from "../feedItemLinks";
@@ -36,8 +35,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, discussion, space } = content(activity);
 
     const discussionPath = discussion ? paths.discussionPath(discussion.id) : null;

@@ -2,7 +2,7 @@ import type { ActivityContentResourceHubDocumentEdited, ActivityContentResourceH
 import { useLocale } from "@/contexts/TimezoneContext";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
-import { usePaths } from "@/routes/paths";
+import type { Paths } from "@/routes/paths";
 import * as React from "react";
 import { Link } from "turboui";
 
@@ -17,8 +17,7 @@ interface ListPart {
   value: string;
 }
 
-export function EditedResourceList({ activity }: { activity: Activity }) {
-  const paths = usePaths();
+export function EditedResourceList({ activity, paths }: { activity: Activity; paths: Paths }) {
   const locale = useLocale();
   const resources = editedResourcesForFeed(activity, paths);
   const parts = listParts(resources.length, locale);
@@ -41,7 +40,7 @@ export function EditedResourceList({ activity }: { activity: Activity }) {
   );
 }
 
-function editedResourcesForFeed(activity: Activity, paths: ReturnType<typeof usePaths>): EditedResource[] {
+function editedResourcesForFeed(activity: Activity, paths: Paths): EditedResource[] {
   const seen = new Set<string>();
 
   return Activities.getAggregatedActivities(activity)
@@ -57,7 +56,7 @@ function editedResourcesForFeed(activity: Activity, paths: ReturnType<typeof use
     });
 }
 
-function editedResource(activity: Activity, paths: ReturnType<typeof usePaths>): EditedResource | null {
+function editedResource(activity: Activity, paths: Paths): EditedResource | null {
   switch (activity.action) {
     case "resource_hub_document_edited": {
       const data = activity.content as ActivityContentResourceHubDocumentEdited | null | undefined;

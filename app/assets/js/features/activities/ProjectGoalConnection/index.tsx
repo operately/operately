@@ -1,6 +1,6 @@
 import type { ActivityContentProjectGoalConnection } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
 
@@ -25,16 +25,16 @@ const ProjectGoalConnection: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
     const { project: p, goal: g, previousGoal } = data;
     const connectedGoalName = currentGoalName(data);
     const disconnectedGoalName = previousGoalName(data);
 
-    const project = projectLink(p);
+    const project = projectLink(paths, p);
 
     if (g) {
-      const goal = goalLink(g);
+      const goal = goalLink(paths, g);
 
       if (page === "project") {
         return feedTitle(activity, "connected the project to the", goal, "goal");
@@ -55,7 +55,7 @@ const ProjectGoalConnection: ActivityHandler = {
 
     // Handle cases where a project was disconnected from a goal
     if (previousGoal) {
-      const prevGoal = goalLink(previousGoal);
+      const prevGoal = goalLink(paths, previousGoal);
 
       if (page === "project") {
         return feedTitle(activity, "disconnected the project from the", prevGoal, "goal");

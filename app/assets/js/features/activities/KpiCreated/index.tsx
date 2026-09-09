@@ -2,7 +2,7 @@ import * as React from "react";
 
 import type { ActivityContentKpiCreated } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
 
@@ -34,14 +34,14 @@ const KpiCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
 
     if (page === "space") {
       return feedTitle(activity, "created a KPI");
     }
 
-    return feedTitle(activity, "created a KPI in the", spaceLink(data.space), "space");
+    return feedTitle(activity, "created a KPI in the", spaceLink(paths, data.space), "space");
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

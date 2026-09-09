@@ -1,6 +1,6 @@
 import type { ActivityContentProjectCreated } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -25,8 +25,8 @@ const ProjectCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const project = projectLink(content(activity).project!);
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
+    const project = projectLink(paths, content(activity).project!);
 
     if (page === "project") {
       return feedTitle(activity, "created the project");

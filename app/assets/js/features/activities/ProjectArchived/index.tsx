@@ -1,6 +1,6 @@
 import type { ActivityContentProjectArchived } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -25,11 +25,11 @@ const ProjectArchived: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
       return feedTitle(activity, "archived the project");
     } else {
-      return feedTitle(activity, "archived the", projectLink(content(activity).project!), "project");
+      return feedTitle(activity, "archived the", projectLink(paths, content(activity).project!), "project");
     }
   },
 

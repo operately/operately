@@ -1,3 +1,4 @@
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -45,7 +46,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubDocumentCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain(
       'created a document in the <a href="/spaces/space-1">General</a> space: <a href="/documents/doc-1">Start Here</a>',
@@ -64,7 +67,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubDocumentCommented.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentCommented.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain('href="/projects/project-1"');
     expect(html).toContain(">Apollo</a> project");
@@ -83,7 +88,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubDocumentCommented.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentCommented.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).toContain(">Company Goal</a> goal");
@@ -99,7 +106,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubDocumentCreated.FeedItemTitle({ activity, page: "goal" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentCreated.FeedItemTitle({ paths: usePaths(), activity, page: "goal" })}</>,
+    );
 
     expect(html).not.toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).not.toContain("in the");
@@ -115,7 +124,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubDocumentCommented.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentCommented.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).not.toContain("in the");
     expect(html).not.toContain("project");
@@ -133,7 +144,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubFileCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubFileCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain('href="/projects/project-1?tab=docs-and-files"');
     expect(html).toContain(">Documents &amp; Files</a>");
@@ -152,7 +165,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubFileCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubFileCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain(
       'added a file to <a href="/resource-hubs/hub-1">Documents &amp; Files</a> in the <a href="/spaces/space-1">General</a> space: <a href="/files/file-1">Readme.pdf</a>',
@@ -170,7 +185,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubFileCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubFileCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).toContain(">Documents &amp; Files</a>");
@@ -189,7 +206,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubLinkCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubLinkCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain('href="/projects/project-1?tab=docs-and-files"');
     expect(html).toContain(">Documents &amp; Files</a>");
@@ -208,7 +227,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubLinkCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubLinkCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain(
       'added a link to <a href="/resource-hubs/hub-1">Documents &amp; Files</a> in the <a href="/spaces/space-1">General</a> space: <a href="/links/link-1">Spec</a>',
@@ -226,7 +247,9 @@ describe("resource hub activity parent-aware rendering", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubLinkCreated.FeedItemTitle({ activity, page: "feed" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubLinkCreated.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(html).toContain('href="/goals/goal-1?tab=docs-and-files"');
     expect(html).toContain(">Documents &amp; Files</a>");

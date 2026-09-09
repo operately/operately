@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentProjectTaskCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
 import { commentPath, commentedLink, feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -33,8 +32,7 @@ const ProjectTaskCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, project, task } = content(activity);
 
     const taskPath = task ? paths.taskPath(task.id) : null;
@@ -44,7 +42,7 @@ const ProjectTaskCommented: ActivityHandler = {
     if (page === "project") {
       return feedTitle(activity, action, "on", taskLink);
     } else {
-      return feedTitle(activity, action, "on", taskLink, "in the", projectLink(project), "project");
+      return feedTitle(activity, action, "on", taskLink, "in the", projectLink(paths, project), "project");
     }
   },
 

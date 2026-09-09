@@ -8,9 +8,8 @@ import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
-import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { TimeframeEdited } from "./TimeframeEdited";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -70,15 +69,14 @@ const GoalTimeframeEditing: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalActivityPath(activity.id!);
     const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 
     if (page === "goal") {
       return feedTitle(activity, activityLink);
     } else {
-      return feedTitle(activity, activityLink, " on the", goalLink(content(activity).goal!));
+      return feedTitle(activity, activityLink, " on the", goalLink(paths, content(activity).goal!));
     }
   },
 
