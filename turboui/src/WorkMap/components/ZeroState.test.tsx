@@ -1,36 +1,10 @@
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { MemoryRouter } from "react-router";
 
 import { ZeroState } from "./ZeroState";
-
-jest.mock("react-select", () => {
-  return function MockSelect({
-    options,
-    value,
-    onChange,
-  }: {
-    options: { label: string; value: string }[];
-    value?: { label: string; value: string };
-    onChange: (option: { label: string; value: string } | null) => void;
-  }) {
-    return (
-      <select
-        aria-label="Template"
-        value={value?.value ?? ""}
-        onChange={(event) => onChange(options.find((option) => option.value === event.target.value) ?? null)}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    );
-  };
-});
 
 const generalSpace = { id: "general", name: "General", link: "/spaces/general" };
 const spaceSearch = jest.fn().mockResolvedValue([generalSpace]);
@@ -148,60 +122,14 @@ describe("Work Map first-project state", () => {
     expect(submitButton).toBeDisabled();
   });
 
-  it("shows the template picker when project templates are enabled", () => {
-    renderFirstProjectState(undefined, undefined);
+  it.each([
+    { state: "no templates", projectTemplates: [] },
+    { state: "available templates", projectTemplates: templates },
+  ])("omits template controls with $state", ({ projectTemplates }) => {
+    renderFirstProjectState(undefined, undefined, { projectTemplates, onCreateProjectTemplate: jest.fn() });
 
-    expect(screen.getByLabelText("Template")).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "General campaign" })).toBeInTheDocument();
-  });
-
-  it("can start creating a template in General", () => {
-    const onCreateProjectTemplate = jest.fn();
-    renderFirstProjectState(undefined, undefined, { onCreateProjectTemplate });
-
-    const options = screen.getAllByRole("option");
-    expect(options.at(-1)).toHaveTextContent("Create a project template");
-
-    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "create-project-template" } });
-
-    expect(onCreateProjectTemplate).toHaveBeenCalledWith("general");
-  });
-
-  it("passes templateId and startDate when creating from a template", async () => {
-    const user = userEvent.setup();
-    const { addItem } = renderFirstProjectState(undefined, undefined);
-
-    await user.type(screen.getByLabelText("Project name"), "Launch customer portal");
-    fireEvent.change(screen.getByLabelText("Template"), { target: { value: "tpl-general" } });
-    selectCurrentDate("Project start date");
-    await user.click(screen.getByRole("button", { name: "Create project" }));
-
-    await waitFor(() => {
-      expect(addItem).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: "Launch customer portal",
-          type: "project",
-          templateId: "tpl-general",
-          startDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-        }),
-      );
-    });
+    expect(document.querySelector('[data-test-id="template"]')).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Project start date")).not.toBeInTheDocument();
   });
 });
-
-function selectCurrentDate(label: string) {
-  const date = new Date();
-  const isoDate = [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0"),
-  ].join("-");
-
-  fireEvent.click(screen.getByLabelText(label));
-
-  const day = document.querySelector(`[data-date="${isoDate}"]`);
-  if (!day) throw new Error(`Could not find calendar day ${isoDate}`);
-
-  fireEvent.click(day);
-  fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
-}
