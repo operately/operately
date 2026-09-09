@@ -208,7 +208,7 @@ export type {
 export { OtherPeopleWithAccess, OtherPeopleWithAccessModal } from "./OtherPeopleWithAccess";
 export type { OtherPeopleWithAccessModalProps, OtherPeopleWithAccessPerson } from "./OtherPeopleWithAccess";
 
-export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
+export { dismissToast, showErrorToast, showInfoToast, showSuccessToast, ToasterBar, type ToastOptions } from "./Toasts";
 export { Tooltip } from "./Tooltip";
 export { Timeline } from "./Timeline";
 export { Reactions } from "./Reactions";
