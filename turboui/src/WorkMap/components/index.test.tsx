@@ -6,9 +6,9 @@ import { WorkMap } from "./index";
 import { mockSingleItem } from "../tests/mockData";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 
-function mapElement(props: Partial<WorkMap.Props> = {}) {
+function mapElement(props: Partial<WorkMap.Props> = {}, initialEntry = "/") {
   return (
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <WorkMap
         title="Company Work Map"
         items={[]}
@@ -19,8 +19,8 @@ function mapElement(props: Partial<WorkMap.Props> = {}) {
   );
 }
 
-function renderMap(props: Partial<WorkMap.Props> = {}) {
-  return render(mapElement(props));
+function renderMap(props: Partial<WorkMap.Props> = {}, initialEntry = "/") {
+  return render(mapElement(props, initialEntry));
 }
 
 describe("Work Map creation loading", () => {
@@ -37,6 +37,26 @@ describe("Work Map creation loading", () => {
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(document.querySelector('[data-test-id="first-project-zero-state"]')).not.toBeInTheDocument();
     expect(screen.queryByText("Nothing here yet.")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    { state: "loading", creationLoading: true },
+    { state: "failed", creationError: true },
+  ])("preserves an empty filtered tab when creation data is $state", ({ state: _state, ...creationState }) => {
+    renderMap(
+      {
+        items: [mockSingleItem],
+        addingEnabled: true,
+        zeroStateMessage: "empty-filter-state",
+        ...creationState,
+      },
+      "/?tab=completed",
+    );
+
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.getByText("empty-filter-state", { exact: false })).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="add-project"]')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="add-goal"]')).not.toBeInTheDocument();
   });
 
   it.each([{ items: [] }, { items: [mockSingleItem] }])(

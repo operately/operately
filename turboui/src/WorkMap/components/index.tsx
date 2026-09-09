@@ -79,7 +79,7 @@ export function WorkMap({
       <div className="flex-1 overflow-auto">
         {view === "timeline" ? (
           <WorkMapTimeline items={filteredItems} tab={tab} />
-        ) : filteredItems.length > 0 || !creationUnavailable ? (
+        ) : items.length > 0 || !creationUnavailable ? (
           <WorkMapTable
             items={filteredItems}
             tab={tab}
