@@ -9,7 +9,7 @@ import { includesId } from "@/routes/paths";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { WorkMapPage } from "turboui";
+import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
 import { convertToWorkMapItems, useWorkMapItems } from "../../models/workMap";
 import { usePaths } from "../../routes/paths";
 import { finishFirstItemOnboarding } from "./finishFirstItemOnboarding";
@@ -22,17 +22,43 @@ export function Page() {
   const queryClient = useQueryClient();
   const me = useMe();
   const companyLoaderData = useCompanyLoaderData();
-  const { workMap, company, spacesCount, templates } = useLoadedData().data;
+
+  const { data, creationData } = useLoadedData();
+  const { workMap, spacesCount, templates } = data;
+  const company = data.company ?? companyLoaderData.company;
+
+  const creationFailed = Boolean(creationData.error);
+  const retryCreation = React.useRef(creationData.retry);
+
+  React.useEffect(() => {
+    retryCreation.current = creationData.retry;
+  }, [creationData.retry]);
+
+  React.useEffect(() => {
+    if (!creationFailed) return;
+
+    const id = showErrorToast("Couldn't load options for adding goals and projects.", "Try loading them again.", {
+      id: `company-work-map-creation-${company.id}`,
+      duration: Infinity,
+      action: {
+        label: "Try again",
+        onClick: () => {
+          void retryCreation.current();
+        },
+      },
+    });
+    return () => dismissToast(id);
+  }, [company.id, creationFailed]);
 
   const title = `${company.name} Work Map`;
 
-  const canAddItem = spacesCount > 0;
+  const canAddItem = !creationData.isLoading && !creationData.error && (spacesCount ?? 0) > 0;
   const ownerIds = companyLoaderData.company.owners?.map((owner) => owner.id) ?? [];
   const firstProjectStateVisible = shouldShowFirstProjectOnboarding({
     isOwner: includesId(ownerIds, me?.id),
     setupCompleted: company.setupCompleted,
     hasWorkItems: workMap.length > 0,
-    canAddItem,
+    canAddItem: canAddItem && Boolean(data.company?.generalSpace),
   });
   const [items, addItem] = useWorkMapItems(workMap, {
     projectChampionId: firstProjectStateVisible ? me?.id : undefined,
@@ -77,7 +103,9 @@ export function Page() {
       addItem={addItem}
       spaceSearch={spaceSearch}
       addingEnabled={canAddItem}
-      addItemDefaultSpace={company.generalSpace && Spaces.parseSpaceForTurboUI(paths, company.generalSpace)}
+      creationLoading={creationData.isLoading}
+      creationError={Boolean(creationData.error)}
+      addItemDefaultSpace={data.company?.generalSpace && Spaces.parseSpaceForTurboUI(paths, data.company.generalSpace)}
       columnOptions={{ hideProject: true }}
       formattedTimePreferences={formattedTimePreferences}
       emptyStateVariant={firstProjectStateVisible ? "first-project" : "standard"}
