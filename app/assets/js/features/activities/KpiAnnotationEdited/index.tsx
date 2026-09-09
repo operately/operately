@@ -2,7 +2,7 @@ import * as React from "react";
 
 import type { ActivityContentKpiAnnotationEdited } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
 
@@ -32,14 +32,14 @@ const KpiAnnotationEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
 
     if (page === "space") {
       return feedTitle(activity, "edited a KPI annotation");
     }
 
-    return feedTitle(activity, "edited a KPI annotation in the", spaceLink(data.space), "space");
+    return feedTitle(activity, "edited a KPI annotation in the", spaceLink(paths, data.space), "space");
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

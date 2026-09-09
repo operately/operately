@@ -2,7 +2,7 @@ import type { ActivityContentTaskMilestoneUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, milestoneLink, projectLink, taskLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskMilestoneUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -25,18 +25,25 @@ const TaskMilestoneUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, task, oldMilestone, newMilestone } = content(activity);
 
     let message: any[];
-    const taskName = task ? taskLink(task) : "task";
+    const taskName = task ? taskLink(paths, task) : "task";
 
     if (!oldMilestone && newMilestone) {
-      message = ["assigned", taskName, "to milestone", milestoneLink(newMilestone)];
+      message = ["assigned", taskName, "to milestone", milestoneLink(paths, newMilestone)];
     } else if (oldMilestone && !newMilestone) {
-      message = ["removed", taskName, "from milestone", milestoneLink(oldMilestone)];
+      message = ["removed", taskName, "from milestone", milestoneLink(paths, oldMilestone)];
     } else if (oldMilestone && newMilestone) {
-      message = ["moved", taskName, "from milestone", milestoneLink(oldMilestone), "to", milestoneLink(newMilestone)];
+      message = [
+        "moved",
+        taskName,
+        "from milestone",
+        milestoneLink(paths, oldMilestone),
+        "to",
+        milestoneLink(paths, newMilestone),
+      ];
     } else {
       message = ["updated", taskName, "milestone"];
     }
@@ -44,7 +51,7 @@ const TaskMilestoneUpdating: ActivityHandler = {
     if (page === "project") {
       return feedTitle(activity, ...message);
     } else {
-      return feedTitle(activity, ...message, "in", projectLink(project));
+      return feedTitle(activity, ...message, "in", projectLink(paths, project));
     }
   },
 

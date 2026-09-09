@@ -9,10 +9,9 @@ import type {
   ActivityContentGoalTimeframeEditing,
   ActivityContentProjectDiscussionSubmitted,
 } from "@/api";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import * as Activities from "@/models/activities";
-import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Link, Summary } from "turboui";
 import { commentPath, commentedLink, feedTitle, goalLink, projectLink } from "../feedItemLinks";
@@ -63,8 +62,7 @@ const CommentAdded: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { activity: commentedActivity, comment } = content(activity);
 
     if (!commentedActivity) {
@@ -82,7 +80,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "goal") {
           return feedTitle(activity, action, "on the", activityLink);
         } else {
-          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(paths, goal), "goal");
         }
       })
       .with("goal_closing", () => {
@@ -95,7 +93,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "goal") {
           return feedTitle(activity, action, "on the", activityLink);
         } else {
-          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(paths, goal), "goal");
         }
       })
       .with("goal_discussion_creation", () => {
@@ -111,7 +109,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "goal") {
           return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on", activityLink, "in the", goalLink(paths, goal), "goal");
         }
       })
       .with("goal_reopening", () => {
@@ -124,7 +122,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "goal") {
           return feedTitle(activity, action, "on the", activityLink);
         } else {
-          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(paths, goal), "goal");
         }
       })
       .with("project_discussion_submitted", () => {
@@ -140,7 +138,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "project") {
           return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
+          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(paths, project), "project");
         }
       })
       .with("project_resuming", () => {
@@ -152,7 +150,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "project") {
           return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
+          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(paths, project), "project");
         }
       })
       .with("project_pausing", () => {
@@ -164,7 +162,7 @@ const CommentAdded: ActivityHandler = {
         if (page === "project") {
           return feedTitle(activity, action, "on", activityLink);
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(project), "project");
+          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(paths, project), "project");
         }
       })
       .otherwise(() => {

@@ -2,7 +2,7 @@ import type { ActivityContentResourceHubFolderDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { feedTitle, resourceHubLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFolderDeleted: ActivityHandler = {
@@ -26,13 +26,13 @@ const ResourceHubFolderDeleted: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
     const resourceHub = data.resourceHub
-      ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal })
+      ? resourceHubLink(paths, data.resourceHub, { project: data.project, goal: data.goal })
       : "the resource hub";
     const folderName = data.folder?.name ?? "a folder";
-    const parent = visibleParentDescriptor(page, data);
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (!parent) {
       return feedTitle(activity, `deleted the "${folderName}" folder from`, resourceHub);

@@ -5,7 +5,7 @@ import type { ActivityContentProjectChampionUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectChampionUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,7 +28,7 @@ const ProjectChampionUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const newChampion = content(activity).newChampion;
     const message = newChampion ? `assigned ${People.shortName(newChampion)} as the champion` : "removed the champion";
@@ -36,7 +36,7 @@ const ProjectChampionUpdating: ActivityHandler = {
     if (page === "project") {
       return feedTitle(activity, message);
     } else {
-      return feedTitle(activity, message, "on", projectLink(project));
+      return feedTitle(activity, message, "on", projectLink(paths, project));
     }
   },
 

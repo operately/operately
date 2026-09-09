@@ -4,7 +4,7 @@ import type { ActivityContentResourceHubFolderRenamed } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { feedTitle, folderLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubFolderPathOrParent, resourceHubParentParts } from "../resourceHubActivity";
 
 const ResourceHubFolderRenamed: ActivityHandler = {
@@ -30,11 +30,11 @@ const ResourceHubFolderRenamed: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
 
-    const folder = data.folder ? folderLink(data.folder) : "a folder";
-    const parentParts = resourceHubParentParts(page, data);
+    const folder = data.folder ? folderLink(paths, data.folder) : "a folder";
+    const parentParts = resourceHubParentParts(paths, page, data);
 
     if (parentParts.length === 0) {
       return feedTitle(activity, "renamed the", folder, "folder");

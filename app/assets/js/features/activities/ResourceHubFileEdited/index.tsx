@@ -4,7 +4,7 @@ import type { ActivityContentResourceHubFileEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { feedTitle, fileLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
@@ -36,10 +36,10 @@ const ResourceHubFileEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const file = data.file?.id && data.file?.name ? fileLink(data.file) : (data.file?.name ?? "a file");
-    const parent = visibleParentDescriptor(page, data);
+    const file = data.file?.id && data.file?.name ? fileLink(paths, data.file) : (data.file?.name ?? "a file");
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (!parent) {
       return feedTitle(activity, "edited a file:", file);

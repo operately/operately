@@ -1,10 +1,16 @@
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 
+export interface FeedItemProps {
+  activity: Activity;
+  page: string;
+  paths: Paths;
+}
+
 export interface ActivityHandler {
   // Feed items
-  FeedItemContent(props: { activity: Activity; page: any }): JSX.Element | null;
-  FeedItemTitle(props: { activity: Activity; page: any }): JSX.Element | null;
+  FeedItemContent(props: FeedItemProps): JSX.Element | null;
+  FeedItemTitle(props: FeedItemProps): JSX.Element | null;
   feedItemAlignment(activity: Activity): "items-start" | "items-center";
 
   // Activity page

@@ -1,6 +1,6 @@
 import type { ActivityContentProjectRetrospectiveAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
@@ -26,13 +26,13 @@ const ProjectRetrospectiveAcknowledged: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
 
     if (page === "project") {
       return feedTitle(activity, "acknowledged the retrospective");
     } else {
-      return feedTitle(activity, "acknowledged the retrospective in the", projectLink(project), "project");
+      return feedTitle(activity, "acknowledged the retrospective in the", projectLink(paths, project), "project");
     }
   },
 

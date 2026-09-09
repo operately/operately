@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentSpaceTaskCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
 import { commentPath, commentedLink, feedTitle, spaceLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -36,8 +35,7 @@ const SpaceTaskCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, space, task } = content(activity);
 
     const taskPath = task ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.spaceKanbanPath(space.id);
@@ -47,7 +45,7 @@ const SpaceTaskCommented: ActivityHandler = {
     if (page === "space") {
       return feedTitle(activity, action, "on", taskLink);
     } else {
-      return feedTitle(activity, action, "on", taskLink, "in the", spaceLink(space), "space");
+      return feedTitle(activity, action, "on", taskLink, "in the", spaceLink(paths, space), "space");
     }
   },
 

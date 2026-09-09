@@ -2,7 +2,7 @@ import { Activity, ActivityContentSpaceMemberRemoved } from "@/api";
 import { shortName } from "@/models/people";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceMemberRemoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -25,9 +25,9 @@ const SpaceMemberRemoved: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const person = shortName(content(activity).member!);
-    const space = spaceLink(content(activity).space!);
+    const space = spaceLink(paths, content(activity).space!);
 
     if (page === "space") {
       return feedTitle(activity, "removed", person, "from the space");

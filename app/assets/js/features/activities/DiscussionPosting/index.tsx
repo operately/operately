@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentDiscussionPosting } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
 import { feedTitle, spaceLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -30,8 +29,7 @@ const DiscussionPosting: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const discussion = content(activity).discussion!;
 
     const path = paths.discussionPath(discussion.id!);
@@ -40,7 +38,7 @@ const DiscussionPosting: ActivityHandler = {
     if (page === "space") {
       return feedTitle(activity, "posted", link);
     } else {
-      return feedTitle(activity, "posted", link, "in the", spaceLink(content(activity).space!));
+      return feedTitle(activity, "posted", link, "in the", spaceLink(paths, content(activity).space!));
     }
   },
 

@@ -4,8 +4,7 @@ import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectResuming } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
-import { usePaths } from "@/routes/paths";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { isContentEmpty, Link, RichContent, Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -47,8 +46,7 @@ const ProjectResuming: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const activityPath = activity.id ? paths.projectActivityPath(activity.id) : null;
     const link = activityPath ? <Link to={activityPath}>resumed</Link> : "resumed";
     const project = content(activity).project;
@@ -56,7 +54,7 @@ const ProjectResuming: ActivityHandler = {
     if (page === "project") {
       return feedTitle(activity, link, "the project");
     } else if (project) {
-      return feedTitle(activity, link, "the", projectLink(project), "project");
+      return feedTitle(activity, link, "the", projectLink(paths, project), "project");
     } else {
       return feedTitle(activity, link, "a project");
     }

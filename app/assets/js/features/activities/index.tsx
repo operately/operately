@@ -40,12 +40,12 @@ const ActivityHandler: interfaces.ActivityHandler = {
     return React.createElement(handler(activity).PageOptions, { activity });
   },
 
-  FeedItemContent({ activity, page }: { activity: Activity; page: any }) {
-    return React.createElement(handler(activity).FeedItemContent, { activity, page });
+  FeedItemContent({ activity, page, paths }: interfaces.FeedItemProps) {
+    return React.createElement(handler(activity).FeedItemContent, { activity, page, paths });
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    return React.createElement(handler(activity).FeedItemTitle, { activity, page });
+  FeedItemTitle({ activity, page, paths }: interfaces.FeedItemProps) {
+    return React.createElement(handler(activity).FeedItemTitle, { activity, page, paths });
   },
 
   feedItemAlignment(activity: Activity) {

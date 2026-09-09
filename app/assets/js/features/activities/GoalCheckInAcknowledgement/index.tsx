@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentGoalCheckInAcknowledgement } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
@@ -29,8 +28,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const goal = content(activity).goal!;
     const update = content(activity).update!;
 
@@ -40,7 +38,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     if (page === "goal") {
       return feedTitle(activity, "acknowledged the", link);
     } else {
-      return feedTitle(activity, "acknowledged the", link, "in the", goalLink(goal), "goal");
+      return feedTitle(activity, "acknowledged the", link, "in the", goalLink(paths, goal), "goal");
     }
   },
 

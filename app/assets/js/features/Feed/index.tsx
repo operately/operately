@@ -215,8 +215,8 @@ function ActivityItem({
   const formattedTimePreferences = useFormattedTimePreferences();
   const author = activity.author!;
   const time = activity.insertedAt!;
-  const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
-  const content = <ActivityHandler.FeedItemContent activity={activity} page={page} />;
+  const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} paths={paths} />;
+  const content = <ActivityHandler.FeedItemContent activity={activity} page={page} paths={paths} />;
   const alignement = ActivityHandler.feedItemAlignment(activity);
   const profilePath = paths.profilePath(author.id!);
 

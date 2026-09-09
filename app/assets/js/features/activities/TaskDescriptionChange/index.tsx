@@ -2,7 +2,7 @@ import React from "react";
 
 import type { ActivityContentTaskDescriptionChange } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { feedTitle, taskLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -35,17 +35,17 @@ const TaskDescriptionChange: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { task, projectName, space } = content(activity);
     const isSpaceTask = task?.type === "space";
 
     // Determine link and context
     const link = isSpaceTask
       ? space
-        ? taskLink(task, { spaceId: space.id })
+        ? taskLink(paths, task, { spaceId: space.id })
         : task.name
       : task
-        ? taskLink(task)
+        ? taskLink(paths, task)
         : "a task";
 
     // Add context suffix based on page view

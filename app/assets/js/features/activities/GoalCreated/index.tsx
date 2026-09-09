@@ -1,8 +1,9 @@
+import { usePaths } from "@/routes/paths";
 import * as People from "@/models/people";
 
 import type { ActivityContentGoalCreated } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { match } from "ts-pattern";
 import { feedTitle, goalLink } from "../feedItemLinks";
@@ -28,11 +29,11 @@ const GoalCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "goal") {
       return feedTitle(activity, "added this goal");
     } else {
-      return feedTitle(activity, "added the", goalLink(content(activity).goal!), "goal");
+      return feedTitle(activity, "added the", goalLink(paths, content(activity).goal!), "goal");
     }
   },
 
@@ -64,7 +65,8 @@ const GoalCreated: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return goalLink(content(activity).goal!);
+    const paths = usePaths();
+    return goalLink(paths, content(activity).goal!);
   },
 };
 

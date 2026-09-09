@@ -1,3 +1,4 @@
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -26,7 +27,9 @@ describe("ResourceHubDocumentCommented", () => {
       },
     };
 
-    const html = renderToStaticMarkup(<>{ResourceHubDocumentCommented.FeedItemTitle({ activity, page: "space" })}</>);
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentCommented.FeedItemTitle({ paths: usePaths(), activity, page: "space" })}</>,
+    );
 
     expect(html).toContain('href="/documents/doc-1#comment-1"');
     expect(html).toContain(">commented</a>");

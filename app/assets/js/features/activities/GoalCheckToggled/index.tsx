@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalCheckToggled: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -26,7 +26,8 @@ const GoalCheckToggled: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const goal = content(props.activity).goal!;
     const message = content(props.activity).completed
       ? "marked a checklist item as completed"
@@ -35,7 +36,7 @@ const GoalCheckToggled: ActivityHandler = {
     if (props.page === "goal") {
       return feedTitle(props.activity, message);
     } else {
-      return feedTitle(props.activity, message, "on", goalLink(goal));
+      return feedTitle(props.activity, message, "on", goalLink(paths, goal));
     }
   },
 

@@ -4,7 +4,7 @@ import type { ActivityContentGoalNameUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalNameUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,13 +27,14 @@ const GoalNameUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const { goal } = content(props.activity);
 
     if (props.page === "goal") {
       return feedTitle(props.activity, "renamed the goal");
     } else {
-      return feedTitle(props.activity, "renamed", goalLink(goal!));
+      return feedTitle(props.activity, "renamed", goalLink(paths, goal!));
     }
   },
 

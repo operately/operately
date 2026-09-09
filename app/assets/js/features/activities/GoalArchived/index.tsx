@@ -1,6 +1,6 @@
 import type { ActivityContentGoalArchived } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, goalLink } from "../feedItemLinks";
 
@@ -25,11 +25,11 @@ const GoalArchived: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "goal") {
       return feedTitle(activity, "archived this goal");
     } else {
-      return feedTitle(activity, "archived the", goalLink(content(activity).goal!), "goal");
+      return feedTitle(activity, "archived the", goalLink(paths, content(activity).goal!), "goal");
     }
   },
 

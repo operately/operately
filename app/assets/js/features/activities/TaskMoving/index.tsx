@@ -1,7 +1,8 @@
+import type { Paths } from "@/routes/paths";
 import React from "react";
 import type { ActivityContentTaskMoving } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 
 const TaskMoving: ActivityHandler = {
@@ -38,22 +39,22 @@ const TaskMoving: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, paths }: FeedItemProps) {
     const data = content(activity);
     const movedTask =
       data.task && data.destinationType === "space" && data.destinationSpace?.id
-        ? taskLink(data.task, { spaceId: data.destinationSpace.id })
+        ? taskLink(paths, data.task, { spaceId: data.destinationSpace.id })
         : data.task
-          ? taskLink(data.task)
+          ? taskLink(paths, data.task)
           : `"${data.taskName}"`;
 
-    return feedTitle(activity, "moved the task", movedTask, "to", destinationLabel(data));
+    return feedTitle(activity, "moved the task", movedTask, "to", destinationLabel(paths, data));
   },
 
-  FeedItemContent({ activity }: { activity: Activity; page: any }) {
+  FeedItemContent({ activity, paths }: FeedItemProps) {
     const data = content(activity);
 
-    return <>Previously, it was in {originLabel(data)}</>;
+    return <>Previously, it was in {originLabel(paths, data)}</>;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -82,15 +83,15 @@ function content(activity: Activity): ActivityContentTaskMoving {
   return activity.content as ActivityContentTaskMoving;
 }
 
-function originLabel(data: ActivityContentTaskMoving) {
-  if (data.originProject) return projectLink(data.originProject);
-  if (data.originSpace) return spaceLink(data.originSpace);
+function originLabel(paths: Paths, data: ActivityContentTaskMoving) {
+  if (data.originProject) return projectLink(paths, data.originProject);
+  if (data.originSpace) return spaceLink(paths, data.originSpace);
   return data.originType === "project" ? "a project" : "a space";
 }
 
-function destinationLabel(data: ActivityContentTaskMoving) {
-  if (data.destinationProject) return projectLink(data.destinationProject);
-  if (data.destinationSpace) return spaceLink(data.destinationSpace);
+function destinationLabel(paths: Paths, data: ActivityContentTaskMoving) {
+  if (data.destinationProject) return projectLink(paths, data.destinationProject);
+  if (data.destinationSpace) return spaceLink(paths, data.destinationSpace);
   return data.destinationType === "project" ? "a project" : "a space";
 }
 

@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentProjectMoved } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -29,16 +28,15 @@ const ProjectMoved: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
       return feedTitle(activity, "moved the project");
     } else {
-      return feedTitle(activity, "moved the", projectLink(content(activity).project!), "project");
+      return feedTitle(activity, "moved the", projectLink(paths, content(activity).project!), "project");
     }
   },
 
-  FeedItemContent({ activity }: { activity: Activity }) {
-    const paths = usePaths();
+  FeedItemContent({ activity, paths }: FeedItemProps) {
     const oldSpace = content(activity).oldSpace!;
     const newSpace = content(activity).newSpace!;
 

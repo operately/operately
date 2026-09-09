@@ -2,7 +2,7 @@ import type { ActivityContentResourceHubDocumentVersionRestored } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { feedTitle, documentLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubDocumentVersionRestored: ActivityHandler = {
@@ -32,16 +32,16 @@ const ResourceHubDocumentVersionRestored: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
     const document = data.document;
-    const parent = visibleParentDescriptor(page, data);
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (!document) {
       return feedTitle(activity, "restored a document to a previous version");
     }
 
-    const doc = documentLink(document);
+    const doc = documentLink(paths, document);
 
     if (!parent) {
       return feedTitle(activity, "restored", doc, "to a previous version");

@@ -1,7 +1,7 @@
 import { Activity, ActivityContentSpaceJoining } from "@/api";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceJoining: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -24,11 +24,11 @@ const SpaceJoining: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "space") {
       return feedTitle(activity, "joined the space");
     } else {
-      return feedTitle(activity, "joined the", spaceLink(content(activity).space!), "space");
+      return feedTitle(activity, "joined the", spaceLink(paths, content(activity).space!), "space");
     }
   },
 

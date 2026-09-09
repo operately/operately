@@ -7,8 +7,8 @@ import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectTimelineEdited, ActivityMilestone } from "@/api";
 import type { Activity } from "@/models/activities";
-import { usePaths } from "@/routes/paths";
-import type { ActivityHandler } from "../interfaces";
+import type { Paths } from "@/routes/paths";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectTimelineEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,15 +31,20 @@ const ProjectTimelineEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
       return feedTitle(activity, "edited the timeline");
     } else {
-      return feedTitle(activity, "edited the timeline on the", projectLink(content(activity).project!), "project");
+      return feedTitle(
+        activity,
+        "edited the timeline on the",
+        projectLink(paths, content(activity).project!),
+        "project",
+      );
     }
   },
 
-  FeedItemContent({ activity }: { activity: Activity; page: string }) {
+  FeedItemContent({ activity, paths }: FeedItemProps) {
     const content = prepareContent(activity.content as ActivityContentProjectTimelineEdited);
 
     return (
@@ -47,8 +52,8 @@ const ProjectTimelineEdited: ActivityHandler = {
         <NewStartDate content={content} />
         <NewEndDate content={content} />
         <DurationChange content={content} />
-        <AddedMilestones content={content} />
-        <UpdatedMilestones content={content} />
+        <AddedMilestones content={content} paths={paths} />
+        <UpdatedMilestones content={content} paths={paths} />
       </div>
     );
   },
@@ -124,7 +129,7 @@ function DurationChange({ content }: { content: Content }) {
   return null;
 }
 
-function AddedMilestones({ content }: { content: Content }) {
+function AddedMilestones({ content, paths }: { content: Content; paths: Paths }) {
   if (!content.hasNewMilestones) return null;
 
   const title = content.newMilestones.length === 1 ? "Added a new milestone" : "Added new milestones";
@@ -134,14 +139,14 @@ function AddedMilestones({ content }: { content: Content }) {
       {title}:
       <div className="flex flex-col gap-1">
         {content.newMilestones.map((m) => (
-          <MilestoneLink key={m.id} milestone={m} />
+          <MilestoneLink key={m.id} milestone={m} paths={paths} />
         ))}
       </div>
     </div>
   );
 }
 
-function UpdatedMilestones({ content }: { content: Content }) {
+function UpdatedMilestones({ content, paths }: { content: Content; paths: Paths }) {
   if (!content.hasUpdatedMilestones) return null;
 
   const title = content.updatedMilestones.length === 1 ? "Updated a milestone" : "Updated milestones";
@@ -151,15 +156,14 @@ function UpdatedMilestones({ content }: { content: Content }) {
       {title}:
       <div className="flex flex-col gap-1">
         {content.updatedMilestones.map((m) => (
-          <MilestoneLink key={m.id} milestone={m} />
+          <MilestoneLink key={m.id} milestone={m} paths={paths} />
         ))}
       </div>
     </div>
   );
 }
 
-function MilestoneLink({ milestone }: { milestone: ActivityMilestone }) {
-  const paths = usePaths();
+function MilestoneLink({ milestone, paths }: { milestone: ActivityMilestone; paths: Paths }) {
   const formattedTimePreferences = useFormattedTimePreferences();
   const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;

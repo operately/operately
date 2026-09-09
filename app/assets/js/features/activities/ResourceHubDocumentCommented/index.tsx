@@ -3,9 +3,8 @@ import * as People from "@/models/people";
 
 import type { ActivityContentResourceHubDocumentCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { commentedLink, documentLink, feedTitle } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Summary } from "turboui";
@@ -36,15 +35,14 @@ const ResourceHubDocumentCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const parent = visibleParentDescriptor(page, data);
+    const parent = visibleParentDescriptor(paths, page, data);
     let action: any = "commented";
     let document: any = "a document";
 
     if (data.document) {
-      document = documentLink(data.document);
+      document = documentLink(paths, data.document);
     }
 
     if (data.document?.id) {

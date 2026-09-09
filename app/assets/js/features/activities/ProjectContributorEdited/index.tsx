@@ -6,7 +6,7 @@ import type {
   ActivityContentProjectContributorEditedContributor,
 } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { accessLevelAsString } from "@/features/Permissions";
 import { compareIds } from "@/routes/paths";
@@ -33,10 +33,10 @@ const ProjectContributorEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, updatedContributor } = content(activity);
     const person = contributorFirstName(updatedContributor);
-    const projectParts = project ? ["the", projectLink(project), "project"] : ["a project"];
+    const projectParts = project ? ["the", projectLink(paths, project), "project"] : ["a project"];
 
     if (personChanged(activity)) {
       const newRole = updatedContributor?.role || "contributor";

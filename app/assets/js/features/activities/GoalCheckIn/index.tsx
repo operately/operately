@@ -3,9 +3,8 @@ import * as React from "react";
 import type { ActivityContentGoalCheckIn } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import { Link, SmallStatusIndicator, richContentToString } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
@@ -44,15 +43,14 @@ const GoalCheckIn: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, page }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalCheckInPath(content(activity).update!.id!);
     const link = <Link to={path}>submitted a check-in</Link>;
 
     if (page === "goal") {
       return feedTitle(activity, link);
     } else {
-      return feedTitle(activity, link, "for", goalLink(content(activity).goal!));
+      return feedTitle(activity, link, "for", goalLink(paths, content(activity).goal!));
     }
   },
 

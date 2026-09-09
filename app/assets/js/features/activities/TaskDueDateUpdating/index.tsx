@@ -4,7 +4,7 @@ import { Paths } from "@/routes/paths";
 import React from "react";
 import { DateDisplay } from "turboui";
 import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { parseContextualDate } from "@/models/contextualDates";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
@@ -43,14 +43,15 @@ const TaskDueDateUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const { taskName, task, project, space, newDueDate } = content(props.activity);
 
     const message = newDueDate ? "changed the due date to " : "cleared the due date";
-    const location = project ? projectLink(project) : spaceLink(space);
+    const location = project ? projectLink(paths, project) : spaceLink(paths, space);
 
     if (hasAggregatedTasks(props.activity)) {
-      const tasks = <UpdatedTaskList activity={props.activity} />;
+      const tasks = <UpdatedTaskList activity={props.activity} paths={paths} />;
 
       if (props.page === "project") {
         return feedTitle(props.activity, "updated due dates on", tasks);
@@ -62,7 +63,7 @@ const TaskDueDateUpdating: ActivityHandler = {
     }
 
     const taskElement = (() => {
-      if (task) return taskLink(task, { spaceId: !project ? space.id : undefined });
+      if (task) return taskLink(paths, task, { spaceId: !project ? space.id : undefined });
       if (taskName) return taskName;
       return "a task";
     })();

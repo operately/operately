@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
 
 import { feedTitle } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
@@ -36,10 +36,10 @@ const ResourceHubLinkEdited: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const resources = <EditedResourceList activity={activity} />;
-    const parent = visibleParentDescriptor(page, data);
+    const resources = <EditedResourceList activity={activity} paths={paths} />;
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (Activities.getAggregatedActivities(activity).length === 1) {
       const link = data.link?.name ?? "a link";

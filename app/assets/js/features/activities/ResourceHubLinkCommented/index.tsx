@@ -2,9 +2,8 @@ import React from "react";
 
 import type { ActivityContentResourceHubLinkCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { commentedLink, feedTitle, linkLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -35,15 +34,14 @@ const ResourceHubLinkCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const parent = visibleParentDescriptor(page, data);
+    const parent = visibleParentDescriptor(paths, page, data);
     let action: any = "commented";
     let link: any = "a link";
 
     if (data.link) {
-      link = linkLink(data.link);
+      link = linkLink(paths, data.link);
     }
 
     if (data.link?.id) {
