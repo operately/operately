@@ -55,37 +55,37 @@ export async function loader({ params, request }: { params: { id: string }; requ
   return { projectInput, childrenInput, ...contentInputs };
 }
 
-export type LoaderResult = Awaited<ReturnType<typeof loader>>;
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData() {
   const inputs = Pages.useLoadedData<LoaderResult>();
   const projectQuery = useLoadedQuery(Api.projects.getQueryOptions(inputs.projectInput));
   const childrenQuery = useLoadedQuery(Api.projects.countChildrenQueryOptions(inputs.childrenInput));
-  
+
   const spaceId = projectQuery.data?.project?.spaceId;
   const spaceQuery = useLoadedQuery({
     ...Api.spaces.getQueryOptions({ id: spaceId ?? "", includePermissions: true }),
     enabled: Boolean(spaceId),
   });
-  
+
   const project = projectQuery.data?.project;
   const childrenCount = childrenQuery.data?.childrenCount;
   const space = spaceId ? (spaceQuery.data?.space ?? null) : null;
-  
+
   const data = useMemo(
     () => (project && childrenCount ? { project, childrenCount, space } : null),
     [project, childrenCount, space],
   );
-  
+
   if (!data) throw new Error("Project page data is unavailable");
-  
+
   return { ...inputs, data };
 }
 
 export function useRefreshCore() {
   const client = useQueryClient();
   const { projectInput, childrenInput } = Pages.useLoadedData<LoaderResult>();
-  
+
   return useCallback(async () => {
     await Promise.all([
       client.invalidateQueries({ queryKey: Api.projects.getQueryKey(projectInput) }),

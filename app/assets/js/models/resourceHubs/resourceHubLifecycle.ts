@@ -1,7 +1,7 @@
 import Api from "@/api";
 import { type QueryClient, type UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export async function invalidateResourceHubQueries(client: QueryClient) {
+async function invalidateResourceHubQueries(client: QueryClient) {
   await Promise.all(
     [
       Api.resource_hubs.getQueryKeyPrefix(),
