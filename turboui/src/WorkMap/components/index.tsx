@@ -37,6 +37,8 @@ export function WorkMap({
   type = "company",
   addItem,
   addingEnabled = false,
+  creationLoading = false,
+  creationError = false,
   spaceSearch,
   addItemDefaultSpace,
   navigation,
@@ -55,7 +57,9 @@ export function WorkMap({
   const searchParams = new URLSearchParams(location.search);
   const timelineAvailable = type !== "personal" && tab === "projects";
   const view = timelineAvailable && searchParams.get("view") === "timeline" ? "timeline" : "table";
-  const firstProjectStateVisible = emptyStateVariant === "first-project" && items.length === 0 && addingEnabled;
+  const creationUnavailable = creationLoading || creationError;
+  const canAddItem = addingEnabled && !creationUnavailable;
+  const firstProjectStateVisible = emptyStateVariant === "first-project" && items.length === 0 && canAddItem;
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -75,13 +79,13 @@ export function WorkMap({
       <div className="flex-1 overflow-auto">
         {view === "timeline" ? (
           <WorkMapTimeline items={filteredItems} tab={tab} />
-        ) : (
+        ) : filteredItems.length > 0 || !creationUnavailable ? (
           <WorkMapTable
             items={filteredItems}
             tab={tab}
             columnOptions={columnOptions}
             addItem={addItem}
-            addingEnabled={addingEnabled}
+            addingEnabled={canAddItem}
             spaceSearch={spaceSearch}
             addItemDefaultSpace={addItemDefaultSpace}
             type={type}
@@ -95,7 +99,7 @@ export function WorkMap({
             projectTemplates={projectTemplates}
             onCreateProjectTemplate={onCreateProjectTemplate}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -224,6 +228,8 @@ export namespace WorkMap {
     items: Item[];
     addItem?: AddNewItemFn;
     addingEnabled?: boolean;
+    creationLoading?: boolean;
+    creationError?: boolean;
     spaceSearch?: SpaceField.SearchSpaceFn;
     addItemDefaultSpace?: SpaceField.Space;
 
