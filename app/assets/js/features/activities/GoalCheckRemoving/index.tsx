@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalCheckRemoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -26,13 +26,14 @@ const GoalCheckRemoving: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const goal = content(props.activity).goal!;
 
     if (props.page === "goal") {
       return feedTitle(props.activity, "removed a checklist item");
     } else {
-      return feedTitle(props.activity, "removed a checklist item", "on", goalLink(goal));
+      return feedTitle(props.activity, "removed a checklist item", "on", goalLink(paths, goal));
     }
   },
 

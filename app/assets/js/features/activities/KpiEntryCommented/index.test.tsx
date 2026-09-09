@@ -1,3 +1,4 @@
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -39,14 +40,18 @@ describe("kpi_entry_commented activities", () => {
   };
 
   it("renders and includes the activity in the feed", () => {
-    const title = renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ activity, page: "feed" })}</>);
+    const title = renderToStaticMarkup(
+      <>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(DISPLAYED_IN_FEED).toContain("kpi_entry_commented");
     expect(title).toContain("Jo");
     expect(title).toContain("commented");
     expect(title).toContain("Weekly active users");
     expect(title).toContain("update in the");
-    expect(renderToStaticMarkup(<>{ActivityHandler.NotificationTitle({ activity })}</>)).toBe("Re: Weekly active users");
+    expect(renderToStaticMarkup(<>{ActivityHandler.NotificationTitle({ activity })}</>)).toBe(
+      "Re: Weekly active users",
+    );
     expect(renderToStaticMarkup(<>{ActivityHandler.NotificationLocation({ activity })}</>)).toBe("General");
   });
 

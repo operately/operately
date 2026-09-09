@@ -1,3 +1,4 @@
+import type { Paths } from "@/routes/paths";
 import React from "react";
 
 import type { ActivityContentResourceHubDocumentCreated } from "@/api";
@@ -5,7 +6,7 @@ import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 
 import { documentLink, feedTitle } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
@@ -37,11 +38,11 @@ const ResourceHubDocumentCreating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (content(activity).copiedDocument) {
-      return ItemCopiedTitle(activity, page);
+      return ItemCopiedTitle(paths, activity, page);
     } else {
-      return ItemCreatedTitle(activity, page);
+      return ItemCreatedTitle(paths, activity, page);
     }
   },
 
@@ -87,12 +88,12 @@ function content(activity: Activity): ActivityContentResourceHubDocumentCreated 
 
 export default ResourceHubDocumentCreating;
 
-function ItemCopiedTitle(activity: Activity, page: string) {
+function ItemCopiedTitle(paths: Paths, activity: Activity, page: string) {
   const data = content(activity);
 
-  const document = data.document ? documentLink(data.document) : "a document";
-  const copiedDocument = data.copiedDocument ? documentLink(data.copiedDocument) : "a document";
-  const parent = visibleParentDescriptor(page, data);
+  const document = data.document ? documentLink(paths, data.document) : "a document";
+  const copiedDocument = data.copiedDocument ? documentLink(paths, data.copiedDocument) : "a document";
+  const parent = visibleParentDescriptor(paths, page, data);
 
   if (!parent) {
     return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
@@ -110,11 +111,11 @@ function ItemCopiedTitle(activity: Activity, page: string) {
   );
 }
 
-function ItemCreatedTitle(activity: Activity, page: string) {
+function ItemCreatedTitle(paths: Paths, activity: Activity, page: string) {
   const data = content(activity);
 
-  const document = data.document ? documentLink(data.document) : "a document";
-  const parent = visibleParentDescriptor(page, data);
+  const document = data.document ? documentLink(paths, data.document) : "a document";
+  const parent = visibleParentDescriptor(paths, page, data);
 
   if (!parent) {
     return feedTitle(activity, "created a document:", document);

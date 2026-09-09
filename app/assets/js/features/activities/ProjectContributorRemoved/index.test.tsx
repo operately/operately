@@ -1,3 +1,4 @@
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -24,7 +25,9 @@ describe("project_contributor_removed activities", () => {
   };
 
   it("renders the removed contributor in the feed", () => {
-    const title = renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ activity, page: "feed" })}</>);
+    const title = renderToStaticMarkup(
+      <>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(DISPLAYED_IN_FEED).toContain("project_contributor_removed");
     expect(title).toContain("Jo removed Alex from the");
@@ -35,7 +38,7 @@ describe("project_contributor_removed activities", () => {
   it("renders without crashing when the removed person is missing", () => {
     const activityWithoutPerson = { ...activity, content: { ...activity.content, person: null } };
     const title = renderToStaticMarkup(
-      <>{ActivityHandler.FeedItemTitle({ activity: activityWithoutPerson, page: "feed" })}</>,
+      <>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity: activityWithoutPerson, page: "feed" })}</>,
     );
 
     expect(title).toContain("Jo removed a contributor from the");
@@ -45,7 +48,7 @@ describe("project_contributor_removed activities", () => {
   it("renders without crashing on the project page when the removed person is missing", () => {
     const activityWithoutPerson = { ...activity, content: { ...activity.content, person: null } };
     const title = renderToStaticMarkup(
-      <>{ActivityHandler.FeedItemTitle({ activity: activityWithoutPerson, page: "project" })}</>,
+      <>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity: activityWithoutPerson, page: "project" })}</>,
     );
 
     expect(title).toContain("Jo removed a contributor from the project");
@@ -54,7 +57,7 @@ describe("project_contributor_removed activities", () => {
   it("renders without crashing when the project is missing", () => {
     const activityWithoutProject = { ...activity, content: { ...activity.content, project: null } };
     const title = renderToStaticMarkup(
-      <>{ActivityHandler.FeedItemTitle({ activity: activityWithoutProject, page: "feed" })}</>,
+      <>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity: activityWithoutProject, page: "feed" })}</>,
     );
 
     expect(title).toContain("Jo removed Alex from a project");

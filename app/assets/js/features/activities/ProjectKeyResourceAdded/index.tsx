@@ -1,7 +1,7 @@
 import type { ActivityContentProjectKeyResourceAdded } from "@/api";
 import type { Activity } from "@/models/activities";
 import React from "react";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -26,11 +26,16 @@ const ProjectKeyResourceAdded: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
       return feedTitle(activity, "added a key resource to the project");
     } else {
-      return feedTitle(activity, "added a key resource to the", projectLink(content(activity).project!), "project");
+      return feedTitle(
+        activity,
+        "added a key resource to the",
+        projectLink(paths, content(activity).project!),
+        "project",
+      );
     }
   },
 

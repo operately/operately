@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const MilestoneDeleting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -26,13 +26,14 @@ const MilestoneDeleting: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const { milestoneName, project } = content(props.activity);
 
     if (props.page === "project") {
       return feedTitle(props.activity, `deleted the "${milestoneName}" milestone`);
     } else {
-      return feedTitle(props.activity, `deleted the "${milestoneName}" milestone in`, projectLink(project));
+      return feedTitle(props.activity, `deleted the "${milestoneName}" milestone in`, projectLink(paths, project));
     }
   },
 

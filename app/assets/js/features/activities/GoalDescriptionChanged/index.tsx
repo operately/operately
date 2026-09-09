@@ -3,7 +3,7 @@ import type { ActivityContentGoalDescriptionChanged } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -34,9 +34,9 @@ const GoalDescriptionChanged: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const title = data.goal ? goalLink(data.goal) : `"${data.goalName}"`;
+    const title = data.goal ? goalLink(paths, data.goal) : `"${data.goalName}"`;
 
     const message = data.hasDescription
       ? ["updated goal", title, "description"]

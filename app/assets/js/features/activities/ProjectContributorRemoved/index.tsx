@@ -2,7 +2,7 @@ import * as People from "@/models/people";
 
 import type { ActivityContentProjectContributorRemoved } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -27,14 +27,14 @@ const ProjectContributorRemoved: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { person, project } = content(activity);
     const personName = person ? People.firstName(person) : "a contributor";
 
     if (page === "project") {
       return feedTitle(activity, "removed", personName, "from the project");
     } else {
-      const projectParts = project ? ["the", projectLink(project), "project"] : ["a project"];
+      const projectParts = project ? ["the", projectLink(paths, project), "project"] : ["a project"];
       return feedTitle(activity, "removed", personName, "from", ...projectParts);
     }
   },

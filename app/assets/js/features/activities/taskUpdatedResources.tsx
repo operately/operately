@@ -8,7 +8,7 @@ import type {
 import { useLocale } from "@/contexts/TimezoneContext";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
-import { usePaths } from "@/routes/paths";
+import type { Paths } from "@/routes/paths";
 import * as React from "react";
 import { Link } from "turboui";
 
@@ -23,8 +23,7 @@ interface ListPart {
   value: string;
 }
 
-export function UpdatedTaskList({ activity }: { activity: Activity }) {
-  const paths = usePaths();
+export function UpdatedTaskList({ activity, paths }: { activity: Activity; paths: Paths }) {
   const locale = useLocale();
   const tasks = updatedTasksForFeed(activity, paths);
   const parts = listParts(tasks.length, locale);
@@ -51,7 +50,7 @@ export function hasAggregatedTasks(activity: Activity): boolean {
   return Activities.getAggregatedActivities(activity).length > 1;
 }
 
-function updatedTasksForFeed(activity: Activity, paths: ReturnType<typeof usePaths>): UpdatedTask[] {
+function updatedTasksForFeed(activity: Activity, paths: Paths): UpdatedTask[] {
   const seen = new Set<string>();
 
   return Activities.getAggregatedActivities(activity)
@@ -67,7 +66,7 @@ function updatedTasksForFeed(activity: Activity, paths: ReturnType<typeof usePat
     });
 }
 
-function updatedTask(activity: Activity, paths: ReturnType<typeof usePaths>): UpdatedTask | null {
+function updatedTask(activity: Activity, paths: Paths): UpdatedTask | null {
   const data = taskUpdateContent(activity);
   const task = data?.task;
   const project = data?.project;

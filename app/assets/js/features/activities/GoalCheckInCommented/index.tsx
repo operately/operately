@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentGoalCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Summary } from "turboui";
 import { commentPath, commentedLink, feedTitle, goalCheckInLink, goalLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -37,16 +36,15 @@ const GoalUpdateCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, update, goal } = content(activity);
     const action = update?.id ? commentedLink(paths.goalCheckInPath(update.id), comment) : "commented";
-    const checkInLink = goalCheckInLink(update);
+    const checkInLink = goalCheckInLink(paths, update);
 
     if (page === "goal") {
       return feedTitle(activity, action, "on a", checkInLink);
     } else {
-      return feedTitle(activity, action, "on a", checkInLink, "in the", goalLink(goal), "goal");
+      return feedTitle(activity, action, "on a", checkInLink, "in the", goalLink(paths, goal), "goal");
     }
   },
 

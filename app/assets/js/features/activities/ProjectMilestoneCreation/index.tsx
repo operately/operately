@@ -2,7 +2,7 @@ import type { ActivityContentProjectMilestoneCreation } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectMilestoneCreation: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,7 +31,8 @@ const ProjectMilestoneCreation: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const project = content(props.activity).project;
     const milestoneName = content(props.activity).milestoneName;
     const message = `added the ${milestoneName} milestone`;
@@ -39,7 +40,7 @@ const ProjectMilestoneCreation: ActivityHandler = {
     if (props.page === "project") {
       return feedTitle(props.activity, message);
     } else {
-      return feedTitle(props.activity, message, "to", projectLink(project));
+      return feedTitle(props.activity, message, "to", projectLink(paths, project));
     }
   },
 

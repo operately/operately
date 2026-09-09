@@ -1,8 +1,9 @@
+import type { Paths } from "@/routes/paths";
 import * as React from "react";
 
 import type { ActivityContentProjectMilestoneCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { commentPath, feedTitle, milestoneCommentLink, milestoneLink, projectLink } from "../feedItemLinks";
 import { Summary } from "turboui";
@@ -36,10 +37,10 @@ const ProjectMilestoneCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, commentAction, milestone, project } = content(activity);
-    const milestoneName = milestone ? milestoneLink(milestone) : "a milestone";
-    const action = activityAction(commentAction, milestone, comment);
+    const milestoneName = milestone ? milestoneLink(paths, milestone) : "a milestone";
+    const action = activityAction(paths, commentAction, milestone, comment);
 
     if (page === "project") {
       return feedTitle(activity, action.verb, action.objectPrefix, milestoneName, "milestone");
@@ -50,7 +51,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
         action.objectPrefix,
         milestoneName,
         "milestone in the",
-        projectLink(project),
+        projectLink(paths, project),
         "project",
       );
     }
@@ -121,13 +122,14 @@ function content(activity: Activity): ActivityContentProjectMilestoneCommented {
 export default ProjectMilestoneCommented;
 
 function activityAction(
+  paths: Paths,
   action: string,
   milestone: ActivityContentProjectMilestoneCommented["milestone"],
   comment: ActivityContentProjectMilestoneCommented["comment"],
 ): { verb: string | JSX.Element; objectPrefix: string } {
   switch (action) {
     case "none":
-      return { verb: milestoneCommentLink(milestone, comment), objectPrefix: "on the" };
+      return { verb: milestoneCommentLink(paths, milestone, comment), objectPrefix: "on the" };
     case "complete":
       return { verb: "completed", objectPrefix: "the" };
     case "reopen":

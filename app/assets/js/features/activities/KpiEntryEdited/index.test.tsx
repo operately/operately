@@ -1,3 +1,4 @@
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -34,8 +35,12 @@ describe("kpi_entry_edited activities", () => {
   };
 
   it("renders and includes the activity in the feed", () => {
-    const title = renderToStaticMarkup(<>{ActivityHandler.FeedItemTitle({ activity, page: "feed" })}</>);
-    const content = renderToStaticMarkup(<>{ActivityHandler.FeedItemContent({ activity, page: "feed" })}</>);
+    const title = renderToStaticMarkup(
+      <>{ActivityHandler.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
+    const content = renderToStaticMarkup(
+      <>{ActivityHandler.FeedItemContent({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
 
     expect(DISPLAYED_IN_FEED).toContain("kpi_entry_edited");
     expect(title).toContain("Jo edited a KPI update in the");

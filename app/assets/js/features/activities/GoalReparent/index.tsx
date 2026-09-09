@@ -3,7 +3,7 @@ import React from "react";
 import { Activity, ActivityContentGoalReparent } from "@/api";
 
 import { feedTitle, goalLink } from "../feedItemLinks";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalReparent: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,9 +28,9 @@ const GoalReparent: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const goal = data.goal ? goalLink(data.goal) : null;
+    const goal = data.goal ? goalLink(paths, data.goal) : null;
 
     if (page === "goal" || !goal) {
       return feedTitle(activity, "changed the parent goal");
@@ -39,11 +39,12 @@ const GoalReparent: ActivityHandler = {
     }
   },
 
-  FeedItemContent(props: { activity: Activity }) {
+  FeedItemContent(props: FeedItemProps) {
+    const { paths } = props;
     const { newParentGoal, oldParentGoal } = content(props.activity);
 
-    const oldParentLink = oldParentGoal ? goalLink(oldParentGoal) : null;
-    const newParentLink = newParentGoal ? goalLink(newParentGoal) : null;
+    const oldParentLink = oldParentGoal ? goalLink(paths, oldParentGoal) : null;
+    const newParentLink = newParentGoal ? goalLink(paths, newParentGoal) : null;
 
     if (newParentGoal && oldParentGoal) {
       return (

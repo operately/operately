@@ -2,7 +2,7 @@ import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
 import { namesListToString } from "@/models/people";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceMembersAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -25,9 +25,9 @@ const SpaceMembersAdded: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const names = namesListToString(content(activity).members!);
-    const space = spaceLink(content(activity).space!);
+    const space = spaceLink(paths, content(activity).space!);
 
     if (page === "space") {
       return feedTitle(activity, "added", names, "to the space");

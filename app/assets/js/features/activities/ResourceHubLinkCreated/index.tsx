@@ -2,7 +2,7 @@ import type { ActivityContentResourceHubLinkCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { feedTitle, linkLink, resourceHubLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubLinkCreated: ActivityHandler = {
@@ -32,13 +32,13 @@ const ResourceHubLinkCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const link = data.link ? linkLink(data.link) : "a link";
+    const link = data.link ? linkLink(paths, data.link) : "a link";
     const resourceHub = data.resourceHub
-      ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal })
+      ? resourceHubLink(paths, data.resourceHub, { project: data.project, goal: data.goal })
       : null;
-    const parent = visibleParentDescriptor(page, data);
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (!parent) {
       return feedTitle(activity, "added a link:", link);

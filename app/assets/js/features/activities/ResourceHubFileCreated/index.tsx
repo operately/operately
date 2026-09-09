@@ -3,10 +3,9 @@ import React from "react";
 import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, fileLink, resourceHubLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
 const ResourceHubFileCreated: ActivityHandler = {
@@ -36,16 +35,16 @@ const ResourceHubFileCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const parent = visibleParentDescriptor(page, data);
+    const parent = visibleParentDescriptor(paths, page, data);
     const resourceHub = data.resourceHub
-      ? resourceHubLink(data.resourceHub, { project: data.project, goal: data.goal })
+      ? resourceHubLink(paths, data.resourceHub, { project: data.project, goal: data.goal })
       : null;
     const files = data.files ?? [];
 
     if (files.length === 1 && files[0]) {
-      const file = files[0].id ? fileLink(files[0]) : (files[0].name ?? "a file");
+      const file = files[0].id ? fileLink(paths, files[0]) : (files[0].name ?? "a file");
 
       if (!parent) {
         return feedTitle(activity, "added a file:", file);
@@ -69,8 +68,7 @@ const ResourceHubFileCreated: ActivityHandler = {
     return feedTitle(activity, "added files in the", parent.link, `${parent.label}:`);
   },
 
-  FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemContent({ activity, paths }: FeedItemProps) {
     const data = content(activity);
 
     if (data.files && data.files.length > 1) {

@@ -2,7 +2,7 @@ import { ActivityContentCompanyMemberConvertedToGuest } from "@/api";
 import { feedTitle, personLink } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const CompanyMemberConvertedToGuest: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -25,11 +25,11 @@ const CompanyMemberConvertedToGuest: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
+  FeedItemTitle({ activity, paths }: FeedItemProps) {
     const { person } = content(activity);
 
     if (person) {
-      return feedTitle(activity, "converted", personLink(person), "to an outside collaborator");
+      return feedTitle(activity, "converted", personLink(paths, person), "to an outside collaborator");
     } else {
       return feedTitle(activity, "converted a team member to an outside collaborator");
     }

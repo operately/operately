@@ -2,9 +2,8 @@ import * as React from "react";
 
 import type { ActivityContentProjectCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
 import { Summary } from "turboui";
 import { commentPath, commentedLink, feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -37,16 +36,15 @@ const ProjectCheckInCommented: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { checkIn, comment, project } = content(activity);
     const action = checkIn?.id ? commentedLink(paths.projectCheckInPath(checkIn.id), comment) : "commented";
-    const checkInLink = projectCheckInLink(checkIn);
+    const checkInLink = projectCheckInLink(paths, checkIn);
 
     if (page === "project") {
       return feedTitle(activity, action, "on", checkInLink);
     } else {
-      return feedTitle(activity, action, "on", checkInLink, "in the", projectLink(project), "project");
+      return feedTitle(activity, action, "on", checkInLink, "in the", projectLink(paths, project), "project");
     }
   },
 

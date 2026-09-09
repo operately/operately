@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
 import { feedTitle, projectLink, spaceLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskDeleting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -32,9 +32,10 @@ const TaskDeleting: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const { taskName, project, space } = content(props.activity);
-    const location = project ? projectLink(project) : spaceLink(space);
+    const location = project ? projectLink(paths, project) : spaceLink(paths, space);
 
     if (props.page === "project") {
       return feedTitle(props.activity, `deleted task "${taskName}"`);

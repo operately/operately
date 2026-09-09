@@ -6,7 +6,7 @@ import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
 import { Link, IconEdit, isContentEmpty, RichContent, Summary } from "turboui";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { feedTitle, goalLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -74,15 +74,14 @@ const GoalDiscussionCreation: ActivityHandler = {
     );
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "goal") {
       return feedTitle(activity, "posted ", link);
     } else {
-      return feedTitle(activity, "posted ", link, " on the ", goalLink(content(activity).goal!), " goal");
+      return feedTitle(activity, "posted ", link, " on the ", goalLink(paths, content(activity).goal!), " goal");
     }
   },
 

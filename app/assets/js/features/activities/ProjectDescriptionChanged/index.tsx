@@ -2,7 +2,7 @@ import React from "react";
 
 import type { ActivityContentProjectDescriptionChanged } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -34,9 +34,9 @@ const ProjectDescriptionChanged: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, projectName, hasDescription } = content(activity);
-    const projectDisplay = project ? projectLink(project) : `"${projectName}"`;
+    const projectDisplay = project ? projectLink(paths, project) : `"${projectName}"`;
 
     if (page === "project") {
       return hasDescription

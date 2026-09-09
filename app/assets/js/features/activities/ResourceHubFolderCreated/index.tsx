@@ -2,7 +2,7 @@ import * as React from "react";
 
 import type { ActivityContentResourceHubFolderCreated } from "@/api";
 import type { Activity } from "@/models/activities";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { feedTitle, folderLink } from "../feedItemLinks";
 import { resourceHubFolderPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
@@ -30,10 +30,10 @@ const ResourceHubFolderCreated: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const folder = data.folder ? folderLink(data.folder) : "a folder";
-    const parent = visibleParentDescriptor(page, data);
+    const folder = data.folder ? folderLink(paths, data.folder) : "a folder";
+    const parent = visibleParentDescriptor(paths, page, data);
 
     if (!parent) {
       return feedTitle(activity, "created a folder:", folder);

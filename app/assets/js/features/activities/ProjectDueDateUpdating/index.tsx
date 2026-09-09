@@ -4,7 +4,7 @@ import React from "react";
 import { FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectDueDateUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,7 +27,8 @@ const ProjectDueDateUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newDueDate } = content(props.activity);
 
@@ -42,7 +43,7 @@ const ProjectDueDateUpdating: ActivityHandler = {
     if (props.page === "project") {
       return feedTitle(props.activity, message);
     } else {
-      return feedTitle(props.activity, message, " on the", projectLink(project!));
+      return feedTitle(props.activity, message, " on the", projectLink(paths, project!));
     }
   },
 

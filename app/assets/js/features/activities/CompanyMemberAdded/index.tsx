@@ -3,7 +3,7 @@ import { feedTitle, personLink } from "../feedItemLinks";
 import type { ActivityContentCompanyMemberAdded } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const CompanyMemberAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -26,11 +26,11 @@ const CompanyMemberAdded: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, paths }: FeedItemProps) {
     const { person, name } = content(activity);
 
     if (person) {
-      return feedTitle(activity, "added", personLink(person), "as a company member");
+      return feedTitle(activity, "added", personLink(paths, person), "as a company member");
     } else {
       return feedTitle(activity, "added", name, "as a company member");
     }

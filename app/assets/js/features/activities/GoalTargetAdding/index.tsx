@@ -4,7 +4,7 @@ import type { ActivityContentGoalTargetAdding } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, goalLink } from "../feedItemLinks";
-import type { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalTargetAdding: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,7 +27,8 @@ const GoalTargetAdding: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(props: { activity: Activity; page: string }) {
+  FeedItemTitle(props: FeedItemProps) {
+    const { paths } = props;
     const goal = content(props.activity).goal!;
     const targetName = content(props.activity).targetName!;
     const message = `added the ${targetName} target`;
@@ -35,7 +36,7 @@ const GoalTargetAdding: ActivityHandler = {
     if (props.page === "goal") {
       return feedTitle(props.activity, message);
     } else {
-      return feedTitle(props.activity, message, "to", goalLink(goal));
+      return feedTitle(props.activity, message, "to", goalLink(paths, goal));
     }
   },
 

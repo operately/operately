@@ -1,7 +1,7 @@
 import { Activity, ActivityContentSpaceAdded } from "@/api";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
-import { ActivityHandler } from "../interfaces";
+import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -24,11 +24,11 @@ const SpaceAdded: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "space") {
       return feedTitle(activity, "created this space");
     } else {
-      return feedTitle(activity, "created the", spaceLink(content(activity).space!), "space");
+      return feedTitle(activity, "created the", spaceLink(paths, content(activity).space!), "space");
     }
   },
 
