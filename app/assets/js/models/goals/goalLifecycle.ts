@@ -59,7 +59,7 @@ export async function invalidateClosedGoalQueries(
   ]);
 }
 
-export type GoalInteractionContext = {
+type GoalInteractionContext = {
   goalId: string;
   resourceId: string;
   resourceType: "goal_update" | "goal_discussion";
