@@ -34,6 +34,7 @@ export function useOptimisticReactions({
   const session = useMemo(
     () => ({
       confirmed: initial,
+      pendingServerReactions: null as Reaction[] | null,
       pending: [] as Change[],
       queue: Promise.resolve(),
       ids: new Map<string, string>(),
@@ -55,8 +56,10 @@ export function useOptimisticReactions({
   current.current = session;
 
   useEffect(() => {
+    session.pendingServerReactions = initial;
+
     if (!session.pending.length && !session.refreshing) {
-      session.confirmed = initial;
+      syncServerReactions();
       render();
     }
   }, [initial, session]);
@@ -67,6 +70,14 @@ export function useOptimisticReactions({
 
   const getReactions = () => session.pending.reduce((value, apply) => apply(value), session.confirmed);
 
+  // Apply server data buffered while busy, then clear it so it cannot overwrite later changes.
+  function syncServerReactions() {
+    if (!session.pendingServerReactions) return;
+
+    session.confirmed = session.pendingServerReactions;
+    session.pendingServerReactions = null;
+  }
+
   async function run(apply: Change, save: () => Promise<Change>) {
     session.pending.push(apply);
     publish();
@@ -75,11 +86,14 @@ export function useOptimisticReactions({
       try {
         const commit = await save();
         session.confirmed = commit(session.confirmed);
+        // Buffered server data may predate this successful write.
+        session.pendingServerReactions = null;
         session.changed = true;
       } catch {
         if (mounted.current && current.current === session) showErrorToast("Error", "Failed to save reaction.");
       }
       session.pending = session.pending.filter((change) => change !== apply);
+      if (!session.pending.length) syncServerReactions();
       publish();
 
       if (session.changed && !session.pending.length) {
@@ -89,6 +103,10 @@ export function useOptimisticReactions({
         } finally {
           session.refreshing = false;
           session.changed = false;
+          // Queued writes have not started yet, so their optimistic changes can
+          // safely be applied on top of the refreshed server data.
+          syncServerReactions();
+          publish();
         }
       }
     });

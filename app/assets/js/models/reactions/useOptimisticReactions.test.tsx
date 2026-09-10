@@ -164,3 +164,87 @@ it.each(["id", "type", "parentType"] as const)(
     expect(onRefresh).not.toHaveBeenCalled();
   },
 );
+
+it.each(["during refresh", "after refresh"] as const)(
+  "keeps server reactions received %s when a queued reaction fails",
+  async (arrival) => {
+    let finishRefresh: () => void = () => {};
+    let failQueued: (error: Error) => void = () => {};
+    onRefresh.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishRefresh = resolve;
+      }),
+    );
+    create.mockResolvedValueOnce({ reaction }).mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          failQueued = reject;
+        }),
+    );
+
+    await render();
+
+    let first: Promise<void>;
+    let second: Promise<void>;
+    await act(async () => {
+      first = hook.onAddReaction("👍");
+    });
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      second = hook.onAddReaction("❤️");
+    });
+    expect(create).toHaveBeenCalledTimes(1);
+
+    const serverReactions = [reaction, { ...reaction, id: "other-person", emoji: "🎉" }];
+    if (arrival === "during refresh") {
+      initial = serverReactions;
+      await render();
+    }
+
+    await act(async () => {
+      finishRefresh();
+      await first;
+    });
+    expect(create).toHaveBeenCalledTimes(2);
+
+    if (arrival === "after refresh") {
+      initial = serverReactions;
+      await render();
+    }
+
+    await act(async () => {
+      failQueued(new Error("failed"));
+      await second;
+    });
+
+    expect(hook.reactions.map((r) => r.id)).toEqual(["saved", "other-person"]);
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+  },
+);
+
+it("does not overwrite a later successful reaction with an older server snapshot", async () => {
+  let finishSave: (value: unknown) => void = () => {};
+  create.mockReturnValue(
+    new Promise((resolve) => {
+      finishSave = resolve;
+    }),
+  );
+
+  await render();
+
+  let adding: Promise<void>;
+  await act(async () => {
+    adding = hook.onAddReaction("👍");
+  });
+
+  initial = [{ ...reaction, id: "other-person", emoji: "🎉" }];
+  await render();
+
+  await act(async () => {
+    finishSave({ reaction });
+    await adding;
+  });
+
+  expect(hook.reactions.map((r) => r.id)).toContain("saved");
+});
