@@ -57,6 +57,20 @@ defmodule Operately.Notifications.EmailWorkerTest do
     assert is_nil(notification.email_sent_at)
   end
 
+  test "completes skipped delivery without marking the notification as sent", ctx do
+    with_mocks([
+      {Operately.Activities, [:passthrough], [get_activity!: fn _id -> %Operately.Activities.Activity{action: "goal_check_in"} end]},
+      {OperatelyEmail.Emails.GoalCheckInEmail, [:passthrough], [send: fn _person, _activity -> :skip end]}
+    ]) do
+      assert {:ok, :skipped} = EmailWorker.deliver(ctx.notification)
+      assert :ok = EmailWorker.perform(%{args: %{"notification_id" => ctx.notification.id}})
+    end
+
+    notification = Notifications.get_notification!(ctx.notification.id)
+    refute notification.email_sent
+    assert is_nil(notification.email_sent_at)
+  end
+
   test "does not mark notification as sent when recipient has no account", ctx do
     person_without_account = person_fixture(company_id: ctx.company.id, email: unique_account_email())
 

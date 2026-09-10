@@ -10,8 +10,13 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   def send(person, activity) do
     update_id = activity.content["update_id"]
 
-    {:ok, update} = load_update(update_id, person)
+    case load_update(update_id, person) do
+      {:ok, update} -> send_email(person, update)
+      {:error, :not_found} -> :skip
+    end
+  end
 
+  defp send_email(person, update) do
     company = update.goal.company
     author = update.author
     goal = update.goal
@@ -122,8 +127,14 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     defp normalize_status(:off_track), do: :off_track
   end
 
-  def buffered_item(_person, activity) do
-    {:ok, update} = Update.get(:system, id: activity.content["update_id"], opts: [preload: :goal])
+  def buffered_item(person, activity) do
+    case Update.get(person, id: activity.content["update_id"], opts: [preload: :goal]) do
+      {:ok, update} -> build_buffered_item(update, activity)
+      {:error, :not_found} -> :skip
+    end
+  end
+
+  defp build_buffered_item(update, activity) do
     goal = update.goal
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company

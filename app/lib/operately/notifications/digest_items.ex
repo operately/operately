@@ -22,7 +22,10 @@ defmodule Operately.Notifications.DigestItems do
     module = email_module(activity)
 
     if Code.ensure_loaded?(module) and function_exported?(module, :buffered_item, 2) do
-      {:ok, apply(module, :buffered_item, [person, activity])}
+      case apply(module, :buffered_item, [person, activity]) do
+        :skip -> :skip
+        item -> {:ok, item}
+      end
     else
       Logger.warning("Activity #{activity.action} does not have buffered_item/2 implemented, skipping digest item")
       :skip
