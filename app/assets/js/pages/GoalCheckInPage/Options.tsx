@@ -17,10 +17,10 @@ export function Options() {
 
   const mode = Pages.usePageMode();
   const setPageMode = Pages.useSetPageMode();
-  const me = useMe()!;
+  const me = useMe();
 
   const isUnpublished = update.state === "draft" || update.state === "scheduled";
-  const isAuthor = compareIds(me.id, update.author?.id);
+  const isAuthor = compareIds(me?.id, update.author?.id);
   const isEditVisible = isAuthor && mode === "view";
   const isDiscardVisible = isUnpublished && mode === "view";
 
@@ -50,8 +50,8 @@ export function Options() {
       <DiscardDraftModal
         isOpen={showDiscardModal}
         toggleModal={toggleDiscardModal}
-        updateId={update.id!}
-        goalId={goal.id!}
+        updateId={update.id}
+        goalId={goal.id}
       />
     </>
   );
@@ -68,7 +68,7 @@ function DiscardDraftModal({
   updateId: string;
   goalId: string;
 }) {
-  const [remove] = useDeleteGoalProgressUpdate();
+  const remove = useDeleteGoalProgressUpdate(goalId);
   const navigate = useNavigate();
   const paths = usePaths();
 
@@ -76,7 +76,7 @@ function DiscardDraftModal({
     fields: {},
     cancel: toggleModal,
     submit: async () => {
-      await remove({ id: updateId });
+      await remove.mutateAsync({ id: updateId });
       showSuccessToast("Draft discarded", "The draft has been discarded.");
       navigate(paths.goalPath(goalId, { tab: "check-ins" }));
     },

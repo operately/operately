@@ -223,6 +223,16 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.assert_text(params.message)
   end
 
+  step :revisit_edited_check_in, ctx, params do
+    ctx
+    |> UI.click(testid: UI.testid(["nav-item", "Check-ins"]))
+    |> UI.assert_text(params.message)
+    |> UI.click(testid: "check-in-title")
+    |> UI.assert_has(testid: "goal-check-in-page")
+    |> UI.assert_text(params.message)
+    |> UI.assert_text(params.status)
+  end
+
   step :comment_on_check_in_as_reviewer, ctx, message do
     ctx
     |> UI.login_as(ctx.reviewer)
@@ -316,6 +326,14 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: "edit-check-in")
     |> UI.click(testid: "publish-draft-options")
     |> UI.click(testid: "save-as-draft-option")
+  end
+
+  step :discard_check_in_and_assert_removed, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_has(testid: "check-in-button")
+    |> UI.refute_has(testid: "check-in-title")
   end
 
   step :open_discard_modal, ctx do
