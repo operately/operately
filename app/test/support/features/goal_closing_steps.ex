@@ -76,30 +76,24 @@ defmodule Operately.Support.Features.GoalClosingSteps do
   end
 
   step :close_goal, ctx do
-    goal_path = OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal)
-
     ctx
     |> UI.click(testid: "close-goal-button")
     |> UI.wait_until_testid(testid: "goal-closing-page")
     |> UI.fill_rich_text("We are closing the goal.")
     |> UI.click_button("Close Goal")
     |> wait_until_goal_closed()
-    |> UI.visit(goal_path)
     |> UI.wait_until_testid(testid: "goal-page")
     |> UI.wait_until_has(testid: "page-header")
     |> UI.wait_until_has(testid: "closed-status-banner")
   end
 
   step :reopen_goal, ctx do
-    goal_path = OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal)
-
     ctx
     |> UI.click(testid: "reopen-goal-button")
     |> UI.wait_until_text("Reopening Goal")
     |> UI.fill_rich_text("We are reopening the goal.")
     |> UI.click_button("Reopen Goal")
     |> wait_until_goal_open()
-    |> UI.visit(goal_path)
     |> UI.wait_until_testid(testid: "goal-page")
     |> UI.wait_until_has(testid: "page-header")
     |> UI.wait_until_has(testid: "close-goal-button")

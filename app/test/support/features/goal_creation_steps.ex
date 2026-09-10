@@ -97,6 +97,17 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     |> UI.wait_until_text(ctx.goal.name, testid: "parent-goal-field")
   end
 
+  step :return_to_parent_and_assert_subgoal, ctx, name do
+    subgoal = wait_until_goal_created(name)
+    subgoal_path = Paths.goal_path(ctx.company, subgoal)
+
+    ctx
+    |> UI.click(testid: "parent-goal-field")
+    |> UI.click(testid: "parent-goal-field-view-goal")
+    |> UI.assert_location(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_has(css: "a[href='#{subgoal_path}']")
+  end
+
   step :assert_subgoal_added, ctx, name do
     attempts(ctx, 3, fn ->
       goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
@@ -124,7 +135,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   step :assert_work_item_added, ctx, name do
     attempts(ctx, 3, fn ->
       goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
-      general = Operately.Repo.one(from s in Operately.Groups.Group, where: s.name == "General")
+      general = Operately.Repo.one(from s in Operately.Groups.Group, where: s.name == "General" and s.company_id == ^ctx.company.id)
 
       assert goal != nil
       assert goal.name == name
