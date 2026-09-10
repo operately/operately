@@ -10,33 +10,50 @@ export async function invalidateCommentQueries(queryClient: QueryClient, refetch
   ]);
 }
 
-export function useCreateCommentMutation() {
-  return useCommentMutation(Api.comments.createMutationOptions());
+export function useCreateCommentMutation(invalidate: CommentQueryInvalidator = invalidateCommentQueries) {
+  return useCommentMutation(Api.comments.createMutationOptions(), invalidate);
 }
 
-export function useUpdateCommentMutation() {
-  return useCommentMutation(Api.comments.updateMutationOptions());
+export function useUpdateCommentMutation(invalidate: CommentQueryInvalidator = invalidateCommentQueries) {
+  return useCommentMutation(Api.comments.updateMutationOptions(), invalidate);
 }
 
-export function useDeleteCommentMutation() {
-  return useCommentMutation(Api.comments.deleteMutationOptions());
+export function useDeleteCommentMutation(invalidate: CommentQueryInvalidator = invalidateCommentQueries) {
+  return useCommentMutation(Api.comments.deleteMutationOptions(), invalidate);
 }
 
-export function useCreateCommentReactionMutation() {
-  return useCommentMutation(Api.reactions.createMutationOptions());
+export function useCreateCommentReactionMutation(invalidate: CommentQueryInvalidator = invalidateCommentQueries) {
+  return useCommentMutation(Api.reactions.createMutationOptions(), invalidate);
 }
 
-export function useDeleteCommentReactionMutation() {
-  return useCommentMutation(Api.reactions.deleteMutationOptions());
+export function useDeleteCommentReactionMutation(invalidate: CommentQueryInvalidator = invalidateCommentQueries) {
+  return useCommentMutation(Api.reactions.deleteMutationOptions(), invalidate);
 }
 
-function useCommentMutation<TData, TError, TVariables, TContext>(
-  options: UseMutationOptions<TData, TError, TVariables, TContext>,
+export type CommentQueryInvalidator = (client: QueryClient, refetchType: "active" | "none") => Promise<void>;
+
+function useCommentMutation<TData, TError, TVariables>(
+  options: Pick<UseMutationOptions<TData, TError, TVariables>, "mutationFn" | "mutationKey" | "retry">,
+  invalidate: CommentQueryInvalidator,
 ) {
   const queryClient = useQueryClient();
-  return useMutation({
-    ...options,
+
+  // Keep the invalidator with each request, including writes queued before navigation.
+  const mutation = useMutation<TData, TError, { input: TVariables; invalidate: CommentQueryInvalidator }>({
+    mutationKey: options.mutationKey,
+    retry: options.retry,
+    mutationFn: ({ input }, context) => {
+      if (!options.mutationFn) throw new Error("Comment mutation function is unavailable");
+      return options.mutationFn(input, context);
+    },
     // Refresh once the optimistic batch settles, so refetches cannot erase pending changes.
-    onSuccess: () => invalidateCommentQueries(queryClient, "none"),
+    onSuccess: (_result, request) => request.invalidate(queryClient, "none"),
   });
+
+  return {
+    ...mutation,
+    variables: mutation.variables?.input,
+    mutate: (input: TVariables) => mutation.mutate({ input, invalidate }),
+    mutateAsync: (input: TVariables) => mutation.mutateAsync({ input, invalidate }),
+  };
 }

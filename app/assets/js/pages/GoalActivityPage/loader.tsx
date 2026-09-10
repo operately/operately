@@ -1,3 +1,4 @@
+import { invalidateGoalInteractionQueries } from "@/models/goals/goalLifecycle";
 import Api, { Activity, Goal } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
@@ -18,7 +19,11 @@ export async function loader({ params }) {
 
   const { activity } = await Api.companies.getActivityQuery(activityInput);
 
+  if (!activity) throw new Error(`Activity data is unavailable for activity "${params.id}"`);
   const embeddedGoal = Activities.getGoal(activity);
+
+  if (!embeddedGoal?.id) throw new Error(`Goal data is unavailable for activity "${params.id}"`);
+
   const goalInput = embeddedGoal.id
     ? {
         id: embeddedGoal.id,
@@ -65,28 +70,27 @@ export function useLoadedData(): { activity: Activity; goal: Goal; isCurrentUser
     throw new Error(`Activity data is unavailable for activity "${activityInput.id}"`);
   }
 
+  const goal = goalData?.goal ?? Activities.getGoal(activityData.activity);
+  if (!goal?.id) throw new Error(`Goal data is unavailable for activity "${activityInput.id}"`);
+
   return {
     activity: activityData.activity,
-    goal: goalData?.goal ?? Activities.getGoal(activityData.activity),
+    goal,
     isCurrentUserSubscribed: subscription?.subscribed ?? false,
   };
 }
 
 export function useRefresh() {
-  const queryClient = useQueryClient();
-  const { activityInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
+  const client = useQueryClient();
+  const { activity, goal } = useLoadedData();
 
-  return () => {
-    const invalidations = [
-      queryClient.invalidateQueries({ queryKey: Api.companies.getActivityQueryKey(activityInput) }),
-    ];
-
-    if (subscriptionInput) {
-      invalidations.push(
-        queryClient.invalidateQueries({ queryKey: Api.notifications.isSubscribedQueryKey(subscriptionInput) }),
-      );
-    }
-
-    void Promise.all(invalidations);
-  };
+  return () =>
+    activity.commentThread?.id
+      ? invalidateGoalInteractionQueries(client, {
+          goalId: goal.id,
+          resourceId: activity.commentThread.id,
+          resourceType: "goal_discussion",
+          activityId: activity.id,
+        })
+      : Promise.resolve();
 }

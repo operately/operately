@@ -1,7 +1,5 @@
-import * as Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Activities from "@/models/activities";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -11,30 +9,19 @@ import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { DimmedLink, Forms, emptyContent, isContentEmpty } from "turboui";
 
-import { match } from "ts-pattern";
+import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "GoalDiscussionEditPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  activity: Activities.Activity;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    activity: await Activities.getActivity({ id: params.id }),
-  };
-}
-
 function Page() {
   const paths = usePaths();
-  const { activity } = Pages.useLoadedData<LoaderResult>();
-  const form = useForm({ activity: activity });
-  const goal = Activities.getGoal(activity);
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: findGoalId(activity) } });
+  const { activity, goal, commentThread } = useLoadedData();
+  const form = useForm({ activity, goal, commentThread });
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
   return (
-    <Pages.Page title={["New Discussion", goal.name!]}>
+    <Pages.Page title={["New Discussion", goal.name]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 
@@ -68,7 +55,7 @@ function Page() {
 
             <div className="flex items-center gap-4 mt-4">
               <Forms.Submit saveText="Save" buttonSize="base" testId="save" containerClassName="mt-0" />
-              <DimmedLink to={paths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
+              <DimmedLink to={paths.goalActivityPath(activity.id)}>Cancel</DimmedLink>
             </div>
           </Forms.Form>
         </Paper.Body>
@@ -82,11 +69,10 @@ type FormValues = {
   message: any;
 };
 
-function useForm({ activity }: { activity: Activities.Activity }) {
+function useForm({ activity, goal, commentThread }: ReturnType<typeof useLoadedData>) {
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = Goals.useEditGoalDiscussion();
-  const commentThread = activity.commentThread!;
+  const edit = Goals.useEditGoalDiscussion(goal.id);
   const initialMessage = commentThread.message ? JSON.parse(commentThread.message) : emptyContent();
 
   const form = Forms.useForm<FormValues>({
@@ -100,32 +86,15 @@ function useForm({ activity }: { activity: Activities.Activity }) {
       }
     },
     submit: async () => {
-      await edit({
+      await edit.mutateAsync({
         activityId: activity.id,
         title: form.values.title,
         message: JSON.stringify(form.values.message),
       });
 
-      navigate(paths.goalActivityPath(activity.id!));
+      navigate(paths.goalActivityPath(activity.id));
     },
   });
 
   return form;
-}
-
-function findGoalId(activity: Api.Activity): string {
-  return match(activity.action)
-    .with("goal_archived", () => (activity.content as Api.ActivityContentGoalArchived).goal!.id)
-    .with("goal_check_in", () => (activity.content as Api.ActivityContentGoalCheckIn).goal!.id)
-    .with(
-      "goal_check_in_acknowledgement",
-      () => (activity.content as Api.ActivityContentGoalCheckInAcknowledgement).goal!.id,
-    )
-    .with("goal_closing", () => (activity.content as Api.ActivityContentGoalClosing).goal!.id)
-    .with("goal_created", () => (activity.content as Api.ActivityContentGoalCreated).goal!.id)
-    .with("goal_discussion_creation", () => (activity.content as Api.ActivityContentGoalDiscussionCreation).goal!.id)
-    .with("goal_editing", () => (activity.content as Api.ActivityContentGoalEditing).goal!.id)
-    .with("goal_reopening", () => (activity.content as Api.ActivityContentGoalReopening).goal!.id)
-    .with("goal_timeframe_editing", () => (activity.content as Api.ActivityContentGoalTimeframeEditing).goal!.id)
-    .run()!;
 }

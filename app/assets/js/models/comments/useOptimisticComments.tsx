@@ -1,3 +1,4 @@
+import { type CommentQueryInvalidator } from "./commentLifecycle";
 import { type Comment, type CommentParentType, type Reaction } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { showErrorToast } from "turboui";
@@ -20,15 +21,16 @@ export function useOptimisticComments(opts: {
   parentType: CommentParentType;
   initialComments: Comment[];
   onAfterMutation?: () => void | Promise<void>;
+  invalidateQueries?: CommentQueryInvalidator;
 }) {
   const { taskId, parentType } = opts;
   const me = useMe();
-  const { comments, getComments, run, reactionIds } = useOptimisticCommentUpdates(opts);
-  const { mutateAsync: create } = useCreateCommentMutation();
-  const { mutateAsync: update } = useUpdateCommentMutation();
-  const { mutateAsync: remove } = useDeleteCommentMutation();
-  const { mutateAsync: createReaction } = useCreateCommentReactionMutation();
-  const { mutateAsync: deleteReaction } = useDeleteCommentReactionMutation();
+  const { comments, getComments, run, reactionIds, isPending } = useOptimisticCommentUpdates(opts);
+  const { mutateAsync: create } = useCreateCommentMutation(opts.invalidateQueries);
+  const { mutateAsync: update } = useUpdateCommentMutation(opts.invalidateQueries);
+  const { mutateAsync: remove } = useDeleteCommentMutation(opts.invalidateQueries);
+  const { mutateAsync: createReaction } = useCreateCommentReactionMutation(opts.invalidateQueries);
+  const { mutateAsync: deleteReaction } = useDeleteCommentReactionMutation(opts.invalidateQueries);
 
   function hasSavedComment(commentId: string) {
     return taskId && !commentId.startsWith("temp-") && getComments().some((comment) => comment.id === commentId);
@@ -148,7 +150,7 @@ export function useOptimisticComments(opts: {
     );
   }
 
-  return { comments, addComment, editComment, deleteComment, addReaction, removeReaction };
+  return { comments, isPending, addComment, editComment, deleteComment, addReaction, removeReaction };
 }
 
 function changeComment(commentId: string, change: (comment: Comment) => Comment): CommentUpdate {
