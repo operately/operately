@@ -9,6 +9,7 @@ import * as Pages from "@/components/Pages";
 import { loader, useLoadedData } from "./loader";
 
 jest.mock("axios");
+jest.mock("react-router", () => ({}));
 jest.mock("turboui", () => ({}));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn() }));
 
@@ -50,11 +51,11 @@ async function readLoadedData(inputs: Awaited<ReturnType<typeof loader>>) {
   }
 }
 
-const visit = () => loader({ params: { goalId: "goal-1" } });
+const visit = () => loader({ params: { id: "check1" } });
 
 it("prefetches and reads cached data without a duplicate request", async () => {
   jest.mocked(axios.get).mockResolvedValue({
-    data: { goal: { id: "goal-1", name: "Before", space: { name: "Space" }, potentialSubscribers: [] } },
+    data: { update: { id: "check1", goal: { id: "goal-1", name: "Before" } }, subscribed: false },
   });
 
   const inputs = await visit();
@@ -67,23 +68,24 @@ it("prefetches and reads cached data without a duplicate request", async () => {
 
   await visit();
 
-  expect(axios.get).toHaveBeenCalledTimes(1);
-  expect(inputs.queryInput.includeSpace).toBe(true);
-  expect(inputs.queryInput.includeLastCheckIn).toBe(true);
+  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(inputs.queryInput.includeGoal).toBe(true);
 });
 
 it("fetches fresh data after invalidation and re-entry", async () => {
   jest.mocked(axios.get).mockResolvedValue({
-    data: { goal: { id: "goal-1", name: "Before", space: { name: "Space" }, potentialSubscribers: [] } },
+    data: { update: { id: "check1", goal: { id: "goal-1", name: "Before" } }, subscribed: false },
   });
 
   await visit();
 
-  await queryClient.invalidateQueries({ queryKey: Api.goals.getQueryKeyPrefix() });
-  jest.mocked(axios.get).mockResolvedValue({ data: { goal: { id: "goal-1", name: "After" } } });
+  await queryClient.invalidateQueries({ queryKey: Api.goals.getCheckInQueryKeyPrefix() });
+  jest
+    .mocked(axios.get)
+    .mockResolvedValue({ data: { update: { id: "check1", goal: { id: "goal-1", name: "After" } } } });
 
   expect((await readLoadedData(await visit()))?.goal.name).toBe("After");
-  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(axios.get).toHaveBeenCalledTimes(3);
 });
 
 it("rejects missing required data", async () => {
@@ -95,10 +97,4 @@ it("rejects missing required data", async () => {
   } finally {
     error.mockRestore();
   }
-});
-
-it("keeps an inaccessible space optional", async () => {
-  jest.mocked(axios.get).mockResolvedValue({ data: { goal: { id: "goal-1", space: null } } });
-
-  expect((await readLoadedData(await visit()))?.goal.space).toBeNull();
 });

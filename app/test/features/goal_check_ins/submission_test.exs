@@ -72,6 +72,7 @@ defmodule Operately.Features.GoalChecksIns.SubmissionTest do
     |> Steps.check_in(params)
     |> Steps.edit_check_in(edit_params)
     |> Steps.assert_check_in_edited(edit_params)
+    |> Steps.revisit_edited_check_in(edit_params)
   end
 
   feature "cannot edit check-in after 72 hours", ctx do

@@ -28,10 +28,12 @@ defmodule Operately.Features.GoalCheckIns.SchedulingTest do
     |> Steps.assert_scheduled_check_in_is_a_draft()
   end
 
-  feature "scheduled goal check-in discard modal opens from the options menu", ctx do
+  feature "discarding a scheduled check-in refreshes the goal list", ctx do
     ctx
     |> Steps.given_a_scheduled_check_in_exists()
-    |> Steps.visit_scheduled_check_in()
+    |> Steps.visit_check_ins_tab()
+    |> UI.click(testid: "check-in-title")
     |> Steps.open_discard_modal()
+    |> Steps.discard_check_in_and_assert_removed()
   end
 end

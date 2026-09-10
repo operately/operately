@@ -29,8 +29,8 @@ interface EditProps {
 export function useForm(props: EditProps | NewProps) {
   const paths = usePaths();
   const { mode, goal } = props;
-  const [post] = usePostGoalProgressUpdate();
-  const [edit] = useEditGoalProgressUpdate();
+  const post = usePostGoalProgressUpdate();
+  const edit = useEditGoalProgressUpdate(goal.id);
 
   const navigate = useNavigate();
   const setPageMode = Pages.useSetPageMode();
@@ -48,12 +48,12 @@ export function useForm(props: EditProps | NewProps) {
       status: mode === "edit" ? props.update.status : null,
       dueDate: parseContextualDate(timeframe?.contextualEndDate),
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
-      description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
+      description: mode === "edit" && props.update.message ? JSON.parse(props.update.message) : emptyContent(),
       checklist: mode === "edit" ? sortByIndex(props.update.checklist || []) : sortByIndex(props.goal.checklist || []),
     },
     cancel: () => {
       if (mode === "new") {
-        navigate(paths.goalPath(goal.id!));
+        navigate(paths.goalPath(goal.id));
       } else {
         setPageMode("view");
       }
@@ -102,9 +102,10 @@ export function useForm(props: EditProps | NewProps) {
           scheduledAt: shouldSchedule ? scheduleFlow.scheduledAtIso : undefined,
         };
 
-        const res = await post(payload);
+        const res = await post.mutateAsync(payload);
 
-        navigate(paths.goalCheckInPath(res.update!.id));
+        if (!res.update?.id) throw new Error("Created check-in is unavailable");
+        navigate(paths.goalCheckInPath(res.update.id));
       } else {
         const isUnpublished = props.update.state === "draft" || props.update.state === "scheduled";
         const shouldSchedule =
@@ -135,11 +136,11 @@ export function useForm(props: EditProps | NewProps) {
 
         const payload = {
           ...commonAttrs,
-          id: props.update.id!,
+          id: props.update.id,
           state,
           scheduledAt,
         };
-        await edit(payload);
+        await edit.mutateAsync(payload);
 
         setPageMode("view");
       }

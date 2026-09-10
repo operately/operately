@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 
 import { PrimaryButton } from "turboui";
 
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 
@@ -35,7 +35,7 @@ export function AckCTA() {
     isViewMode && !update.acknowledgedAt && !!update.permissions?.canAcknowledge && isChampionOrReviewer;
 
   const ackOnLoad = shouldAcknowledgeOnLoad();
-  const ackHandler = useAcknowledgeHandler(update, ackOnLoad, canAcknowledge);
+  const ackHandler = useAcknowledgeHandler(goal.id, update, ackOnLoad, canAcknowledge);
 
   if (ackOnLoad || !canAcknowledge) return null;
 
@@ -48,16 +48,18 @@ export function AckCTA() {
   );
 }
 
-function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean, canAcknowledge: boolean) {
-  const refresh = useRefresh();
-  const [ack] = GoalCheckIns.useAcknowledgeGoalProgressUpdate();
+function useAcknowledgeHandler(
+  goalId: string,
+  update: GoalCheckIns.Update,
+  ackOnLoad: boolean,
+  canAcknowledge: boolean,
+) {
+  const ack = GoalCheckIns.useAcknowledgeGoalProgressUpdate(goalId);
 
   const handleAck = async () => {
     if (!canAcknowledge) return;
 
-    await ack({ id: update.id });
-
-    refresh();
+    await ack.mutateAsync({ id: update.id });
   };
 
   //
