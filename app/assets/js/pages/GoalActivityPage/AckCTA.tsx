@@ -1,21 +1,27 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
-import * as Activities from "@/models/activities";
 
 import { PrimaryButton, IconSquareCheckFilled } from "turboui";
 
 import { useLoadedData } from "./loader";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { compareIds } from "@/routes/paths";
 
 export function AckCTA() {
   const { activity, goal } = useLoadedData();
 
-  if (activity.action !== "goal_closing") return null;
+  const me = useMe();
+  const isChampionOrReviewer = compareIds(goal.champion?.id, me?.id) || compareIds(goal.reviewer?.id, me?.id);
+  const canAcknowledge =
+    activity.action === "goal_closing" &&
+    !activity.commentThread?.acknowledgedAt &&
+    !!activity.permissions?.canAcknowledge &&
+    isChampionOrReviewer;
 
   const ackOnLoad = shouldAcknowledgeOnLoad();
-  const showButton = showAcknowledgeButton(activity);
-  const ackHandler = useAcknowledgeHandler(activity, goal, ackOnLoad);
+  const ackHandler = useAcknowledgeHandler(goal, ackOnLoad, canAcknowledge);
 
-  if (ackOnLoad || !showButton) return null;
+  if (ackOnLoad || !canAcknowledge) return null;
 
   return (
     <div className="flex flex-row items-center justify-center mt-8 mb-4">
@@ -43,17 +49,11 @@ export function AcknowledgementStatus() {
   return <span className="flex items-center gap-1">Not yet acknowledged</span>;
 }
 
-function showAcknowledgeButton(activity: Activities.Activity) {
-  if (activity.commentThread?.acknowledgedAt) return false;
-  return !!activity.permissions?.canAcknowledge;
-}
-
-function useAcknowledgeHandler(activity: Activities.Activity, goal: Goals.Goal, ackOnLoad: boolean) {
+function useAcknowledgeHandler(goal: Goals.Goal, ackOnLoad: boolean, canAcknowledge: boolean) {
   const ack = Goals.useAcknowledgeGoalRetrospective();
 
   const handleAck = async () => {
-    if (activity.commentThread?.acknowledgedAt) return;
-    if (!activity.permissions?.canAcknowledge) return;
+    if (!canAcknowledge) return;
 
     await ack.mutateAsync({ goalId: goal.id });
   };

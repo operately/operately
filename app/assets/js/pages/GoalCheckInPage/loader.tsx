@@ -13,6 +13,9 @@ export async function loader({ params }): Promise<LoaderResult> {
   const [update, subscriptionStatus] = await Promise.all([
     GoalCheckIns.getGoalProgressUpdate({
       id: params.id,
+      includeGoal: true,
+      includeChampion: true,
+      includeReviewer: true,
       includeGoalTargets: true,
       includeAcknowledgedBy: true,
       includeReactions: true,
