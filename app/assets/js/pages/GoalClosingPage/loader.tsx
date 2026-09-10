@@ -1,3 +1,5 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
@@ -15,28 +17,48 @@ export interface ActiveSubitem {
   type: "goal" | "project";
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
+export async function loader({ params }) {
+  const queryInput = {
+    id: params.goalId,
+    includeSpace: true,
+    includeChampion: true,
+    includeReviewer: true,
+    includePotentialSubscribers: true,
+  };
+  const goalsInput = {};
+  const projectsInput = {};
 
-  const [goal, goals, projects] = await Promise.all([
-    Goals.getGoal({
-      id: params.goalId,
-      includeChampion: true,
-      includeReviewer: true,
-      includePotentialSubscribers: true,
-    }).then((data) => data.goal!),
-    Goals.getGoals({}).then((data) => data.goals!),
-    Projects.getProjects({}).then((data) => data.projects!),
+  await Promise.all([
+    Api.goals.getQuery(queryInput),
+    Api.goals.listQuery(goalsInput),
+    Api.projects.listQuery(projectsInput),
   ]);
 
-  return {
-    goal: goal,
-    activeSubitems: findActiveSubitems(paths, goal, goals, projects),
-  };
+  return { queryInput, goalsInput, projectsInput, companyId: params.companyId };
 }
 
+type LoaderInputs = Awaited<ReturnType<typeof loader>>;
+
 export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+  const { queryInput, goalsInput, projectsInput, companyId } = Pages.useLoadedData<LoaderInputs>();
+  const { data: goalData } = useLoadedQuery(Api.goals.getQueryOptions(queryInput));
+  const { data: goalsData } = useLoadedQuery(Api.goals.listQueryOptions(goalsInput));
+  const { data: projectsData } = useLoadedQuery(Api.projects.listQueryOptions(projectsInput));
+
+  if (!goalData?.goal) {
+    throw new Error(`Goal data is unavailable for goal "${queryInput.id}"`);
+  }
+  if (!goalsData?.goals) {
+    throw new Error("Goal list is unavailable");
+  }
+  if (!projectsData?.projects) {
+    throw new Error("Project list is unavailable");
+  }
+
+  return {
+    goal: goalData.goal,
+    activeSubitems: findActiveSubitems(new Paths({ companyId }), goalData.goal, goalsData.goals, projectsData.projects),
+  };
 }
 
 function findActiveSubitems(
@@ -45,26 +67,26 @@ function findActiveSubitems(
   goals: Goals.Goal[],
   projects: Projects.Project[],
 ): ActiveSubitem[] {
-  const activeGoals = findSubgoals(goal.id!, goals);
+  const activeGoals = findSubgoals(goal.id, goals);
   const activeProjects = findActiveProjects(projects, [...activeGoals, goal]);
 
   let res: ActiveSubitem[] = [];
 
   activeGoals.forEach((goal) => {
     res.push({
-      id: goal.id!,
-      name: goal.name!,
+      id: goal.id,
+      name: goal.name,
       type: "goal",
-      link: paths.goalPath(goal.id!),
+      link: paths.goalPath(goal.id),
     });
   });
 
   activeProjects.forEach((project) => {
     res.push({
-      id: project.id!,
-      name: project.name!,
+      id: project.id,
+      name: project.name,
       type: "project",
-      link: paths.projectPath(project.id!),
+      link: paths.projectPath(project.id),
     });
   });
 
@@ -77,7 +99,7 @@ function findSubgoals(parentId: string, goals: Goals.Goal[]): Goals.Goal[] {
   goals.forEach((goal) => {
     if (compareIds(goal.parentGoalId, parentId)) {
       res.push(goal);
-      res = res.concat(findSubgoals(goal.id!, goals));
+      res = res.concat(findSubgoals(goal.id, goals));
     }
   });
 
