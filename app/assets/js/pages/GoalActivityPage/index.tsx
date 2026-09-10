@@ -1,20 +1,22 @@
 import * as React from "react";
+import { type QueryClient } from "@tanstack/react-query";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
-import * as ReactionsModel from "@/models/reactions";
+import { useOptimisticReactions } from "@/models/reactions/useOptimisticReactions";
 
 import { usePaths } from "@/routes/paths";
-import { CommentSection, useForGoalRetrospective } from "@/features/CommentSection";
+import { useCommentSection } from "@/features/CommentSection/useCommentSection";
+import { invalidateGoalInteractionQueries } from "@/models/goals/goalLifecycle";
 
-import { Avatar, CurrentSubscriptions, FormattedTime, Reactions } from "turboui";
+import { CommentSection, Avatar, CurrentSubscriptions, FormattedTime, Reactions } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 
 import { loader, useLoadedData, useRefresh } from "./loader";
 import { AckCTA, AcknowledgementStatus } from "./AckCTA";
@@ -25,10 +27,21 @@ function Page() {
   const { activity, goal } = useLoadedData();
 
   assertPresent(activity.notifications, "Activity notifications must be defined");
-  useClearNotificationsOnLoad(activity.notifications);
+  const notificationContext = activity.commentThread
+    ? {
+        goalId: goal.id,
+        resourceId: activity.commentThread.id,
+        resourceType: "goal_discussion" as const,
+        activityId: activity.id,
+      }
+    : undefined;
+  useReadNotificationsOnLoad(
+    activity.notifications,
+    notificationContext ? (client) => invalidateGoalInteractionQueries(client, notificationContext, "none") : undefined,
+  );
 
   return (
-    <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name!]}>
+    <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name]}>
       <Paper.Root>
         <Nav />
 
@@ -74,16 +87,18 @@ function Nav() {
 function Title({ activity }: { activity: Activities.Activity }) {
   const formattedTimePreferences = useFormattedTimePreferences();
 
+  if (!activity.author) throw new Error("Activity author is unavailable");
+
   return (
     <div className="flex items-center gap-3">
-      <Avatar person={activity.author!} size={50} />
+      <Avatar person={activity.author} size={50} />
       <div>
         <div className="text-content-accent text-2xl font-bold leading-tight">
           <ActivityHandler.PageTitle activity={activity} />
         </div>
         <div className="inline-flex items-center gap-1">
-          <span>{activity.author!.fullName!}</span>
-          on <FormattedTime {...formattedTimePreferences} time={activity.insertedAt!} format="long-date" />
+          <span>{activity.author.fullName}</span>
+          on <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="long-date" />
           {activity.action === "goal_closing" && (
             <>
               <span>&middot;</span>
@@ -98,6 +113,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
 
 function ActivityReactions() {
   const { activity } = useLoadedData();
+  const refresh = useRefresh();
 
   assertPresent(
     activity.commentThread?.reactions,
@@ -105,31 +121,49 @@ function ActivityReactions() {
   );
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
-  const reactions = activity.commentThread.reactions.map((r) => r!);
-  const entity = ReactionsModel.entity(activity.commentThread.id!, "goal_discussion");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
+  const thread = activity.commentThread;
+  const form = useOptimisticReactions({
+    entity: { id: thread.id, type: "goal_discussion" },
+    initialReactions: activity.commentThread.reactions,
+    onRefresh: refresh,
+  });
 
   return <Reactions {...form} size={24} canAddReaction={activity.permissions.canCommentOnThread} />;
 }
 
 function Comments({ goal }: { goal: Goals.Goal }) {
   const { activity } = useLoadedData();
-
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
-  const isRetrospective = activity.action === "goal_closing";
-  const commentsForm = useForGoalRetrospective(activity, goal);
+  const thread = activity.commentThread;
+  const context = {
+    goalId: goal.id,
+    resourceId: thread.id,
+    resourceType: "goal_discussion" as const,
+    activityId: activity.id,
+  };
+
+  function invalidateQueries(client: QueryClient, refetchType: "active" | "none") {
+    return invalidateGoalInteractionQueries(client, context, refetchType);
+  }
+
+  const props = useCommentSection({
+    entity: { id: thread.id, type: "goal_discussion" },
+    mentionSearchScope: { type: "goal", id: goal.id },
+    invalidateQueries,
+    canComment: activity.permissions.canCommentOnThread,
+    acknowledgedAt: thread.acknowledgedAt,
+    acknowledgedBy: thread.acknowledgedBy,
+    ackLabel: activity.action === "goal_closing" ? "Retrospective" : undefined,
+  });
+
+  if (!props) return null;
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="goal_discussion"
-        canComment={activity.permissions.canCommentOnThread}
-        ackLabel={isRetrospective ? "Retrospective" : undefined}
-      />
+      <CommentSection {...props} />
     </>
   );
 }
@@ -138,17 +172,15 @@ function Subscriptions() {
   const refresh = useRefresh();
   const { activity, goal, isCurrentUserSubscribed } = useLoadedData();
 
-  if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
-    return null;
-  }
-
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
-    potentialSubscribers: activity.commentThread.potentialSubscribers,
-    subscriptionList: activity.commentThread.subscriptionList,
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
+    potentialSubscribers: activity.commentThread?.potentialSubscribers ?? [],
+    subscriptionList: activity.commentThread?.subscriptionList,
     resourceName: "discussion",
     type: "comment_thread",
     onRefresh: refresh,
   });
+
+  if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) return null;
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">

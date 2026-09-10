@@ -4,6 +4,8 @@ import {
   invalidateGoalRetrospectiveQueries,
   invalidateGoalLifecycleQueries,
   invalidateClosedGoalQueries,
+  invalidateGoalInteractionQueries,
+  invalidateGoalCheckInActivities,
 } from "./goalLifecycle";
 
 jest.mock("turboui", () => ({}));
@@ -77,5 +79,70 @@ it("does not invalidate other goal details when creation has no parent or return
   client.setQueryData(key, {});
   await invalidateGoalLifecycleQueries(client, undefined);
   expect(client.getQueryState(key)?.isInvalidated).toBe(false);
+  client.clear();
+});
+
+it.each(["goal_update", "goal_discussion"] as const)(
+  "scopes comments, subscriptions and owning records for %s",
+  async (resourceType) => {
+    const client = new QueryClient();
+    const subscriptionType = resourceType === "goal_update" ? "goal_update" : "comment_thread";
+
+    const affected = [
+      Api.comments.listQueryKey({ entityId: "old-resource1", entityType: resourceType }),
+      Api.comments.listQueryKey({ entityId: "resource1", entityType: resourceType }),
+      Api.notifications.isSubscribedQueryKey({ resourceId: "resource1", resourceType: subscriptionType }),
+      ...(resourceType === "goal_update"
+        ? [Api.goals.getCheckInQueryKey({ id: "resource1" }), Api.goals.listCheckInsQueryKey({ goalId: "goal1" })]
+        : [
+            Api.companies.getActivityQueryKey({ id: "old-activity1" }),
+            Api.goals.listDiscussionsQueryKey({ goalId: "goal1" }),
+          ]),
+    ];
+
+    const unrelated = [
+      Api.comments.listQueryKey({ entityId: "resource2", entityType: resourceType }),
+      Api.comments.listQueryKey({ entityId: "resource1", entityType: "project_task" }),
+      Api.notifications.isSubscribedQueryKey({ resourceId: "resource2", resourceType: subscriptionType }),
+      Api.notifications.isSubscribedQueryKey({ resourceId: "resource1", resourceType: "project" }),
+      Api.goals.getCheckInQueryKey({ id: "resource2" }),
+      Api.companies.getActivityQueryKey({ id: "activity2" }),
+      Api.tasks.getQueryKey({ id: "task1" }),
+    ];
+
+    [...affected, ...unrelated].forEach((key) => client.setQueryData(key, {}));
+
+    await invalidateGoalInteractionQueries(
+      client,
+      { goalId: "goal1", resourceId: "resource1", resourceType, activityId: "activity1" },
+      "none",
+    );
+
+    affected.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+    unrelated.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+
+    client.clear();
+  },
+);
+
+it("refreshes all variants of activities related to a check-in", async () => {
+  const client = new QueryClient();
+  const checkInActivity = Api.companies.getActivityQueryKey({ id: "activity1" });
+  const renamedVariant = Api.companies.getActivityQueryKey({ id: "renamed-activity1", includePermissions: true });
+  const editActivity = Api.companies.getActivityQueryKey({ id: "activity2" });
+  const unrelated = Api.companies.getActivityQueryKey({ id: "activity3" });
+
+  client.setQueryData(checkInActivity, { activity: { id: "activity1", content: { update: { id: "old-check1" } } } });
+  client.setQueryData(renamedVariant, {});
+  client.setQueryData(editActivity, { activity: { id: "activity2", content: { checkInId: "check1" } } });
+  client.setQueryData(unrelated, { activity: { id: "activity3", content: { update: { id: "check2" } } } });
+
+  await invalidateGoalCheckInActivities(client, "check1");
+
+  [checkInActivity, renamedVariant, editActivity].forEach((key) =>
+    expect(client.getQueryState(key)?.isInvalidated).toBe(true),
+  );
+  expect(client.getQueryState(unrelated)?.isInvalidated).toBe(false);
+
   client.clear();
 });

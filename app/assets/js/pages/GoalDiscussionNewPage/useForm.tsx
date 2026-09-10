@@ -15,6 +15,7 @@ type FormValues = {
 export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
   const paths = usePaths();
   const navigate = useNavigate();
+  const create = Goals.useCreateGoalDiscussion();
   const form = Forms.useForm<FormValues>({
     fields: {
       title: "",
@@ -26,7 +27,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
       }
     },
     submit: async () => {
-      const res = await Goals.createGoalDiscussion({
+      const res = await create.mutateAsync({
         goalId: goal.id,
         title: form.values.title,
         message: JSON.stringify(form.values.message),
@@ -34,6 +35,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
+      if (!res.activityId) throw new Error("Created discussion is unavailable");
       navigate(paths.goalActivityPath(res.activityId));
     },
   });

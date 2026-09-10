@@ -106,6 +106,39 @@ describe("useOptimisticComments", () => {
     jest.clearAllMocks();
   });
 
+  it("uses a caller's scoped invalidation for both saved mutations and queue refresh", async () => {
+    const invalidateQueries = jest.fn(async () => {});
+    create.mockResolvedValue({ comment: comment("saved") });
+    const unrelated = Api.tasks.getQueryKey({ id: "unrelated" });
+    client.setQueryData(unrelated, {});
+    await render({ taskId: "goal-update1", parentType: "goal_update", invalidateQueries });
+    await act(async () => {
+      await hook.addComment({ text: "new" });
+    });
+    expect(invalidateQueries).toHaveBeenCalledWith(client, "none");
+    expect(invalidateQueries).toHaveBeenCalledWith(client, "active");
+    expect(client.getQueryState(unrelated)?.isInvalidated).toBe(false);
+  });
+
+  it("keeps a pending mutation's invalidation tied to its original resource", async () => {
+    const first = jest.fn(async () => {});
+    const second = jest.fn(async () => {});
+    const request = deferred<{ comment: Comment }>();
+    create.mockReturnValue(request.promise);
+    await render({ taskId: "goal-update1", parentType: "goal_update", invalidateQueries: first });
+    const pending = await start(() => hook.addComment({ text: "new" }));
+    const queued = await start(() => hook.addComment({ text: "queued" }));
+    await render({ taskId: "goal-update2", invalidateQueries: second });
+    await act(async () => {
+      request.resolve({ comment: comment("saved") });
+      await pending.result;
+      await queued.result;
+    });
+    expect(first).toHaveBeenCalledWith(client, "none");
+    expect(first).toHaveBeenCalledWith(client, "active");
+    expect(second).not.toHaveBeenCalled();
+  });
+
   it("keeps an optimistic create through a stale refresh and replaces it once", async () => {
     const request = deferred<{ comment: Comment }>();
     create.mockReturnValue(request.promise);
