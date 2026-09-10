@@ -19,6 +19,7 @@ function Page() {
           <div className="flex justify-end mb-2">
             <SecondaryButton
               size="xs"
+              testId={copied ? "goal-markdown-copied" : "goal-markdown-copy"}
               onClick={() => {
                 navigator.clipboard.writeText(markdown);
                 setCopied(true);

@@ -15,7 +15,11 @@ jest.mock("@/components/PaperContainer", () => ({
   Body: ({ children }) => children,
 }));
 jest.mock("turboui", () => ({
-  SecondaryButton: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
+  SecondaryButton: ({ children, onClick, testId }) => (
+    <button onClick={onClick} data-test-id={testId}>
+      {children}
+    </button>
+  ),
 }));
 
 it("renders fetched markdown and copies exactly the displayed content", async () => {
@@ -43,13 +47,18 @@ it("renders fetched markdown and copies exactly the displayed content", async ()
       ),
     );
     expect(container.querySelector("code")?.textContent).toBe(markdown);
-    await act(async () => container.querySelector("button")?.click());
+    const copyButton = container.querySelector<HTMLButtonElement>('[data-test-id="goal-markdown-copy"]');
+    expect(copyButton).not.toBeNull();
+    expect(container.querySelector('[data-test-id="goal-markdown-copied"]')).toBeNull();
+    await act(async () => copyButton?.click());
     expect(writeText).toHaveBeenCalledWith(markdown);
-    expect(container.querySelector("button")?.textContent).toBe("Copied!");
+    expect(container.querySelector('[data-test-id="goal-markdown-copied"]')).not.toBeNull();
+    expect(container.querySelector('[data-test-id="goal-markdown-copy"]')).toBeNull();
     await act(async () => {
       jest.advanceTimersByTime(2000);
     });
-    expect(container.querySelector("button")?.textContent).toBe("Copy to clipboard");
+    expect(container.querySelector('[data-test-id="goal-markdown-copy"]')).not.toBeNull();
+    expect(container.querySelector('[data-test-id="goal-markdown-copied"]')).toBeNull();
   } finally {
     await act(async () => root.unmount());
     queryClient.clear();
