@@ -8,13 +8,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { compareIds, usePaths } from "@/routes/paths";
-import {
-  Comment,
-  CommentSectionItem,
-  CommentSectionProps,
-  Reactions,
-  showErrorToast,
-} from "turboui";
+import { Comment, CommentSectionItem, CommentSectionProps, Reactions, showErrorToast } from "turboui";
 import * as ReactionsModel from "@/models/reactions";
 
 import { FormState } from "./form";
@@ -39,10 +33,7 @@ export function useCommentSectionProps({
   const [markNotificationAsRead] = useMarkNotificationAsRead();
 
   const currentUser = People.parsePersonForTurboUi(paths, me);
-  const mappedItems = React.useMemo(
-    () => mapFormItemsToCommentSectionItems(paths, form.items),
-    [paths, form.items],
-  );
+  const mappedItems = React.useMemo(() => mapFormItemsToCommentSectionItems(paths, form.items), [paths, form.items]);
 
   const [items, setItems] = React.useState(mappedItems);
 
@@ -88,7 +79,7 @@ export function useCommentSectionProps({
   };
 }
 
-function mapFormItemsToCommentSectionItems(
+export function mapFormItemsToCommentSectionItems(
   paths: ReturnType<typeof usePaths>,
   items: Comments.CommentItem[],
 ): CommentSectionItem[] {

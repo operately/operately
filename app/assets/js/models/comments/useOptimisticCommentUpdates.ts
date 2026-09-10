@@ -1,3 +1,4 @@
+import { type CommentQueryInvalidator } from "./commentLifecycle";
 import * as React from "react";
 import Api, { type Comment, type CommentParentType } from "@/api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,11 +22,13 @@ export function useOptimisticCommentUpdates({
   parentType,
   initialComments,
   onAfterMutation,
+  invalidateQueries = invalidateCommentQueries,
 }: {
   taskId: string | null;
   parentType: CommentParentType;
   initialComments: Comment[];
   onAfterMutation?: () => void | Promise<void>;
+  invalidateQueries?: CommentQueryInvalidator;
 }) {
   const queryClient = useQueryClient();
   const [, render] = React.useReducer((version: number) => version + 1, 0);
@@ -82,7 +85,7 @@ export function useOptimisticCommentUpdates({
 
       if (options) await queryClient.cancelQueries({ queryKey: options.queryKey });
 
-      await invalidateCommentQueries(queryClient);
+      await invalidateQueries(queryClient, "active");
 
       if (options) {
         const data = await queryClient.fetchQuery({ ...options, staleTime: Infinity });
@@ -128,5 +131,11 @@ export function useOptimisticCommentUpdates({
     return result;
   }
 
-  return { comments: getComments(), getComments, run, reactionIds: session.reactionIds };
+  return {
+    comments: getComments(),
+    getComments,
+    run,
+    reactionIds: session.reactionIds,
+    isPending: session.pending.length > 0,
+  };
 }

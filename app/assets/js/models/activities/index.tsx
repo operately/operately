@@ -1,4 +1,4 @@
-import Api, { Activity, CompaniesGetActivityInput } from "@/api";
+import { Activity } from "@/api";
 export { useDeleteFeedActivity } from "./activityLifecycle";
 export type { Activity, ActivityContentGoalCheckIn, ActivityContentGoalTimeframeEditing, CommentThread } from "@/api";
 
@@ -21,11 +21,6 @@ const TASK_UPDATE_ACTIONS = [
   "task_name_updating",
   "task_status_updating",
 ];
-
-export const getActivity = async (input: CompaniesGetActivityInput) => {
-  const response = await Api.companies.getActivity(input);
-  return response.activity!;
-};
 
 export interface ActivityGroup {
   date: Date;
