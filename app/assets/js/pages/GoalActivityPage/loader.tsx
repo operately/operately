@@ -19,7 +19,15 @@ export async function loader({ params }) {
   const { activity } = await Api.companies.getActivityQuery(activityInput);
 
   const embeddedGoal = Activities.getGoal(activity);
-  const goalInput = embeddedGoal.id ? { id: embeddedGoal.id, includeSpace: true, includePermissions: true } : null;
+  const goalInput = embeddedGoal.id
+    ? {
+        id: embeddedGoal.id,
+        includeSpace: true,
+        includePermissions: true,
+        includeChampion: true,
+        includeReviewer: true,
+      }
+    : null;
 
   const commentThreadId = activity.commentThread?.id;
   const subscriptionInput = commentThreadId

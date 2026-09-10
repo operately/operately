@@ -37,6 +37,20 @@ defmodule Operately.Support.Features.GoalRetrospectiveAcknowledgementSteps do
     |> UI.sleep(300)
   end
 
+  step :given_a_reviewer_submitted_retrospective, ctx do
+    ctx
+    |> Factory.close_goal(:goal, author: :reviewer)
+    |> then(fn ctx -> Map.put(ctx, :closing_activity, wait_until_goal_closing_activity(ctx.goal)) end)
+  end
+
+  step :assert_acknowledge_button_hidden_for, ctx, person_key do
+    ctx
+    |> UI.login_as(Map.fetch!(ctx, person_key))
+    |> UI.visit(Paths.goal_activity_path(ctx.company, ctx.closing_activity))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.goal.name]))
+    |> UI.refute_has(testid: "acknowledge-retrospective")
+  end
+
   step :assert_retrospective_acknowledged, ctx do
     ctx
     |> UI.assert_text("Acknowledged by")
