@@ -8,17 +8,17 @@ import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscripti
 import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { PageCache } from "@/routes/PageCache";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
 export function Form() {
   const paths = usePaths();
   const { goal } = useLoadedData();
 
-  const [close] = Goals.useCloseGoal();
-  const navigateToGoal = useNavigateTo(paths.goalPath(goal.id!));
+  const close = Goals.useCloseGoal(goal.parentGoalId);
+  const navigateToGoal = useNavigateTo(paths.goalPath(goal.id));
 
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
   assertPresent(goal.space, "space must be present in goal");
@@ -37,7 +37,7 @@ export function Form() {
     submit: async () => {
       const successStatus = form.values.success === "yes" ? "achieved" : "missed";
 
-      await close({
+      await close.mutateAsync({
         goalId: goal.id,
         success: form.values.success,
         successStatus: successStatus,
@@ -80,7 +80,7 @@ function AccomplishedOrDropped() {
 
 function RetrospectiveNotes() {
   const { goal } = useLoadedData();
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id! } });
+  const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
   return (
     <Forms.RichTextArea

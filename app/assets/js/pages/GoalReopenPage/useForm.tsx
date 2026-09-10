@@ -26,12 +26,12 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
     localDraft: { key: `goal:${goal.id}:reopen-message` },
   });
 
-  const goalPath = paths.goalPath(goal.id!);
+  const goalPath = paths.goalPath(goal.id);
 
-  const [reopen] = Goals.useReopenGoal();
+  const reopen = Goals.useReopenGoal(goal.parentGoalId);
 
   const submit = async () => {
-    await reopen({
+    await reopen.mutateAsync({
       id: goal.id,
       message: JSON.stringify(messageEditor.editor.getJSON()),
       sendNotificationsToEveryone: subscriptionsState.notifyEveryone,

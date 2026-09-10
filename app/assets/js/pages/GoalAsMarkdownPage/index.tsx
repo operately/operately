@@ -1,38 +1,14 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Goals from "@/models/goals";
 import * as React from "react";
 import { SecondaryButton } from "turboui";
 
 import { PageModule } from "@/routes/types";
+import { loader, useLoadedData } from "./loader";
 export default { name: "GoalAsMarkdownPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  markdown: string;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  const data = await Goals.getGoal({
-    id: params.id,
-    includeSpace: true,
-    includeChampion: true,
-    includeReviewer: true,
-    includePermissions: true,
-    includeUnreadNotifications: true,
-    includeLastCheckIn: true,
-    includeAccessLevels: true,
-    includePrivacy: true,
-    includeRetrospective: true,
-    includeChecklist: true,
-    includeProjects: true,
-    includeMarkdown: true,
-  });
-
-  return { markdown: data.markdown! };
-}
-
 function Page() {
-  const { markdown } = Pages.useLoadedData<LoaderResult>();
+  const { markdown } = useLoadedData();
 
   const [copied, setCopied] = React.useState(false);
 
@@ -43,6 +19,7 @@ function Page() {
           <div className="flex justify-end mb-2">
             <SecondaryButton
               size="xs"
+              testId={copied ? "goal-markdown-copied" : "goal-markdown-copy"}
               onClick={() => {
                 navigator.clipboard.writeText(markdown);
                 setCopied(true);
