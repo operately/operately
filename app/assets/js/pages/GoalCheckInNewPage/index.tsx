@@ -19,7 +19,7 @@ function Page() {
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={["Check-in", goal.name!]} testId="goal-check-in-new-page">
+    <Pages.Page title={["Check-in", goal.name]} testId="goal-check-in-new-page">
       <Paper.Root>
         <Navigation />
 

@@ -2,12 +2,12 @@ import * as Pages from "@/components/Pages";
 import { useLoadedData } from "./loader";
 
 export function useGoalCheckInPageTitle(): string[] {
-  const { update } = useLoadedData();
+  const { goal } = useLoadedData();
   const mode = Pages.usePageMode();
 
   if (mode === "edit") {
-    return ["Editing", "Goal Check-In", update.goal!.name!];
+    return ["Editing", "Goal Check-In", goal.name];
   } else {
-    return ["Goal Check-In", update.goal!.name!];
+    return ["Goal Check-In", goal.name];
   }
 }

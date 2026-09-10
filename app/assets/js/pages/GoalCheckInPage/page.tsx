@@ -1,3 +1,4 @@
+import { useLoadedData } from "./loader";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -31,7 +32,7 @@ export function Page() {
 
 function Body() {
   const mode = Pages.usePageMode();
-  const { goal, update } = Pages.useLoadedData();
+  const { goal, update } = useLoadedData();
 
   return (
     <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={banner(goal)}>

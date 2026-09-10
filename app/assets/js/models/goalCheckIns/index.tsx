@@ -1,4 +1,3 @@
-import Api from "@/api";
 import * as api from "@/api";
 import { Paths } from "@/routes/paths";
 import { isPresent } from "@/utils/isPresent";
@@ -9,11 +8,12 @@ import { displayDate } from "turboui";
 export type Update = api.GoalProgressUpdate;
 export type Target = api.GoalTargetUpdates;
 
-export const getGoalProgressUpdate = Api.goals.getCheckIn;
-export const useAcknowledgeGoalProgressUpdate = Api.goals.useAcknowledgeCheckIn;
-export const useEditGoalProgressUpdate = Api.goals.useUpdateCheckIn;
-export const usePostGoalProgressUpdate = Api.goals.useCreateCheckIn;
-export const useDeleteGoalProgressUpdate = Api.goals.useDeleteCheckIn;
+export {
+  useAcknowledgeGoalProgressUpdate,
+  useEditGoalProgressUpdate,
+  usePostGoalProgressUpdate,
+  useDeleteGoalProgressUpdate,
+} from "./goalCheckInLifecycle";
 
 export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.GoalProgressUpdate[]) {
   return checkIns.map((checkIn) => {
