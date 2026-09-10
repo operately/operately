@@ -20,7 +20,6 @@ export const createGoalDiscussion = Api.goals.createDiscussion;
 export const useEditGoalDiscussion = Api.goals.useUpdateDiscussion;
 
 export const getGoal = Api.goals.get;
-export const getGoals = Api.goals.list;
 
 export function targetProgressPercentage(
   target: Pick<Target, "from" | "to" | "value">,
