@@ -29,6 +29,9 @@ defmodule Operately.Notifications.EmailWorker do
       with {:ok, _result} <- deliver_email(module, person, activity),
            {:ok, _notification} <- EmailDelivery.mark_sent(notification) do
         {:ok, :sent}
+      else
+        :skip -> {:ok, :skipped}
+        {:error, reason} -> {:error, reason}
       end
     else
       {:ok, :skipped}
@@ -41,6 +44,7 @@ defmodule Operately.Notifications.EmailWorker do
 
   defp deliver_email(module, person, activity) do
     case apply(module, :send, [person, activity]) do
+      :skip -> :skip
       {:error, reason} -> {:error, reason}
       result -> {:ok, result}
     end

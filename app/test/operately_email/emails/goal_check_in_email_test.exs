@@ -92,21 +92,57 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmailTest do
     assert_acknowledge_email()
   end
 
+  test "skips email and digest item when the check-in was deleted", ctx do
+    activity = check_in_activity(ctx.check_in)
+    {:ok, _} = Operately.Operations.GoalCheckInDeleting.run(ctx.check_in)
+    flush_emails()
+
+    assert :skip = GoalCheckInEmail.send(ctx.reviewer, activity)
+    assert :skip = GoalCheckInEmail.buffered_item(ctx.reviewer, activity)
+    refute_email_sent()
+  end
+
+  test "skips email and digest item when the recipient cannot access the check-in", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:outsider)
+      |> Factory.add_goal(:private_goal, :space, company_access: Binding.no_access())
+      |> Factory.add_goal_update(:private_check_in, :private_goal, :creator)
+
+    activity = check_in_activity(ctx.private_check_in)
+    flush_emails()
+
+    assert :skip = GoalCheckInEmail.send(ctx.outsider, activity)
+    assert :skip = GoalCheckInEmail.buffered_item(ctx.outsider, activity)
+    refute_email_sent()
+  end
+
+  test "builds a digest item for an accessible check-in", ctx do
+    item = GoalCheckInEmail.buffered_item(ctx.reviewer, check_in_activity(ctx.check_in))
+
+    assert item.parent_id == ctx.goal.id
+    assert item.parent_type == :goal
+    assert item.item_url =~ OperatelyWeb.Paths.goal_check_in_path(ctx.company, ctx.check_in)
+  end
+
   defp send_check_in_email(ctx, person), do: send_check_in_email(ctx, person, ctx.check_in)
 
-  defp send_check_in_email(ctx, person, update) do
-    activity =
-      activity_fixture(%{
-        author_id: update.author_id,
-        action: "goal_check_in",
-        content: %{
-          "update_id" => update.id,
-          "goal_id" => ctx.goal.id
-        }
-      })
+  defp send_check_in_email(_ctx, person, update) do
+    activity = check_in_activity(update)
 
     flush_emails()
     GoalCheckInEmail.send(person, activity)
+  end
+
+  defp check_in_activity(update) do
+    activity_fixture(%{
+      author_id: update.author_id,
+      action: "goal_check_in",
+      content: %{
+        "update_id" => update.id,
+        "goal_id" => update.goal_id
+      }
+    })
   end
 
   defp assert_acknowledge_email do
