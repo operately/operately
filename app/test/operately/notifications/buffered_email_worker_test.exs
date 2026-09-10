@@ -2,6 +2,7 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
   use Operately.DataCase
 
   import Mock
+  import Swoosh.TestAssertions
 
   import Operately.ActivitiesFixtures
   import Operately.NotificationsFixtures
@@ -288,6 +289,67 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     ]) do
       assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
     end
+  end
+
+  for count <- [1, 2] do
+    test "skips a batch containing #{count} deleted check-in notifications", ctx do
+      ctx = ctx |> Factory.add_goal(:goal, :space) |> Factory.add_goal_update(:check_in, :goal, :creator)
+      notifications = Enum.map(1..unquote(count), fn _ -> check_in_notification(ctx, ctx.check_in) end)
+      {:ok, _} = Operately.Operations.GoalCheckInDeleting.run(ctx.check_in)
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+      batch = Notifications.get_email_batch!(ctx.batch.id)
+      assert batch.status == :skipped
+      assert is_nil(batch.sent_at)
+      assert is_nil(batch.error)
+
+      for notification <- notifications do
+        notification = Notifications.get_notification!(notification.id)
+        refute notification.email_sent
+        assert is_nil(notification.email_sent_at)
+      end
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+      refute_email_sent()
+    end
+  end
+
+  test "sends valid digest items while skipping a deleted check-in", ctx do
+    ctx =
+      ctx
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_goal_update(:deleted_check_in, :goal, :creator)
+      |> Factory.add_goal_update(:check_in, :goal, :creator)
+
+    skipped = check_in_notification(ctx, ctx.deleted_check_in)
+    sent = check_in_notification(ctx, ctx.check_in)
+    {:ok, _} = Operately.Operations.GoalCheckInDeleting.run(ctx.deleted_check_in)
+
+    with_mock OperatelyEmail.Mailers.DigestMailer, [:passthrough], send: fn _person, _batch, items ->
+      assert [item] = items
+      assert item.item_url =~ OperatelyWeb.Paths.goal_check_in_path(ctx.company, ctx.check_in)
+      {:ok, :delivered}
+    end do
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+      assert_called(OperatelyEmail.Mailers.DigestMailer.send(:_, :_, :_))
+    end
+
+    assert Notifications.get_email_batch!(ctx.batch.id).status == :sent
+    assert Notifications.get_notification!(sent.id).email_sent
+    refute Notifications.get_notification!(skipped.id).email_sent
+  end
+
+  defp check_in_notification(ctx, check_in) do
+    activity = activity_fixture(author_id: check_in.author_id, action: "goal_check_in", content: %{"update_id" => check_in.id})
+
+    notification_fixture(
+      activity_id: activity.id,
+      person_id: ctx.creator.id,
+      email_batch_id: ctx.batch.id,
+      email_sent: false,
+      email_sent_at: nil
+    )
   end
 
   test "marks an empty batch as skipped", ctx do

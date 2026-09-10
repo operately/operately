@@ -46,7 +46,11 @@ defmodule Operately.Notifications.BufferedEmailWorker do
 
   defp deliver_single_notification(notification, batch) do
     case EmailWorker.deliver(notification) do
-      {:ok, _result} ->
+      {:ok, :skipped} ->
+        mark_batch(batch, %{status: :skipped, sent_at: nil})
+        :ok
+
+      {:ok, :sent} ->
         mark_batch(batch, %{status: :sent, sent_at: current_time()})
         :ok
 
