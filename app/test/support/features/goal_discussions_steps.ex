@@ -147,6 +147,17 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     ctx
   end
 
+  step :revisit_edited_discussion, ctx, params do
+    ctx
+    |> UI.assert_text(params.title)
+    |> UI.assert_text(params.message)
+    |> UI.click(testid: UI.testid(["nav-item", "Discussions"]))
+    |> UI.assert_has(testid: "start-discussion")
+    |> UI.click_text(params.title)
+    |> UI.assert_text(params.message)
+    |> UI.assert_has(testid: "edit")
+  end
+
   step :comment_on_discussion, ctx, message do
     ctx
     |> UI.login_as(ctx.reviewer)

@@ -26,6 +26,7 @@ defmodule Operately.Features.GoalDiscussionsTest do
     |> Steps.assert_discussion_submitted(@discussion_params)
     |> Steps.edit_discussion(edits)
     |> Steps.assert_discusssion_edited(edits)
+    |> Steps.revisit_edited_discussion(edits)
   end
 
   @tag login_as: :champion

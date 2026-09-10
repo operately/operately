@@ -16,8 +16,7 @@ export {
   useReopenGoal,
 } from "./goalLifecycle";
 
-export const createGoalDiscussion = Api.goals.createDiscussion;
-export const useEditGoalDiscussion = Api.goals.useUpdateDiscussion;
+export { useCreateGoalDiscussion, useEditGoalDiscussion } from "./goalDiscussionLifecycle";
 
 export const getGoal = Api.goals.get;
 

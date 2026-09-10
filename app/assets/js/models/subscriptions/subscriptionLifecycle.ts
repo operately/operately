@@ -36,3 +36,7 @@ export function useSubscribeToResource() {
 export function useUnsubscribeFromResource() {
   return useMutation(Api.notifications.unsubscribeMutationOptions());
 }
+
+export function useUpdateSubscriptionsList() {
+  return useMutation(Api.notifications.updateSubscriptionsListMutationOptions());
+}
