@@ -5,6 +5,8 @@ import * as Pages from "@/components/Pages";
 import { PrimaryButton } from "turboui";
 
 import { useLoadedData, useRefresh } from "./loader";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { compareIds } from "@/routes/paths";
 
 //
 // There are two ways in which the AckCTA component is used:
@@ -20,17 +22,22 @@ import { useLoadedData, useRefresh } from "./loader";
 //
 // - The check-in has not been acknowledged already.
 // - The user has permission to acknowledge (edit access, and not the author).
+// - The user is the current goal champion or reviewer.
 // - The acknowledgement is not automatic via the URL parameter.
 //
 
 export function AckCTA() {
-  const { update } = useLoadedData();
+  const { update, goal } = useLoadedData();
+  const me = useMe();
+  const isViewMode = Pages.useIsViewMode();
+  const isChampionOrReviewer = compareIds(goal.champion?.id, me?.id) || compareIds(goal.reviewer?.id, me?.id);
+  const canAcknowledge =
+    isViewMode && !update.acknowledgedAt && !!update.permissions?.canAcknowledge && isChampionOrReviewer;
 
   const ackOnLoad = shouldAcknowledgeOnLoad();
-  const showButton = showAcknowledgeButton(update);
-  const ackHandler = useAcknowledgeHandler(update, ackOnLoad);
+  const ackHandler = useAcknowledgeHandler(update, ackOnLoad, canAcknowledge);
 
-  if (ackOnLoad || !showButton) return null;
+  if (ackOnLoad || !canAcknowledge) return null;
 
   return (
     <div className="flex flex-row items-center justify-center mt-8 mb-4">
@@ -41,22 +48,12 @@ export function AckCTA() {
   );
 }
 
-function showAcknowledgeButton(update: GoalCheckIns.Update) {
-  const isViewMode = Pages.useIsViewMode();
-
-  if (!isViewMode) return false;
-  if (update.acknowledgedAt) return false;
-
-  return update.permissions!.canAcknowledge;
-}
-
-function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean) {
+function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean, canAcknowledge: boolean) {
   const refresh = useRefresh();
   const [ack] = GoalCheckIns.useAcknowledgeGoalProgressUpdate();
 
   const handleAck = async () => {
-    if (update.acknowledgedAt) return;
-    if (!update.permissions!.canAcknowledge) return;
+    if (!canAcknowledge) return;
 
     await ack({ id: update.id });
 

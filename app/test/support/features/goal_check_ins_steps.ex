@@ -124,6 +124,14 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: "acknowledge-check-in")
   end
 
+  step :assert_acknowledge_button_hidden_for, ctx, person_key do
+    ctx
+    |> UI.login_as(Map.fetch!(ctx, person_key))
+    |> visit_check_in()
+    |> UI.assert_has(testid: "goal-check-in-page")
+    |> UI.refute_has(testid: "acknowledge-check-in")
+  end
+
   step :assert_check_in_acknowledged_in_feed, ctx do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
