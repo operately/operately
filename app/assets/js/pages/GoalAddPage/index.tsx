@@ -1,15 +1,16 @@
 import React from "react";
-import Api from "@/api";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { GoalAddPage, SpaceField } from "turboui";
 
 import { PageModule } from "@/routes/types";
+import { loader, useLoadedData } from "./loader";
+import { PageCache } from "@/routes/PageCache";
+import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { useNavigate } from "react-router";
 import { GoalAddForm } from "turboui/src/GoalAddForm";
 import { accessLevelAsNumber } from "../../models/goals";
 
-import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Spaces from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
@@ -21,35 +22,8 @@ export interface UrlParams {
   spaceId?: string;
 }
 
-interface LoaderResult {
-  space: Spaces.Space | null;
-  parentGoal: Goals.Goal | null;
-}
-
-async function loader({ request }): Promise<LoaderResult> {
-  const searchParams = new URL(request.url).searchParams;
-
-  const parentGoalId = searchParams.get("parentGoalId") || undefined;
-  const spaceID = searchParams.get("spaceId") || undefined;
-
-  let data: LoaderResult = {
-    space: null,
-    parentGoal: null,
-  };
-
-  if (spaceID) {
-    data.space = await Spaces.getSpace({ id: spaceID });
-  }
-
-  if (parentGoalId) {
-    data.parentGoal = await Goals.getGoal({ id: parentGoalId }).then((data) => data.goal);
-  }
-
-  return data;
-}
-
 function Page() {
-  const { space, parentGoal } = Pages.useLoadedData<LoaderResult>();
+  const { space, parentGoal } = useLoadedData();
 
   const paths = usePaths();
   const save = useSaveGoal();
@@ -68,20 +42,29 @@ function Page() {
 }
 
 function useSaveGoal(): (props: GoalAddForm.SaveProps) => Promise<{ id: string }> {
-  const { parentGoal } = Pages.useLoadedData<LoaderResult>();
-  const [create] = Api.goals.useCreate();
+  const { parentGoal } = useLoadedData();
+  const create = Goals.useCreateGoal();
 
   return (props: GoalAddForm.SaveProps) => {
-    return create({
-      name: props.name,
-      spaceId: props.spaceId,
-      anonymousAccessLevel: 0,
-      companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
-      spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
-      parentGoalId: parentGoal ? parentGoal.id : undefined,
-    }).then((response) => {
-      return { id: response.goal.id };
-    });
+    return create
+      .mutateAsync({
+        name: props.name,
+        spaceId: props.spaceId,
+        anonymousAccessLevel: 0,
+        companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
+        spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
+        parentGoalId: parentGoal ? parentGoal.id : undefined,
+      })
+      .then((response) => {
+        if (!response.goal) {
+          throw new Error("Created goal is unavailable");
+        }
+        if (parentGoal) {
+          // Keep the parent page fresh until GoalPage migrates from PageCache.
+          PageCache.invalidate(goalPageCacheKey(parentGoal.id));
+        }
+        return { id: response.goal.id };
+      });
   };
 }
 

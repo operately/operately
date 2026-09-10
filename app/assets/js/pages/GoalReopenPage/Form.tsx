@@ -1,16 +1,15 @@
 import React from "react";
 
-import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
+import { useLoadedData } from "./loader";
 
 import { Editor, PrimaryButton, SubscribersSelector, DimmedLink } from "turboui";
-import { assertPresent } from "@/utils/assertions";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 
 import { FormState, useForm } from "./useForm";
+import { assertPresent } from "@/utils/assertions";
 
 export function Form() {
-  const { goal } = Pages.useLoadedData<{ goal: Goals.Goal }>();
+  const { goal } = useLoadedData();
 
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
   assertPresent(goal.space, "space must be present in goal");
