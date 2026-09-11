@@ -204,6 +204,8 @@ defmodule OperatelyWeb.Api.Comments.List do
       join: a in Activity,
       on: a.comment_thread_id == t.id,
       as: :activity,
+      # A thread can be referenced by multiple activities.
+      distinct: true,
       where: c.entity_id == ^id and c.entity_type == :comment_thread
     )
     |> preload_resources()

@@ -53,15 +53,16 @@ defmodule Operately.Access.Filters do
   end
 
   defp filter(query, person_id, access_level) do
-    from([context: c] in query,
-      join: b in assoc(c, :bindings),
+    permissions = from b in Binding,
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
       join: p in assoc(m, :person),
+      where: b.context_id == parent_as(:context).id,
       where: m.person_id == ^person_id and b.access_level >= ^access_level,
       where: is_nil(p.suspended_at),
-      distinct: true
-    )
+      select: 1
+
+    from item in query, where: exists(subquery(permissions))
   end
 
   defp join_context(query, join_parent: parent, named_binding: name) do

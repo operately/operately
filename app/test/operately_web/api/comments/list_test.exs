@@ -16,6 +16,17 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
 
+  test "a thread referenced by multiple activities returns each comment once", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      |> Factory.add_goal_discussion(:discussion, :goal) |> Factory.add_comment(:comment, :discussion)
+    activity = Repo.get_by!(Activity, comment_thread_id: ctx.discussion.id)
+    attrs = Map.take(activity, [:author_id, :action, :content, :access_context_id, :comment_thread_id])
+    Repo.insert!(struct(Activity, attrs))
+
+    assert {200, response} = query(ctx.conn, [:comments, :list], %{entity_id: Paths.comment_thread_id(ctx.discussion), entity_type: "goal_discussion"})
+    assert Enum.map(response.comments, & &1.id) == [Paths.comment_id(ctx.comment)]
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:comments, :list], %{})
