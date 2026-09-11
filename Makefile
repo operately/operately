@@ -452,3 +452,11 @@ release.build.singlehost:
 
 release.push.github.release:
 	elixir app/rel/make-github-release.exs $(VERSION)
+
+# Isolated command-line feed performance benchmark. See docs/feed-benchmark.md.
+.PHONY: benchmark.feed.seed benchmark.feed.run
+benchmark.feed.seed:
+	./devenv bash -c 'cd app && OPERATELY_FEED_BENCHMARK=true mix operately.feed_benchmark seed --activities $(or $(ACTIVITIES),20000) $(if $(filter true,$(RESET)),--reset,)'
+
+benchmark.feed.run:
+	./devenv bash -c 'cd app && OPERATELY_FEED_BENCHMARK=true mix operately.feed_benchmark run'
