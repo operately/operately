@@ -34,15 +34,28 @@ function renderPage(overrides: Partial<SpaceToolsConfigurationPage.Props> = {}) 
   );
 }
 
-describe("SpaceToolsConfigurationPage KPIs gating", () => {
-  test("hides the KPIs tool row by default", () => {
+describe("SpaceToolsConfigurationPage KPIs", () => {
+  test("shows the KPIs tool row", () => {
     renderPage();
-    expect(queryByTestId("kpis")).not.toBeInTheDocument();
+    expect(queryByTestId("kpis")).toBeInTheDocument();
   });
 
-  test("shows the KPIs tool row when showKpis is enabled", () => {
-    renderPage({ showKpis: true });
-    expect(queryByTestId("kpis")).toBeInTheDocument();
+  test("reflects and updates the KPIs setting", () => {
+    const onToolsChange = jest.fn();
+    renderPage({ onToolsChange });
+
+    const toggle = queryByTestId("kpis");
+    expect(toggle).toHaveAttribute("data-state", "unchecked");
+
+    fireEvent.click(toggle!);
+
+    expect(onToolsChange).toHaveBeenCalledWith({
+      discussionsEnabled: true,
+      resourceHubEnabled: true,
+      tasksEnabled: false,
+      kpisEnabled: true,
+      templatesEnabled: true,
+    });
   });
 });
 

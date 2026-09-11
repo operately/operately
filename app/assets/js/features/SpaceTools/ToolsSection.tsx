@@ -1,8 +1,6 @@
 import React from "react";
 
 import { Space, SpaceTools } from "@/models/spaces";
-import * as Companies from "@/models/companies";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 import { GoalsAndProjects } from "./GoalsAndProjects";
 import { Discussions } from "./Discussions";
@@ -17,10 +15,6 @@ interface ToolsSectionPros {
 }
 
 export function ToolsSection({ space, tools }: ToolsSectionPros) {
-  const { company } = useCompanyLoaderData();
-  const kpisFeatureEnabled = Companies.hasFeature(company, "space_kpis");
-  const showKpis = kpisFeatureEnabled && tools.kpisEnabled;
-  const showTemplates = tools.templatesEnabled;
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-4">
@@ -41,9 +35,9 @@ export function ToolsSection({ space, tools }: ToolsSectionPros) {
 
         {tools.tasksEnabled && <Tasks space={space} tasks={tools.tasks ?? []} />}
 
-        {showKpis && <Kpis space={space} kpis={tools.kpis ?? []} />}
+        {tools.kpisEnabled && <Kpis space={space} kpis={tools.kpis ?? []} />}
 
-        {showTemplates && <Templates space={space} templates={tools.templates ?? []} />}
+        {tools.templatesEnabled && <Templates space={space} templates={tools.templates ?? []} />}
       </div>
     </div>
   );

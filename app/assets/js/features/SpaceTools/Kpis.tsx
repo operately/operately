@@ -12,8 +12,6 @@ interface Props {
   kpis?: Kpi[];
 }
 
-// Space tool card for KPIs. Only rendered when the company has the `space_kpis`
-// experimental feature enabled (see ToolsSection).
 export function Kpis({ space, kpis = [] }: Props) {
   const paths = usePaths();
   const path = paths.spaceKpisPath(space.id!);
