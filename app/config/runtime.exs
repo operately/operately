@@ -1,5 +1,9 @@
 import Config
 
+if System.get_env("OPERATELY_FEED_BENCHMARK") == "true" and config_env() != :dev do
+  raise "The feed benchmark is only available in development"
+end
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -174,4 +178,18 @@ if config_env() == :prod do
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
+end
+
+# Opt-in isolation for the command-line feed benchmark.
+if System.get_env("OPERATELY_FEED_BENCHMARK") == "true" do
+  config :operately, Operately.Repo, database: "operately_feed_benchmark", timeout: 120_000
+  config :operately, Oban, queues: false, plugins: false
+  config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Local
+  config :operately, :feed_benchmark, true
+
+  config :operately, OperatelyWeb.Endpoint, server: false, watchers: [], code_reloader: false
+  config :operately, :send_onboarding_emails, false
+  config :operately, :send_company_creation_notifications, false
+  config :operately, :billing_enabled, false
+  config :operately, :beacon_enabled, false
 end
