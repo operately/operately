@@ -9,6 +9,8 @@ interface SearchActivatorProps {
 }
 
 export function SearchActivator({ placeholder, onActivate, testId }: SearchActivatorProps) {
+  const shortcut = isMacPlatform() ? "⌘K" : "Ctrl K";
+
   return (
     <button
       type="button"
@@ -18,7 +20,11 @@ export function SearchActivator({ placeholder, onActivate, testId }: SearchActiv
     >
       <IconSearch size={14} className="text-content-dimmed" />
       <span className="flex-1 text-left truncate">{placeholder}</span>
-      <span className="text-xs">⌘K</span>
+      <span className="text-xs">{shortcut}</span>
     </button>
   );
+}
+
+function isMacPlatform(): boolean {
+  return window.navigator.platform.toLowerCase().includes("mac");
 }
