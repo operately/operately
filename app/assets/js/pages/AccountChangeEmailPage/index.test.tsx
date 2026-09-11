@@ -161,7 +161,11 @@ test.each(["success", "delivery_failed"] as const)(
       await act(async () => {
         expect(await mockProps.onVerifyCurrent("request", "ABC123")).toBe(outcome === "success");
       });
-      expect(mockProps.state.pending?.stage).toBe(outcome === "success" ? "new_email" : "current_email");
+      // Query notifications can render after the mutation promise resolves.
+      await waitFor(() => {
+        expect(mockProps.busy).toBe(false);
+        expect(mockProps.state.pending?.stage).toBe(outcome === "success" ? "new_email" : "current_email");
+      });
       expect(mockProps.completedEmail).toBeNull();
       expect(mockRenderedSteps).not.toContain("success");
       expect(mockRenderedSteps).not.toContain("enter-email");
