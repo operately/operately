@@ -1,5 +1,5 @@
 defmodule Operately.Access.Filters do
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query, only: [from: 2, subquery: 1]
 
   alias Operately.Repo
   alias Operately.Access.Binding
