@@ -1,7 +1,8 @@
 import React from "react";
 
 import classNames from "classnames";
-import { IconChevronDown } from "turboui";
+import { IconChevronDown, IconCopy, showErrorToast, showSuccessToast } from "turboui";
+import { UnstyledButton } from "turboui/Button/UnstalyedButton";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { DevIconButton } from "./DevPill";
 import { ToggleTestIds } from "./ToggleTestIds";
@@ -24,6 +25,17 @@ function DevBarContent() {
   const { pageName, loadTime, isVisible } = useDevBarData();
   const [isExpanded, setIsExpanded] = useStateWithLocalStorage<boolean>("devBar", "isExpanded", true);
 
+  const copyPageName = async () => {
+    if (!pageName) return;
+
+    try {
+      await navigator.clipboard.writeText(pageName);
+      showSuccessToast("Page name copied", "Copied to clipboard.");
+    } catch {
+      showErrorToast("Copy failed", "Unable to copy the page name to clipboard.");
+    }
+  };
+
   if (!isVisible) return null;
   if (!isExpanded) return <CollapsedHandle onClick={() => setIsExpanded(true)} />;
 
@@ -43,7 +55,15 @@ function DevBarContent() {
         <span className={classNames("h-1.5 w-1.5 shrink-0 rounded-full", loadTimeStyles.dot)} />
         <span className="min-w-0 truncate text-xs font-medium">{pageName || "unknown page"}</span>
 
-        <div className="ml-auto -mr-1 shrink-0">
+        <div className="ml-auto -mr-1 flex shrink-0 items-center">
+          <UnstyledButton
+            onClick={copyPageName}
+            disabled={!pageName}
+            ariaLabel="Copy page name"
+            className="inline-flex items-center justify-center rounded p-1 text-white-2 transition-colors hover:bg-shade-2 hover:text-white-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white-1"
+          >
+            <IconCopy size={12} />
+          </UnstyledButton>
           <DevIconButton onClick={() => setIsExpanded(false)} title="Collapse dev bar">
             <IconChevronDown size={12} />
           </DevIconButton>
