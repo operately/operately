@@ -1,13 +1,4 @@
 defmodule OperatelyWeb.Api.Kpis do
-  #
-  # NOTE: These endpoints intentionally do NOT check the
-  # `enabled_experimental_features` feature flag. Per product decision, KPI
-  # gating is UI-only for this iteration, so the API must work when called
-  # directly regardless of the space's enabled features. This is a temporary,
-  # intentional decision tracked as a risk in the mission and should be
-  # revisited once KPIs graduate from experimental.
-  #
-
   alias Operately.Groups.{Group, Permissions}
   alias Operately.Kpis
   alias Operately.Kpis.Kpi

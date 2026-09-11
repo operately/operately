@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { showErrorToast, SpaceKpisPage } from "turboui";
@@ -7,7 +7,6 @@ import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/
 
 import Api from "@/api";
 import * as Comments from "@/models/comments";
-import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Kpis from "@/models/kpis";
 import { invalidateKpiQueries } from "@/models/kpis/kpiLifecycle";
@@ -15,7 +14,6 @@ import { useSubscription } from "@/models/subscriptions";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { useLoadedData, useRefresh } from "./loader";
 import { KpiEntryComments } from "./KpiEntryComments";
 
@@ -24,7 +22,6 @@ export function Page() {
   const navigate = useNavigate();
   const refresh = useRefresh();
   const queryClient = useQueryClient();
-  const { company } = useCompanyLoaderData();
   const { space, kpis, kpi } = useLoadedData();
 
   const peopleSearch = People.usePeopleSearch({ type: "space", id: space.id! });
@@ -61,13 +58,6 @@ export function Page() {
     async (query: string) => People.parsePeopleForTurboUi(paths, await peopleSearch(query)),
     [paths, peopleSearch],
   );
-
-  // The KPIs tool is gated behind the company experimental feature. If it is
-  // off the route is not linked anywhere; a direct visit falls back to the
-  // space page rather than rendering an unsupported tool.
-  if (!Companies.hasFeature(company, "space_kpis")) {
-    return <Navigate to={paths.spacePath(space.id!)} replace />;
-  }
 
   const onCreateKpi = async (input: SpaceKpisPageTypes.NewKpiInput) =>
     run(async () => {

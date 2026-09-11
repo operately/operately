@@ -7,7 +7,6 @@ defmodule Operately.Support.Features.KpiEntriesSteps do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("space_kpis")
       |> Factory.add_space(:space)
       |> Factory.log_in_person(:creator)
 

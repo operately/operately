@@ -4,8 +4,8 @@ import { MemoryRouter } from "react-router";
 
 import { ToolsSection } from "./ToolsSection";
 
-// Render the surrounding tools as no-ops; this suite only exercises the
-// experimental-feature gating of optional Space tool cards.
+// Render the surrounding tools as no-ops; this suite only exercises
+// optional Space tool card visibility.
 jest.mock("./GoalsAndProjects", () => ({ GoalsAndProjects: () => null }));
 jest.mock("./Discussions", () => ({ Discussions: () => null }));
 jest.mock("./ResourceHub", () => ({ ResourceHub: () => null }));
@@ -33,14 +33,7 @@ jest.mock("@/routes/paths", () => ({
   }),
 }));
 
-const mockCompany = jest.fn();
-jest.mock("@/routes/useCompanyLoaderData", () => ({
-  useCompanyLoaderData: () => ({ company: mockCompany() }),
-}));
-
-function renderSection(enabledExperimentalFeatures: string[], kpisEnabled: boolean, templatesEnabled = true): string {
-  mockCompany.mockReturnValue({ enabledExperimentalFeatures });
-
+function renderSection(kpisEnabled: boolean, templatesEnabled = true): string {
   return renderToStaticMarkup(
     <MemoryRouter>
       <ToolsSection
@@ -52,18 +45,13 @@ function renderSection(enabledExperimentalFeatures: string[], kpisEnabled: boole
 }
 
 describe("ToolsSection KPIs gating", () => {
-  test("hides the KPIs tool when the space_kpis feature is off", () => {
-    const html = renderSection([], true);
+  test("hides the KPIs tool when the space has KPIs disabled", () => {
+    const html = renderSection(false);
     expect(html).not.toContain('data-test-id="kpis-tool"');
   });
 
-  test("hides the KPIs tool when the feature is on but the space has KPIs disabled", () => {
-    const html = renderSection(["space_kpis"], false);
-    expect(html).not.toContain('data-test-id="kpis-tool"');
-  });
-
-  test("shows the KPIs tool linking to the KPIs page when the feature is on and KPIs are enabled", () => {
-    const html = renderSection(["space_kpis"], true);
+  test("shows the KPIs tool linking to the KPIs page when KPIs are enabled", () => {
+    const html = renderSection(true);
     expect(html).toContain('data-test-id="kpis-tool"');
     expect(html).toContain('href="/spaces/space-1/kpis"');
   });
@@ -71,12 +59,12 @@ describe("ToolsSection KPIs gating", () => {
 
 describe("ToolsSection Templates gating", () => {
   test("hides the Templates tool when the space has it disabled", () => {
-    const html = renderSection([], false, false);
+    const html = renderSection(false, false);
     expect(html).not.toContain('data-test-id="templates-tool"');
   });
 
   test("shows the Templates tool when the space tool is enabled", () => {
-    const html = renderSection([], false, true);
+    const html = renderSection(false, true);
     expect(html).toContain('data-test-id="templates-tool"');
   });
 });

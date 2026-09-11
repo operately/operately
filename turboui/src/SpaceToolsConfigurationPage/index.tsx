@@ -26,11 +26,6 @@ export namespace SpaceToolsConfigurationPage {
     onCancel: () => void;
 
     isSubmitting?: boolean;
-
-    // Whether to expose the experimental KPIs tool. Gated by the caller so the
-    // row only appears for companies with the `space_kpis` feature enabled.
-    showKpis?: boolean;
-
   }
 }
 
@@ -84,15 +79,13 @@ export function SpaceToolsConfigurationPage(props: SpaceToolsConfigurationPage.P
               testId="templates"
             />
 
-            {props.showKpis && (
-              <ToolRow
-                title="KPIs"
-                description="Track the numbers this space cares about and log updates on a weekly or monthly cadence."
-                value={props.tools.kpisEnabled}
-                onChange={(value) => props.onToolsChange({ ...props.tools, kpisEnabled: value })}
-                testId="kpis"
-              />
-            )}
+            <ToolRow
+              title="KPIs"
+              description="Track the numbers this space cares about and log updates on a weekly or monthly cadence."
+              value={props.tools.kpisEnabled}
+              onChange={(value) => props.onToolsChange({ ...props.tools, kpisEnabled: value })}
+              testId="kpis"
+            />
           </div>
 
           <div className="flex items-center gap-2 mt-10">
