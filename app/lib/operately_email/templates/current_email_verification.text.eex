@@ -1,0 +1,9 @@
+Verify your current email address
+
+A change to your Operately email was requested. The proposed new address is <%= @destination %>.
+
+Your verification code is <%= @code %>. Enter it in Operately within 5 minutes.
+
+We’ll then send a separate code to the new address. Your email won’t change until both inboxes are verified.
+
+If you didn’t request this change, ignore this email. Don’t share this code with anyone.

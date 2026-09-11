@@ -2,6 +2,26 @@ defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
   alias Operately.Access.Binding
 
+  enum :email_change_outcome, values: Operately.People.EmailChange.outcomes()
+
+  enum :email_change_stage, values: Ecto.Enum.values(Operately.People.EmailChangeRequest, :stage)
+
+  object :email_change_request, for: Operately.People.EmailChangeRequest do
+    field :id, :string, null: false
+    field :email, :string, null: false
+    field :expires_at, :datetime, null: false
+    field :attempts_remaining, :integer, null: false
+    field :stage, :email_change_stage, null: false
+    field :code_recipient, :string, null: false
+    field :authorization_expires_at, :datetime, null: true
+  end
+
+  object :email_change_state, for: Operately.People.EmailChange.State do
+    field :current_email, :string, null: false
+    field :pending, :email_change_request, null: true
+    field :retry_after, :integer, null: false
+  end
+
   primitive(:id,
     encoded_type: :string,
     decoded_type: :string,

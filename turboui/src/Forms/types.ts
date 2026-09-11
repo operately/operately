@@ -107,6 +107,7 @@ export interface DateInputProps {
 }
 
 export interface SubmitProps {
+  disabled?: boolean;
   saveText?: string;
   cancelText?: string;
   layout?: "left" | "centered";
