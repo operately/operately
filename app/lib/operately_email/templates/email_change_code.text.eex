@@ -1,0 +1,6 @@
+Confirm your new email address
+
+Your Operately email change code is <%= @code %>. Enter it in Operately within 5 minutes.
+Your current email stays active until you confirm the change.
+
+If you didn’t request this change, ignore this email. Don’t share this code with anyone.

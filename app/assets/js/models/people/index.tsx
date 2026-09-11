@@ -17,8 +17,11 @@ export const getPerson = Api.people.get;
 export const updateProfile = Api.people.update;
 export const updateProfilePicture = Api.people.updatePicture;
 export const getMe = Api.people.getMe;
-export const useGetPeople = Api.people.useList;
 export const updateTheme = Api.people.updateTheme;
+
+export function useGetPeople(input: api.PeopleListInput) {
+  return useQuery(Api.people.listQueryOptions(input));
+}
 
 export function useGetMe(input: api.PeopleGetMeInput) {
   return useQuery(Api.people.getMeQueryOptions(input));
