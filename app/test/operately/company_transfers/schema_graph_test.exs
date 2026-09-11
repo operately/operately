@@ -147,6 +147,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "returns true for session/auth tables" do
       assert PolicyRegistry.excluded?("accounts_tokens")
       assert PolicyRegistry.excluded?("email_activation_codes")
+      assert PolicyRegistry.excluded?("email_change_requests")
       assert PolicyRegistry.excluded?("mcp_grants")
       assert PolicyRegistry.excluded?("mcp_sessions")
     end

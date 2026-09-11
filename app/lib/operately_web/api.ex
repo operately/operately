@@ -371,6 +371,15 @@ defmodule OperatelyWeb.Api do
 
       query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
 
+      namespace(:email_changes) do
+        query :get, OperatelyWeb.Api.EmailChanges.Get
+        mutation :request, OperatelyWeb.Api.EmailChanges.Request
+        mutation :verify_current, OperatelyWeb.Api.EmailChanges.VerifyCurrent
+        mutation :resend, OperatelyWeb.Api.EmailChanges.Resend
+        mutation :confirm, OperatelyWeb.Api.EmailChanges.Confirm
+        mutation :cancel, OperatelyWeb.Api.EmailChanges.Cancel
+      end
+
       namespace(:companies) do
         mutation(:create, OperatelyWeb.Api.Companies.Create)
       end

@@ -89,6 +89,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("account/security/api-tokens/usage", pages.AccountApiTokensUsagePage),
         pageRoute("account/security/mcp-connections", pages.AccountMcpConnectionsPage),
         pageRoute("account/security/change-password", pages.AccountChangePasswordPage),
+        pageRoute("account/security/change-email", pages.AccountChangeEmailPage),
 
         pageRoute("people", pages.PeoplePage),
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
