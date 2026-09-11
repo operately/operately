@@ -1,0 +1,12 @@
+<%= title("Confirm your new email address") %>
+<%= spacer() %>
+<%= row do %>
+  Enter this code in Operately to change your account email. It expires in 5 minutes.
+  Your current email stays active until you confirm the change.
+<% end %>
+<%= spacer() %>
+<tr style="height: 80px; font-size: 40px; font-family: monospace;"><td><%= @code %></td></tr>
+<%= spacer() %>
+<%= row do %>
+  If you didn’t request this change, ignore this email. Don’t share this code with anyone.
+<% end %>

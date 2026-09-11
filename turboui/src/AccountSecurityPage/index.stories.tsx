@@ -15,6 +15,7 @@ type Story = StoryObj<typeof meta>;
 const defaultArgs = {
   homePath: "#",
   changePasswordPath: "#",
+  changeEmailPath: "#",
   apiTokensPath: "#",
   mcpConnectionsPath: "#",
 };
@@ -28,7 +29,7 @@ export const Mobile: Story = {
   globals: {
     viewport: {
       value: "mobile1",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };

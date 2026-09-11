@@ -1,5 +1,7 @@
 import Api from "@/api";
 
+export { useRequestEmailChange, useConfirmEmailChange, useCancelEmailChange } from "./emailChangeLifecycle";
+
 export type {
   ApiToken,
   ApiTokensCreateResult,

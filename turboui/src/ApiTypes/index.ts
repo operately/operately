@@ -1520,6 +1520,21 @@ export interface EditProjectTimelineNewMilestoneInput {
   dueDate: ContextualDate;
 }
 
+export interface EmailChangeRequest {
+  __typename: "email_change_request";
+  id: string;
+  email: string;
+  expiresAt: string;
+  attemptsRemaining: number;
+}
+
+export interface EmailChangeState {
+  __typename: "email_change_state";
+  currentEmail: string;
+  pending: EmailChangeRequest | null;
+  retryAfter: number;
+}
+
 export interface Goal {
   __typename: "goal";
   id: string;
@@ -2922,6 +2937,19 @@ export type ContextualDateType = "day" | "month" | "quarter" | "year";
 export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
+
+export type EmailChangeOutcome =
+  | "success"
+  | "invalid_email"
+  | "email_unchanged"
+  | "email_taken"
+  | "rate_limited"
+  | "delivery_unavailable"
+  | "delivery_failed"
+  | "request_invalid"
+  | "code_expired"
+  | "invalid_code"
+  | "too_many_attempts";
 
 export type EmailPreferenceValues = "buffered";
 

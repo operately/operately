@@ -377,6 +377,19 @@
         "space_task",
         "project_task",
         "kpi_entry"
+      ],
+      "email_change_outcome": [
+        "success",
+        "invalid_email",
+        "email_unchanged",
+        "email_taken",
+        "rate_limited",
+        "delivery_unavailable",
+        "delivery_failed",
+        "request_invalid",
+        "code_expired",
+        "invalid_code",
+        "too_many_attempts"
       ]
     },
     "int_enums": {
@@ -23195,6 +23208,113 @@
             "name": "period",
             "type": {
               "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "email_change_request": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "email",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "expires_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "attempts_remaining",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          }
+        ]
+      },
+      "email_change_state": {
+        "fields": [
+          {
+            "default": null,
+            "name": "__typename",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "current_email",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "pending",
+            "type": {
+              "name": "email_change_request",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "retry_after",
+            "type": {
+              "name": "integer",
               "kind": "named"
             },
             "optional": false,
