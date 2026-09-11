@@ -20,11 +20,12 @@ export function CurrentCompanyProvider({ children }) {
   const { data: meData, refetch: meRefetch } = People.useGetMe({ includeManager: true });
   const {
     data: peopleData,
-    loading: peopleLoading,
+    isLoading: peopleLoading,
     refetch: peopleRefetch,
   } = People.useGetPeople({ includeSuspended: true });
 
   useProfileUpdatedSignal(meRefetch);
+  useProfileUpdatedSignal(peopleRefetch);
   useRevalidateStalePeopleCache(peopleRefetch);
 
   const ctx = {

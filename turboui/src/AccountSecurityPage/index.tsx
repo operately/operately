@@ -2,22 +2,20 @@ import React from "react";
 
 import { Page } from "../Page";
 import { OptionsMenuItem } from "../OptionsMenuItem";
-import { IconCode, IconLockPassword, IconRobotFace } from "../icons";
+import { IconCode, IconLockPassword, IconRobotFace, IconMail } from "../icons";
 
 export namespace AccountSecurityPage {
   export interface Props {
     homePath: string;
     changePasswordPath: string;
+    changeEmailPath: string;
     apiTokensPath: string;
     mcpConnectionsPath: string;
   }
 }
 
 export function AccountSecurityPage(props: AccountSecurityPage.Props) {
-  const navigation = React.useMemo(
-    () => [{ to: props.homePath, label: "Home" }],
-    [props.homePath],
-  );
+  const navigation = React.useMemo(() => [{ to: props.homePath, label: "Home" }], [props.homePath]);
 
   return (
     <Page title="Password & Security" size="small" testId="account-security-page" navigation={navigation}>
@@ -25,6 +23,12 @@ export function AccountSecurityPage(props: AccountSecurityPage.Props) {
         <div className="mb-2 text-content-accent text-3xl font-extrabold">Password & Security</div>
         <p className="mb-8">Manage how you sign in and grant access to Operately.</p>
 
+        <OptionsMenuItem
+          linkTo={props.changeEmailPath}
+          icon={IconMail}
+          title="Change email"
+          description="Update your email across all your companies"
+        />
         <OptionsMenuItem
           linkTo={props.changePasswordPath}
           icon={IconLockPassword}
