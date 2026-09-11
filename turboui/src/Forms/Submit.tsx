@@ -5,7 +5,9 @@ import classNames from "../utils/classnames";
 import { useFormContext } from "./context";
 import type { SubmitProps } from "./types";
 
-const DEFAULT_SUBMIT_PROPS: Required<Pick<SubmitProps, "saveText" | "cancelText" | "layout" | "buttonSize" | "submitOnEnter">> = {
+const DEFAULT_SUBMIT_PROPS: Required<
+  Pick<SubmitProps, "saveText" | "cancelText" | "layout" | "buttonSize" | "submitOnEnter">
+> = {
   saveText: "Save",
   cancelText: "Cancel",
   layout: "left",
@@ -15,16 +17,10 @@ const DEFAULT_SUBMIT_PROPS: Required<Pick<SubmitProps, "saveText" | "cancelText"
 
 export function Submit(props: SubmitProps) {
   const form = useFormContext();
-  const {
-    buttonSize,
-    cancelText,
-    className,
-    containerClassName,
-    layout,
-    saveText,
-    submitOnEnter,
-    testId,
-  } = { ...DEFAULT_SUBMIT_PROPS, ...props };
+  const { buttonSize, cancelText, className, containerClassName, layout, saveText, submitOnEnter, testId } = {
+    ...DEFAULT_SUBMIT_PROPS,
+    ...props,
+  };
   const isLoading = form.state === "submitting" || form.state === "uploading";
   const label = form.state === "uploading" ? "Uploading..." : saveText;
   const buttonType = submitOnEnter ? "submit" : "button";
@@ -42,7 +38,15 @@ export function Submit(props: SubmitProps) {
 
   return (
     <div className={containerStyles}>
-      <PrimaryButton type={buttonType} size={buttonSize} loading={isLoading} testId={testId ?? "submit"} onClick={handleSubmit} className={className}>
+      <PrimaryButton
+        type={buttonType}
+        size={buttonSize}
+        loading={isLoading}
+        disabled={props.disabled}
+        testId={testId ?? "submit"}
+        onClick={handleSubmit}
+        className={className}
+      >
         {label}
       </PrimaryButton>
 

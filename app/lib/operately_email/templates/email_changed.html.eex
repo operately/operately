@@ -1,0 +1,10 @@
+<%= title("Your email address has changed") %>
+<%= spacer() %>
+<%= row do %>
+  Your Operately account email is now <strong><%= @new_email %></strong>.
+  This change applies to all your companies. Your existing sessions remain signed in.
+<% end %>
+<%= spacer() %>
+<%= row do %>
+  If you didn’t make this change, contact your organization administrator for help.
+<% end %>

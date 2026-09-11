@@ -120,6 +120,10 @@ export class Paths {
     return this.createCompanyPath(["account", "security", "change-password"]);
   }
 
+  accountChangeEmailPath() {
+    return this.createCompanyPath(["account", "security", "change-email"]);
+  }
+
   notificationsPath() {
     return this.createCompanyPath(["notifications"]);
   }

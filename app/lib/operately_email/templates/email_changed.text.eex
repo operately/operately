@@ -1,0 +1,4 @@
+Your Operately account email is now <%= @new_email %>.
+This change applies to all your companies. Your existing sessions remain signed in.
+
+If you didn’t make this change, contact your organization administrator for help.

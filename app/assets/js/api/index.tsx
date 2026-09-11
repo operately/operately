@@ -1642,6 +1642,24 @@ export interface EditProjectTimelineNewMilestoneInput {
   dueDate: ContextualDate;
 }
 
+export interface EmailChangeRequest {
+  __typename: "email_change_request";
+  id: string;
+  email: string;
+  expiresAt: string;
+  attemptsRemaining: number;
+  stage: EmailChangeStage;
+  codeRecipient: string;
+  authorizationExpiresAt: string | null;
+}
+
+export interface EmailChangeState {
+  __typename: "email_change_state";
+  currentEmail: string;
+  pending: EmailChangeRequest | null;
+  retryAfter: number;
+}
+
 export interface Goal {
   __typename: "goal";
   id: string;
@@ -3045,6 +3063,22 @@ export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
 
+export type EmailChangeOutcome =
+  | "success"
+  | "invalid_email"
+  | "email_unchanged"
+  | "email_taken"
+  | "rate_limited"
+  | "delivery_unavailable"
+  | "delivery_failed"
+  | "request_invalid"
+  | "code_expired"
+  | "authorization_expired"
+  | "invalid_code"
+  | "too_many_attempts";
+
+export type EmailChangeStage = "current_email" | "new_email";
+
 export type EmailPreferenceValues = "buffered";
 
 export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
@@ -3452,6 +3486,12 @@ export interface DocumentsListVersionsInput {
 
 export interface DocumentsListVersionsResult {
   versions: DocumentVersion[];
+}
+
+export interface EmailChangesGetInput {}
+
+export interface EmailChangesGetResult {
+  state: EmailChangeState;
 }
 
 export interface FilesGetInput {
@@ -4755,6 +4795,53 @@ export interface DocumentsUpdateInput {
 
 export interface DocumentsUpdateResult {
   document?: ResourceHubDocument | null;
+}
+
+export interface EmailChangesCancelInput {
+  requestId: string;
+}
+
+export interface EmailChangesCancelResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
+}
+
+export interface EmailChangesConfirmInput {
+  requestId: string;
+  code: string;
+}
+
+export interface EmailChangesConfirmResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
+}
+
+export interface EmailChangesRequestInput {
+  email: string;
+}
+
+export interface EmailChangesRequestResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
+}
+
+export interface EmailChangesResendInput {
+  requestId: string;
+}
+
+export interface EmailChangesResendResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
+}
+
+export interface EmailChangesVerifyCurrentInput {
+  requestId: string;
+  code: string;
+}
+
+export interface EmailChangesVerifyCurrentResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
 }
 
 export interface FilesCreateInput {
@@ -6761,6 +6848,34 @@ class ApiNamespaceBilling {
   }
 }
 
+class ApiNamespaceEmailChanges {
+  constructor(private client: ApiClient) {}
+
+  async get(input: EmailChangesGetInput): Promise<EmailChangesGetResult> {
+    return this.client.get("/email_changes/get", input);
+  }
+
+  async cancel(input: EmailChangesCancelInput): Promise<EmailChangesCancelResult> {
+    return this.client.post("/email_changes/cancel", input);
+  }
+
+  async confirm(input: EmailChangesConfirmInput): Promise<EmailChangesConfirmResult> {
+    return this.client.post("/email_changes/confirm", input);
+  }
+
+  async request(input: EmailChangesRequestInput): Promise<EmailChangesRequestResult> {
+    return this.client.post("/email_changes/request", input);
+  }
+
+  async resend(input: EmailChangesResendInput): Promise<EmailChangesResendResult> {
+    return this.client.post("/email_changes/resend", input);
+  }
+
+  async verifyCurrent(input: EmailChangesVerifyCurrentInput): Promise<EmailChangesVerifyCurrentResult> {
+    return this.client.post("/email_changes/verify_current", input);
+  }
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -7972,6 +8087,7 @@ export class ApiClient {
   public apiNamespaceProductReleases: ApiNamespaceProductReleases;
   public apiNamespaceSiteMessages: ApiNamespaceSiteMessages;
   public apiNamespaceBilling: ApiNamespaceBilling;
+  public apiNamespaceEmailChanges: ApiNamespaceEmailChanges;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -7998,6 +8114,7 @@ export class ApiClient {
     this.apiNamespaceProductReleases = new ApiNamespaceProductReleases(this);
     this.apiNamespaceSiteMessages = new ApiNamespaceSiteMessages(this);
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
+    this.apiNamespaceEmailChanges = new ApiNamespaceEmailChanges(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -9120,6 +9237,77 @@ export default {
     refreshMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: BillingRefreshInput) => defaultApiClient.apiNamespaceBilling.refresh(input),
+      }),
+  },
+
+  email_changes: {
+    get: (input: EmailChangesGetInput) => defaultApiClient.apiNamespaceEmailChanges.get(input),
+    useGet: (input: EmailChangesGetInput) =>
+      useQuery<EmailChangesGetResult>(() => defaultApiClient.apiNamespaceEmailChanges.get(input)),
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/email_changes/get"),
+    getQueryKey: (input: EmailChangesGetInput) => buildApiQueryKey(defaultApiClient, "/email_changes/get", input),
+    getQueryOptions: (input: EmailChangesGetInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/email_changes/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceEmailChanges.get(input),
+      }),
+    getQuery: (input: EmailChangesGetInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/email_changes/get", input),
+        queryFn: () => defaultApiClient.apiNamespaceEmailChanges.get(input),
+        staleTime: Infinity,
+      }),
+
+    verifyCurrent: (input: EmailChangesVerifyCurrentInput) =>
+      defaultApiClient.apiNamespaceEmailChanges.verifyCurrent(input),
+    useVerifyCurrent: () =>
+      useMutation<EmailChangesVerifyCurrentInput, EmailChangesVerifyCurrentResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.verifyCurrent(input),
+      ),
+    verifyCurrentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesVerifyCurrentInput) =>
+          defaultApiClient.apiNamespaceEmailChanges.verifyCurrent(input),
+      }),
+
+    request: (input: EmailChangesRequestInput) => defaultApiClient.apiNamespaceEmailChanges.request(input),
+    useRequest: () =>
+      useMutation<EmailChangesRequestInput, EmailChangesRequestResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.request(input),
+      ),
+    requestMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesRequestInput) => defaultApiClient.apiNamespaceEmailChanges.request(input),
+      }),
+
+    cancel: (input: EmailChangesCancelInput) => defaultApiClient.apiNamespaceEmailChanges.cancel(input),
+    useCancel: () =>
+      useMutation<EmailChangesCancelInput, EmailChangesCancelResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.cancel(input),
+      ),
+    cancelMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesCancelInput) => defaultApiClient.apiNamespaceEmailChanges.cancel(input),
+      }),
+
+    resend: (input: EmailChangesResendInput) => defaultApiClient.apiNamespaceEmailChanges.resend(input),
+    useResend: () =>
+      useMutation<EmailChangesResendInput, EmailChangesResendResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.resend(input),
+      ),
+    resendMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesResendInput) => defaultApiClient.apiNamespaceEmailChanges.resend(input),
+      }),
+
+    confirm: (input: EmailChangesConfirmInput) => defaultApiClient.apiNamespaceEmailChanges.confirm(input),
+    useConfirm: () =>
+      useMutation<EmailChangesConfirmInput, EmailChangesConfirmResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.confirm(input),
+      ),
+    confirmMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesConfirmInput) => defaultApiClient.apiNamespaceEmailChanges.confirm(input),
       }),
   },
 

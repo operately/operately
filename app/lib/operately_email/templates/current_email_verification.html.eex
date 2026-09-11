@@ -1,0 +1,16 @@
+<%= title("Verify your current email address") %>
+<%= spacer() %>
+<%= row do %>
+  A change to your Operately email was requested. The proposed new address is <strong><%= @destination %></strong>.
+<% end %>
+<%= spacer() %>
+<%= row do %>
+  Enter this code in Operately to verify your current inbox. It expires in 5 minutes.
+<% end %>
+<%= spacer() %>
+<tr style="height: 80px; font-size: 40px; font-family: monospace;"><td><%= @code %></td></tr>
+<%= spacer() %>
+<%= row do %>
+  We’ll then send a separate code to the new address. Your email won’t change until both inboxes are verified.
+  If you didn’t request this change, ignore this email. Don’t share this code with anyone.
+<% end %>

@@ -15,6 +15,7 @@ function Page() {
     <AccountSecurityPage
       homePath={paths.homePath()}
       changePasswordPath={paths.accountChangePasswordPath()}
+      changeEmailPath={paths.accountChangeEmailPath()}
       apiTokensPath={paths.accountApiTokensPath()}
       mcpConnectionsPath={paths.accountMcpConnectionsPath()}
     />
