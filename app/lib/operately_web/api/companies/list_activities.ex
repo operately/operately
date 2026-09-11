@@ -73,14 +73,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
 
   defp load_activities(person, scope_id, inputs, cursor) do
     {page, next_cursor} =
-      Activity
-      |> limit_search_to_current_company(person.company_id)
-      |> scope_query(inputs.scope_type, scope_id)
-      |> filter_by_action(inputs[:actions] || [])
-      |> filter_deleted_resource_hub_resources()
-      |> filter_by_view_access(person.id)
-      |> before_cursor(cursor)
-      |> order_desc()
+      build_query(person, scope_id, inputs, cursor)
       |> fetch_activities(inputs[:paginate] == true)
 
     activities =
@@ -90,6 +83,17 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
       |> Preloader.preload()
 
     {activities, next_cursor}
+  end
+
+  def build_query(person, scope_id, inputs, cursor \\ nil) do
+    Activity
+    |> limit_search_to_current_company(person.company_id)
+    |> scope_query(inputs.scope_type, scope_id)
+    |> filter_by_action(inputs[:actions] || [])
+    |> filter_deleted_resource_hub_resources()
+    |> filter_by_view_access(person.id)
+    |> before_cursor(cursor)
+    |> order_desc()
   end
 
   defp fetch_activities(query, false), do: {Repo.all(query), nil}

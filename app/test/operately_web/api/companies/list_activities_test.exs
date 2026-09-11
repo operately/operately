@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
@@ -122,8 +123,103 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
     end
   end
 
-  describe "get_activities functionality" do
-    setup :register_and_log_in_account
+  describe "permission query regressions" do
+    setup ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      activity = Repo.get_by!(Activity, author_id: ctx.creator.id, action: "goal_created")
+      Map.merge(ctx, %{activity: activity, attrs: %{scope_type: :company, scope_id: Paths.company_id(ctx.company), actions: ["goal_created"], paginate: true}})
+    end
+
+    test "overlapping permission paths fill pages with distinct activities", ctx do
+      activities = populate_activities(ctx.activity, 21)
+      bindings = from b in Binding,
+        join: g in assoc(b, :group),
+        join: m in assoc(g, :memberships),
+        where: b.context_id == ^ctx.activity.access_context_id and m.person_id == ^ctx.creator.id and b.access_level >= ^Binding.view_access()
+      assert Repo.aggregate(bindings, :count) > 1
+
+      assert {200, first} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
+      assert length(first.activities) == 20
+      assert {200, second} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, first.next_cursor))
+      assert length(second.activities) == 1
+      assert second.next_cursor == nil
+      assert Enum.map(first.activities ++ second.activities, & &1.id) == Enum.map(activities, &Paths.activity_id/1)
+    end
+
+    test "visibility requires at least view access", ctx do
+      bindings = from b in Binding, where: b.context_id == ^ctx.activity.access_context_id
+      Repo.update_all(bindings, set: [access_level: Binding.minimal_access()])
+      assert feed_ids(ctx.creator, ctx.attrs) == []
+
+      for level <- [Binding.view_access(), Binding.edit_access()] do
+        Repo.update_all(bindings, set: [access_level: level])
+        assert feed_ids(ctx.creator, ctx.attrs) == [ctx.activity.id]
+      end
+    end
+
+    test "suspended requesters cannot use existing memberships", ctx do
+      assert feed_ids(ctx.creator, ctx.attrs) == [ctx.activity.id]
+      ctx.creator |> Ecto.Changeset.change(suspended_at: DateTime.utc_now() |> DateTime.truncate(:second)) |> Repo.update!()
+      assert feed_ids(ctx.creator, ctx.attrs) == []
+    end
+
+    test "requesters without memberships cannot see activities", ctx do
+      Repo.delete_all(from m in Operately.Access.GroupMembership, where: m.person_id == ^ctx.creator.id)
+      assert feed_ids(ctx.creator, ctx.attrs) == []
+    end
+
+    test "activities without access contexts are excluded", ctx do
+      copy_activity(%{ctx.activity | access_context_id: nil}, ctx.activity.inserted_at)
+      assert feed_ids(ctx.creator, ctx.attrs) == [ctx.activity.id]
+    end
+
+    test "guests see a resource only after receiving a direct binding", ctx do
+      ctx = Factory.add_outside_collaborator(ctx, :guest, :creator)
+      assert feed_ids(ctx.guest, ctx.attrs) == []
+      group = Operately.Access.get_group!(person_id: ctx.guest.id)
+      {:ok, _} = Operately.Access.create_binding(%{context_id: ctx.activity.access_context_id, group_id: group.id, access_level: Binding.view_access()})
+      assert feed_ids(ctx.guest, ctx.attrs) == [ctx.activity.id]
+    end
+
+    test "foreign company and resource scopes do not bypass company isolation", ctx do
+      foreign = Factory.setup(%{}) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      foreign_activity = Repo.get_by!(Activity, author_id: foreign.creator.id, action: "goal_created")
+      group = Operately.Access.get_group!(person_id: ctx.creator.id)
+      {:ok, _} = Operately.Access.create_binding(%{context_id: foreign_activity.access_context_id, group_id: group.id, access_level: Binding.view_access()})
+
+      for {scope, id} <- [{:company, Paths.company_id(foreign.company)}, {:goal, Paths.goal_id(foreign.goal)}] do
+        assert {200, %{activities: [], next_cursor: nil}} = query(ctx.conn, [:companies, :list_activities], %{ctx.attrs | scope_type: scope, scope_id: id})
+      end
+    end
+
+    test "person scope filters by author", ctx do
+      ctx = Factory.add_company_member(ctx, :member)
+      other = copy_activity(%{ctx.activity | author_id: ctx.member.id}, ctx.activity.inserted_at)
+      assert {200, response} = query(ctx.conn, [:companies, :list_activities], %{ctx.attrs | scope_type: :person, scope_id: Paths.person_id(ctx.member)})
+      assert Enum.map(response.activities, & &1.id) == [Paths.activity_id(other)]
+    end
+
+    test "deprecated actions stay excluded with empty or explicit action filters", ctx do
+      deprecated = hd(Activity.deprecated_actions())
+      copy = copy_activity(%{ctx.activity | action: deprecated}, ctx.activity.inserted_at)
+      refute copy.id in feed_ids(ctx.creator, %{ctx.attrs | actions: []})
+      assert feed_ids(ctx.creator, %{ctx.attrs | actions: [deprecated]}) == []
+      assert feed_ids(ctx.creator, %{ctx.attrs | actions: [deprecated, "goal_created"]}) == [ctx.activity.id]
+    end
+
+    test "file creation with any deleted node in its array is excluded", ctx do
+      ctx = ctx |> Factory.add_resource_hub(:hub, :goal, :creator) |> Factory.add_file(:file, :hub) |> Factory.add_file(:deleted_file, :hub)
+      content = %{"company_id" => ctx.company.id, "space_id" => ctx.space.id, "goal_id" => ctx.goal.id, "resource_hub_id" => ctx.hub.id,
+        "files" => [%{"file_id" => ctx.file.id, "node_id" => ctx.file.node_id}, %{"file_id" => ctx.deleted_file.id, "node_id" => ctx.deleted_file.node_id}]}
+      activity = copy_activity(%{ctx.activity | action: "resource_hub_file_created", content: content}, ctx.activity.inserted_at)
+      attrs = %{ctx.attrs | actions: ["resource_hub_file_created"]}
+      assert {200, before_deletion} = query(ctx.conn, [:companies, :list_activities], attrs)
+      assert Enum.any?(before_deletion.activities, &(&1.id == Paths.activity_id(activity)))
+
+      Repo.soft_delete!(Repo.get!(Node, ctx.deleted_file.node_id))
+      assert {200, after_deletion} = query(ctx.conn, [:companies, :list_activities], attrs)
+      refute Enum.any?(after_deletion.activities, &(&1.id == Paths.activity_id(activity)))
+    end
   end
 
   describe "activity scope types" do
@@ -433,6 +529,11 @@ defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
         assert {400, _} = query(ctx.conn, [:companies, :list_activities], Map.put(ctx.attrs, :cursor, value))
       end
     end
+  end
+
+  defp feed_ids(person, inputs) do
+    {:ok, scope_id} = OperatelyWeb.Api.Companies.ListActivities.decode_scope_id(inputs)
+    OperatelyWeb.Api.Companies.ListActivities.build_query(person, scope_id, inputs) |> Repo.all() |> Enum.map(& &1.id)
   end
 
   defp populate_activities(activity, count, opts \\ []) do
