@@ -67,4 +67,23 @@ defmodule OperatelyWeb.Api.EmailChanges.GetTest do
     assert state.pending.expires_at == DateTime.to_iso8601(expired_at)
     assert state.pending.attempts_remaining == 5
   end
+
+  test "legacy requests cannot resume or bypass current-inbox verification", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_account(:account)
+    {:ok, request} = EmailChange.request(ctx.account, "new@example.com")
+    request |> Ecto.Changeset.change(stage: nil) |> Repo.update!()
+    assert {200, %{state: %{pending: nil}}} = query(ctx.conn, [:email_changes, :get], %{})
+    assert {200, %{outcome: "request_invalid"}} = mutation(ctx.conn, [:email_changes, :confirm], %{request_id: request.id, code: "ABC123"})
+  end
+
+  test "resumes the new-inbox stage with its recipient and authorization deadline", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.log_in_account(:account)
+    {:ok, request} = Operately.Support.EmailChange.Helpers.request_new_email(ctx.account, "new@example.com")
+    assert {200, %{state: state}} = query(ctx.conn, [:email_changes, :get], %{})
+    assert state.current_email == ctx.account.email
+    assert state.pending.id == request.id
+    assert state.pending.stage == "new_email"
+    assert state.pending.code_recipient == request.email
+    assert state.pending.authorization_expires_at == DateTime.to_iso8601(DateTime.add(request.current_email_verified_at, 600))
+  end
 end

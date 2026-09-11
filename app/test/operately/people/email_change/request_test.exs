@@ -69,17 +69,17 @@ defmodule Operately.People.EmailChange.RequestTest do
     code = delivered_code()
     age_send(request)
 
-    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _ -> {:error, :smtp_unavailable} end do
+    with_mock OperatelyEmail.Emails.CurrentEmailVerificationEmail, send: fn _, _, _ -> {:error, :smtp_unavailable} end do
       assert {:error, :delivery_failed} = Request.run(ctx.account, "different@example.com")
     end
 
     assert EmailChange.state(ctx.account).pending.id == request.id
     assert Repo.aggregate(EmailChangeRequest, :count) == 1
-    assert :ok = EmailChange.confirm(ctx.account, request.id, code)
+    assert {:ok, _} = EmailChange.verify_current(ctx.account, request.id, code)
   end
 
   defp delivered_code do
-    assert_receive {:email, %Swoosh.Email{subject: "Operately email change code: " <> code}}
+    assert_receive {:email, %Swoosh.Email{subject: "Operately current email verification code: " <> code}}
     String.replace(code, "-", "")
   end
 

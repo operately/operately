@@ -22,6 +22,9 @@ const pending: EmailChangeState = {
     __typename: "email_change_request",
     id: "request",
     email: "new@example.com",
+    stage: "new_email",
+    codeRecipient: "new@example.com",
+    authorizationExpiresAt: "2099-01-01T00:00:00Z",
     expiresAt: "2099-01-01T00:00:00Z",
     attemptsRemaining: 5,
   },
@@ -38,6 +41,8 @@ function setup(overrides: Partial<AccountChangeEmailPage.Props> = {}) {
     allowEmailLogin: true,
     allowGoogleLogin: true,
     onRequest: jest.fn().mockResolvedValue(true),
+    onVerifyCurrent: jest.fn().mockResolvedValue(true),
+    onResend: jest.fn().mockResolvedValue(true),
     onConfirm: jest.fn().mockResolvedValue(true),
     onCancelRequest: jest.fn().mockResolvedValue(true),
     onExit: jest.fn(),
@@ -135,8 +140,8 @@ test("resend shows progress and preserves success feedback when the request is r
   const response = new Promise<boolean>((resolve) => {
     finishRequest = resolve;
   });
-  const onRequest = jest.fn(() => response);
-  const { props, rerender } = setup({ state: pending, onRequest });
+  const onResend = jest.fn(() => response);
+  const { props, rerender } = setup({ state: pending, onResend });
   fireEvent.change(screen.getByLabelText("Verification code"), { target: { value: "ABC123" } });
   fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
 
@@ -144,7 +149,7 @@ test("resend shows progress and preserves success feedback when the request is r
   expect(screen.getByRole("status")).toHaveTextContent("Sending code…");
   expect(screen.getByRole("button", { name: "Use a different email" })).toBeDisabled();
   expect(showSuccessToast).not.toHaveBeenCalled();
-  expect(onRequest).toHaveBeenCalledWith("new@example.com");
+  expect(onResend).toHaveBeenCalledWith("request");
 
   const request = pending.pending;
   if (!request) throw new Error("Missing fixture request");
@@ -169,7 +174,7 @@ test("resend shows progress and preserves success feedback when the request is r
 });
 
 test("a failed resend preserves the entered code and does not show success feedback", async () => {
-  const { props, rerender } = setup({ state: pending, onRequest: jest.fn().mockResolvedValue(false) });
+  const { props, rerender } = setup({ state: pending, onResend: jest.fn().mockResolvedValue(false) });
   fireEvent.change(screen.getByLabelText("Verification code"), { target: { value: "ABC123" } });
   fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
   await waitFor(() => expect(screen.getByRole("button", { name: "Resend code" })).toBeEnabled());
@@ -202,4 +207,79 @@ test("returning to verification does not repeat the resend toast", async () => {
   );
   expect(screen.getByRole("status")).toBeEmptyDOMElement();
   expect(showSuccessToast).toHaveBeenCalledTimes(1);
+});
+
+function currentInboxState(): EmailChangeState {
+  if (!pending.pending) throw new Error("Missing fixture request");
+  return {
+    ...pending,
+    pending: {
+      ...pending.pending,
+      stage: "current_email",
+      codeRecipient: state.currentEmail,
+      authorizationExpiresAt: null,
+    },
+  };
+}
+
+test("current-inbox verification uses its dedicated callback and recipient", async () => {
+  const { props } = setup({ state: currentInboxState() });
+  expect(screen.getByRole("heading", { name: "Check your current inbox" })).toBeInTheDocument();
+  expect(screen.getByText(state.currentEmail)).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("Verification code"), { target: { value: "abc-123" } });
+  fireEvent.click(screen.getByRole("button", { name: "Verify current email" }));
+  await waitFor(() => expect(props.onVerifyCurrent).toHaveBeenCalledWith("request", "abc-123"));
+  expect(props.onConfirm).not.toHaveBeenCalled();
+});
+
+test("resending a current-inbox code names the current recipient in the toast", async () => {
+  setup({ state: currentInboxState() });
+  fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
+  await waitFor(() => expect(showSuccessToast).toHaveBeenCalledWith("Code sent", "New code sent to old@example.com."));
+});
+
+test("expired current-inbox authorization blocks confirmation and resend and offers restart", async () => {
+  if (!pending.pending) throw new Error("Missing fixture request");
+  const { props } = setup({
+    state: { ...pending, pending: { ...pending.pending, authorizationExpiresAt: new Date(0).toISOString() } },
+  });
+  expect(screen.getByRole("button", { name: "Confirm email change" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Resend code" })).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Start again" }));
+  await waitFor(() => expect(props.onCancelRequest).toHaveBeenCalledWith("request"));
+  expect(props.onExit).not.toHaveBeenCalled();
+});
+
+test("a failed current-inbox verification keeps the code and recipient visible", async () => {
+  const { props, rerender } = setup({
+    state: currentInboxState(),
+    onVerifyCurrent: jest.fn().mockResolvedValue(false),
+  });
+  fireEvent.change(screen.getByLabelText("Verification code"), { target: { value: "ABC123" } });
+  fireEvent.click(screen.getByRole("button", { name: "Verify current email" }));
+  await waitFor(() => expect(props.onVerifyCurrent).toHaveBeenCalled());
+  rerender(
+    <MemoryRouter>
+      <AccountChangeEmailPage {...props} error="Delivery failed" />
+    </MemoryRouter>,
+  );
+  expect(screen.getByLabelText("Verification code")).toHaveValue("ABC123");
+  expect(screen.getByText(state.currentEmail)).toBeInTheDocument();
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  expect(props.onConfirm).not.toHaveBeenCalled();
+});
+
+test("returning to entry focuses the email after cancellation finishes", () => {
+  const { props, rerender } = setup({ state: pending, busy: true });
+  rerender(
+    <MemoryRouter>
+      <AccountChangeEmailPage {...props} state={state} />
+    </MemoryRouter>,
+  );
+  rerender(
+    <MemoryRouter>
+      <AccountChangeEmailPage {...props} state={state} busy={false} />
+    </MemoryRouter>,
+  );
+  expect(screen.getByLabelText("New email")).toHaveFocus();
 });

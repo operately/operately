@@ -388,8 +388,13 @@
         "delivery_failed",
         "request_invalid",
         "code_expired",
+        "authorization_expired",
         "invalid_code",
         "too_many_attempts"
+      ],
+      "email_change_stage": [
+        "current_email",
+        "new_email"
       ]
     },
     "int_enums": {
@@ -23271,6 +23276,39 @@
             },
             "optional": false,
             "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "stage",
+            "type": {
+              "name": "email_change_stage",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "code_recipient",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "authorization_expires_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": true,
             "has_default": false
           }
         ]

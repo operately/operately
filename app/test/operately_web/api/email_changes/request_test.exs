@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.EmailChanges.RequestTest do
     refute_receive {:email, _}
   end
 
-  test "returns the trimmed destination and sends its verification code", ctx do
+  test "returns the trimmed destination and sends verification to the current inbox", ctx do
     ctx = ctx |> Factory.setup() |> Factory.log_in_account(:account)
     assert {200, %{outcome: "success", state: state}} = mutation(ctx.conn, [:email_changes, :request], %{email: "  new@example.com  "})
     assert state.current_email == ctx.account.email
@@ -66,7 +66,10 @@ defmodule OperatelyWeb.Api.EmailChanges.RequestTest do
     assert state.retry_after > 0
     assert state.retry_after <= 60
     assert {:ok, _, _} = DateTime.from_iso8601(state.pending.expires_at)
-    assert_receive {:email, %Swoosh.Email{to: [{_, "new@example.com"}], subject: "Operately email change code: " <> _code}}
+    assert state.pending.stage == "current_email"
+    assert state.pending.code_recipient == ctx.account.email
+    assert_receive {:email, %Swoosh.Email{to: [{_, recipient}], subject: "Operately current email verification code: " <> _code}}
+    assert recipient == ctx.account.email
     assert Repo.reload!(ctx.account).email == ctx.account.email
   end
 
@@ -111,7 +114,7 @@ defmodule OperatelyWeb.Api.EmailChanges.RequestTest do
   test "returns delivery_failed without presenting an unsent code as usable", ctx do
     ctx = ctx |> Factory.setup() |> Factory.log_in_account(:account)
 
-    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _ -> {:error, :smtp_unavailable} end do
+    with_mock OperatelyEmail.Emails.CurrentEmailVerificationEmail, send: fn _, _, _ -> {:error, :smtp_unavailable} end do
       assert {200, %{outcome: "delivery_failed", state: state}} = mutation(ctx.conn, [:email_changes, :request], %{email: "new@example.com"})
       assert state.current_email == ctx.account.email
       assert state.pending == nil
@@ -127,7 +130,7 @@ defmodule OperatelyWeb.Api.EmailChanges.RequestTest do
     {:ok, request} = EmailChange.request(ctx.account, "new@example.com")
     age_send(request)
 
-    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _ -> {:error, :smtp_unavailable} end do
+    with_mock OperatelyEmail.Emails.CurrentEmailVerificationEmail, send: fn _, _, _ -> {:error, :smtp_unavailable} end do
       assert {200, %{outcome: "delivery_failed", state: state}} = mutation(ctx.conn, [:email_changes, :request], %{email: "different@example.com"})
       assert state.current_email == ctx.account.email
       assert state.pending.id == request.id

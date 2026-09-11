@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.EmailChanges.CancelTest do
   use OperatelyWeb.TurboCase
   alias Operately.People.EmailChange
+  import Operately.Support.EmailChange.Helpers
   alias Operately.Support.Factory
 
   test "requires authentication", ctx do
@@ -96,7 +97,7 @@ defmodule OperatelyWeb.Api.EmailChanges.CancelTest do
 
   test "cannot cancel a consumed request or revert the new email", ctx do
     ctx = ctx |> Factory.setup() |> Factory.log_in_account(:account)
-    {:ok, request} = EmailChange.request(ctx.account, "new@example.com")
+    {:ok, request} = request_new_email(ctx.account, "new@example.com")
     assert_receive {:email, %Swoosh.Email{subject: "Operately email change code: " <> code}}
     :ok = EmailChange.confirm(ctx.account, request.id, code)
 

@@ -11,8 +11,10 @@ defmodule Operately.People.EmailChange.Confirm do
     result =
       Shared.with_account_lock(account, fn account ->
         with {:ok, request} <- Shared.find_pending(account, request_id),
-             :ok <- check_validity(request),
-             :ok <- verify_code(request, code),
+             :ok <- Shared.check_stage(request, :new_email),
+             :ok <- Shared.check_authorization(request),
+             :ok <- Shared.check_validity(request),
+             :ok <- Shared.verify_code(request, code),
              {:ok, changeset} <- Shared.validate_email(account, request.email) do
           complete_change(account, changeset)
         end
@@ -24,28 +26,6 @@ defmodule Operately.People.EmailChange.Confirm do
     end
 
     result
-  end
-
-  defp check_validity(request) do
-    cond do
-      request.attempts >= 5 -> {:error, :too_many_attempts}
-      DateTime.compare(request.expires_at, Shared.now()) != :gt -> {:error, :code_expired}
-      true -> :ok
-    end
-  end
-
-  defp verify_code(request, code) do
-    normalized = if is_binary(code), do: code |> String.trim() |> String.upcase() |> String.replace(~r/[\s-]/u, ""), else: ""
-    valid = Regex.match?(~r/^[A-Z0-9]{6}$/, normalized) and Plug.Crypto.secure_compare(request.code_hash, :crypto.hash(:sha256, normalized))
-
-    if valid do
-      :ok
-    else
-      attempts = request.attempts + 1
-      request |> Ecto.Changeset.change(attempts: attempts) |> Repo.update!()
-      # Return the error normally so this attempt is committed, not rolled back.
-      {:error, if(attempts >= 5, do: :too_many_attempts, else: :invalid_code)}
-    end
   end
 
   defp complete_change(account, changeset) do

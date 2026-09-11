@@ -1648,6 +1648,9 @@ export interface EmailChangeRequest {
   email: string;
   expiresAt: string;
   attemptsRemaining: number;
+  stage: EmailChangeStage;
+  codeRecipient: string;
+  authorizationExpiresAt: string | null;
 }
 
 export interface EmailChangeState {
@@ -3070,8 +3073,11 @@ export type EmailChangeOutcome =
   | "delivery_failed"
   | "request_invalid"
   | "code_expired"
+  | "authorization_expired"
   | "invalid_code"
   | "too_many_attempts";
+
+export type EmailChangeStage = "current_email" | "new_email";
 
 export type EmailPreferenceValues = "buffered";
 
@@ -4815,6 +4821,25 @@ export interface EmailChangesRequestInput {
 }
 
 export interface EmailChangesRequestResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
+}
+
+export interface EmailChangesResendInput {
+  requestId: string;
+}
+
+export interface EmailChangesResendResult {
+  outcome: EmailChangeOutcome;
+  state: EmailChangeState;
+}
+
+export interface EmailChangesVerifyCurrentInput {
+  requestId: string;
+  code: string;
+}
+
+export interface EmailChangesVerifyCurrentResult {
   outcome: EmailChangeOutcome;
   state: EmailChangeState;
 }
@@ -6840,6 +6865,14 @@ class ApiNamespaceEmailChanges {
 
   async request(input: EmailChangesRequestInput): Promise<EmailChangesRequestResult> {
     return this.client.post("/email_changes/request", input);
+  }
+
+  async resend(input: EmailChangesResendInput): Promise<EmailChangesResendResult> {
+    return this.client.post("/email_changes/resend", input);
+  }
+
+  async verifyCurrent(input: EmailChangesVerifyCurrentInput): Promise<EmailChangesVerifyCurrentResult> {
+    return this.client.post("/email_changes/verify_current", input);
   }
 }
 
@@ -9225,6 +9258,18 @@ export default {
         staleTime: Infinity,
       }),
 
+    verifyCurrent: (input: EmailChangesVerifyCurrentInput) =>
+      defaultApiClient.apiNamespaceEmailChanges.verifyCurrent(input),
+    useVerifyCurrent: () =>
+      useMutation<EmailChangesVerifyCurrentInput, EmailChangesVerifyCurrentResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.verifyCurrent(input),
+      ),
+    verifyCurrentMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesVerifyCurrentInput) =>
+          defaultApiClient.apiNamespaceEmailChanges.verifyCurrent(input),
+      }),
+
     request: (input: EmailChangesRequestInput) => defaultApiClient.apiNamespaceEmailChanges.request(input),
     useRequest: () =>
       useMutation<EmailChangesRequestInput, EmailChangesRequestResult>((input) =>
@@ -9243,6 +9288,16 @@ export default {
     cancelMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: EmailChangesCancelInput) => defaultApiClient.apiNamespaceEmailChanges.cancel(input),
+      }),
+
+    resend: (input: EmailChangesResendInput) => defaultApiClient.apiNamespaceEmailChanges.resend(input),
+    useResend: () =>
+      useMutation<EmailChangesResendInput, EmailChangesResendResult>((input) =>
+        defaultApiClient.apiNamespaceEmailChanges.resend(input),
+      ),
+    resendMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: EmailChangesResendInput) => defaultApiClient.apiNamespaceEmailChanges.resend(input),
       }),
 
     confirm: (input: EmailChangesConfirmInput) => defaultApiClient.apiNamespaceEmailChanges.confirm(input),

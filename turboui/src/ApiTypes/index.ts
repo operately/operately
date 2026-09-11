@@ -1526,6 +1526,9 @@ export interface EmailChangeRequest {
   email: string;
   expiresAt: string;
   attemptsRemaining: number;
+  stage: EmailChangeStage;
+  codeRecipient: string;
+  authorizationExpiresAt: string | null;
 }
 
 export interface EmailChangeState {
@@ -2948,8 +2951,11 @@ export type EmailChangeOutcome =
   | "delivery_failed"
   | "request_invalid"
   | "code_expired"
+  | "authorization_expired"
   | "invalid_code"
   | "too_many_attempts";
+
+export type EmailChangeStage = "current_email" | "new_email";
 
 export type EmailPreferenceValues = "buffered";
 

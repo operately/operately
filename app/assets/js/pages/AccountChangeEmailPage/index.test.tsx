@@ -30,6 +30,9 @@ const pendingState: EmailChangeState = {
     __typename: "email_change_request",
     id: "request",
     email: "new@example.com",
+    stage: "new_email",
+    codeRecipient: "new@example.com",
+    authorizationExpiresAt: "2099-01-01T00:00:00Z",
     expiresAt: "2099-01-01T00:00:00Z",
     attemptsRemaining: 5,
   },
@@ -123,3 +126,50 @@ test("an invalid code keeps verification visible and never shows success", async
     client.clear();
   }
 });
+
+test.each(["success", "delivery_failed"] as const)(
+  "current-inbox verification handles %s without completing the change",
+  async (outcome) => {
+    if (!pendingState.pending) throw new Error("Missing fixture request");
+    const currentState: EmailChangeState = {
+      ...pendingState,
+      pending: {
+        ...pendingState.pending,
+        stage: "current_email",
+        codeRecipient: pendingState.currentEmail,
+        authorizationExpiresAt: null,
+      },
+    };
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+    const queryOptions = Api.email_changes.getQueryOptions({});
+    client.setQueryData(queryOptions.queryKey, () => ({ state: currentState }));
+    const refetch = jest.fn(async () => ({ state: currentState }));
+    jest.spyOn(Api.email_changes, "getQueryOptions").mockReturnValue({ ...queryOptions, queryFn: refetch });
+    jest.spyOn(Api.email_changes, "verifyCurrentMutationOptions").mockReturnValue({
+      mutationFn: async () => ({ outcome, state: outcome === "success" ? pendingState : currentState }),
+    });
+    const invalidate = jest.spyOn(client, "invalidateQueries");
+    const root = createRoot(document.createElement("div"));
+    await act(async () =>
+      root.render(
+        <QueryClientProvider client={client}>
+          <PageModule.Page />
+        </QueryClientProvider>,
+      ),
+    );
+    try {
+      await act(async () => {
+        expect(await mockProps.onVerifyCurrent("request", "ABC123")).toBe(outcome === "success");
+      });
+      expect(mockProps.state.pending?.stage).toBe(outcome === "success" ? "new_email" : "current_email");
+      expect(mockProps.completedEmail).toBeNull();
+      expect(mockRenderedSteps).not.toContain("success");
+      expect(mockRenderedSteps).not.toContain("enter-email");
+      expect(invalidate).not.toHaveBeenCalled();
+      expect(refetch).not.toHaveBeenCalled();
+    } finally {
+      await act(async () => root.unmount());
+      client.clear();
+    }
+  },
+);

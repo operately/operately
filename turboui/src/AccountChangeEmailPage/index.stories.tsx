@@ -14,6 +14,9 @@ const request: NonNullable<EmailChangeState["pending"]> = {
   __typename: "email_change_request",
   id: "request-1",
   email: "alex@newcompany.com",
+  stage: "new_email",
+  codeRecipient: "alex@newcompany.com",
+  authorizationExpiresAt: new Date(Date.now() + 600000).toISOString(),
   expiresAt: new Date(Date.now() + 300000).toISOString(),
   attemptsRemaining: 5,
 };
@@ -34,6 +37,8 @@ const meta = {
     allowEmailLogin: true,
     allowGoogleLogin: true,
     onRequest: async () => true,
+    onVerifyCurrent: async () => true,
+    onResend: async () => true,
     onConfirm: async () => true,
     onCancelRequest: async () => true,
     onExit: () => {},
@@ -43,6 +48,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const EnterEmail: Story = {};
+export const VerifyCurrentInbox: Story = {
+  args: {
+    state: {
+      ...pending,
+      pending: { ...request, stage: "current_email", codeRecipient: state.currentEmail, authorizationExpiresAt: null },
+    },
+  },
+};
+export const AuthorizationExpired: Story = {
+  args: { state: { ...pending, pending: { ...request, authorizationExpiresAt: new Date(0).toISOString() } } },
+};
 export const VerifyCode: Story = { args: { state: pending } };
 export const ResendCooldown: Story = { args: { state: { ...pending, retryAfter: 60 } } };
 export const Sending: Story = { args: { busy: true } };
@@ -72,10 +88,10 @@ function ResendDemo(props: AccountChangeEmailPage.Props) {
       {...props}
       state={currentState}
       error={error}
-      onRequest={async (email) => {
+      onResend={async (email) => {
         setError(null);
         await new Promise((resolve) => setTimeout(resolve, 500));
-        const success = await props.onRequest(email);
+        const success = await props.onResend(email);
         if (success) {
           setState({
             ...state,
@@ -103,7 +119,7 @@ export const ResendFeedback: Story = {
 };
 
 export const ResendFailure: Story = {
-  args: { onRequest: async () => false },
+  args: { onResend: async () => false },
   render: (args) => <ResendDemo {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -133,8 +149,30 @@ function InteractivePage(props: AccountChangeEmailPage.Props) {
             __typename: "email_change_request",
             id: "demo",
             email,
+            stage: "current_email",
+            codeRecipient: state.currentEmail,
+            authorizationExpiresAt: null,
             expiresAt: new Date(Date.now() + 300000).toISOString(),
             attemptsRemaining: 5,
+          },
+        });
+        return true;
+      }}
+      onVerifyCurrent={async (_id, code) => {
+        if (code.replace(/[\s-]/g, "").toUpperCase() !== "ABC123") {
+          setError("That code doesn’t match. Try ABC-123 in this demo.");
+          return false;
+        }
+        if (!currentState.pending) return false;
+        setError(null);
+        setState({
+          ...currentState,
+          pending: {
+            ...currentState.pending,
+            id: "new-inbox",
+            stage: "new_email",
+            codeRecipient: currentState.pending.email,
+            authorizationExpiresAt: new Date(Date.now() + 600000).toISOString(),
           },
         });
         return true;
@@ -165,6 +203,11 @@ export const CompleteFlow: Story = {
     const code = await canvas.findByLabelText("Verification code");
     await expect(code).toHaveFocus();
     await userEvent.type(code, "abc-123");
+    await userEvent.keyboard("{Enter}");
+    await expect(await canvas.findByRole("heading", { name: "Check your new inbox" })).toBeVisible();
+    const newCode = canvas.getByLabelText("Verification code");
+    await expect(newCode).toHaveFocus();
+    await userEvent.type(newCode, "abc-123");
     await userEvent.keyboard("{Enter}");
     await expect(await canvas.findByRole("heading", { name: "Email changed" })).toHaveFocus();
   },

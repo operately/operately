@@ -5,6 +5,8 @@ import {
   useRequestEmailChange,
   useConfirmEmailChange,
   useCancelEmailChange,
+  useVerifyCurrentEmail,
+  useResendEmailChange,
 } from "@/models/accounts/emailChangeLifecycle";
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -27,6 +29,8 @@ function Page() {
   const request = useRequestEmailChange();
   const confirm = useConfirmEmailChange(setCompletedEmail);
   const cancel = useCancelEmailChange();
+  const verifyCurrent = useVerifyCurrentEmail();
+  const resend = useResendEmailChange();
   const [error, setError] = React.useState<string | null>(null);
 
   if (!data?.state) throw new Error("Email change settings are unavailable");
@@ -49,11 +53,13 @@ function Page() {
       homePath={paths.homePath()}
       securityPath={paths.accountSecurityPath()}
       error={error}
-      busy={request.isPending || confirm.isPending || cancel.isPending}
+      busy={request.isPending || confirm.isPending || cancel.isPending || verifyCurrent.isPending || resend.isPending}
       completedEmail={completedEmail}
       allowEmailLogin={window.appConfig.allowLoginWithEmail}
       allowGoogleLogin={window.appConfig.allowLoginWithGoogle}
       onRequest={(email) => perform(() => request.mutateAsync({ email }))}
+      onVerifyCurrent={(requestId, code) => perform(() => verifyCurrent.mutateAsync({ requestId, code }))}
+      onResend={(requestId) => perform(() => resend.mutateAsync({ requestId }))}
       onConfirm={async (requestId, code) => {
         // Keep verification visible while the cache replaces the pending request with the confirmed account.
         setConfirmingState(data.state);
@@ -77,6 +83,7 @@ const messages: Record<Exclude<EmailChangeOutcome, "success">, string> = {
   delivery_unavailable: "Email delivery isn’t configured. Contact your organization administrator for help.",
   delivery_failed: "We couldn’t send the code. Please try again.",
   request_invalid: "This request is no longer active. Review your current email or request a new code.",
+  authorization_expired: "Your verification has expired. Start again to verify your current email.",
   code_expired: "This code has expired. Request a new code to continue.",
   invalid_code: "That code doesn’t match. Check your latest email and try again.",
   too_many_attempts: "Too many incorrect attempts. Request a new code to continue.",

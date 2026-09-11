@@ -13,6 +13,9 @@ defmodule Operately.Features.AccountEmailChangeTest do
     |> Steps.request_code("new@example.com")
     |> Steps.assert_email_unchanged()
     |> Steps.reload_verification()
+    |> Steps.verify_current_inbox()
+    |> Steps.assert_email_unchanged()
+    |> Steps.reload_verification()
     |> Steps.confirm_code()
     |> Steps.assert_email_changed()
     |> Steps.assert_account_display_updated()
@@ -36,6 +39,9 @@ defmodule Operately.Features.AccountEmailChangeTest do
     |> Steps.enter_wrong_code()
     |> Steps.expire_code()
     |> Steps.resend_code()
+    |> Steps.verify_current_inbox()
+    |> Steps.assert_email_unchanged()
+    |> Steps.reload_verification()
     |> Steps.confirm_code()
     |> Steps.assert_email_changed()
   end
@@ -45,6 +51,34 @@ defmodule Operately.Features.AccountEmailChangeTest do
     |> Steps.use_mobile_viewport()
     |> Steps.open_email_settings()
     |> Steps.request_code("mobile@example.com")
+    |> Steps.verify_current_inbox()
+    |> Steps.assert_email_unchanged()
+    |> Steps.reload_verification()
+    |> Steps.confirm_code()
+    |> Steps.assert_email_changed()
+  end
+
+  feature "resend a new-inbox code without repeating current-inbox verification", ctx do
+    ctx
+    |> Steps.open_email_settings()
+    |> Steps.request_code("new@example.com")
+    |> Steps.verify_current_inbox()
+    |> Steps.expire_code()
+    |> Steps.resend_code()
+    |> Steps.confirm_code()
+    |> Steps.assert_email_changed()
+  end
+
+  feature "expired authorization requires verifying the current inbox again", ctx do
+    ctx
+    |> Steps.open_email_settings()
+    |> Steps.request_code("new@example.com")
+    |> Steps.verify_current_inbox()
+    |> Steps.expire_authorization()
+    |> Steps.restart_verification()
+    |> Steps.request_code("new@example.com")
+    |> Steps.assert_email_unchanged()
+    |> Steps.verify_current_inbox()
     |> Steps.confirm_code()
     |> Steps.assert_email_changed()
   end

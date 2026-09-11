@@ -38,6 +38,16 @@ export function useRequestEmailChange() {
   return useMutation({ ...Api.email_changes.requestMutationOptions(), onSuccess: update });
 }
 
+export function useVerifyCurrentEmail() {
+  const update = useUpdateEmailChangeState();
+  return useMutation({ ...Api.email_changes.verifyCurrentMutationOptions(), onSuccess: update });
+}
+
+export function useResendEmailChange() {
+  const update = useUpdateEmailChangeState();
+  return useMutation({ ...Api.email_changes.resendMutationOptions(), onSuccess: update });
+}
+
 export function useCancelEmailChange() {
   const update = useUpdateEmailChangeState();
   return useMutation({ ...Api.email_changes.cancelMutationOptions(), onSuccess: update });
