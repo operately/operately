@@ -28,6 +28,7 @@ const richEditorMockState = {
   localDraftRestored: false,
   restoredDraft: null as unknown,
   fallbackContent: null as unknown,
+  lastLocalDraft: undefined as { key?: string; enabled?: boolean } | undefined,
   editor: {
     commands: { setContent: jest.fn() },
     getJSON: () => richEditorMockState.restoredDraft ?? richEditorMockState.fallbackContent ?? null,
@@ -38,8 +39,9 @@ jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
     <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
-  useEditor: (props: { content?: unknown }) => {
+  useEditor: (props: { content?: unknown; localDraft?: { key?: string; enabled?: boolean } }) => {
     richEditorMockState.fallbackContent = props.content ?? null;
+    richEditorMockState.lastLocalDraft = props.localDraft;
 
     return {
       editor: richEditorMockState.editor,
@@ -738,6 +740,46 @@ describe("Forms", () => {
 
     expect(input).toHaveValue("Roadmap");
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  test("disables local drafts when enableLocalDraft is false", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea field="body" enableLocalDraft={false} richTextHandlers={createMockRichEditorHandlers()} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(richEditorMockState.lastLocalDraft).toBeUndefined();
+  });
+
+  test("stores local drafts by field path by default", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea field="body" richTextHandlers={createMockRichEditorHandlers()} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(richEditorMockState.lastLocalDraft).toEqual(
+      expect.objectContaining({ key: expect.stringContaining("body") }),
+    );
   });
 
   test("hides editor border when hideBorder is set", () => {

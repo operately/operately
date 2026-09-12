@@ -15,6 +15,7 @@ const DEFAULTS = {
   fontSize: "text-base",
   fontWeight: "font-medium",
   height: "min-h-[250px]",
+  enableLocalDraft: true,
 };
 
 type ResolvedRichTextAreaProps = RichTextAreaProps & typeof DEFAULTS;
@@ -67,7 +68,7 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
     placeholder: props.placeholder,
     className: contentClassName(props),
     handlers: props.richTextHandlers,
-    localDraft: { key: localDraftKey(props.field) },
+    localDraft: props.enableLocalDraft ? { key: localDraftKey(props.field) } : undefined,
     onBlur: ({ json }) => {
       skipNextContentSync.current = true;
       setValue(json);

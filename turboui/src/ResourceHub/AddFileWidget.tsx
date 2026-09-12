@@ -52,11 +52,17 @@ export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize,
   });
 
   useEffect(() => {
-    if (form && files) {
-      const initialFileItems = files.map((file) => new PayloadItem(file));
-      form.actions.setValue("items", initialFileItems);
+    if (files) {
+      form.actions.setValue(
+        "items",
+        files.map((file) => new PayloadItem(file)),
+      );
       setProgress(0);
+      return;
     }
+
+    form.actions.reset();
+    setProgress(0);
     // Intentionally omit `form`: it is a new object each render and would reset upload progress.
   }, [files]);
 
@@ -93,8 +99,13 @@ function Files({
 
   return (
     <div>
-      {items.map((_, i) => (
-        <FileForm key={i} index={i} formatFileSize={formatFileSize} richTextHandlers={richTextHandlers} />
+      {items.map((item, i) => (
+        <FileForm
+          key={fileFormKey(item, i)}
+          index={i}
+          formatFileSize={formatFileSize}
+          richTextHandlers={richTextHandlers}
+        />
       ))}
     </div>
   );
@@ -140,6 +151,7 @@ function FileForm({
             placeholder="Leave notes here..."
             richTextHandlers={richTextHandlers}
             height="min-h-[80px]"
+            enableLocalDraft={false}
           />
           <FileDetails file={item.mainFile} formatFileSize={formatFileSize} />
         </Forms.FieldGroup>
@@ -150,6 +162,14 @@ function FileForm({
       </div>
     </div>
   );
+}
+
+function fileFormKey(item: PayloadItem, index: number) {
+  if (!item?.mainFile) {
+    return String(index);
+  }
+
+  return `${item.mainFile.name}-${item.mainFile.size}-${item.mainFile.lastModified}`;
 }
 
 function FileDetails({ file, formatFileSize }: { file: File; formatFileSize: (size: number) => string }) {
