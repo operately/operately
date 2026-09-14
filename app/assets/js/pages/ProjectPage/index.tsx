@@ -14,7 +14,7 @@ import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { ProjectPage, showErrorToast } from "turboui";
 import { loader, useLoadedData, useRefreshCore } from "./loader";
-import { useProjectDocsQueries, type ProjectDocsAndFilesData } from "./docsQueries";
+import { useResourceHubDocsQueries, type ResourceHubDocsAndFilesData } from "@/models/resourceHubs/docsQueries";
 import { useProjectContentQueries } from "./contentQueries";
 import { shouldRevalidate } from "./navigation";
 
@@ -27,7 +27,6 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import {
-  getDraftEditPath,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -53,7 +52,7 @@ function LoadedPage() {
   const refreshCore = useRefreshCore();
   const invalidateProjectPage = useInvalidateProjectPage();
 
-  const docs = useProjectDocsQueries(data.project.resourceHub?.id);
+  const docs = useResourceHubDocsQueries(data.project.resourceHub?.id);
   const docsAndFiles = docs.data;
 
   const content = useProjectContentQueries({ checkInsInput, discussionsInput, tasksInput });
@@ -487,7 +486,7 @@ function useProjectDocsAndFilesProps({
   projectId,
   onRefresh,
 }: {
-  docsAndFiles: ProjectDocsAndFilesData | null;
+  docsAndFiles: ResourceHubDocsAndFilesData | null;
   projectId: string;
   onRefresh?: () => Promise<void>;
 }): ProjectPage.Props["docsAndFiles"] {
@@ -523,7 +522,6 @@ function useProjectDocsAndFilesProps({
       drafts: {
         nodes: docsAndFiles.draftNodes,
         draftsPath: paths.resourceHubDraftsPath(resourceHub.id),
-        getDraftEditPath: (node) => getDraftEditPath(paths, node),
       },
       newFileModals,
       addFileWidgetProps,

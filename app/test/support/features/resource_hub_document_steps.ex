@@ -47,6 +47,46 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> Factory.add_document(:document, :hub, state: :draft)
   end
 
+  step :given_drafts_in_multiple_folders_exist, ctx do
+    ctx
+    |> Factory.add_resource_hub(:hub, :space, :creator)
+    |> Factory.add_folder(:folder, :hub)
+    |> Factory.add_folder(:nested_folder, :hub, :folder)
+    |> Factory.add_document(:root_draft, :hub, state: :draft, name: "Root draft")
+    |> Factory.add_document(:document, :hub, folder: :nested_folder, state: :draft, name: "Nested draft")
+  end
+
+  step :given_empty_nested_folder_exists, ctx do
+    ctx
+    |> Factory.fetch_default_resource_hub(:hub, :space)
+    |> Factory.add_folder(:folder, :hub)
+    |> Factory.add_folder(:nested_folder, :hub, :folder)
+  end
+
+  step :assert_drafts_count, ctx, count do
+    if count == 0 do
+      UI.refute_has(ctx, testid: "continue-editing-draft")
+    else
+      UI.assert_has(ctx, Wallaby.Query.css(~s([data-test-id="continue-editing-draft"]), text: "Your drafts (#{count})"))
+    end
+  end
+
+  step :open_nested_draft, ctx do
+    ctx
+    |> UI.click_link("Nested draft")
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, ctx.document))
+  end
+
+  step :delete_draft_from_list, ctx do
+    document_id = Paths.document_id(ctx.document)
+
+    ctx
+    |> UI.click(testid: "draft-menu-#{document_id}")
+    |> UI.click(testid: "delete-draft-#{document_id}")
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "draft-menu-#{document_id}")
+  end
+
   step :given_members_exist, ctx do
     ctx
     |> Factory.add_space_member(:bob, :space)
@@ -286,12 +326,12 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
 
   step :assert_single_draft_document_link_is_visible, ctx do
     ctx
-    |> UI.assert_text("Continue writing your draft document")
+    |> UI.assert_has(Wallaby.Query.css(~s([data-test-id="continue-editing-draft"]), text: "Your drafts (1)"))
   end
 
   step :assert_several_draft_documents_link_is_visible, ctx do
     ctx
-    |> UI.assert_text("Continue writing your 3 draft documents")
+    |> UI.assert_has(Wallaby.Query.css(~s([data-test-id="continue-editing-draft"]), text: "Your drafts (3)"))
   end
 
   step :assert_draft_document_not_visible_and_state_is_zero, ctx do

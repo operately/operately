@@ -46,7 +46,6 @@ export interface PageDocsAndFiles {
   drafts: {
     nodes: ResourceHubNode[];
     draftsPath: string;
-    getDraftEditPath: (node: ResourceHubNode) => string | undefined;
   };
   newFileModals: NewFileModalsContextValue;
   addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
@@ -116,19 +115,8 @@ function PageDocsAndFilesTabContent({
   );
 }
 
-function buildDraftPrompt(docsAndFiles: PageDocsAndFiles): DocsAndFiles.DraftPrompt | null {
-  if (docsAndFiles.drafts.nodes.length < 1) return null;
-
-  const firstDraft = docsAndFiles.drafts.nodes[0];
-  const link =
-    docsAndFiles.drafts.nodes.length === 1 && firstDraft
-      ? docsAndFiles.drafts.getDraftEditPath(firstDraft) || docsAndFiles.nodesListProps.getNodePath(firstDraft)
-      : docsAndFiles.drafts.draftsPath;
-
-  return {
-    count: docsAndFiles.drafts.nodes.length,
-    link,
-  };
+function buildDraftPrompt(docsAndFiles: PageDocsAndFiles): DocsAndFiles.DraftPrompt {
+  return { count: docsAndFiles.drafts.nodes.length, link: docsAndFiles.drafts.draftsPath };
 }
 
 function mapNodeToItem(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles): DocsAndFiles.Item[] {

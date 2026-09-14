@@ -183,7 +183,6 @@ function GoalPageHarness({
             }),
           ],
           draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
-          getDraftEditPath: (node) => `/resource-hubs/documents/${node.document?.id}/edit`,
         },
         newFileModals: sharedProps.newFileModals,
         addFileWidgetProps: sharedProps.addFileWidgetProps,
@@ -270,14 +269,17 @@ describe("GoalPage", () => {
     render(<GoalPageHarness includeDocsAndFiles />);
 
     expect(screen.getByRole("link", { name: "Docs & Files 1" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Show 1 more" })).toHaveAttribute("href", "/goals/goal-1?tab=docs-and-files");
+    expect(screen.getByRole("link", { name: "Show 1 more" })).toHaveAttribute(
+      "href",
+      "/goals/goal-1?tab=docs-and-files",
+    );
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
   });
 
   test("renders the shared resource hub content in the docs and files tab", () => {
     render(<GoalPageHarness includeDocsAndFiles initialEntry="/goals/goal-1?tab=docs-and-files" />);
 
-    expect(screen.getByText("Continue writing your draft document...")).toBeInTheDocument();
+    expect(screen.getByText("Your drafts (1)")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
@@ -303,6 +305,6 @@ describe("GoalPage", () => {
     render(<GoalPageHarness initialEntry="/goals/goal-1?tab=docs-and-files" />);
 
     expect(screen.getByText("Goal description")).toBeInTheDocument();
-    expect(screen.queryByText("Continue writing your draft document...")).not.toBeInTheDocument();
+    expect(screen.queryByText("Your drafts (1)")).not.toBeInTheDocument();
   });
 });
