@@ -16,7 +16,7 @@ import { usePaths } from "@/routes/paths";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
-  const { folder, nodes } = useLoadedData();
+  const { folder, nodes, draftNodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -36,10 +36,12 @@ export function Page() {
   const { mutateAsync: createFolder } = useCreateFolder();
   const { mutateAsync: renameFolder } = useRenameFolder();
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
+
   const props: ResourceHubFolderPage.Props = {
     title: folder.name || "Folder",
     navigation: buildFolderPageNavigation(folder, paths),
     folder,
+    drafts: { nodes: draftNodes, draftsPath: paths.resourceHubDraftsPath(folder.resourceHub.id) },
     renameFolder: {
       onRename: async (id, name) => {
         await renameFolder({ folderId: id, newName: name });
@@ -50,7 +52,7 @@ export function Page() {
     addFileWidgetProps,
     nodesListProps,
     addFolderModalProps: {
-      resourceHubId: folder.resourceHub.id!,
+      resourceHubId: folder.resourceHub.id,
       folderId: folder.id,
       onCreated: refresh,
       onCreateFolder: async (args) => {

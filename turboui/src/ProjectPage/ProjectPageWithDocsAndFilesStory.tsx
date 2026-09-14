@@ -104,10 +104,7 @@ export function ProjectPageWithDocsAndFilesStory({
   );
   const [space, setSpace] = useState(storyData.defaultSpace);
   const subscriptions = useMockSubscriptions({ entityType: "project" });
-  const docsAndFiles = useMockProjectDocsAndFiles(
-    { id: "project-1", name: "Mobile App Redesign" },
-    { includeDrafts },
-  );
+  const docsAndFiles = useMockProjectDocsAndFiles({ id: "project-1", name: "Mobile App Redesign" }, { includeDrafts });
 
   const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
     const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -358,7 +355,6 @@ function useMockProjectDocsAndFiles(
     drafts: {
       nodes: draftNodes,
       draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
-      getDraftEditPath: (node) => (node.document?.id ? `/resource-hub/documents/${node.document.id}/edit` : undefined),
     },
     newFileModals: sharedListProps.newFileModals,
     addFileWidgetProps: sharedListProps.addFileWidgetProps,

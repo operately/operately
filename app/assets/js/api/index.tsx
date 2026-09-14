@@ -2470,6 +2470,7 @@ export interface ResourceHubLink {
 
 export interface ResourceHubNode {
   __typename: "resource_hub_node";
+  pathToNode?: ResourceHubFolder[] | null;
   id?: string | null;
   name?: string | null;
   type?: string | null;
@@ -4081,6 +4082,14 @@ export interface ResourceHubsGetFolderInput {
 
 export interface ResourceHubsGetFolderResult {
   folder: ResourceHubFolder;
+}
+
+export interface ResourceHubsListDraftsInput {
+  resourceHubId: Id;
+}
+
+export interface ResourceHubsListDraftsResult {
+  draftNodes: ResourceHubNode[];
 }
 
 export interface ResourceHubsListNodesInput {
@@ -7071,6 +7080,10 @@ class ApiNamespaceResourceHubs {
     return this.client.get("/resource_hubs/get_folder", input);
   }
 
+  async listDrafts(input: ResourceHubsListDraftsInput): Promise<ResourceHubsListDraftsResult> {
+    return this.client.get("/resource_hubs/list_drafts", input);
+  }
+
   async listNodes(input: ResourceHubsListNodesInput): Promise<ResourceHubsListNodesResult> {
     return this.client.get("/resource_hubs/list_nodes", input);
   }
@@ -9664,6 +9677,24 @@ export default {
       queryClient.query({
         queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/list_nodes", input),
         queryFn: () => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
+        staleTime: Infinity,
+      }),
+
+    listDrafts: (input: ResourceHubsListDraftsInput) => defaultApiClient.apiNamespaceResourceHubs.listDrafts(input),
+    useListDrafts: (input: ResourceHubsListDraftsInput) =>
+      useQuery<ResourceHubsListDraftsResult>(() => defaultApiClient.apiNamespaceResourceHubs.listDrafts(input)),
+    listDraftsQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/resource_hubs/list_drafts"),
+    listDraftsQueryKey: (input: ResourceHubsListDraftsInput) =>
+      buildApiQueryKey(defaultApiClient, "/resource_hubs/list_drafts", input),
+    listDraftsQueryOptions: (input: ResourceHubsListDraftsInput) =>
+      queryOptions({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/list_drafts", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.listDrafts(input),
+      }),
+    listDraftsQuery: (input: ResourceHubsListDraftsInput) =>
+      queryClient.query({
+        queryKey: buildApiQueryKey(defaultApiClient, "/resource_hubs/list_drafts", input),
+        queryFn: () => defaultApiClient.apiNamespaceResourceHubs.listDrafts(input),
         staleTime: Infinity,
       }),
 

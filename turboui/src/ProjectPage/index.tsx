@@ -3,7 +3,7 @@ import React from "react";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
 
-import { type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
+import { PageDocsAndFilesTab, type PageDocsAndFiles } from "../DocsAndFiles/PageDocsAndFiles";
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
@@ -18,7 +18,6 @@ import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection } from "../SidebarSection";
-import { DocsAndFilesSection } from "./DocsAndFilesSection";
 import { TasksSection } from "./TasksSection";
 import { getTaskCompletionStats } from "./taskCompletion";
 import { ProjectPermissions } from "./types";
@@ -297,7 +296,15 @@ export function ProjectPage(props: ProjectPage.Props) {
         {activeTab === "tasks" && <TasksSection state={state} />}
         {activeTab === "check-ins" && <CheckIns {...state} />}
         {activeTab === "discussions" && <Discussions {...state} />}
-        {activeTab === "docs-and-files" && <DocsAndFilesSection state={state} />}
+        {activeTab === "docs-and-files" && (
+          <PageDocsAndFilesTab
+            docsAndFiles={state.docsAndFiles}
+            formattedTimePreferences={state.formattedTimePreferences}
+            loading={state.docsAndFilesLoading}
+            error={state.docsAndFilesError}
+            onRetry={state.onRetryDocsAndFiles}
+          />
+        )}
         {activeTab === "activity" && <Activity {...state} />}
       </div>
 

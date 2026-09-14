@@ -289,6 +289,7 @@ defmodule OperatelyWeb.Api do
       namespace(:resource_hubs, catalog: :omit) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
+        query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
         query(:search, OperatelyWeb.Api.ResourceHubs.Search)
 
@@ -487,6 +488,7 @@ defmodule OperatelyWeb.Api do
       @doc "Browse and manage Docs & Files"
       namespace(:documents) do
         query(:list_contents, OperatelyWeb.Api.Wrappers.DocsAndFiles.ListContents)
+        query(:list_drafts, OperatelyWeb.Api.ResourceHubs.ListDrafts)
         query(:search, OperatelyWeb.Api.Wrappers.DocsAndFiles.Search)
         query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
         query(:get_document, OperatelyWeb.Api.Documents.Get)

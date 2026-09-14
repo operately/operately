@@ -20,6 +20,7 @@ defmodule Operately.ResourceHubs.Node do
     # remove this column once all name backfills are confirmed safe in production.
     field :name, :string
     field :type, Ecto.Enum, values: [:document, :folder, :file, :link]
+    field :path_to_node, :any, virtual: true
 
     has_one :folder, Operately.ResourceHubs.Folder, foreign_key: :node_id
     has_one :document, Operately.ResourceHubs.Document, foreign_key: :node_id
