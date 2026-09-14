@@ -5,8 +5,6 @@ import { GoalAddPage, SpaceField } from "turboui";
 
 import { PageModule } from "@/routes/types";
 import { loader, useLoadedData } from "./loader";
-import { PageCache } from "@/routes/PageCache";
-import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { useNavigate } from "react-router";
 import { GoalAddForm } from "turboui/src/GoalAddForm";
 import { accessLevelAsNumber } from "../../models/goals";
@@ -58,10 +56,6 @@ function useSaveGoal(): (props: GoalAddForm.SaveProps) => Promise<{ id: string }
       .then((response) => {
         if (!response.goal) {
           throw new Error("Created goal is unavailable");
-        }
-        if (parentGoal) {
-          // Keep the parent page fresh until GoalPage migrates from PageCache.
-          PageCache.invalidate(goalPageCacheKey(parentGoal.id));
         }
         return { id: response.goal.id };
       });

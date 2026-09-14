@@ -4,7 +4,6 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api from "@/api";
-import { PageCache } from "@/routes/PageCache";
 
 const mockNavigate = jest.fn();
 jest.mock("axios");
@@ -13,8 +12,6 @@ jest.mock("@/routes/paths", () => ({
   compareIds: jest.requireActual("@/routes/paths").compareIds,
   usePaths: () => ({ goalPath: (id) => `/goals/${id}` }),
 }));
-jest.mock("@/routes/PageCache", () => ({ PageCache: { invalidate: jest.fn() } }));
-jest.mock("@/pages/GoalPage", () => ({ pageCacheKey: (id) => `goal:${id}` }));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
 
 beforeEach(() => {
@@ -84,11 +81,9 @@ it.each([false, true])("reopens and clears the draft only after success (failure
     expect(client.getQueryState(parentKey)?.isInvalidated).toBe(!fails);
     expect(client.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
     [key, activityKey].forEach((queryKey) => expect(client.getQueryState(queryKey)?.isInvalidated).toBe(!fails));
-    expect(PageCache.invalidate).toHaveBeenCalledTimes(fails ? 0 : 1);
     expect(mockClearDraft).toHaveBeenCalledTimes(fails ? 0 : 1);
     expect(mockNavigate).toHaveBeenCalledTimes(fails ? 0 : 1);
     if (!fails) {
-      expect(PageCache.invalidate).toHaveBeenCalledWith("goal:goal-1");
       expect(mockNavigate).toHaveBeenCalledWith("/goals/goal-1");
     }
   } finally {

@@ -4,7 +4,6 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api, { Goal } from "@/api";
-import { PageCache } from "@/routes/PageCache";
 import { useLoadedData } from "./loader";
 import page from "./index";
 
@@ -17,8 +16,6 @@ jest.mock("@/routes/paths", () => ({
   compareIds: jest.requireActual("@/routes/paths").compareIds,
   usePaths: () => ({ goalPath: (id) => `/goals/${id}`, spacePath: (id) => `/spaces/${id}` }),
 }));
-jest.mock("@/routes/PageCache", () => ({ PageCache: { invalidate: jest.fn() } }));
-jest.mock("@/pages/GoalPage", () => ({ pageCacheKey: (id) => `goal:${id}` }));
 jest.mock("@/models/spaces", () => ({ useSpaceSearch: jest.fn() }));
 jest.mock("turboui", () => ({
   GoalAddPage: (props) => {
@@ -76,8 +73,6 @@ it.each([false, true])("creates a goal and keeps cached views fresh (with parent
     expect(client.getQueryState(goalKey)?.isInvalidated).toBe(true);
     expect(client.getQueryState(parentKey)?.isInvalidated).toBe(withParent);
     expect(client.getQueryState(unrelatedKey)?.isInvalidated).toBe(false);
-    expect(PageCache.invalidate).toHaveBeenCalledTimes(withParent ? 1 : 0);
-    if (withParent) expect(PageCache.invalidate).toHaveBeenCalledWith("goal:parent-1");
     expect(mockNavigate).toHaveBeenCalledWith("/goals/new-goal");
   } finally {
     await act(async () => root.unmount());
@@ -104,7 +99,6 @@ it("propagates a failed creation without invalidation or navigation", async () =
       await expect(mockProps.save(values)).rejects.toThrow("Creation failed");
     });
     expect(client.getQueryState(key)?.isInvalidated).toBe(false);
-    expect(PageCache.invalidate).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   } finally {
     await act(async () => root.unmount());

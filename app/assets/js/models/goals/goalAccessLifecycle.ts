@@ -1,4 +1,5 @@
 import Api from "@/api";
+import { useGoalMutation } from "./goalMutation";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import { compareIds } from "@/routes/paths";
 import { invalidateGoalPageQueries, invalidateGoalResourceQueries } from "./goalPageQueries";
@@ -50,10 +51,7 @@ export function useDeleteGoalAccessMember() {
 }
 
 export function useUpdateGoalAccessLevels() {
-  const client = useQueryClient();
-
-  return useMutation({
-    ...Api.goals.updateAccessLevelsMutationOptions(),
-    onSuccess: (_result, { goalId }) => invalidateGoalAccessQueries(client, goalId),
-  });
+  return useGoalMutation(Api.goals.updateAccessLevelsMutationOptions(), (client, { goalId }) =>
+    invalidateGoalAccessQueries(client, goalId),
+  );
 }

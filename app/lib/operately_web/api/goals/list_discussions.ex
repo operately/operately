@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Goals.ListDiscussions do
   end
 
   outputs do
-    field :discussions, list_of(:discussion), null: false
+    field :discussions, list_of(:goal_discussion), null: false
   end
 
   def call(conn, inputs) do

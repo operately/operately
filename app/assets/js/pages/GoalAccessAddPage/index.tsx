@@ -5,8 +5,6 @@ import * as Goals from "@/models/goals";
 import * as React from "react";
 
 import { loader, useLoadedData } from "./loader";
-import { PageCache } from "@/routes/PageCache";
-import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { Forms, IconPlus, IconX, SecondaryButton } from "turboui";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
@@ -49,7 +47,6 @@ function Page() {
         members: uniqueMemberList(form.values.members, accessMembers),
       });
 
-      PageCache.invalidate(goalPageCacheKey(goal.id));
       navigate(backPath);
     },
   });

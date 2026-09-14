@@ -28851,7 +28851,7 @@
           "name": "discussions",
           "type": {
             "item": {
-              "name": "discussion",
+              "name": "goal_discussion",
               "kind": "named"
             },
             "kind": "list"
