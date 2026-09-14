@@ -2348,6 +2348,7 @@ export interface ResourceHubLink {
 
 export interface ResourceHubNode {
   __typename: "resource_hub_node";
+  pathToNode?: ResourceHubFolder[] | null;
   id?: string | null;
   name?: string | null;
   type?: string | null;
