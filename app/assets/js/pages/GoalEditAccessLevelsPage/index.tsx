@@ -4,8 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 
 import { loader, useLoadedData } from "./loader";
-import { PageCache } from "@/routes/PageCache";
-import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import {
   applyAccessLevelConstraints,
   initialAccessLevels,
@@ -78,7 +76,6 @@ function Form() {
         },
       });
 
-      PageCache.invalidate(goalPageCacheKey(goal.id));
       navigateBack();
     },
     cancel: navigateBack,
