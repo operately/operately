@@ -28,7 +28,8 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
   end
 
   defp get_date_value(nil), do: nil
-  defp get_date_value(date), do: date.value
+  defp get_date_value(%{"value" => value}), do: value
+  defp get_date_value(%{value: value}), do: value
 
   def buffered_item(_person, activity) do
     milestone = Operately.Projects.get_milestone!(activity.content["milestone_id"])
