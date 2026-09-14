@@ -1,6 +1,6 @@
 import React from "react";
 import { ProjectPage } from ".";
-import { ContentListState } from "./ContentListState";
+import { ContentListState } from "../ContentListState";
 import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
 import { CheckInOverdueCallout } from "./CheckInOverdueCallout";

@@ -1,36 +1,30 @@
 import * as Pages from "@/components/Pages";
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 
-import { resource_hubs, ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
-
-interface LoaderResult {
-  resourceHub: ResourceHub;
-  draftNodes: ResourceHubNode[];
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  const [resourceHub, nodes] = await Promise.all([
-    resource_hubs
-      .get({
-        id: params.id,
-        includeGoal: true,
-        includeSpace: true,
-        includeProject: true,
-        includePermissions: true,
-        includePotentialSubscribers: true,
-      })
-      .then((res) => res.resourceHub!),
-    resource_hubs.listNodes({
-      resourceHubId: params.id,
-      includeCommentsCount: true,
-    }),
-  ]);
-
-  return {
-    resourceHub,
-    draftNodes: nodes.draftNodes!,
+export async function loader({ params }) {
+  const hubInput = {
+    id: params.id,
+    includeGoal: true,
+    includeSpace: true,
+    includeProject: true,
+    includePermissions: true,
+    includePotentialSubscribers: true,
   };
+  const draftsInput = { resourceHubId: params.id };
+
+  await Promise.all([Api.resource_hubs.getQuery(hubInput), Api.resource_hubs.listDraftsQuery(draftsInput)]);
+
+  return { hubInput, draftsInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+export function useLoadedData() {
+  const inputs = Pages.useLoadedData() as Awaited<ReturnType<typeof loader>>;
+  const hub = useLoadedQuery(Api.resource_hubs.getQueryOptions(inputs.hubInput));
+  const drafts = useLoadedQuery(Api.resource_hubs.listDraftsQueryOptions(inputs.draftsInput));
+
+  if (hub.error || drafts.error) throw hub.error || drafts.error;
+  if (!hub.data?.resourceHub || !drafts.data) throw new Error("Docs & Files data is missing");
+
+  return { resourceHub: hub.data.resourceHub, draftNodes: drafts.data.draftNodes };
 }

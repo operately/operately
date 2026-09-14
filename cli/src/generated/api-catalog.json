@@ -22805,6 +22805,20 @@
           },
           {
             "default": null,
+            "name": "path_to_node",
+            "type": {
+              "item": {
+                "name": "resource_hub_folder",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "id",
             "type": {
               "name": "string",
@@ -23381,7 +23395,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 254,
+  "endpoint_count": 255,
   "endpoints": [
     {
       "name": "create",
@@ -26556,6 +26570,45 @@
       "method": "GET",
       "namespace": "documents",
       "docstring": null
+    },
+    {
+      "name": "list_drafts",
+      "type": "query",
+      "path": "/api/external/v1/documents/list_drafts",
+      "handler": "OperatelyWeb.Api.ResourceHubs.ListDrafts",
+      "outputs": [
+        {
+          "default": null,
+          "name": "draft_nodes",
+          "type": {
+            "item": {
+              "name": "resource_hub_node",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_hub_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "nullable": false,
+          "has_default": false
+        }
+      ],
+      "full_name": "documents/list_drafts",
+      "method": "GET",
+      "namespace": "documents",
+      "docstring": "Lists the requester's drafts across all live folders in a resource hub."
     },
     {
       "name": "publish_document",
@@ -40474,7 +40527,7 @@
       "docstring": "Updates the status of a task."
     }
   ],
-  "query_count": 75,
+  "query_count": 76,
   "mutation_count": 179,
   "schema_version": 1
 }

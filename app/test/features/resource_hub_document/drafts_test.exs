@@ -14,13 +14,59 @@ defmodule Operately.Features.ResourceHubDocument.DraftsTest do
   }
 
   describe "Drafts" do
-    feature "Link to continue editing single draft is displayed", ctx do
+    feature "Saving a draft in a folder makes it discoverable from the root", ctx do
+      ctx
+      |> Steps.given_empty_nested_folder_exists()
+      |> Steps.visit_resource_hub_page()
+      |> Steps.assert_drafts_count(0)
+      |> Steps.visit_folder_page(:nested_folder)
+      |> Steps.assert_drafts_count(0)
+      |> Steps.create_draft_document(@document)
+      |> Steps.visit_resource_hub_page()
+      |> Steps.assert_drafts_count(1)
+      |> Steps.click_on_continue_writing_draft_link()
+      |> Steps.assert_page_is_resource_hub_drafts()
+      |> Steps.navigate_to_document(index: 0)
+      |> Steps.assert_page_is_document_editing()
+    end
+
+    feature "Drafts across folders remain discoverable from every location", ctx do
+      ctx
+      |> Steps.given_drafts_in_multiple_folders_exist()
+      |> Steps.visit_folder_page(:nested_folder)
+      |> Steps.assert_drafts_count(2)
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.assert_drafts_count(2)
+      |> Steps.click_on_continue_writing_draft_link()
+      |> Steps.assert_page_is_resource_hub_drafts()
+      |> Steps.assert_document_present_in_files_list("Root draft")
+      |> Steps.assert_document_present_in_files_list("Nested draft")
+      |> Steps.open_nested_draft()
+    end
+
+    feature "Deleting a nested draft updates the list and folder counts", ctx do
+      ctx
+      |> Steps.given_drafts_in_multiple_folders_exist()
+      |> Steps.visit_folder_page(:folder)
+      |> Steps.assert_drafts_count(2)
+      |> Steps.click_on_continue_writing_draft_link()
+      |> Steps.delete_draft_from_list()
+      |> Steps.assert_document_present_in_files_list("Root draft")
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.assert_drafts_count(1)
+      |> Steps.visit_folder_page(:nested_folder)
+      |> Steps.assert_drafts_count(1)
+    end
+
+    feature "Single draft is discoverable through the drafts list", ctx do
       ctx
       |> Steps.given_a_single_draft_document_exists()
       |> Steps.visit_resource_hub_page("Resource hub")
       |> Steps.assert_single_draft_document_link_is_visible()
       |> Steps.assert_draft_document_not_visible_and_state_is_zero()
       |> Steps.click_on_continue_writing_draft_link()
+      |> Steps.assert_page_is_resource_hub_drafts()
+      |> Steps.navigate_to_document(index: 0)
       |> Steps.assert_page_is_document_editing()
     end
 
@@ -66,6 +112,7 @@ defmodule Operately.Features.ResourceHubDocument.DraftsTest do
       |> Steps.publish_document()
       |> Steps.visit_resource_hub_page("Resource hub")
       |> Steps.assert_document_present_in_files_list("Document")
+      |> Steps.assert_drafts_count(0)
     end
 
     feature "Draft document can be edited and published", ctx do
@@ -83,6 +130,7 @@ defmodule Operately.Features.ResourceHubDocument.DraftsTest do
       |> Steps.assert_document_content(new_doc)
       |> Steps.visit_resource_hub_page("Resource hub")
       |> Steps.assert_document_present_in_files_list(new_doc.name)
+      |> Steps.assert_drafts_count(0)
     end
 
     feature "Edit subscriptions when publishing draft", ctx do

@@ -101,7 +101,6 @@ function StoryPage({
       drafts={{
         nodes: empty ? [] : [createMockDraftNode()],
         draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
-        getDraftEditPath: (node) => `/resource-hubs/documents/${node.document?.id}/edit`,
       }}
     />
   );

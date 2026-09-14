@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ContentListState } from "../ContentListState";
 
 import {
   AddFileWidget,
@@ -46,7 +47,6 @@ export interface PageDocsAndFiles {
   drafts: {
     nodes: ResourceHubNode[];
     draftsPath: string;
-    getDraftEditPath: (node: ResourceHubNode) => string | undefined;
   };
   newFileModals: NewFileModalsContextValue;
   addFileWidgetProps: Pick<AddFileWidgetProps, "subscriptions" | "richTextHandlers" | "formatFileSize" | "onUpload">;
@@ -58,14 +58,31 @@ export interface PageDocsAndFiles {
 export function PageDocsAndFilesTab({
   docsAndFiles,
   formattedTimePreferences,
+  loading,
+  error,
+  onRetry,
 }: {
-  docsAndFiles: PageDocsAndFiles;
+  docsAndFiles?: PageDocsAndFiles;
   formattedTimePreferences: FormattedTimePreferences;
+  loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
 }) {
   return (
-    <NewFileModalsProvider value={docsAndFiles.newFileModals}>
-      <PageDocsAndFilesTabContent docsAndFiles={docsAndFiles} formattedTimePreferences={formattedTimePreferences} />
-    </NewFileModalsProvider>
+    <div className={docsAndFiles ? undefined : "p-4 max-w-6xl mx-auto my-6"}>
+      {!docsAndFiles && <h2 className="text-xl font-semibold tracking-tight mb-4">Docs & Files</h2>}
+
+      <ContentListState name="docs-and-files" loading={loading} error={error} onRetry={onRetry}>
+        {docsAndFiles && (
+          <NewFileModalsProvider value={docsAndFiles.newFileModals}>
+            <PageDocsAndFilesTabContent
+              docsAndFiles={docsAndFiles}
+              formattedTimePreferences={formattedTimePreferences}
+            />
+          </NewFileModalsProvider>
+        )}
+      </ContentListState>
+    </div>
   );
 }
 
@@ -116,19 +133,8 @@ function PageDocsAndFilesTabContent({
   );
 }
 
-function buildDraftPrompt(docsAndFiles: PageDocsAndFiles): DocsAndFiles.DraftPrompt | null {
-  if (docsAndFiles.drafts.nodes.length < 1) return null;
-
-  const firstDraft = docsAndFiles.drafts.nodes[0];
-  const link =
-    docsAndFiles.drafts.nodes.length === 1 && firstDraft
-      ? docsAndFiles.drafts.getDraftEditPath(firstDraft) || docsAndFiles.nodesListProps.getNodePath(firstDraft)
-      : docsAndFiles.drafts.draftsPath;
-
-  return {
-    count: docsAndFiles.drafts.nodes.length,
-    link,
-  };
+function buildDraftPrompt(docsAndFiles: PageDocsAndFiles): DocsAndFiles.DraftPrompt {
+  return { count: docsAndFiles.drafts.nodes.length, link: docsAndFiles.drafts.draftsPath };
 }
 
 function mapNodeToItem(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles): DocsAndFiles.Item[] {

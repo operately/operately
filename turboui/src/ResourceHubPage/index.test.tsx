@@ -95,7 +95,6 @@ function ResourceHubPageHarness({
         drafts={{
           nodes: [createMockDraftNode()],
           draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
-          getDraftEditPath: (node) => `/resource-hubs/documents/${node.document?.id}/edit`,
         }}
         search={
           showSearch
@@ -117,7 +116,7 @@ describe("ResourceHubPage", () => {
 
     expect(screen.getByText("Operations")).toBeInTheDocument();
     expect(screen.getByText("Engineering Handbook")).toBeInTheDocument();
-    expect(screen.getByText("Continue writing your draft document…")).toBeInTheDocument();
+    expect(screen.getByText("Your drafts (1)")).toBeInTheDocument();
     expect(screen.getByText("Ready for your first document")).toBeInTheDocument();
   });
 

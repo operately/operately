@@ -4,7 +4,7 @@ import { createRoot, Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api from "@/api";
-import { useProjectDocsQueries } from "./docsQueries";
+import { useResourceHubDocsQueries } from "./docsQueries";
 
 jest.mock("axios");
 jest.mock("turboui", () => ({}));
@@ -21,10 +21,10 @@ function deferred() {
 
 let client: QueryClient;
 let root: Root;
-let result: ReturnType<typeof useProjectDocsQueries>;
+let result: ReturnType<typeof useResourceHubDocsQueries>;
 let requests: Array<{ path: string; response: ReturnType<typeof deferred> }>;
 function Harness({ id }: { id?: string }) {
-  result = useProjectDocsQueries(id);
+  result = useResourceHubDocsQueries(id);
   return null;
 }
 async function render(id: string | undefined = "hub-1") {
@@ -67,10 +67,11 @@ afterEach(async () => {
   jest.clearAllMocks();
 });
 
-it("starts both docs queries on mount and shows loading until both finish", async () => {
+it("loads nodes and hub-wide drafts independently", async () => {
   await render();
   expect(requests.map(({ path }) => path).sort()).toEqual([
     "/api/v2/resource_hubs/get",
+    "/api/v2/resource_hubs/list_drafts",
     "/api/v2/resource_hubs/list_nodes",
   ]);
   expect(result.loading).toBe(true);

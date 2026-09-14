@@ -2,12 +2,14 @@ import * as React from "react";
 
 import { Page } from "../Page";
 import { IconEdit } from "../icons";
-import { RenameFolderModal, type ResourceHubFolder } from "../ResourceHub";
+import { ContinueEditingDrafts, RenameFolderModal, type ResourceHubFolder } from "../ResourceHub";
+import type { ResourceHubPage } from "../ResourceHubPage";
 import { SharedListPage, type SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 
 export namespace ResourceHubFolderPage {
   export interface Props extends SharedListPageProps {
     folder: ResourceHubFolder;
+    drafts: ResourceHubPage.Props["drafts"];
     renameFolder: {
       onRename: (id: string, name: string) => Promise<void>;
       onSave: () => void;
@@ -44,6 +46,7 @@ export function ResourceHubFolderPage(props: ResourceHubFolderPage.Props) {
       addFileWidgetProps={props.addFileWidgetProps}
       nodesListProps={props.nodesListProps}
       addFolderModalProps={props.addFolderModalProps}
+      beforeList={<ContinueEditingDrafts drafts={props.drafts.nodes} draftsPath={props.drafts.draftsPath} />}
       heading={props.folder.name ?? ""}
       permissions={props.folder.permissions}
       options={options}

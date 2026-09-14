@@ -2,7 +2,6 @@ import React from "react";
 
 import { ResourceHubPage } from "turboui";
 import {
-  getDraftEditPath,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -28,13 +27,12 @@ export function Page() {
   const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
 
   const props: ResourceHubPage.Props = {
-    title: resourceHub.name || "Resource Hub",
+    title: resourceHub.name || "Docs & Files",
     navigation: buildResourceHubPageNavigation(resourceHub, paths),
     resourceHub,
     drafts: {
       nodes: draftNodes,
-      draftsPath: paths.resourceHubDraftsPath(resourceHub.id!),
-      getDraftEditPath: (node) => getDraftEditPath(paths, node),
+      draftsPath: paths.resourceHubDraftsPath(resourceHub.id),
     },
     newFileModals: newFileModalsContext,
     addFileWidgetProps,
@@ -42,7 +40,7 @@ export function Page() {
     search,
     formattedTimePreferences,
     addFolderModalProps: {
-      resourceHubId: resourceHub.id!,
+      resourceHubId: resourceHub.id,
       onCreated: refresh,
       onCreateFolder: async (args) => {
         await createFolder({

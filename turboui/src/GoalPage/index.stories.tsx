@@ -469,8 +469,8 @@ const contributors: GoalPage.Contributor[] = genPeople(10).map((p, i) => {
     i < contributions.length
       ? contributions[i]
       : contributions.length > 0
-      ? contributions[contributions.length - 1]
-      : [];
+        ? contributions[contributions.length - 1]
+        : [];
 
   return {
     person,
@@ -524,8 +524,7 @@ const description: any = {
 
 function GoalPageDocsAndFilesStory({ includeDrafts = true }: { includeDrafts?: boolean }) {
   const docsAndFiles = useMockGoalDocsAndFiles("goal-1", "Launch AI Platform", { includeDrafts });
-  const docsAndFilesCount =
-    docsAndFiles.previewNodes.length + (docsAndFiles.drafts?.nodes.length ?? 0);
+  const docsAndFilesCount = docsAndFiles.previewNodes.length + (docsAndFiles.drafts?.nodes.length ?? 0);
 
   return (
     <Component
@@ -659,7 +658,6 @@ function useMockGoalDocsAndFiles(
     drafts: {
       nodes: draftNodes,
       draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
-      getDraftEditPath: (node) => (node.document?.id ? `/resource-hub/documents/${node.document.id}/edit` : undefined),
     },
     newFileModals: sharedListProps.newFileModals,
     addFileWidgetProps: sharedListProps.addFileWidgetProps,
@@ -762,8 +760,8 @@ export const Mobile: Story = {
   globals: {
     viewport: {
       value: "mobile2",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
 
@@ -871,4 +869,26 @@ export const WithDocsAndFilesNoOpenDrafts: Story = {
     },
   },
   render: () => <GoalPageDocsAndFilesStory includeDrafts={false} />,
+};
+
+export const DocsAndFilesLoading: Story = {
+  parameters: WithDocsAndFiles.parameters,
+  args: { docsAndFilesAvailable: true, docsAndFilesLoading: true },
+};
+
+export const DocsAndFilesError: Story = {
+  parameters: WithDocsAndFiles.parameters,
+  render: () => {
+    const [error, setError] = React.useState(true);
+    const docsAndFiles = useMockGoalDocsAndFiles("goal-1", "Launch AI Platform");
+
+    return (
+      <Component
+        docsAndFilesAvailable
+        docsAndFilesError={error}
+        docsAndFiles={error ? undefined : docsAndFiles}
+        onRetryDocsAndFiles={() => setError(false)}
+      />
+    );
+  },
 };
