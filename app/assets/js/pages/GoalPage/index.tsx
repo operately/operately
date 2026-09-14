@@ -1,4 +1,4 @@
-import Api, { GoalChildrenCount, GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
+import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -7,19 +7,10 @@ import { parseContextualDate, serializeContextualDate } from "@/models/contextua
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import { GoalPage, showErrorToast, showSuccessToast, displayDate } from "turboui";
-import {
-  accessLevelsAsNumbers,
-  accessLevelsAsStrings,
-  getGoal,
-  Goal,
-  parseParentGoalForTurboUi,
-  Target,
-} from "@/models/goals";
-import { PageCache } from "@/routes/PageCache";
+import { accessLevelsAsNumbers, accessLevelsAsStrings, Goal, parseParentGoalForTurboUi, Target } from "@/models/goals";
 import { useNavigate } from "react-router";
-import { getWorkMap, WorkMapItem } from "../../models/workMap";
+import { WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
-import { fetchAll } from "../../utils/async";
 
 import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -35,97 +26,58 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 import { Paths, usePaths } from "@/routes/paths";
 import {
-  prefetchResourceHubDocs,
-  resourceHubDocsInputs,
   useResourceHubDocsQueries,
   type ResourceHubDocsAndFilesData as GoalDocsAndFilesData,
 } from "@/models/resourceHubs/docsQueries";
 import { useChecklists } from "./useChecklists";
+import { loader, useLoadedData, useRefresh } from "./loader";
+import { useOptimisticGoalState } from "@/models/goals/useOptimisticGoalState";
+import { assertGoalMutationSucceeded } from "@/models/goals/goalMutation";
 export default { name: "GoalPage", loader, Page } as PageModule;
-
-export function pageCacheKey(id: string): string {
-  return `v33-GoalPage.goal-${id}`;
-}
-
-type LoaderResult = {
-  data: {
-    goal: Goal;
-    workMap: WorkMapItem[];
-    checkIns: GoalProgressUpdate[];
-    checklist: Goals.Check[];
-    discussions: GoalDiscussion[];
-    childrenCount: GoalChildrenCount;
-  };
-
-  cacheVersion: number;
-};
-
-async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  const result = await PageCache.fetch({
-    cacheKey: pageCacheKey(params.id),
-    refreshCache,
-    fetchFn: async () => {
-      const data = await fetchAll({
-        goal: getGoal({
-          id: params.id,
-          includeSpace: true,
-          includeChampion: true,
-          includeReviewer: true,
-          includePermissions: true,
-          includeUnreadNotifications: true,
-          includeLastCheckIn: true,
-          includeAccessLevels: true,
-          includePrivacy: true,
-          includeRetrospective: true,
-          includeChecklist: true,
-          includeResourceHub: true,
-        }).then((d) => d.goal),
-        workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
-        checkIns: Api.goals.listCheckIns({ goalId: params.id }).then((d) => d.checkIns),
-        discussions: Api.goals.listDiscussions({ goalId: params.id }).then((d) => d.discussions),
-        childrenCount: Api.goals.countChildren({ id: params.id }).then((d) => d.childrenCount),
-      });
-
-      return data;
-    },
-  });
-
-  // Docs query errors are displayed within the Docs & Files tab.
-  await prefetchResourceHubDocs(resourceHubDocsInputs(result.data.goal.resourceHub?.id)).catch(() => undefined);
-
-  return result;
-}
 
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { data, refresh } = PageCache.useData(loader);
+  const { data } = useLoadedData();
+  const refresh = useRefresh();
   const { goal, workMap, checkIns, discussions, childrenCount } = data;
   const docs = useResourceHubDocsQueries(goal.resourceHub?.id);
   const refreshDocsAndGoal = React.useCallback(async () => {
-    await Promise.all([docs.refresh(), refresh?.()]);
+    await Promise.all([docs.refresh(), refresh()]);
   }, [docs.refresh, refresh]);
   const currentUser = useMe();
 
-  assertPresent(goal.privacy);
-  assertPresent(goal.permissions?.canEdit);
+  const updateName = Goals.useUpdateGoalName();
+  const updateDescription = Goals.useUpdateGoalDescription();
+  const updateAccessLevels = Goals.useUpdateGoalAccessLevels();
+  const updateSpace = Goals.useUpdateGoalSpace();
+  const updateStartDate = Goals.useUpdateGoalStartDate();
+  const updateDueDate = Goals.useUpdateGoalDueDate();
+  const updateChampion = Goals.useUpdateGoalChampion();
+  const updateReviewer = Goals.useUpdateGoalReviewer();
+  const updateParentGoal = Goals.useUpdateGoalParentGoal(goal.parentGoalId);
+  const removeGoal = Goals.useDeleteGoal(goal.parentGoalId);
 
   const [goalName, setGoalName] = usePageField({
     value: (data) => data.goal.name,
-    update: (v) => Api.goals.updateName({ goalId: goal.id, name: v }),
-    onError: (e: string) => showErrorToast(e, "Reverted the goal name to its previous value."),
+    update: (v) => updateName.mutateAsync({ goalId: goal.id, name: v }),
+    onError: (error) =>
+      showErrorToast(
+        typeof error === "string" ? error : "Network Error",
+        "Reverted the goal name to its previous value.",
+      ),
     validations: [(v) => (v.trim() === "" ? "Goal name cannot be empty" : null)],
   });
 
   const [description, setDescription] = usePageField({
     value: (data: { goal: Goal }) => data.goal.description && JSON.parse(data.goal.description),
-    update: (v) => Api.goals.updateDescription({ goalId: goal.id, description: JSON.stringify(v) }),
+    update: (v) => updateDescription.mutateAsync({ goalId: goal.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
   });
 
   const [accessLevels, setAccessLevels] = usePageField({
     value: (data) => accessLevelsAsStrings(data.goal.accessLevels),
-    update: (v) => Api.goals.updateAccessLevels({ goalId: goal.id, accessLevels: accessLevelsAsNumbers(v) }),
+    update: (v) => updateAccessLevels.mutateAsync({ goalId: goal.id, accessLevels: accessLevelsAsNumbers(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
   });
 
@@ -134,38 +86,38 @@ function Page() {
     update: (v) => {
       if (!v) return Promise.resolve({ success: false });
 
-      return Api.goals.updateSpace({ goalId: goal.id, spaceId: v.id });
+      return updateSpace.mutateAsync({ goalId: goal.id, spaceId: v.id });
     },
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
   const [startDate, setStartDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualStartDate),
-    update: (v) => Api.goals.updateStartDate({ goalId: goal.id, startDate: serializeContextualDate(v) }),
+    update: (v) => updateStartDate.mutateAsync({ goalId: goal.id, startDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the start date to its previous value."),
   });
 
   const [dueDate, setDueDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualEndDate),
-    update: (v) => Api.goals.updateDueDate({ goalId: goal.id, dueDate: serializeContextualDate(v) }),
+    update: (v) => updateDueDate.mutateAsync({ goalId: goal.id, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
   });
 
   const [champion, setChampion] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.champion),
-    update: (v) => Api.goals.updateChampion({ goalId: goal.id, championId: v && v.id }),
+    update: (v) => updateChampion.mutateAsync({ goalId: goal.id, championId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.reviewer),
-    update: (v) => Api.goals.updateReviewer({ goalId: goal.id, reviewerId: v && v.id }),
+    update: (v) => updateReviewer.mutateAsync({ goalId: goal.id, reviewerId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
     value: (data) => parseParentGoalForTurboUi(paths, data.goal.parentGoal),
-    update: (v) => Api.goals.updateParentGoal({ goalId: goal.id, parentGoalId: v && v.id }),
+    update: (v) => updateParentGoal.mutateAsync({ goalId: goal.id, parentGoalId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
     onSuccess: () => showSuccessToast("Parent Goal Updated", "The parent goal has been successfully changed."),
   });
@@ -199,7 +151,8 @@ function Page() {
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
 
-  const checklists = useChecklists({ goalId: goal.id, initialChecklist: goal.checklist || [] });
+  const initialChecklist = React.useMemo(() => goal.checklist ?? [], [goal.checklist]);
+  const checklists = useChecklists({ goalId: goal.id, initialChecklist });
   const goalDocsAndFilesProps = useGoalDocsAndFilesProps({
     docsAndFiles: docs.data,
     goalId: goal.id,
@@ -208,17 +161,13 @@ function Page() {
 
   const initialTargets = React.useMemo(() => prepareTargets(goal.targets), [goal.targets]);
 
-  const { targets, setTargets, addTarget, deleteTarget, updateTarget, updateTargetValue, updateTargetIndex } =
-    Goals.useGoalTargets({ goalId: goal.id, cacheKey: pageCacheKey(goal.id), initialTargets, refresh });
-
-  React.useEffect(() => {
-    setTargets(initialTargets);
-  }, [initialTargets, setTargets]);
+  const { targets, addTarget, deleteTarget, updateTarget, updateTargetValue, updateTargetIndex } = Goals.useGoalTargets(
+    { goalId: goal.id, initialTargets },
+  );
 
   const deleteGoal = async () => {
     try {
-      await Api.goals.delete({ goalId: goal.id });
-      PageCache.invalidate(pageCacheKey(goal.id));
+      await removeGoal.mutateAsync({ goalId: goal.id });
 
       if (space?.id) {
         navigate(paths.spaceWorkMapPath(space.id, "goals"));
@@ -323,9 +272,57 @@ function Page() {
     formattedTimePreferences,
   };
 
-  if (docs.error) throw new Error("Could not load Docs & Files");
-
   return <GoalPage key={goal.id} {...props} />;
+}
+
+interface PageFieldProps<T> {
+  value: (data: ReturnType<typeof useLoadedData>["data"]) => T;
+  update: (value: T) => Promise<unknown>;
+  onError?: (error: unknown) => void;
+  onSuccess?: () => void;
+  validations?: ((value: T) => string | null)[];
+}
+
+export function usePageField<T>({
+  value,
+  update,
+  onError,
+  onSuccess,
+  validations,
+}: PageFieldProps<T>): [T, (value: T) => Promise<boolean>] {
+  const { data } = useLoadedData();
+  const select = React.useRef(value);
+  select.current = value;
+  const serverValue = React.useMemo(() => select.current(data), [data]);
+  const state = useOptimisticGoalState(data.goal.id, serverValue);
+
+  const save = async (newValue: T) => {
+    for (const validate of validations ?? []) {
+      const error = validate(newValue);
+      if (error) {
+        onError?.(error);
+        return false;
+      }
+    }
+    try {
+      await state.run(
+        () => newValue,
+        async () => {
+          const result = await update(newValue);
+          assertGoalMutationSucceeded(result);
+          return result;
+        },
+      );
+      onSuccess?.();
+      return true;
+    } catch (error) {
+      console.error("API update failed", error);
+      onError?.(error);
+      return false;
+    }
+  };
+
+  return [state.value, save];
 }
 
 function useGoalDocsAndFilesProps({
@@ -455,84 +452,6 @@ function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["t
       mode: "view" as const,
     };
   });
-}
-
-interface usePageFieldProps<T> {
-  value: (LoaderResult) => T;
-  update: (newValue: T) => Promise<{ success?: boolean | null } | boolean | null | undefined>;
-  onError?: (error: any) => void;
-  onSuccess?: () => void;
-  validations?: ((newValue: T) => string | null)[];
-}
-
-function usePageField<T>({
-  value,
-  update,
-  onError,
-  onSuccess,
-  validations,
-}: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
-
-  const [state, setState] = React.useState<T>(() => value(data));
-  const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
-
-  React.useEffect(() => {
-    if (cacheVersion !== stateVersion) {
-      setState(() => value(data));
-      setStateVersion(cacheVersion);
-    }
-  }, [value, cacheVersion, stateVersion]);
-
-  const updateState = (newVal: T): Promise<boolean> => {
-    return new Promise((resolve) => {
-      // Run validations if provided
-      if (validations) {
-        for (const validate of validations) {
-          const error = validate(newVal);
-
-          if (error) {
-            console.error("Validation failed:", error);
-            console.log("Reverting to previous value", value(data));
-            setState(value(data)); // revert to previous value
-            onError?.(error);
-            resolve(false);
-            return;
-          }
-        }
-      }
-
-      const oldVal = state;
-
-      const successHandler = () => {
-        PageCache.invalidate(pageCacheKey(data.goal.id));
-        onSuccess?.();
-        resolve(true);
-      };
-
-      const errorHandler = (error: any) => {
-        onError?.(error);
-
-        console.error("API update failed", error);
-        setState(oldVal);
-        resolve(false);
-      };
-
-      setState(newVal);
-
-      update(newVal)
-        .then((res) => {
-          if (res === true || (typeof res === "object" && res?.success !== false)) {
-            successHandler();
-          } else {
-            errorHandler("Network Error");
-          }
-        })
-        .catch(errorHandler);
-    });
-  };
-
-  return [state, updateState];
 }
 
 function prepareDiscussions(paths: Paths, discussions: GoalDiscussion[]): GoalPage.Props["discussions"] {

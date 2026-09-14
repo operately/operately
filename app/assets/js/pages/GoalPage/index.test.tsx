@@ -4,7 +4,8 @@ import React, { act } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
-import GoalPageModule from "./index";
+import GoalPageModule, { usePageField } from "./index";
+import * as Loader from "./loader";
 import { resourceHubDocsInputs, useResourceHubDocsQueries } from "@/models/resourceHubs/docsQueries";
 import { renderHook, waitFor } from "@/__tests__/renderHook";
 
@@ -12,8 +13,7 @@ jest.mock("axios");
 jest.mock("react-router", () => ({}));
 jest.mock("turboui", () => ({}));
 jest.mock("@/components/Pages", () => ({}));
-jest.mock("@/models/goals", () => ({ getGoal: (input: object) => require("@/api").default.goals.get(input) }));
-jest.mock("@/models/workMap", () => ({ getWorkMap: () => Promise.resolve({ workMap: [] }) }));
+jest.mock("@/models/goals", () => ({}));
 jest.mock("@/models/people", () => ({}));
 jest.mock("@/models/spaces", () => ({}));
 jest.mock("@/models/resourceHubs", () => ({}));
@@ -51,9 +51,9 @@ it.each(["get", "list_nodes", "list_drafts"] as const)(
       return { data: path.endsWith("/goals/get") ? { goal } : {} };
     });
 
-    await expect(visit()).resolves.toMatchObject({ data: { goal } });
+    await expect(visit()).resolves.toMatchObject({ goalInput: { id: goal.id } });
     // Returning to the cached goal must also tolerate a docs failure.
-    await expect(visit()).resolves.toMatchObject({ data: { goal } });
+    await expect(visit()).resolves.toMatchObject({ goalInput: { id: goal.id } });
 
     const inputs = resourceHubDocsInputs("hub-1");
     const keys = {
@@ -91,4 +91,73 @@ it("exposes failed drafts to the section and recovers when retried", async () =>
   act(() => result.current.retry());
   await waitFor(() => expect(result.current.data?.draftNodes).toEqual([{ id: "draft-1" }]));
   expect(result.current.error).toBe(false);
+});
+
+describe("inline fields", () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  const load = (id: string, name: string) =>
+    jest
+      .spyOn(Loader, "useLoadedData")
+      .mockReturnValue({ data: { goal: { id, name } } } as ReturnType<typeof Loader.useLoadedData>);
+
+  it("validates before saving and rolls back an unsuccessful response", async () => {
+    load("goal1", "Before");
+    const update = jest.fn().mockResolvedValue({ success: false });
+    const onError = jest.fn();
+    const { result } = renderHook(
+      () =>
+        usePageField({
+          value: (data) => data.goal.name,
+          update,
+          onError,
+          validations: [(value) => (value.trim() ? null : "Empty")],
+        }),
+      { initialProps: undefined },
+    );
+    await act(async () => {
+      expect(await result.current[1](" ")).toBe(false);
+    });
+    expect(update).not.toHaveBeenCalled();
+    expect(result.current[0]).toBe("Before");
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await act(async () => {
+        expect(await result.current[1]("After")).toBe(false);
+      });
+      expect(result.current[0]).toBe("Before");
+      expect(onError).toHaveBeenCalledTimes(2);
+    } finally {
+      log.mockRestore();
+    }
+  });
+
+  it("keeps an optimistic field through a refresh and resets on navigation", async () => {
+    load("goal1", "Before");
+    let finish = () => {};
+    const pending = new Promise<void>((resolve) => {
+      finish = resolve;
+    });
+    const { result, rerender } = renderHook(
+      () => usePageField({ value: (data) => data.goal.name, update: () => pending }),
+      { initialProps: undefined },
+    );
+    let saving: Promise<boolean>;
+    act(() => {
+      saving = result.current[1]("After");
+    });
+    load("goal1", "Stale refresh");
+    rerender(undefined);
+    expect(result.current[0]).toBe("After");
+    load("goal1", "After");
+    rerender(undefined);
+    await act(async () => {
+      finish();
+      expect(await saving).toBe(true);
+    });
+    expect(result.current[0]).toBe("After");
+    load("goal2", "Other goal");
+    rerender(undefined);
+    expect(result.current[0]).toBe("Other goal");
+  });
 });

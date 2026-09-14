@@ -15,7 +15,7 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_goal_docs_and_files_empty_state()
   end
 
-  feature "create a new subgoal from an existing goal (from the goal page)", ctx do
+  feature "creating subgoals refreshes the parent on each return", ctx do
     ctx
     |> Steps.given_a_goal_exists(%{name: "Existing Goal"})
     |> Steps.visit_goal_page()
@@ -25,6 +25,11 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.submit()
     |> Steps.assert_parent_goal()
     |> Steps.return_to_parent_and_assert_subgoal("Example Subgoal")
+    |> Steps.click_add_goal_in_related_work()
+    |> Steps.fill_in_goal_name("Second Subgoal")
+    |> Steps.submit()
+    |> Steps.assert_parent_goal()
+    |> Steps.return_to_parent_and_assert_subgoal("Second Subgoal")
   end
 
   feature "create a new goal from the company work map", ctx do

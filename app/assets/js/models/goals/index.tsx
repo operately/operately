@@ -25,6 +25,30 @@ export {
   useUpdateGoalAccessLevels,
 } from "./goalAccessLifecycle";
 
+export {
+  useUpdateGoalName,
+  useUpdateGoalDescription,
+  useUpdateGoalStartDate,
+  useUpdateGoalDueDate,
+  useUpdateGoalSpace,
+  useUpdateGoalChampion,
+  useUpdateGoalReviewer,
+  useUpdateGoalParentGoal,
+  useDeleteGoal,
+} from "./goalDetailsLifecycle";
+export {
+  useCreateGoalTarget,
+  useDeleteGoalTarget,
+  useUpdateGoalTarget,
+  useUpdateGoalTargetValue,
+  useUpdateGoalTargetIndex,
+  useCreateGoalCheck,
+  useDeleteGoalCheck,
+  useUpdateGoalCheck,
+  useToggleGoalCheck,
+  useUpdateGoalCheckIndex,
+} from "./goalItemLifecycle";
+
 export const getGoal = Api.goals.get;
 
 export function targetProgressPercentage(

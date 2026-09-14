@@ -1,13 +1,11 @@
+import { useMemo } from "react";
 import * as Goals from "@/models/goals";
-import * as React from "react";
-
-import Api from "@/api";
+import { useOptimisticGoalState } from "@/models/goals/useOptimisticGoalState";
 import { Checklist, showErrorToast } from "turboui";
-import { pageCacheKey } from ".";
-import { PageCache } from "../../routes/PageCache";
 
+type Item = Checklist.ChecklistItem;
 interface Checklists {
-  items: Checklist.ChecklistItem[];
+  items: Item[];
   add: Checklist.AddChecklistItemFn;
   delete: Checklist.DeleteChecklistItemFn;
   update: Checklist.UpdateChecklistItemFn;
@@ -15,258 +13,106 @@ interface Checklists {
   updateIndex: Checklist.UpdateChecklistItemIndexFn;
 }
 
-interface UseChecklistsParams {
+export function useChecklists({
+  goalId,
+  initialChecklist,
+}: {
   goalId: string;
   initialChecklist: Goals.Check[];
-}
-
-export function useChecklists(params: UseChecklistsParams): Checklists {
-  const hasUserEdits = React.useRef(false);
-  const [items, setItemsBasic] = React.useState<Checklist.ChecklistItem[]>([]);
-
-  React.useEffect(() => {
-    if (hasUserEdits.current) return;
-
-    const sorted = params.initialChecklist.sort((a, b) => a.index - b.index);
-    setItems(sorted.map((check) => ({ ...check, mode: "view" as const })));
-  }, [params.initialChecklist]);
-
-  const setItems = React.useCallback(
-    (newItems: Checklist.ChecklistItem[]) => {
-      PageCache.invalidate(pageCacheKey(params.goalId));
-      hasUserEdits.current = true;
-      setItemsBasic(newItems);
-    },
-    [params.goalId],
+}): Checklists {
+  const serverItems = useMemo(
+    () =>
+      normalize(
+        initialChecklist
+          .slice()
+          .sort((a, b) => a.index - b.index)
+          .map((item) => ({ ...item, mode: "view" as const })),
+      ),
+    [initialChecklist],
   );
+  const { value: items, run } = useOptimisticGoalState(goalId, serverItems);
+  const createdIds = useMemo(() => new Map<string, string>(), [goalId]);
+  const resolveId = (id: string) => createdIds.get(id) ?? id;
+  const create = Goals.useCreateGoalCheck();
+  const remove = Goals.useDeleteGoalCheck();
+  const update = Goals.useUpdateGoalCheck();
+  const toggle = Goals.useToggleGoalCheck();
+  const reorder = Goals.useUpdateGoalCheckIndex();
+
+  const add: Checklists["add"] = async ({ name }) => {
+    const temporary = {
+      id: `temp-${crypto.randomUUID()}`,
+      name,
+      completed: false,
+      index: items.length,
+      mode: "view" as const,
+    };
+    try {
+      const id = await run(
+        (items) => normalize([...items, temporary]),
+        async () => {
+          const result = await create.mutateAsync({ goalId, name });
+          if (!result.checkId) throw new Error("Missing checklist item id from server response");
+          createdIds.set(temporary.id, result.checkId);
+          return result.checkId;
+        },
+        (items, id) => normalize([...items, { ...temporary, id }]),
+      );
+      return { id, success: true };
+    } catch (error) {
+      console.error("Failed to add checklist item:", error);
+      showErrorToast("Something went wrong", "Failed to add checklist item");
+      return { id: "", success: false };
+    }
+  };
+
+  const save = async (change: (items: Item[]) => Item[], request: () => Promise<unknown>, message: string) => {
+    try {
+      await run(change, request);
+      return true;
+    } catch (error) {
+      console.error(message, error);
+      showErrorToast("Something went wrong", message);
+      return false;
+    }
+  };
 
   return {
-    items: items,
-    add: useAddHandler({ goalId: params.goalId, items, setItems }),
-    delete: useDeleteHandler({ goalId: params.goalId, items, setItems }),
-    update: useUpdateHandler({ items, setItems, params }),
-    toggle: useToggleHandler({ items, setItems, params }),
-    updateIndex: useUpdateIndexHandler({ items, setItems, params }),
+    items,
+    add,
+    delete: (id) =>
+      save(
+        (items) => normalize(items.filter((item) => item.id !== resolveId(id))),
+        () => remove.mutateAsync({ goalId, checkId: resolveId(id) }),
+        "Failed to delete checklist item",
+      ),
+    update: ({ itemId, name }) =>
+      save(
+        (items) => items.map((item) => (item.id === resolveId(itemId) ? { ...item, name } : item)),
+        () => update.mutateAsync({ goalId, checkId: resolveId(itemId), name }),
+        "Failed to update checklist item",
+      ),
+    toggle: (id) =>
+      save(
+        (items) => items.map((item) => (item.id === resolveId(id) ? { ...item, completed: !item.completed } : item)),
+        () => toggle.mutateAsync({ goalId, checkId: resolveId(id) }),
+        "Failed to toggle checklist item",
+      ),
+    updateIndex: (id, index) =>
+      save(
+        (items) => {
+          const item = items.find((item) => item.id === resolveId(id));
+          if (!item) return items;
+          const reordered = items.filter((item) => item.id !== resolveId(id));
+          reordered.splice(index, 0, item);
+          return normalize(reordered);
+        },
+        () => reorder.mutateAsync({ goalId, checkId: resolveId(id), index }),
+        "Failed to update checklist item index",
+      ),
   };
 }
 
-interface UseAddHandlerParams {
-  goalId: string;
-  items: Checklist.ChecklistItem[];
-  setItems: React.Dispatch<React.SetStateAction<Checklist.ChecklistItem[]>>;
-}
-
-function useAddHandler(params: UseAddHandlerParams): Checklist.AddChecklistItemFn {
-  return React.useCallback(
-    async function ({ name }: { name: string }): Promise<{ id: string; success: boolean }> {
-      const tempId = newTempId();
-      const item = {
-        id: tempId,
-        name,
-        completed: false,
-        index: params.items.length,
-        mode: "view" as const,
-      };
-
-      params.setItems((prev) => [...prev, item]);
-
-      Api.goals
-        .createCheck({ goalId: params.goalId, name: name })
-        .then((res) => {
-          if (res.success) {
-            params.setItems((prev) => prev.map((i) => (i.id === tempId ? { ...i, id: res.checkId } : i)));
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to add checklist item:", error);
-          showErrorToast("Something went wrong", "Failed to add checklist item");
-          params.setItems((prev) => prev.filter((i) => i.id !== tempId));
-        });
-
-      return { id: tempId, success: true };
-    },
-    [params.goalId, params.items.length],
-  );
-}
-
-interface UseDeleteHandlerParams {
-  goalId: string;
-  items: Checklist.ChecklistItem[];
-  setItems: React.Dispatch<React.SetStateAction<Checklist.ChecklistItem[]>>;
-}
-
-function useDeleteHandler(params: UseDeleteHandlerParams): Checklist.DeleteChecklistItemFn {
-  return React.useCallback(
-    async function (id: string): Promise<boolean> {
-      let deletedItem: Checklist.ChecklistItem | undefined;
-      params.setItems((prev) => {
-        const filtered = prev.filter((item) => {
-          if (item.id === id) deletedItem = item;
-          return item.id !== id;
-        });
-        return filtered;
-      });
-
-      try {
-        await Api.goals.deleteCheck({ goalId: params.goalId, checkId: id });
-      } catch (error) {
-        console.error("Failed to delete checklist item:", error);
-        showErrorToast("Something went wrong", "Failed to delete checklist item");
-        // Revert deletion if API call fails
-        if (deletedItem) {
-          params.setItems((prev) => {
-            // Insert back at the original index
-            const newItems = [...prev];
-            newItems.splice(deletedItem!.index, 0, deletedItem!);
-            return newItems.map((item, i) => ({ ...item, index: i }));
-          });
-        }
-        return false;
-      }
-
-      return true;
-    },
-    [params.goalId, params.setItems],
-  );
-}
-
-interface UseToggleHandlerParams {
-  items: Checklist.ChecklistItem[];
-  setItems: React.Dispatch<React.SetStateAction<Checklist.ChecklistItem[]>>;
-  params: UseChecklistsParams;
-}
-
-function useUpdateHandler(params: UseToggleHandlerParams): Checklist.UpdateChecklistItemFn {
-  return React.useCallback(
-    async function (inputs: { itemId: string; name: string }): Promise<boolean> {
-      let previousName: string | undefined;
-
-      params.setItems((prev) =>
-        prev.map((item) => {
-          if (item.id === inputs.itemId) {
-            previousName = item.name;
-            return { ...item, name: inputs.name };
-          }
-          return item;
-        }),
-      );
-
-      try {
-        await Api.goals.updateCheck({
-          goalId: params.params.goalId,
-          checkId: inputs.itemId,
-          name: inputs.name,
-        });
-      } catch (error) {
-        console.error("Failed to update checklist item:", error);
-        showErrorToast("Something went wrong", "Failed to update checklist item");
-        // Revert the change
-        if (previousName !== undefined) {
-          params.setItems((prev) =>
-            prev.map((item) => (item.id === inputs.itemId ? { ...item, name: previousName! } : item)),
-          );
-        }
-        return false;
-      }
-
-      return true;
-    },
-    [params.setItems, params.params.goalId],
-  );
-}
-
-interface UseToggleHandlerParams {
-  items: Checklist.ChecklistItem[];
-  setItems: React.Dispatch<React.SetStateAction<Checklist.ChecklistItem[]>>;
-  params: UseChecklistsParams;
-}
-
-function useUpdateIndexHandler(params: UseToggleHandlerParams): Checklist.UpdateChecklistItemIndexFn {
-  return React.useCallback(
-    async function (id: string, index: number): Promise<boolean> {
-      let previousIndex: number | undefined;
-
-      params.setItems((prev) => {
-        const item = prev.find((item) => item.id === id);
-        if (!item) return prev;
-
-        previousIndex = item.index;
-
-        const newItems = prev.filter((item) => item.id !== id);
-        item.index = index;
-        newItems.splice(index, 0, item);
-
-        return newItems.map((item, i) => ({ ...item, index: i }));
-      });
-
-      try {
-        await Api.goals.updateCheckIndex({ goalId: params.params.goalId, checkId: id, index });
-      } catch (error) {
-        console.error("Failed to update checklist item index:", error);
-        showErrorToast("Something went wrong", "Failed to update checklist item index");
-        // Revert the change
-        if (previousIndex !== undefined) {
-          params.setItems((prev) => {
-            const item = prev.find((item) => item.id === id);
-            if (!item) return prev;
-
-            const newItems = prev.filter((item) => item.id !== id);
-            item.index = previousIndex!;
-            newItems.splice(previousIndex!, 0, item);
-
-            return newItems.map((item, i) => ({ ...item, index: i }));
-          });
-        }
-        return false;
-      }
-
-      return true;
-    },
-    [params.setItems, params.params.goalId],
-  );
-}
-
-interface UseToggleHandlerParams {
-  items: Checklist.ChecklistItem[];
-  setItems: React.Dispatch<React.SetStateAction<Checklist.ChecklistItem[]>>;
-  params: UseChecklistsParams;
-}
-
-function useToggleHandler(params: UseToggleHandlerParams): Checklist.ToggleChecklistItemFn {
-  return React.useCallback(
-    async function (id: string): Promise<boolean> {
-      let previousCompleted: boolean | undefined;
-
-      params.setItems((prev) =>
-        prev.map((item) => {
-          if (item.id === id) {
-            previousCompleted = item.completed;
-            return { ...item, completed: !item.completed };
-          }
-          return item;
-        }),
-      );
-
-      try {
-        await Api.goals.toggleCheck({ goalId: params.params.goalId, checkId: id });
-      } catch (error) {
-        console.error("Failed to toggle checklist item:", error);
-        showErrorToast("Something went wrong", "Failed to toggle checklist item");
-        // Revert the change
-        if (previousCompleted !== undefined) {
-          params.setItems((prev) =>
-            prev.map((item) => (item.id === id ? { ...item, completed: previousCompleted! } : item)),
-          );
-        }
-        return false;
-      }
-
-      return true;
-    },
-    [params.setItems, params.params.goalId],
-  );
-}
-
-function newTempId(): string {
-  return `temp-${Math.random().toString(36).substring(2, 9)}`;
+function normalize(items: Item[]): Item[] {
+  return items.map((item, index) => ({ ...item, index }));
 }

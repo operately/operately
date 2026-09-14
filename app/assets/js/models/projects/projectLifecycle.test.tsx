@@ -22,10 +22,15 @@ describe("project lifecycle queries", () => {
   it("invalidates project detail, list, and search queries after a lifecycle change", async () => {
     const queryClient = createQueryClient();
     const lifecycleKeys = seedProjectQueries(queryClient);
+    const goalChildrenKeys = [
+      Api.companies.getWorkMapQueryKey({ parentGoalId: "old-parent" }),
+      Api.companies.getWorkMapQueryKey({ parentGoalId: "new-parent" }),
+    ];
+    goalChildrenKeys.forEach((key) => queryClient.setQueryData(key, {}));
 
     await invalidateProjectLifecycleQueries(queryClient);
 
-    lifecycleKeys.forEach((queryKey) => {
+    [...lifecycleKeys, ...goalChildrenKeys].forEach((queryKey) => {
       expect(queryClient.getQueryState(queryKey)?.isInvalidated).toBe(true);
     });
 
