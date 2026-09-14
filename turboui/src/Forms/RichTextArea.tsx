@@ -67,7 +67,7 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
     placeholder: props.placeholder,
     className: contentClassName(props),
     handlers: props.richTextHandlers,
-    localDraft: { key: localDraftKey(props.field) },
+    localDraft: localDraftOptions(props.field, props.localDraftKey),
     onBlur: ({ json }) => {
       skipNextContentSync.current = true;
       setValue(json);
@@ -139,7 +139,24 @@ function EditableContent(props: ResolvedRichTextAreaProps & { error: boolean }) 
   );
 }
 
-function localDraftKey(field: string): string | undefined {
+function localDraftOptions(field: string, localDraftKey?: string | null) {
+  if (localDraftKey === null) {
+    return { enabled: false };
+  }
+
+  if (localDraftKey !== undefined) {
+    return { key: localDraftKey };
+  }
+
+  const defaultKey = defaultLocalDraftKey(field);
+  if (!defaultKey) {
+    return { enabled: false };
+  }
+
+  return { key: defaultKey };
+}
+
+function defaultLocalDraftKey(field: string): string | undefined {
   if (typeof window === "undefined") {
     return undefined;
   }
@@ -147,6 +164,11 @@ function localDraftKey(field: string): string | undefined {
   return `form:${window.location.pathname}:${field}`;
 }
 
-function contentClassName(props: Pick<ResolvedRichTextAreaProps, "horizontalPadding" | "verticalPadding" | "fontSize" | "fontWeight" | "height">) {
+function contentClassName(
+  props: Pick<
+    ResolvedRichTextAreaProps,
+    "horizontalPadding" | "verticalPadding" | "fontSize" | "fontWeight" | "height"
+  >,
+) {
   return classNames(props.horizontalPadding, props.verticalPadding, props.fontSize, props.fontWeight, props.height);
 }
