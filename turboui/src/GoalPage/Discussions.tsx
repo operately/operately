@@ -1,15 +1,23 @@
 import React from "react";
 
 import { GoalPage } from ".";
+import { ContentListState } from "../ContentListState";
 import { PrimaryButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";
 
 export function Discussions(props: GoalPage.State) {
-  if (props.discussions.length === 0 && !props.permissions.canEdit && props.state !== "closed") return null;
+  if (
+    props.discussions.length === 0 &&
+    !props.permissions.canEdit &&
+    props.state !== "closed" &&
+    !props.discussionsLoading &&
+    !props.discussionsError
+  )
+    return null;
 
   const showNewDiscussionButton = props.permissions.canEdit && props.state !== "closed";
-  const isZeroState = props.discussions.length === 0;
+  const isZeroState = props.discussions.length === 0 && !props.discussionsError;
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
@@ -26,9 +34,19 @@ export function Discussions(props: GoalPage.State) {
       </div>
 
       <div className="mt-8">
-        {isZeroState && props.state === "closed" && <DiscussionsZeroStateClosed />}
-        {isZeroState && props.state !== "closed" && <DiscussionsZeroState />}
-        {!isZeroState && <DiscussionsList props={props} />}
+        <ContentListState
+          name="discussions"
+          loading={props.discussionsLoading}
+          error={props.discussionsError}
+          onRetry={props.onRetryDiscussions}
+        >
+          {isZeroState && (
+            <div data-test-id="discussions-empty-state">
+              {props.state === "closed" ? <DiscussionsZeroStateClosed /> : <DiscussionsZeroState />}
+            </div>
+          )}
+          {!isZeroState && <DiscussionsList props={props} />}
+        </ContentListState>
       </div>
     </div>
   );
@@ -59,10 +77,5 @@ function DiscussionsZeroState() {
 }
 
 function DiscussionsZeroStateClosed() {
-  return (
-    <InfoCallout
-      message="No discussions"
-      description="This goal is closed and has no discussions."
-    />
-  );
+  return <InfoCallout message="No discussions" description="This goal is closed and has no discussions." />;
 }

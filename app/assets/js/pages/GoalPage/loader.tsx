@@ -1,12 +1,14 @@
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Api from "@/api";
+import { match } from "ts-pattern";
+import { goalContentInputs } from "./contentQueries";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { invalidateGoalPageQueries } from "@/models/goals/goalPageQueries";
 import { prefetchResourceHubDocs, resourceHubDocsInputs } from "@/models/resourceHubs/docsQueries";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({ params, request }: { params: { id: string }; request?: Request }) {
   const goalInput = {
     id: params.id,
     includeSpace: true,
@@ -21,27 +23,34 @@ export async function loader({ params }: { params: { id: string } }) {
     includeChecklist: true,
     includeResourceHub: true,
   };
-  const workMapInput = { parentGoalId: params.id, includeAssignees: true };
-  const checkInsInput = { goalId: params.id };
-  const discussionsInput = { goalId: params.id };
   const childrenInput = { id: params.id };
+  const contentInputs = goalContentInputs(params.id);
+  const tab = (request ? new URL(request.url).searchParams.get("tab") : null) || "overview";
+
+  const selectedContent = match(tab)
+    .with("overview", () => Api.companies.getWorkMapQuery(contentInputs.workMapInput))
+    .with("check-ins", () => Api.goals.listCheckInsQuery(contentInputs.checkInsInput))
+    .with("discussions", () => Api.goals.listDiscussionsQuery(contentInputs.discussionsInput))
+    .otherwise(() => Promise.resolve());
 
   const core = Api.goals.getQuery(goalInput).then(async ({ goal }) => {
     if (!goal) throw new Error(`Goal data is unavailable for goal "${params.id}"`);
 
-    // Docs errors belong to the Docs & Files tab, not the entire goal page.
-    await prefetchResourceHubDocs(resourceHubDocsInputs(goal.resourceHub?.id)).catch(() => undefined);
+    if (tab !== "docs-and-files") return;
+
+    if (!goal.resourceHub?.id) {
+      // The page falls back to Overview when docs are unavailable.
+      await Api.companies.getWorkMapQuery(contentInputs.workMapInput);
+      return;
+    }
+
+    // Keep docs errors recoverable inside the tab.
+    await prefetchResourceHubDocs(resourceHubDocsInputs(goal.resourceHub.id)).catch(() => undefined);
   });
 
-  await Promise.all([
-    core,
-    Api.companies.getWorkMapQuery(workMapInput),
-    Api.goals.listCheckInsQuery(checkInsInput),
-    Api.goals.listDiscussionsQuery(discussionsInput),
-    Api.goals.countChildrenQuery(childrenInput),
-  ]);
+  await Promise.all([core, Api.goals.countChildrenQuery(childrenInput), selectedContent]);
 
-  return { goalInput, workMapInput, checkInsInput, discussionsInput, childrenInput };
+  return { goalInput, childrenInput, ...contentInputs };
 }
 
 type LoaderInputs = Awaited<ReturnType<typeof loader>>;
@@ -49,9 +58,6 @@ type LoaderInputs = Awaited<ReturnType<typeof loader>>;
 export function useLoadedData() {
   const inputs = Pages.useLoadedData<LoaderInputs>();
   const goalQuery = useLoadedQuery(Api.goals.getQueryOptions(inputs.goalInput));
-  const workMapQuery = useLoadedQuery(Api.companies.getWorkMapQueryOptions(inputs.workMapInput));
-  const checkInsQuery = useLoadedQuery(Api.goals.listCheckInsQueryOptions(inputs.checkInsInput));
-  const discussionsQuery = useLoadedQuery(Api.goals.listDiscussionsQueryOptions(inputs.discussionsInput));
   const childrenQuery = useLoadedQuery(Api.goals.countChildrenQueryOptions(inputs.childrenInput));
 
   const data = useMemo(() => {
@@ -61,32 +67,17 @@ export function useLoadedData() {
       throw new Error(`Goal data is unavailable for goal "${inputs.goalInput.id}"`);
     }
 
-    if (
-      !workMapQuery.data?.workMap ||
-      !checkInsQuery.data?.checkIns ||
-      !discussionsQuery.data?.discussions ||
-      !childrenQuery.data?.childrenCount
-    ) {
+    if (!childrenQuery.data?.childrenCount) {
       throw new Error(`Goal content is unavailable for goal "${inputs.goalInput.id}"`);
     }
 
     return {
       goal: { ...goal, permissions: goal.permissions, privacy: goal.privacy, accessLevels: goal.accessLevels },
-      workMap: workMapQuery.data.workMap,
-      checkIns: checkInsQuery.data.checkIns,
-      discussions: discussionsQuery.data.discussions,
       childrenCount: childrenQuery.data.childrenCount,
     };
-  }, [
-    goalQuery.data,
-    workMapQuery.data,
-    checkInsQuery.data,
-    discussionsQuery.data,
-    childrenQuery.data,
-    inputs.goalInput.id,
-  ]);
+  }, [goalQuery.data, childrenQuery.data, inputs.goalInput.id]);
 
-  return { data };
+  return { ...inputs, data };
 }
 
 export function useRefresh() {

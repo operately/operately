@@ -130,6 +130,15 @@ export namespace GoalPage {
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
     discussions: Discussion[];
+    checkInsLoading?: boolean;
+    checkInsError?: boolean;
+    onRetryCheckIns?: () => void;
+    discussionsLoading?: boolean;
+    discussionsError?: boolean;
+    onRetryDiscussions?: () => void;
+    relatedWorkLoading?: boolean;
+    relatedWorkError?: boolean;
+    onRetryRelatedWork?: () => void;
     childrenCount: {
       checkInsCount: number;
       discussionsCount: number;
