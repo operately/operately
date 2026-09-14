@@ -127,6 +127,40 @@ defmodule Operately.Support.Features.GoalAccessSteps do
     end)
   end
 
+  step :assert_company_member_has_inherited_access, ctx do
+    ctx
+    |> UI.click(testid: "show-all-other-people")
+    |> UI.assert_text(ctx.member.full_name, testid: "goal-other-people-list")
+  end
+
+  step :remove_general_company_access, ctx do
+    ctx
+    |> UI.click(css: "a[href$='/edit/permissions']")
+    |> UI.select(testid: "access-companymembers", option: "No Access")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-access-management-page")
+  end
+
+  step :assert_company_member_lost_inherited_access, ctx do
+    ctx =
+      if Wallaby.Browser.has?(ctx.session, UI.query(testid: "show-all-other-people")) do
+        UI.click(ctx, testid: "show-all-other-people")
+      else
+        ctx
+      end
+
+    ctx = UI.refute_text(ctx, ctx.member.full_name)
+
+    attempts(ctx, 3, fn ->
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+      binding = Access.get_binding(context_id: context.id, group_id: group.id)
+      assert binding.access_level == Binding.no_access()
+    end)
+
+    ctx
+  end
+
   #
   # Helpers
   #

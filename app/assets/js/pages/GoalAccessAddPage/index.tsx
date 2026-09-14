@@ -4,7 +4,9 @@ import * as People from "@/models/people";
 import * as Goals from "@/models/goals";
 import * as React from "react";
 
-import Api from "@/api";
+import { loader, useLoadedData } from "./loader";
+import { PageCache } from "@/routes/PageCache";
+import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { Forms, IconPlus, IconX, SecondaryButton } from "turboui";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
@@ -14,24 +16,6 @@ import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router";
 
 export default { name: "GoalAccessAddPage", loader, Page } as PageModule;
-
-interface LoaderResult {
-  goal: Goals.Goal;
-  accessMembers: People.Person[];
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  const [goal, accessMembers] = await Promise.all([
-    Goals.getGoal({
-      id: params.goalId,
-      includeChampion: true,
-      includeReviewer: true,
-    }).then((res) => res.goal),
-    Api.goals.listAccessMembers({ goalId: params.goalId }).then((res) => res.people ?? []),
-  ]);
-
-  return { goal, accessMembers };
-}
 
 interface MemberField {
   key: number;
@@ -48,23 +32,24 @@ function newMember() {
 }
 
 function Page() {
-  const { goal, accessMembers } = Pages.useLoadedData<LoaderResult>();
+  const { goal, accessMembers } = useLoadedData();
   const paths = usePaths();
   const goalName = goal.name ?? "Goal";
   const backPath = paths.goalAccessManagementPath(goal.id);
   const navigate = useNavigate();
-  const [add] = Api.goals.useCreateAccessMembers();
+  const add = Goals.useCreateGoalAccessMembers();
 
   const form = Forms.useForm({
     fields: {
       members: [newMember()],
     },
     submit: async () => {
-      await add({
+      await add.mutateAsync({
         goalId: goal.id,
         members: uniqueMemberList(form.values.members, accessMembers),
       });
 
+      PageCache.invalidate(goalPageCacheKey(goal.id));
       navigate(backPath);
     },
   });
