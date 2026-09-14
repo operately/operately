@@ -3,7 +3,9 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 
-import Api from "@/api";
+import { loader, useLoadedData } from "./loader";
+import { PageCache } from "@/routes/PageCache";
+import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import {
   applyAccessLevelConstraints,
   initialAccessLevels,
@@ -12,27 +14,12 @@ import {
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { assertPresent } from "@/utils/assertions";
 import { Forms } from "turboui";
 
 export default { name: "GoalEditAccessLevelsPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  goal: Goals.Goal;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  const goal = await Goals.getGoal({
-    id: params.goalId,
-    includeAccessLevels: true,
-    includeSpace: true,
-  }).then((data) => data.goal!);
-
-  return { goal };
-}
-
 function Page() {
-  const { goal } = Pages.useLoadedData<LoaderResult>();
+  const { goal } = useLoadedData();
 
   return (
     <Pages.Page title={["Edit General Access", goal.name ?? "Goal"]}>
@@ -49,7 +36,7 @@ function Page() {
 
 function Navigation() {
   const paths = usePaths();
-  const { goal } = Pages.useLoadedData<LoaderResult>();
+  const { goal } = useLoadedData();
 
   const items: Paper.NavigationItem[] = [];
 
@@ -67,12 +54,10 @@ function Navigation() {
 
 function Form() {
   const paths = usePaths();
-  const { goal } = Pages.useLoadedData<LoaderResult>();
-
-  assertPresent(goal.accessLevels, "Goal access levels must be present");
+  const { goal } = useLoadedData();
 
   const navigateBack = useNavigateTo(paths.goalAccessManagementPath(goal.id));
-  const [edit] = Api.goals.useUpdateAccessLevels();
+  const edit = Goals.useUpdateGoalAccessLevels();
   const showSpaceAccess = Boolean(goal.space);
 
   const form = Forms.useForm({
@@ -83,7 +68,7 @@ function Form() {
       newValues.access = applyAccessLevelConstraints(newValues.access, UNRESTRICTED_PARENT_ACCESS);
     },
     submit: async () => {
-      await edit({
+      await edit.mutateAsync({
         goalId: goal.id,
         accessLevels: {
           __typename: "access_levels",
@@ -93,6 +78,7 @@ function Form() {
         },
       });
 
+      PageCache.invalidate(goalPageCacheKey(goal.id));
       navigateBack();
     },
     cancel: navigateBack,

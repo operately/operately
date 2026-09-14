@@ -18,6 +18,13 @@ export {
 
 export { useCreateGoalDiscussion, useEditGoalDiscussion } from "./goalDiscussionLifecycle";
 
+export {
+  useCreateGoalAccessMembers,
+  useUpdateGoalAccessMember,
+  useDeleteGoalAccessMember,
+  useUpdateGoalAccessLevels,
+} from "./goalAccessLifecycle";
+
 export const getGoal = Api.goals.get;
 
 export function targetProgressPercentage(

@@ -39,6 +39,15 @@ defmodule Operately.Features.GoalAccessManagementTest do
     |> Steps.assert_access_member_removed()
   end
 
+  feature "changing general access refreshes inherited access after returning to management", ctx do
+    ctx
+    |> Steps.given_company_member_exists()
+    |> Steps.visit_goal_access_management_page()
+    |> Steps.assert_company_member_has_inherited_access()
+    |> Steps.remove_general_company_access()
+    |> Steps.assert_company_member_lost_inherited_access()
+  end
+
   describe "permissions" do
     setup ctx do
       Steps.setup_with_edit_access(ctx)
