@@ -214,7 +214,6 @@ function ProjectPageHarness({
             }),
           ],
           draftsPath: `/resource-hubs/${resourceHub.id}/drafts`,
-          getDraftEditPath: (node) => `/resource-hubs/documents/${node.document?.id}/edit`,
         },
         newFileModals: sharedProps.newFileModals,
         addFileWidgetProps: sharedProps.addFileWidgetProps,
@@ -315,7 +314,7 @@ describe("ProjectPage", () => {
   test("renders the shared resource hub content in the docs and files tab", () => {
     render(<ProjectPageHarness includeDocsAndFiles initialEntry="/projects/project-1?tab=docs-and-files" />);
 
-    expect(screen.getByText("Continue writing your draft document...")).toBeInTheDocument();
+    expect(screen.getByText("Your drafts (1)")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sort by Name" })).toBeInTheDocument();
     expect(screen.getByText("Quarterly Plan")).toBeInTheDocument();
     expect(screen.getByText("Roadmap Screenshot")).toBeInTheDocument();
@@ -372,6 +371,6 @@ describe("ProjectPage", () => {
     render(<ProjectPageHarness initialEntry="/projects/project-1?tab=docs-and-files" />);
 
     expect(screen.getByText("Description")).toBeInTheDocument();
-    expect(screen.queryByText("Continue writing your draft document...")).not.toBeInTheDocument();
+    expect(screen.queryByText("Your drafts (1)")).not.toBeInTheDocument();
   });
 });

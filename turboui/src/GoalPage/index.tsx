@@ -136,6 +136,10 @@ export namespace GoalPage {
       docsAndFilesCount: number;
     };
     docsAndFiles?: PageDocsAndFiles;
+    docsAndFilesAvailable?: boolean;
+    docsAndFilesLoading?: boolean;
+    docsAndFilesError?: boolean;
+    onRetryDocsAndFiles?: () => void;
     currentUser?: Person | null;
     status: BadgeStatus;
     state: "active" | "closed";
@@ -229,11 +233,12 @@ export function GoalPage(props: GoalPage.Props) {
       label: "Docs & Files",
       icon: <IconClipboardText size={14} />,
       count: props.childrenCount.docsAndFilesCount,
-      hidden: !state.docsAndFiles,
+      hidden: !state.docsAndFiles && !state.docsAndFilesAvailable,
     },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
-  const activeTab = !state.docsAndFiles && tabs.active === "docs-and-files" ? "overview" : tabs.active;
+  const activeTab =
+    !state.docsAndFiles && !state.docsAndFilesAvailable && tabs.active === "docs-and-files" ? "overview" : tabs.active;
 
   return (
     <>
@@ -252,10 +257,13 @@ export function GoalPage(props: GoalPage.Props) {
           {activeTab === "overview" && <Overview {...state} />}
           {activeTab === "check-ins" && <CheckIns {...state} />}
           {activeTab === "discussions" && <Discussions {...state} />}
-          {activeTab === "docs-and-files" && state.docsAndFiles && (
+          {activeTab === "docs-and-files" && (
             <PageDocsAndFilesTab
               docsAndFiles={state.docsAndFiles}
               formattedTimePreferences={state.formattedTimePreferences}
+              loading={state.docsAndFilesLoading}
+              error={state.docsAndFilesError}
+              onRetry={state.onRetryDocsAndFiles}
             />
           )}
           {activeTab === "activity" && <Activity {...state} />}

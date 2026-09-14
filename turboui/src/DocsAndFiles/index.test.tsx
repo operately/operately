@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import { defaultFormattedTimePreferences } from "../FormattedTime";
-import { DocsAndFilesTab } from ".";
+import { DocsAndFilesDraftPrompt, DocsAndFilesTab } from ".";
 
 describe("DocsAndFilesTab", () => {
   test("renders compact author and update metadata for a document", () => {
@@ -38,5 +38,22 @@ describe("DocsAndFilesTab", () => {
     expect(screen.getByText("DOC")).toBeInTheDocument();
     expect(screen.getByText("Plan summary")).not.toHaveClass("hidden");
     expect(screen.getByText("Plan summary")).toHaveClass("basis-full");
+  });
+});
+
+describe("DocsAndFilesDraftPrompt", () => {
+  test.each([0, 1, 3])("shows the expected draft label and list destination for %i drafts", (count) => {
+    const { container } = render(
+      <MemoryRouter>
+        <DocsAndFilesDraftPrompt prompt={{ count, link: "/drafts" }} />
+      </MemoryRouter>,
+    );
+    if (count === 0) {
+      expect(container).toBeEmptyDOMElement();
+    } else {
+      const link = screen.getByRole("link");
+      expect(link).toHaveAttribute("href", "/drafts");
+      expect(link).toHaveAccessibleName(`Your drafts (${count})`);
+    }
   });
 });

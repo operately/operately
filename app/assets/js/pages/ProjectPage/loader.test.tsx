@@ -9,7 +9,7 @@ import axios from "axios";
 import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
 import { loader, projectQueryInput, useLoadedData } from "./loader";
-import { projectDocsInputs, prefetchProjectDocs } from "./docsQueries";
+import { resourceHubDocsInputs, prefetchResourceHubDocs } from "@/models/resourceHubs/docsQueries";
 
 jest.mock("axios");
 jest.mock("turboui", () => ({}));
@@ -78,7 +78,8 @@ it.each([
   expect(finished).toBe(false);
   expect(requestedPaths()).toContain(path);
   expect(requestedPaths()).not.toContain("/api/v2/projects/get");
-  expect(requestedPaths().filter((p) => p.includes("list_") || p.endsWith("/tasks/list"))).toEqual([path]);
+  const expectedLists = tab === "docs-and-files" ? [path, "/api/v2/resource_hubs/list_drafts"] : [path];
+  expect(requestedPaths().filter((p) => p.includes("list_") || p.endsWith("/tasks/list"))).toEqual(expectedLists);
   finish({ data: {} });
   await pending;
 });
@@ -90,7 +91,7 @@ it.each(["tasks", "check-ins", "discussions", "docs-and-files"])("%s reuses cach
   expect(axios.get).not.toHaveBeenCalled();
 });
 
-it("joins in-flight docs queries and awaits both hub and nodes", async () => {
+it("joins in-flight docs queries and awaits hub, nodes, and drafts", async () => {
   const resolvers: Array<() => void> = [];
   jest.mocked(axios.get).mockImplementation((path) =>
     path.includes("/resource_hubs/")
@@ -99,19 +100,22 @@ it("joins in-flight docs queries and awaits both hub and nodes", async () => {
         })
       : Promise.resolve(response(path)),
   );
-  const docs = prefetchProjectDocs(projectDocsInputs("hub-1"));
+  const docs = prefetchResourceHubDocs(resourceHubDocsInputs("hub-1"));
   let finished = false;
   const page = visit("docs-and-files").then(() => {
     finished = true;
   });
   await new Promise(setImmediate);
-  expect(resolvers).toHaveLength(2);
+  expect(resolvers).toHaveLength(3);
   resolvers[0]?.();
   await new Promise(setImmediate);
   expect(finished).toBe(false);
   resolvers[1]?.();
+  await new Promise(setImmediate);
+  expect(finished).toBe(false);
+  resolvers[2]?.();
   await Promise.all([docs, page]);
-  expect(requestedPaths().filter((p) => p.includes("/resource_hubs/"))).toHaveLength(2);
+  expect(requestedPaths().filter((p) => p.includes("/resource_hubs/"))).toHaveLength(3);
 });
 
 it("does not request docs for a project without a resource hub", async () => {

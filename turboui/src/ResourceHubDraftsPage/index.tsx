@@ -1,14 +1,15 @@
 import * as React from "react";
 
+import { Link } from "../Link";
+import type { DraftNodesListProps } from "../ResourceHub/DraftNodesList";
 import { Page } from "../Page";
-import { DraftNodesList, type ResourceHubNode } from "../ResourceHub";
+import { DraftNodesList } from "../ResourceHub";
 
 export namespace ResourceHubDraftsPage {
-  export interface Props {
+  export interface Props extends DraftNodesListProps {
     title: Page.Props["title"];
     navigation: NonNullable<Page.Props["navigation"]>;
-    nodes: ResourceHubNode[];
-    getNodePath: (node: ResourceHubNode) => string;
+    resourceHubPath: string;
     actions?: React.ReactNode;
   }
 }
@@ -18,7 +19,16 @@ export function ResourceHubDraftsPage(props: ResourceHubDraftsPage.Props) {
     <Page title={props.title} size="large" navigation={props.navigation}>
       <div className="min-h-[75vh] px-4 sm:px-12 py-10">
         <DraftsHeader actions={props.actions} />
-        <DraftNodesList nodes={props.nodes} getNodePath={props.getNodePath} />
+        {props.nodes.length === 0 ? (
+          <div className="text-center py-12" data-test-id="drafts-empty">
+            <p>You don’t have any drafts in these Docs & Files.</p>
+            <Link to={props.resourceHubPath} className="mt-3 inline-block">
+              Back to Docs & Files
+            </Link>
+          </div>
+        ) : (
+          <DraftNodesList {...props} />
+        )}
       </div>
     </Page>
   );

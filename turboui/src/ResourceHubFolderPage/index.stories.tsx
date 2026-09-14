@@ -93,6 +93,7 @@ function StoryPage({ empty = false }: { empty?: boolean }) {
     <ResourceHubFolderPage
       {...sharedProps}
       title={folder.name ?? "Folder"}
+      drafts={{ nodes: [], draftsPath: `/resource-hubs/${resourceHub.id}/drafts` }}
       folder={folder}
       renameFolder={{
         onRename: async (_id, name) => {

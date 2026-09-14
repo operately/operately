@@ -1,7 +1,7 @@
 import React from "react";
 
 import { ProjectPage } from ".";
-import { ContentListState } from "./ContentListState";
+import { ContentListState } from "../ContentListState";
 import { PrimaryButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";

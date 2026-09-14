@@ -3,7 +3,7 @@ import React from "react";
 import { TaskBoard, TasksBoardView, useMilestoneFilter, useTaskDisplayMode } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 
-import { ContentListState } from "./ContentListState";
+import { ContentListState } from "../ContentListState";
 
 import type { ProjectPage } from "./index";
 

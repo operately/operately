@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
@@ -25,11 +25,7 @@ import {
   useMockSharedListPageProps,
 } from "../ResourceHubPage/mockData";
 
-function ResourceHubFolderPageHarness({
-  canRenameFolder,
-}: {
-  canRenameFolder: boolean;
-}) {
+function ResourceHubFolderPageHarness({ canRenameFolder }: { canRenameFolder: boolean }) {
   const [resourceHub] = React.useState(() => createMockResourceHub());
   const [folder, setFolder] = React.useState(() =>
     createMockFolder({
@@ -61,6 +57,7 @@ function ResourceHubFolderPageHarness({
       <ResourceHubFolderPage
         {...sharedProps}
         title={folder.name ?? "Folder"}
+        drafts={{ nodes: [], draftsPath: `/resource-hubs/${resourceHub.id}/drafts` }}
         folder={folder}
         renameFolder={{
           onRename: async (_id, name) => {
@@ -74,10 +71,10 @@ function ResourceHubFolderPageHarness({
 }
 
 describe("ResourceHubFolderPage", () => {
-  test("does not render drafts and exposes rename when permitted", () => {
+  test("hides the drafts link at zero and exposes rename when permitted", () => {
     const { container } = render(<ResourceHubFolderPageHarness canRenameFolder />);
 
-    expect(screen.queryByText(/Continue writing your draft/i)).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="continue-editing-draft"]')).not.toBeInTheDocument();
     expect(container.querySelector('[data-test-id="options-button"]')).toBeInTheDocument();
   });
 
@@ -85,6 +82,6 @@ describe("ResourceHubFolderPage", () => {
     const { container } = render(<ResourceHubFolderPageHarness canRenameFolder={false} />);
 
     expect(container.querySelector('[data-test-id="options-button"]')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Continue writing your draft/i)).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="continue-editing-draft"]')).not.toBeInTheDocument();
   });
 });

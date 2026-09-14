@@ -1869,6 +1869,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :resource_hub_node, for: Operately.ResourceHubs.Node do
+    field? :path_to_node, list_of(:resource_hub_folder), null: true
     field? :id, :string, null: true
     field? :name, :string, null: true
     field? :type, :string, null: true
