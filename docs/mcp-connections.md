@@ -2,6 +2,8 @@
 
 Operately exposes a hosted remote MCP server so AI clients (ChatGPT, Claude, Cursor, Codex, and other OAuth-capable MCP hosts) can read and optionally write workspace data on your behalf.
 
+For the fastest path, use the in-app instructions at **Account → Security → MCP Connections**. This document covers scopes, security, self-hosting, and clients not listed there.
+
 User-facing product documentation lives in the Operately docs site (separate repo). This page covers scopes, authorization, and connection management for self-hosted operators and developers.
 
 ## OAuth scopes

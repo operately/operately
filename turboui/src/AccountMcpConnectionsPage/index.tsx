@@ -9,6 +9,8 @@ import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
 import { Page } from "../Page";
 import { createTestId } from "../TestableElement";
+import classNames from "../utils/classnames";
+import { CLIENT_INSTRUCTIONS } from "./clientInstructions";
 
 const MCP_DOCS_URL = "https://operately.com/help/mcp-connections/";
 
@@ -58,7 +60,7 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
           </p>
         </header>
 
-        <ServerUrlSection mcpServerUrl={props.mcpServerUrl} />
+        <ConnectClientSection mcpServerUrl={props.mcpServerUrl} />
 
         <section className="mt-10" data-test-id="existing-mcp-connections-section">
           <h2 className="font-bold">Connected Clients</h2>
@@ -84,10 +86,13 @@ export function AccountMcpConnectionsPage(props: AccountMcpConnectionsPage.Props
   );
 }
 
-function ServerUrlSection({ mcpServerUrl }: { mcpServerUrl: string }) {
+function ConnectClientSection({ mcpServerUrl }: { mcpServerUrl: string }) {
+  const [selectedClientId, setSelectedClientId] = React.useState(CLIENT_INSTRUCTIONS[0]!.id);
+  const selectedClient = CLIENT_INSTRUCTIONS.find((client) => client.id === selectedClientId) ?? CLIENT_INSTRUCTIONS[0]!;
+
   return (
-    <section className="mt-8" data-test-id="mcp-server-url-section">
-      <h2 className="font-bold">Server URL</h2>
+    <section className="mt-8" data-test-id="mcp-connect-section">
+      <h2 className="font-bold">Connect a client</h2>
       <p className="text-sm text-content-dimmed mt-1">Use this URL to create a connection in your AI client.</p>
 
       <div className="mt-3 rounded-md border border-stroke-base bg-surface-dimmed px-3 py-2.5 flex items-center gap-3">
@@ -97,8 +102,29 @@ function ServerUrlSection({ mcpServerUrl }: { mcpServerUrl: string }) {
         <CopyToClipboard text={mcpServerUrl} size={18} className="shrink-0" testId="copy-mcp-server-url" />
       </div>
 
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {CLIENT_INSTRUCTIONS.map((client) => (
+          <ClientTab
+            key={client.id}
+            client={client}
+            isActive={client.id === selectedClientId}
+            onSelect={() => setSelectedClientId(client.id)}
+          />
+        ))}
+      </div>
+
+      <ol className="mt-4 space-y-2 text-sm list-decimal list-inside" data-test-id="mcp-client-instructions">
+        {selectedClient.steps.map((step, index) => (
+          <li key={index}>{step}</li>
+        ))}
+      </ol>
+
       <p className="text-sm text-content-dimmed mt-3">
-        More details are in the docs:{" "}
+        You can grant read-only or read/write access when the client asks — you can revoke it anytime below.
+      </p>
+
+      <p className="text-sm text-content-dimmed mt-3">
+        Using a different client, or need more control (scopes, self-hosting, troubleshooting)?{" "}
         <DivLink
           to={MCP_DOCS_URL}
           external
@@ -106,11 +132,41 @@ function ServerUrlSection({ mcpServerUrl }: { mcpServerUrl: string }) {
           className="text-link-base hover:text-link-hover inline-flex items-center gap-1"
           testId="mcp-setup-guides-link"
         >
-          Setup guides
+          See the full setup guide
           <IconExternalLink size={14} />
         </DivLink>
       </p>
     </section>
+  );
+}
+
+function ClientTab({
+  client,
+  isActive,
+  onSelect,
+}: {
+  client: (typeof CLIENT_INSTRUCTIONS)[number];
+  isActive: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={isActive}
+      data-test-id={createTestId("mcp-client-tab", client.id)}
+      className={classNames(
+        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+        isActive
+          ? "border-stroke-base bg-surface-base text-content-base"
+          : "border-transparent bg-surface-dimmed text-content-dimmed hover:text-content-base",
+      )}
+    >
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-accent text-[10px] font-bold text-content-base">
+        {client.badge}
+      </span>
+      {client.name}
+    </button>
   );
 }
 

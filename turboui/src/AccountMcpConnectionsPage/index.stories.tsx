@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { userEvent } from "storybook/test";
 import { AccountMcpConnectionsPage } from "./index";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
@@ -87,5 +88,22 @@ export const EmptyState: Story = {
     securityPath: "#",
     mcpServerUrl: "https://app.operately.com/mcp",
     formattedTimePreferences: defaultFormattedTimePreferences,
+  },
+};
+
+export const ConnectClientCursorSelected: Story = {
+  name: "Connect a client (Cursor selected)",
+  args: {
+    grants: initialGrants,
+    pendingRevokeIds: {},
+    onRevokeGrant: () => {},
+    homePath: "#",
+    securityPath: "#",
+    mcpServerUrl: "https://app.operately.com/mcp",
+    formattedTimePreferences: defaultFormattedTimePreferences,
+  },
+  play: async ({ canvasElement }) => {
+    const cursorTab = canvasElement.querySelector<HTMLButtonElement>('[data-test-id="mcp-client-tab-cursor"]');
+    if (cursorTab) await userEvent.click(cursorTab);
   },
 };
