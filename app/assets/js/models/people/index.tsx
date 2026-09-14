@@ -23,6 +23,10 @@ export function useGetPeople(input: api.PeopleListInput) {
   return useQuery(Api.people.listQueryOptions(input));
 }
 
+export function useGetBinded(input: api.PeopleGetBindedInput) {
+  return useQuery(Api.people.getBindedQueryOptions(input));
+}
+
 export function useGetMe(input: api.PeopleGetMeInput) {
   return useQuery(Api.people.getMeQueryOptions(input));
 }

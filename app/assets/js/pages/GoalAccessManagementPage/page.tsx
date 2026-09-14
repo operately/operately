@@ -5,7 +5,9 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import { AccessOptionsInt } from "@/models/permissions";
 
-import Api from "@/api";
+import * as Goals from "@/models/goals";
+import { PageCache } from "@/routes/PageCache";
+import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PermissionLevels } from "@/features/Permissions";
 import { createTestId } from "@/utils/testid";
@@ -169,22 +171,22 @@ function MemberName({ member, role }: { member: People.Person; role: string | nu
 
 function MemberMenu({ member, role }: { member: People.Person; role: string | null }) {
   const { goal } = useLoadedData();
-  const refresh = Pages.useRefresh();
-  const [update] = Api.goals.useUpdateAccessMember();
-  const [remove] = Api.goals.useDeleteAccessMember();
+  const update = Goals.useUpdateGoalAccessMember();
+  const remove = Goals.useDeleteGoalAccessMember();
 
   const canEdit = goal.permissions?.canEdit ?? false;
   if (!canEdit || role) return null;
-  if (!member.id) return null;
+  const personId = member.id;
+  if (!personId) return null;
 
   const handleUpdate = async (accessLevel: AccessOptionsInt) => {
-    await update({ goalId: goal.id, personId: member.id, accessLevel });
-    refresh();
+    await update.mutateAsync({ goalId: goal.id, personId, accessLevel });
+    PageCache.invalidate(goalPageCacheKey(goal.id));
   };
 
   const handleRemove = async () => {
-    await remove({ goalId: goal.id, personId: member.id });
-    refresh();
+    await remove.mutateAsync({ goalId: goal.id, personId });
+    PageCache.invalidate(goalPageCacheKey(goal.id));
   };
 
   const menuLabel = member.fullName ?? member.id ?? "member";
