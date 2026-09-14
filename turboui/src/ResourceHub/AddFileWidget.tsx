@@ -30,11 +30,34 @@ export interface AddFileWidgetProps {
 
 export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize, onUpload }: AddFileWidgetProps) {
   const { files, setFiles, filesSelected } = useNewFileModalsContext();
+
+  if (!filesSelected || !files) return null;
+
+  return (
+    <AddFileForm
+      files={files}
+      subscriptions={subscriptions}
+      richTextHandlers={richTextHandlers}
+      formatFileSize={formatFileSize}
+      onUpload={onUpload}
+      onClose={() => setFiles(undefined)}
+    />
+  );
+}
+
+function AddFileForm({
+  files,
+  subscriptions,
+  richTextHandlers,
+  formatFileSize,
+  onUpload,
+  onClose,
+}: AddFileWidgetProps & { files: File[]; onClose: () => void }) {
   const [progress, setProgress] = useState(0);
 
   const form = Forms.useForm({
     fields: {
-      items: [],
+      items: files.map((file) => new PayloadItem(file)),
     },
     validate: (addError: (field: string, message: string) => void) => {
       (form.values.items as PayloadItem[]).forEach((item, idx) => {
@@ -43,28 +66,26 @@ export function AddFileWidget({ subscriptions, richTextHandlers, formatFileSize,
         }
       });
     },
-    cancel: () => setFiles(undefined),
+    cancel: onClose,
     submit: async () => {
       const items = (form.values.items as PayloadItem[]).map((item) => item.toUploadItem());
       await onUpload(items, setProgress);
-      setFiles(undefined);
+      onClose();
     },
   });
 
   useEffect(() => {
-    if (form && files) {
-      const initialFileItems = files.map((file) => new PayloadItem(file));
-      form.actions.setValue("items", initialFileItems);
-      setProgress(0);
-    }
+    form.actions.setValue(
+      "items",
+      files.map((file) => new PayloadItem(file)),
+    );
+    setProgress(0);
     // Intentionally omit `form`: it is a new object each render and would reset upload progress.
   }, [files]);
 
   if (form.state === "submitting") {
-    return <UploadingModal progress={progress} isOpen={filesSelected} />;
+    return <UploadingModal progress={progress} isOpen />;
   }
-
-  if (!filesSelected) return null;
 
   return (
     <div className="border border-surface-outline shadow-lg p-8 rounded-lg">
@@ -93,8 +114,13 @@ function Files({
 
   return (
     <div>
-      {items.map((_, i) => (
-        <FileForm key={i} index={i} formatFileSize={formatFileSize} richTextHandlers={richTextHandlers} />
+      {items.map((item, i) => (
+        <FileForm
+          key={`${item.mainFile.name}:${item.mainFile.size}:${item.mainFile.lastModified}:${i}`}
+          index={i}
+          formatFileSize={formatFileSize}
+          richTextHandlers={richTextHandlers}
+        />
       ))}
     </div>
   );
@@ -140,6 +166,7 @@ function FileForm({
             placeholder="Leave notes here..."
             richTextHandlers={richTextHandlers}
             height="min-h-[80px]"
+            localDraftKey={null}
           />
           <FileDetails file={item.mainFile} formatFileSize={formatFileSize} />
         </Forms.FieldGroup>

@@ -28,6 +28,7 @@ const richEditorMockState = {
   localDraftRestored: false,
   restoredDraft: null as unknown,
   fallbackContent: null as unknown,
+  lastLocalDraft: undefined as { key?: string; enabled?: boolean } | undefined,
   editor: {
     commands: { setContent: jest.fn() },
     getJSON: () => richEditorMockState.restoredDraft ?? richEditorMockState.fallbackContent ?? null,
@@ -38,8 +39,9 @@ jest.mock("../RichEditor", () => ({
   Editor: (props: { hideBorder?: boolean; className?: string }) => (
     <div data-testid="rich-editor" data-hide-border={props.hideBorder ? "true" : "false"} className={props.className} />
   ),
-  useEditor: (props: { content?: unknown }) => {
+  useEditor: (props: { content?: unknown; localDraft?: { key?: string; enabled?: boolean } }) => {
     richEditorMockState.fallbackContent = props.content ?? null;
+    richEditorMockState.lastLocalDraft = props.localDraft;
 
     return {
       editor: richEditorMockState.editor,
@@ -799,6 +801,48 @@ describe("Forms", () => {
     }
   });
 
+  test("disables local drafts when localDraftKey is null", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea field="body" localDraftKey={null} richTextHandlers={createMockRichEditorHandlers()} />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(richEditorMockState.lastLocalDraft).toEqual({ enabled: false });
+  });
+
+  test("uses a custom local draft key when provided", () => {
+    function Harness() {
+      const form = useForm({
+        fields: { body: emptyContent() },
+        submit: async () => undefined,
+      });
+
+      return (
+        <Form form={form}>
+          <RichTextArea
+            field="body"
+            localDraftKey="upload:session:description"
+            richTextHandlers={createMockRichEditorHandlers()}
+          />
+        </Form>
+      );
+    }
+
+    render(<Harness />);
+
+    expect(richEditorMockState.lastLocalDraft).toEqual({ key: "upload:session:description" });
+  });
+
   test("shows editor border by default", () => {
     function Harness() {
       const form = useForm({
@@ -1234,7 +1278,11 @@ describe("Forms", () => {
 
 function selectCurrentDate(label: string) {
   const date = new Date();
-  const isoDate = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+  const isoDate = [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 
   fireEvent.click(screen.getByLabelText(label));
 
