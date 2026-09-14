@@ -1,7 +1,5 @@
 import { SubscriptionsState } from "@/models/subscriptions";
 import * as Goals from "@/models/goals";
-import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
-import { PageCache } from "@/routes/PageCache";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router";
 
@@ -38,7 +36,6 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
     messageEditor.clearLocalDraft();
-    PageCache.invalidate(goalPageCacheKey(goal.id));
     navigate(goalPath);
   };
 

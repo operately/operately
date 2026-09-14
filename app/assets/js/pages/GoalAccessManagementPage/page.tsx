@@ -6,8 +6,6 @@ import * as People from "@/models/people";
 import { AccessOptionsInt } from "@/models/permissions";
 
 import * as Goals from "@/models/goals";
-import { PageCache } from "@/routes/PageCache";
-import { pageCacheKey as goalPageCacheKey } from "@/pages/GoalPage";
 import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PermissionLevels } from "@/features/Permissions";
 import { createTestId } from "@/utils/testid";
@@ -181,12 +179,10 @@ function MemberMenu({ member, role }: { member: People.Person; role: string | nu
 
   const handleUpdate = async (accessLevel: AccessOptionsInt) => {
     await update.mutateAsync({ goalId: goal.id, personId, accessLevel });
-    PageCache.invalidate(goalPageCacheKey(goal.id));
   };
 
   const handleRemove = async () => {
     await remove.mutateAsync({ goalId: goal.id, personId });
-    PageCache.invalidate(goalPageCacheKey(goal.id));
   };
 
   const menuLabel = member.fullName ?? member.id ?? "member";

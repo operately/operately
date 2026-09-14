@@ -18,6 +18,7 @@ export async function invalidateProjectLifecycleQueries(
     queryClient.invalidateQueries({ queryKey: Api.projects.getQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.listQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.projects.searchQueryKeyPrefix(), refetchType }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix(), refetchType }),
   ]);
 }
 

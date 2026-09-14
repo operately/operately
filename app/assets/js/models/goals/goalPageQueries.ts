@@ -8,20 +8,16 @@ export async function invalidateGoalPageQueries(
   goalId: string,
   refetchType: "active" | "none" = "active",
 ): Promise<void> {
-  const prefixes = [Api.goals.getQueryKeyPrefix(), Api.goals.countChildrenQueryKeyPrefix()];
+  const resources = [
+    [Api.goals.getQueryKeyPrefix(), "id"],
+    [Api.goals.countChildrenQueryKeyPrefix(), "id"],
+    [Api.goals.listCheckInsQueryKeyPrefix(), "goalId"],
+    [Api.goals.listDiscussionsQueryKeyPrefix(), "goalId"],
+    [Api.companies.getWorkMapQueryKeyPrefix(), "parentGoalId"],
+  ] as const;
 
   await Promise.all(
-    prefixes.map((queryKey) =>
-      client.invalidateQueries({
-        queryKey,
-        refetchType,
-        predicate: (query) => {
-          // The input object follows the generated endpoint prefix.
-          const input = query.queryKey[queryKey.length] as { id?: string } | undefined;
-          return compareIds(input?.id, goalId);
-        },
-      }),
-    ),
+    resources.map(([queryKey, field]) => invalidateGoalResourceQueries(client, queryKey, field, goalId, refetchType)),
   );
 }
 

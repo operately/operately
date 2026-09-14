@@ -3617,7 +3617,7 @@ export interface GoalsListDiscussionsInput {
 }
 
 export interface GoalsListDiscussionsResult {
-  discussions: Discussion[];
+  discussions: GoalDiscussion[];
 }
 
 export interface GoalsSearchParentGoalInput {
