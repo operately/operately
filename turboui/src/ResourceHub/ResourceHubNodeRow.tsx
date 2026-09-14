@@ -14,6 +14,7 @@ interface ResourceHubNodeRowProps {
   path: string;
   testId: string;
   actions?: React.ReactNode;
+  description?: React.ReactNode;
   className?: string;
   formattedTimePreferences?: FormattedTimePreferences;
 }
@@ -23,6 +24,7 @@ export function ResourceHubNodeRow({
   path,
   testId,
   actions,
+  description,
   className,
   formattedTimePreferences,
 }: ResourceHubNodeRowProps) {
@@ -39,7 +41,7 @@ export function ResourceHubNodeRow({
 
         <div className="min-w-0">
           <div className="truncate text-base font-bold">{getNodeName(node)}</div>
-          <NodeDescription node={node} formattedTimePreferences={formattedTimePreferences} />
+          {description ?? <NodeDescription node={node} formattedTimePreferences={formattedTimePreferences} />}
         </div>
       </DivLink>
 

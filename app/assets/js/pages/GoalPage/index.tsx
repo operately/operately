@@ -26,8 +26,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import {
-  folders,
-  getDraftEditPath,
+  useCreateFolder,
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
   useResourceHubNodesListProps,
@@ -35,19 +34,18 @@ import {
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useResourceHubSearchProps } from "@/models/search/resourceHub";
 import { Paths, usePaths } from "@/routes/paths";
-import type * as Hub from "@/models/resourceHubs";
+import {
+  prefetchResourceHubDocs,
+  resourceHubDocsInputs,
+  useResourceHubDocsQueries,
+  type ResourceHubDocsAndFilesData as GoalDocsAndFilesData,
+} from "@/models/resourceHubs/docsQueries";
 import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 export function pageCacheKey(id: string): string {
   return `v33-GoalPage.goal-${id}`;
 }
-
-type GoalDocsAndFilesData = {
-  resourceHub: Hub.ResourceHub;
-  nodes: Hub.ResourceHubNode[];
-  draftNodes: Hub.ResourceHubNode[];
-};
 
 type LoaderResult = {
   data: {
@@ -57,14 +55,13 @@ type LoaderResult = {
     checklist: Goals.Check[];
     discussions: GoalDiscussion[];
     childrenCount: GoalChildrenCount;
-    docsAndFiles: GoalDocsAndFilesData | null;
   };
 
   cacheVersion: number;
 };
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  return await PageCache.fetch({
+  const result = await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
     fetchFn: async () => {
@@ -89,54 +86,24 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         childrenCount: Api.goals.countChildren({ id: params.id }).then((d) => d.childrenCount),
       });
 
-      return {
-        ...data,
-        docsAndFiles: await loadGoalDocsAndFiles(data.goal),
-      };
+      return data;
     },
   });
-}
 
-async function loadGoalDocsAndFiles(goal: Goal): Promise<GoalDocsAndFilesData | null> {
-  const resourceHubId = goal.resourceHub?.id;
+  await prefetchResourceHubDocs(resourceHubDocsInputs(result.data.goal.resourceHub?.id));
 
-  if (!resourceHubId) {
-    return null;
-  }
-
-  try {
-    const [resourceHub, nodes] = await Promise.all([
-      Api.resource_hubs
-        .get({
-          id: resourceHubId,
-          includeGoal: true,
-          includeSpace: true,
-          includePermissions: true,
-          includePotentialSubscribers: true,
-        })
-        .then((res) => res.resourceHub!),
-      Api.resource_hubs.listNodes({
-        resourceHubId,
-        includeCommentsCount: true,
-        includeChildrenCount: true,
-      }),
-    ]);
-
-    return {
-      resourceHub,
-      nodes: nodes.nodes || [],
-      draftNodes: nodes.draftNodes || [],
-    };
-  } catch {
-    return null;
-  }
+  return result;
 }
 
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const { data, refresh } = PageCache.useData(loader);
-  const { goal, workMap, checkIns, discussions, childrenCount, docsAndFiles } = data;
+  const { goal, workMap, checkIns, discussions, childrenCount } = data;
+  const docs = useResourceHubDocsQueries(goal.resourceHub?.id);
+  const refreshDocsAndGoal = React.useCallback(async () => {
+    await Promise.all([docs.refresh(), refresh?.()]);
+  }, [docs.refresh, refresh]);
   const currentUser = useMe();
 
   assertPresent(goal.privacy);
@@ -233,9 +200,9 @@ function Page() {
 
   const checklists = useChecklists({ goalId: goal.id, initialChecklist: goal.checklist || [] });
   const goalDocsAndFilesProps = useGoalDocsAndFilesProps({
-    docsAndFiles,
+    docsAndFiles: docs.data,
     goalId: goal.id,
-    onRefresh: refresh,
+    onRefresh: refreshDocsAndGoal,
   });
 
   const initialTargets = React.useMemo(() => prepareTargets(goal.targets), [goal.targets]);
@@ -351,6 +318,8 @@ function Page() {
     formattedTimePreferences,
   };
 
+  if (docs.error) throw new Error("Could not load Docs & Files");
+
   return <GoalPage key={goal.id} {...props} />;
 }
 
@@ -370,7 +339,7 @@ function useGoalDocsAndFilesProps({
   }, [onRefresh]);
   const newFileModals = useNewFileModalsContextValue({ resourceHub });
   const addFileWidgetProps = useAddFileWidgetProps({ resourceHub, onUploaded: refresh });
-  const [createFolder] = folders.useCreate();
+  const { mutateAsync: createFolder } = useCreateFolder();
   const nodesListProps = useResourceHubNodesListProps(
     resourceHub
       ? {
@@ -395,7 +364,6 @@ function useGoalDocsAndFilesProps({
       drafts: {
         nodes: docsAndFiles.draftNodes,
         draftsPath: paths.resourceHubDraftsPath(resourceHub.id),
-        getDraftEditPath: (node) => getDraftEditPath(paths, node),
       },
       newFileModals,
       addFileWidgetProps,

@@ -10,6 +10,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Node do
       document: OperatelyWeb.Api.Serializer.serialize(node.document),
       file: OperatelyWeb.Api.Serializer.serialize(node.file),
       link: OperatelyWeb.Api.Serializer.serialize(node.link),
+      path_to_node: OperatelyWeb.Api.Serializer.serialize(node.path_to_node, level: :essential),
     }
   end
 

@@ -230,12 +230,9 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] 
 }
 
 export function DocsAndFilesDraftPrompt({ prompt }: { prompt?: DocsAndFiles.DraftPrompt | null }) {
-  if (!prompt || prompt.count < 1) return null;
+  if (!prompt || prompt.count === 0) return null;
 
-  const label =
-    prompt.count === 1
-      ? "Continue writing your draft document..."
-      : `Continue writing your ${prompt.count} draft documents...`;
+  const label = `Your drafts (${prompt.count})`;
 
   return (
     <div className="flex justify-center py-3">

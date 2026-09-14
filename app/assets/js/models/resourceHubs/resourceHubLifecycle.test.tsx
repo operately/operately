@@ -19,6 +19,7 @@ it.each(["success", "failure", "unsuccessful response"])(
     const keys = [
       Api.resource_hubs.getQueryKey({ id: "hub-1" }),
       Api.resource_hubs.listNodesQueryKey({ resourceHubId: "hub-1" }),
+      Api.resource_hubs.listDraftsQueryKey({ resourceHubId: "hub-1" }),
       Api.resource_hubs.getFolderQueryKey({ id: "folder-1" }),
       Api.documents.getQueryKey({ id: "document-1" }),
       Api.files.getQueryKey({ id: "file-1" }),

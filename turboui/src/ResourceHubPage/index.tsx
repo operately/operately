@@ -14,7 +14,6 @@ export namespace ResourceHubPage {
     drafts: {
       nodes: ResourceHubNode[];
       draftsPath: string;
-      getDraftEditPath: (node: ResourceHubNode) => string | undefined;
     };
   }
 }
@@ -32,14 +31,7 @@ export function ResourceHubPage(props: ResourceHubPage.Props) {
       permissions={props.resourceHub.permissions}
       search={props.search}
       formattedTimePreferences={props.formattedTimePreferences}
-      beforeList={
-        <ContinueEditingDrafts
-          drafts={props.drafts.nodes}
-          draftsPath={props.drafts.draftsPath}
-          getDraftEditPath={props.drafts.getDraftEditPath}
-          getNodePath={props.nodesListProps.getNodePath}
-        />
-      }
+      beforeList={<ContinueEditingDrafts drafts={props.drafts.nodes} draftsPath={props.drafts.draftsPath} />}
     />
   );
 }

@@ -5,7 +5,7 @@ import Api from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import { projectContentInputs } from "./contentQueries";
-import { projectDocsInputs, prefetchProjectDocs } from "./docsQueries";
+import { resourceHubDocsInputs, prefetchResourceHubDocs } from "@/models/resourceHubs/docsQueries";
 
 export function projectQueryInput(id: string) {
   return {
@@ -42,11 +42,14 @@ export async function loader({ params, request }: { params: { id: string }; requ
 
   const core = Api.projects.getQuery(projectInput).then(async ({ project }) => {
     if (!project) throw new Error(`Project data is unavailable for project "${params.id}"`);
+
     await Promise.all([
       project.spaceId
         ? Api.spaces.getQuery({ id: project.spaceId, includePermissions: true }).catch(() => undefined)
         : Promise.resolve(),
-      tab === "docs-and-files" ? prefetchProjectDocs(projectDocsInputs(project.resourceHub?.id)) : Promise.resolve(),
+      tab === "docs-and-files"
+        ? prefetchResourceHubDocs(resourceHubDocsInputs(project.resourceHub?.id))
+        : Promise.resolve(),
     ]);
   });
 
