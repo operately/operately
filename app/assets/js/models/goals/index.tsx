@@ -1,4 +1,4 @@
-import Api, * as api from "@/api";
+import * as api from "@/api";
 import { Paths } from "@/routes/paths";
 
 export type Goal = api.Goal;
@@ -48,8 +48,6 @@ export {
   useToggleGoalCheck,
   useUpdateGoalCheckIndex,
 } from "./goalItemLifecycle";
-
-export const getGoal = Api.goals.get;
 
 export function targetProgressPercentage(
   target: Pick<Target, "from" | "to" | "value">,

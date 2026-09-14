@@ -2,6 +2,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
+import { showErrorToast } from "turboui";
 import Api from "@/api";
 import { act, renderHook } from "@/__tests__/renderHook";
 import { useGoalTargets } from "./useGoalTargets";
@@ -102,3 +103,64 @@ it("accepts server changes after edits and resets when visiting another goal", a
   rerender({ goalId: "goal2", initialTargets: [target("other")] });
   expect(result.current.targets.map((item) => item.id)).toEqual(["other"]);
 });
+
+it.each(["edit", "value", "reorder", "delete"])(
+  "cancels a queued %s after creation fails and continues unrelated saves",
+  async (operation) => {
+    const { result } = setup();
+    let finish = (_result: unknown) => {};
+    jest
+      .mocked(axios.post)
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+      )
+      .mockResolvedValue({ data: { success: true } });
+    let adding: Promise<unknown>;
+    let dependent: Promise<boolean>;
+    let unrelated: Promise<boolean>;
+    act(() => {
+      adding = result.current.addTarget({ name: "New", startValue: 0, targetValue: 10, unit: "items" });
+    });
+    const temporary = result.current.targets.at(-1);
+    if (!temporary) throw new Error("Missing optimistic item");
+    act(() => {
+      switch (operation) {
+        case "edit":
+          dependent = result.current.updateTarget({
+            targetId: temporary.id,
+            name: "Edited",
+            startValue: 0,
+            targetValue: 10,
+            unit: "items",
+          });
+          break;
+        case "value":
+          dependent = result.current.updateTargetValue(temporary.id, 5);
+          break;
+        case "reorder":
+          dependent = result.current.updateTargetIndex(temporary.id, 0);
+          break;
+        default:
+          dependent = result.current.deleteTarget(temporary.id);
+      }
+      unrelated = result.current.updateTargetValue("one", 7);
+    });
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await act(async () => {
+        finish({ data: { success: false } });
+        expect(await adding).toMatchObject({ success: false });
+        expect(await dependent).toBe(false);
+        expect(await unrelated).toBe(true);
+      });
+      expect(axios.post).toHaveBeenCalledTimes(2);
+      expect(jest.mocked(axios.post).mock.calls[1]?.[0]).toContain("/goals/update_target_value");
+      expect(showErrorToast).toHaveBeenCalledTimes(1);
+      expect(result.current.targets).toMatchObject([{ id: "one", value: 7 }, { id: "two" }]);
+    } finally {
+      log.mockRestore();
+    }
+  },
+);

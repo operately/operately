@@ -62,7 +62,7 @@ export function useUpdateGoalParentGoal(previousParentGoalId?: string | null) {
   );
 }
 
-export async function invalidateDeletedGoalQueries(client: QueryClient, goalId: string, parentGoalId?: string | null) {
+async function invalidateDeletedGoalQueries(client: QueryClient, goalId: string, parentGoalId?: string | null) {
   const workMapPrefix = Api.companies.getWorkMapQueryKeyPrefix();
   await Promise.all([
     invalidateGoalPageQueries(client, goalId, "none"),

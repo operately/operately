@@ -47,8 +47,11 @@ export function useOptimisticGoalState<T>(goalId: string, serverValue: T) {
         } finally {
           // Removing a failed edit rolls it back while preserving later edits.
           scope.pending = scope.pending.filter((pending) => pending !== operation);
-          // Reconcile refreshed server data only after all pending edits settle.
-          if (scope.pending.length === 0 && scope.server !== serverAtStart) scope.base = scope.server;
+
+          // Rebase after each settled save so the next save retains this refresh.
+          // Remaining pending edits are still applied on top of the new base.
+          if (scope.server !== serverAtStart) scope.base = scope.server;
+
           // A save for a previous goal must not trigger the current goal's render.
           if (activeScope.current === scope) render();
         }

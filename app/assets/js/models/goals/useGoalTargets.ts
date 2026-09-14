@@ -27,7 +27,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
     [initialTargets],
   );
   const { value: targets, run } = useOptimisticGoalState(goalId, serverTargets);
-  const createdIds = useMemo(() => new Map<string, string>(), [goalId]);
+  const createdIds = useMemo(() => new Map<string, string | null>(), [goalId]);
   const resolveId = (id: string) => createdIds.get(id) ?? id;
   const create = useCreateGoalTarget();
   const remove = useDeleteGoalTarget();
@@ -46,6 +46,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
       index: targets.length,
       mode: "view" as const,
     };
+    createdIds.set(temporary.id, null);
     try {
       const id = await run(
         (items) => normalize([...items, temporary]),
@@ -66,13 +67,22 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
   };
 
   const save = async (
+    id: string,
     change: (items: GoalTarget[]) => GoalTarget[],
     request: () => Promise<unknown>,
     message: string,
   ) => {
     try {
-      await run(change, request);
-      return true;
+      return await run(
+        change,
+        async () => {
+          // Creation runs first; an unresolved temporary ID means it failed.
+          if (createdIds.get(id) === null) return false;
+          await request();
+          return true;
+        },
+        (items, saved) => (saved ? change(items) : items),
+      );
     } catch (error) {
       console.error(message, error);
       showErrorToast("Error", message);
@@ -82,6 +92,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
 
   const deleteTarget = (id: string) =>
     save(
+      id,
       (items) => normalize(items.filter((item) => item.id !== resolveId(id))),
       () => remove.mutateAsync({ goalId, targetId: resolveId(id) }),
       "Failed to delete target",
@@ -89,6 +100,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
 
   const updateTarget = (inputs: TargetInputs & { targetId: string }) =>
     save(
+      inputs.targetId,
       (items) =>
         items.map((item) =>
           item.id === resolveId(inputs.targetId)
@@ -107,6 +119,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
 
   const updateTargetValue = (id: string, value: number) =>
     save(
+      id,
       (items) => items.map((item) => (item.id === resolveId(id) ? { ...item, value, mode: "view" } : item)),
       () => updateValue.mutateAsync({ goalId, targetId: resolveId(id), value }),
       "Failed to update target value",
@@ -117,6 +130,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
     const destination = Math.min(Math.max(index, 0), targets.length - 1);
 
     return save(
+      id,
       (items) => {
         const item = items.find((item) => item.id === resolveId(id));
         if (!item) return items;

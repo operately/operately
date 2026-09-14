@@ -61,6 +61,66 @@ it("rolls back only the failed operation and preserves a later edit", async () =
   expect(result.current.value).toEqual(["one", "good"]);
 });
 
+it.each(["succeeds", "fails"])("retains a refresh from the first queued save when the second %s", async (outcome) => {
+  const { result, rerender } = setup();
+  const firstRequest = deferred<void>();
+  const secondRequest = deferred<void>();
+  let first: Promise<void>;
+  let second: Promise<unknown>;
+  act(() => {
+    first = result.current.run(
+      (items) => items.map((item) => (item === "one" ? "edited" : item)),
+      () => firstRequest.promise,
+    );
+    second = result.current
+      .run(
+        (items) => [...items, "two"],
+        () => secondRequest.promise,
+      )
+      .catch(() => undefined);
+  });
+  // The first mutation's refresh includes an unrelated item added on the server.
+  rerender({ id: "goal1", value: ["edited", "server"] });
+  expect(result.current.value).toEqual(["edited", "two"]);
+  await act(async () => {
+    firstRequest.resolve();
+    await first;
+  });
+  expect(result.current.value).toEqual(["edited", "server", "two"]);
+
+  // There is no further refresh (for example, the second refetch fails).
+  await act(async () => {
+    if (outcome === "succeeds") secondRequest.resolve();
+    else secondRequest.reject(new Error("Save failed"));
+    await second;
+  });
+  expect(result.current.value).toEqual(outcome === "succeeds" ? ["edited", "server", "two"] : ["edited", "server"]);
+});
+
+it("does not apply a non-idempotent edit twice when its refresh arrives before a queued save", async () => {
+  const { result, rerender } = setup();
+  const request = deferred<void>();
+  let first: Promise<void>;
+  let second: Promise<void>;
+  act(() => {
+    first = result.current.run(
+      (items) => [...items, "created"],
+      () => request.promise,
+    );
+    second = result.current.run(
+      (items) => [...items, "later"],
+      async () => {},
+    );
+  });
+  rerender({ id: "goal1", value: ["one", "created", "server"] });
+  await act(async () => {
+    request.resolve();
+    await first;
+    await second;
+  });
+  expect(result.current.value).toEqual(["one", "created", "server", "later"]);
+});
+
 it("replaces temporary IDs on success", async () => {
   const { result } = setup();
   await act(async () => {
