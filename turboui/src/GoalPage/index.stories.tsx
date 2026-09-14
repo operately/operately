@@ -870,3 +870,25 @@ export const WithDocsAndFilesNoOpenDrafts: Story = {
   },
   render: () => <GoalPageDocsAndFilesStory includeDrafts={false} />,
 };
+
+export const DocsAndFilesLoading: Story = {
+  parameters: WithDocsAndFiles.parameters,
+  args: { docsAndFilesAvailable: true, docsAndFilesLoading: true },
+};
+
+export const DocsAndFilesError: Story = {
+  parameters: WithDocsAndFiles.parameters,
+  render: () => {
+    const [error, setError] = React.useState(true);
+    const docsAndFiles = useMockGoalDocsAndFiles("goal-1", "Launch AI Platform");
+
+    return (
+      <Component
+        docsAndFilesAvailable
+        docsAndFilesError={error}
+        docsAndFiles={error ? undefined : docsAndFiles}
+        onRetryDocsAndFiles={() => setError(false)}
+      />
+    );
+  },
+};

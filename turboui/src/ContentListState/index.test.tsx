@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { ContentListState } from "./ContentListState";
+import { ContentListState } from ".";
 
 it("replaces initial content with a loading skeleton", () => {
   const { rerender } = render(

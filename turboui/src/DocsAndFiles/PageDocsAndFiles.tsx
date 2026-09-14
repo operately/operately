@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ContentListState } from "../ContentListState";
 
 import {
   AddFileWidget,
@@ -57,14 +58,31 @@ export interface PageDocsAndFiles {
 export function PageDocsAndFilesTab({
   docsAndFiles,
   formattedTimePreferences,
+  loading,
+  error,
+  onRetry,
 }: {
-  docsAndFiles: PageDocsAndFiles;
+  docsAndFiles?: PageDocsAndFiles;
   formattedTimePreferences: FormattedTimePreferences;
+  loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
 }) {
   return (
-    <NewFileModalsProvider value={docsAndFiles.newFileModals}>
-      <PageDocsAndFilesTabContent docsAndFiles={docsAndFiles} formattedTimePreferences={formattedTimePreferences} />
-    </NewFileModalsProvider>
+    <div className={docsAndFiles ? undefined : "p-4 max-w-6xl mx-auto my-6"}>
+      {!docsAndFiles && <h2 className="text-xl font-semibold tracking-tight mb-4">Docs & Files</h2>}
+
+      <ContentListState name="docs-and-files" loading={loading} error={error} onRetry={onRetry}>
+        {docsAndFiles && (
+          <NewFileModalsProvider value={docsAndFiles.newFileModals}>
+            <PageDocsAndFilesTabContent
+              docsAndFiles={docsAndFiles}
+              formattedTimePreferences={formattedTimePreferences}
+            />
+          </NewFileModalsProvider>
+        )}
+      </ContentListState>
+    </div>
   );
 }
 

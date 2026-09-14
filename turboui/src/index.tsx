@@ -12,6 +12,8 @@ export * from "./CommentSection";
 export * from "./Circle";
 export * from "./CopyToClipboard";
 export * from "./ConfirmDialog";
+export * from "./ContentListState";
+export { PageDocsAndFilesTab, type PageDocsAndFiles } from "./DocsAndFiles/PageDocsAndFiles";
 export * from "./FormattedTime";
 export * from "./InfiniteScroll";
 export * as Forms from "./Forms";

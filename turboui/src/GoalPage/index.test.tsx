@@ -12,6 +12,7 @@ jest.mock("../icons", () => {
     IconCheck: HiddenIcon,
     IconCircleArrowRight: HiddenIcon,
     IconCircleCheck: HiddenIcon,
+    IconCircleXFilled: HiddenIcon,
     IconClipboardText: HiddenIcon,
     IconDots: HiddenIcon,
     IconFile: HiddenIcon,
@@ -79,10 +80,15 @@ function GoalPageHarness({
   includeDocsAndFiles = false,
   initialEntry = "/goals/goal-1",
   search,
+  docsState,
 }: {
   includeDocsAndFiles?: boolean;
   initialEntry?: string;
   search?: NonNullable<NonNullable<GoalPage.Props["docsAndFiles"]>["search"]>["search"];
+  docsState?: Pick<
+    GoalPage.Props,
+    "docsAndFilesAvailable" | "docsAndFilesLoading" | "docsAndFilesError" | "onRetryDocsAndFiles"
+  >;
 }) {
   const permissions = generateGoalPermissions(true);
   const [resourceHub] = React.useState(() =>
@@ -231,6 +237,7 @@ function GoalPageHarness({
           docsAndFilesCount: includeDocsAndFiles ? 1 : 0,
         }}
         docsAndFiles={docsAndFiles}
+        {...docsState}
         status="on_track"
         state="active"
         closedAt={null}
@@ -258,6 +265,36 @@ function GoalPageHarness({
 }
 
 describe("GoalPage", () => {
+  test("keeps the goal overview accessible when docs fail", () => {
+    render(<GoalPageHarness docsState={{ docsAndFilesAvailable: true, docsAndFilesError: true }} />);
+    expect(screen.getByText("Goal description")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Docs & Files/ })).toBeInTheDocument();
+  });
+
+  test("shows docs errors and retry without falling back to overview", () => {
+    const retry = jest.fn();
+    render(
+      <GoalPageHarness
+        initialEntry="/goals/goal-1?tab=docs-and-files"
+        docsState={{ docsAndFilesAvailable: true, docsAndFilesError: true, onRetryDocsAndFiles: retry }}
+      />,
+    );
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.queryByText("Goal description")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(retry).toHaveBeenCalledTimes(1);
+  });
+
+  test("shows loading feedback while retrying docs", () => {
+    render(
+      <GoalPageHarness
+        initialEntry="/goals/goal-1?tab=docs-and-files"
+        docsState={{ docsAndFilesAvailable: true, docsAndFilesLoading: true }}
+      />,
+    );
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
   test("hides the docs and files tab when goal docs are unavailable", () => {
     render(<GoalPageHarness />);
 

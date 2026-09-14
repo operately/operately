@@ -90,7 +90,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
     },
   });
 
-  await prefetchResourceHubDocs(resourceHubDocsInputs(result.data.goal.resourceHub?.id));
+  // Docs query errors are displayed within the Docs & Files tab.
+  await prefetchResourceHubDocs(resourceHubDocsInputs(result.data.goal.resourceHub?.id)).catch(() => undefined);
 
   return result;
 }
@@ -294,6 +295,10 @@ function Page() {
     discussions: prepareDiscussions(paths, discussions),
     childrenCount,
     docsAndFiles: goalDocsAndFilesProps,
+    docsAndFilesAvailable: docs.available,
+    docsAndFilesLoading: docs.loading,
+    docsAndFilesError: docs.error,
+    onRetryDocsAndFiles: docs.retry,
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
