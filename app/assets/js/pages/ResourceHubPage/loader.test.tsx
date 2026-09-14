@@ -32,11 +32,12 @@ it("loads and reuses the hub-wide draft query", async () => {
 });
 
 it("propagates draft-query failure instead of showing zero drafts", async () => {
+  const error = new Error("Drafts unavailable");
   const respond = jest.mocked(axios.get).getMockImplementation();
   if (!respond) throw new Error("Missing API mock");
   jest.mocked(axios.get).mockImplementation((path, config) => {
-    if (path.endsWith("/list_drafts")) return Promise.reject(new Error("Drafts unavailable"));
+    if (path.endsWith("/list_drafts")) return Promise.reject(error);
     return respond(path, config);
   });
-  await expect(loader({ params: { id: "hub-1" } })).rejects.toThrow("Drafts unavailable");
+  await expect(loader({ params: { id: "hub-1" } })).rejects.toBe(error);
 });

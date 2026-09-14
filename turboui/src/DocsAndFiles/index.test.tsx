@@ -42,7 +42,7 @@ describe("DocsAndFilesTab", () => {
 });
 
 describe("DocsAndFilesDraftPrompt", () => {
-  test.each([0, 1, 3])("shows the link only for a nonzero count: %i", (count) => {
+  test.each([0, 1, 3])("shows the expected draft label and list destination for %i drafts", (count) => {
     const { container } = render(
       <MemoryRouter>
         <DocsAndFilesDraftPrompt prompt={{ count, link: "/drafts" }} />
@@ -51,7 +51,9 @@ describe("DocsAndFilesDraftPrompt", () => {
     if (count === 0) {
       expect(container).toBeEmptyDOMElement();
     } else {
-      expect(screen.getByRole("link", { name: `Your drafts (${count})` })).toHaveAttribute("href", "/drafts");
+      const link = screen.getByRole("link");
+      expect(link).toHaveAttribute("href", "/drafts");
+      expect(link).toHaveAccessibleName(`Your drafts (${count})`);
     }
   });
 });

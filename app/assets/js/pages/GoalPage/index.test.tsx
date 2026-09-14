@@ -68,7 +68,7 @@ it.each(["get", "list_nodes", "list_drafts"] as const)(
 it("still rejects when the core goal request fails", async () => {
   const error = new Error("Goal unavailable");
   jest.mocked(axios.get).mockRejectedValue(error);
-  await expect(visit()).rejects.toThrow("Goal unavailable");
+  await expect(visit()).rejects.toBe(error);
 });
 
 it("exposes failed drafts to the section and recovers when retried", async () => {

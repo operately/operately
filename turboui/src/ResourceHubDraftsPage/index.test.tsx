@@ -48,21 +48,21 @@ function ResourceHubDraftsPageHarness({
 }
 
 describe("ResourceHubDraftsPage", () => {
-  test("renders navigation, header, and draft nodes", () => {
+  test("renders navigation and draft nodes", () => {
     render(<ResourceHubDraftsPageHarness nodes={[createMockDraftNode()]} />);
 
     expect(screen.getByText("Operations")).toBeInTheDocument();
     expect(screen.getByText("Engineering Handbook")).toBeInTheDocument();
-    expect(screen.getByText("Your Drafts")).toBeInTheDocument();
     expect(screen.getByText("Draft Interview Guide")).toBeInTheDocument();
   });
 
   test("renders the page shell when there are no drafts", () => {
     const { container } = render(<ResourceHubDraftsPageHarness nodes={[]} />);
 
-    expect(screen.getByText("Your Drafts")).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="navigation"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="drafts-empty"]')).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="node-0"]')).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to Docs & Files" })).toHaveAttribute("href", "/resource-hubs/hub-1");
+    expect(container.querySelector('[data-test-id="drafts-empty"] a')).toHaveAttribute("href", "/resource-hubs/hub-1");
   });
 });
 
@@ -95,13 +95,16 @@ test.each([false, true])("confirms deletion and handles failure: %s", async (fai
   fireEvent.keyDown(trigger, { key: "Enter" });
   fireEvent.click(await screen.findByRole("menuitem"));
   expect(onDelete).not.toHaveBeenCalled();
-  fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+  const dialog = await screen.findByRole("dialog");
+  const confirm = dialog.querySelector('[data-test-id="submit"]');
+  if (!confirm) throw new Error("Delete confirmation is missing");
+  fireEvent.click(confirm);
   await waitFor(() => expect(onDelete).toHaveBeenCalledWith(node.document?.id));
   if (fails) {
     await waitFor(() => expect(container.querySelector('[data-test-id="draft-delete-error"]')).toBeInTheDocument());
     expect(container.querySelector('[data-test-id="node-0"]')).toBeInTheDocument();
   } else {
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Delete" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   }
 });
 
