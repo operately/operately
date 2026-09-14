@@ -209,6 +209,7 @@ export interface RichTextAreaProps {
   showToolbarTopBorder?: boolean;
   readonly?: boolean;
   hideToolbar?: boolean;
+  localDraftKey?: string | null;
 }
 
 export interface PasswordInputProps {
