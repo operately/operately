@@ -4,7 +4,7 @@ import { ErrorCallout } from "../Callouts";
 import { ContentListSkeleton } from "../ContentListSkeleton";
 
 interface Props {
-  name: "check-ins" | "discussions" | "tasks" | "docs-and-files";
+  name: "check-ins" | "discussions" | "tasks" | "docs-and-files" | "related-work";
   className?: string;
   loading?: boolean;
   error?: boolean;
@@ -13,7 +13,8 @@ interface Props {
 }
 
 export function ContentListState({ name, className, loading, error, onRetry, children }: Props) {
-  const label = name === "docs-and-files" ? "docs and files" : name;
+  const label = name === "docs-and-files" ? "docs and files" : name === "related-work" ? "subgoals and projects" : name;
+
   return (
     <div className={className} aria-busy={loading || undefined}>
       {error && (

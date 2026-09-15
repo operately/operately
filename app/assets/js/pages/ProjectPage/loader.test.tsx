@@ -124,7 +124,7 @@ it("does not request docs for a project without a resource hub", async () => {
   expect(requestedPaths().some((p) => p.includes("/resource_hubs/"))).toBe(false);
 });
 
-it("propagates selected docs errors and tolerates optional space failures", async () => {
+it("keeps selected docs errors recoverable and tolerates optional space failures", async () => {
   jest
     .mocked(axios.get)
     .mockImplementation((path) =>
@@ -133,7 +133,7 @@ it("propagates selected docs errors and tolerates optional space failures", asyn
         : Promise.resolve(response(path)),
     );
   await expect(visit("overview")).resolves.toBeDefined();
-  await expect(visit("docs-and-files")).rejects.toThrow("Unavailable");
+  await expect(visit("docs-and-files")).resolves.toBeDefined();
 });
 
 it("supports calls without a request and refreshes invalidated core queries", async () => {
@@ -202,3 +202,15 @@ it("subscribes to cached core data and follows space changes without old space p
     client.clear();
   }
 });
+
+it.each(["/api/v2/projects/get", "/api/v2/projects/count_children"])(
+  "propagates core failures: %s",
+  async (failedPath) => {
+    jest
+      .mocked(axios.get)
+      .mockImplementation((path) =>
+        path === failedPath ? Promise.reject(new Error("Unavailable")) : Promise.resolve(response(path)),
+      );
+    await expect(visit("docs-and-files")).rejects.toThrow("Unavailable");
+  },
+);

@@ -48,7 +48,7 @@ export async function loader({ params, request }: { params: { id: string }; requ
         ? Api.spaces.getQuery({ id: project.spaceId, includePermissions: true }).catch(() => undefined)
         : Promise.resolve(),
       tab === "docs-and-files"
-        ? prefetchResourceHubDocs(resourceHubDocsInputs(project.resourceHub?.id))
+        ? prefetchResourceHubDocs(resourceHubDocsInputs(project.resourceHub?.id)).catch(() => undefined)
         : Promise.resolve(),
     ]);
   });
