@@ -3,7 +3,7 @@ import { compareIds } from "@/routes/paths";
 import { type QueryClient } from "@tanstack/react-query";
 
 type RefetchType = "active" | "none";
-export interface DiscussionContext {
+interface DiscussionContext {
   spaceId: string;
   discussionId: string;
 }
