@@ -4,7 +4,13 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api from "@/api";
-import { invalidateSpaceLifecycleQueries, useCreateSpace, useEditSpace } from "./spaceLifecycle";
+import {
+  invalidateSpaceLifecycleQueries,
+  invalidateSpaceToolsQueries,
+  useCreateSpace,
+  useEditSpace,
+  useUpdateSpaceTools,
+} from "./spaceLifecycle";
 
 jest.mock("turboui", () => ({}));
 jest.mock("axios");
@@ -83,6 +89,33 @@ it("does not invalidate other space details when creation has no returned space"
   expect(queryClient.getQueryState(listKey)?.isInvalidated).toBe(true);
 });
 
+it("invalidates only the matching space detail and tools variants after tools change", async () => {
+  const queryClient = createQueryClient();
+  const affected = [
+    Api.spaces.getQueryKey({ id: "space-1" }),
+    Api.spaces.getQueryKey({ id: "renamed-space-1", includePermissions: true }),
+    Api.spaces.getQueryKey({ id: "space-1", includeMembers: true }),
+    Api.spaces.listToolsQueryKey({ spaceId: "space-1" }),
+    Api.spaces.listToolsQueryKey({ spaceId: "old-space-1" }),
+  ];
+  const unrelated = [
+    Api.spaces.getQueryKey({ id: "space-2" }),
+    Api.spaces.listToolsQueryKey({ spaceId: "space-2" }),
+    Api.spaces.listQueryKey({}),
+    Api.spaces.searchQueryKey({ query: "marketing" }),
+    Api.spaces.listTasksQueryKey({ spaceId: "space-1" }),
+    Api.companies.getWorkMapQueryKey({ spaceId: "space-1" }),
+    Api.projects.getQueryKey({ id: "project-1", includeSpace: true }),
+  ];
+
+  [...affected, ...unrelated].forEach((queryKey) => queryClient.setQueryData(queryKey, {}));
+  await invalidateSpaceToolsQueries(queryClient, "space-1");
+
+  affected.forEach((queryKey) => expect(queryClient.getQueryState(queryKey)?.isInvalidated).toBe(true));
+  unrelated.forEach((queryKey) => expect(queryClient.getQueryState(queryKey)?.isInvalidated).toBe(false));
+  queryClient.clear();
+});
+
 const mutations = [
   [
     "create",
@@ -91,13 +124,16 @@ const mutations = [
     { space: { id: "space-1" } },
   ],
   ["edit", useEditSpace, { id: "space-1", name: "Growth", mission: "Find customers" }, { space: { id: "space-1" } }],
+  ["update tools", useUpdateSpaceTools, { spaceId: "space-1", tools: { tasksEnabled: true } }, { success: true }],
 ] as const;
 
 it.each(mutations)("%s invalidates only after a successful mutation", async (_name, useHook, input, result) => {
   const queryClient = createQueryClient();
   const spaceKey = Api.spaces.getQueryKey({ id: "space-1" });
   const otherKey = Api.spaces.getQueryKey({ id: "space-2" });
-  [spaceKey, otherKey].forEach((queryKey) => queryClient.setQueryData(queryKey, {}));
+  const toolsKey = Api.spaces.listToolsQueryKey({ spaceId: "space-1" });
+  const otherToolsKey = Api.spaces.listToolsQueryKey({ spaceId: "space-2" });
+  [spaceKey, otherKey, toolsKey, otherToolsKey].forEach((queryKey) => queryClient.setQueryData(queryKey, {}));
 
   let mutate: (input: unknown) => Promise<unknown>;
   function Harness() {
@@ -120,6 +156,7 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
       await expect(mutate(input)).rejects.toThrow("Save failed");
     });
     expect(queryClient.getQueryState(spaceKey)?.isInvalidated).toBe(false);
+    expect(queryClient.getQueryState(toolsKey)?.isInvalidated).toBe(false);
 
     jest.mocked(axios.post).mockResolvedValueOnce({ data: result });
     await act(async () => {
@@ -127,6 +164,8 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
     });
     expect(queryClient.getQueryState(spaceKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(otherKey)?.isInvalidated).toBe(false);
+    expect(queryClient.getQueryState(toolsKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(otherToolsKey)?.isInvalidated).toBe(false);
   } finally {
     await act(async () => root.unmount());
     queryClient.clear();

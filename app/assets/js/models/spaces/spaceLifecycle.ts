@@ -2,24 +2,6 @@ import Api from "@/api";
 import { compareIds } from "@/routes/paths";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export async function invalidateSpaceLifecycleQueries(
-  queryClient: QueryClient,
-  spaceId?: string | null,
-): Promise<void> {
-  await Promise.all([
-    spaceId
-      ? invalidateMatchingSpaceQueries(queryClient, Api.spaces.getQueryKeyPrefix(), "id", spaceId)
-      : Promise.resolve(),
-    queryClient.invalidateQueries({ queryKey: Api.spaces.listQueryKeyPrefix() }),
-    queryClient.invalidateQueries({ queryKey: Api.spaces.searchQueryKeyPrefix() }),
-    spaceId
-      ? invalidateMatchingSpaceQueries(queryClient, Api.spaces.listToolsQueryKeyPrefix(), "spaceId", spaceId)
-      : queryClient.invalidateQueries({ queryKey: Api.spaces.listToolsQueryKeyPrefix() }),
-    queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
-    invalidateEmbeddedSpaceNameQueries(queryClient),
-  ]);
-}
-
 export function useCreateSpace() {
   const queryClient = useQueryClient();
 
@@ -40,6 +22,42 @@ export function useEditSpace() {
       void invalidateSpaceLifecycleQueries(queryClient, space?.id ?? id);
     },
   });
+}
+
+export function useUpdateSpaceTools() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...Api.spaces.updateToolsMutationOptions(),
+    onSuccess: (_data, { spaceId }) => {
+      void invalidateSpaceToolsQueries(queryClient, spaceId);
+    },
+  });
+}
+
+export async function invalidateSpaceToolsQueries(queryClient: QueryClient, spaceId: string): Promise<void> {
+  await Promise.all([
+    invalidateMatchingSpaceQueries(queryClient, Api.spaces.getQueryKeyPrefix(), "id", spaceId),
+    invalidateMatchingSpaceQueries(queryClient, Api.spaces.listToolsQueryKeyPrefix(), "spaceId", spaceId),
+  ]);
+}
+
+export async function invalidateSpaceLifecycleQueries(
+  queryClient: QueryClient,
+  spaceId?: string | null,
+): Promise<void> {
+  await Promise.all([
+    spaceId
+      ? invalidateMatchingSpaceQueries(queryClient, Api.spaces.getQueryKeyPrefix(), "id", spaceId)
+      : Promise.resolve(),
+    queryClient.invalidateQueries({ queryKey: Api.spaces.listQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.spaces.searchQueryKeyPrefix() }),
+    spaceId
+      ? invalidateMatchingSpaceQueries(queryClient, Api.spaces.listToolsQueryKeyPrefix(), "spaceId", spaceId)
+      : queryClient.invalidateQueries({ queryKey: Api.spaces.listToolsQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
+    invalidateEmbeddedSpaceNameQueries(queryClient),
+  ]);
 }
 
 async function invalidateMatchingSpaceQueries(
