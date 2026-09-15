@@ -31,6 +31,7 @@ import {
 } from "@/models/resourceHubs/docsQueries";
 import { useChecklists } from "./useChecklists";
 import { loader, useLoadedData, useRefresh } from "./loader";
+import { useGoalContentQueries } from "./contentQueries";
 import { useOptimisticGoalState } from "@/models/goals/useOptimisticGoalState";
 import { assertGoalMutationSucceeded } from "@/models/goals/goalMutation";
 export default { name: "GoalPage", loader, Page } as PageModule;
@@ -38,9 +39,11 @@ export default { name: "GoalPage", loader, Page } as PageModule;
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { data } = useLoadedData();
+  const { data, workMapInput, checkInsInput, discussionsInput } = useLoadedData();
   const refresh = useRefresh();
-  const { goal, workMap, checkIns, discussions, childrenCount } = data;
+  const { goal, childrenCount } = data;
+  const content = useGoalContentQueries({ workMapInput, checkInsInput, discussionsInput });
+  const { workMap, checkIns, discussions } = content;
   const docs = useResourceHubDocsQueries(goal.resourceHub?.id);
   const refreshDocsAndGoal = React.useCallback(async () => {
     await Promise.all([docs.refresh(), refresh()]);
@@ -243,6 +246,15 @@ function Page() {
     checkIns: prepareCheckIns(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     childrenCount,
+    checkInsLoading: content.checkInsLoading,
+    checkInsError: content.checkInsError,
+    onRetryCheckIns: content.retryCheckIns,
+    discussionsLoading: content.discussionsLoading,
+    discussionsError: content.discussionsError,
+    onRetryDiscussions: content.retryDiscussions,
+    relatedWorkLoading: content.relatedWorkLoading,
+    relatedWorkError: content.relatedWorkError,
+    onRetryRelatedWork: content.retryRelatedWork,
     docsAndFiles: goalDocsAndFilesProps,
     docsAndFilesAvailable: docs.available,
     docsAndFilesLoading: docs.loading,

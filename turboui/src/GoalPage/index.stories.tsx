@@ -892,3 +892,56 @@ export const DocsAndFilesError: Story = {
     );
   },
 };
+
+const contentTabParameters = (tab: string) => ({
+  reactRouter: { path: `/goals/goal-1?tab=${tab}`, routePath: "/goals/:id" },
+});
+
+export const CheckInsLoading: Story = {
+  parameters: contentTabParameters("check-ins"),
+  args: { checkInsLoading: true },
+};
+export const DiscussionsLoading: Story = {
+  parameters: contentTabParameters("discussions"),
+  args: { discussionsLoading: true },
+};
+export const RelatedWorkLoading: Story = {
+  parameters: contentTabParameters("overview"),
+  args: { relatedWorkLoading: true },
+};
+
+export const CheckInsError: Story = {
+  parameters: contentTabParameters("check-ins"),
+  render: () => {
+    const [error, setError] = React.useState(true);
+    return (
+      <Component checkInsError={error} checkIns={error ? [] : mockCheckIns} onRetryCheckIns={() => setError(false)} />
+    );
+  },
+};
+export const DiscussionsError: Story = {
+  parameters: contentTabParameters("discussions"),
+  render: () => {
+    const [error, setError] = React.useState(true);
+    return (
+      <Component
+        discussionsError={error}
+        discussions={error ? [] : mockDiscussions}
+        onRetryDiscussions={() => setError(false)}
+      />
+    );
+  },
+};
+export const RelatedWorkError: Story = {
+  parameters: contentTabParameters("overview"),
+  render: () => {
+    const [error, setError] = React.useState(true);
+    return (
+      <Component
+        relatedWorkError={error}
+        relatedWorkItems={error ? [] : mockRelatedWorkItems}
+        onRetryRelatedWork={() => setError(false)}
+      />
+    );
+  },
+};
