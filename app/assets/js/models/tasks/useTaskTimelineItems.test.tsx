@@ -6,6 +6,7 @@ import Api, { Activity, Comment } from "@/api";
 import { useTaskTimelineItems, invalidateTaskTimelineQueries } from "./useTaskTimelineItems";
 import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
+import { waitFor } from "@/__tests__/renderHook";
 
 jest.mock("@/models/activities/feed", () => ({ TASK_ACTIVITY_TYPES: ["task_name_updating"] }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => ({ id: "me" }) }));
@@ -110,10 +111,12 @@ describe("task timelines", () => {
     await act(async () => {
       nextComments.resolve({ comments: [comment("two")] });
       nextActivities.resolve({ activities: [activity("two")] });
-      await tick();
     });
-    expect(hook.comments.map((c) => c.id)).toEqual(["two"]);
-    expect(hook.activities.map((a) => a.id)).toEqual(["two"]);
+    await waitFor(() => {
+      expect(hook.comments.map((c) => c.id)).toEqual(["two"]);
+      expect(hook.activities.map((a) => a.id)).toEqual(["two"]);
+      expect(hook.isLoading).toBe(false);
+    });
   });
 
   it("never displays another task's late response", async () => {
