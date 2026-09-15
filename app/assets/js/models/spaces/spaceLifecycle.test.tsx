@@ -38,6 +38,16 @@ it("invalidates space detail, list, tools, and embedded name queries for include
     Api.goals.getQueryKey({ id: "goal-1", includeSpace: true }),
     Api.goals.listQueryKey({ includeSpace: true }),
     Api.resource_hubs.getQueryKey({ id: "hub-1", includeSpace: true }),
+    Api.resource_hubs.getFolderQueryKey({ id: "folder-1", includeSpace: true }),
+    Api.resource_hubs.getFolderQueryKey({
+      id: "folder-1",
+      includeSpace: true,
+      includeNodes: true,
+      includePathToFolder: true,
+      includeResourceHub: true,
+      includeGoal: true,
+      includeProject: true,
+    }),
   ];
   const unrelated = [
     Api.spaces.getQueryKey({ id: "space-2" }),
@@ -46,6 +56,8 @@ it("invalidates space detail, list, tools, and embedded name queries for include
     Api.projects.getQueryKey({ id: "project-1" }),
     Api.goals.getQueryKey({ id: "goal-1" }),
     Api.resource_hubs.getQueryKey({ id: "hub-1" }),
+    Api.resource_hubs.getFolderQueryKey({ id: "folder-1" }),
+    Api.resource_hubs.getFolderQueryKey({ id: "folder-1", includeSpace: false }),
     Api.comments.listQueryKey({ entityId: "space-1", entityType: "project_task" }),
   ];
 

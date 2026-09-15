@@ -65,6 +65,7 @@ async function invalidateEmbeddedSpaceNameQueries(queryClient: QueryClient): Pro
     Api.goals.getQueryKeyPrefix(),
     Api.goals.listQueryKeyPrefix(),
     Api.resource_hubs.getQueryKeyPrefix(),
+    Api.resource_hubs.getFolderQueryKeyPrefix(),
   ];
 
   await Promise.all(
