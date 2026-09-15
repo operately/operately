@@ -123,6 +123,9 @@ gen.cli.catalog:
 	$(MAKE) cli.node_modules
 	./devenv bash -c "cd cli && npm run gen:commands"
 
+gen.i18n:
+	./devenv bash -c "cd app && mix operately.i18n.extract && mix operately.i18n.convert"
+
 dev.shell:
 	./devenv shell
 

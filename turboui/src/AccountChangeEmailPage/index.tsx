@@ -31,7 +31,7 @@ export function AccountChangeEmailPage(props: AccountChangeEmailPage.Props) {
   const [resending, setResending] = React.useState(false);
   const [resentEmail, setResentEmail] = React.useState<string | null>(null);
   const [clock, setClock] = React.useState(Date.now);
-  const retryAt = React.useMemo(() => Date.now() + state.retryAfter * 1000, [state]);
+  const retryAt = React.useMemo(() => clock + state.retryAfter * 1000, [state]);
 
   React.useEffect(() => {
     const timer = setInterval(() => setClock(Date.now()), 1000);

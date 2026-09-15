@@ -1,22 +1,20 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { i18nOptions } from "./i18nOptions";
 
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
-    lng: "en",
+    ...i18nOptions,
     resources: {
       en: {
         translation: {
           intlRelativeDateTime: "{{val, relativetime}}",
-          intlRelativeDateTimeJustNow: "just now",
+          "just now": "just now",
           Today: "Today",
           Yesterday: "Yesterday",
           Tomorrow: "Tomorrow",
         },
       },
-    },
-    interpolation: {
-      escapeValue: false,
     },
   });
 }
