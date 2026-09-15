@@ -1,0 +1,36 @@
+name: Preview environment
+
+# The preview host builds Operately from source, so it only needs a PR number.
+# See https://github.com/operately/preview/blob/main/docs/ci.md
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    name: ${{ github.event.action == 'closed' && 'Destroy preview' || 'Deploy preview' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy preview
+        if: github.event.action != 'closed'
+        env:
+          PREVIEW_API_URL: ${{ secrets.PREVIEW_API_URL }}
+          PREVIEW_API_TOKEN: ${{ secrets.PREVIEW_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash scripts/preview_ci.sh upsert
+
+      - name: Destroy preview
+        if: github.event.action == 'closed'
+        env:
+          PREVIEW_API_URL: ${{ secrets.PREVIEW_API_URL }}
+          PREVIEW_API_TOKEN: ${{ secrets.PREVIEW_API_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash scripts/preview_ci.sh destroy
