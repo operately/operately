@@ -14,6 +14,7 @@ import type { RichEditorHandlers } from "./useEditor";
 export type CreateRichEditorExtensionsOptions = {
   editable?: boolean;
   placeholder?: string;
+  thumbnailBlobs?: boolean;
 };
 
 // Levels that get a markdown input rule ("# ", "## "), matching the
@@ -76,6 +77,7 @@ export function createRichEditorExtensions(
     Blob.configure({
       uploadFile: handlers.uploadFile,
       editable,
+      thumbnail: options.thumbnailBlobs,
     }),
     linkExtension,
   ];

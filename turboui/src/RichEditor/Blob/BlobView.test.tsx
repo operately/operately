@@ -49,4 +49,27 @@ describe("BlobView image preview", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(closeSlideIn).toHaveBeenCalledTimes(1);
   });
+
+  it("renders a compact image thumbnail without download links", () => {
+    render(
+      <BlobView
+        node={{
+          attrs: {
+            filetype: "image/png",
+            src: "https://example.com/image.png",
+            alt: "Example image",
+            title: "Example image",
+          },
+        }}
+        deleteNode={jest.fn()}
+        updateAttributes={jest.fn()}
+        editor={{ view: { editable: false } }}
+        extension={{ options: { thumbnail: true } }}
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "Example image" })).toHaveAttribute("src", "https://example.com/image.png");
+    expect(screen.queryByText("Download")).not.toBeInTheDocument();
+    expect(screen.queryByText("View original")).not.toBeInTheDocument();
+  });
 });
