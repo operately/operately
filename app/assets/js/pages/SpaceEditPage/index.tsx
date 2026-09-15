@@ -9,25 +9,17 @@ import { useNavigate } from "react-router";
 import { Forms } from "turboui";
 
 import { usePaths } from "@/routes/paths";
+import { loader, useLoadedData } from "./loader";
+
 export default { name: "SpaceEditPage", loader, Page } as PageModule;
-
-interface LoaderResult {
-  space: Spaces.Space;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    space: await Spaces.getSpace({ id: params.id }),
-  };
-}
 
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { space } = Pages.useLoadedData<LoaderResult>();
+  const { space } = useLoadedData();
 
-  const [edit] = Spaces.useEditSpace();
-  const backPath = paths.spacePath(space.id!);
+  const edit = Spaces.useEditSpace();
+  const backPath = paths.spacePath(space.id);
 
   const form = Forms.useForm({
     fields: {
@@ -35,8 +27,8 @@ function Page() {
       purpose: space.mission || "",
     },
     submit: async () => {
-      await edit({
-        id: space.id!,
+      await edit.mutateAsync({
+        id: space.id,
         name: form.values.name,
         mission: form.values.purpose,
       });
@@ -47,7 +39,7 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={["Edit Space", space.name!]}>
+    <Pages.Page title={["Edit Space", space.name]}>
       <Paper.Root size="small">
         <Paper.Body minHeight="none">
           <Forms.Form form={form}>
