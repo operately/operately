@@ -68,7 +68,7 @@ defmodule Operately.I18n.Po do
         to_expo(message)
 
       existing ->
-        translated = message |> Message.merge(from_expo(existing)) |> to_expo()
+        translated = message |> preserve_compatible_translation(from_expo(existing)) |> to_expo()
 
         %{
           translated
@@ -79,6 +79,12 @@ defmodule Operately.I18n.Po do
         }
     end
   end
+
+  defp preserve_compatible_translation(%Message{msgid_plural: plural} = message, %Message{msgid_plural: plural} = existing) do
+    %{message | msgstr: existing.msgstr, msgstr_plural: existing.msgstr_plural}
+  end
+
+  defp preserve_compatible_translation(message, _existing), do: message
 
   defp from_expo(%Singular{} = message) do
     %Message{
