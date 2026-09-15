@@ -237,6 +237,7 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     ctx
     |> UI.click(testid: "publish-now")
     |> UI.assert_has(testid: "discussion-page")
+    |> UI.refute_has(testid: "publish-now")
   end
 
   step :leave_a_comment, ctx do
@@ -518,6 +519,121 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :assert_comment_deleted, ctx do
     ctx
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
+  step :set_page_reload_marker, ctx do
+    UI.execute("set_page_reload_marker", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "window.discussionPageReloadMarker = true")
+    end)
+  end
+
+  step :assert_page_was_not_reloaded, ctx do
+    UI.execute("assert_page_was_not_reloaded", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "return window.discussionPageReloadMarker === true", fn present ->
+        assert present
+      end)
+    end)
+  end
+
+  step :return_to_discussion_board, ctx do
+    ctx
+    |> UI.click(css: "a[href='#{Paths.space_discussions_path(ctx.company, ctx.marketing_space)}']")
+    |> UI.assert_has(testid: "discussions-page")
+  end
+
+  step :open_posted_discussion, ctx do
+    ctx
+    |> UI.click(testid: "discussion-list-item-this-is-a-discussion")
+    |> UI.assert_has(testid: "discussion-page")
+  end
+
+  step :assert_published_on_cached_board, ctx do
+    ctx
+    |> return_to_discussion_board()
+    |> UI.assert_has(testid: "discussion-list-item-this-is-a-discussion")
+    |> UI.refute_has(testid: "continue-editing-draft")
+  end
+
+  step :assert_edit_on_cached_board, ctx do
+    ctx
+    |> return_to_discussion_board()
+    |> UI.assert_has(testid: "discussion-list-item-this-is-an-edited-discussion")
+    |> UI.refute_has(testid: "discussion-list-item-this-is-a-discussion")
+  end
+
+  step :comment_as_author, ctx do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment.")
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "post-comment")
+    |> UI.assert_has(css: "div[id][data-test-id^='comment-']")
+  end
+
+  step :assert_comment_count_on_cached_board, ctx, count do
+    ctx = return_to_discussion_board(ctx)
+
+    if count == 0 do
+      UI.refute_has(ctx, css: "[data-test-id='discussion-comment-count'] svg")
+    else
+      UI.assert_text(ctx, "#{count}", testid: "discussion-comment-count")
+    end
+  end
+
+  step :add_discussion_reaction, ctx do
+    ctx
+    |> UI.click(css: "[data-test-id='discussion-reactions'] [aria-haspopup='dialog']")
+    |> UI.click(testid: "reaction-👍-button")
+    |> UI.assert_has(css: "[data-test-id='discussion-reactions'] [data-reaction-item]")
+  end
+
+  step :assert_discussion_reaction, ctx do
+    UI.assert_has(ctx, css: "[data-test-id='discussion-reactions'] [data-reaction-item]")
+  end
+
+  step :remove_discussion_reaction, ctx do
+    ctx
+    |> UI.click(css: "[data-test-id='discussion-reactions'] [data-reaction-item]")
+    |> UI.click(css: "[data-test-id='discussion-reactions'] [title='Remove reaction']")
+    |> assert_no_discussion_reaction()
+  end
+
+  step :assert_no_discussion_reaction, ctx do
+    UI.refute_has(ctx, css: "[data-test-id='discussion-reactions'] [data-reaction-item]")
+  end
+
+  step :open_discussion_with_unread_notification, ctx do
+    import Ecto.Query
+
+    message = last_message(ctx)
+
+    notification =
+      Operately.Repo.one!(
+        from n in Operately.Notifications.Notification,
+          join: a in assoc(n, :activity),
+          where: n.person_id == ^ctx.reader.id and a.action == "discussion_posting"
+      )
+
+    refute notification.read
+
+    ctx =
+      ctx
+      |> UI.login_as(ctx.reader)
+      |> UI.visit(Paths.message_path(ctx.company, message))
+      |> UI.assert_has(testid: "discussion-page")
+
+    Map.put(ctx, :discussion_notification, notification)
+  end
+
+  step :assert_discussion_notification_read, ctx do
+    ctx =
+      ctx
+      |> return_to_discussion_board()
+      |> open_posted_discussion()
+      |> UI.assert_has(testid: "unsubscribe")
+
+    assert Operately.Repo.reload!(ctx.discussion_notification).read
+    ctx
   end
 
   #

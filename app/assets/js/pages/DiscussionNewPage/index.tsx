@@ -1,8 +1,8 @@
+import { loader, useLoadedData } from "./loader";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Spaces from "@/models/spaces";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -12,22 +12,9 @@ import { GhostButton, Link, ScheduleFlowControls, SubscribersSelector } from "tu
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  space: Spaces.Space;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    space: await Spaces.getSpace({
-      id: params.id,
-      includePotentialSubscribers: true,
-    }),
-  };
-}
-
 function Page() {
-  const { space } = Pages.useLoadedData<LoaderResult>();
-  const form = useForm({ space: space, mode: "create", potentialSubscribers: space.potentialSubscribers! });
+  const { space } = useLoadedData();
+  const form = useForm({ space: space, mode: "create", potentialSubscribers: space.potentialSubscribers ?? [] });
 
   return (
     <Pages.Page title="New Discussion" testId="new-discussion">
@@ -93,5 +80,5 @@ function DiscardLink({ form }: { form: FormState }) {
 
 function Navigation({ space }) {
   const paths = usePaths();
-  return <Paper.Navigation items={[{ to: paths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.spaceDiscussionsPath(space.id), label: space.name }]} />;
 }

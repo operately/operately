@@ -1,3 +1,4 @@
+import { loader, useLoadedData } from "./loader";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
@@ -8,38 +9,32 @@ import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { PageModule } from "@/routes/types";
-import { DiscardDiscussionDraftModal, GhostButton, Link, PrimaryButton, ScheduleFlowControls } from "turboui";
+import {
+  ActionLink,
+  DiscardDiscussionDraftModal,
+  GhostButton,
+  Link,
+  PrimaryButton,
+  ScheduleFlowControls,
+} from "turboui";
 import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionEditPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  discussion: Discussions.Discussion;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    discussion: await Discussions.getDiscussion({
-      id: params.id,
-      includeSpace: true,
-    }).then((d) => d.discussion!),
-  };
-}
-
 function Page() {
-  const { discussion } = Pages.useLoadedData<LoaderResult>();
+  const { discussion } = useLoadedData();
 
   const form = useForm({
     discussion: discussion,
-    space: discussion.space!,
+    space: discussion.space,
     mode: "edit",
   });
 
   return (
     <Pages.Page title="Edit Discussion" testId="discussion-edit-page">
       <Paper.Root>
-        <Navigation space={discussion.space!} />
+        <Navigation space={discussion.space} />
 
         <Paper.Body>
           <Form form={form}>
@@ -52,7 +47,7 @@ function Page() {
 }
 
 function Submit({ form }: { form: FormState }) {
-  const { discussion } = Pages.useLoadedData<LoaderResult>();
+  const { discussion } = useLoadedData();
   const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
   const isScheduled = discussion.state === "scheduled";
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -121,10 +116,10 @@ function CancelLink({ form }: { form: FormState }) {
   );
 }
 
-function DiscardDraftLink({ discussion }: { discussion: Discussions.Discussion }) {
+function DiscardDraftLink({ discussion }: { discussion: ReturnType<typeof useLoadedData>["discussion"] }) {
   const paths = usePaths();
   const navigate = useNavigate();
-  const [archive] = Discussions.useArchiveMessage();
+  const { mutateAsync: archive } = Discussions.useArchiveMessage(discussion.space.id);
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
   const handleRedirect = () => {
@@ -137,13 +132,20 @@ function DiscardDraftLink({ discussion }: { discussion: Discussions.Discussion }
 
   return (
     <>
-      <button type="button" onClick={toggleDiscardModal} className="font-medium" data-test-id="discard-draft">
+      <ActionLink
+        onClick={toggleDiscardModal}
+        className="font-medium !text-inherit"
+        underline="hover"
+        testId="discard-draft"
+      >
         Discard draft
-      </button>
+      </ActionLink>
       <DiscardDiscussionDraftModal
         isOpen={showDiscardModal}
         onClose={toggleDiscardModal}
-        onDiscard={() => archive({ id: discussion.id! })}
+        onDiscard={async () => {
+          await archive({ id: discussion.id });
+        }}
         onSuccess={handleRedirect}
       />
     </>
