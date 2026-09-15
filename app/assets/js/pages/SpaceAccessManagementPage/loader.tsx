@@ -1,39 +1,47 @@
 import Api from "@/api";
 import * as Pages from "@/components/Pages";
-import * as Spaces from "@/models/spaces";
 import * as People from "@/models/people";
 
 import { compareIds } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
+import { useLoadedQuery } from "@/api/queryClient";
 
-interface LoaderResult {
-  space: Spaces.Space;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  const space = await Spaces.getSpace({
+export async function loader({ params }) {
+  const queryInput = {
     id: params.id,
     includePermissions: true,
     includeMembersAccessLevels: true,
     includeAccessLevels: true,
     includePotentialSubscribers: true,
-  });
+  };
 
-  return { space: space };
+  await Api.spaces.getQuery(queryInput);
+  return { queryInput };
 }
 
 export function useLoadedData() {
-  return Pages.useLoadedData() as LoaderResult;
+  const { queryInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { data } = useLoadedQuery(Api.spaces.getQueryOptions(queryInput));
+  const space = data?.space;
+
+  if (!space?.id) throw new Error(`Space data is unavailable for space "${queryInput.id}"`);
+  if (!space.permissions) throw new Error("Space permissions are unavailable");
+  if (!space.accessLevels) throw new Error("Space access levels are unavailable");
+  if (!space.members) throw new Error("Space members are unavailable");
+
+  return {
+    space: { ...space, permissions: space.permissions, accessLevels: space.accessLevels, members: space.members },
+  };
 }
 
 export function useBindedPeopleList(): { people: People.Person[] | undefined; loading: boolean } {
   const { space } = useLoadedData();
-  const { data, loading } = Api.people.useGetBinded({ resourseType: "space", resourseId: space.id! });
-  if (loading) return { people: undefined, loading: true };
+  const { data, isLoading } = People.useGetBinded({ resourseType: "space", resourseId: space.id });
 
-  assertPresent(space.members, "Space members are required");
+  if (isLoading) return { people: undefined, loading: true };
 
-  const people = data?.people!.filter((p) => !space.members!.some((m) => compareIds(m.id, p.id)));
+  const people = (data?.people ?? []).filter(
+    (person) => !space.members.some((member) => compareIds(member.id, person.id)),
+  );
 
   return { people, loading: false };
 }
