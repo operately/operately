@@ -1,14 +1,15 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
-import React from "react";
+import React, { act } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import { setImmediate } from "timers";
 import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { renderHook } from "@/__tests__/renderHook";
+import { renderHook, waitFor } from "@/__tests__/renderHook";
 import { invalidateGoalPageQueries } from "@/models/goals/goalPageQueries";
 import { loader, useLoadedData } from "./loader";
+import { useGoalContentQueries } from "./contentQueries";
 
 jest.mock("axios");
 jest.mock("react-router", () => ({}));
@@ -195,7 +196,7 @@ it("loads overview content when docs are requested without a resource hub", asyn
   ]);
 });
 
-it.each(["/api/v2/goals/get", "/api/v2/goals/count_children", "/api/v2/goals/list_check_ins"])(
+it.each(["/api/v2/goals/get", "/api/v2/goals/count_children"])(
   "propagates required request failures: %s",
   async (failedPath) => {
     jest
@@ -221,13 +222,47 @@ it("supports loader calls without a request", async () => {
 });
 
 it.each([
-  ["overview", "/api/v2/companies/get_work_map"],
-  ["discussions", "/api/v2/goals/list_discussions"],
-])("propagates selected %s failures", async (tab, failedPath) => {
-  jest
-    .mocked(axios.get)
-    .mockImplementation((path) =>
-      path === failedPath ? Promise.reject(new Error("Unavailable")) : Promise.resolve(response()),
+  [undefined, "/api/v2/companies/get_work_map", "relatedWorkError", "retryRelatedWork"],
+  ["overview", "/api/v2/companies/get_work_map", "relatedWorkError", "retryRelatedWork"],
+  ["check-ins", "/api/v2/goals/list_check_ins", "checkInsError", "retryCheckIns"],
+  ["discussions", "/api/v2/goals/list_discussions", "discussionsError", "retryDiscussions"],
+  ["docs-and-files", "/api/v2/companies/get_work_map", "relatedWorkError", "retryRelatedWork"],
+] as const)(
+  "mounts after a %s content failure and recovers through Retry",
+  async (tab, failedPath, errorField, retryField) => {
+    const error = new Error("Content unavailable");
+    jest
+      .mocked(axios.get)
+      .mockImplementation((path) => (path === failedPath ? Promise.reject(error) : Promise.resolve(response())));
+
+    const inputs = await visit(tab);
+    const failedQueries = queryClient
+      .getQueryCache()
+      .getAll()
+      .filter((query) => query.state.status === "error");
+    expect(failedQueries).toHaveLength(1);
+    expect(failedQueries[0]?.state.error).toBe(error);
+    jest.mocked(Pages.useLoadedData).mockReturnValue(inputs);
+
+    const { result } = renderHook(
+      () => {
+        const loaded = useLoadedData();
+        const content = useGoalContentQueries(loaded);
+        return { goal: loaded.data.goal, content };
+      },
+      {
+        initialProps: undefined,
+        wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+      },
     );
-  await expect(visit(tab)).rejects.toThrow("Unavailable");
-});
+    await waitFor(() => expect(result.current.content[errorField]).toBe(true));
+    expect(result.current.goal.id).toBe("goal1");
+
+    jest.mocked(axios.get).mockClear();
+    jest.mocked(axios.get).mockResolvedValue(response());
+    act(() => result.current.content[retryField]());
+    await waitFor(() => expect(failedQueries[0]?.state.status).toBe("success"));
+    await waitFor(() => expect(result.current.content[errorField]).toBe(false));
+    expect(requestedPaths()).toEqual([failedPath]);
+  },
+);

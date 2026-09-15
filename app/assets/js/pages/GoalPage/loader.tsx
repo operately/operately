@@ -39,8 +39,8 @@ export async function loader({ params, request }: { params: { id: string }; requ
     if (tab !== "docs-and-files") return;
 
     if (!goal.resourceHub?.id) {
-      // The page falls back to Overview when docs are unavailable.
-      await Api.companies.getWorkMapQuery(contentInputs.workMapInput);
+      // The page falls back to Overview, where related work errors remain recoverable.
+      await Api.companies.getWorkMapQuery(contentInputs.workMapInput).catch(() => undefined);
       return;
     }
 
@@ -48,7 +48,8 @@ export async function loader({ params, request }: { params: { id: string }; requ
     await prefetchResourceHubDocs(resourceHubDocsInputs(goal.resourceHub.id)).catch(() => undefined);
   });
 
-  await Promise.all([core, Api.goals.countChildrenQuery(childrenInput), selectedContent]);
+  // Tab queries retain errors in the cache so their sections can render Retry.
+  await Promise.all([core, Api.goals.countChildrenQuery(childrenInput), selectedContent.catch(() => undefined)]);
 
   return { goalInput, childrenInput, ...contentInputs };
 }
