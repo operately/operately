@@ -13,7 +13,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 
 import { loader, useLoadedData, useRefresh } from "./loader";
 
@@ -131,17 +131,17 @@ function Subscriptions() {
   const refresh = useRefresh();
   const { activity, project, isCurrentUserSubscribed } = useLoadedData();
 
-  if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
-    return null;
-  }
-
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
-    potentialSubscribers: activity.commentThread.potentialSubscribers,
-    subscriptionList: activity.commentThread.subscriptionList,
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
+    potentialSubscribers: activity.commentThread?.potentialSubscribers ?? [],
+    subscriptionList: activity.commentThread?.subscriptionList,
     resourceName: "discussion",
     type: "comment_thread",
     onRefresh: refresh,
   });
+
+  if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
+    return null;
+  }
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">

@@ -6,7 +6,7 @@ import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { CommentSection, useForProjectRetrospective } from "@/features/CommentSection";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import {
   AvatarWithName,
   IconEdit,
@@ -170,17 +170,17 @@ function Subscriptions() {
   const { retrospective, isCurrentUserSubscribed } = useLoadedData();
   const refresh = useRefresh();
 
-  if (!retrospective.potentialSubscribers || !retrospective.subscriptionList) {
-    return null;
-  }
-
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
-    potentialSubscribers: retrospective.potentialSubscribers,
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
+    potentialSubscribers: retrospective.potentialSubscribers ?? [],
     subscriptionList: retrospective.subscriptionList,
     resourceName: "project retrospective",
     type: "project_retrospective",
     onRefresh: refresh,
   });
+
+  if (!retrospective.potentialSubscribers || !retrospective.subscriptionList) {
+    return null;
+  }
 
   return (
     <>
