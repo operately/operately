@@ -3,7 +3,13 @@ import { SpaceField } from "turboui/src/SpaceField";
 import { Paths, usePaths } from "../../routes/paths";
 
 export { invalidateSpaceTaskQueries, useUpdateSpaceKanban, useUpdateSpaceTaskStatuses } from "./spaceTaskLifecycle";
-export { invalidateSpaceLifecycleQueries, useCreateSpace, useEditSpace } from "./spaceLifecycle";
+export {
+  invalidateSpaceLifecycleQueries,
+  invalidateSpaceToolsQueries,
+  useCreateSpace,
+  useEditSpace,
+  useUpdateSpaceTools,
+} from "./spaceLifecycle";
 
 export type { Space, SpaceTools } from "@/api";
 
