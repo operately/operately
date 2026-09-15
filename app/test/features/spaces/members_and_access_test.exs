@@ -6,8 +6,30 @@ defmodule Operately.Features.Spaces.MembersAndAccessTest do
 
   alias Operately.Access.Binding
   alias Operately.Support.Features.SpacesSteps, as: Steps
+  alias Operately.Support.Features.Spaces.MembersAndAccessSteps, as: AccessSteps
 
   setup ctx, do: Steps.setup(ctx)
+
+  feature "membership changes refresh inherited access without reloading", ctx do
+    ctx
+    |> AccessSteps.given_inherited_access()
+    |> AccessSteps.visit_access_management()
+    |> AccessSteps.assert_inherited_access()
+    |> AccessSteps.add_member()
+    |> AccessSteps.assert_no_inherited_access()
+    |> AccessSteps.remove_member()
+    |> AccessSteps.assert_page_was_not_reloaded()
+  end
+
+  feature "changing general access refreshes inherited access after returning", ctx do
+    ctx
+    |> AccessSteps.given_inherited_access()
+    |> AccessSteps.visit_access_management()
+    |> AccessSteps.assert_inherited_access()
+    |> AccessSteps.remove_general_company_access()
+    |> AccessSteps.assert_no_inherited_access()
+    |> AccessSteps.assert_page_was_not_reloaded()
+  end
 
   feature "joining a space", ctx do
     group = group_fixture(ctx.creator, %{name: "Marketing", company_permissions: Binding.view_access()})
