@@ -1,3 +1,5 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
@@ -15,12 +17,20 @@ import { useNavigate } from "react-router";
 
 export default { name: "SpaceAddMembersPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  space: Spaces.Space;
+async function loader({ params }) {
+  const queryInput = { id: params.id };
+  await Api.spaces.getQuery(queryInput);
+
+  return { queryInput };
 }
 
-async function loader({ params }): Promise<LoaderResult> {
-  const space = await Spaces.getSpace({ id: params.id });
+function useLoadedData() {
+  const { queryInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { data } = useLoadedQuery(Api.spaces.getQueryOptions(queryInput));
+  const space = data?.space;
+
+  if (!space?.id) throw new Error(`Space data is unavailable for space "${queryInput.id}"`);
+
   return { space: space };
 }
 
@@ -39,11 +49,12 @@ function newMember() {
 }
 
 function Page() {
-  const { space } = Pages.useLoadedData() as LoaderResult;
   const paths = usePaths();
-  const backPath = paths.spaceAccessManagementPath(space.id!);
   const navigate = useNavigate();
-  const [add] = Spaces.useAddSpaceMembers();
+
+  const { space } = useLoadedData();
+  const backPath = paths.spaceAccessManagementPath(space.id);
+  const { mutateAsync: add } = Spaces.useAddSpaceMembers();
 
   const form = Forms.useForm({
     fields: {
@@ -60,7 +71,7 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={["Add members", space.name!]}>
+    <Pages.Page title={["Add members", space.name]}>
       <Paper.Root size="small">
         <Paper.NavigateBack to={backPath} title="Back to Team & Access" />
         <div className="text-2xl font-extrabold mb-4 text-center">Add members to {space.name}</div>
@@ -141,24 +152,25 @@ function RemoveMemberButton({ index }) {
 
   return (
     <div className="absolute" style={{ top: "-14px", right: "-14px" }}>
-      <div
-        className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface-base"
+      <SecondaryButton
+        ariaLabel="Remove member"
+        className="!rounded-full !p-2 !text-content-subtle hover:!text-content-accent hover:!bg-surface-base"
         onClick={onClick}
       >
         <IconX size={16} />
-      </div>
+      </SecondaryButton>
     </div>
   );
 }
 
 function useSearch() {
-  const { space } = Pages.useLoadedData() as LoaderResult;
+  const { space } = useLoadedData();
 
   return React.useCallback(
     async (query: string): Promise<People.Person[]> => {
       const res = await Spaces.searchPotentialSpaceMembers({ spaceId: space.id, query });
 
-      return res.people as People.Person[];
+      return res.people ?? [];
     },
     [space.id],
   );

@@ -13,14 +13,18 @@ export {
 
 export type { Space, SpaceTools } from "@/api";
 
+export {
+  invalidateSpaceAccessQueries,
+  useAddSpaceMembers,
+  useRemoveGroupMember,
+  useEditSpaceMembersPermissions,
+  useEditSpacePermissions,
+} from "./spaceAccessLifecycle";
+
 export const listSpaceTools = Api.spaces.listTools;
 export const searchPotentialSpaceMembers = Api.spaces.searchPotentialMembers;
-export const useAddSpaceMembers = Api.spaces.useAddMembers;
 export const useDeleteSpace = Api.spaces.useDelete;
-export const useEditSpaceMembersPermissions = Api.spaces.useUpdateMembersPermissions;
-export const useEditSpacePermissions = Api.spaces.useUpdatePermissions;
 export const useJoinSpace = Api.spaces.useJoin;
-export const useRemoveGroupMember = Api.spaces.useDeleteMember;
 
 export async function getSpace(params: api.SpacesGetInput): Promise<api.Space> {
   return await Api.spaces.get(params).then((res) => res.space!);

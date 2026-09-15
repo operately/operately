@@ -23,7 +23,6 @@ import {
 import { OtherPeople } from "./OtherPeople";
 
 import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
-import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
 
@@ -31,7 +30,7 @@ export function Page() {
   const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={space.name!} testId="space-access-management-page">
+    <Pages.Page title={space.name} testId="space-access-management-page">
       <Paper.Root>
         <Navigation space={space} />
 
@@ -50,9 +49,7 @@ export function Page() {
 function Title() {
   const { space } = useLoadedData();
   const paths = usePaths();
-  const addMembersPath = paths.spaceAddMembersPath(space.id!);
-
-  assertPresent(space.permissions, "Space permissions must be present");
+  const addMembersPath = paths.spaceAddMembersPath(space.id);
 
   return (
     <div className="rounded-t-[20px]">
@@ -74,16 +71,13 @@ function Title() {
 
 function Navigation({ space }: { space: Space }) {
   const paths = usePaths();
-  return <Paper.Navigation items={[{ to: paths.spacePath(space.id!), label: space.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.spacePath(space.id), label: space.name }]} />;
 }
 
 function GeneralAccess() {
   const { space } = useLoadedData();
   const paths = usePaths();
-  const editPath = paths.spaceEditGeneralAccessPath(space.id!);
-
-  assertPresent(space.accessLevels, "Space access levels must be present");
-  assertPresent(space.permissions, "Space permissions must be present");
+  const editPath = paths.spaceEditGeneralAccessPath(space.id);
 
   return (
     <PageSection title="General Access">
@@ -108,8 +102,6 @@ function GeneralAccess() {
 function SpaceManagers() {
   const { space } = useLoadedData();
 
-  assertPresent(space.members, "Space members must be present");
-
   const subtitle = "Managers have full access to resources in this space, including team and access management.";
   const managers = space.members.filter((member) => member.accessLevel === PermissionLevels.FULL_ACCESS);
 
@@ -126,8 +118,6 @@ function SpaceManagers() {
 
 function SpaceMembers() {
   const { space } = useLoadedData();
-
-  assertPresent(space.members, "Space members must be present");
 
   const members = space.members.filter((member) => member.accessLevel !== PermissionLevels.FULL_ACCESS);
 
@@ -175,7 +165,7 @@ function MemberMenu({ member }: { member: People.Person }) {
   if (!editPerms) return null;
 
   return (
-    <Menu testId={createTestId("member-menu", member!.fullName!)} size="medium">
+    <Menu testId={createTestId("member-menu", member.fullName)} size="medium">
       <PromoteToManagerMenuItem member={member} hidden={!editPerms} />
       <DemoteToMemberMenuItem member={member} hidden={!editPerms} />
       <ChangeAccessLevelMenuItem member={member} hidden={!editPerms || isManager} />
@@ -186,14 +176,12 @@ function MemberMenu({ member }: { member: People.Person }) {
 
 function PromoteToManagerMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
   const { space } = useLoadedData();
-  const refresh = Pages.useRefresh();
-  const [edit] = useEditSpaceMembersPermissions();
+  const { mutateAsync: edit } = useEditSpaceMembersPermissions();
 
   if (member.accessLevel === PermissionLevels.FULL_ACCESS) return null;
 
   const handleClick = async () => {
     await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel: PermissionLevels.FULL_ACCESS }] });
-    refresh();
   };
 
   return (
@@ -205,14 +193,12 @@ function PromoteToManagerMenuItem({ member, hidden }: { member: People.Person; h
 
 function DemoteToMemberMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
   const { space } = useLoadedData();
-  const refresh = Pages.useRefresh();
-  const [edit] = useEditSpaceMembersPermissions();
+  const { mutateAsync: edit } = useEditSpaceMembersPermissions();
 
   if (member.accessLevel !== PermissionLevels.FULL_ACCESS) return null;
 
   const handleClick = async () => {
     await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel: PermissionLevels.EDIT_ACCESS }] });
-    refresh();
   };
 
   return (
@@ -224,12 +210,10 @@ function DemoteToMemberMenuItem({ member, hidden }: { member: People.Person; hid
 
 function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
   const { space } = useLoadedData();
-  const refresh = Pages.useRefresh();
-  const [remove] = useRemoveGroupMember();
+  const { mutateAsync: remove } = useRemoveGroupMember();
 
   const handleClick = async () => {
     await remove({ spaceId: space.id, memberId: member.id });
-    refresh();
   };
 
   return (
@@ -241,12 +225,10 @@ function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidde
 
 function ChangeAccessLevelMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
   const { space } = useLoadedData();
-  const refresh = Pages.useRefresh();
-  const [edit] = useEditSpaceMembersPermissions();
+  const { mutateAsync: edit } = useEditSpaceMembersPermissions();
 
   const handleClick = async (accessLevel: AccessOptionsInt) => {
     await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel }] });
-    refresh();
   };
 
   return (

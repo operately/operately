@@ -1,3 +1,5 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
@@ -12,21 +14,29 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { usePaths } from "@/routes/paths";
 export default { name: "SpaceEditGeneralAccessPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  space: Spaces.Space;
+async function loader({ params }) {
+  const queryInput = { id: params.id, includeAccessLevels: true };
+  await Api.spaces.getQuery(queryInput);
+
+  return { queryInput };
 }
 
-async function loader({ params }): Promise<LoaderResult> {
-  const space = await Spaces.getSpace({ id: params.id, includeAccessLevels: true });
+function useLoadedData() {
+  const { queryInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { data } = useLoadedQuery(Api.spaces.getQueryOptions(queryInput));
+  const space = data?.space;
 
-  return { space: space };
+  if (!space?.id) throw new Error(`Space data is unavailable for space "${queryInput.id}"`);
+  if (!space.accessLevels) throw new Error("Space access levels are unavailable");
+
+  return { space: { ...space, accessLevels: space.accessLevels } };
 }
 
 function Page() {
-  const { space } = Pages.useLoadedData<LoaderResult>();
+  const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit General Access", space.name!]}>
+    <Pages.Page title={["Edit General Access", space.name]}>
       <Paper.Root size="small">
         <Paper.Body>
           <h1 className="text-2xl font-extrabold">Edit General Access</h1>
@@ -39,10 +49,10 @@ function Page() {
 
 function Form() {
   const paths = usePaths();
-  const { space } = Pages.useLoadedData();
+  const { space } = useLoadedData();
 
-  const navigateBack = useNavigateTo(paths.spaceAccessManagementPath(space.id!));
-  const [edit] = Spaces.useEditSpacePermissions();
+  const navigateBack = useNavigateTo(paths.spaceAccessManagementPath(space.id));
+  const { mutateAsync: edit } = Spaces.useEditSpacePermissions();
 
   const form = Forms.useForm({
     fields: {
@@ -53,7 +63,7 @@ function Form() {
     },
     submit: async () => {
       await edit({
-        spaceId: space.id!,
+        spaceId: space.id,
         accessLevels: {
           __typename: "access_levels",
           public: form.values.access.anonymous,
