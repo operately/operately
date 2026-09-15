@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Api, { type Comment, type Person, type CommentsUpdateInput } from "@/api";
 import { useCommentSection } from "./useCommentSection";
+import { renderHook, waitFor } from "@/__tests__/renderHook";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useReloadCommentsSignal } from "@/signals";
 import { type CommentQueryInvalidator } from "@/models/comments/commentLifecycle";
@@ -149,3 +150,50 @@ it.each(["goal_update", "goal_discussion", "project_check_in", "message"] as con
     }
   },
 );
+
+it("keeps cached comments visible when a background refresh fails", async () => {
+  Api.default.setBasePath("/api/v2");
+  Api.default.setHeaders({});
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+  const entity = { id: "discussion1", type: "message" as const };
+  const key = Api.comments.listQueryKey({ entityId: entity.id, entityType: entity.type });
+  const comment = {
+    id: "comment1",
+    insertedAt: "2026-09-10T10:00:00Z",
+    content: "{}",
+    author: { id: "me", fullName: "Me" },
+  };
+  client.setQueryData(key, { comments: [comment] });
+  const options = Api.comments.listQueryOptions;
+  const error = new Error("Offline");
+  jest.spyOn(Api.comments, "listQueryOptions").mockImplementation((input) => ({
+    ...options(input),
+    queryFn: async () => {
+      throw error;
+    },
+  }));
+  const { result, rerender, unmount } = renderHook(
+    () =>
+      useCommentSection({
+        entity,
+        mentionSearchScope: { type: "space", id: "space1" },
+        invalidateQueries: async () => {},
+        canComment: true,
+      }),
+    {
+      initialProps: undefined,
+      wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    },
+  );
+  try {
+    await act(() => client.invalidateQueries({ queryKey: key }));
+    await waitFor(() => expect(client.getQueryState(key)?.error).toBe(error));
+    rerender(undefined);
+    expect(result.current?.items).toHaveLength(1);
+    expect(result.current?.items[0]?.type).toBe("comment");
+  } finally {
+    unmount();
+    client.clear();
+    jest.restoreAllMocks();
+  }
+});
