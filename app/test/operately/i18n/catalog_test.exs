@@ -1,5 +1,5 @@
 defmodule Operately.I18n.CatalogTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias Operately.I18n.{Catalog, Locale}
 
@@ -92,6 +92,45 @@ defmodule Operately.I18n.CatalogTest do
   test "maps gettext directory names to BCP 47 locale codes" do
     assert Locale.to_bcp47("pt_BR") == "pt-BR"
     assert Locale.to_gettext("pt-BR") == "pt_BR"
+  end
+
+  test "preserves locale headers during extraction", %{pot_path: pot_path, po_root: po_root, po_path: po_path} do
+    headers = Expo.PO.parse_string!(File.read!(po_path)).headers
+
+    Catalog.extract(extract_opts(pot_path, po_root))
+
+    assert Expo.PO.parse_string!(File.read!(po_path)).headers == headers
+  end
+
+  test "keeps missing translations obsolete and restores them when their source returns", ctx do
+    opts = extract_opts(ctx.pot_path, ctx.po_root)
+    original = Expo.PO.parse_string!(File.read!(ctx.po_path)).messages
+
+    Catalog.extract(Keyword.merge(opts, elixir_files: [], frontend_files: []))
+    obsolete = Expo.PO.parse_string!(File.read!(ctx.po_path)).messages
+
+    assert length(obsolete) == length(original)
+    assert Enum.all?(obsolete, & &1.obsolete)
+    assert Enum.map(obsolete, & &1.msgstr) |> Enum.sort() == Enum.map(original, & &1.msgstr) |> Enum.sort()
+
+    Catalog.convert(pot_path: ctx.pot_path, po_root: ctx.po_root, json_dir: ctx.json_dir)
+    assert json(ctx.json_dir, "pt-BR.json") == %{}
+
+    Catalog.extract(opts)
+    restored = Expo.PO.parse_string!(File.read!(ctx.po_path)).messages
+    save = Enum.find(restored, &(Enum.join(&1.msgid) == "Save"))
+    refute save.obsolete
+    assert save.msgstr == ["Salvar"]
+  end
+
+  test "default discovery includes executable Elixir sources and excludes test scripts", %{tmp: tmp, pot_path: pot_path, po_root: po_root} do
+    File.mkdir_p!(Path.join(tmp, "lib"))
+    File.write!(Path.join(tmp, "lib/copy.exs"), ~s|gettext("Script message")|)
+    File.write!(Path.join(tmp, "lib/copy_test.exs"), ~s|gettext("Test message")|)
+
+    messages = File.cd!(tmp, fn -> Catalog.extract(pot_path: pot_path, po_root: po_root) end)
+
+    assert Enum.map(messages, & &1.msgid) == ["Script message"]
   end
 
   defp extract_opts(pot_path, po_root) do

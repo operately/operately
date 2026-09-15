@@ -10,9 +10,9 @@ describe("i18n", () => {
   });
 
   it("looks up context with the catalog separator", () => {
-    i18n.addResourceBundle("en", "translation", { "Close|button": "Close" }, true, true);
+    i18n.addResourceBundle("en", "translation", { "Close|button": "Close dialog" }, true, true);
 
-    expect(i18n.t("Close", { context: "button" })).toEqual("Close");
+    expect(i18n.t("Close", { context: "button" })).toEqual("Close dialog");
   });
 
   it("selects language-aware plural forms", () => {
@@ -36,5 +36,29 @@ describe("i18n", () => {
     i18n.addResourceBundle("en", "translation", { [key]: key }, true, true);
 
     expect(i18n.t(key)).toEqual(key);
+  });
+});
+
+describe.each([true, false])("initialization with TurboUI first: %s", (turboFirst) => {
+  afterEach(() => {
+    jest.dontMock("../../../turboui/node_modules/i18next");
+  });
+
+  it("uses catalog context keys in either import order", () => {
+    jest.isolateModules(() => {
+      // Match Vite's deduplication of the shared runtime across both packages.
+      const runtime = jest.requireActual<typeof i18n>("i18next");
+      jest.doMock("../../../turboui/node_modules/i18next", () => runtime);
+
+      if (turboFirst) jest.requireActual("turboui/i18n");
+      const app = jest.requireActual<typeof import("./i18n")>("./i18n");
+      const turbo = jest.requireActual<typeof import("turboui/i18n")>("turboui/i18n");
+
+      expect(app.default).toBe(turbo.default);
+      runtime.addResourceBundle("en", "translation", { "Close|button": "Close dialog" }, true, true);
+      expect(runtime.t("Close", { context: "button" })).toBe("Close dialog");
+      expect(runtime.language).toBe("en");
+      expect(runtime.t("intlDateTime", { val: new Date("2026-01-01T12:00:00Z") })).not.toBe("intlDateTime");
+    });
   });
 });

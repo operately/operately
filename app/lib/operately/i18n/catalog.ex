@@ -15,7 +15,7 @@ defmodule Operately.I18n.Catalog do
   @json_dir "assets/js/generated/locales"
   @elixir_roots ["lib", "ee/lib"]
   @frontend_roots ["assets/js", "ee/assets/js", "../turboui/src"]
-  @elixir_extensions ~w(ex heex)
+  @elixir_extensions ~w(ex exs heex)
   @frontend_extensions ~w(js jsx ts tsx)
 
   def pot_path, do: Path.expand(@pot_path)
@@ -106,17 +106,7 @@ defmodule Operately.I18n.Catalog do
     po_root
     |> po_files()
     |> Enum.each(fn {_locale, path} ->
-      existing_by_key = Map.new(Po.parse_file!(path), &{Message.key(&1), &1})
-
-      merged =
-        Enum.map(pot_messages, fn message ->
-          case Map.get(existing_by_key, Message.key(message)) do
-            nil -> message
-            existing -> Message.merge(message, existing)
-          end
-        end)
-
-      Po.write!(path, merged)
+      Po.merge_file!(path, pot_messages)
     end)
   end
 

@@ -26,4 +26,24 @@ defmodule Operately.I18n.FrontendExtractorTest do
 
     assert FrontendExtractor.extract_contents(source, "assets/js/other.ts") == []
   end
+
+  test "extracts qualified i18n calls without matching other objects" do
+    source = """
+    import i18n from "@/i18n";
+    i18n.t("Save");
+    i18n.t("Close", { context: "button" });
+    other.t("Not a translation");
+    otheri18n.t("Not the runtime");
+    """
+
+    messages = Enum.map(FrontendExtractor.extract_contents(source, "sample.ts"), &Message.key/1)
+
+    assert messages == [{"", "Save"}, {"button", "Close"}]
+  end
+
+  test "extracts calls through a direct i18next import" do
+    source = ~s|import i18n from "i18next"; i18n.t("Save");|
+
+    assert [%Message{msgid: "Save"}] = FrontendExtractor.extract_contents(source, "sample.ts")
+  end
 end

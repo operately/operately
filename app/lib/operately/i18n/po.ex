@@ -17,6 +17,7 @@ defmodule Operately.I18n.Po do
     content
     |> Expo.PO.parse_string!()
     |> Map.fetch!(:messages)
+    |> Enum.reject(& &1.obsolete)
     |> Enum.map(&from_expo/1)
   end
 
@@ -42,6 +43,41 @@ defmodule Operately.I18n.Po do
   def write!(path, messages, opts \\ []) do
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, compose(messages, opts))
+  end
+
+  def merge_file!(path, messages) do
+    catalog = Expo.PO.parse_string!(File.read!(path))
+    existing_by_key = Map.new(catalog.messages, &{Expo.Message.key(&1), &1})
+    active_keys = MapSet.new(messages, &Message.key/1)
+
+    active = Enum.map(messages, &merge_translation(&1, existing_by_key))
+
+    obsolete =
+      catalog.messages
+      |> Enum.reject(&MapSet.member?(active_keys, Expo.Message.key(&1)))
+      |> Enum.map(&%{&1 | obsolete: true})
+
+    merged = Enum.sort_by(active ++ obsolete, &Expo.Message.key/1)
+    content = Expo.PO.compose(%{catalog | messages: merged})
+    File.write!(path, content)
+  end
+
+  defp merge_translation(message, existing_by_key) do
+    case Map.get(existing_by_key, Message.key(message)) do
+      nil ->
+        to_expo(message)
+
+      existing ->
+        translated = message |> Message.merge(from_expo(existing)) |> to_expo()
+
+        %{
+          translated
+          | comments: existing.comments,
+            flags: existing.flags,
+            previous_messages: existing.previous_messages,
+            references: expo_references(message.references)
+        }
+    end
   end
 
   defp from_expo(%Singular{} = message) do

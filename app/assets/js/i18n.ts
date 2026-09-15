@@ -1,6 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next, setI18n } from "react-i18next";
 import type { TOptions } from "i18next";
+import { i18nOptions } from "turboui/i18nOptions";
 
 import en from "./generated/locales/en.json";
 
@@ -15,22 +16,13 @@ const englishResources = {
 };
 
 const initOptions = {
-  lng: "en",
-  fallbackLng: "en",
+  ...i18nOptions,
   supportedLngs: ["en"],
   resources: {
     en: {
       translation: englishResources,
     },
   },
-  interpolation: {
-    escapeValue: false,
-  },
-  returnNull: false,
-  keySeparator: false as const,
-  nsSeparator: false as const,
-  contextSeparator: "|",
-  pluralSeparator: "_",
 };
 
 i18n.use(initReactI18next);

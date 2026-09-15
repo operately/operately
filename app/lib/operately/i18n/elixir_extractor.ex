@@ -10,13 +10,20 @@ defmodule Operately.I18n.ElixirExtractor do
   end
 
   def extract_contents(source, path) when is_binary(source) do
-    case Code.string_to_quoted(source, file: path, columns: true) do
-      {:ok, ast} ->
-        {_ast, messages} = Macro.prewalk(ast, [], &collect(&1, &2, path))
-        Enum.reverse(messages)
+    ast = parse_source(source, path)
+    {_ast, messages} = Macro.prewalk(ast, [], &collect(&1, &2, path))
+    Enum.reverse(messages)
+  end
 
-      {:error, _} ->
-        []
+  defp parse_source(source, path) do
+    if Path.extname(path) == ".heex" do
+      Phoenix.LiveView.TagEngine.compile(source,
+        file: path,
+        caller: __ENV__,
+        tag_handler: Phoenix.LiveView.HTMLEngine
+      )
+    else
+      Code.string_to_quoted!(source, file: path, columns: true)
     end
   end
 

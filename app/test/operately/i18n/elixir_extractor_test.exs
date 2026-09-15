@@ -6,6 +6,31 @@ defmodule Operately.I18n.ElixirExtractorTest do
 
   @fixture Path.expand("fixtures/elixir/sample.ex", __DIR__)
 
+  test "extracts HEEx expressions and attributes with source references" do
+    source = """
+    <div title={gettext("Title")}>
+      <%= gettext("Save") %>
+      {pgettext("button", "Close")}
+      <.button label={ngettext("1 task", "%{count} tasks", @count)} />
+      <%!-- {gettext("Commented out")} --%>
+    </div>
+    """
+
+    messages = Map.new(ElixirExtractor.extract_contents(source, "sample.heex"), &{Message.key(&1), &1})
+
+    assert map_size(messages) == 4
+    assert messages[{"", "Title"}].references == [{"sample.heex", 1}]
+    assert messages[{"", "Save"}].references == [{"sample.heex", 2}]
+    assert messages[{"button", "Close"}].references == [{"sample.heex", 3}]
+    assert messages[{"", "1 task"}].msgid_plural == "%{count} tasks"
+  end
+
+  test "reports invalid Elixir instead of silently omitting its messages" do
+    assert_raise SyntaxError, fn ->
+      ElixirExtractor.extract_contents("gettext(\"Save\")\n)", "invalid.ex")
+    end
+  end
+
   test "extracts gettext, ngettext, pgettext, and npgettext messages" do
     messages = Map.new(ElixirExtractor.extract_file(@fixture), &{Message.key(&1), &1})
 

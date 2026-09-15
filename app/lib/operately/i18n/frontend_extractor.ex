@@ -3,7 +3,7 @@ defmodule Operately.I18n.FrontendExtractor do
 
   alias Operately.I18n.{Message, Placeholders}
 
-  @translation_imports ["react-i18next", "/i18n", "@/i18n"]
+  @translation_imports ["i18next", "/i18n", "@/i18n"]
 
   def extract_file(path) do
     path
@@ -31,6 +31,9 @@ defmodule Operately.I18n.FrontendExtractor do
     rest = remaining(source, offset)
 
     cond do
+      String.starts_with?(rest, "i18n.t(") and not identifier_before?(source, offset) ->
+        collect_call(source, path, offset, acc, 7, 1, &singular_message/4)
+
       String.starts_with?(rest, "tn(") ->
         collect_call(source, path, offset, acc, 3, 2, &plural_message/5)
 
