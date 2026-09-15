@@ -149,6 +149,20 @@
   color: var(--color-content-dimmed);
 }
 
+.ProseMirror .blob-container.blob-thumbnail {
+  margin: 0.25rem 0.5rem 0.25rem 0;
+  max-width: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ProseMirror .blob-container.blob-thumbnail img,
+.ProseMirror .blob-container.blob-thumbnail video {
+  max-height: 5rem;
+  max-width: 8rem;
+  object-fit: cover;
+}
+
 .ProseMirror .blob-container .footer {
   text-align: center;
   color: var(--color-content);
