@@ -29,7 +29,7 @@ import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";
@@ -105,17 +105,17 @@ function SubscriptionsSection() {
   const { checkIn, isCurrentUserSubscribed } = useLoadedData();
   const refresh = useRefresh();
 
-  if (!checkIn.potentialSubscribers || !checkIn.subscriptionList) {
-    return null;
-  }
-
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
-    potentialSubscribers: checkIn.potentialSubscribers,
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
+    potentialSubscribers: checkIn.potentialSubscribers ?? [],
     subscriptionList: checkIn.subscriptionList,
     resourceName: "check-in",
     type: "project_check_in",
     onRefresh: refresh,
   });
+
+  if (!checkIn.potentialSubscribers || !checkIn.subscriptionList) {
+    return null;
+  }
 
   return (
     <CurrentSubscriptions

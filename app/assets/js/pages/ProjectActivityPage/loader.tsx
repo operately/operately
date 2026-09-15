@@ -1,3 +1,4 @@
+import { invalidateProjectActivityPageQueries } from "@/models/projects/projectPageQueries";
 import Api, { Activity, Project } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
@@ -70,17 +71,5 @@ export function useRefresh() {
   const queryClient = useQueryClient();
   const { activityInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
 
-  return () => {
-    const invalidations = [
-      queryClient.invalidateQueries({ queryKey: Api.companies.getActivityQueryKey(activityInput) }),
-    ];
-
-    if (subscriptionInput) {
-      invalidations.push(
-        queryClient.invalidateQueries({ queryKey: Api.notifications.isSubscribedQueryKey(subscriptionInput) }),
-      );
-    }
-
-    void Promise.all(invalidations);
-  };
+  return () => invalidateProjectActivityPageQueries(queryClient, { activityInput, subscriptionInput });
 }
