@@ -20,6 +20,7 @@ jest.mock("../icons", () => {
     IconFolderFilled: HiddenIcon,
     IconGoal: HiddenIcon,
     IconInfoCircle: HiddenIcon,
+    IconInfoCircleFilled: HiddenIcon,
     IconLink: HiddenIcon,
     IconLogs: HiddenIcon,
     IconMessage: HiddenIcon,
@@ -35,6 +36,22 @@ jest.mock("../icons", () => {
     IconX: HiddenIcon,
   };
 });
+
+jest.mock("../CheckInCard", () => ({
+  CheckInCard: ({ checkIn }: { checkIn: { id: string } }) => <div data-test-id={checkIn.id} />,
+}));
+jest.mock("../DiscussionCard", () => ({
+  DiscussionCard: ({ discussion }: { discussion: { id: string } }) => <div data-test-id={discussion.id} />,
+}));
+jest.mock("../MiniWorkMap", () => ({
+  MiniWorkMap: ({ items }: { items: { id: string }[] }) => (
+    <div>
+      {items.map((item) => (
+        <div key={item.id} data-test-id={item.id} />
+      ))}
+    </div>
+  ),
+}));
 
 jest.mock("./Checklists", () => ({
   Checklists: () => <div>Checklists</div>,
@@ -81,7 +98,9 @@ function GoalPageHarness({
   initialEntry = "/goals/goal-1",
   search,
   docsState,
+  contentState,
 }: {
+  contentState?: Partial<GoalPage.Props>;
   includeDocsAndFiles?: boolean;
   initialEntry?: string;
   search?: NonNullable<NonNullable<GoalPage.Props["docsAndFiles"]>["search"]>["search"];
@@ -259,6 +278,7 @@ function GoalPageHarness({
         activityFeed={<div>Activity feed</div>}
         richTextHandlers={createMockRichEditorHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        {...contentState}
       />
     </MemoryRouter>
   );
@@ -344,4 +364,123 @@ describe("GoalPage", () => {
     expect(screen.getByText("Goal description")).toBeInTheDocument();
     expect(screen.queryByText("Your drafts (1)")).not.toBeInTheDocument();
   });
+});
+
+const contentSections = [
+  { tab: "check-ins", name: "check-ins", loading: "checkInsLoading", error: "checkInsError", retry: "onRetryCheckIns" },
+  {
+    tab: "discussions",
+    name: "discussions",
+    loading: "discussionsLoading",
+    error: "discussionsError",
+    retry: "onRetryDiscussions",
+  },
+  {
+    tab: "overview",
+    name: "related-work",
+    loading: "relatedWorkLoading",
+    error: "relatedWorkError",
+    retry: "onRetryRelatedWork",
+  },
+] as const;
+
+it.each(contentSections)("shows $name loading for read-only users", ({ tab, name, loading }) => {
+  const { container } = render(
+    <GoalPageHarness
+      initialEntry={`/goals/goal-1?tab=${tab}`}
+      contentState={{ [loading]: true, permissions: generateGoalPermissions(false) }}
+    />,
+  );
+  expect(container.querySelector(`[data-test-id="${name}-skeleton"]`)).toBeInTheDocument();
+  expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument();
+});
+
+it.each(contentSections)("shows $name failure and retries for read-only users", ({ tab, name, error, retry }) => {
+  const onRetry = jest.fn();
+  const { container, rerender } = render(
+    <GoalPageHarness
+      initialEntry={`/goals/goal-1?tab=${tab}`}
+      contentState={{ [error]: true, [retry]: onRetry, permissions: generateGoalPermissions(false) }}
+    />,
+  );
+  expect(container.querySelector(`[data-test-id="${name}-error"]`)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  expect(onRetry).toHaveBeenCalledTimes(1);
+  rerender(
+    <GoalPageHarness
+      initialEntry={`/goals/goal-1?tab=${tab}`}
+      contentState={{ [error]: false, permissions: generateGoalPermissions(false) }}
+    />,
+  );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(container.querySelector(`[data-test-id="${name}-skeleton"]`)).not.toBeInTheDocument();
+});
+
+it.each(["active", "closed"] as const)(
+  "does not show a discussion empty state during %s loading or failure",
+  (state) => {
+    const { container, rerender } = render(
+      <GoalPageHarness
+        initialEntry="/goals/goal-1?tab=discussions"
+        contentState={{ state, discussionsLoading: true }}
+      />,
+    );
+    expect(container.querySelector('[data-test-id="discussions-empty-state"]')).not.toBeInTheDocument();
+    rerender(
+      <GoalPageHarness initialEntry="/goals/goal-1?tab=discussions" contentState={{ state, discussionsError: true }} />,
+    );
+    expect(container.querySelector('[data-test-id="discussions-empty-state"]')).not.toBeInTheDocument();
+    rerender(<GoalPageHarness initialEntry="/goals/goal-1?tab=discussions" contentState={{ state }} />);
+    expect(container.querySelector('[data-test-id="discussions-empty-state"]')).toBeInTheDocument();
+  },
+);
+
+const cachedContent: Partial<GoalPage.Props> = {
+  checkIns: [
+    {
+      id: "cached-check-in",
+      author: null,
+      date: new Date("2026-09-14"),
+      content: "{}",
+      link: "#",
+      commentCount: 0,
+      status: "on_track",
+    },
+  ],
+  discussions: [
+    {
+      id: "cached-discussion",
+      title: "Discussion",
+      author: { id: "person1", fullName: "Test Person", avatarUrl: null, title: "", profileLink: "#" },
+      date: new Date("2026-09-14"),
+      link: "#",
+      content: "{}",
+      commentCount: 0,
+    },
+  ],
+  relatedWorkItems: [
+    {
+      id: "cached-child",
+      name: "Child goal",
+      type: "goal",
+      status: "on_track",
+      state: "active",
+      itemPath: "#",
+      children: [],
+      assignees: [],
+    },
+  ],
+};
+
+it.each([
+  { tab: "check-ins", error: "checkInsError", item: "cached-check-in" },
+  { tab: "discussions", error: "discussionsError", item: "cached-discussion" },
+  { tab: "overview", error: "relatedWorkError", item: "cached-child" },
+])("keeps cached $tab content after a refresh failure", ({ tab, error, item }) => {
+  const { container } = render(
+    <GoalPageHarness initialEntry={`/goals/goal-1?tab=${tab}`} contentState={{ ...cachedContent, [error]: true }} />,
+  );
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  expect(container.querySelector(`[data-test-id="${item}"]`)).toBeInTheDocument();
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
 });

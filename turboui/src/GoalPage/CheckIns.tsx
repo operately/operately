@@ -1,5 +1,6 @@
 import React from "react";
 import { GoalPage } from ".";
+import { ContentListState } from "../ContentListState";
 import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
 
@@ -24,15 +25,22 @@ export function CheckIns(props: GoalPage.State) {
       </div>
 
       <div className="mt-8">
-        {props.checkIns.map((checkIn) => (
-          <CheckInCard
-            key={checkIn.id}
-            checkIn={checkIn}
-            mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
-            type="goal"
-            formattedTimePreferences={props.formattedTimePreferences}
-          />
-        ))}
+        <ContentListState
+          name="check-ins"
+          loading={props.checkInsLoading}
+          error={props.checkInsError}
+          onRetry={props.onRetryCheckIns}
+        >
+          {props.checkIns.map((checkIn) => (
+            <CheckInCard
+              key={checkIn.id}
+              checkIn={checkIn}
+              mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+              type="goal"
+              formattedTimePreferences={props.formattedTimePreferences}
+            />
+          ))}
+        </ContentListState>
       </div>
     </div>
   );

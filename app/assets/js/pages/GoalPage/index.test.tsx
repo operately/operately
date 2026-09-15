@@ -25,8 +25,11 @@ jest.mock("@/hooks/useFormattedTimePreferences", () => ({}));
 jest.mock("./useChecklists", () => ({}));
 
 const goal = { id: "goal-1", resourceHub: { id: "hub-1" } };
-const visit = () =>
-  GoalPageModule.loader({ params: { id: goal.id }, request: { url: `https://operately.test/goals/${goal.id}` } });
+const visit = (tab = "overview") =>
+  GoalPageModule.loader({
+    params: { id: goal.id },
+    request: { url: `https://operately.test/goals/${goal.id}?tab=${tab}` },
+  });
 
 beforeEach(() => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -51,9 +54,9 @@ it.each(["get", "list_nodes", "list_drafts"] as const)(
       return { data: path.endsWith("/goals/get") ? { goal } : {} };
     });
 
-    await expect(visit()).resolves.toMatchObject({ goalInput: { id: goal.id } });
+    await expect(visit("docs-and-files")).resolves.toMatchObject({ goalInput: { id: goal.id } });
     // Returning to the cached goal must also tolerate a docs failure.
-    await expect(visit()).resolves.toMatchObject({ goalInput: { id: goal.id } });
+    await expect(visit("docs-and-files")).resolves.toMatchObject({ goalInput: { id: goal.id } });
 
     const inputs = resourceHubDocsInputs("hub-1");
     const keys = {
