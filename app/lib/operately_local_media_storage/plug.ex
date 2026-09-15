@@ -11,10 +11,19 @@ defmodule OperatelyLocalMediaStorage.Plug do
     disposition = conn.query_params["disposition"] || "inline"
     filename = conn.query_params["filename"] || path
 
-    conn
-    |> put_cache_headers()
-    |> put_content_disposition(disposition, filename)
-    |> send_file(200, "/media/#{path}")
+    try do
+      conn
+      |> put_cache_headers()
+      |> put_content_disposition(disposition, filename)
+      |> send_file(200, "/media/#{path}")
+    rescue
+      error in File.Error ->
+        if error.reason == :enoent do
+          json_response(conn, 404, %{message: "File not found"})
+        else
+          reraise error, __STACKTRACE__
+        end
+    end
   end
 
   put "*path" do
