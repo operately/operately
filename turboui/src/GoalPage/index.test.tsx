@@ -1,7 +1,9 @@
 import * as React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { configure, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
+
+configure({ testIdAttribute: "data-test-id" });
 
 jest.mock("../icons", () => {
   const HiddenIcon = () => <span aria-hidden="true" />;
@@ -301,7 +303,7 @@ describe("GoalPage", () => {
     );
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.queryByText("Goal description")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByTestId("retry-docs-and-files"));
     expect(retry).toHaveBeenCalledTimes(1);
   });
 
@@ -404,7 +406,7 @@ it.each(contentSections)("shows $name failure and retries for read-only users", 
     />,
   );
   expect(container.querySelector(`[data-test-id="${name}-error"]`)).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  fireEvent.click(screen.getByTestId(`retry-${name}`));
   expect(onRetry).toHaveBeenCalledTimes(1);
   rerender(
     <GoalPageHarness
