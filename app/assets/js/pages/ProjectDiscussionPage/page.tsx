@@ -12,7 +12,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { compareIds, usePaths } from "../../routes/paths";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
@@ -143,17 +143,17 @@ function Subscriptions() {
   const refresh = useRefresh();
   const { discussion, isCurrentUserSubscribed } = useLoadedData();
 
-  if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
-    return null;
-  }
-
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
-    potentialSubscribers: discussion.potentialSubscribers,
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
+    potentialSubscribers: discussion.potentialSubscribers ?? [],
     subscriptionList: discussion.subscriptionList,
     resourceName: "discussion",
     type: "comment_thread",
     onRefresh: refresh,
   });
+
+  if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
+    return null;
+  }
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">

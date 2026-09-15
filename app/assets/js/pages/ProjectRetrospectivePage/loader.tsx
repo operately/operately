@@ -1,3 +1,4 @@
+import { invalidateProjectRetrospectivePageQueries } from "@/models/projects/projectPageQueries";
 import Api, { ProjectRetrospective } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
@@ -57,10 +58,5 @@ export function useRefresh() {
   const queryClient = useQueryClient();
   const { queryInput, subscriptionInput } = Pages.useLoadedData<LoaderResult>();
 
-  return () => {
-    void Promise.all([
-      queryClient.invalidateQueries({ queryKey: Api.projects.getRetrospectiveQueryKey(queryInput) }),
-      queryClient.invalidateQueries({ queryKey: Api.notifications.isSubscribedQueryKey(subscriptionInput) }),
-    ]);
-  };
+  return () => invalidateProjectRetrospectivePageQueries(queryClient, { queryInput, subscriptionInput });
 }
