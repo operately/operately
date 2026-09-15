@@ -32,8 +32,13 @@ defmodule Operately.Features.Discussions.PublishingTest do
   feature "edit a posted discussion", ctx do
     ctx
     |> Steps.given_a_discussion_exists()
+    |> Steps.set_page_reload_marker()
+    |> Steps.assert_published_on_cached_board()
+    |> Steps.open_posted_discussion()
     |> Steps.edit_discussion()
     |> Steps.assert_discussion_is_edited()
+    |> Steps.assert_edit_on_cached_board()
+    |> Steps.assert_page_was_not_reloaded()
   end
 
   feature "attach a file to a discussion", ctx do

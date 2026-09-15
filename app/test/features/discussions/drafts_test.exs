@@ -19,6 +19,20 @@ defmodule Operately.Features.Discussions.DraftsTest do
     |> Steps.assert_draft_is_not_listed_on_space_page()
   end
 
+  feature "publishing refreshes the cached draft and discussion list without reloading", ctx do
+    ctx
+    |> Steps.post_a_draft_discussion()
+    |> Steps.set_page_reload_marker()
+    |> Steps.return_to_discussion_board()
+    |> Steps.click_on_continue_editing_last_draft()
+    |> Steps.modify_the_draft_discussion_and_save()
+    |> Steps.publish_draft()
+    |> Steps.return_to_discussion_board()
+    |> UI.refute_has(testid: "continue-editing-draft")
+    |> UI.assert_has(testid: "discussion-list-item-this-is-a-draft-discussion-edited-")
+    |> Steps.assert_page_was_not_reloaded()
+  end
+
   feature "share a link to a draft", ctx do
     ctx
     |> Steps.post_a_draft_discussion()
@@ -47,9 +61,20 @@ defmodule Operately.Features.Discussions.DraftsTest do
     ctx
     |> Steps.given_multiple_draft_discussions_exist()
     |> Steps.visit_the_discussion_board()
+    |> Steps.set_page_reload_marker()
     |> Steps.click_on_continue_editing_draft()
     |> Steps.modify_the_draft_discussion_and_save()
     |> Steps.assert_draft_edit_is_saved(:draft_discussion_1)
+    |> Steps.return_to_discussion_board()
+    |> UI.click(testid: "continue-editing-draft")
+    |> UI.assert_has(testid: "discussion-list-item-this-is-a-draft-discussion-edited-")
+    |> UI.refute_has(testid: "discussion-list-item-draft-discussion-1")
+    |> UI.click(testid: "discussion-draft-options-this-is-a-draft-discussion-edited-")
+    |> UI.click(testid: "discard-draft-this-is-a-draft-discussion-edited-")
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: "discussion-list-item-this-is-a-draft-discussion-edited-")
+    |> UI.assert_has(testid: "discussion-list-item-draft-discussion-2")
+    |> Steps.assert_page_was_not_reloaded()
   end
 
   feature "scheduled discussion is shown in the discussion list for its author", ctx do

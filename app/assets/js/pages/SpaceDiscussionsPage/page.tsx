@@ -21,6 +21,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
+import { createTestId } from "@/utils/testid";
 
 import classNames from "classnames";
 
@@ -28,7 +29,7 @@ export function Page() {
   const { space, discussions } = useLoadedData();
 
   return (
-    <Pages.Page title={["Discussions", space.name!]} testId="discussions-page">
+    <Pages.Page title={["Discussions", space.name]} testId="discussions-page">
       <Paper.Root size="large">
         <SpacePageNavigation space={space} />
 
@@ -55,7 +56,7 @@ function NewDiscussionButton() {
   if (!space.permissions?.canEdit) return null;
 
   return (
-    <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={paths.discussionNewPath(space.id)} size="sm" testId="new-discussion">
       New discussion
     </PrimaryButton>
   );
@@ -67,8 +68,8 @@ function ContinueEditingDrafts() {
 
   if (myDrafts.length < 1) {
     return null;
-  } else if (myDrafts.length === 1) {
-    const path = paths.discussionEditPath(myDrafts[0]!.id!);
+  } else if (myDrafts.length === 1 && myDrafts[0]) {
+    const path = paths.discussionEditPath(myDrafts[0].id);
 
     return (
       <div className="flex justify-center">
@@ -78,7 +79,7 @@ function ContinueEditingDrafts() {
       </div>
     );
   } else {
-    const path = paths.discussionDraftsPath(space.id!);
+    const path = paths.discussionDraftsPath(space.id);
 
     return (
       <div className="flex justify-center">
@@ -112,7 +113,7 @@ function DiscussionList() {
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
-  const path = paths.discussionPath(discussion.id!);
+  const path = paths.discussionPath(discussion.id);
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
 
@@ -125,7 +126,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   );
 
   return (
-    <DivLink to={path} className={className}>
+    <DivLink to={path} className={className} testId={createTestId("discussion-list-item", discussion.title)}>
       {discussion.author && (
         <div className="shrink-0">
           <Avatar person={discussion.author} size="large" />
@@ -138,7 +139,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           {discussion.state === "scheduled" && <ScheduledPostLabel />}
         </div>
         <div className="break-words">
-          <Summary content={discussion.body!} characterCount={150} mentionedPersonLookup={mentionedPersonLookup} />
+          <Summary content={discussion.body ?? ""} characterCount={150} mentionedPersonLookup={mentionedPersonLookup} />
         </div>
 
         <div className="flex gap-1 mt-1 text-xs">
@@ -165,7 +166,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8" data-test-id="discussion-comment-count">
         <CommentCountIndicator count={discussion.commentsCount || 0} size={28} />
       </div>
     </DivLink>
