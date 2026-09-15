@@ -117,6 +117,26 @@ test("resend becomes available after the server-provided cooldown", () => {
   jest.useRealTimers();
 });
 
+test("resend cooldown uses current time when retryAfter arrives between ticks", () => {
+  jest.useFakeTimers();
+  jest.setSystemTime(1_700_000_000_000);
+  const { props, rerender } = setup({ state: pending });
+
+  act(() => jest.advanceTimersByTime(999));
+  rerender(
+    <MemoryRouter>
+      <AccountChangeEmailPage {...props} state={{ ...pending, retryAfter: 60 }} />
+    </MemoryRouter>,
+  );
+
+  expect(screen.getByTestId("resend-email-code")).toBeDisabled();
+  act(() => jest.advanceTimersByTime(59001));
+  expect(screen.getByTestId("resend-email-code")).toBeDisabled();
+  act(() => jest.advanceTimersByTime(2000));
+  expect(screen.getByTestId("resend-email-code")).toBeEnabled();
+  jest.useRealTimers();
+});
+
 test("expired codes cannot be submitted but can be replaced", () => {
   const request = pending.pending;
   if (!request) throw new Error("Missing fixture request");
