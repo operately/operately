@@ -4,6 +4,55 @@ defmodule OperatelyLocalMediaStorage.PlugTest do
 
   alias Operately.Blobs.Tokens
 
+  describe "GET requests" do
+    test "returns 404 for a missing file without file cache or disposition headers" do
+      path = "missing-#{Ecto.UUID.generate()}/image.png"
+      token = Tokens.gen_get_token(path)
+
+      conn =
+        conn(:get, "/#{path}?token=#{token}")
+        |> Plug.Conn.fetch_query_params()
+        |> OperatelyLocalMediaStorage.Plug.call(OperatelyLocalMediaStorage.Plug.init([]))
+
+      assert conn.status == 404
+      assert conn.state == :sent
+      assert Plug.Conn.get_resp_header(conn, "cache-control") != ["public, max-age=31536000, immutable"]
+      assert Plug.Conn.get_resp_header(conn, "content-disposition") == []
+    end
+
+    test "serves an existing file with cache and disposition headers" do
+      path = "local-media-download-#{Ecto.UUID.generate()}.txt"
+      destination = "/media/#{path}"
+      token = Tokens.gen_get_token(path)
+
+      File.mkdir_p!("/media")
+      on_exit(fn -> File.rm(destination) end)
+      File.write!(destination, "hello")
+
+      conn =
+        conn(:get, "/#{path}?token=#{token}&disposition=attachment&filename=example.txt")
+        |> Plug.Conn.fetch_query_params()
+        |> OperatelyLocalMediaStorage.Plug.call(OperatelyLocalMediaStorage.Plug.init([]))
+
+      assert conn.status == 200
+      assert conn.resp_body == "hello"
+      assert Plug.Conn.get_resp_header(conn, "cache-control") == ["public, max-age=31536000, immutable"]
+      assert Plug.Conn.get_resp_header(conn, "content-disposition") == [~s(attachment; filename="example.txt")]
+    end
+
+    test "rejects an invalid token even when the file is missing" do
+      path = "missing-#{Ecto.UUID.generate()}.png"
+
+      conn =
+        conn(:get, "/#{path}?token=invalid")
+        |> Plug.Conn.fetch_query_params()
+        |> OperatelyLocalMediaStorage.Plug.call(OperatelyLocalMediaStorage.Plug.init([]))
+
+      assert conn.status == 401
+      assert conn.halted
+    end
+  end
+
   describe "cache headers functionality" do
     test "put_cache_headers/1 adds correct cache control header" do
       # Test the cache headers function directly
