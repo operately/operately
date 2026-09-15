@@ -58,8 +58,8 @@ export interface FormState extends FormsFormState<FormValues> {
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
   const paths = usePaths();
   const navigate = useNavigate();
-  const [post] = Discussions.usePostDiscussion();
-  const [edit] = Discussions.useEditDiscussion();
+  const { mutateAsync: post } = Discussions.usePostDiscussion();
+  const { mutateAsync: edit } = Discussions.useEditDiscussion(space.id);
 
   const canSchedule = mode === "create" || discussion?.state === "draft" || discussion?.state === "scheduled";
   const scheduleFlow = useScheduleFlow({

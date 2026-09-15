@@ -1,6 +1,7 @@
 defmodule Operately.Features.Subscriptions.MessageTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.SubscriptionsSteps, as: Steps
+  alias Operately.Support.Features.DiscussionsSteps
 
   setup ctx, do: Steps.setup(ctx)
 
@@ -44,13 +45,22 @@ defmodule Operately.Features.Subscriptions.MessageTest do
       |> Steps.assert_current_subscribers(%{count: 1, resource: "discussion"})
     end
 
-    feature "Subscribe and unsubribe", ctx do
+    feature "Subscribe and unsubscribe across cached navigation", ctx do
       ctx
       |> Steps.go_to_new_message_page()
       |> Steps.fill_out_message_form()
       |> Steps.select_all_people()
       |> Steps.submit_message_form()
+      |> DiscussionsSteps.set_page_reload_marker()
       |> Steps.exercise_current_subscriptions_widget("discussion")
+      |> Steps.unsubscribe()
+      |> UI.assert_has(testid: "subscribe")
+      |> UI.click(css: "a[href='#{Paths.space_discussions_path(ctx.company, ctx.space)}']")
+      |> UI.click(testid: "discussion-list-item-some-title")
+      |> UI.assert_has(testid: "subscribe")
+      |> Steps.subscribe()
+      |> UI.assert_has(testid: "unsubscribe")
+      |> DiscussionsSteps.assert_page_was_not_reloaded()
     end
   end
 end

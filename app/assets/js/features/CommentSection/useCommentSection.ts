@@ -68,7 +68,7 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
 
   const currentUser = parsePersonForTurboUi(paths, me);
 
-  if (query.error) throw query.error;
+  if (query.error && !query.data) throw query.error;
   if (!currentUser) return null;
 
   return {
