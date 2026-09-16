@@ -23,6 +23,25 @@ defmodule Operately.Release do
     {:ok, _, _} = Ecto.Migrator.with_repo(repo(), &Ecto.Migrator.run(&1, :up, all: true))
   end
 
+  def seed_preview do
+    load_app()
+    {:ok, _} = Application.ensure_all_started(@app)
+
+    email = System.get_env("PREVIEW_DEMO_EMAIL", "demo@operately.dev")
+    password = System.get_env("PREVIEW_DEMO_PASSWORD", "preview-demo-1")
+    full_name = System.get_env("PREVIEW_DEMO_NAME", "Sam Reed")
+    company_name = System.get_env("PREVIEW_DEMO_COMPANY", "Acme Inc.")
+
+    if Operately.Setup.configured?() do
+      IO.puts("preview already has a user or company; skipping seed")
+    else
+      {:ok, account} = Operately.People.register_account(%{email: email, password: password, full_name: full_name})
+      {:ok, _} = Operately.People.Account.promote_to_admin(account)
+      {:ok, company} = Operately.Demo.run(account, company_name, "CEO")
+      IO.puts("seeded #{company.name} as #{email}")
+    end
+  end
+
   def rollback(version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo(), &Ecto.Migrator.run(&1, :down, to: version))
