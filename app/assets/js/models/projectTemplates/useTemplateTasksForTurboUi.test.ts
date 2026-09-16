@@ -1,18 +1,10 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import Api, { type ProjectTemplate, type ProjectTemplateMilestone, type ProjectTemplateTask } from "@/api";
-import {
-  mapTemplateTaskGraph,
-  performTemplateMilestoneCreate,
-  performTemplateMilestoneUpdate,
-  performTemplatePersonCreate,
-  performTemplatePersonUpdate,
-  performTemplateStatusesChange,
-  performTemplateTaskCreate,
-  performTemplateTaskKanbanChange,
-  performTemplateTaskReorder,
-  performTemplateTaskUpdate,
-} from "./useTemplateTasksForTurboUi";
+import { useTemplateTasksForTurboUi } from "./useTemplateTasksForTurboUi";
+import * as Operations from "./operations";
+import { mapTemplateTaskGraph } from "./operations";
 import type { TemplateTaskGraph } from "./optimisticUpdates";
-import type { Mutate } from "./operations";
+import { act, renderHook } from "@/__tests__/renderHook";
 
 jest.mock("@/models/tasks", () => ({
   parseTaskStatusForTurboUi: (status: { id: string }) => ({
@@ -38,6 +30,7 @@ jest.mock("@/routes/paths", () => {
 
   return {
     compareIds,
+    includesId: (ids: string[], id: string) => ids.some((item) => compareIds(item, id)),
     sameMilestoneId: (left: string | null | undefined, right: string | null | undefined) => {
       if (left == null && right == null) return true;
       return compareIds(left, right);
@@ -64,6 +57,28 @@ jest.mock("@/api", () => ({
     },
   },
 }));
+
+jest.mock("@/models/tasks/useProjectKanbanState", () => ({
+  useProjectKanbanState: () => ({}),
+}));
+
+jest.mock("./projectTemplateEditorLifecycle", () => {
+  const api = jest.requireMock("@/api").default.project_templates;
+  return {
+    useCreateTemplateTask: () => ({ mutateAsync: api.createTask }),
+    useUpdateTemplateTask: () => ({ mutateAsync: api.updateTask }),
+    useUpdateTemplateTaskAssignees: () => ({ mutateAsync: api.updateTaskAssignees }),
+    useDeleteTemplateTask: () => ({ mutateAsync: api.deleteTask }),
+    useUpdateTemplateTaskMilestoneAndOrdering: () => ({ mutateAsync: api.updateMilestoneAndOrdering }),
+    useCreateTemplateMilestone: () => ({ mutateAsync: api.createMilestone }),
+    useUpdateTemplateMilestone: () => ({ mutateAsync: api.updateMilestone }),
+    useDeleteTemplateMilestone: () => ({ mutateAsync: api.deleteMilestone }),
+    useCreateTemplatePerson: () => ({ mutateAsync: api.createPerson }),
+    useUpdateTemplatePerson: () => ({ mutateAsync: api.updatePerson }),
+    useDeleteTemplatePerson: () => ({ mutateAsync: api.deletePerson }),
+    useUpdateTemplate: () => ({ mutateAsync: api.update }),
+  };
+});
 
 const updateMilestoneAndOrdering = Api.project_templates.updateMilestoneAndOrdering as jest.Mock;
 const updateTask = Api.project_templates.updateTask as jest.Mock;
@@ -153,30 +168,32 @@ function mappedGraph() {
   );
 }
 
-function succeedingMutate(): Mutate {
-  return async (_message, operation) => {
-    await operation();
-    return true;
+function graphSession(graph: TemplateTaskGraph) {
+  jest.spyOn(Operations, "mapTemplateTaskGraph").mockReturnValue(graph);
+  const input = {
+    template: { ...template(), id: "template-1", space: { id: "space-1" } } as ProjectTemplate,
+    profilePath: (id: string) => `/people/${id}`,
+    milestoneLink: (id: string) => `/milestones/${id}`,
   };
-}
+  const { result } = renderHook(() => useTemplateTasksForTurboUi(input), { initialProps: undefined });
 
-function graphSession(graph: TemplateTaskGraph, mutate: Mutate = succeedingMutate()) {
-  let current = graph;
   return {
-    graph,
-    templateId: "template-1",
-    mutate,
-    commit: (next: TemplateTaskGraph) => {
-      current = next;
+    async run(action: (editor: ReturnType<typeof useTemplateTasksForTurboUi>) => Promise<boolean>) {
+      let saved = false;
+      await act(async () => {
+        saved = await action(result.current);
+      });
+      return saved;
     },
     get current() {
-      return current;
+      return result.current;
     },
   };
 }
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  jest.restoreAllMocks();
+  jest.resetAllMocks();
 });
 
 test("maps loader tasks, milestone ordering, and milestone list order", () => {
@@ -198,14 +215,7 @@ test("keeps the optimistic order and persists milestone plus index", async () =>
   updateMilestoneAndOrdering.mockResolvedValue({ task: { id: "task-1" } });
   const session = graphSession(mappedGraph());
 
-  await expect(
-    performTemplateTaskReorder({
-      ...session,
-      taskId: "task-1",
-      milestoneId: "milestone-1",
-      index: 1,
-    }),
-  ).resolves.toBe(true);
+  await expect(session.run((editor) => editor.onTaskReorder("task-1", "milestone-1", 1))).resolves.toBe(true);
 
   expect(session.current.milestones[0]!.tasksOrderingState).toEqual(["task-2", "task-1"]);
   expect(updateMilestoneAndOrdering).toHaveBeenCalledWith({
@@ -217,19 +227,13 @@ test("keeps the optimistic order and persists milestone plus index", async () =>
 });
 
 test("restores the snapshot when reorder persistence fails", async () => {
-  const session = graphSession(mappedGraph(), jest.fn().mockResolvedValue(false));
+  jest.mocked(updateMilestoneAndOrdering).mockRejectedValueOnce(new Error("Offline"));
+  const session = graphSession(mappedGraph());
 
-  await expect(
-    performTemplateTaskReorder({
-      ...session,
-      taskId: "task-1",
-      milestoneId: "milestone-1",
-      index: 1,
-    }),
-  ).resolves.toBe(false);
+  await expect(session.run((editor) => editor.onTaskReorder("task-1", "milestone-1", 1))).resolves.toBe(false);
 
   expect(session.current.milestones[0]!.tasksOrderingState).toEqual(["task-1", "task-2"]);
-  expect(updateMilestoneAndOrdering).not.toHaveBeenCalled();
+  expect(updateMilestoneAndOrdering).toHaveBeenCalled();
 });
 
 test("keeps status, due offset, and assignees in the graph before persist", async () => {
@@ -248,11 +252,9 @@ test("keeps status, due offset, and assignees in the graph before persist", asyn
   ];
 
   await expect(
-    performTemplateTaskUpdate({
-      ...session,
-      taskId: "task-1",
-      updates: { status: { ...doneStatus, icon: "circleDashed" }, dueOffsetDays: 5, assignees },
-    }),
+    session.run((editor) =>
+      editor.onTaskUpdate("task-1", { status: { ...doneStatus, icon: "circleDashed" }, dueOffsetDays: 5, assignees }),
+    ),
   ).resolves.toBe(true);
 
   expect(session.current.tasks[0]).toEqual(
@@ -293,11 +295,7 @@ test("moves the task between kanban columns when status changes", async () => {
   );
 
   await expect(
-    performTemplateTaskUpdate({
-      ...session,
-      taskId: "task-1",
-      updates: { status: { ...doneStatus, icon: "circleDashed" } },
-    }),
+    session.run((editor) => editor.onTaskUpdate("task-1", { status: { ...doneStatus, icon: "circleDashed" } })),
   ).resolves.toBe(true);
 
   expect(session.current.tasksKanbanState).toEqual({ todo: ["task-2"], done: ["task-1"] });
@@ -312,18 +310,13 @@ test("moves the task between kanban columns when status changes", async () => {
 });
 
 test("restores the task when status persistence fails", async () => {
-  const session = graphSession(mappedGraph(), jest.fn().mockResolvedValue(false));
+  jest.mocked(updateTask).mockRejectedValueOnce(new Error("Offline"));
+  const session = graphSession(mappedGraph());
 
-  await expect(
-    performTemplateTaskUpdate({
-      ...session,
-      taskId: "task-1",
-      updates: { dueOffsetDays: 9 },
-    }),
-  ).resolves.toBe(false);
+  await expect(session.run((editor) => editor.onTaskUpdate("task-1", { dueOffsetDays: 9 }))).resolves.toBe(false);
 
   expect(session.current.tasks[0]!.dueOffsetDays).toBeNull();
-  expect(updateTask).not.toHaveBeenCalled();
+  expect(updateTask).toHaveBeenCalled();
 });
 
 test("persists template-root kanban state and status for a milestone task", async () => {
@@ -339,19 +332,20 @@ test("persists template-root kanban state and status for a milestone task", asyn
   const updatedKanbanState = { todo: ["task-2"], done: ["task-1"] };
 
   await expect(
-    performTemplateTaskKanbanChange({
-      ...session,
-      event: {
+    session.run((editor) =>
+      editor.onTaskKanbanChange({
         milestoneId: null,
         taskId: "task-1",
         from: { status: "todo", index: 0 },
         to: { status: "done", index: 0 },
         updatedKanbanState,
-      },
-    }),
+      }),
+    ),
   ).resolves.toBe(true);
 
-  expect(session.current.tasks[0]).toEqual(expect.objectContaining({ id: "task-1", status: expect.objectContaining({ id: "done" }) }));
+  expect(session.current.tasks[0]).toEqual(
+    expect.objectContaining({ id: "task-1", status: expect.objectContaining({ id: "done" }) }),
+  );
   expect(session.current.tasksKanbanState).toEqual({ todo: ["task-2"], done: ["task-1"] });
   expect(updateTask).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -386,16 +380,15 @@ test("persists root kanban state for a template-root task", async () => {
   );
 
   await expect(
-    performTemplateTaskKanbanChange({
-      ...session,
-      event: {
+    session.run((editor) =>
+      editor.onTaskKanbanChange({
         milestoneId: null,
         taskId: "root-task",
         from: { status: "todo", index: 0 },
         to: { status: "done", index: 0 },
         updatedKanbanState: { todo: [], done: ["root-task"] },
-      },
-    }),
+      }),
+    ),
   ).resolves.toBe(true);
 
   expect(session.current.tasksKanbanState).toEqual({ todo: [], done: ["root-task"] });
@@ -436,16 +429,15 @@ test("persists the full board order on the template root", async () => {
   );
 
   await expect(
-    performTemplateTaskKanbanChange({
-      ...session,
-      event: {
+    session.run((editor) =>
+      editor.onTaskKanbanChange({
         milestoneId: null,
         taskId: "root-b",
         from: { status: "todo", index: 2 },
         to: { status: "todo", index: 0 },
         updatedKanbanState: { todo: ["root-b", "task-1", "root-a"], done: [] },
-      },
-    }),
+      }),
+    ),
   ).resolves.toBe(true);
 
   expect(session.current.tasksKanbanState).toEqual({ todo: ["root-b", "task-1", "root-a"], done: [] });
@@ -463,9 +455,8 @@ test("creates a task with a server id and appends milestone ordering", async () 
   const session = graphSession(mappedGraph());
 
   await expect(
-    performTemplateTaskCreate({
-      ...session,
-      task: {
+    session.run((editor) =>
+      editor.onTaskCreate({
         name: "Prepare agenda",
         description: {},
         milestoneId: "milestone-1",
@@ -475,8 +466,8 @@ test("creates a task with a server id and appends milestone ordering", async () 
         status: { ...taskStatus, icon: "circleDashed" },
         reminders: [],
         assignees: [],
-      },
-    }),
+      }),
+    ),
   ).resolves.toBe(true);
 
   expect(session.current.tasks.map((task) => task.id)).toEqual(["task-1", "task-2", "task-3"]);
@@ -495,11 +486,7 @@ test("patches milestone title and due offset in the graph", async () => {
   const session = graphSession(mappedGraph());
 
   await expect(
-    performTemplateMilestoneUpdate({
-      ...session,
-      milestoneId: "milestone-1",
-      updates: { title: "Launch", dueOffsetDays: 14 },
-    }),
+    session.run((editor) => editor.onMilestoneUpdate("milestone-1", { title: "Launch", dueOffsetDays: 14 })),
   ).resolves.toBe(true);
 
   expect(session.current.milestones[0]).toEqual(
@@ -525,11 +512,7 @@ test("creates a milestone with the returned server id", async () => {
   const session = graphSession(mappedGraph());
 
   await expect(
-    performTemplateMilestoneCreate({
-      ...session,
-      milestone: { title: "Ship", description: {}, dueOffsetDays: 3 },
-      milestoneLink: (milestoneId) => `/milestones/${milestoneId}`,
-    }),
+    session.run((editor) => editor.onMilestoneCreate({ title: "Ship", description: {}, dueOffsetDays: 3 })),
   ).resolves.toBe(true);
 
   expect(session.current.milestones.map((milestone) => milestone.id)).toEqual(["milestone-1", "milestone-2"]);
@@ -546,7 +529,7 @@ test("creates a contributor with the returned server id", async () => {
     accessLevel: 70,
   };
 
-  await expect(performTemplatePersonCreate({ ...session, person })).resolves.toBe(true);
+  await expect(session.run((editor) => editor.onPersonCreate(person))).resolves.toBe(true);
 
   expect(session.current.people).toEqual([expect.objectContaining({ id: "template-person-1", role: "contributor" })]);
   expect(createPerson).toHaveBeenCalledWith({
@@ -559,6 +542,7 @@ test("creates a contributor with the returned server id", async () => {
 });
 
 test("restores the contributor when an update fails", async () => {
+  jest.mocked(Api.project_templates.updatePerson).mockRejectedValueOnce(new Error("Offline"));
   const session = graphSession(
     mapTemplateTaskGraph(
       template({
@@ -577,15 +561,10 @@ test("restores the contributor when an update fails", async () => {
       (personId) => `/people/${personId}`,
       (milestoneId) => `/milestones/${milestoneId}`,
     ),
-    jest.fn().mockResolvedValue(false),
   );
 
   await expect(
-    performTemplatePersonUpdate({
-      ...session,
-      personId: "template-person-1",
-      updates: { responsibility: "Updated" },
-    }),
+    session.run((editor) => editor.onPersonUpdate("template-person-1", { responsibility: "Updated" })),
   ).resolves.toBe(false);
 
   expect(session.current.people[0]!.responsibility).toBe("Launch");
@@ -603,13 +582,82 @@ test("remaps tasks off a deleted workflow status", async () => {
   const nextStatuses = [{ ...doneStatus, icon: "circleDashed" as const, index: 0 }];
 
   await expect(
-    performTemplateStatusesChange({
-      ...session,
-      nextStatuses,
-      deletedStatusReplacements: { todo: "done" },
-    }),
+    session.run((editor) =>
+      editor.onStatusesChange({ nextStatuses: nextStatuses, deletedStatusReplacements: { todo: "done" } }),
+    ),
   ).resolves.toBe(true);
 
   expect(session.current.statuses.map((status) => status.id)).toEqual(["done"]);
   expect(session.current.tasks.every((task) => task.status.id === "done")).toBe(true);
+});
+
+test("shows task edits while saving and restores the previous value on failure", async () => {
+  let rejectSave = (_error: Error) => {};
+  updateTask.mockImplementationOnce(
+    () =>
+      new Promise((_resolve, reject) => {
+        rejectSave = reject;
+      }),
+  );
+  const session = graphSession(mappedGraph());
+
+  let saving: Promise<boolean>;
+  act(() => {
+    saving = session.current.onTaskUpdate("task-1", { name: "Pending" });
+  });
+  expect(session.current.tasks[0]?.name).toBe("Pending");
+
+  await act(async () => {
+    rejectSave(new Error("Offline"));
+    expect(await saving).toBe(false);
+  });
+  expect(session.current.tasks[0]?.name).toBe("First");
+});
+
+test("replaces and deletes contributors using the template person id", async () => {
+  const session = graphSession(mappedGraph());
+  const person = { id: "person-2", fullName: "Emily Davis", avatarUrl: null };
+
+  await expect(
+    session.run((editor) =>
+      editor.onPersonUpdate("template-person-1", {
+        person,
+        role: "contributor",
+        responsibility: "Launch",
+        accessLevel: 70,
+      }),
+    ),
+  ).resolves.toBe(true);
+
+  expect(Api.project_templates.updatePerson).toHaveBeenCalledWith({
+    templateId: "template-1",
+    templatePersonId: "template-person-1",
+    personId: "person-2",
+    role: "contributor",
+    responsibility: "Launch",
+    accessLevel: 70,
+  });
+
+  await expect(session.run((editor) => editor.onPersonDelete("template-person-1"))).resolves.toBe(true);
+  expect(Api.project_templates.deletePerson).toHaveBeenCalledWith({
+    templateId: "template-1",
+    templatePersonId: "template-person-1",
+  });
+});
+
+test("does not create a contributor without a selected person", async () => {
+  const session = graphSession(mappedGraph());
+
+  await expect(
+    session.run((editor) =>
+      editor.onPersonCreate({
+        person: null,
+        role: "contributor",
+        responsibility: null,
+        accessLevel: 70,
+      }),
+    ),
+  ).resolves.toBe(false);
+
+  expect(createPerson).not.toHaveBeenCalled();
 });

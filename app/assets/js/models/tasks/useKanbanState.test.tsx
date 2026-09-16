@@ -95,7 +95,13 @@ it.each(["space", "template", "project"] as const)("keeps %s Kanban persistence 
           ? { ...options, type, projectId: "p1", updateKanban: save }
           : type === "space"
             ? { ...options, type, spaceId: "s1", updateKanban: save }
-            : { ...options, type, templateId: "t1" },
+            : {
+                ...options,
+                type,
+                templateId: "t1",
+                updateTask: Api.project_templates.updateTask,
+                updateTemplate: Api.project_templates.update,
+              },
       ),
     { initialProps: {} },
   );

@@ -1,3 +1,5 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateTemplateEditorQueries } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -16,7 +18,6 @@ interface LoadedData {
 }
 
 async function loader({ params, request }): Promise<LoadedData> {
-
   const url = new URL(request.url);
   const parentFolderId = url.searchParams.get("folderId") || undefined;
   const { template } = await Api.project_templates.get({ id: params.templateId });
@@ -25,6 +26,7 @@ async function loader({ params, request }): Promise<LoadedData> {
 }
 
 function Page() {
+  const queryClient = useQueryClient();
   const { template, parentFolderId } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ function Page() {
         name: values.title,
         content: JSON.stringify(values.content),
       });
+      await invalidateTemplateEditorQueries(queryClient, { templateId: template.id, spaceId: template.space.id });
       navigate(paths.projectTemplateDocumentPath(template.id, result.document.nodeId));
       return true;
     } catch {
@@ -60,4 +63,3 @@ function Page() {
     />
   );
 }
-

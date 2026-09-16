@@ -1,7 +1,13 @@
 import { useProjectKanbanState } from "./useProjectKanbanState";
 import * as React from "react";
 
-import Api, { type ProjectsUpdateKanbanInput, type SpacesUpdateKanbanInput, type TaskStatus } from "@/api";
+import {
+  type ProjectTemplatesUpdateInput,
+  type ProjectTemplatesUpdateTaskInput,
+  type ProjectsUpdateKanbanInput,
+  type SpacesUpdateKanbanInput,
+  type TaskStatus,
+} from "@/api";
 import { TaskBoard, showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
@@ -40,6 +46,8 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "template";
       templateId: string;
+      updateTask: (input: ProjectTemplatesUpdateTaskInput) => Promise<unknown>;
+      updateTemplate: (input: ProjectTemplatesUpdateInput) => Promise<unknown>;
     });
 
 export function useKanbanState(options: UseKanbanStateOptions) {
@@ -85,12 +93,12 @@ export function useKanbanState(options: UseKanbanStateOptions) {
 
       try {
         if (type === "template") {
-          await Api.project_templates.updateTask({
+          await options.updateTask({
             templateId: options.templateId,
             taskId: event.taskId,
             taskStatus: backendStatus,
           });
-          await Api.project_templates.update({
+          await options.updateTemplate({
             id: options.templateId,
             tasksKanbanState: serializeKanbanState(event.updatedKanbanState),
           });
