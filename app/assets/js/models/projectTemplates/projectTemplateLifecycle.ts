@@ -1,8 +1,28 @@
 import Api from "@/api";
+import { compareIds } from "@/routes/paths";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export async function invalidateProjectTemplateListQueries(queryClient: QueryClient): Promise<void> {
-  await queryClient.invalidateQueries({ queryKey: Api.project_templates.listQueryKeyPrefix() });
+export async function invalidateProjectTemplateListQueries(
+  queryClient: QueryClient,
+  templateId?: string,
+): Promise<void> {
+  const refreshes = [queryClient.invalidateQueries({ queryKey: Api.project_templates.listQueryKeyPrefix() })];
+
+  if (templateId) {
+    const queryKey = Api.project_templates.getQueryKeyPrefix();
+    refreshes.push(
+      queryClient.invalidateQueries({
+        queryKey,
+        refetchType: "none",
+        predicate: (query) =>
+          compareIds((query.queryKey[queryKey.length] as { id?: string } | undefined)?.id, templateId),
+      }),
+    );
+  }
+
+  await Promise.all(refreshes).catch((error) => {
+    console.error("Failed to refresh project template queries", error);
+  });
 }
 
 export function useCreateProjectTemplate() {
@@ -28,7 +48,7 @@ export function useArchiveProjectTemplate() {
 
   return useMutation({
     ...Api.project_templates.archiveMutationOptions(),
-    onSuccess: () => void invalidateProjectTemplateListQueries(queryClient),
+    onSuccess: (_result, { id }) => invalidateProjectTemplateListQueries(queryClient, id),
   });
 }
 
@@ -37,7 +57,7 @@ export function useRestoreProjectTemplate() {
 
   return useMutation({
     ...Api.project_templates.restoreMutationOptions(),
-    onSuccess: () => void invalidateProjectTemplateListQueries(queryClient),
+    onSuccess: (_result, { id }) => invalidateProjectTemplateListQueries(queryClient, id),
   });
 }
 
@@ -46,7 +66,7 @@ export function useDeleteProjectTemplate() {
 
   return useMutation({
     ...Api.project_templates.deleteMutationOptions(),
-    onSuccess: () => void invalidateProjectTemplateListQueries(queryClient),
+    onSuccess: (_result, { id }) => invalidateProjectTemplateListQueries(queryClient, id),
   });
 }
 

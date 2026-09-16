@@ -6,7 +6,7 @@ jest.mock("@/api", () => ({
   __esModule: true,
   default: {
     project_templates: {
-      get: jest.fn(),
+      getQuery: jest.fn(),
     },
   },
 }));
@@ -36,7 +36,7 @@ jest.mock("@/routes/paths", () => {
   };
 });
 
-const getTemplate = Api.project_templates.get as jest.Mock;
+const getTemplate = Api.project_templates.getQuery as jest.Mock;
 const redirectTo = redirect as jest.Mock;
 
 beforeEach(() => {
@@ -54,7 +54,7 @@ test("loads the template and selected milestone", async () => {
 
   await expect(
     loader({ params: { companyId: "acme", templateId: "template-1", id: "milestone-1" } } as any),
-  ).resolves.toEqual({ template, milestone });
+  ).resolves.toEqual({ queryInput: { id: "template-1" }, milestoneId: "milestone-1" });
 
   expect(getTemplate).toHaveBeenCalledWith({ id: "template-1" });
 });

@@ -1,3 +1,4 @@
+import { useUpdateTemplateFile } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -17,7 +18,6 @@ interface LoadedData {
 }
 
 async function loader({ params }): Promise<LoadedData> {
-
   const { template } = await Api.project_templates.get({ id: params.templateId });
   const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));
 
@@ -31,6 +31,7 @@ async function loader({ params }): Promise<LoadedData> {
 
 function Page() {
   const { template, node } = Pages.useLoadedData<LoadedData>();
+  const updateFileMutation = useUpdateTemplateFile({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const file = node.file!;
@@ -41,7 +42,7 @@ function Page() {
   async function handleSubmit(values: FileEditPageTypes.Values, meta: { contentChanged: boolean }) {
     try {
       if (meta.contentChanged) {
-        await Api.project_templates.updateFile({
+        await updateFileMutation.mutateAsync({
           templateId: template.id,
           fileId: file.id,
           name: values.title,
@@ -72,4 +73,3 @@ function Page() {
     />
   );
 }
-

@@ -1,19 +1,8 @@
-import Api from "@/api";
-import * as Pages from "@/components/Pages";
+import * as Templates from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import * as People from "@/models/people";
-import {
-  content,
-  persistAndRefreshTemplate,
-  persistPersonCreate,
-  persistPersonDelete,
-  persistPersonUpdate,
-  persistTemplateChange,
-  serializeContent,
-  serializeJson,
-  type Mutate,
-} from "@/models/projectTemplates";
+import { content, serializeContent, serializeJson } from "@/models/projectTemplates";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
 import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
 import { findFileSize, uploadFilesWithPreviews } from "@/models/blobs";
@@ -22,15 +11,16 @@ import type { PageModule } from "@/routes/types";
 import { showErrorToast, TemplateProjectPage, type AddFileUploadItem } from "turboui";
 import React from "react";
 import { useNavigate } from "react-router";
-import { loader, type LoadedData } from "./loader";
+import { loader, useLoadedData, useRefresh, type LoadedData } from "./loader";
 
 export default { name: "ProjectTemplatePage", loader, Page } as PageModule;
 
 function Page() {
-  const { template } = Pages.useLoadedData<LoadedData>();
-  const refresh = Pages.useRefresh();
+  const { template } = useLoadedData();
+  const scope = { templateId: template.id, spaceId: template.space.id };
+  const updateTemplate = Templates.useUpdateTemplate(scope);
+  const refresh = useRefresh();
   const paths = usePaths();
-  const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
   const profilePath = React.useCallback((personId: string) => paths.profilePath(personId), [paths]);
@@ -55,7 +45,6 @@ function Page() {
 
   const canEdit = !template.archivedAt && Boolean(permissions.canEdit || permissions.hasFullAccess);
   const slideInModel = useTemplateTaskSlideInProps({ canEdit, formattedTimePreferences });
-  const mutate: Mutate = (message, operation) => persistAndRefreshTemplate(refresh, message, operation);
   const [overview, setOverview] = React.useState(() => templateOverview(template));
   React.useEffect(() => {
     setOverview(templateOverview(template));
@@ -85,7 +74,6 @@ function Page() {
     template,
     profilePath,
     milestoneLink,
-    mutate: persistTemplateChange,
   });
   const templatePersonIds = React.useMemo(
     () => people.flatMap((templatePerson) => (templatePerson.person?.id ? [templatePerson.person.id] : [])),
@@ -116,31 +104,26 @@ function Page() {
       description: updates.description !== undefined ? updates.description : overview.description,
       durationDays: updates.durationDays !== undefined ? updates.durationDays : overview.durationDays,
     });
-    const saved = await persistTemplateChange("Template not updated", () =>
-      Api.project_templates.update({
+    try {
+      await updateTemplate.mutateAsync({
         id: template.id,
         name: updates.name,
         description: serializeContent(updates.description),
         durationDays: updates.durationDays,
         milestonesOrderingState: updates.milestonesOrderingState,
         tasksKanbanState: serializeJson(updates.tasksKanbanState),
-      }),
-    );
-    if (!saved) setOverview(snapshot);
-    return saved;
+      });
+      await refresh();
+      return true;
+    } catch {
+      setOverview(snapshot);
+      showErrorToast("Template not updated", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
   }
 
-  const onFolderCreate = createFolderOperation({ templateId: template.id, mutate });
-  const onFolderRename = createFolderRenameOperation({ templateId: template.id, mutate });
-  const onResourceDelete = createResourceDeleteOperation({ templateId: template.id, mutate });
-  const onResourceMove = createResourceMoveOperation({ templateId: template.id, mutate });
-  const onFilesUpload = createFilesUploadOperation({ templateId: template.id, mutate });
-  const lifecycleHandlers = createProjectTemplateEditorLifecycleHandlers({
-    navigate,
-    refresh,
-    paths,
-    spaceId: template.space.id,
-  });
+  const resources = useTemplateResources(template);
+  const lifecycle = useTemplateLifecycle(template);
 
   return (
     <TemplateProjectPage
@@ -161,11 +144,6 @@ function Page() {
       tasks={tasks}
       discussions={discussions}
       resourceNodes={resourceNodes}
-      onFolderCreate={onFolderCreate}
-      onFolderRename={onFolderRename}
-      onResourceDelete={onResourceDelete}
-      onResourceMove={onResourceMove}
-      onFilesUpload={onFilesUpload}
       formatFileSize={findFileSize}
       newDiscussionLink={paths.projectTemplateDiscussionNewPath(template.id)}
       newDocumentLink={paths.projectTemplateNewDocumentPath(template.id)}
@@ -190,128 +168,148 @@ function Page() {
       onPersonCreate={onPersonCreate}
       onPersonUpdate={onPersonUpdate}
       onPersonDelete={onPersonDelete}
-      {...lifecycleHandlers}
+      {...resources}
+      {...lifecycle}
     />
   );
 }
 
-function createProjectTemplateEditorLifecycleHandlers({
-  navigate,
-  refresh,
-  paths,
-  spaceId,
-}: {
-  navigate: (path: string) => void;
-  refresh: () => Promise<unknown>;
-  paths: Pick<Paths, "projectTemplatePath" | "spaceProjectTemplatesPath">;
-  spaceId: string;
-}): Pick<TemplateProjectPage.Props, "onDuplicate" | "onArchive" | "onRestore" | "onDelete"> {
-  async function onDuplicate(id: string, name: string) {
-    let result;
+function useTemplateLifecycle(template: LoadedData["template"]) {
+  const scope = { templateId: template.id, spaceId: template.space.id };
+  const duplicate = Templates.useDuplicateTemplate(scope);
+  const archive = Templates.useArchiveTemplate(scope);
+  const restore = Templates.useRestoreTemplate(scope);
+  const remove = Templates.useDeleteTemplate(scope);
+  const navigate = useNavigate();
+  const paths = usePaths();
+  const refresh = useRefresh();
 
+  async function onDuplicate(id: string, name: string) {
     try {
-      result = await Api.project_templates.duplicate({ id, name });
-    } catch (_error) {
+      const { template: created } = await duplicate.mutateAsync({ id, name });
+      navigate(paths.projectTemplatePath(created.id));
+      return { success: true };
+    } catch {
       showErrorToast("Template not duplicated", "Restore archived templates before duplicating them, then try again.");
       return { success: false, error: "The template could not be duplicated. Refresh the page and try again." };
     }
-
-    navigate(paths.projectTemplatePath(result.template.id));
-    return { success: true };
   }
 
-  async function onLifecycleChange(message: string, operation: () => Promise<unknown>) {
+  async function onArchive(id: string) {
     try {
-      await operation();
+      await archive.mutateAsync({ id });
       await refresh();
       return { success: true };
-    } catch (_error) {
-      showErrorToast(message, "The template may have changed. Refresh the page and try again.");
+    } catch {
+      showErrorToast("Template not archived", "The template may have changed. Refresh the page and try again.");
+      return { success: false, error: "The template could not be changed. Refresh the page and try again." };
+    }
+  }
+
+  async function onRestore(id: string) {
+    try {
+      await restore.mutateAsync({ id });
+      await refresh();
+      return { success: true };
+    } catch {
+      showErrorToast("Template not restored", "The template may have changed. Refresh the page and try again.");
       return { success: false, error: "The template could not be changed. Refresh the page and try again." };
     }
   }
 
   async function onDelete(id: string) {
     try {
-      await Api.project_templates.delete({ id });
-      navigate(paths.spaceProjectTemplatesPath(spaceId));
+      await remove.mutateAsync({ id });
+      navigate(paths.spaceProjectTemplatesPath(template.space.id));
       return { success: true };
-    } catch (_error) {
+    } catch {
       showErrorToast("Template not deleted", "The template may have changed. Refresh the page and try again.");
       return { success: false, error: "The template could not be deleted. Refresh the page and try again." };
     }
   }
 
-  return {
-    onDuplicate,
-    onArchive: (id) => onLifecycleChange("Template not archived", () => Api.project_templates.archive({ id })),
-    onRestore: (id) => onLifecycleChange("Template not restored", () => Api.project_templates.restore({ id })),
-    onDelete,
-  };
+  return { onDuplicate, onArchive, onRestore, onDelete };
 }
 
-export function createPeopleOperations({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
-  function onPersonCreate(person: Omit<TemplateProjectPage.TemplatePerson, "id" | "active">) {
-    const selectedPerson = person.person;
-    if (!selectedPerson) return false;
+export function useTemplateResources(template: LoadedData["template"]) {
+  const templateId = template.id;
+  const scope = { templateId, spaceId: template.space.id };
+  const createFolder = Templates.useCreateTemplateFolder(scope);
+  const renameFolder = Templates.useUpdateTemplateFolder(scope);
+  const deleteResource = Templates.useDeleteTemplateResource(scope);
+  const moveResource = Templates.useMoveTemplateResource(scope);
+  const createFiles = Templates.useCreateTemplateFiles(scope);
+  const refresh = useRefresh();
 
-    return mutate("Contributor not added", () => persistPersonCreate(templateId, person));
+  async function onFolderCreate(parentFolderId: string | null, name: string) {
+    try {
+      await createFolder.mutateAsync({ templateId, parentFolderId, name });
+      await refresh();
+      return true;
+    } catch {
+      showErrorToast("Folder not created", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
   }
 
-  function onPersonUpdate(
-    templatePersonId: string,
-    updates: Partial<Omit<TemplateProjectPage.TemplatePerson, "id" | "active">>,
+  async function onFolderRename(folderId: string, name: string) {
+    try {
+      await renameFolder.mutateAsync({ templateId, folderId, name });
+      await refresh();
+      return true;
+    } catch {
+      showErrorToast("Folder not renamed", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
+  }
+
+  async function onResourceDelete(nodeId: string) {
+    try {
+      await deleteResource.mutateAsync({ templateId, nodeId });
+      await refresh();
+      return true;
+    } catch {
+      showErrorToast("Resource not deleted", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
+  }
+
+  async function onResourceMove(nodeId: string, parentFolderId: string | null) {
+    try {
+      await moveResource.mutateAsync({ templateId, nodeId, parentFolderId });
+      await refresh();
+      return true;
+    } catch {
+      showErrorToast("Resource not moved", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
+  }
+
+  async function onFilesUpload(
+    items: AddFileUploadItem[],
+    setProgress: (progress: number) => void,
+    parentFolderId: string | null,
   ) {
-    return mutate("Contributor not updated", () => persistPersonUpdate(templateId, templatePersonId, updates));
-  }
-
-  function onPersonDelete(templatePersonId: string) {
-    return mutate("Contributor not removed", () => persistPersonDelete(templateId, templatePersonId));
-  }
-
-  return { onPersonCreate, onPersonUpdate, onPersonDelete };
-}
-
-export function createFolderOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
-  return (parentFolderId: string | null, name: string) =>
-    mutate("Folder not created", () =>
-      Api.project_templates.createFolder({
-        templateId,
-        parentFolderId,
-        name,
-      }),
-    );
-}
-
-export function createFolderRenameOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
-  return (folderId: string, name: string) =>
-    mutate("Folder not renamed", () => Api.project_templates.updateFolder({ templateId, folderId, name }));
-}
-
-export function createResourceDeleteOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
-  return (nodeId: string) =>
-    mutate("Resource not deleted", () => Api.project_templates.deleteResource({ templateId, nodeId }));
-}
-
-export function createResourceMoveOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
-  return (nodeId: string, parentFolderId: string | null) =>
-    mutate("Resource not moved", () => Api.project_templates.moveResource({ templateId, nodeId, parentFolderId }));
-}
-
-export function createFilesUploadOperation({ templateId, mutate }: { templateId: string; mutate: Mutate }) {
-  return (items: AddFileUploadItem[], setProgress: (progress: number) => void, parentFolderId: string | null) =>
-    mutate("Files not uploaded", () =>
-      uploadFilesWithPreviews({
+    try {
+      await uploadFilesWithPreviews({
         items,
         setProgress,
         persist: (files) =>
-          Api.project_templates.createFiles({
+          createFiles.mutateAsync({
             templateId,
             parentFolderId,
             files: files.map((file) => ({ ...file, description: JSON.stringify(file.description) })),
           }),
-      }),
-    );
+      });
+      await refresh();
+      return true;
+    } catch {
+      showErrorToast("Files not uploaded", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
+  }
+
+  return { onFolderCreate, onFolderRename, onResourceDelete, onResourceMove, onFilesUpload };
 }
 
 export function toResourceNode(

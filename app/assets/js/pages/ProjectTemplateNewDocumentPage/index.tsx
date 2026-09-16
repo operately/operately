@@ -1,3 +1,4 @@
+import { useCreateTemplateDocument } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -16,7 +17,6 @@ interface LoadedData {
 }
 
 async function loader({ params, request }): Promise<LoadedData> {
-
   const url = new URL(request.url);
   const parentFolderId = url.searchParams.get("folderId") || undefined;
   const { template } = await Api.project_templates.get({ id: params.templateId });
@@ -26,6 +26,7 @@ async function loader({ params, request }): Promise<LoadedData> {
 
 function Page() {
   const { template, parentFolderId } = Pages.useLoadedData<LoadedData>();
+  const createDocumentMutation = useCreateTemplateDocument({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
@@ -33,7 +34,7 @@ function Page() {
 
   async function createDocument(values: NewDocumentPage.Values, _meta: { isDraft: boolean }) {
     try {
-      const result = await Api.project_templates.createDocument({
+      const result = await createDocumentMutation.mutateAsync({
         templateId: template.id,
         parentFolderId,
         name: values.title,
@@ -60,4 +61,3 @@ function Page() {
     />
   );
 }
-
