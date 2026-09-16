@@ -12,20 +12,39 @@ interface SummaryProps {
 export function Summary({ content, characterCount, mentionedPersonLookup }: SummaryProps): JSX.Element {
   const summary = useSummarized(content, characterCount);
 
-  return <RichContent content={summary} mentionedPersonLookup={mentionedPersonLookup} className="rich-text-summary" />;
+  return (
+    <RichContent
+      content={summary}
+      mentionedPersonLookup={mentionedPersonLookup}
+      className="rich-text-summary"
+      thumbnailBlobs
+    />
+  );
 }
 
 //
-// Summarize extracts the text content and mentions from a rich text object.
+// Summarize extracts the text content and mentions from a rich text object, preserving attached blob nodes in the summarized output.
 //
 
-function useSummarized(content: any, characterCount: number): string {
+function useSummarized(content: any, characterCount: number): any {
   return React.useMemo(() => {
     const summary = summarize(parseContent(content));
-    const shortened = shortenContent(summary, characterCount, { suffix: "...", skipParse: true });
+    const textContent = (summary.content || []).filter((node: any) => !paragraphHasBlob(node));
+    const blobContent = (summary.content || []).filter((node: any) => paragraphHasBlob(node));
+    const shortened = shortenContent({ ...summary, content: textContent }, characterCount, {
+      suffix: "...",
+      skipParse: true,
+    });
 
-    return shortened;
+    return {
+      ...shortened,
+      content: [...(shortened.content || []), ...blobContent],
+    };
   }, [content, characterCount]);
+}
+
+function paragraphHasBlob(node: any): boolean {
+  return node?.type === "paragraph" && (node.content || []).some((child: any) => child.type === "blob");
 }
 
 export function summarize(node: any): any {
@@ -51,6 +70,7 @@ export function summarize(node: any): any {
     case "hardBreak":
     case "horizontalRule":
     case "codeBlock":
+      return null;
     case "blob":
       return summarizeBlob(node);
     default:
@@ -60,10 +80,20 @@ export function summarize(node: any): any {
 }
 
 function summarizeDoc(node: any): any {
-  return {
-    type: "doc",
-    content: [{ type: "paragraph", content: flatten(node.content.map(summarize).filter((node: any) => node)) }],
-  };
+  const flattened = flatten((node.content || []).map(summarize).filter((child: any) => child));
+  const blobs = flattened.filter((child: any) => child.type === "blob");
+  const rest = trimEdgeSpaces(flattened.filter((child: any) => child.type !== "blob"));
+  const content: any[] = [];
+
+  if (rest.length > 0) {
+    content.push({ type: "paragraph", content: rest });
+  }
+
+  if (blobs.length > 0) {
+    content.push({ type: "paragraph", content: blobs });
+  }
+
+  return { type: "doc", content };
 }
 
 function summarizeBulletList(node: any): any {
@@ -86,10 +116,10 @@ function summarizeBlockquote(node: any): any {
   if (!node.content) {
     return { type: "paragraph", content: [] };
   }
-  
+
   const summarizedContent = node.content.map(summarize).filter((node: any) => node);
   const flattened = flatten(summarizedContent);
-  
+
   // Return a paragraph with the flattened content
   return { type: "paragraph", content: flattened };
 }
@@ -124,9 +154,42 @@ function summarizeText(node: any): any {
   return { type: "text", text: richContentToString(node) };
 }
 
+function trimEdgeSpaces(nodes: any[]): any[] {
+  const result = [...nodes];
+
+  while (result[0]?.type === "text" && result[0]?.text === " ") {
+    result.shift();
+  }
+
+  while (result.at(-1)?.type === "text" && result.at(-1)?.text === " ") {
+    result.pop();
+  }
+
+  return result;
+}
+
 function summarizeBlob(node: any) {
-  if (!node.attrs?.title) return null;
-  return { type: "text", text: node.attrs.title };
+  const attrs = normalizeBlobAttrs(node.attrs);
+
+  if (attrs?.src) {
+    return { type: "blob", attrs };
+  }
+
+  if (!attrs?.title) return null;
+  return { type: "text", text: attrs.title };
+}
+
+function normalizeBlobAttrs(attrs: any) {
+  if (!attrs) return attrs;
+
+  const src = attrs.src;
+  if (!src || typeof src !== "object") return attrs;
+
+  return {
+    ...attrs,
+    id: attrs.id || src.id,
+    src: src.url,
+  };
 }
 
 const summarizeMention = (node: any) => node;
