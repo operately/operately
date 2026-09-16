@@ -512,6 +512,108 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     end)
   end
 
+  step :edit_cached_template_discussion, ctx do
+    ctx
+    |> mark_template_page_loaded()
+    |> UI.click(testid: "tab-discussions")
+    |> UI.click_link("Launch notes")
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "edit-template-discussion")
+    |> UI.fill(testid: "discussion-title", with: "Updated notes")
+    |> UI.click(testid: "save-template-discussion")
+    |> UI.assert_has(testid: "template-discussion-page")
+    |> UI.assert_text("Updated notes")
+    |> add_template_comment("Cached discussion comment")
+    |> UI.click_link("Discussions")
+    |> UI.click_link("Updated notes")
+    |> UI.assert_text("Cached discussion comment")
+    |> edit_and_delete_cached_template_comment()
+    |> assert_template_page_not_reloaded()
+  end
+
+  step :edit_and_delete_cached_template_comment, ctx do
+    comment_test_id = "comment-#{Paths.project_template_comment_id(ctx.discussion_comment)}"
+
+    ctx
+    |> UI.find(UI.query(testid: comment_test_id), fn el -> UI.click(el, testid: "comment-options") end)
+    |> UI.click(testid: "edit-comment")
+    |> UI.fill_rich_text("Edited reusable comment")
+    |> UI.click(testid: "post-comment")
+    |> UI.assert_text("Edited reusable comment")
+    |> UI.click_link("Discussions")
+    |> UI.click_link("Updated notes")
+    |> UI.assert_text("Edited reusable comment")
+    |> UI.find(UI.query(testid: comment_test_id), fn el -> UI.click(el, testid: "comment-options") end)
+    |> UI.click(testid: "delete-comment")
+    |> UI.refute_has(testid: comment_test_id)
+    |> UI.click_link("Discussions")
+    |> UI.click_link("Updated notes")
+    |> UI.refute_has(testid: comment_test_id)
+  end
+
+  step :edit_cached_template_document, ctx do
+    ctx
+    |> mark_template_page_loaded()
+    |> UI.click(testid: "tab-docs & files")
+    |> UI.click_link("Launch plan")
+    |> UI.click(testid: "edit-document-link")
+    |> UI.fill(testid: "title", with: "Updated plan")
+    |> UI.click_button("Save Changes")
+    |> UI.assert_has(testid: "project-template-document-page")
+    |> UI.assert_text("Updated plan")
+    |> add_template_comment("Cached document comment")
+    |> UI.click_link("Docs & Files")
+    |> UI.click_link("Updated plan")
+    |> UI.assert_text("Cached document comment")
+    |> assert_template_page_not_reloaded()
+  end
+
+  step :create_and_edit_cached_template_link, ctx do
+    ctx
+    |> mark_template_page_loaded()
+    |> UI.click(testid: "tab-docs & files")
+    |> UI.click(testid: "add-options")
+    |> UI.click_text("Add link")
+    |> UI.click(testid: "link-to-other-resource")
+    |> UI.fill(testid: "title", with: "Reference link")
+    |> UI.fill(testid: "link", with: "https://example.com")
+    |> UI.click_button("Add link")
+    |> UI.assert_has(testid: "project-template-link-page")
+    |> UI.click(testid: "edit-link-link")
+    |> UI.fill(testid: "title", with: "Updated reference")
+    |> UI.click_button("Save")
+    |> UI.assert_has(testid: "project-template-link-page")
+    |> UI.assert_text("Updated reference")
+    |> add_template_comment("Cached link comment")
+    |> UI.click_link("Docs & Files")
+    |> UI.click_link("Updated reference")
+    |> UI.assert_text("Cached link comment")
+    |> assert_template_page_not_reloaded()
+  end
+
+  step :given_template_file_exists, ctx do
+    ctx
+    |> Factory.add_blob(:template_blob, :creator)
+    |> Factory.add_project_template_resource_file(:template_file, :template, :template_blob, name: "Reference file")
+  end
+
+  step :edit_cached_template_file, ctx do
+    ctx
+    |> mark_template_page_loaded()
+    |> UI.click(testid: "tab-docs & files")
+    |> UI.click_link("Reference file")
+    |> UI.click(testid: "edit-file-link")
+    |> UI.fill(testid: "title", with: "Updated file")
+    |> UI.click_button("Save")
+    |> UI.assert_has(testid: "project-template-file-page")
+    |> UI.assert_text("Updated file")
+    |> add_template_comment("Cached file comment")
+    |> UI.click_link("Docs & Files")
+    |> UI.click_link("Updated file")
+    |> UI.assert_text("Cached file comment")
+    |> assert_template_page_not_reloaded()
+  end
+
   defp assert_template_page_not_reloaded(ctx) do
     UI.execute("assert_template_page_not_reloaded", ctx, fn session ->
       Wallaby.Browser.execute_script(session, "return window.templatePageReloadMarker === true", fn present ->

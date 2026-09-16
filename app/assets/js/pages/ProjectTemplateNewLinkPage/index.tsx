@@ -1,34 +1,18 @@
 import { useCreateTemplateLink } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
-import Api, { type ProjectTemplate } from "@/api";
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { LinkNewPage, showErrorToast, type ResourceHubLinkType } from "turboui";
+import { LinkNewPage, showErrorToast } from "turboui";
 import type { LinkNewPage as LinkNewPageTypes } from "turboui/LinkNewPage/types";
 import { useNavigate } from "react-router";
 import React from "react";
 
 export default { name: "ProjectTemplateNewLinkPage", loader, Page } as PageModule;
 
-interface LoadedData {
-  template: ProjectTemplate;
-  parentFolderId: string | undefined;
-  linkType: ResourceHubLinkType;
-}
-
-async function loader({ params, request }): Promise<LoadedData> {
-  const url = new URL(request.url);
-  const parentFolderId = url.searchParams.get("folderId") || undefined;
-  const linkType = (url.searchParams.get("type") || "other") as ResourceHubLinkType;
-  const { template } = await Api.project_templates.get({ id: params.templateId });
-
-  return { template, parentFolderId, linkType };
-}
-
 function Page() {
-  const { template, parentFolderId, linkType } = Pages.useLoadedData<LoadedData>();
+  const { template, parentFolderId, linkType } = useLoadedData();
   const createLinkMutation = useCreateTemplateLink({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
