@@ -234,6 +234,45 @@ describe("summarize", () => {
     });
   });
 
+  it("normalizes legacy object blob sources to a URL string", () => {
+    const input = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "blob",
+              attrs: {
+                src: { id: "blob-1", url: "https://example.com/photo.png" },
+                filetype: "image/png",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(summarize(input)).toEqual({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "blob",
+              attrs: {
+                id: "blob-1",
+                src: "https://example.com/photo.png",
+                filetype: "image/png",
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   it("keeps an image blob even when it has no title", () => {
     const blob = {
       type: "blob",

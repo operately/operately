@@ -23,7 +23,7 @@ export function Summary({ content, characterCount, mentionedPersonLookup }: Summ
 }
 
 //
-// Summarize extracts the text content and mentions from a rich text object.
+// Summarize extracts the text content and mentions from a rich text object, preserving attached blob nodes in the summarized output.
 //
 
 function useSummarized(content: any, characterCount: number): any {
@@ -169,12 +169,27 @@ function trimEdgeSpaces(nodes: any[]): any[] {
 }
 
 function summarizeBlob(node: any) {
-  if (node.attrs?.src) {
-    return { type: "blob", attrs: node.attrs };
+  const attrs = normalizeBlobAttrs(node.attrs);
+
+  if (attrs?.src) {
+    return { type: "blob", attrs };
   }
 
-  if (!node.attrs?.title) return null;
-  return { type: "text", text: node.attrs.title };
+  if (!attrs?.title) return null;
+  return { type: "text", text: attrs.title };
+}
+
+function normalizeBlobAttrs(attrs: any) {
+  if (!attrs) return attrs;
+
+  const src = attrs.src;
+  if (!src || typeof src !== "object") return attrs;
+
+  return {
+    ...attrs,
+    id: attrs.id || src.id,
+    src: src.url,
+  };
 }
 
 const summarizeMention = (node: any) => node;

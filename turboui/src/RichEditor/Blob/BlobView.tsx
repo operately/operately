@@ -21,15 +21,33 @@ let imagePreviewPreviousBodyOverflow: string | null = null;
 // In case of an image, the delete button is only visible when the user hovers over the blob.
 //
 
-const IMAGE_FILETYPES = ["image/png", "image/jpeg", "image/gif"];
-const VIDEO_FILETYPES = ["video/mp4", "video/quicktime", "video/ogg"];
+type BlobSrc = string | { id?: string; url?: string } | null | undefined;
 
-function isImageFiletype(filetype: string) {
-  return IMAGE_FILETYPES.includes(filetype);
+interface BlobNode {
+  attrs: {
+    src?: BlobSrc;
+    alt?: string | null;
+    title?: string | null;
+    filetype?: string | null;
+    filesize?: number | null;
+    status?: string;
+    progress?: number;
+    id?: string | null;
+  };
 }
 
-function isVideoFiletype(filetype: string) {
-  return VIDEO_FILETYPES.includes(filetype);
+function isImageFiletype(filetype?: string | null) {
+  return typeof filetype === "string" && filetype.startsWith("image/");
+}
+
+function isVideoFiletype(filetype?: string | null) {
+  return typeof filetype === "string" && filetype.startsWith("video/");
+}
+
+function blobSrcUrl(src: BlobSrc): string {
+  if (typeof src === "string") return src;
+  if (src && typeof src.url === "string") return src.url;
+  return "";
 }
 
 export function BlobView({
@@ -62,7 +80,7 @@ export function BlobView({
   return <FileView node={node} deleteNode={deleteNode} view={editor.view} />;
 }
 
-function ThumbnailView({ node }) {
+function ThumbnailView({ node }: { node: BlobNode }) {
   if (isImageFiletype(node.attrs.filetype)) {
     return <ImageThumbnail node={node} />;
   }
@@ -74,8 +92,9 @@ function ThumbnailView({ node }) {
   return <FileThumbnail node={node} />;
 }
 
-function ImageThumbnail({ node }) {
+function ImageThumbnail({ node }: { node: BlobNode }) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const src = blobSrcUrl(node.attrs.src);
   const label = node.attrs.alt || node.attrs.title || "image";
 
   return (
@@ -87,9 +106,9 @@ function ImageThumbnail({ node }) {
         aria-label={`Open ${label} preview`}
       >
         <img
-          src={node.attrs.src}
-          alt={node.attrs.alt}
-          title={node.attrs.title}
+          src={src}
+          alt={node.attrs.alt || ""}
+          title={node.attrs.title || undefined}
           className="max-h-20 max-w-32 rounded-md object-cover"
         />
       </button>
@@ -97,26 +116,30 @@ function ImageThumbnail({ node }) {
       <ImagePreviewModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        src={node.attrs.src}
-        title={node.attrs.title}
-        alt={node.attrs.alt}
+        src={src}
+        title={node.attrs.title || undefined}
+        alt={node.attrs.alt || undefined}
       />
     </NodeViewWrapper>
   );
 }
 
-function VideoThumbnail({ node }) {
+function VideoThumbnail({ node }: { node: BlobNode }) {
   return (
     <NodeViewWrapper className="blob-container blob-thumbnail relative">
-      <video src={node.attrs.src} controls className="max-h-20 max-w-32 rounded-md" />
+      <video src={blobSrcUrl(node.attrs.src)} controls className="max-h-20 max-w-32 rounded-md" />
     </NodeViewWrapper>
   );
 }
 
-function FileThumbnail({ node }) {
+function FileThumbnail({ node }: { node: BlobNode }) {
   return (
     <NodeViewWrapper className="blob-container blob-thumbnail relative bg-surface-dimmed rounded-md px-2 py-1">
-      <a href={downloadableUrl(node.attrs.src)} title={node.attrs.title} className="flex items-center gap-1.5 min-w-0">
+      <a
+        href={downloadableUrl(blobSrcUrl(node.attrs.src))}
+        title={node.attrs.title || undefined}
+        className="flex items-center gap-1.5 min-w-0"
+      >
         <FileIcon filetype={node.attrs.filetype} size={18} />
         <span className="truncate max-w-[8rem] text-xs text-content-accent">{node.attrs.title}</span>
       </a>
@@ -410,7 +433,7 @@ function HumanFilesize({ size }: { size: number }) {
   return <>{humanValue}</>;
 }
 
-function FileIcon({ filetype, size = 48 }: { filetype: string; size?: number }) {
+function FileIcon({ filetype, size = 48 }: { filetype?: string | null; size?: number }) {
   switch (filetype) {
     case "application/pdf":
       return <IconPdf className="text-content-accent" size={size} data-drag-handle strokeWidth={1} />;

@@ -72,4 +72,64 @@ describe("BlobView image preview", () => {
     expect(screen.queryByText("Download")).not.toBeInTheDocument();
     expect(screen.queryByText("View original")).not.toBeInTheDocument();
   });
+
+  it("renders webp and webm uploads as media thumbnails", () => {
+    const { rerender } = render(
+      <BlobView
+        node={{
+          attrs: {
+            filetype: "image/webp",
+            src: "https://example.com/photo.webp",
+            alt: "photo.webp",
+            title: "photo.webp",
+          },
+        }}
+        deleteNode={jest.fn()}
+        updateAttributes={jest.fn()}
+        editor={{ view: { editable: false } }}
+        extension={{ options: { thumbnail: true } }}
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "photo.webp" })).toHaveAttribute("src", "https://example.com/photo.webp");
+
+    rerender(
+      <BlobView
+        node={{
+          attrs: {
+            filetype: "video/webm",
+            src: "https://example.com/clip.webm",
+            title: "clip.webm",
+          },
+        }}
+        deleteNode={jest.fn()}
+        updateAttributes={jest.fn()}
+        editor={{ view: { editable: false } }}
+        extension={{ options: { thumbnail: true } }}
+      />,
+    );
+
+    expect(document.querySelector("video")).toHaveAttribute("src", "https://example.com/clip.webm");
+  });
+
+  it("uses the URL from a legacy object blob source", () => {
+    render(
+      <BlobView
+        node={{
+          attrs: {
+            filetype: "image/png",
+            src: { id: "blob-1", url: "https://example.com/legacy.png" },
+            alt: "legacy.png",
+            title: "legacy.png",
+          },
+        }}
+        deleteNode={jest.fn()}
+        updateAttributes={jest.fn()}
+        editor={{ view: { editable: false } }}
+        extension={{ options: { thumbnail: true } }}
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "legacy.png" })).toHaveAttribute("src", "https://example.com/legacy.png");
+  });
 });
