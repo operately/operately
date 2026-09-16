@@ -1,6 +1,5 @@
 import { useCreateTemplateDocument } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
-import Api, { type ProjectTemplate } from "@/api";
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { usePaths } from "@/routes/paths";
@@ -11,21 +10,8 @@ import React from "react";
 
 export default { name: "ProjectTemplateNewDocumentPage", loader, Page } as PageModule;
 
-interface LoadedData {
-  template: ProjectTemplate;
-  parentFolderId: string | undefined;
-}
-
-async function loader({ params, request }): Promise<LoadedData> {
-  const url = new URL(request.url);
-  const parentFolderId = url.searchParams.get("folderId") || undefined;
-  const { template } = await Api.project_templates.get({ id: params.templateId });
-
-  return { template, parentFolderId };
-}
-
 function Page() {
-  const { template, parentFolderId } = Pages.useLoadedData<LoadedData>();
+  const { template, parentFolderId } = useLoadedData();
   const createDocumentMutation = useCreateTemplateDocument({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();

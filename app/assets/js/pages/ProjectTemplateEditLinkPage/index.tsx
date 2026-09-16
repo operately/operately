@@ -1,9 +1,8 @@
 import { useUpdateTemplateLink } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
-import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/api";
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
-import { compareIds, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import { LinkEditPage, emptyContent, showErrorToast } from "turboui";
 import type { LinkEditPage as LinkEditPageTypes } from "turboui/LinkEditPage/types";
@@ -12,29 +11,12 @@ import React from "react";
 
 export default { name: "ProjectTemplateEditLinkPage", loader, Page } as PageModule;
 
-interface LoadedData {
-  template: ProjectTemplate;
-  node: ProjectTemplateResourceNode;
-}
-
-async function loader({ params }): Promise<LoadedData> {
-  const { template } = await Api.project_templates.get({ id: params.templateId });
-  const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));
-
-  if (!node) throw new Response("Not found", { status: 404 });
-  if (node.type !== "link" || !node.link) {
-    throw new Response("Not found", { status: 404 });
-  }
-
-  return { template, node };
-}
-
 function Page() {
-  const { template, node } = Pages.useLoadedData<LoadedData>();
+  const { template, node } = useLoadedData();
   const updateLinkMutation = useUpdateTemplateLink({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
-  const link = node.link!;
+  const link = node.link;
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const cancelLink = paths.projectTemplateLinkPath(template.id, node.id);
   const initialDescription = link.description ? JSON.parse(link.description) : emptyContent();

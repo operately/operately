@@ -1,6 +1,6 @@
+import { type ProjectTemplate, type ProjectTemplateDiscussion } from "@/api";
 import { useUpdateTemplateDiscussion } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
-import Api, { type ProjectTemplate, type ProjectTemplateDiscussion } from "@/api";
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Paths, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
@@ -10,22 +10,8 @@ import React from "react";
 
 export default { name: "ProjectTemplateDiscussionEditPage", loader, Page } as PageModule;
 
-interface LoadedData {
-  template: ProjectTemplate;
-  discussion: ProjectTemplateDiscussion;
-}
-
-async function loader({ params }): Promise<LoadedData> {
-  const [templateResult, discussionResult] = await Promise.all([
-    Api.project_templates.get({ id: params.templateId }),
-    Api.project_templates.getDiscussion({ templateId: params.templateId, discussionId: params.id }),
-  ]);
-
-  return { template: templateResult.template, discussion: discussionResult.discussion };
-}
-
 function Page() {
-  const { template, discussion } = Pages.useLoadedData<LoadedData>();
+  const { template, discussion } = useLoadedData();
   const updateDiscussionMutation = useUpdateTemplateDiscussion({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();

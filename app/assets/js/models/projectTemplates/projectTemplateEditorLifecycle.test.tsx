@@ -35,11 +35,13 @@ function setup() {
   const affected = [
     Api.project_templates.getQueryKey({ id: "template1" }),
     Api.project_templates.getQueryKey({ id: "renamed-template1" }),
+    Api.project_templates.getDiscussionQueryKey({ templateId: "renamed-template1", discussionId: "discussion1" }),
     Api.project_templates.listQueryKey({ spaceId: "space1" }),
     Api.spaces.listToolsQueryKey({ spaceId: "renamed-space1" }),
   ];
   const unrelated = [
     Api.project_templates.getQueryKey({ id: "template2" }),
+    Api.project_templates.getDiscussionQueryKey({ templateId: "template2", discussionId: "discussion2" }),
     Api.spaces.listToolsQueryKey({ spaceId: "space2" }),
   ];
   [...affected, ...unrelated].forEach((key) => client.setQueryData(key, {}));

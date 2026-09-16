@@ -13,11 +13,21 @@ export async function invalidateTemplateEditorQueries(
   refetchType: "active" | "none" = "none",
 ) {
   const prefix = Api.project_templates.getQueryKeyPrefix();
+  const discussionPrefix = Api.project_templates.getDiscussionQueryKeyPrefix();
   await Promise.all([
     client.invalidateQueries({
       queryKey: prefix,
       refetchType,
       predicate: (query) => compareIds((query.queryKey[prefix.length] as { id?: string } | undefined)?.id, templateId),
+    }),
+    client.invalidateQueries({
+      queryKey: discussionPrefix,
+      refetchType,
+      predicate: (query) =>
+        compareIds(
+          (query.queryKey[discussionPrefix.length] as { templateId?: string } | undefined)?.templateId,
+          templateId,
+        ),
     }),
     client.invalidateQueries({ queryKey: Api.project_templates.listQueryKeyPrefix() }),
     invalidateSpaceSummaryQueries(client, [spaceId], "none"),

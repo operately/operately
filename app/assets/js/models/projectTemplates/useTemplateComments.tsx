@@ -1,10 +1,9 @@
-import React from "react";
-
-import Api, { type ProjectTemplateComment } from "@/api";
+import { type ProjectTemplateComment } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import * as People from "@/models/people";
 import { stringifyCommentContent } from "@/models/comments";
 import { usePaths } from "@/routes/paths";
+import { useTemplateCommentMutations } from "./projectTemplateCommentLifecycle";
 import {
   showErrorToast,
   type CommentSectionItem,
@@ -46,67 +45,37 @@ export function useTemplateComments({
   const me = useMe();
   const paths = usePaths();
   const currentUser = People.parsePersonForTurboUi(paths, me) ?? UNKNOWN_AUTHOR;
-  const [items, setItems] = React.useState<CommentSectionItem[]>(() => mapComments(paths, comments));
-
-  React.useEffect(() => {
-    setItems((current) => [...mapComments(paths, comments), ...current.filter(isOptimisticItem)]);
-  }, [comments, paths]);
+  const { create, update, remove } = useTemplateCommentMutations({ templateId, parentType, parentId });
 
   const canComment = canEdit;
 
   return {
-    items,
+    items: mapComments(paths, comments),
     currentUser,
     canComment,
     canManageComments: canComment,
     onAddComment: async (content) => {
-      const tempId = `temp-${Date.now()}`;
-      const optimisticItem: CommentSectionItem = {
-        type: "comment",
-        value: {
-          id: tempId,
-          content: stringifyCommentContent(content),
-          author: currentUser,
-          insertedAt: new Date().toISOString(),
-          reactions: [],
-        },
-      };
-
-      setItems((current) => [...current, optimisticItem]);
-
       try {
-        const result = await Api.project_templates.createComment({
+        await create.mutateAsync({
           templateId,
           parentType,
           parentId,
           content: stringifyCommentContent(content),
         });
-        const saved = toItem(paths, result.comment);
-
-        setItems((current) => {
-          if (current.some((item) => item.type === "comment" && item.value.id === saved.value.id)) {
-            return current.filter((item) => !isItem(item, tempId));
-          }
-
-          return current.map((item) => (isItem(item, tempId) ? saved : item));
-        });
-
         return true;
       } catch {
-        setItems((current) => current.filter((item) => !isItem(item, tempId)));
         showErrorToast("Comment not added", "The comment was not saved. Try again.");
         return false;
       }
     },
     onEditComment: async (id, content) => {
       try {
-        const result = await Api.project_templates.updateComment({
+        await update.mutateAsync({
           templateId,
           commentId: id,
           content: stringifyCommentContent(content),
         });
 
-        setItems((current) => current.map((item) => (item.type === "comment" && item.value.id === id ? toItem(paths, result.comment) : item)));
         return true;
       } catch {
         showErrorToast("Comment not updated", "The comment was not saved. Try again.");
@@ -116,8 +85,7 @@ export function useTemplateComments({
     onDeleteComment: canComment
       ? async (id) => {
           try {
-            await Api.project_templates.deleteComment({ templateId, commentId: id });
-            setItems((current) => current.filter((item) => !(item.type === "comment" && item.value.id === id)));
+            await remove.mutateAsync({ templateId, commentId: id });
           } catch {
             showErrorToast("Comment not deleted", "The comment is still on this page. Try again.");
           }
@@ -131,14 +99,6 @@ export function useTemplateComments({
 
 function mapComments(paths: ReturnType<typeof usePaths>, comments: ProjectTemplateComment[]): CommentSectionItem[] {
   return comments.map((comment) => toItem(paths, comment));
-}
-
-function isOptimisticItem(item: CommentSectionItem) {
-  return item.type === "comment" && item.value.id.startsWith("temp-");
-}
-
-function isItem(item: CommentSectionItem, id: string) {
-  return item.type === "comment" && item.value.id === id;
 }
 
 function toItem(paths: ReturnType<typeof usePaths>, comment: ProjectTemplateComment): CommentSectionItem {

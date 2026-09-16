@@ -1,5 +1,5 @@
-import Api, { type ProjectTemplate, type ProjectTemplateComment, type ProjectTemplateDiscussion } from "@/api";
-import * as Pages from "@/components/Pages";
+import { type ProjectTemplate } from "@/api";
+import { loader, useLoadedData } from "./loader";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
@@ -11,25 +11,8 @@ import React from "react";
 
 export default { name: "ProjectTemplateDiscussionPage", loader, Page } as PageModule;
 
-interface LoadedData {
-  template: ProjectTemplate;
-  discussion: ProjectTemplateDiscussion;
-  comments: ProjectTemplateComment[];
-}
-
-async function loader({ params }): Promise<LoadedData> {
-
-  const [templateResult, discussionResult, commentsResult] = await Promise.all([
-    Api.project_templates.get({ id: params.templateId }),
-    Api.project_templates.getDiscussion({ templateId: params.templateId, discussionId: params.id }),
-    Api.project_templates.listComments({ templateId: params.templateId, parentType: "discussion", parentId: params.id }),
-  ]);
-
-  return { template: templateResult.template, discussion: discussionResult.discussion, comments: commentsResult.comments };
-}
-
 function Page() {
-  const { template, discussion, comments } = Pages.useLoadedData<LoadedData>();
+  const { template, discussion, comments } = useLoadedData();
   const paths = usePaths();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
