@@ -42,4 +42,18 @@ defmodule Operately.Features.ProjectTemplates.EditorTest do
     |> Steps.open_template_milestone("Kickoff workshop")
     |> Steps.assert_template_milestone_page()
   end
+
+  feature "cached template and milestone pages stay synchronized without reloading", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.visit_template_page()
+    |> Steps.edit_cached_template_milestone()
+  end
+
+  feature "new discussions and documents appear when returning to the cached editor", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.visit_template_page()
+    |> Steps.create_resources_and_return_to_cached_editor()
+  end
 end

@@ -6,7 +6,15 @@ import { useCreateProjectTemplateFromProject } from "./projectTemplateLifecycle"
 jest.mock("turboui", () => ({}));
 import Api from "@/api";
 import { QueryClient } from "@tanstack/react-query";
-import { invalidateProjectTemplateListQueries } from "./projectTemplateLifecycle";
+import {
+  invalidateProjectTemplateListQueries,
+  useArchiveProjectTemplate,
+  useRestoreProjectTemplate,
+  useDeleteProjectTemplate,
+} from "./projectTemplateLifecycle";
+import { renderHook } from "@/__tests__/renderHook";
+
+jest.mock("react-router", () => ({}));
 
 describe("project template lifecycle queries", () => {
   beforeAll(() => {
@@ -99,5 +107,86 @@ describe("save project as template mutation", () => {
     await act(async () => {
       expect(await mutation.mutateAsync({ projectId: "project-1", name: "Template" })).toEqual(result);
     });
+  });
+});
+
+describe("library actions refresh cached editors", () => {
+  it.each([
+    ["archive", useArchiveProjectTemplate, "archiveMutationOptions"],
+    ["restore", useRestoreProjectTemplate, "restoreMutationOptions"],
+    ["delete", useDeleteProjectTemplate, "deleteMutationOptions"],
+  ] as const)("%s invalidates matching editors without refetching them", async (_name, useAction, endpoint) => {
+    const client = new QueryClient();
+    const details = ["template1", "renamed-template1"].map((id) => Api.project_templates.getQueryKey({ id }));
+    const unrelated = Api.project_templates.getQueryKey({ id: "template2" });
+    const list = Api.project_templates.listQueryKey({});
+    [...details, unrelated, list].forEach((key) => client.setQueryData(key, {}));
+
+    const request = jest.fn().mockResolvedValue({ success: true });
+    jest.spyOn(Api.project_templates, endpoint).mockReturnValue({ mutationFn: request });
+    const invalidate = jest.spyOn(client, "invalidateQueries");
+    const { result, unmount } = renderHook(useAction, {
+      initialProps: undefined,
+      wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    });
+
+    try {
+      await act(async () => {
+        await result.current.mutateAsync({ id: "old-template1" });
+      });
+
+      details.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+      expect(client.getQueryState(list)?.isInvalidated).toBe(true);
+      expect(client.getQueryState(unrelated)?.isInvalidated).toBe(false);
+      expect(invalidate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queryKey: Api.project_templates.getQueryKeyPrefix(),
+          refetchType: "none",
+        }),
+      );
+    } finally {
+      unmount();
+      client.clear();
+      jest.restoreAllMocks();
+    }
+  });
+
+  it("waits for invalidation before completing an archive", async () => {
+    const client = new QueryClient();
+    jest.spyOn(Api.project_templates, "archiveMutationOptions").mockReturnValue({
+      mutationFn: jest.fn().mockResolvedValue({ success: true }),
+    });
+    let finishRefresh = () => {};
+    const refreshing = new Promise<void>((resolve) => {
+      finishRefresh = resolve;
+    });
+    jest.spyOn(client, "invalidateQueries").mockReturnValue(refreshing);
+    const { result, unmount } = renderHook(useArchiveProjectTemplate, {
+      initialProps: undefined,
+      wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    });
+    let completed = false;
+
+    try {
+      let saving: Promise<unknown>;
+      await act(async () => {
+        saving = result.current.mutateAsync({ id: "template1" }).then(() => {
+          completed = true;
+        });
+      });
+      expect(client.invalidateQueries).toHaveBeenCalled();
+      expect(completed).toBe(false);
+
+      await act(async () => {
+        finishRefresh();
+        await saving;
+      });
+      expect(completed).toBe(true);
+    } finally {
+      finishRefresh();
+      unmount();
+      client.clear();
+      jest.restoreAllMocks();
+    }
   });
 });

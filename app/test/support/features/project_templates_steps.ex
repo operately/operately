@@ -465,6 +465,61 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
     |> UI.assert_text(name)
   end
 
+  step :edit_cached_template_milestone, ctx do
+    ctx
+    |> mark_template_page_loaded()
+    |> open_template_milestone("Kickoff")
+    |> rename_template_milestone("Cached kickoff")
+    |> add_template_milestone_task("Cached agenda")
+    |> UI.click(testid: "tab-overview")
+    |> UI.assert_has(testid: "project-template-page")
+    |> UI.assert_text("Cached kickoff")
+    |> UI.click(testid: "tab-tasks")
+    |> UI.assert_text("Cached agenda")
+    |> open_template_milestone("Cached kickoff")
+    |> UI.assert_text("Cached agenda")
+    |> assert_template_page_not_reloaded()
+  end
+
+  step :create_resources_and_return_to_cached_editor, ctx do
+    ctx
+    |> mark_template_page_loaded()
+    |> UI.click(testid: "tab-discussions")
+    |> UI.click(testid: "start-template-discussion")
+    |> UI.fill(testid: "discussion-title", with: "Cached discussion")
+    |> UI.fill_rich_text("New discussion body")
+    |> UI.click(testid: "save-template-discussion")
+    |> UI.assert_has(testid: "template-discussion-page")
+    |> UI.click_link("Discussions")
+    |> UI.assert_has(testid: "project-template-page")
+    |> UI.assert_text("Cached discussion")
+    |> UI.click(testid: "tab-docs & files")
+    |> UI.click(testid: "add-options")
+    |> UI.click(testid: "new-document")
+    |> UI.fill(testid: "title", with: "Cached document")
+    |> UI.fill_rich_text("New document body")
+    |> UI.click_button("Create document")
+    |> UI.assert_text("Cached document")
+    |> UI.click_link("Docs & Files")
+    |> UI.assert_has(testid: "project-template-page")
+    |> UI.assert_text("Cached document")
+    |> assert_template_page_not_reloaded()
+  end
+
+  defp mark_template_page_loaded(ctx) do
+    UI.execute("mark_template_page_loaded", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "window.templatePageReloadMarker = true")
+    end)
+  end
+
+  defp assert_template_page_not_reloaded(ctx) do
+    UI.execute("assert_template_page_not_reloaded", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "return window.templatePageReloadMarker === true", fn present ->
+        assert present
+      end)
+    end)
+  end
+
   step :visit_template_tasks_tab, ctx do
     visit_template_tab(ctx, "tasks")
   end

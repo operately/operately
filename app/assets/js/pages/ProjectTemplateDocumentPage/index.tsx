@@ -1,3 +1,4 @@
+import { useDeleteTemplateResource } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate, type ProjectTemplateComment, type ProjectTemplateResourceNode } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -20,7 +21,6 @@ interface LoadedData {
 }
 
 async function loader({ params }): Promise<LoadedData> {
-
   const { template } = await Api.project_templates.get({ id: params.templateId });
   const node = template.resourceNodes?.find((resourceNode) => compareIds(resourceNode.id, params.id));
 
@@ -40,6 +40,7 @@ async function loader({ params }): Promise<LoadedData> {
 
 function Page() {
   const { template, node, comments } = Pages.useLoadedData<LoadedData>();
+  const deleteResourceMutation = useDeleteTemplateResource({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -60,7 +61,7 @@ function Page() {
 
   async function handleDelete() {
     try {
-      await Api.project_templates.deleteResource({ templateId: template.id, nodeId: node.id });
+      await deleteResourceMutation.mutateAsync({ templateId: template.id, nodeId: node.id });
       navigate(docsAndFilesLink);
     } catch {
       showErrorToast("Resource not deleted", "The document is still on this page. Try again.");
@@ -112,4 +113,3 @@ function Page() {
     />
   );
 }
-

@@ -1,3 +1,4 @@
+import { useCreateTemplateLink } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -18,7 +19,6 @@ interface LoadedData {
 }
 
 async function loader({ params, request }): Promise<LoadedData> {
-
   const url = new URL(request.url);
   const parentFolderId = url.searchParams.get("folderId") || undefined;
   const linkType = (url.searchParams.get("type") || "other") as ResourceHubLinkType;
@@ -29,6 +29,7 @@ async function loader({ params, request }): Promise<LoadedData> {
 
 function Page() {
   const { template, parentFolderId, linkType } = Pages.useLoadedData<LoadedData>();
+  const createLinkMutation = useCreateTemplateLink({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
@@ -36,7 +37,7 @@ function Page() {
 
   async function createLink(values: LinkNewPageTypes.Values) {
     try {
-      const result = await Api.project_templates.createLink({
+      const result = await createLinkMutation.mutateAsync({
         templateId: template.id,
         parentFolderId,
         name: values.title,
@@ -65,4 +66,3 @@ function Page() {
     />
   );
 }
-

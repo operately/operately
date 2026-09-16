@@ -1,22 +1,23 @@
-import Api from "@/api";
-import * as Pages from "@/components/Pages";
+import { useUpdateTemplate } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as People from "@/models/people";
-import { persistTemplateChange } from "@/models/projectTemplates";
 import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
 import { compareIds, usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
 import React from "react";
 import { useNavigate } from "react-router";
-import { MilestonePage } from "turboui";
-import { loader, type LoadedData } from "./loader";
+import { MilestonePage, showErrorToast } from "turboui";
+import { loader, useLoadedData, useRefresh } from "./loader";
 
 export default { name: "ProjectTemplateMilestonePage", loader, Page } as PageModule;
 
 function Page() {
-  const { template, milestone } = Pages.useLoadedData<LoadedData>();
+  const { template, milestone } = useLoadedData();
+  const scope = { templateId: template.id, spaceId: template.space.id };
+  const updateTemplate = useUpdateTemplate(scope);
+  const refresh = useRefresh();
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
@@ -55,7 +56,6 @@ function Page() {
     template,
     profilePath,
     milestoneLink,
-    mutate: persistTemplateChange,
   });
   const currentMilestone = milestones.find((item) => compareIds(item.id, milestone.id));
   const tasks = templateTasks.filter((task) => compareIds(task.milestoneId, milestone.id));
@@ -71,8 +71,16 @@ function Page() {
     }
   };
 
-  const updateTemplateName = (name: string) =>
-    persistTemplateChange("Template not updated", () => Api.project_templates.update({ id: template.id, name }));
+  async function updateTemplateName(name: string) {
+    try {
+      await updateTemplate.mutateAsync({ id: template.id, name });
+      await refresh();
+      return true;
+    } catch {
+      showErrorToast("Template not updated", "Your last confirmed template is still displayed. Try again.");
+      return false;
+    }
+  }
 
   return (
     <MilestonePage
