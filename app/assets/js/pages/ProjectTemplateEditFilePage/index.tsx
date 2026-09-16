@@ -1,5 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { invalidateTemplateEditorQueries } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
+import { useUpdateTemplateFile } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate, type ProjectTemplateResourceNode } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -31,8 +30,8 @@ async function loader({ params }): Promise<LoadedData> {
 }
 
 function Page() {
-  const queryClient = useQueryClient();
   const { template, node } = Pages.useLoadedData<LoadedData>();
+  const updateFileMutation = useUpdateTemplateFile({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const file = node.file!;
@@ -43,13 +42,12 @@ function Page() {
   async function handleSubmit(values: FileEditPageTypes.Values, meta: { contentChanged: boolean }) {
     try {
       if (meta.contentChanged) {
-        await Api.project_templates.updateFile({
+        await updateFileMutation.mutateAsync({
           templateId: template.id,
           fileId: file.id,
           name: values.title,
           description: JSON.stringify(values.description),
         });
-        await invalidateTemplateEditorQueries(queryClient, { templateId: template.id, spaceId: template.space.id });
       }
       navigate(cancelLink);
       return true;

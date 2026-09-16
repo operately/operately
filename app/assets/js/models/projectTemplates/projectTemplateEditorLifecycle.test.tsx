@@ -9,6 +9,14 @@ import {
   useUpdateTemplateTask,
   useDeleteTemplateTask,
   useDeleteTemplate,
+  useCreateTemplateDiscussion,
+  useUpdateTemplateDiscussion,
+  useCreateTemplateDocument,
+  useUpdateTemplateDocument,
+  useCreateTemplateLink,
+  useUpdateTemplateLink,
+  useUpdateTemplateFile,
+  useDeleteTemplateResource,
 } from "./projectTemplateEditorLifecycle";
 
 jest.mock("axios");
@@ -216,4 +224,153 @@ it("refreshes the destination editor when a save finishes after the originating 
     unsubscribe();
     cleanup();
   }
+});
+
+const resourceMutations = [
+  {
+    name: "createDiscussion",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useCreateTemplateDiscussion(scope);
+      return () => mutation.mutateAsync({ templateId: scope.templateId, title: "Notes", body: "{}" });
+    },
+  },
+  {
+    name: "updateDiscussion",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useUpdateTemplateDiscussion(scope);
+      return () =>
+        mutation.mutateAsync({ templateId: scope.templateId, discussionId: "discussion1", title: "Notes", body: "{}" });
+    },
+  },
+  {
+    name: "createDocument",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useCreateTemplateDocument(scope);
+      return () => mutation.mutateAsync({ templateId: scope.templateId, name: "Document", content: "{}" });
+    },
+  },
+  {
+    name: "updateDocument",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useUpdateTemplateDocument(scope);
+      return () =>
+        mutation.mutateAsync({
+          templateId: scope.templateId,
+          documentId: "document1",
+          name: "Document",
+          content: "{}",
+        });
+    },
+  },
+  {
+    name: "createLink",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useCreateTemplateLink(scope);
+      return () =>
+        mutation.mutateAsync({ templateId: scope.templateId, name: "Link", url: "https://example.com", type: "other" });
+    },
+  },
+  {
+    name: "updateLink",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useUpdateTemplateLink(scope);
+      return () =>
+        mutation.mutateAsync({
+          templateId: scope.templateId,
+          linkId: "link1",
+          name: "Link",
+          url: "https://example.com",
+          type: "other",
+        });
+    },
+  },
+  {
+    name: "updateFile",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useUpdateTemplateFile(scope);
+      return () => mutation.mutateAsync({ templateId: scope.templateId, fileId: "file1", name: "File" });
+    },
+  },
+  {
+    name: "deleteResource",
+    useSave(scope: { templateId: string; spaceId: string }) {
+      const mutation = useDeleteTemplateResource(scope);
+      return () => mutation.mutateAsync({ templateId: scope.templateId, nodeId: "node1" });
+    },
+  },
+];
+
+describe.each(resourceMutations)("$name", ({ useSave }) => {
+  function setupResource() {
+    const client = new QueryClient();
+    const affected = [
+      Api.project_templates.getQueryKey({ id: "renamed-template1" }),
+      Api.project_templates.listQueryKey({ spaceId: "space1" }),
+      Api.spaces.listToolsQueryKey({ spaceId: "space1" }),
+    ];
+    const unrelated = Api.project_templates.getQueryKey({ id: "template2" });
+    [...affected, unrelated].forEach((key) => client.setQueryData(key, {}));
+
+    const hook = renderHook<{ templateId: string; spaceId: string }, () => Promise<unknown>>(useSave, {
+      initialProps: { templateId: "template1", spaceId: "space1" },
+      wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    });
+
+    return { client, affected, unrelated, ...hook };
+  }
+
+  it("invalidates the originating template and awaits refresh before completing", async () => {
+    const { client, affected, unrelated, result, unmount } = setupResource();
+    const invalidate = client.invalidateQueries.bind(client);
+    let finishRefresh = () => {};
+    const gate = new Promise<void>((resolve) => {
+      finishRefresh = resolve;
+    });
+    jest.spyOn(client, "invalidateQueries").mockImplementation(async (filters) => {
+      await invalidate(filters);
+      await gate;
+    });
+    let completed = false;
+    let saving: Promise<unknown>;
+
+    try {
+      act(() => {
+        saving = result.current().then(() => {
+          completed = true;
+        });
+      });
+      await waitFor(() => expect(client.invalidateQueries).toHaveBeenCalled());
+
+      affected.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+      expect(client.getQueryState(unrelated)?.isInvalidated).toBe(false);
+      expect(completed).toBe(false);
+
+      await act(async () => {
+        finishRefresh();
+        await saving;
+      });
+      expect(completed).toBe(true);
+    } finally {
+      finishRefresh();
+      unmount();
+      client.clear();
+    }
+  });
+
+  it.each(["rejected", "unsuccessful"])("preserves caches when a write is %s", async (outcome) => {
+    const { client, affected, result, unmount } = setupResource();
+    if (outcome === "rejected") jest.mocked(axios.post).mockRejectedValueOnce(new Error("Offline"));
+    else jest.mocked(axios.post).mockResolvedValueOnce({ data: { success: false } });
+
+    try {
+      await act(async () => {
+        await expect(result.current()).rejects.toThrow();
+      });
+
+      affected.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+    } finally {
+      unmount();
+      client.clear();
+    }
+  });
 });

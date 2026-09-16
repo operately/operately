@@ -146,3 +146,31 @@ export function useRestoreTemplate(scope: EditorScope) {
 export function useDeleteTemplate(scope: EditorScope) {
   return useTemplateEditorMutation(Api.project_templates.deleteMutationOptions(), scope, "none");
 }
+
+export function useCreateTemplateDiscussion(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.createDiscussionMutationOptions(), scope);
+}
+
+export function useUpdateTemplateDiscussion(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.updateDiscussionMutationOptions(), scope);
+}
+
+export function useCreateTemplateDocument(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.createDocumentMutationOptions(), scope);
+}
+
+export function useUpdateTemplateDocument(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.updateDocumentMutationOptions(), scope);
+}
+
+export function useCreateTemplateLink(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.createLinkMutationOptions(), scope);
+}
+
+export function useUpdateTemplateLink(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.updateLinkMutationOptions(), scope);
+}
+
+export function useUpdateTemplateFile(scope: EditorScope) {
+  return useTemplateEditorMutation(Api.project_templates.updateFileMutationOptions(), scope);
+}

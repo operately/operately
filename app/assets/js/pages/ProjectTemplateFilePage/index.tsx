@@ -1,5 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { invalidateTemplateEditorQueries } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
+import { useDeleteTemplateResource } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate, type ProjectTemplateComment, type ProjectTemplateResourceNode } from "@/api";
 import * as Pages from "@/components/Pages";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
@@ -41,8 +40,8 @@ async function loader({ params }): Promise<LoadedData> {
 }
 
 function Page() {
-  const queryClient = useQueryClient();
   const { template, node, comments } = Pages.useLoadedData<LoadedData>();
+  const deleteResourceMutation = useDeleteTemplateResource({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -65,9 +64,7 @@ function Page() {
 
   async function handleDelete() {
     try {
-      const result = await Api.project_templates.deleteResource({ templateId: template.id, nodeId: node.id });
-      if (!result.success) throw new Error("Template resource was not deleted");
-      await invalidateTemplateEditorQueries(queryClient, { templateId: template.id, spaceId: template.space.id });
+      await deleteResourceMutation.mutateAsync({ templateId: template.id, nodeId: node.id });
       navigate(docsAndFilesLink);
     } catch {
       showErrorToast("Resource not deleted", "The file is still on this page. Try again.");

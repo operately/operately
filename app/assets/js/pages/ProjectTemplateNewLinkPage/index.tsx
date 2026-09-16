@@ -1,5 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { invalidateTemplateEditorQueries } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
+import { useCreateTemplateLink } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -29,8 +28,8 @@ async function loader({ params, request }): Promise<LoadedData> {
 }
 
 function Page() {
-  const queryClient = useQueryClient();
   const { template, parentFolderId, linkType } = Pages.useLoadedData<LoadedData>();
+  const createLinkMutation = useCreateTemplateLink({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
@@ -38,7 +37,7 @@ function Page() {
 
   async function createLink(values: LinkNewPageTypes.Values) {
     try {
-      const result = await Api.project_templates.createLink({
+      const result = await createLinkMutation.mutateAsync({
         templateId: template.id,
         parentFolderId,
         name: values.title,
@@ -46,7 +45,6 @@ function Page() {
         type: values.type || "other",
         description: JSON.stringify(values.description),
       });
-      await invalidateTemplateEditorQueries(queryClient, { templateId: template.id, spaceId: template.space.id });
       navigate(paths.projectTemplateLinkPath(template.id, result.link.nodeId));
       return true;
     } catch {

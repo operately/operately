@@ -1,5 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { invalidateTemplateEditorQueries } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
+import { useCreateTemplateDiscussion } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -20,20 +19,19 @@ async function loader({ params }): Promise<LoadedData> {
 }
 
 function Page() {
-  const queryClient = useQueryClient();
   const { template } = Pages.useLoadedData<LoadedData>();
+  const createDiscussionMutation = useCreateTemplateDiscussion({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
   const navigate = useNavigate();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
 
   async function createDiscussion(values: TemplateDiscussionForm.Values) {
     try {
-      const result = await Api.project_templates.createDiscussion({
+      const result = await createDiscussionMutation.mutateAsync({
         templateId: template.id,
         title: values.title,
         body: JSON.stringify(values.body),
       });
-      await invalidateTemplateEditorQueries(queryClient, { templateId: template.id, spaceId: template.space.id });
       navigate(paths.projectTemplateDiscussionPath(template.id, result.discussion.id));
       return true;
     } catch {
