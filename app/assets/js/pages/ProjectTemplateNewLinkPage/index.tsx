@@ -1,3 +1,5 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateTemplateEditorQueries } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import Api, { type ProjectTemplate } from "@/api";
 import * as Pages from "@/components/Pages";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -18,7 +20,6 @@ interface LoadedData {
 }
 
 async function loader({ params, request }): Promise<LoadedData> {
-
   const url = new URL(request.url);
   const parentFolderId = url.searchParams.get("folderId") || undefined;
   const linkType = (url.searchParams.get("type") || "other") as ResourceHubLinkType;
@@ -28,6 +29,7 @@ async function loader({ params, request }): Promise<LoadedData> {
 }
 
 function Page() {
+  const queryClient = useQueryClient();
   const { template, parentFolderId, linkType } = Pages.useLoadedData<LoadedData>();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -44,6 +46,7 @@ function Page() {
         type: values.type || "other",
         description: JSON.stringify(values.description),
       });
+      await invalidateTemplateEditorQueries(queryClient, { templateId: template.id, spaceId: template.space.id });
       navigate(paths.projectTemplateLinkPath(template.id, result.link.nodeId));
       return true;
     } catch {
@@ -65,4 +68,3 @@ function Page() {
     />
   );
 }
-
