@@ -1,3 +1,4 @@
+import { invalidateResourceHubInteractionQueries } from "@/models/resourceHubs/resourceHubInteractionQueries";
 import Api from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
@@ -58,26 +59,28 @@ export function useLoadedData() {
   const folder = folderInput ? folderData?.folder : undefined;
 
   if (!document?.id) throw new Error("Document data is unavailable");
+  if (!document.resourceHubId) throw new Error("Document resource hub is unavailable");
   if (!resourceHub?.id) throw new Error("Document resource hub is unavailable");
   if (folderInput && !folder?.id) throw new Error("Document folder is unavailable");
   if (!subscriptionData) throw new Error("Document subscription status is unavailable");
 
-  return { document, resourceHub, folder, isCurrentUserSubscribed: subscriptionData.subscribed };
+  return {
+    document,
+    resourceHub,
+    folder,
+    isCurrentUserSubscribed: subscriptionData.subscribed,
+  };
 }
 
 export function useRefresh() {
   const client = useQueryClient();
-  const { documentInput, hubInput, folderInput, subscriptionInput } =
-    Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { document } = useLoadedData();
 
-  return async () => {
-    await Promise.all([
-      client.invalidateQueries({ queryKey: Api.documents.getQueryKey(documentInput) }),
-      client.invalidateQueries({ queryKey: Api.resource_hubs.getQueryKey(hubInput) }),
-      client.invalidateQueries({ queryKey: Api.notifications.isSubscribedQueryKey(subscriptionInput) }),
-      ...(folderInput
-        ? [client.invalidateQueries({ queryKey: Api.resource_hubs.getFolderQueryKey(folderInput) })]
-        : []),
-    ]);
-  };
+  return () =>
+    invalidateResourceHubInteractionQueries(client, {
+      id: document.id,
+      type: "resource_hub_document",
+      resourceHubId: document.resourceHubId,
+      parentFolderId: document.parentFolderId,
+    });
 }

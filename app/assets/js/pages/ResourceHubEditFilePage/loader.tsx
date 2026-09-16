@@ -1,25 +1,30 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { files, ResourceHubFile } from "@/models/resourceHubs";
 
-interface LoaderResult {
-  file: ResourceHubFile;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    file: await files
-      .get({
-        id: params.id,
-        includePathToFile: true,
-        includeResourceHub: true,
-        includeGoal: true,
-        includeSpace: true,
-        includeProject: true,
-      })
-      .then((res) => res.file!),
+export async function loader({ params }) {
+  const fileInput = {
+    id: params.id,
+    includePathToFile: true,
+    includeResourceHub: true,
+    includeGoal: true,
+    includeSpace: true,
+    includeProject: true,
   };
+
+  await Api.files.getQuery(fileInput);
+
+  return { fileInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+export function useLoadedData() {
+  const { fileInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { data } = useLoadedQuery(Api.files.getQueryOptions(fileInput));
+
+  const file = data?.file;
+
+  if (!file?.id) throw new Error("File data is unavailable");
+  if (!file.resourceHubId) throw new Error("File resource hub is unavailable");
+
+  return { file: { ...file, resourceHubId: file.resourceHubId } };
 }

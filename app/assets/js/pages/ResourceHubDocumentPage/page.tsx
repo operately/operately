@@ -1,7 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import * as ReactionsModel from "@/models/reactions";
+import { useOptimisticReactions } from "@/models/reactions/useOptimisticReactions";
+import { type QueryClient } from "@tanstack/react-query";
+import { invalidateResourceHubInteractionQueries } from "@/models/resourceHubs/resourceHubInteractionQueries";
 import {
   resourceHubLandingPath,
   useCopyDocumentListContext,
@@ -10,9 +12,9 @@ import {
 } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
-import { useComments, useCommentSectionProps } from "@/features/CommentSection";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCommentSection } from "@/features/CommentSection/useCommentSection";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -33,7 +35,11 @@ export function Page() {
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
-  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+  const mutationScope = {
+    spaceId: document.space?.id,
+    resourceHubId: document.resourceHubId,
+    parentFolderId: document.parentFolderId,
+  };
 
   const { mutateAsync: remove } = useDeleteDocument(mutationScope);
   const { mutateAsync: publish } = usePublishDocument(mutationScope);
@@ -48,20 +54,27 @@ export function Page() {
   assertPresent(document.permissions?.canCommentOnDocument, "permissions must be present in document");
   assertPresent(document.potentialSubscribers, "potentialSubscribers must be present in document");
   assertPresent(document.subscriptionList, "subscriptionList must be present in document");
-  useClearNotificationsOnLoad(document.notifications);
 
   React.useEffect(closeCopyForm, [document.id]);
 
-  const reactions = document.reactions!.map((r) => r!);
-  const entity = ReactionsModel.entity(document.id!, "resource_hub_document");
-  const reactionsForm = ReactionsModel.useReactionsForm(entity, reactions);
-  const commentsForm = useComments({ parentType: "resource_hub_document", document });
-  const comments = useCommentSectionProps({
-    form: commentsForm,
-    commentParentType: "resource_hub_document",
+  const entity = { id: document.id, type: "resource_hub_document" as const };
+  const invalidateQueries = (client: QueryClient, refetchType: "active" | "none") =>
+    invalidateResourceHubInteractionQueries(client, { ...entity, ...mutationScope }, refetchType);
+
+  const reactionsForm = useOptimisticReactions({
+    entity,
+    initialReactions: document.reactions ?? undefined,
+    onRefresh: refresh,
+  });
+  const comments = useCommentSection({
+    entity,
+    mentionSearchScope: { type: "resource_hub", id: document.resourceHubId },
+    invalidateQueries,
     canComment: document.permissions.canCommentOnDocument,
   });
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
+  useReadNotificationsOnLoad(document.notifications, (client) => invalidateQueries(client, "none"));
+
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
     potentialSubscribers: document.potentialSubscribers,
     subscriptionList: document.subscriptionList,
     resourceName: "document",
@@ -133,7 +146,7 @@ export function Page() {
         draftActions={{
           state: "draft",
           updatedAt: document.updatedAt!,
-          editPath: paths.resourceHubEditDocumentPath(document.id!),
+          editPath: paths.resourceHubEditDocumentPath(document.id),
           onPublish: handlePublish,
           formattedTimePreferences,
         }}

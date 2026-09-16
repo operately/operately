@@ -11,6 +11,8 @@ interface ResourceHubScope {
 
 // IDs already supplied by the resource-hub mutation endpoints.
 interface ResourceHubMutationInput {
+  // Deleted details stay stale until navigation; requesting them now would return a 404.
+  deleted?: boolean;
   resourceHubId?: string | null;
   documentId?: string | null;
   fileId?: string | null;
@@ -26,6 +28,7 @@ export async function invalidateResourceHubQueries(
   client: QueryClient,
   input: ResourceHubMutationInput,
   scope: ResourceHubScope = {},
+  refetchType: "active" | "none" = "active",
 ) {
   const hubId = input.resourceHubId ?? scope.resourceHubId;
   const folderIds = [scope.parentFolderId, input.folderId, input.newFolderId, input.destParentFolderId];
@@ -36,11 +39,12 @@ export async function invalidateResourceHubQueries(
   if (input.resourceType === "folder") folderIds.push(input.resourceId);
 
   // Match every include-flag and URL-name variant, without affecting other resources.
-  const invalidate = (prefix: readonly unknown[], field: string, ids: (string | null | undefined)[]) => {
+  const invalidate = (prefix: readonly unknown[], field: string, ids: (string | null | undefined)[], detail = false) => {
     if (!ids.some(Boolean)) return Promise.resolve();
 
     return client.invalidateQueries({
       queryKey: prefix,
+      refetchType: detail && input.deleted ? "none" : refetchType,
       predicate: (query) => {
         const queryInput = query.queryKey[prefix.length] as Record<string, string | undefined> | undefined;
         return ids.some((id) => compareIds(queryInput?.[field], id));
@@ -54,6 +58,7 @@ export async function invalidateResourceHubQueries(
     invalidate(Api.resource_hubs.listDraftsQueryKeyPrefix(), "resourceHubId", [hubId]),
     client.invalidateQueries({
       queryKey: nodesPrefix,
+      refetchType,
       predicate: (query) => {
         const queryInput = query.queryKey[nodesPrefix.length] as
           | { resourceHubId?: string; folderId?: string }
@@ -64,16 +69,17 @@ export async function invalidateResourceHubQueries(
       },
     }),
     invalidate(Api.resource_hubs.getFolderQueryKeyPrefix(), "id", folderIds),
-    invalidate(Api.documents.getQueryKeyPrefix(), "id", [documentId]),
-    invalidate(Api.documents.listVersionsQueryKeyPrefix(), "documentId", [documentId]),
-    invalidate(Api.files.getQueryKeyPrefix(), "id", [fileId]),
-    invalidate(Api.links.getQueryKeyPrefix(), "id", [linkId]),
+    invalidate(Api.documents.getQueryKeyPrefix(), "id", [documentId], true),
+    invalidate(Api.documents.listVersionsQueryKeyPrefix(), "documentId", [documentId], true),
+    invalidate(Api.files.getQueryKeyPrefix(), "id", [fileId], true),
+    invalidate(Api.links.getQueryKeyPrefix(), "id", [linkId], true),
   ]);
 }
 
 function useResourceHubMutation<TData, TError, TVariables extends ResourceHubMutationInput>(
   options: UseMutationOptions<TData, TError, TVariables>,
   scope: ResourceHubScope = {},
+  deleted = false,
 ) {
   const client = useQueryClient();
 
@@ -85,7 +91,7 @@ function useResourceHubMutation<TData, TError, TVariables extends ResourceHubMut
       if (data === false || (data && typeof data === "object" && "success" in data && data.success === false)) return;
 
       await Promise.all([
-        invalidateResourceHubQueries(client, input, context),
+        invalidateResourceHubQueries(client, { ...input, deleted }, context),
         context?.spaceId ? invalidateSpaceSummaryQueries(client, [context.spaceId]) : undefined,
       ]).catch((error) => {
         console.error("Failed to refresh resource hub queries", error);
@@ -107,7 +113,7 @@ export function usePublishDocument(scope: ResourceHubScope = {}) {
 }
 
 export function useDeleteDocument(scope: ResourceHubScope = {}) {
-  return useResourceHubMutation(Api.documents.deleteMutationOptions(), scope);
+  return useResourceHubMutation(Api.documents.deleteMutationOptions(), scope, true);
 }
 
 export function useCreateFiles(scope: ResourceHubScope = {}) {
@@ -119,7 +125,7 @@ export function useUpdateFile(scope: ResourceHubScope = {}) {
 }
 
 export function useDeleteFile(scope: ResourceHubScope = {}) {
-  return useResourceHubMutation(Api.files.deleteMutationOptions(), scope);
+  return useResourceHubMutation(Api.files.deleteMutationOptions(), scope, true);
 }
 
 export function useCreateLink(scope: ResourceHubScope = {}) {
@@ -131,7 +137,7 @@ export function useUpdateLink(scope: ResourceHubScope = {}) {
 }
 
 export function useDeleteLink(scope: ResourceHubScope = {}) {
-  return useResourceHubMutation(Api.links.deleteMutationOptions(), scope);
+  return useResourceHubMutation(Api.links.deleteMutationOptions(), scope, true);
 }
 
 export function useCreateFolder(scope: ResourceHubScope = {}) {
