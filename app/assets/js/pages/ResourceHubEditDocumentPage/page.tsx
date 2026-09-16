@@ -16,8 +16,11 @@ export function Page() {
   const { document } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const { mutateAsync: edit } = useUpdateDocument();
-  const { mutateAsync: publish } = usePublishDocument();
+
+  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+
+  const { mutateAsync: edit } = useUpdateDocument(mutationScope);
+  const { mutateAsync: publish } = usePublishDocument(mutationScope);
 
   const isDraft = document.state === "draft";
 

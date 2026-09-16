@@ -13,7 +13,9 @@ export function Page() {
   const { resourceHub, draftNodes } = useLoadedData();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mutateAsync: deleteDocument } = useDeleteDocument();
+
+  const mutationScope = { spaceId: resourceHub.space?.id, resourceHubId: resourceHub.id, parentFolderId: undefined };
+  const { mutateAsync: deleteDocument } = useDeleteDocument(mutationScope);
 
   const props: ResourceHubDraftsPage.Props = {
     title: ["Drafts", resourceHub.name ?? "Docs & Files"],

@@ -27,7 +27,9 @@ export function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const { mutateAsync: remove } = useDeleteLink();
+
+  const mutationScope = { spaceId: link.space?.id, resourceHubId: link.resourceHubId, parentFolderId: link.parentFolderId };
+  const { mutateAsync: remove } = useDeleteLink(mutationScope);
   const options = useLinkPageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(link.notifications, "notifications must be present in link");

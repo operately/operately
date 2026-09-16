@@ -1,28 +1,31 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import { documents, ResourceHubDocument } from "@/models/resourceHubs";
 
-interface LoaderResult {
-  document: ResourceHubDocument;
-}
-
-export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    document: await documents
-      .get({
-        id: params.id,
-        includeGoal: true,
-        includeSpace: true,
-        includeProject: true,
-        includeResourceHub: true,
-        includeParentFolder: true,
-        includePathToDocument: true,
-        includeSubscriptionsList: true,
-        includePotentialSubscribers: true,
-      })
-      .then((res) => res.document!),
+export async function loader({ params }) {
+  const documentInput = {
+    id: params.id,
+    includeGoal: true,
+    includeSpace: true,
+    includeProject: true,
+    includeResourceHub: true,
+    includeParentFolder: true,
+    includePathToDocument: true,
+    includeSubscriptionsList: true,
+    includePotentialSubscribers: true,
   };
+
+  await Api.documents.getQuery(documentInput);
+
+  return { documentInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+export function useLoadedData() {
+  const { documentInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { data } = useLoadedQuery(Api.documents.getQueryOptions(documentInput));
+  const document = data?.document;
+
+  if (!document?.id) throw new Error("Document data is unavailable");
+
+  return { document };
 }

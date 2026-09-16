@@ -40,5 +40,7 @@ export function useLoadedData() {
 
 export function useRefresh() {
   const client = useQueryClient();
-  return useCallback(() => invalidateResourceHubQueries(client), [client]);
+  const { hubInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+
+  return useCallback(() => invalidateResourceHubQueries(client, { resourceHubId: hubInput.id }), [client, hubInput.id]);
 }
