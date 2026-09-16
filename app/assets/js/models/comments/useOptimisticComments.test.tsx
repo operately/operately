@@ -146,13 +146,13 @@ describe("useOptimisticComments", () => {
     const pending = await start(() => hook.addComment({ text: "new" }));
     expect(hook.comments).toHaveLength(3);
     await render({ initialComments: [...serverComments] });
-    expect(hook.comments[0]?.id).toMatch(/^temp-/);
-    serverComments = [comment("saved", JSON.stringify({ text: "new" })), ...serverComments];
+    expect(hook.comments[2]?.id).toMatch(/^temp-/);
+    serverComments = [...serverComments, comment("saved", JSON.stringify({ text: "new" }))];
     await act(async () => {
-      request.resolve({ comment: serverComments[0] as Comment });
+      request.resolve({ comment: serverComments[2] as Comment });
       await pending.result;
     });
-    expect(hook.comments.map((c) => c.id)).toEqual(["saved", "one", "two"]);
+    expect(hook.comments.map((c) => c.id)).toEqual(["one", "two", "saved"]);
     expect(client.getMutationCache().getAll()).toHaveLength(1);
   });
 
@@ -254,13 +254,13 @@ describe("useOptimisticComments", () => {
     await act(async () => {
       expect(await hook.addComment("new")).toBe(true);
     });
-    expect(hook.comments.map((c) => c.id)).toEqual(["saved", "one", "two"]);
+    expect(hook.comments.map((c) => c.id)).toEqual(["one", "two", "saved"]);
     expect(showErrorToast).not.toHaveBeenCalled();
   });
 
   it("does not treat a throwing refresh callback as a failed write", async () => {
-    serverComments = [comment("saved"), ...serverComments];
-    create.mockResolvedValue({ comment: serverComments[0] });
+    serverComments = [...serverComments, comment("saved")];
+    create.mockResolvedValue({ comment: serverComments[2] });
     jest.spyOn(console, "error").mockImplementation(() => undefined);
     await render({
       onAfterMutation: async () => {
@@ -270,7 +270,7 @@ describe("useOptimisticComments", () => {
     await act(async () => {
       expect(await hook.addComment("new")).toBe(true);
     });
-    expect(hook.comments.map((c) => c.id)).toEqual(["saved", "one", "two"]);
+    expect(hook.comments.map((c) => c.id)).toEqual(["one", "two", "saved"]);
     expect(showErrorToast).not.toHaveBeenCalled();
   });
 
@@ -279,7 +279,7 @@ describe("useOptimisticComments", () => {
     create.mockReturnValue(request.promise);
     await render();
     const addition = await start(() => hook.addComment("new"));
-    const id = hook.comments[0]?.id;
+    const id = hook.comments[2]?.id;
     if (!id) throw new Error("Missing temporary comment");
     await act(async () => {
       expect(await hook.editComment(id, "edit")).toBe(false);
@@ -334,11 +334,11 @@ describe("useOptimisticComments", () => {
     jest.spyOn(client, "fetchQuery").mockReturnValue(refresh.promise);
     await render();
     const pending = await start(() => hook.addComment("new"));
-    expect(hook.comments[0]?.id).toBe("saved");
-    expect(hook.comments[0]?.author?.id).toBe("me");
-    expect(hook.comments[0]?.reactions).toEqual([]);
+    expect(hook.comments[2]?.id).toBe("saved");
+    expect(hook.comments[2]?.author?.id).toBe("me");
+    expect(hook.comments[2]?.reactions).toEqual([]);
     await act(async () => {
-      refresh.resolve({ comments: [comment("saved"), ...serverComments] });
+      refresh.resolve({ comments: [...serverComments, comment("saved")] });
       await pending.result;
     });
   });

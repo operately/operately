@@ -179,11 +179,17 @@ function AddReaction({ size, onAddReaction }: AddReactionProps) {
   const close = React.useCallback(() => setOpen(false), []);
 
   const handleSelected = React.useCallback(
-    (emoji: string) => {
+    async (emoji: string) => {
       const trimmed = emoji.trim();
       if (!trimmed) return;
 
-      Promise.resolve(onAddReaction(trimmed)).finally(close);
+      close();
+
+      try {
+        await onAddReaction(trimmed);
+      } catch (error) {
+        console.error("Failed to add reaction", error);
+      }
     },
     [close, onAddReaction],
   );

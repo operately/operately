@@ -295,3 +295,23 @@ it("refreshes the moved resource and both known folders", async () => {
     optionsSpy.mockRestore();
   }
 });
+
+it("marks a deleted link stale without refetching it while refreshing its parent list", async () => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const detailKey = Api.links.getQueryKey({ id: "link1", includePermissions: true });
+  const nodesKey = Api.resource_hubs.listNodesQueryKey({ resourceHubId: "hub1" });
+  client.setQueryData(detailKey, {});
+  client.setQueryData(nodesKey, {});
+  const invalidate = jest.spyOn(client, "invalidateQueries");
+
+  await invalidateResourceHubQueries(client, { linkId: "link1", deleted: true }, { resourceHubId: "hub1" });
+
+  expect(client.getQueryState(detailKey)?.isInvalidated).toBe(true);
+  expect(invalidate).toHaveBeenCalledWith(
+    expect.objectContaining({ queryKey: Api.links.getQueryKeyPrefix(), refetchType: "none" }),
+  );
+  expect(invalidate).toHaveBeenCalledWith(
+    expect.objectContaining({ queryKey: Api.resource_hubs.listNodesQueryKeyPrefix(), refetchType: "active" }),
+  );
+  client.clear();
+});

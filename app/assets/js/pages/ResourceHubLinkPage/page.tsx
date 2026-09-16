@@ -1,14 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import * as Pages from "@/components/Pages";
-import * as ReactionsModel from "@/models/reactions";
+import { useOptimisticReactions } from "@/models/reactions/useOptimisticReactions";
+import { type QueryClient } from "@tanstack/react-query";
+import { invalidateResourceHubInteractionQueries } from "@/models/resourceHubs/resourceHubInteractionQueries";
 import { resourceHubLandingPath, useDeleteLink } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
-import { useComments, useCommentSectionProps } from "@/features/CommentSection";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCommentSection } from "@/features/CommentSection/useCommentSection";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -16,14 +17,14 @@ import { assertPresent } from "@/utils/assertions";
 import { LinkPage, type ResourceHubLinkType } from "turboui";
 
 import { useLinkPageOptions } from "./Options";
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { buildLinkPageNavigation } from "./navigation";
 
 export function Page() {
   const { link, isCurrentUserSubscribed } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const refresh = Pages.useRefresh();
+  const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
@@ -42,18 +43,25 @@ export function Page() {
   assertPresent(link.reactions, "reactions must be present in link");
   assertPresent(link.potentialSubscribers, "potentialSubscribers must be present in link");
   assertPresent(link.subscriptionList, "subscriptionList must be present in link");
-  useClearNotificationsOnLoad(link.notifications);
 
-  const reactions = link.reactions.map((r) => r!);
-  const entity = ReactionsModel.entity(link.id!, "resource_hub_link");
-  const reactionsForm = ReactionsModel.useReactionsForm(entity, reactions);
-  const commentsForm = useComments({ parentType: "resource_hub_link", link });
-  const comments = useCommentSectionProps({
-    form: commentsForm,
-    commentParentType: "resource_hub_link",
+  const entity = { id: link.id, type: "resource_hub_link" as const };
+  const invalidateQueries = (client: QueryClient, refetchType: "active" | "none") =>
+    invalidateResourceHubInteractionQueries(client, { ...entity, ...mutationScope }, refetchType);
+
+  const reactionsForm = useOptimisticReactions({
+    entity,
+    initialReactions: link.reactions ?? undefined,
+    onRefresh: refresh,
+  });
+  const comments = useCommentSection({
+    entity,
+    mentionSearchScope: { type: "resource_hub", id: link.resourceHubId },
+    invalidateQueries,
     canComment: link.permissions.canCommentOnLink,
   });
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
+  useReadNotificationsOnLoad(link.notifications, (client) => invalidateQueries(client, "none"));
+
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
     potentialSubscribers: link.potentialSubscribers,
     subscriptionList: link.subscriptionList,
     resourceName: "link",
