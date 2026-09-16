@@ -6,6 +6,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import {
   useAddSpaceMembers,
+  useJoinSpace,
   useEditSpaceMembersPermissions,
   useRemoveGroupMember,
   useEditSpacePermissions,
@@ -15,6 +16,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { invalidateSpaceAccessQueries } from "./spaceAccessLifecycle";
 
 jest.mock("turboui", () => ({}));
+
 beforeAll(() => {
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "company1" });
@@ -36,6 +38,7 @@ it("invalidates access data for every space ID variant without touching unrelate
     Api.companies.getWorkMapQueryKey({ spaceId: "space1" }),
     Api.companies.listActivitiesQueryKey({ scopeType: "space", scopeId: "space1", actions: [] }),
   ];
+
   const unrelated = [
     Api.spaces.getQueryKey({ id: "space2" }),
     Api.spaces.listToolsQueryKey({ spaceId: "space2" }),
@@ -44,21 +47,27 @@ it("invalidates access data for every space ID variant without touching unrelate
     Api.projects.getQueryKey({ id: "space1" }),
     Api.projects.listQueryKey({}),
   ];
+
   [...affected, ...unrelated].forEach((key) => client.setQueryData(key, {}));
+
   await invalidateSpaceAccessQueries(client, "space1");
+
   affected.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
   unrelated.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+
   client.clear();
 });
 
 jest.mock("axios");
 jest.mock("react-router", () => ({}));
+
 beforeEach(() => {
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   jest.clearAllMocks();
 });
 
 const mutations = [
+  ["join", useJoinSpace, { spaceId: "space1" }],
   ["add members", useAddSpaceMembers, { spaceId: "space1", members: [{ id: "person1", accessLevel: 40 }] }],
   [
     "update member",
@@ -74,25 +83,35 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
   const space = Api.spaces.getQueryKey({ id: "space1" });
   const other = Api.spaces.getQueryKey({ id: "space2" });
   [space, other].forEach((key) => client.setQueryData(key, {}));
+
   let mutate: (input: any) => Promise<unknown>;
+
   function Harness() {
     mutate = useHook().mutateAsync as typeof mutate;
     return null;
   }
+
   const root = createRoot(document.createElement("div"));
+
   try {
     await act(async () =>
       root.render(React.createElement(QueryClientProvider, { client }, React.createElement(Harness))),
     );
+
     jest.mocked(axios.post).mockRejectedValueOnce(new Error("Save failed"));
+
     await act(async () => {
       await expect(mutate(input)).rejects.toThrow("Save failed");
     });
+
     expect(client.getQueryState(space)?.isInvalidated).toBe(false);
+
     jest.mocked(axios.post).mockResolvedValueOnce({ data: { success: true } });
+
     await act(async () => {
       await mutate(input);
     });
+
     expect(client.getQueryState(space)?.isInvalidated).toBe(true);
     expect(client.getQueryState(other)?.isInvalidated).toBe(false);
   } finally {
@@ -108,16 +127,21 @@ it.each(mutations)("%s waits for invalidation before resolving", async (_name, u
     finish = resolve;
   });
   const invalidate = jest.spyOn(client, "invalidateQueries").mockReturnValue(pending);
+
   let mutate: (input: any) => Promise<unknown>;
+
   function Harness() {
     mutate = useHook().mutateAsync as typeof mutate;
     return null;
   }
+
   const root = createRoot(document.createElement("div"));
+
   try {
     await act(async () =>
       root.render(React.createElement(QueryClientProvider, { client }, React.createElement(Harness))),
     );
+
     jest.mocked(axios.post).mockResolvedValueOnce({ data: {} });
     let completed = false;
     let saving: Promise<unknown>;
@@ -126,12 +150,15 @@ it.each(mutations)("%s waits for invalidation before resolving", async (_name, u
         completed = true;
       });
     });
+
     await waitFor(() => expect(invalidate).toHaveBeenCalled());
     expect(completed).toBe(false);
+
     await act(async () => {
       finish();
       await saving;
     });
+
     expect(completed).toBe(true);
   } finally {
     finish();
