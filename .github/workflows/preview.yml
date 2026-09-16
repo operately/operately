@@ -1,0 +1,39 @@
+name: Preview environment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    name: ${{ github.event.action == 'closed' && 'Destroy preview' || 'Deploy preview' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      HOST: app@167.233.193.239
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - name: SSH key
+        env:
+          PREVIEW_SSH_KEY: ${{ secrets.PREVIEW_SSH_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printenv PREVIEW_SSH_KEY > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo '167.233.193.239 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICQ9842+U39QsoF2mRDfQf4oQeH6vlfhqWSZ7dvApISG' >> ~/.ssh/known_hosts
+
+      - name: Deploy preview
+        if: github.event.action != 'closed'
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -o ServerAliveInterval=30 \
+            "$HOST" "/home/app/.local/bin/preview up --pr $PR"
+
+      - name: Destroy preview
+        if: github.event.action == 'closed'
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes \
+            "$HOST" "/home/app/.local/bin/preview down --pr $PR"
