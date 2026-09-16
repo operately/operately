@@ -14,6 +14,61 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.login_as(ctx, ctx.creator)
   end
 
+  step :set_page_reload_marker, ctx do
+    UI.execute("set_resource_hub_reload_marker", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "window.resourceHubReloadMarker = true")
+    end)
+  end
+
+  step :assert_page_was_not_reloaded, ctx do
+    UI.execute("assert_resource_hub_was_not_reloaded", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "return window.resourceHubReloadMarker === true", fn marker_present ->
+        assert marker_present
+      end)
+    end)
+  end
+
+  step :reopen_resource_from_list, ctx do
+    ctx
+    |> navigate_back("Documents & Files")
+    |> UI.click(css: "[data-test-id='node-0'] a")
+    |> UI.assert_has(testid: "add-comment")
+  end
+
+  step :add_resource_reaction, ctx do
+    ctx
+    |> UI.click(css: "[data-test-id^='resource-hub-'][data-test-id$='-page'] [aria-haspopup='dialog']")
+    |> UI.click(testid: "reaction-👍-button")
+    |> assert_resource_reaction()
+  end
+
+  step :assert_resource_reaction, ctx do
+    UI.assert_has(ctx, css: "[data-reaction-item]")
+  end
+
+  step :remove_resource_reaction, ctx do
+    ctx
+    |> UI.click(css: "[data-reaction-item]")
+    |> UI.click(css: "[title='Remove reaction']")
+    |> UI.refute_has(css: "[data-reaction-item]")
+  end
+
+  step :unsubscribe_and_return, ctx do
+    ctx
+    |> UI.click(testid: "unsubscribe")
+    |> UI.assert_has(testid: "subscribe")
+    |> reopen_resource_from_list()
+    |> UI.assert_has(testid: "subscribe")
+  end
+
+  step :subscribe_and_return, ctx do
+    ctx
+    |> UI.click(testid: "subscribe")
+    |> UI.assert_has(testid: "unsubscribe")
+    |> reopen_resource_from_list()
+    |> UI.assert_has(testid: "unsubscribe")
+  end
+
   step :visit_resource_hub_page, ctx, name \\ "Documents & Files" do
     {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id, name: name)
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
@@ -70,14 +125,6 @@ defmodule Operately.Support.Features.ResourceHubSteps do
 
     ctx
     |> UI.refute_has(testid: "comment-#{Paths.comment_id(comment)}")
-  end
-
-  step :reload_document_page, ctx do
-    cond do
-      Map.has_key?(ctx, :document) -> UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
-      Map.has_key?(ctx, :link) -> UI.visit(ctx, Paths.link_path(ctx.company, ctx.link))
-      Map.has_key?(ctx, :file) -> UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
-    end
   end
 
   #

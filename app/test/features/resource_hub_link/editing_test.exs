@@ -6,6 +6,8 @@ defmodule Operately.Features.ResourceHubLink.EditingTest do
 
   alias Operately.Support.Features.ResourceHubLinkSteps, as: Steps
 
+  alias Operately.Support.Features.ResourceHubSteps, as: HubSteps
+
   setup ctx, do: Steps.setup(ctx)
 
   @link %{
@@ -27,7 +29,9 @@ defmodule Operately.Features.ResourceHubLink.EditingTest do
       ctx
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
+      |> HubSteps.set_page_reload_marker()
       |> Steps.edit_link(link)
+      |> HubSteps.assert_page_was_not_reloaded()
       |> Steps.assert_link_content(link)
       |> Steps.assert_link_edited_on_space_feed(link)
       |> Steps.assert_link_edited_on_company_feed(link)

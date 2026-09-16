@@ -1,9 +1,4 @@
-import Api from "@/api";
-
 export { useSubscription } from "./useSubscription";
 export { useSubscribeToResource, useUnsubscribeFromResource } from "./subscriptionLifecycle";
-export { useCurrentSubscriptionsAdapter } from "./useCurrentSubscriptionsAdapter";
 export { useSubscriptionsAdapter } from "./useSubscriptionsAdapter";
 export type { SubscriptionsState } from "./useSubscriptionsAdapter";
-
-export const isSubscribedToResource = Api.notifications.isSubscribed;

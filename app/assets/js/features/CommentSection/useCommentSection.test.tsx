@@ -42,7 +42,6 @@ it.each(["goal_update", "goal_discussion", "project_check_in", "message"] as con
 
     const person = { id: "me", fullName: "Me" } as Person;
     let comments = [
-      { id: "later", insertedAt: "2026-09-10T12:00:00Z", content: "{}", author: person },
       {
         id: "earlier",
         insertedAt: "2026-09-10T10:00:00Z",
@@ -50,6 +49,7 @@ it.each(["goal_update", "goal_discussion", "project_check_in", "message"] as con
         author: person,
         notification: { id: "notification1", read: false },
       },
+      { id: "later", insertedAt: "2026-09-10T12:00:00Z", content: "{}", author: person },
     ] as Comment[];
 
     const options = Api.comments.listQueryOptions;
@@ -59,7 +59,7 @@ it.each(["goal_update", "goal_discussion", "project_check_in", "message"] as con
 
     const update = jest.fn(async (_input: CommentsUpdateInput) => {
       comments = comments.map((c) => (c.id === "earlier" ? { ...c, content: '{"edited":true}' } : c));
-      const comment = comments[1];
+      const comment = comments.find((comment) => comment.id === "earlier");
       if (!comment) throw new Error("Missing test comment");
 
       return { comment };
@@ -197,3 +197,92 @@ it("keeps cached comments visible when a background refresh fails", async () => 
     jest.restoreAllMocks();
   }
 });
+
+it("appends queued document comments without moving them while saving or refreshing", async () => {
+  Api.default.setBasePath("/api/v2");
+  Api.default.setHeaders({});
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+  const entity = { id: "document1", type: "resource_hub_document" as const };
+  const key = Api.comments.listQueryKey({ entityId: entity.id, entityType: entity.type });
+  const person = { id: "me", fullName: "Me" } as Person;
+  // The browser clock is behind the server, and the saved comments share a timestamp.
+  const existing: Comment = {
+    __typename: "comment",
+    id: "existing",
+    insertedAt: "2099-01-01T12:00:00Z",
+    content: '"existing"',
+    author: person,
+  };
+  const first = { ...existing, id: "first", content: '"first"' };
+  const second = { ...existing, id: "second", content: '"second"' };
+  client.setQueryData(key, { comments: [existing] });
+
+  const firstSave = deferred<{ comment: Comment }>();
+  const secondSave = deferred<{ comment: Comment }>();
+  const refresh = deferred<{ comments: Comment[] }>();
+  const create = jest.fn().mockReturnValueOnce(firstSave.promise).mockReturnValueOnce(secondSave.promise);
+  jest.spyOn(Api.comments, "createMutationOptions").mockReturnValue({ mutationFn: create });
+  const options = Api.comments.listQueryOptions;
+  jest.spyOn(Api.comments, "listQueryOptions").mockImplementation((input) => ({
+    ...options(input),
+    queryFn: () => refresh.promise,
+  }));
+
+  const { result, unmount } = renderHook(
+    () =>
+      useCommentSection({
+        entity,
+        mentionSearchScope: { type: "resource_hub", id: "hub1" },
+        invalidateQueries: async (queryClient, refetchType) => {
+          await queryClient.invalidateQueries({ queryKey: key, refetchType });
+        },
+        canComment: true,
+      }),
+    {
+      initialProps: undefined,
+      wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
+    },
+  );
+  const contents = () => result.current?.items.flatMap((item) => (item.type === "comment" ? [item.value.content] : []));
+  let firstSubmit: Promise<boolean | void> | undefined;
+  let secondSubmit: Promise<boolean | void> | undefined;
+
+  try {
+    await act(async () => {
+      firstSubmit = Promise.resolve(result.current?.onAddComment("first"));
+      secondSubmit = Promise.resolve(result.current?.onAddComment("second"));
+    });
+    expect(contents()).toEqual(['"existing"', '"first"', '"second"']);
+
+    await act(async () => {
+      firstSave.resolve({ comment: first });
+      await firstSubmit;
+    });
+    expect(contents()).toEqual(['"existing"', '"first"', '"second"']);
+
+    await act(async () => secondSave.resolve({ comment: second }));
+    await waitFor(() =>
+      expect(result.current?.items.map((item) => item.value.id)).toEqual(["existing", "first", "second"]),
+    );
+    expect(contents()).toEqual(['"existing"', '"first"', '"second"']);
+
+    await act(async () => {
+      refresh.resolve({ comments: [existing, first, second] });
+      await secondSubmit;
+    });
+    expect(contents()).toEqual(['"existing"', '"first"', '"second"']);
+  } finally {
+    unmount();
+    client.clear();
+    jest.restoreAllMocks();
+  }
+});
+
+function deferred<T>() {
+  let resolve: (value: T) => void = () => {};
+  const promise = new Promise<T>((done) => {
+    resolve = done;
+  });
+
+  return { promise, resolve };
+}
