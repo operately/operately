@@ -15,7 +15,9 @@ export function Page() {
   const { file } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const { mutateAsync: edit } = useUpdateFile();
+
+  const mutationScope = { spaceId: file.space?.id, resourceHubId: file.resourceHubId, parentFolderId: file.parentFolderId };
+  const { mutateAsync: edit } = useUpdateFile(mutationScope);
 
   assertPresent(file.name, "name must be present in file");
   assertPresent(file.description, "description must be present in file");

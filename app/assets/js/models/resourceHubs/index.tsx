@@ -37,6 +37,7 @@ export {
   useCreateDocument,
   useUpdateDocument,
   usePublishDocument,
+  useRestoreDocumentVersion,
   useDeleteDocument,
   useCreateFiles,
   useUpdateFile,
