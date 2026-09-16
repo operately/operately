@@ -8,14 +8,15 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as Hub from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import * as Pages from "@/components/Pages";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentVersionsPageNavigation } from "./navigation";
 
 export function Page() {
   const { document, resourceHub, versions } = useLoadedData();
-  const refresh = Pages.useRefresh();
+  const refresh = useRefresh();
+  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+  const { mutateAsync: restoreVersion } = Hub.useRestoreDocumentVersion(mutationScope);
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
@@ -34,13 +35,12 @@ export function Page() {
     currentVersionNumber: document.currentVersion ?? null,
     onRestore: async (versionNumber, expectedCurrentVersion) => {
       try {
-        await Hub.documents.restoreVersion({
+        await restoreVersion({
           documentId: document.id!,
           versionNumber,
           expectedCurrentVersion,
         });
         showSuccessToast("Version restored", `Version ${versionNumber} restored as the current document.`);
-        refresh();
         return "ok";
       } catch (error) {
         if (isVersionConflict(error)) {
@@ -51,9 +51,7 @@ export function Page() {
         return "error";
       }
     },
-    onReload: () => {
-      refresh();
-    },
+    onReload: refresh,
   };
 
   return <DocumentVersionHistoryPage {...props} />;

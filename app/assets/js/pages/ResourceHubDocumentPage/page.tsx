@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import * as Pages from "@/components/Pages";
 import * as ReactionsModel from "@/models/reactions";
 import {
   resourceHubLandingPath,
@@ -20,7 +19,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
 import { DocumentPage, displayDate } from "turboui";
 
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentPageNavigation, buildNavigationDocument } from "./navigation";
 import { useDocumentPageOptions } from "./Options";
 
@@ -28,13 +27,16 @@ export function Page() {
   const { document, folder, resourceHub, isCurrentUserSubscribed } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const refresh = Pages.useRefresh();
+  const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
-  const { mutateAsync: remove } = useDeleteDocument();
-  const { mutateAsync: publish } = usePublishDocument();
+
+  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+
+  const { mutateAsync: remove } = useDeleteDocument(mutationScope);
+  const { mutateAsync: publish } = usePublishDocument(mutationScope);
 
   const navigationDocument = buildNavigationDocument(document, resourceHub);
   const pageResourceHub = navigationDocument.resourceHub;
@@ -81,7 +83,7 @@ export function Page() {
 
   async function handlePublish() {
     await publish({ documentId: document.id });
-    refresh();
+    await refresh();
   }
 
   if (!comments) return null;

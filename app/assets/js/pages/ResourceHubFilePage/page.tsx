@@ -27,7 +27,9 @@ export function Page() {
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const { mutateAsync: remove } = useDeleteFile();
+
+  const mutationScope = { spaceId: file.space?.id, resourceHubId: file.resourceHubId, parentFolderId: file.parentFolderId };
+  const { mutateAsync: remove } = useDeleteFile(mutationScope);
   const options = useFilePageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(file.name, "name must be present in file");
