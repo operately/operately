@@ -1,13 +1,15 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import axios from "axios";
 import Api from "@/api";
 import {
   invalidateSpaceLifecycleQueries,
+  invalidateDeletedSpaceQueries,
   invalidateSpaceToolsQueries,
   useCreateSpace,
+  useDeleteSpace,
   useEditSpace,
   useUpdateSpaceTools,
 } from "./spaceLifecycle";
@@ -55,6 +57,7 @@ it("invalidates space detail, list, tools, and embedded name queries for include
       includeProject: true,
     }),
   ];
+
   const unrelated = [
     Api.spaces.getQueryKey({ id: "space-2" }),
     Api.spaces.listToolsQueryKey({ spaceId: "space-2" }),
@@ -98,6 +101,7 @@ it("invalidates only the matching space detail and tools variants after tools ch
     Api.spaces.listToolsQueryKey({ spaceId: "space-1" }),
     Api.spaces.listToolsQueryKey({ spaceId: "old-space-1" }),
   ];
+
   const unrelated = [
     Api.spaces.getQueryKey({ id: "space-2" }),
     Api.spaces.listToolsQueryKey({ spaceId: "space-2" }),
@@ -109,6 +113,7 @@ it("invalidates only the matching space detail and tools variants after tools ch
   ];
 
   [...affected, ...unrelated].forEach((queryKey) => queryClient.setQueryData(queryKey, {}));
+
   await invalidateSpaceToolsQueries(queryClient, "space-1");
 
   affected.forEach((queryKey) => expect(queryClient.getQueryState(queryKey)?.isInvalidated).toBe(true));
@@ -117,6 +122,7 @@ it("invalidates only the matching space detail and tools variants after tools ch
 });
 
 const mutations = [
+  ["delete", useDeleteSpace, { spaceId: "space-1" }, { success: true }],
   [
     "create",
     useCreateSpace,
@@ -127,7 +133,7 @@ const mutations = [
   ["update tools", useUpdateSpaceTools, { spaceId: "space-1", tools: { tasksEnabled: true } }, { success: true }],
 ] as const;
 
-it.each(mutations)("%s invalidates only after a successful mutation", async (_name, useHook, input, result) => {
+it.each(mutations)("%s invalidates only after a successful mutation", async (name, useHook, input, result) => {
   const queryClient = createQueryClient();
   const spaceKey = Api.spaces.getQueryKey({ id: "space-1" });
   const otherKey = Api.spaces.getQueryKey({ id: "space-2" });
@@ -136,12 +142,14 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
   [spaceKey, otherKey, toolsKey, otherToolsKey].forEach((queryKey) => queryClient.setQueryData(queryKey, {}));
 
   let mutate: (input: unknown) => Promise<unknown>;
+
   function Harness() {
     mutate = useHook().mutateAsync as typeof mutate;
     return null;
   }
 
   const root = createRoot(document.createElement("div"));
+
   try {
     await act(async () =>
       root.render(
@@ -155,6 +163,7 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
     await act(async () => {
       await expect(mutate(input)).rejects.toThrow("Save failed");
     });
+
     expect(queryClient.getQueryState(spaceKey)?.isInvalidated).toBe(false);
     expect(queryClient.getQueryState(toolsKey)?.isInvalidated).toBe(false);
 
@@ -162,9 +171,10 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
     await act(async () => {
       await mutate(input);
     });
+
     expect(queryClient.getQueryState(spaceKey)?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState(otherKey)?.isInvalidated).toBe(false);
-    expect(queryClient.getQueryState(toolsKey)?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(toolsKey)?.isInvalidated).toBe(name !== "delete");
     expect(queryClient.getQueryState(otherToolsKey)?.isInvalidated).toBe(false);
   } finally {
     await act(async () => root.unmount());
@@ -175,3 +185,53 @@ it.each(mutations)("%s invalidates only after a successful mutation", async (_na
 function createQueryClient(): QueryClient {
   return new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 }
+
+it("deleting a space invalidates its details and surviving lists without refreshing deleted resources", async () => {
+  const client = createQueryClient();
+  const details = [
+    Api.spaces.getQueryKey({ id: "space1" }),
+    Api.spaces.getQueryKey({ id: "renamed-space1", includeMembers: true }),
+  ];
+  const lists = [Api.spaces.listQueryKey({}), Api.spaces.searchQueryKey({ query: "marketing" })];
+  const companyMap = Api.companies.getWorkMapQueryKey({});
+  const otherMap = Api.companies.getWorkMapQueryKey({ spaceId: "space2" });
+  const untouched = [
+    Api.spaces.getQueryKey({ id: "space2" }),
+    Api.spaces.listToolsQueryKey({ spaceId: "space1" }),
+    Api.spaces.listTasksQueryKey({ spaceId: "space1" }),
+    Api.spaces.listDiscussionsQueryKey({ spaceId: "space1" }),
+    Api.projects.listQueryKey({ spaceId: "space1" }),
+    Api.goals.listQueryKey({ spaceId: "space1" }),
+    Api.kpis.listKpisQueryKey({ spaceId: "space1" }),
+    Api.project_templates.listQueryKey({ spaceId: "space1" }),
+    Api.people.getBindedQueryKey({ resourseType: "space", resourseId: "space1" }),
+    Api.companies.getWorkMapQueryKey({ spaceId: "old-space1" }),
+    Api.companies.listActivitiesQueryKey({ scopeType: "space", scopeId: "space1", actions: [] }),
+  ];
+
+  const fetchDeleted = jest.fn().mockResolvedValue({});
+  const fetchCompany = jest.fn().mockResolvedValue({});
+  [...details, ...lists, companyMap, otherMap, ...untouched].forEach((key) => client.setQueryData(key, {}));
+
+  const observers = [...details, ...untouched, companyMap].map(
+    (key) =>
+      new QueryObserver(client, {
+        queryKey: key,
+        queryFn: key === companyMap ? fetchCompany : fetchDeleted,
+        staleTime: Infinity,
+      }),
+  );
+  const unsubscribers = observers.map((observer) => observer.subscribe(() => {}));
+
+  try {
+    await invalidateDeletedSpaceQueries(client, "space1");
+
+    expect(fetchDeleted).not.toHaveBeenCalled();
+    expect(fetchCompany).toHaveBeenCalledTimes(1);
+    [...details, ...lists, otherMap].forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+    untouched.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+  } finally {
+    unsubscribers.forEach((unsubscribe) => unsubscribe());
+    client.clear();
+  }
+});

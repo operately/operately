@@ -21,6 +21,20 @@ defmodule Operately.Support.Features.SpacesSteps do
   step(:visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company)))
   step(:visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.marketing)))
 
+  step :set_page_reload_marker, ctx do
+    UI.execute("set_space_page_reload_marker", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "window.spacePageReloadMarker = true")
+    end)
+  end
+
+  step :assert_page_was_not_reloaded, ctx do
+    UI.execute("assert_space_page_was_not_reloaded", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "return window.spacePageReloadMarker === true", fn marker_present ->
+        assert marker_present
+      end)
+    end)
+  end
+
   step :visit_general_space, ctx do
     {:ok, space} = Group.get(:system, id: ctx.company.company_space_id)
 
