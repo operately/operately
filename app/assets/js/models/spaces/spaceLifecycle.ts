@@ -8,7 +8,7 @@ export function useCreateSpace() {
   return useMutation({
     ...Api.spaces.createMutationOptions(),
     onSuccess: ({ space }) => {
-      void invalidateSpaceLifecycleQueries(queryClient, space?.id);
+      return invalidateSpaceLifecycleQueries(queryClient, space?.id);
     },
   });
 }
@@ -19,7 +19,7 @@ export function useEditSpace() {
   return useMutation({
     ...Api.spaces.updateMutationOptions(),
     onSuccess: ({ space }, { id }) => {
-      void invalidateSpaceLifecycleQueries(queryClient, space?.id ?? id);
+      return invalidateSpaceLifecycleQueries(queryClient, space?.id ?? id);
     },
   });
 }
@@ -30,15 +30,28 @@ export function useUpdateSpaceTools() {
   return useMutation({
     ...Api.spaces.updateToolsMutationOptions(),
     onSuccess: (_data, { spaceId }) => {
-      void invalidateSpaceToolsQueries(queryClient, spaceId);
+      return invalidateSpaceToolsQueries(queryClient, spaceId);
     },
   });
 }
 
-export async function invalidateSpaceToolsQueries(queryClient: QueryClient, spaceId: string): Promise<void> {
+export function useDeleteSpace() {
+  const client = useQueryClient();
+
+  return useMutation({
+    ...Api.spaces.deleteMutationOptions(),
+    onSuccess: (_result, { spaceId }) => invalidateDeletedSpaceQueries(client, spaceId),
+  });
+}
+
+export async function invalidateSpaceToolsQueries(
+  queryClient: QueryClient,
+  spaceId: string,
+  refetchType: "active" | "none" = "active",
+): Promise<void> {
   await Promise.all([
-    invalidateMatchingSpaceQueries(queryClient, Api.spaces.getQueryKeyPrefix(), "id", spaceId),
-    invalidateMatchingSpaceQueries(queryClient, Api.spaces.listToolsQueryKeyPrefix(), "spaceId", spaceId),
+    invalidateMatchingSpaceQueries(queryClient, Api.spaces.getQueryKeyPrefix(), "id", spaceId, refetchType),
+    invalidateMatchingSpaceQueries(queryClient, Api.spaces.listToolsQueryKeyPrefix(), "spaceId", spaceId, refetchType),
   ]);
 }
 
@@ -65,9 +78,11 @@ async function invalidateMatchingSpaceQueries(
   queryKey: readonly unknown[],
   field: string,
   id: string,
+  refetchType: "active" | "none" = "active",
 ): Promise<void> {
   await queryClient.invalidateQueries({
     queryKey,
+    refetchType,
     predicate: (query) => {
       const input = query.queryKey[queryKey.length] as Record<string, unknown> | undefined;
       const resourceId = input?.[field];
@@ -97,4 +112,22 @@ async function invalidateEmbeddedSpaceNameQueries(queryClient: QueryClient): Pro
       }),
     ),
   );
+}
+
+export async function invalidateDeletedSpaceQueries(client: QueryClient, spaceId: string): Promise<void> {
+  const workMapPrefix = Api.companies.getWorkMapQueryKeyPrefix();
+
+  await Promise.all([
+    // Revalidate on the next visit, after navigating away from the deleted space.
+    invalidateMatchingSpaceQueries(client, Api.spaces.getQueryKeyPrefix(), "id", spaceId, "none"),
+    client.invalidateQueries({ queryKey: Api.spaces.listQueryKeyPrefix() }),
+    client.invalidateQueries({ queryKey: Api.spaces.searchQueryKeyPrefix() }),
+    client.invalidateQueries({
+      queryKey: workMapPrefix,
+      predicate: (query) => {
+        const input = query.queryKey[workMapPrefix.length] as { spaceId?: string } | undefined;
+        return !compareIds(input?.spaceId, spaceId);
+      },
+    }),
+  ]);
 }

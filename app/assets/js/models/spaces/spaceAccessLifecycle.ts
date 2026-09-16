@@ -57,3 +57,12 @@ export function useEditSpacePermissions() {
     onSuccess: (_result, { spaceId }) => invalidateSpaceAccessQueries(client, spaceId),
   });
 }
+
+export function useJoinSpace() {
+  const client = useQueryClient();
+
+  return useMutation({
+    ...Api.spaces.joinMutationOptions(),
+    onSuccess: (_result, { spaceId }) => invalidateSpaceAccessQueries(client, spaceId),
+  });
+}

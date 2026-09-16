@@ -38,13 +38,14 @@ defmodule Operately.Features.Spaces.MembersAndAccessTest do
     ctx
     |> UI.login_as(person)
     |> UI.visit(Paths.space_path(ctx.company, group))
+    |> Steps.set_page_reload_marker()
     |> UI.click(testid: "join-space-button")
-    |> UI.sleep(300)
-    |> UI.visit(Paths.space_path(ctx.company, group))
+    |> UI.refute_has(testid: "join-space-button")
     |> UI.assert_text("Mati joined the space")
+    |> Steps.assert_page_was_not_reloaded()
 
     members = Operately.Groups.list_members(group)
-    assert Enum.find(members, fn member -> member.id == ctx.creator.id end) != nil
+    assert Enum.any?(members, &(&1.id == person.id))
   end
 
   feature "adding space members", ctx do

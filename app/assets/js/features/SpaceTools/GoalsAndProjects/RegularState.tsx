@@ -52,12 +52,7 @@ function Goals({ goals, projectsCount }: { goals: Goal[]; projectsCount: number 
   // displays goals and projects evenly in the container.
   // With the current fixed 380px height, only 9 goals and project
   // can be displayed.
-  const slicedGoals = useMemo(() => {
-    if (projectsCount > 4) {
-      return goals.slice(0, 5);
-    }
-    return goals.slice(0, 9 - projectsCount);
-  }, []);
+  const slicedGoals = goals.slice(0, projectsCount > 4 ? 5 : 9 - projectsCount);
 
   return (
     <div className="flex flex-col px-2 py-3">
@@ -159,14 +154,8 @@ interface ResourceStatus {
 }
 
 function Header(props: GoalsHeader | ProjectsHeader) {
-  const status: ResourceStatus = React.useMemo(() => {
-    switch (props.type) {
-      case "goals":
-        return calculateGoalStatuses(props.goals);
-      case "projects":
-        return calculateProjectStatuses(props.projects);
-    }
-  }, []);
+  const status: ResourceStatus =
+    props.type === "goals" ? calculateGoalStatuses(props.goals) : calculateProjectStatuses(props.projects);
 
   const onTrackPercentage = (status.on_track / status.total) * 100;
   const cautionPercentage = (status.caution / status.total) * 100;
