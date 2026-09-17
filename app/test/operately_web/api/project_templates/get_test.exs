@@ -14,7 +14,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space)
     |> Factory.add_project_template(:template, :space,
       name: "Launch Template",
@@ -196,7 +195,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.GetTest do
     other_ctx =
       %{conn: Phoenix.ConnTest.build_conn()}
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.log_in_person(:creator)
 
     assert {404, _} = query(other_ctx.conn, [:project_templates, :get], %{id: Paths.project_template_id(ctx.template)})

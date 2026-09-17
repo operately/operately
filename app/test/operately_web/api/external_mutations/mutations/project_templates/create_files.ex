@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectTemplates.CreateFi
   def mutation_name, do: "project_templates/create_files"
 
   def setup(ctx) do
-    ctx = ctx |> Factory.setup() |> Factory.enable_feature("project_templates") |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space) |> Factory.add_blob(:blob)
+    ctx = ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space) |> Factory.add_blob(:blob)
     %{ctx | blob: ctx.blob |> Blob.changeset(%{status: :uploaded}) |> Repo.update!()}
   end
 

@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Mcp.Tools.ProjectTemplates.UpdateDocumentTest do
     ctx =
       %{}
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.add_space(:space)
       |> Factory.add_project_template(:template, :space, name: "Launch template", duration_days: 30)
       |> Factory.add_project_template_resource_document(:document, :template, name: "Original", content: %{"type" => "doc", "content" => []})

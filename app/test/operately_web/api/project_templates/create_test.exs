@@ -14,7 +14,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space)
     |> Factory.log_in_person(:creator)
   end

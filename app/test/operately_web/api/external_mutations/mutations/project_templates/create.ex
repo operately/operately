@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectTemplates.Create d
   def mutation_name, do: "project_templates/create"
 
   @impl true
-  def setup(ctx), do: ctx |> Factory.setup() |> Factory.enable_feature("project_templates") |> Factory.add_space(:space)
+  def setup(ctx), do: ctx |> Factory.setup() |> Factory.add_space(:space)
 
   @impl true
   def inputs(ctx), do: %{space_id: Paths.space_id(ctx.space), name: "Template"}

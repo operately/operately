@@ -18,7 +18,6 @@ defmodule Operately.Support.CliE2E.ProjectTemplates.CreateFileSteps do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.add_space(:engineering)
       |> Factory.add_project_template(:template, :engineering, name: "CLI template")
       |> Factory.add_api_token(:api_token, :creator, read_only: false)
