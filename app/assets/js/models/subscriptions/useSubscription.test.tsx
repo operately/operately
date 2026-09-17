@@ -3,12 +3,10 @@ import React, { act } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Api, { SubscriptionList } from "@/api";
-import { PageCache } from "@/routes/PageCache";
 import { showErrorToast } from "turboui";
 import { useSubscription } from "./useSubscription";
 
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => ({ id: "me" }) }));
-jest.mock("@/routes/PageCache", () => ({ PageCache: { invalidate: jest.fn() } }));
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
 
 function deferred() {
@@ -87,7 +85,6 @@ describe("useSubscription", () => {
       subscriptionList: list("list-1", false),
       entityType: "project_task",
       entityId: "task-1",
-      cacheKey: "legacy",
       onRefresh: jest.fn().mockResolvedValue(undefined),
     };
     subscribe = jest.fn();
@@ -105,7 +102,7 @@ describe("useSubscription", () => {
     jest.clearAllMocks();
   });
 
-  it("shows the toggle immediately and retains legacy refresh callbacks", async () => {
+  it("shows the toggle immediately and refreshes after saving", async () => {
     const request = deferred();
     subscribe.mockReturnValue(request.promise);
     await render();
@@ -118,7 +115,6 @@ describe("useSubscription", () => {
       await pending.promise;
     });
     expect(hook.isSubscribed).toBe(true);
-    expect(PageCache.invalidate).toHaveBeenCalledWith("legacy");
     expect(props.onRefresh).toHaveBeenCalledTimes(1);
     expect(client.getMutationCache().getAll()).toHaveLength(1);
   });
