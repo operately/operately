@@ -80,4 +80,3 @@ For more details, see [installation guide](https://operately.com/install).
 ## Repo activity
 
 ![Alt](https://repobeats.axiom.co/api/embed/f62f76ebf1b2afea77ef0e83aabb1feef57038ff.svg "Repobeats analytics image")
-
