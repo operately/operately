@@ -1503,7 +1503,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :refute_add_check_in_visible, ctx do
     ctx
     |> UI.click(testid: "tab-check-ins")
-    |> UI.assert_text("Check-Ins")
+    |> UI.wait_until_has(testid: "project-check-ins-section")
     |> UI.refute_has(testid: "check-in-button")
   end
 
