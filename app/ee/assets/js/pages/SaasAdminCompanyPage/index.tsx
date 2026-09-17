@@ -1,23 +1,21 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
-import { EnableFeatureModal } from "./EnableFeatureModal";
-import { RemoveFeatureFlagsModal } from "./RemoveFeatureFlagsModal";
+import { useQuery } from "@tanstack/react-query";
+import { FeatureFlagsSection } from "./FeatureFlagsSection";
 
-import { Avatar, IconFlare, IconTrash, SecondaryButton, FormattedTime, formatStorageBytes } from "turboui";
+import { Avatar, SecondaryButton, FormattedTime, formatStorageBytes } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useStartSupportSession } from "@/features/SupportSessions";
-import { useBoolState } from "@/hooks/useBoolState";
 import { useLoadedData } from "./loader";
 
 export { loader } from "./loader";
 
 export function Page() {
-  const { company } = useLoadedData();
-  const { startSupportSession, supportSessionStarting } = useStartSupportSession(company.id!);
+  const { company, companyId, availableFeatures } = useLoadedData();
+  const { startSupportSession, supportSessionStarting } = useStartSupportSession(companyId);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -25,8 +23,6 @@ export function Page() {
         <Paper.Navigation items={[{ to: "/admin", label: "All Companies" }]} />
 
         <Paper.Body>
-          <Options />
-
           <div className="text-3xl font-semibold">{company.name}</div>
           <OwnersSection company={company} />
 
@@ -35,6 +31,12 @@ export function Page() {
 
           <h2 className="mt-8 font-bold">Information</h2>
           <Info company={company} />
+
+          <FeatureFlagsSection
+            companyId={companyId}
+            availableFeatures={availableFeatures}
+            enabledFeatures={company.enabledFeatures ?? []}
+          />
 
           <h2 className="mt-8 font-bold">Support Mode</h2>
           <p className="text-sm text-content-accent mb-3 mt-1 max-w-lg">
@@ -52,7 +54,7 @@ export function Page() {
           </SecondaryButton>
 
           <h2 className="mt-8 font-bold">Activity</h2>
-          <ActivitySection company={company} />
+          <ActivitySection companyId={companyId} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -65,21 +67,14 @@ function Info({ company }: { company: AdminApi.Company }) {
       <div className="flex items-center gap-3">
         <div className="font-medium w-40">Short ID</div>
         <div className="text-blue-500">
-          <code>{company.shortId!}</code>
+          <code>{company.shortId}</code>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
         <div className="font-medium w-40">Database ID</div>
         <div className="text-blue-500">
-          <code>{company.uuid!}</code>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="font-medium w-40">Enabled Features</div>
-        <div className="text-blue-500">
-          <code>{company.enabledFeatures!.join(", ") || "None"}</code>
+          <code>{company.uuid}</code>
         </div>
       </div>
     </div>
@@ -90,10 +85,10 @@ function StatsSection({ company }: { company: AdminApi.Company }) {
   return (
     <div className="border-y border-stroke-base py-3 mt-2">
       <div className="grid grid-cols-5 gap-4 w-full">
-        <Stat title="People" value={company.peopleCount!} />
-        <Stat title="Spaces" value={company.spacesCount!} />
-        <Stat title="Goals" value={company.goalsCount!} />
-        <Stat title="Projects" value={company.projectsCount!} />
+        <Stat title="People" value={company.peopleCount ?? 0} />
+        <Stat title="Spaces" value={company.spacesCount ?? 0} />
+        <Stat title="Goals" value={company.goalsCount ?? 0} />
+        <Stat title="Projects" value={company.projectsCount ?? 0} />
         <Stat title="Storage" value={formatStorageBytes(company.storageUsageBytes)} />
       </div>
     </div>
@@ -110,9 +105,11 @@ function Stat({ title, value }: { title: string; value: number | string | React.
 }
 
 function OwnersSection({ company }: { company: AdminApi.Company }) {
+  const owners = company.owners ?? [];
+
   return (
     <div className="flex gap-12 mt-8">
-      {company.owners!.map((owner) => (
+      {owners.map((owner) => (
         <div key={owner.id} className="flex items-center gap-3">
           <Avatar size={54} person={owner} />
           <div>
@@ -126,9 +123,9 @@ function OwnersSection({ company }: { company: AdminApi.Company }) {
   );
 }
 
-function ActivitySection({ company }: { company: AdminApi.Company }) {
+function ActivitySection({ companyId }: { companyId: string }) {
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { data } = AdminApi.useGetActivities({ companyId: company.id! });
+  const { data } = useQuery(AdminApi.getActivitiesQueryOptions({ companyId }));
 
   if (!data || !data.activities) return null;
 
@@ -141,49 +138,16 @@ function ActivitySection({ company }: { company: AdminApi.Company }) {
         <div className="px-4">Activity Description</div>
       </div>
 
-      {activities!.map((activity: AdminApi.Activity) => (
+      {activities.map((activity: AdminApi.Activity) => (
         <div key={activity.id} className="border-b border-stroke-base py-2 flex items-center gap-4">
           <div className="px-4 text-sm text-content-dimmed w-32">
-            <FormattedTime {...formattedTimePreferences} time={activity.insertedAt!} format="relative" />
+            {activity.insertedAt ? (
+              <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="relative" />
+            ) : null}
           </div>
-          <div className="px-4 text-sm">{activity.action!.split("_").join(" ")}</div>
+          <div className="px-4 text-sm">{(activity.action ?? "").split("_").join(" ")}</div>
         </div>
       ))}
     </div>
-  );
-}
-
-function Options() {
-  const { company } = useLoadedData();
-  const refresh = Pages.useRefresh();
-  const [showEnableFeatureModal, toggleEnableFeatureModal] = useBoolState(false);
-  const [showRemoveFeatureFlagsModal, toggleRemoveFeatureFlagsModal] = useBoolState(false);
-
-  return (
-    <>
-      <PageOptions.Root testId="options-button">
-        <PageOptions.Action
-          icon={IconFlare}
-          title="Enable Feature"
-          onClick={toggleEnableFeatureModal}
-          testId="enable-feature"
-        />
-        <PageOptions.Action
-          icon={IconTrash}
-          title="Remove Feature Flags"
-          onClick={toggleRemoveFeatureFlagsModal}
-          testId="remove-feature-flags"
-        />
-      </PageOptions.Root>
-
-      <EnableFeatureModal isOpen={showEnableFeatureModal} onClose={toggleEnableFeatureModal} onSaved={refresh} />
-      <RemoveFeatureFlagsModal
-        isOpen={showRemoveFeatureFlagsModal}
-        onClose={toggleRemoveFeatureFlagsModal}
-        companyId={company.id!}
-        enabledFeatures={company.enabledFeatures ?? []}
-        onSaved={refresh}
-      />
-    </>
   );
 }

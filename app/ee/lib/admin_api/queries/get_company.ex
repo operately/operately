@@ -2,6 +2,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
   use TurboConnect.Query
 
   alias Operately.Companies.Company
+  alias Operately.Companies.ExperimentalFeatures
 
   inputs do
     field :id, :company_id
@@ -9,6 +10,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
 
   outputs do
     field :company, :company
+    field :available_features, list_of(:string)
   end
 
   def call(_conn, inputs) do
@@ -35,8 +37,8 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
   end
 
   defp serialize(company) do
-    %{company:
-      %{
+    %{
+      company: %{
         id: OperatelyWeb.Paths.company_id(company),
         name: company.name,
         people_count: company.people_count,
@@ -49,8 +51,8 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
         uuid: company.id,
         short_id: company.short_id,
         enabled_features: company.enabled_experimental_features
-      }
+      },
+      available_features: ExperimentalFeatures.available()
     }
   end
-
 end

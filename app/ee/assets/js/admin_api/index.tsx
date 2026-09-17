@@ -308,6 +308,7 @@ export interface GetCompanyInput {
 
 export interface GetCompanyResult {
   company: Company;
+  availableFeatures: string[];
 }
 
 export interface GetEmailSettingsInput {}
