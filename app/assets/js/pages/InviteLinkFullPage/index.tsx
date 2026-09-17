@@ -1,43 +1,17 @@
 import React from "react";
 
-import Api, { InviteLink } from "@/api";
+import { loader, useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { redirect } from "react-router";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 export default { name: "InviteLinkFullPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  invite: InviteLink | null;
-  token: string;
-}
-
-async function loader({ params }): Promise<LoaderResult | Response> {
-  const token = params.token;
-
-  if (!token) {
-    return redirect("/");
-  }
-
-  try {
-    const result = await Api.invitations.getInviteLinkAvailability({ token });
-
-    if (!result.memberLimitExceeded) {
-      return redirect(Paths.inviteJoinPath(token));
-    }
-
-    return { invite: result.inviteLink || null, token };
-  } catch {
-    return redirect(Paths.inviteJoinPath(token));
-  }
-}
-
 function Page() {
-  const { invite, token } = Pages.useLoadedData<LoaderResult>();
+  const { invite, token } = useLoadedData();
   const companyName = invite?.company?.name;
 
   return (
