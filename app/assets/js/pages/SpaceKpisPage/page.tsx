@@ -50,7 +50,6 @@ export function Page() {
     subscriptionList: kpi?.subscriptionList,
     entityId: kpi?.id ?? "",
     entityType: "kpi",
-    cacheKey: `v1-SpaceKpisPage-${space.id}-${kpi?.id ?? "list"}`,
     onRefresh: refresh,
   });
 

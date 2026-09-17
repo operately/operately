@@ -19,6 +19,7 @@ export async function invalidateGoalAccessQueries(client: QueryClient, goalId: s
     }),
     client.invalidateQueries({ queryKey: Api.goals.listQueryKeyPrefix() }),
     client.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
+    client.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
     client.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix() }),
   ]);
 }

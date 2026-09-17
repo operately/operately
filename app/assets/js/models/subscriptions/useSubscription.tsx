@@ -3,7 +3,6 @@ import { type SubscriptionList } from "@/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { showErrorToast, SidebarNotificationSection } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { PageCache } from "@/routes/PageCache";
 import {
   invalidateSubscriptionQueries,
   useSubscribeToResource,
@@ -15,7 +14,6 @@ interface UseSubscriptionOptions {
   subscriptionList?: SubscriptionList | null;
   entityId: string;
   entityType: SubscriptionEntityType;
-  cacheKey?: string;
   onRefresh?: () => Promise<void>;
 }
 
@@ -31,7 +29,6 @@ export function useSubscription({
   subscriptionList,
   entityId,
   entityType,
-  cacheKey,
   onRefresh,
 }: UseSubscriptionOptions): SidebarNotificationSection.Props {
   const currentUser = useMe();
@@ -132,7 +129,6 @@ export function useSubscription({
       session.changed = false;
 
       try {
-        if (cacheKey) PageCache.invalidate(cacheKey);
         await invalidateSubscriptionQueries(queryClient, entityType);
         if (isCurrent()) await onRefresh?.();
       } catch (error) {

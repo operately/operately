@@ -9,7 +9,6 @@ import { parseTaskStatusForTurboUi } from "../tasks";
 import { parseSpaceForTurboUI } from "../spaces";
 
 export const getWorkMap = Api.companies.getWorkMap;
-export const getFlatWorkMap = Api.companies.getFlatWorkMap;
 
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type
@@ -53,7 +52,10 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
 export type { WorkMapItem };
 
 export async function invalidateWorkMapQueries(queryClient: QueryClient): Promise<void> {
-  await queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() });
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
+  ]);
 }
 
 interface WorkMapItemOptions {

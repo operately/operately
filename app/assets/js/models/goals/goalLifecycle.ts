@@ -37,6 +37,7 @@ export async function invalidateGoalLifecycleQueries(
     parentGoalId ? invalidateGoalPageQueries(queryClient, parentGoalId) : Promise.resolve(),
     queryClient.invalidateQueries({ queryKey: Api.goals.listQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.companies.listActivitiesQueryKeyPrefix() }),
   ]);
 }

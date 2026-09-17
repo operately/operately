@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 
 import { useNavigate } from "react-router";
@@ -7,54 +6,25 @@ import { Timezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
-import { compareIds, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import type { PeopleUpdateInput } from "@/api";
 
+import { loader, useLoadedData } from "./loader";
+export type { FromLocation } from "./loader";
+
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
-
-export type FromLocation = "admin-manage-people" | null;
-
-interface LoaderResult {
-  person: People.Person;
-  from: FromLocation;
-}
-
-const fetchPersonWithFallback = async (personId: string) => {
-  try {
-    const person = await People.getPerson({ id: personId, includeManager: true });
-    return person.person!;
-  } catch (error) {
-    if (error.status === 404) {
-      const me = await People.getMe({ includeManager: true }).then((result) => result.me);
-
-      if (me && compareIds(me.id, personId)) {
-        return me;
-      } else {
-        throw error;
-      }
-    }
-
-    throw error;
-  }
-};
-
-async function loader({ request, params }): Promise<LoaderResult> {
-  return {
-    person: await fetchPersonWithFallback(params.id),
-    from: Pages.getSearchParam(request, "from") as FromLocation,
-  };
-}
 
 function Page() {
   const paths = usePaths();
-  const me = useMe()!;
+  const me = useMe();
   const navigate = useNavigate();
-  const { person, from } = Pages.useLoadedData() as LoaderResult;
+  const { person, from } = useLoadedData();
+  const { mutateAsync: updateProfile } = People.useUpdateProfile();
 
-  const isCurrentUser = me.id === person.id;
+  const isCurrentUser = me?.id === person.id;
 
   // Form state
   const [fullName, setFullName] = React.useState(person.fullName || "");
@@ -108,7 +78,7 @@ function Page() {
         updateParams.timeFormat = timeFormat;
       }
 
-      await People.updateProfile(updateParams);
+      await updateProfile(updateParams);
 
       if (isCurrentUser) {
         navigate(paths.accountPath());
@@ -120,7 +90,19 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [fullName, title, aboutMe, timezone, timeFormat, manager, person.id, isCurrentUser, navigate, paths]);
+  }, [
+    fullName,
+    title,
+    aboutMe,
+    timezone,
+    timeFormat,
+    manager,
+    person.id,
+    isCurrentUser,
+    navigate,
+    paths,
+    updateProfile,
+  ]);
 
   const displayPerson: ProfileEditPage.Person = {
     id: person.id,
@@ -167,6 +149,7 @@ function Page() {
 }
 
 function useAvatarHandlers(personId: string) {
+  const { mutateAsync: updateProfilePicture } = People.useUpdateProfilePicture();
   const MAX_AVATAR_FILE_BYTES = 12 * 1024 * 1024; // 12 MB
 
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
@@ -187,7 +170,7 @@ function useAvatarHandlers(personId: string) {
 
       try {
         const { id, url } = await Blobs.uploadAvatarFile(file, (value) => setAvatarUploadProgress(value));
-        const result = await People.updateProfilePicture({
+        const result = await updateProfilePicture({
           personId: personId,
           avatarBlobId: id,
           avatarUrl: url,
@@ -206,7 +189,7 @@ function useAvatarHandlers(personId: string) {
         setAvatarUploadProgress(null);
       }
     },
-    [personId],
+    [personId, updateProfilePicture],
   );
 
   const handleAvatarRemove = React.useCallback(async () => {
@@ -214,7 +197,7 @@ function useAvatarHandlers(personId: string) {
     setAvatarUploading(true);
 
     try {
-      const result = await People.updateProfilePicture({
+      const result = await updateProfilePicture({
         personId: personId,
         avatarBlobId: null,
         avatarUrl: null,
@@ -231,7 +214,7 @@ function useAvatarHandlers(personId: string) {
     } finally {
       setAvatarUploading(false);
     }
-  }, [personId]);
+  }, [personId, updateProfilePicture]);
 
   return {
     avatarUrl,

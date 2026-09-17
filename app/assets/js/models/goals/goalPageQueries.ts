@@ -16,9 +16,12 @@ export async function invalidateGoalPageQueries(
     [Api.companies.getWorkMapQueryKeyPrefix(), "parentGoalId"],
   ] as const;
 
-  await Promise.all(
-    resources.map(([queryKey, field]) => invalidateGoalResourceQueries(client, queryKey, field, goalId, refetchType)),
-  );
+  await Promise.all([
+    ...resources.map(([queryKey, field]) =>
+      invalidateGoalResourceQueries(client, queryKey, field, goalId, refetchType),
+    ),
+    client.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix(), refetchType }),
+  ]);
 }
 
 // Generated keys append their input object immediately after the endpoint prefix.

@@ -1,67 +1,48 @@
-import * as People from "@/models/people";
-import * as WorkMap from "@/models/workMap";
-
-import { PageCache } from "@/routes/PageCache";
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
+import * as Pages from "@/components/Pages";
+import { prefetchPersonWithFallback } from "@/models/people/prefetchPersonWithFallback";
 import { compareIds } from "@/routes/paths";
-import { fetchAll } from "@/utils/async";
 
-interface LoaderResult {
-  data: {
-    person: People.Person;
-    workMap: WorkMap.WorkMapItem[];
-    reviewerWorkMap: WorkMap.WorkMapItem[];
+export async function loader({ params }) {
+  const personInput = {
+    id: params.id,
+    includeManager: true,
+    includeReports: true,
+    includePeers: true,
+    includePermissions: true,
   };
-  cacheVersion: number;
+
+  const workMapInput = { championId: params.id, contributorId: params.id, includeReviewer: true, includeTasks: true };
+  const reviewerWorkMapInput = { reviewerId: params.id, includeReviewer: true };
+
+  const [meInput] = await Promise.all([
+    prefetchPersonWithFallback(personInput),
+    Api.companies.getFlatWorkMapQuery(workMapInput),
+    Api.companies.getFlatWorkMapQuery(reviewerWorkMapInput),
+  ]);
+
+  return { personInput, meInput, workMapInput, reviewerWorkMapInput };
 }
 
-const fetchPersonWithFallback = async (personId: string) => {
-  try {
-    const person = await People.getPerson({
-      id: personId,
-      includeManager: true,
-      includeReports: true,
-      includePeers: true,
-      includePermissions: true,
-    });
-    return person.person;
-  } catch (error) {
-    if (error.status === 404) {
-      const me = await People.getMe({}).then((result) => result.me);
-
-      if (me && compareIds(me.id, personId)) {
-        return me;
-      } else {
-        throw error;
-      }
-    }
-
-    throw error;
-  }
-};
-
-export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  const personId = params.id;
-
-  return PageCache.fetch({
-    cacheKey: `v4-PersonalWorkMap-${personId}`,
-    refreshCache,
-    fetchFn: async () =>
-      fetchAll({
-        person: fetchPersonWithFallback(personId),
-        workMap: WorkMap.getFlatWorkMap({
-          championId: personId,
-          contributorId: personId,
-          includeReviewer: true,
-          includeTasks: true,
-        }).then((d) => d.workMap),
-        reviewerWorkMap: WorkMap.getFlatWorkMap({
-          reviewerId: personId,
-          includeReviewer: true,
-        }).then((d) => d.workMap),
-      }),
-  });
-}
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData() {
-  return PageCache.useData(loader).data;
+  const { personInput, meInput, workMapInput, reviewerWorkMapInput } = Pages.useLoadedData<LoaderResult>();
+  const { data: personData } = useLoadedQuery({
+    ...Api.people.getQueryOptions(personInput),
+    enabled: meInput === null,
+  });
+  const { data: meData } = useLoadedQuery({
+    ...Api.people.getMeQueryOptions(meInput ?? {}),
+    enabled: meInput !== null,
+  });
+  const { data: workMapData } = useLoadedQuery(Api.companies.getFlatWorkMapQueryOptions(workMapInput));
+  const { data: reviewerWorkMapData } = useLoadedQuery(Api.companies.getFlatWorkMapQueryOptions(reviewerWorkMapInput));
+  const person = meInput === null ? personData?.person : meData?.me;
+
+  if (!person?.id || !compareIds(person.id, personInput.id)) throw new Error("Profile data is unavailable");
+  if (!workMapData?.workMap || !reviewerWorkMapData?.workMap) throw new Error("Profile work map data is unavailable");
+
+  return { person, workMap: workMapData.workMap, reviewerWorkMap: reviewerWorkMapData.workMap };
 }
