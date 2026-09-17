@@ -373,10 +373,17 @@ defmodule Operately.Support.Features.UI do
 
   def refute_has(state, %Wallaby.Query{} = query) do
     execute("refute_has", state, fn session ->
+      query = Query.count(query, 0)
+
       case Browser.execute_query(session, query) do
-        {:error, :invalid_selector} -> raise Wallaby.QueryError, Query.ErrorMessage.message(query, :invalid_selector)
-        {:error, _not_found} -> session
-        {:ok, query} -> raise Wallaby.ExpectationNotMetError, Query.ErrorMessage.message(query, :found)
+        {:ok, _} ->
+          session
+
+        {:error, :invalid_selector} ->
+          raise Wallaby.QueryError, Query.ErrorMessage.message(query, :invalid_selector)
+
+        {:error, e} ->
+          raise Wallaby.ExpectationNotMetError, Query.ErrorMessage.message(query, e)
       end
     end)
   end
@@ -385,21 +392,7 @@ defmodule Operately.Support.Features.UI do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
-    refute_has(state, Query.css(css_query), attempts: [1, 50, 150, 250, 400, 1000])
-  end
-
-  defp refute_has(state, query, attempts: [delay | attempts]) do
-    execute("refute_has", state, fn session ->
-      :timer.sleep(delay)
-
-      has_element = session |> Browser.has?(query)
-
-      cond do
-        not has_element -> session
-        attempts == [] -> raise "Element matching '#{inspect(query)}' was found on the page"
-        true -> refute_has(state, query, attempts: attempts).session
-      end
-    end)
+    refute_has(state, Query.css(css_query))
   end
 
   def refute_text(state, text) do

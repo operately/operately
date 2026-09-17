@@ -1472,6 +1472,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :refute_add_task_and_milestone_visible_in_tasks_tab, ctx do
     ctx
     |> UI.click(testid: "tab-tasks")
+    |> UI.wait_until_has(testid: "display-menu-trigger")
     |> UI.refute_has(testid: "add-task")
     |> UI.refute_has(testid: "add-milestone")
   end
@@ -1488,6 +1489,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click(testid: "display-menu-trigger")
     |> UI.click(testid: "display-menu-option-board")
+    |> UI.wait_until_has(testid: "kanban-columns")
     |> UI.refute_has(testid: "add-task-button-pending")
     |> UI.refute_has(testid: "add-task-button-in-progress")
   end
@@ -1501,6 +1503,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :refute_add_check_in_visible, ctx do
     ctx
     |> UI.click(testid: "tab-check-ins")
+    |> UI.assert_text("Check-Ins")
     |> UI.refute_has(testid: "check-in-button")
   end
 
