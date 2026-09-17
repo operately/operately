@@ -31,7 +31,7 @@ describe("FeatureFlagsSection", () => {
     expect(markup).toContain("feature_b");
     expect(markup).toContain("feature-flag-toggle-feature_a");
     expect(markup).toContain("feature-flag-toggle-feature_b");
-    expect(markup).toContain("Add feature flag");
+    expect(markup).toContain("enable-feature");
   });
 
   it("shows empty state when no features are enabled", () => {
@@ -39,6 +39,6 @@ describe("FeatureFlagsSection", () => {
       <FeatureFlagsSection companyId="company-1" enabledFeatures={[]} onAdd={() => {}} />,
     );
 
-    expect(markup).toContain("No feature flags are enabled.");
+    expect(markup).toContain("no-feature-flags");
   });
 });

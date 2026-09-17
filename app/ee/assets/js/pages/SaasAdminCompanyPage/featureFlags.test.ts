@@ -1,7 +1,20 @@
-import { nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
+import { createFeatureToggleLock, nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
 
 const mockEnableFeature = jest.fn();
 const mockDisableFeatures = jest.fn();
+
+describe("createFeatureToggleLock", () => {
+  it("rejects a second start until the first toggle finishes", () => {
+    const lock = createFeatureToggleLock();
+
+    expect(lock.tryStart()).toBe(true);
+    expect(lock.tryStart()).toBe(false);
+
+    lock.finish();
+
+    expect(lock.tryStart()).toBe(true);
+  });
+});
 
 describe("nextEnabledFeatures", () => {
   it("adds a feature when enabling", () => {

@@ -21,6 +21,21 @@ export async function setFeatureEnabled({
   await disableFeatures({ companyId, features: [feature] });
 }
 
+export function createFeatureToggleLock() {
+  let pending = false;
+
+  return {
+    tryStart(): boolean {
+      if (pending) return false;
+      pending = true;
+      return true;
+    },
+    finish(): void {
+      pending = false;
+    },
+  };
+}
+
 export function nextEnabledFeatures(enabledFeatures: string[], feature: string, enabled: boolean): string[] {
   if (enabled) {
     if (enabledFeatures.includes(feature)) return enabledFeatures;

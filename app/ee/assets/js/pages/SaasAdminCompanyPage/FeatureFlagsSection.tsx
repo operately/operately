@@ -1,7 +1,7 @@
 import React from "react";
 
 import { SecondaryButton, IconPlus, SwitchToggle, showErrorToast } from "turboui";
-import { nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
+import { createFeatureToggleLock, nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
 import { useDisableCompanyFeatures, useEnableCompanyFeature } from "./featureFlagsLifecycle";
 
 interface FeatureFlagsSectionProps {
@@ -15,12 +15,15 @@ export function FeatureFlagsSection({ companyId, enabledFeatures, onAdd }: Featu
   const disableFeatures = useDisableCompanyFeatures();
   const [localFeatures, setLocalFeatures] = React.useState(enabledFeatures);
   const [pendingFeature, setPendingFeature] = React.useState<string | null>(null);
+  const toggleLock = React.useRef(createFeatureToggleLock()).current;
 
   React.useEffect(() => {
     setLocalFeatures(enabledFeatures);
   }, [enabledFeatures]);
 
   const handleToggle = async (feature: string, enabled: boolean) => {
+    if (!toggleLock.tryStart()) return;
+
     const previous = localFeatures;
     setLocalFeatures(nextEnabledFeatures(localFeatures, feature, enabled));
     setPendingFeature(feature);
@@ -37,6 +40,7 @@ export function FeatureFlagsSection({ companyId, enabledFeatures, onAdd }: Featu
       setLocalFeatures(previous);
       showErrorToast("Could not update feature flag", "Please try again.");
     } finally {
+      toggleLock.finish();
       setPendingFeature(null);
     }
   };
