@@ -193,4 +193,103 @@ describe("summarize", () => {
       ],
     });
   });
+
+  it("keeps file blobs as preview nodes after the text", () => {
+    const blob = {
+      type: "blob",
+      attrs: {
+        src: "https://example.com/photo.png",
+        alt: "photo.png",
+        title: "photo.png",
+        filetype: "image/png",
+      },
+    };
+
+    const input = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "See attached" }],
+        },
+        {
+          type: "paragraph",
+          content: [blob],
+        },
+      ],
+    };
+
+    expect(summarize(input)).toEqual({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "See attached" }],
+        },
+        {
+          type: "paragraph",
+          content: [blob],
+        },
+      ],
+    });
+  });
+
+  it("normalizes legacy object blob sources to a URL string", () => {
+    const input = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "blob",
+              attrs: {
+                src: { id: "blob-1", url: "https://example.com/photo.png" },
+                filetype: "image/png",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(summarize(input)).toEqual({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "blob",
+              attrs: {
+                id: "blob-1",
+                src: "https://example.com/photo.png",
+                filetype: "image/png",
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("keeps an image blob even when it has no title", () => {
+    const blob = {
+      type: "blob",
+      attrs: {
+        src: "https://example.com/photo.png",
+        filetype: "image/png",
+      },
+    };
+
+    const input = {
+      type: "doc",
+      content: [{ type: "paragraph", content: [blob] }],
+    };
+
+    expect(summarize(input)).toEqual({
+      type: "doc",
+      content: [{ type: "paragraph", content: [blob] }],
+    });
+  });
 });
