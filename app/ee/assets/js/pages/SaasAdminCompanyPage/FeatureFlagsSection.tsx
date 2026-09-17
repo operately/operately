@@ -14,7 +14,6 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
   const enableFeature = useEnableCompanyFeature();
   const disableFeatures = useDisableCompanyFeatures();
   const [localFeatures, setLocalFeatures] = React.useState(enabledFeatures);
-  const [pendingFeature, setPendingFeature] = React.useState<string | null>(null);
   const toggleLock = React.useRef(createFeatureToggleLock()).current;
 
   React.useEffect(() => {
@@ -26,7 +25,6 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
 
     const previous = localFeatures;
     setLocalFeatures(nextEnabledFeatures(localFeatures, feature, enabled));
-    setPendingFeature(feature);
 
     try {
       await setFeatureEnabled({
@@ -41,7 +39,6 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
       showErrorToast("Could not update feature flag", "Please try again.");
     } finally {
       toggleLock.finish();
-      setPendingFeature(null);
     }
   };
 
@@ -82,7 +79,6 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
           ))}
         </div>
       )}
-      {pendingFeature ? <div className="text-xs text-content-dimmed mt-2">Saving…</div> : null}
     </div>
   );
 }
