@@ -1,4 +1,3 @@
-import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
@@ -102,16 +101,13 @@ function PersonActions({ person, type }: { person: People.Person; type: "admins"
 
 function RemoveAction({ person, type }: { person: People.Person; type: "admins" | "owners" }) {
   const me = useMe();
-  const refresh = Pages.useRefresh();
 
-  const [removeAdmin] = Companies.useRemoveCompanyAdmin();
-  const [removeOwner] = Companies.useRemoveCompanyOwner();
+  const { mutateAsync: removeAdmin } = Companies.useRemoveCompanyAdmin();
+  const { mutateAsync: removeOwner } = Companies.useRemoveCompanyOwner();
 
   const handle = async () => {
     if (type === "admins") await removeAdmin({ personId: person.id });
     if (type === "owners") await removeOwner({ personId: person.id });
-
-    refresh();
   };
 
   if (compareIds(person.id, me!.id)) return null;
