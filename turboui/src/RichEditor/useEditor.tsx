@@ -53,6 +53,7 @@ interface UseEditorProps {
   autoFocus?: boolean;
   tabindex?: string;
   localDraft?: LocalDraftOptions;
+  thumbnailBlobs?: boolean;
 
   handlers: RichEditorHandlers;
 }
@@ -97,8 +98,9 @@ export function useEditor(props: UseEditorProps): EditorState {
       createRichEditorExtensions(props.handlers, {
         editable: props.editable,
         placeholder: props.placeholder,
+        thumbnailBlobs: props.thumbnailBlobs,
       }),
-    [props.handlers.uploadFile, props.handlers.peopleSearch, props.editable, props.placeholder],
+    [props.handlers.uploadFile, props.handlers.peopleSearch, props.editable, props.placeholder, props.thumbnailBlobs],
   );
 
   const editorProps = React.useMemo(
