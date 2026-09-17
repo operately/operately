@@ -25,6 +25,7 @@ export function isUploadInProgress(doc: any) {
 interface BlobOptions {
   uploadFile?: UploadFileFn;
   editable?: boolean;
+  thumbnail?: boolean;
 }
 
 const BlobExtension = Node.create<BlobOptions>({

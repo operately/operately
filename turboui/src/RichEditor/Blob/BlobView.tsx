@@ -4,7 +4,9 @@ import { createPortal } from "react-dom";
 import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
 
+import { UnstyledButton } from "../../Button/UnstalyedButton";
 import { IconFileFilled, IconFileZip, IconPdf, IconTrash, IconX } from "../../icons";
+import { DivLink } from "../../Link";
 import classNames from "../../utils/classnames";
 
 let imagePreviewScrollLockCount = 0;
@@ -21,19 +23,131 @@ let imagePreviewPreviousBodyOverflow: string | null = null;
 // In case of an image, the delete button is only visible when the user hovers over the blob.
 //
 
-export function BlobView({ node, deleteNode, updateAttributes, editor }) {
-  switch (node.attrs.filetype) {
-    case "image/png":
-    case "image/jpeg":
-    case "image/gif":
-      return <ImageView node={node} deleteNode={deleteNode} updateAttributes={updateAttributes} view={editor.view} />;
-    case "video/mp4":
-    case "video/quicktime":
-    case "video/ogg":
-      return <VideoView node={node} deleteNode={deleteNode} view={editor.view} updateAttributes={updateAttributes} />;
-    default:
-      return <FileView node={node} deleteNode={deleteNode} view={editor.view} />;
+type BlobSrc = string | { id?: string; url?: string } | null | undefined;
+
+interface BlobNode {
+  attrs: {
+    src?: BlobSrc;
+    alt?: string | null;
+    title?: string | null;
+    filetype?: string | null;
+    filesize?: number | null;
+    status?: string;
+    progress?: number;
+    id?: string | null;
+  };
+}
+
+function isImageFiletype(filetype?: string | null) {
+  return typeof filetype === "string" && filetype.startsWith("image/");
+}
+
+function isVideoFiletype(filetype?: string | null) {
+  return typeof filetype === "string" && filetype.startsWith("video/");
+}
+
+function blobSrcUrl(src: BlobSrc): string {
+  if (typeof src === "string") return src;
+  if (src && typeof src.url === "string") return src.url;
+  return "";
+}
+
+export function BlobView({
+  node,
+  deleteNode,
+  updateAttributes,
+  editor,
+  extension,
+}: {
+  node: any;
+  deleteNode: any;
+  updateAttributes: any;
+  editor: any;
+  extension?: { options?: { thumbnail?: boolean } };
+}) {
+  const thumbnail = Boolean(extension?.options?.thumbnail);
+
+  if (thumbnail) {
+    return <ThumbnailView node={node} />;
   }
+
+  if (isImageFiletype(node.attrs.filetype)) {
+    return <ImageView node={node} deleteNode={deleteNode} updateAttributes={updateAttributes} view={editor.view} />;
+  }
+
+  if (isVideoFiletype(node.attrs.filetype)) {
+    return <VideoView node={node} deleteNode={deleteNode} view={editor.view} updateAttributes={updateAttributes} />;
+  }
+
+  return <FileView node={node} deleteNode={deleteNode} view={editor.view} />;
+}
+
+function ThumbnailView({ node }: { node: BlobNode }) {
+  if (isImageFiletype(node.attrs.filetype)) {
+    return <ImageThumbnail node={node} />;
+  }
+
+  if (isVideoFiletype(node.attrs.filetype)) {
+    return <VideoThumbnail node={node} />;
+  }
+
+  return <FileThumbnail node={node} />;
+}
+
+function ImageThumbnail({ node }: { node: BlobNode }) {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const src = blobSrcUrl(node.attrs.src);
+  const label = node.attrs.alt || node.attrs.title || "image";
+
+  return (
+    <NodeViewWrapper className="blob-container blob-image blob-thumbnail relative">
+      <UnstyledButton
+        type="button"
+        className="block max-w-full appearance-none bg-transparent border-0 p-0"
+        onClick={() => setIsModalOpen(true)}
+        ariaLabel={`Open ${label} preview`}
+      >
+        <img
+          src={src}
+          alt={node.attrs.alt || ""}
+          title={node.attrs.title || undefined}
+          className="max-h-20 max-w-32 rounded-md object-cover"
+        />
+      </UnstyledButton>
+
+      <ImagePreviewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        src={src}
+        title={node.attrs.title || undefined}
+        alt={node.attrs.alt || undefined}
+      />
+    </NodeViewWrapper>
+  );
+}
+
+function VideoThumbnail({ node }: { node: BlobNode }) {
+  return (
+    <NodeViewWrapper className="blob-container blob-thumbnail relative">
+      <video src={blobSrcUrl(node.attrs.src)} controls className="max-h-20 max-w-32 rounded-md" />
+    </NodeViewWrapper>
+  );
+}
+
+function FileThumbnail({ node }: { node: BlobNode }) {
+  return (
+    <NodeViewWrapper className="blob-container blob-thumbnail relative bg-surface-dimmed rounded-md px-2 py-1">
+      <DivLink
+        to={downloadableUrl(blobSrcUrl(node.attrs.src))}
+        title={node.attrs.title || undefined}
+        className="flex items-center gap-1.5 min-w-0"
+        external
+      >
+        <FileIcon filetype={node.attrs.filetype} size={18} />
+        <span className="truncate max-w-[8rem] text-xs text-content-accent">{node.attrs.title}</span>
+      </DivLink>
+    </NodeViewWrapper>
+  );
 }
 
 function VideoView({ node, deleteNode, view, updateAttributes }) {
@@ -322,16 +436,16 @@ function HumanFilesize({ size }: { size: number }) {
   return <>{humanValue}</>;
 }
 
-function FileIcon({ filetype }: { filetype: string }) {
+function FileIcon({ filetype, size = 48 }: { filetype?: string | null; size?: number }) {
   switch (filetype) {
     case "application/pdf":
-      return <IconPdf className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconPdf className="text-content-accent" size={size} data-drag-handle strokeWidth={1} />;
     case "application/zip":
-      return <IconFileZip className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconFileZip className="text-content-accent" size={size} data-drag-handle strokeWidth={1} />;
     case "text/plain":
-      return <IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconFileFilled className="text-content-accent" size={size} data-drag-handle strokeWidth={1} />;
     default:
-      return <IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconFileFilled className="text-content-accent" size={size} data-drag-handle strokeWidth={1} />;
   }
 }
 
