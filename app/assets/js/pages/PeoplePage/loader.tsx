@@ -1,22 +1,24 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 
-interface LoaderResult {
-  company: Companies.Company;
-  people: People.Person[];
+export async function loader() {
+  const companyInput = {};
+  const peopleInput = {};
+  await Promise.all([Api.companies.getQuery(companyInput), Api.people.listQuery(peopleInput)]);
+
+  return { companyInput, peopleInput };
 }
 
-export async function loader(): Promise<LoaderResult> {
-  const companyPromise = Companies.getCompany({}).then((d) => d.company);
-  const peoplePromise = People.getPeople({}).then((d) => People.sortByName(d.people || []));
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
-  return {
-    company: await companyPromise,
-    people: await peoplePromise,
-  };
-}
+export function useLoadedData() {
+  const { companyInput, peopleInput } = Pages.useLoadedData<LoaderResult>();
+  const { data: companyData } = useLoadedQuery(Api.companies.getQueryOptions(companyInput));
+  const { data: peopleData } = useLoadedQuery(Api.people.listQueryOptions(peopleInput));
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+  if (!companyData?.company || !peopleData) throw new Error("People page data is unavailable");
+
+  return { company: companyData.company, people: People.sortByName(peopleData.people ?? []) };
 }

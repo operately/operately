@@ -14,7 +14,6 @@ export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
 
-export const getPeople = Api.people.list;
 export const updateProfile = Api.people.update;
 export const updateTheme = Api.people.updateTheme;
 

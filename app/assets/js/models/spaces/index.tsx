@@ -25,10 +25,6 @@ export {
 
 export const searchPotentialSpaceMembers = Api.spaces.searchPotentialMembers;
 
-export async function getSpaces(params: api.SpacesListInput): Promise<api.Space[]> {
-  return await Api.spaces.list(params).then((res) => res.spaces!);
-}
-
 interface SpaceSearchAttrs {
   accessLevel?: api.AccessOptions;
   ignoreIds?: string[];
