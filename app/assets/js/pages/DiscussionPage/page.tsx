@@ -2,22 +2,27 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Discussions from "@/models/discussions";
-import * as ReactionsModel from "@/models/reactions";
+import { useOptimisticReactions } from "@/models/reactions/useOptimisticReactions";
 import * as React from "react";
 
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { useCommentSection } from "@/features/CommentSection/useCommentSection";
+import { type QueryClient } from "@tanstack/react-query";
+import {
+  invalidateDiscussionQueries,
+  invalidateDiscussionInteractionQueries,
+} from "@/models/discussions/discussionQueries";
 
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { compareIds } from "@/routes/paths";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { assertPresent } from "@/utils/assertions";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { useNavigate } from "react-router";
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import {
+  CommentSection,
   DiscardDiscussionDraftModal,
   DocumentTitle,
   IconEdit,
@@ -36,11 +41,12 @@ import { usePaths } from "@/routes/paths";
 export function Page() {
   const { discussion } = useLoadedData();
 
-  assertPresent(discussion.notifications, "Discussion notifications must be defined");
-  useClearNotificationsOnLoad(discussion.notifications);
+  useReadNotificationsOnLoad(discussion.notifications ?? [], (client) =>
+    invalidateDiscussionQueries(client, { spaceId: discussion.space.id, discussionId: discussion.id }, "none"),
+  );
 
   return (
-    <Pages.Page title={discussion.title!} testId="discussion-page">
+    <Pages.Page title={discussion.title} testId="discussion-page">
       <Paper.Root size="medium">
         <Navigation space={discussion.space} />
 
@@ -50,7 +56,7 @@ export function Page() {
           <DiscussionTitle />
           <DiscussionBody />
           <DiscussionReactions />
-          <DicusssionComments />
+          {discussion.state === "published" && <DiscussionComments />}
 
           {discussion.state === "published" && <DiscussionSubscriptions />}
         </Paper.Body>
@@ -78,49 +84,24 @@ function DiscussionBody() {
 
 function DiscussionSubscriptions() {
   const { discussion, isCurrentUserSubscribed } = useLoadedData();
-  const refresh = Pages.useRefresh();
-
-  if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
-    return null;
-  }
-
-  return (
-    <DiscussionSubscriptionsContent
-      discussion={discussion}
-      isCurrentUserSubscribed={isCurrentUserSubscribed}
-      onRefresh={refresh}
-    />
-  );
-}
-
-function DiscussionSubscriptionsContent({
-  discussion,
-  isCurrentUserSubscribed,
-  onRefresh,
-}: {
-  discussion: Discussions.Discussion;
-  isCurrentUserSubscribed: boolean;
-  onRefresh: () => void;
-}) {
-  assertPresent(discussion.potentialSubscribers, "potentialSubscribers must be present in discussion");
-  assertPresent(discussion.subscriptionList, "subscriptionList must be present in discussion");
-
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
-    potentialSubscribers: discussion.potentialSubscribers,
+  const refresh = useRefresh();
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
+    potentialSubscribers: discussion.potentialSubscribers ?? [],
     subscriptionList: discussion.subscriptionList,
     resourceName: "discussion",
     type: "message",
-    onRefresh,
+    onRefresh: refresh,
   });
+
+  if (!discussion.potentialSubscribers || !discussion.subscriptionList) return null;
 
   return (
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
-
       <CurrentSubscriptions
         {...subscriptionsState}
         isCurrentUserSubscribed={isCurrentUserSubscribed}
-        canEditSubscribers={discussion.permissions?.canEdit || false}
+        canEditSubscribers={discussion.permissions.canEdit}
       />
     </>
   );
@@ -128,18 +109,21 @@ function DiscussionSubscriptionsContent({
 
 function DiscussionReactions() {
   const { discussion } = useLoadedData();
-  const reactions = (discussion.reactions ?? []).map((r) => r!);
-  const entity = ReactionsModel.entity(discussion.id!, "message");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
+  const refresh = useRefresh();
+  const form = useOptimisticReactions({
+    entity: { id: discussion.id, type: "message" },
+    initialReactions: discussion.reactions ?? undefined,
+    onRefresh: refresh,
+  });
 
   if (discussion.state !== "published") return null;
-
-  assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
 
   return (
     <>
       <Spacer size={2} />
-      <Reactions {...form} size={24} canAddReaction={discussion.permissions.canComment} />
+      <div data-test-id="discussion-reactions">
+        <Reactions {...form} size={24} canAddReaction={discussion.permissions.canComment} />
+      </div>
     </>
   );
 }
@@ -177,7 +161,7 @@ function Options() {
   const me = useMe();
   const navigate = useNavigate();
   const { discussion } = useLoadedData();
-  const [archive] = Discussions.useArchiveMessage();
+  const { mutateAsync: archive } = Discussions.useArchiveMessage(discussion.space.id);
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
   const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
@@ -204,7 +188,7 @@ function Options() {
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
-          to={paths.discussionEditPath(discussion.id!)}
+          to={paths.discussionEditPath(discussion.id)}
           testId="edit-discussion"
           keepOutsideOnBigScreen
         />
@@ -225,7 +209,9 @@ function Options() {
         <DiscardDiscussionDraftModal
           isOpen={showDiscardModal}
           onClose={toggleDiscardModal}
-          onDiscard={() => archive({ id: discussion.id })}
+          onDiscard={async () => {
+            await archive({ id: discussion.id });
+          }}
           onSuccess={handleRedirect}
         />
       )}
@@ -233,19 +219,26 @@ function Options() {
   );
 }
 
-function DicusssionComments() {
+function DiscussionComments() {
   const { discussion } = useLoadedData();
-  const commentsForm = useComments({ discussion: discussion, parentType: "message" });
+  const context = { spaceId: discussion.space.id, discussionId: discussion.id };
+  const invalidateQueries = (client: QueryClient, refetchType: "active" | "none") =>
+    invalidateDiscussionInteractionQueries(client, context, refetchType);
 
-  if (discussion.state !== "published") return null;
+  const props = useCommentSection({
+    entity: { id: discussion.id, type: "message" },
+    mentionSearchScope: { type: "space", id: discussion.space.id },
+    invalidateQueries,
+    canComment: discussion.permissions.canComment,
+  });
 
-  assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
+  if (!props) return null;
 
   return (
     <>
       <Spacer size={4} />
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection form={commentsForm} commentParentType="message" canComment={discussion.permissions.canComment} />
+      <CommentSection {...props} />
     </>
   );
 }
@@ -255,23 +248,21 @@ function ContinueEditingDraft() {
   const { discussion } = useLoadedData();
   const formattedTimePreferences = useFormattedTimePreferences();
 
-  const [publish] = Discussions.usePublishDiscussion();
-  const refresh = Pages.useRefresh();
-  const editPath = paths.discussionEditPath(discussion.id!);
+  const { mutateAsync: publish } = Discussions.usePublishDiscussion(discussion.space.id);
+  const editPath = paths.discussionEditPath(discussion.id);
 
   if (discussion.state !== "draft" && discussion.state !== "scheduled") {
     return null;
   }
 
   const publishHandler = async () => {
-    await publish({ id: discussion.id! });
-    refresh();
+    await publish({ id: discussion.id });
   };
 
   return (
     <OngoingDraftActions
       state={discussion.state}
-      updatedAt={discussion.updatedAt!}
+      updatedAt={discussion.updatedAt}
       scheduledAt={discussion.scheduledAt}
       editPath={editPath}
       onPublish={publishHandler}

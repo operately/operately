@@ -51,7 +51,7 @@ export function useOptimisticComments(opts: {
       reactions: [],
     };
     return run(
-      (current) => [optimistic, ...current],
+      (current) => [...current, optimistic],
       async () => {
         const { comment } = await create({ entityId: taskId, entityType: parentType, content: serialized });
 
@@ -65,7 +65,7 @@ export function useOptimisticComments(opts: {
           insertedAt: comment.insertedAt ?? optimistic.insertedAt,
           reactions: comment.reactions ?? [],
         };
-        return (current) => [confirmed, ...current.filter((item) => item.id !== comment.id)];
+        return (current) => [...current.filter((item) => item.id !== comment.id), confirmed];
       },
       "Failed to add comment.",
     );

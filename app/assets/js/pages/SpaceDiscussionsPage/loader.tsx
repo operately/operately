@@ -1,31 +1,27 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import * as Spaces from "@/models/spaces";
-import * as Discussions from "@/models/discussions";
 
-interface LoadedData {
-  space: Spaces.Space;
-  discussions: Discussions.Discussion[];
-  myDrafts: Discussions.Discussion[];
-}
-
-export async function loader({ params }): Promise<LoadedData> {
-  const [space, [discussions, myDrafts]] = await Promise.all([
-    Spaces.getSpace({ id: params.id, includePermissions: true }),
-    Discussions.getDiscussions({
-      spaceId: params.id,
-      includeAuthor: true,
-      includeMyDrafts: true,
-      includeCommentsCount: true,
-    }).then((data) => [data.discussions!, data.myDrafts!]),
-  ]);
-
-  return {
-    space,
-    discussions: discussions!,
-    myDrafts: myDrafts!,
+export async function loader({ params }) {
+  const spaceInput = { id: params.id, includePermissions: true };
+  const discussionsInput = {
+    spaceId: params.id,
+    includeAuthor: true,
+    includeMyDrafts: true,
+    includeCommentsCount: true,
   };
+  await Promise.all([Api.spaces.getQuery(spaceInput), Api.spaces.listDiscussionsQuery(discussionsInput)]);
+
+  return { spaceInput, discussionsInput };
 }
 
-export function useLoadedData(): LoadedData {
-  return Pages.useLoadedData() as LoadedData;
+export function useLoadedData() {
+  const { spaceInput, discussionsInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  const { data: spaceData } = useLoadedQuery(Api.spaces.getQueryOptions(spaceInput));
+  const { data: discussionsData } = useLoadedQuery(Api.spaces.listDiscussionsQueryOptions(discussionsInput));
+
+  if (!spaceData?.space?.id) throw new Error(`Space data is unavailable for space "${spaceInput.id}"`);
+  if (!discussionsData?.discussions) throw new Error(`Discussions are unavailable for space "${spaceInput.id}"`);
+
+  return { space: spaceData.space, discussions: discussionsData.discussions, myDrafts: discussionsData.myDrafts ?? [] };
 }

@@ -21,7 +21,8 @@ import {
   WarningCallout,
 } from "turboui";
 
-import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { invalidateSpaceToolsQueries } from "@/models/spaces/spaceLifecycle";
 import { ToolsSection } from "@/features/SpaceTools";
 import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
@@ -29,15 +30,17 @@ import { assertPresent } from "@/utils/assertions";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router";
 import { match } from "ts-pattern";
-import { useLoadedData, useRefresh } from "./loader";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { space, tools } = useLoadedData();
 
-  useClearNotificationsOnLoad(space.notifications || []);
+  useReadNotificationsOnLoad(space.notifications ?? [], (client) =>
+    invalidateSpaceToolsQueries(client, space.id, "none"),
+  );
 
   return (
-    <Pages.Page title={space.name!} testId="space-page">
+    <Pages.Page title={space.name} testId="space-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
           <SpaceOptions />
@@ -105,7 +108,7 @@ function SpaceFooter({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceActivity({ space }: { space: Spaces.Space }) {
-  const { data, loading, error, pagination } = useFeedItemsQuery("space", space.id!);
+  const { data, loading, error, pagination } = useFeedItemsQuery("space", space.id);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
@@ -114,19 +117,17 @@ function SpaceActivity({ space }: { space: Spaces.Space }) {
 }
 
 function JoinButton({ space }) {
-  const refresh = useRefresh();
-  const [join] = useJoinSpace();
+  const { mutateAsync: join, isPending } = useJoinSpace();
 
   if (space.isMember) return null;
 
   const handleClick = async () => {
     await join({ spaceId: space.id });
-    refresh();
   };
 
   return (
     <div className="flex justify-center mb-8 mt-6">
-      <PrimaryButton size="sm" onClick={handleClick} testId="join-space-button">
+      <PrimaryButton size="sm" onClick={handleClick} loading={isPending} testId="join-space-button">
         Join this Space
       </PrimaryButton>
     </div>
@@ -135,7 +136,7 @@ function JoinButton({ space }) {
 
 function ManageAccessButton({ space }: { space: Spaces.Space }) {
   const paths = usePaths();
-  const path = paths.spaceAccessManagementPath(space.id!);
+  const path = paths.spaceAccessManagementPath(space.id);
 
   assertPresent(space.permissions, "permissions must be present in space");
   if (!space.permissions.hasFullAccess) return null;
@@ -150,7 +151,7 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
 function SpaceOptions() {
   const { space, tools } = useLoadedData();
   const navigate = useNavigate();
-  const [deleteSpace, { loading: isDeleting }] = Spaces.useDeleteSpace();
+  const { mutateAsync: deleteSpace, isPending: isDeleting } = Spaces.useDeleteSpace();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const resourceCounts = React.useMemo(() => {
@@ -187,7 +188,7 @@ function SpaceOptions() {
       return;
     }
 
-    performDelete();
+    void performDelete().catch(() => {});
   }, [hasSubresources, isDeleting, performDelete]);
 
   const handleConfirmDelete = React.useCallback(async () => {
@@ -205,8 +206,8 @@ function SpaceOptions() {
     }
   }, [isDeleting]);
 
-  const editLink = paths.spaceEditPath(space.id!);
-  const toolsConfigLink = paths.spaceToolsConfigPath(space.id!);
+  const editLink = paths.spaceEditPath(space.id);
+  const toolsConfigLink = paths.spaceToolsConfigPath(space.id);
 
   return (
     <>

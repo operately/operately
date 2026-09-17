@@ -15,7 +15,8 @@ export function Page() {
   const { link } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const { mutateAsync: edit } = useUpdateLink();
+  const mutationScope = { spaceId: link.space?.id, resourceHubId: link.resourceHubId, parentFolderId: link.parentFolderId };
+  const { mutateAsync: edit } = useUpdateLink(mutationScope);
 
   assertPresent(link.name, "name must be present in link");
   assertPresent(link.url, "url must be present in link");

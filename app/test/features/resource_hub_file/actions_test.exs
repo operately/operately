@@ -6,6 +6,8 @@ defmodule Operately.Features.ResourceHubFile.ActionsTest do
 
   alias Operately.Support.Features.ResourceHubFileSteps, as: Steps
 
+  alias Operately.Support.Features.ResourceHubSteps, as: HubSteps
+
   setup ctx, do: Steps.setup(ctx)
 
   describe "File actions" do
@@ -24,7 +26,9 @@ defmodule Operately.Features.ResourceHubFile.ActionsTest do
       |> Steps.given_file_exists()
       |> Steps.visit_file_page()
       |> Steps.assert_file_content(@original_file_attrs)
+      |> HubSteps.set_page_reload_marker()
       |> Steps.edit_file(@new_file_attrs)
+      |> HubSteps.assert_page_was_not_reloaded()
       |> Steps.assert_file_content(@new_file_attrs)
     end
 
@@ -69,5 +73,19 @@ defmodule Operately.Features.ResourceHubFile.ActionsTest do
       |> Steps.refute_navigation_links(["Resource hub", "one", "two", "three"])
       |> Steps.assert_navigation_links(["Product Space"])
     end
+  end
+
+  feature "reactions and subscriptions persist across cached navigation", ctx do
+    ctx
+    |> Steps.given_file_exists()
+    |> Steps.visit_file_page()
+    |> HubSteps.set_page_reload_marker()
+    |> HubSteps.add_resource_reaction()
+    |> HubSteps.reopen_resource_from_list()
+    |> HubSteps.assert_resource_reaction()
+    |> HubSteps.remove_resource_reaction()
+    |> HubSteps.unsubscribe_and_return()
+    |> HubSteps.subscribe_and_return()
+    |> HubSteps.assert_page_was_not_reloaded()
   end
 end

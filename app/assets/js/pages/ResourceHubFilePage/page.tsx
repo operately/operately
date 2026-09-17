@@ -1,14 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router";
 
-import * as Pages from "@/components/Pages";
-import * as ReactionsModel from "@/models/reactions";
+import { useOptimisticReactions } from "@/models/reactions/useOptimisticReactions";
+import { type QueryClient } from "@tanstack/react-query";
+import { invalidateResourceHubInteractionQueries } from "@/models/resourceHubs/resourceHubInteractionQueries";
 import { resourceHubLandingPath, useDeleteFile } from "@/models/resourceHubs";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { usePaths } from "@/routes/paths";
 
-import { useComments, useCommentSectionProps } from "@/features/CommentSection";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCommentSection } from "@/features/CommentSection/useCommentSection";
+import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -16,18 +17,24 @@ import { assertPresent } from "@/utils/assertions";
 import { FilePage } from "turboui";
 
 import { useFilePageOptions } from "./Options";
-import { useLoadedData } from "./loader";
+import { useLoadedData, useRefresh } from "./loader";
 import { buildFilePageNavigation } from "./navigation";
 
 export function Page() {
   const { file, isCurrentUserSubscribed } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const refresh = Pages.useRefresh();
+  const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
-  const { mutateAsync: remove } = useDeleteFile();
+
+  const mutationScope = {
+    spaceId: file.space?.id,
+    resourceHubId: file.resourceHubId,
+    parentFolderId: file.parentFolderId,
+  };
+  const { mutateAsync: remove } = useDeleteFile(mutationScope);
   const options = useFilePageOptions({ showDeleteModal: toggleDeleteModal });
 
   assertPresent(file.name, "name must be present in file");
@@ -43,16 +50,22 @@ export function Page() {
   assertPresent(file.subscriptionList, "subscriptionList must be present in file");
 
   const [downloadFile] = useDownloadFile(file.blob.url, file.name);
-  const reactions = file.reactions.map((r) => r!);
-  const entity = ReactionsModel.entity(file.id!, "resource_hub_file");
-  const reactionsForm = ReactionsModel.useReactionsForm(entity, reactions);
-  const commentsForm = useComments({ parentType: "resource_hub_file", file });
-  const comments = useCommentSectionProps({
-    form: commentsForm,
-    commentParentType: "resource_hub_file",
+  const entity = { id: file.id, type: "resource_hub_file" as const };
+  const invalidateQueries = (client: QueryClient, refetchType: "active" | "none") =>
+    invalidateResourceHubInteractionQueries(client, { ...entity, ...mutationScope }, refetchType);
+
+  const reactionsForm = useOptimisticReactions({
+    entity,
+    initialReactions: file.reactions ?? undefined,
+    onRefresh: refresh,
+  });
+  const comments = useCommentSection({
+    entity,
+    mentionSearchScope: { type: "resource_hub", id: file.resourceHubId },
+    invalidateQueries,
     canComment: file.permissions.canCommentOnFile,
   });
-  const subscriptionsState = useCurrentSubscriptionsAdapter({
+  const subscriptionsState = useCurrentSubscriptionsQueryAdapter({
     potentialSubscribers: file.potentialSubscribers,
     subscriptionList: file.subscriptionList,
     resourceName: "file",

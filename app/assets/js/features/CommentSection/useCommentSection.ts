@@ -53,13 +53,12 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
   );
 
   const items = useMemo(() => {
-    let items: Comments.CommentItem[] = comments.comments
-      .map((comment) => ({
-        type: "comment" as const,
-        insertedAt: new Date(comment.insertedAt ?? 0),
-        value: comment,
-      }))
-      .sort((a, b) => a.insertedAt.getTime() - b.insertedAt.getTime());
+    // The API returns oldest first; optimistic comments are appended in submission order.
+    let items: Comments.CommentItem[] = comments.comments.map((comment) => ({
+      type: "comment" as const,
+      insertedAt: new Date(comment.insertedAt ?? 0),
+      value: comment,
+    }));
     if (options.acknowledgedAt && options.acknowledgedBy) {
       items = Comments.insertAcknowledgement(items, options.acknowledgedAt, options.acknowledgedBy);
     }
@@ -68,7 +67,7 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
 
   const currentUser = parsePersonForTurboUi(paths, me);
 
-  if (query.error) throw query.error;
+  if (query.error && !query.data) throw query.error;
   if (!currentUser) return null;
 
   return {

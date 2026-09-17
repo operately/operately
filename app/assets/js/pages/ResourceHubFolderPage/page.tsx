@@ -33,8 +33,10 @@ export function Page() {
     folder,
     onUploaded: refresh,
   });
-  const { mutateAsync: createFolder } = useCreateFolder();
-  const { mutateAsync: renameFolder } = useRenameFolder();
+  const mutationScope = { spaceId: folder.resourceHub.space?.id, resourceHubId: folder.resourceHub.id, parentFolderId: folder.parentFolderId };
+
+  const { mutateAsync: createFolder } = useCreateFolder(mutationScope);
+  const { mutateAsync: renameFolder } = useRenameFolder(mutationScope);
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
 
   const props: ResourceHubFolderPage.Props = {

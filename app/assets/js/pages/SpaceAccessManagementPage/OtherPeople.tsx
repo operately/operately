@@ -14,17 +14,17 @@ export function OtherPeople() {
   const { people, loading } = useBindedPeopleList();
 
   if (loading) return null;
-  if (people!.length === 0) return null;
+  if (!people || people.length === 0) return null;
 
   if (show) {
-    return <Expanded people={people!} />;
+    return <Expanded people={people} />;
   } else {
-    return <Condensed people={people!} onShowAllClick={() => setShow(true)} />;
+    return <Condensed people={people} onShowAllClick={() => setShow(true)} />;
   }
 }
 
 function Expanded({ people }: { people: People.Person[] }) {
-  const groups = groupPeopleByAccessLevel(people!);
+  const groups = groupPeopleByAccessLevel(people);
 
   return (
     <PageSection
@@ -81,7 +81,7 @@ function OtherPeopleAvatarList({ people }: { people: People.Person[] }) {
   return people.map((person) => (
     <div className="flex items-center gap-2" key={person.id}>
       <Avatar person={person} size={20} />
-      <div className="font-medium flex items-center gap-2">{person!.fullName}</div>
+      <div className="font-medium flex items-center gap-2">{person.fullName}</div>
     </div>
   ));
 }

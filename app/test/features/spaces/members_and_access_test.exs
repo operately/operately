@@ -6,8 +6,30 @@ defmodule Operately.Features.Spaces.MembersAndAccessTest do
 
   alias Operately.Access.Binding
   alias Operately.Support.Features.SpacesSteps, as: Steps
+  alias Operately.Support.Features.Spaces.MembersAndAccessSteps, as: AccessSteps
 
   setup ctx, do: Steps.setup(ctx)
+
+  feature "membership changes refresh inherited access without reloading", ctx do
+    ctx
+    |> AccessSteps.given_inherited_access()
+    |> AccessSteps.visit_access_management()
+    |> AccessSteps.assert_inherited_access()
+    |> AccessSteps.add_member()
+    |> AccessSteps.assert_no_inherited_access()
+    |> AccessSteps.remove_member()
+    |> AccessSteps.assert_page_was_not_reloaded()
+  end
+
+  feature "changing general access refreshes inherited access after returning", ctx do
+    ctx
+    |> AccessSteps.given_inherited_access()
+    |> AccessSteps.visit_access_management()
+    |> AccessSteps.assert_inherited_access()
+    |> AccessSteps.remove_general_company_access()
+    |> AccessSteps.assert_no_inherited_access()
+    |> AccessSteps.assert_page_was_not_reloaded()
+  end
 
   feature "joining a space", ctx do
     group = group_fixture(ctx.creator, %{name: "Marketing", company_permissions: Binding.view_access()})
@@ -16,13 +38,14 @@ defmodule Operately.Features.Spaces.MembersAndAccessTest do
     ctx
     |> UI.login_as(person)
     |> UI.visit(Paths.space_path(ctx.company, group))
+    |> Steps.set_page_reload_marker()
     |> UI.click(testid: "join-space-button")
-    |> UI.sleep(300)
-    |> UI.visit(Paths.space_path(ctx.company, group))
+    |> UI.refute_has(testid: "join-space-button")
     |> UI.assert_text("Mati joined the space")
+    |> Steps.assert_page_was_not_reloaded()
 
     members = Operately.Groups.list_members(group)
-    assert Enum.find(members, fn member -> member.id == ctx.creator.id end) != nil
+    assert Enum.any?(members, &(&1.id == person.id))
   end
 
   feature "adding space members", ctx do

@@ -59,7 +59,7 @@ defmodule Operately.MixProject do
       {:site_encrypt, "~> 0.6.0"},
       {:hackney, "~> 4.5", override: true},
       {:sweet_xml, "~> 0.7"},
-      {:mint, "~> 1.9.1"},
+      {:mint, "~> 1.10"},
       {:hpax, "~> 1.0.4"},
       {:req, "~> 0.6.1"},
       {:tesla, "~> 1.18"},

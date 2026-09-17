@@ -56,14 +56,20 @@ export function useResourceHubNodesListContext(props: NullableNodesProps): Resou
   const navigate = useNavigate();
   const parent = props?.type === "resource_hub" ? props.resourceHub : props?.folder;
 
-  const { mutateAsync: deleteDocument } = useDeleteDocument();
-  const { mutateAsync: deleteFile } = useDeleteFile();
-  const { mutateAsync: deleteFolder } = useDeleteFolder();
-  const { mutateAsync: deleteLink } = useDeleteLink();
-  const { mutateAsync: renameFolder } = useRenameFolder();
-  const { mutateAsync: moveResource } = useMoveResource();
-  const { mutateAsync: createDocument } = useCreateDocument();
-  const { mutateAsync: copyFolder } = useCopyFolder();
+  const mutationScope = {
+    spaceId: parent?.space?.id,
+    resourceHubId: props?.type === "resource_hub" ? props.resourceHub.id : props?.folder.resourceHubId,
+    parentFolderId: props?.type === "folder" ? props.folder.id : undefined,
+  };
+
+  const { mutateAsync: deleteDocument } = useDeleteDocument(mutationScope);
+  const { mutateAsync: deleteFile } = useDeleteFile(mutationScope);
+  const { mutateAsync: deleteFolder } = useDeleteFolder(mutationScope);
+  const { mutateAsync: deleteLink } = useDeleteLink(mutationScope);
+  const { mutateAsync: renameFolder } = useRenameFolder(mutationScope);
+  const { mutateAsync: moveResource } = useMoveResource(mutationScope);
+  const { mutateAsync: createDocument } = useCreateDocument(mutationScope);
+  const { mutateAsync: copyFolder } = useCopyFolder(mutationScope);
 
   const subscriptionsState = useSubscriptionsAdapter(parent?.potentialSubscribers || [], {
     ignoreMe: true,

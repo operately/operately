@@ -26,11 +26,13 @@ defmodule Operately.Features.Spaces.ManagementTest do
     |> Steps.given_a_space_exists()
     |> Steps.set_space_tools(tasks_enabled: false)
     |> Steps.visit_space()
+    |> Steps.set_page_reload_marker()
     |> Steps.assert_tool_not_visible("tasks-tool")
     |> Steps.open_tools_configuration()
     |> Steps.toggle_tool("task-board")
     |> Steps.save_tools_configuration()
     |> Steps.assert_tool_visible("tasks-tool")
+    |> Steps.assert_page_was_not_reloaded()
   end
 
   feature "disabling discussions tool hides it", ctx do
@@ -38,11 +40,13 @@ defmodule Operately.Features.Spaces.ManagementTest do
     |> Steps.given_a_space_exists()
     |> Steps.set_space_tools(discussions_enabled: true)
     |> Steps.visit_space()
+    |> Steps.set_page_reload_marker()
     |> Steps.assert_tool_visible("messages-tool")
     |> Steps.open_tools_configuration()
     |> Steps.toggle_tool("discussions")
     |> Steps.save_tools_configuration()
     |> Steps.assert_tool_not_visible("messages-tool")
+    |> Steps.assert_page_was_not_reloaded()
   end
 
   feature "disabling resource hub hides it", ctx do
@@ -51,11 +55,13 @@ defmodule Operately.Features.Spaces.ManagementTest do
     |> Steps.set_space_tools(resource_hub_enabled: true)
     |> Steps.given_a_resource_hub_exists()
     |> Steps.visit_space()
+    |> Steps.set_page_reload_marker()
     |> Steps.assert_tool_visible("team-resources")
     |> Steps.open_tools_configuration()
     |> Steps.toggle_tool("documents-and-files")
     |> Steps.save_tools_configuration()
     |> Steps.assert_tool_not_visible("team-resources")
+    |> Steps.assert_page_was_not_reloaded()
   end
 
   feature "editing space's name and purpose", ctx do
@@ -72,8 +78,10 @@ defmodule Operately.Features.Spaces.ManagementTest do
     ctx
     |> Steps.given_a_space_exists()
     |> Steps.visit_space()
+    |> Steps.set_page_reload_marker()
     |> Steps.request_space_deletion()
     |> Steps.assert_space_deleted()
+    |> Steps.assert_page_was_not_reloaded()
   end
 
   feature "deleting a populated space requires confirmation", ctx do
@@ -81,10 +89,12 @@ defmodule Operately.Features.Spaces.ManagementTest do
     |> Steps.given_a_space_exists()
     |> Steps.given_space_has_subresources()
     |> Steps.visit_space()
+    |> Steps.set_page_reload_marker()
     |> Steps.request_space_deletion()
     |> Steps.assert_space_delete_modal_visible()
     |> Steps.assert_space_still_exists()
     |> Steps.confirm_space_deletion()
     |> Steps.assert_space_deleted()
+    |> Steps.assert_page_was_not_reloaded()
   end
 end

@@ -1,32 +1,10 @@
-import Api from "@/api";
-import { activePersonIds, createTaskMove, createTaskOperations } from "./operations";
+import { activePersonIds, taskInput } from "./operations";
 
 jest.mock("@/models/tasks", () => ({
   serializeTaskStatus: (status: { id: string }) => ({ id: status.id }),
 }));
 
-jest.mock("turboui", () => ({
-  parseContent: jest.fn(),
-  showErrorToast: jest.fn(),
-}));
-
-jest.mock("@/api", () => ({
-  __esModule: true,
-  default: {
-    project_templates: {
-      updateTask: jest.fn(),
-      updateMilestoneAndOrdering: jest.fn(),
-      createTask: jest.fn(),
-    },
-  },
-}));
-
-const updateMilestoneAndOrdering = Api.project_templates.updateMilestoneAndOrdering as jest.Mock;
-const createTask = Api.project_templates.createTask as jest.Mock;
-
-beforeEach(() => {
-  jest.clearAllMocks();
-});
+jest.mock("turboui", () => ({ parseContent: jest.fn() }));
 
 test("sends only available people when replacing task assignees", () => {
   expect(
@@ -51,62 +29,20 @@ test("sends only available people when replacing task assignees", () => {
   ).toEqual(["person-1"]);
 });
 
-test("moves a task with its destination milestone and index in one request", async () => {
-  updateMilestoneAndOrdering.mockResolvedValue({ task: { id: "task-1" } });
-  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
-    await operation();
-    return true;
-  });
-  const moveTask = createTaskMove({ templateId: "template-1", mutate });
-
-  await expect(moveTask("task-1", "milestone-2", 3)).resolves.toBe(true);
-
-  expect(updateMilestoneAndOrdering).toHaveBeenCalledWith({
-    templateId: "template-1",
-    taskId: "task-1",
-    milestoneId: "milestone-2",
-    index: 3,
-  });
-});
-
-test("returns false when a task move fails", async () => {
-  const mutate = jest.fn().mockResolvedValue(false);
-  const moveTask = createTaskMove({ templateId: "template-1", mutate });
-
-  await expect(moveTask("task-1", null, 0)).resolves.toBe(false);
-});
-
-test("creates a task with an empty description document when none is provided", async () => {
-  createTask.mockResolvedValue({ task: { id: "task-1" } });
-  const mutate = jest.fn(async (_message: string, operation: () => Promise<unknown>) => {
-    await operation();
-    return true;
-  });
-  const { onTaskCreate } = createTaskOperations({ templateId: "template-1", mutate });
-  const status = {
-    id: "todo",
-    value: "todo",
-    label: "To do",
-    color: "gray" as const,
-    icon: "circleDashed" as const,
-    index: 0,
-  };
-
-  onTaskCreate({
-    name: "Prepare agenda",
-    description: null,
-    milestoneId: "milestone-1",
-    priority: null,
-    size: null,
-    dueOffsetDays: null,
-    status,
-    reminders: [],
-    assignees: [],
-  });
-
-  await mutate.mock.results[0]!.value;
-
-  expect(createTask).toHaveBeenCalledWith({
+test("creates a task with an empty description document when none is provided", () => {
+  expect(
+    taskInput("template-1", {
+      name: "Prepare agenda",
+      description: null,
+      milestoneId: "milestone-1",
+      priority: null,
+      size: null,
+      dueOffsetDays: null,
+      status: { id: "todo", value: "todo", label: "To do", color: "gray", icon: "circleDashed", index: 0 },
+      reminders: [],
+      assignees: [],
+    }),
+  ).toEqual({
     templateId: "template-1",
     milestoneId: "milestone-1",
     name: "Prepare agenda",

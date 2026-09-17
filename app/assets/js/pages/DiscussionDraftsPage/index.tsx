@@ -1,7 +1,7 @@
+import { loader, useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Discussions from "@/models/discussions";
-import * as Spaces from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
@@ -29,30 +29,11 @@ import { useNavigate } from "react-router";
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
 
-interface LoadedData {
-  space: Spaces.Space;
-  myDrafts: Discussions.Discussion[];
-}
-
-async function loader({ params }): Promise<LoadedData> {
-  const [space, [myDrafts]] = await Promise.all([
-    Spaces.getSpace({ id: params.id, includePermissions: true }),
-    Discussions.getDiscussions({ spaceId: params.id, includeAuthor: true, includeMyDrafts: true }).then((data) => [
-      data.myDrafts!,
-    ]),
-  ]);
-
-  return {
-    space,
-    myDrafts: myDrafts!,
-  };
-}
-
 function Page() {
-  const { space, myDrafts } = Pages.useLoadedData<LoadedData>();
+  const { space, myDrafts } = useLoadedData();
 
   return (
-    <Pages.Page title={["Drafts", "Discussions", space.name!]} testId="discussions-page">
+    <Pages.Page title={["Drafts", "Discussions", space.name]} testId="discussions-page">
       <Paper.Root size="large">
         <Navigation />
 
@@ -67,13 +48,13 @@ function Page() {
 
 function Navigation() {
   const paths = usePaths();
-  const { space } = Pages.useLoadedData<LoadedData>();
+  const { space } = useLoadedData();
 
   return (
     <Paper.Navigation
       items={[
-        { to: paths.spacePath(space.id!), label: space.name! },
-        { to: paths.spaceDiscussionsPath(space.id!), label: "Discussions" },
+        { to: paths.spacePath(space.id), label: space.name },
+        { to: paths.spaceDiscussionsPath(space.id), label: "Discussions" },
       ]}
     />
   );
@@ -87,10 +68,10 @@ function Header() {
 
 function NewDiscussionButton() {
   const paths = usePaths();
-  const { space } = Pages.useLoadedData<LoadedData>();
+  const { space } = useLoadedData();
 
   return (
-    <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={paths.discussionNewPath(space.id)} size="sm" testId="new-discussion">
       New Discussion
     </PrimaryButton>
   );
@@ -101,11 +82,11 @@ function ZeroDiscussions() {
 }
 
 function DiscussionList() {
-  const { myDrafts } = Pages.useLoadedData<LoadedData>();
+  const { myDrafts } = useLoadedData();
 
   const sortedDiscussions = [...myDrafts].sort((a, b) => {
-    const aDate = Time.parseISO(a.insertedAt!);
-    const bDate = Time.parseISO(b.insertedAt!);
+    const aDate = Time.parseISO(a.insertedAt);
+    const bDate = Time.parseISO(b.insertedAt);
 
     if (aDate > bDate) {
       return -1;
@@ -127,7 +108,7 @@ function DiscussionList() {
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
-  const path = paths.discussionEditPath(discussion.id!);
+  const path = paths.discussionEditPath(discussion.id);
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const className = classNames(
@@ -138,8 +119,8 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
     "px-1",
   );
 
-  const testId = createTestId("discussion-list-item", discussion.title!);
-  const contentSnippet = richContentToString(JSON.parse(discussion.body!));
+  const testId = createTestId("discussion-list-item", discussion.title);
+  const contentSnippet = discussion.body ? richContentToString(JSON.parse(discussion.body)) : "";
 
   return (
     <div className={className}>
@@ -155,11 +136,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           <div className="break-words line-clamp-2">
             <span className="font-medium text-content-dimmed">
               Last edited on{" "}
-              <FormattedTime
-                {...formattedTimePreferences}
-                time={discussion.updatedAt!}
-                format="relative-time-or-date"
-              />{" "}
+              <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt} format="relative-time-or-date" />{" "}
               &mdash;{" "}
             </span>
             {truncateString(contentSnippet, 60)}
@@ -175,8 +152,8 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
 function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { space } = Pages.useLoadedData<LoadedData>();
-  const [archive] = Discussions.useArchiveMessage();
+  const { space } = useLoadedData();
+  const { mutateAsync: archive } = Discussions.useArchiveMessage(space.id);
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
   return (
@@ -185,7 +162,7 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
         <Menu
           size="tiny"
           align="end"
-          testId={createTestId("discussion-draft-options", discussion.title!)}
+          testId={createTestId("discussion-draft-options", discussion.title)}
           customTrigger={
             <button
               type="button"
@@ -199,7 +176,7 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
         >
           <MenuActionItem
             onClick={toggleDiscardModal}
-            testId={createTestId("discard-draft", discussion.title!)}
+            testId={createTestId("discard-draft", discussion.title)}
             icon={IconTrash}
             danger
           >
@@ -211,7 +188,9 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
       <DiscardDiscussionDraftModal
         isOpen={showDiscardModal}
         onClose={toggleDiscardModal}
-        onDiscard={() => archive({ id: discussion.id })}
+        onDiscard={async () => {
+          await archive({ id: discussion.id });
+        }}
         onSuccess={() => navigate(paths.discussionDraftsPath(space.id), { replace: true })}
       />
     </>

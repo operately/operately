@@ -15,7 +15,7 @@ export default { name: "SpaceAddPage", loader: Pages.emptyLoader, Page } as Page
 
 function Page() {
   const navigate = useNavigate();
-  const [create] = Spaces.useCreateSpace();
+  const create = Spaces.useCreateSpace();
   const paths = usePaths();
 
   const form = Forms.useForm({
@@ -29,14 +29,18 @@ function Page() {
       newValues.access = applyAccessLevelConstraints(newValues.access);
     },
     submit: async () => {
-      const res = await create({
+      const res = await create.mutateAsync({
         name: form.values.name,
         mission: form.values.mission,
         publicPermissions: form.values.access.anonymous,
         companyPermissions: form.values.access.companyMembers,
       });
 
-      navigate(paths.spacePath(res.space?.id));
+      if (!res.space?.id) {
+        throw new Error("Created space is unavailable");
+      }
+
+      navigate(paths.spacePath(res.space.id));
     },
     onError: (error) => {
       const data = error.response?.data as { error?: string; message?: string } | undefined;
