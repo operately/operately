@@ -484,7 +484,6 @@ defmodule Operately.Support.Features.WorkMapSteps do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.add_space(:product_space, name: "Product Space")
       |> Factory.add_space(:growth_space, name: "Growth Space")
 
@@ -503,7 +502,6 @@ defmodule Operately.Support.Features.WorkMapSteps do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.add_space(:space1, name: "Space 1")
       |> Factory.add_space(:growth_space, name: "Growth Space")
       |> Factory.add_goal(:company_goal1, :space1, name: "Company Goal 1")
@@ -521,7 +519,6 @@ defmodule Operately.Support.Features.WorkMapSteps do
   step :setup_empty_space_work_map_with_templates, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space, name: "Product Space", company_permissions: Binding.view_access())
     |> Factory.add_project_template(:template, :space, name: "Launch kit")
     |> Factory.add_project_template_milestone(:milestone, :template, title: "Kickoff")

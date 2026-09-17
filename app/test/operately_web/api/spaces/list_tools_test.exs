@@ -307,7 +307,6 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     test "when templates are disabled it returns an empty list", ctx do
       ctx =
         ctx
-        |> Factory.enable_feature("project_templates")
         |> Factory.disable_space_tool(:space, :templates)
         |> Factory.add_project_template(:template, :space)
 
@@ -321,7 +320,6 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
     setup ctx do
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
     end

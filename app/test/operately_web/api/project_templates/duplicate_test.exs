@@ -15,7 +15,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.DuplicateTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space)
     |> Factory.add_project_template(:template, :space, name: "Launch kit", duration_days: 10)
     |> Factory.add_project_template_task(:task, :template, name: "Prepare brief", due_offset_days: 3)
@@ -47,7 +46,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.DuplicateTest do
     other_ctx =
       %{conn: Phoenix.ConnTest.build_conn()}
       |> Factory.setup()
-      |> Factory.enable_feature("project_templates")
       |> Factory.log_in_person(:creator)
 
     assert {404, _} = mutation(other_ctx.conn, [:project_templates, :duplicate], %{id: Paths.project_template_id(ctx.template), name: "Copy"})

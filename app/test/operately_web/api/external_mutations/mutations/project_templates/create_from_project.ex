@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectTemplates.CreateFr
   def setup(ctx) do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space,
       timeframe: %{

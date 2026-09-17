@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectTemplates.CreatePe
 
   @impl true
   def setup(ctx),
-    do: ctx |> Factory.setup() |> Factory.enable_feature("project_templates") |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space) |> Factory.add_company_member(:member)
+    do: ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space) |> Factory.add_company_member(:member)
 
   @impl true
   def inputs(ctx), do: %{template_id: Paths.project_template_id(ctx.template), person_id: Paths.person_id(ctx.member), role: "contributor", access_level: Operately.Access.Binding.edit_access()}

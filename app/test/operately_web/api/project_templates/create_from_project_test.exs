@@ -18,7 +18,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateFromProjectTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space)
     |> Factory.add_project(:source, :space, name: "Launch project")
     |> set_project_timeframe(~D[2028-01-10], ~D[2028-01-20])

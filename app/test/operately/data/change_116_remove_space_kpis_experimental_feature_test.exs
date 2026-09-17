@@ -13,22 +13,22 @@ defmodule Operately.Data.Change116RemoveSpaceKpisExperimentalFeatureTest do
   end
 
   test "removes space_kpis and leaves other experimental features intact", ctx do
-    set_features!(ctx.company.id, ["space_kpis", "project_templates"])
+    set_features!(ctx.company.id, ["space_kpis", "other_feature"])
 
     Change.run()
     Change.run()
 
     company = Repo.get!(Company, ctx.company.id)
-    assert company.enabled_experimental_features == ["project_templates"]
+    assert company.enabled_experimental_features == ["other_feature"]
   end
 
   test "does nothing when space_kpis is not enabled", ctx do
-    set_features!(ctx.company.id, ["project_templates"])
+    set_features!(ctx.company.id, ["other_feature"])
 
     Change.run()
 
     company = Repo.get!(Company, ctx.company.id)
-    assert company.enabled_experimental_features == ["project_templates"]
+    assert company.enabled_experimental_features == ["other_feature"]
   end
 
   defp set_features!(company_id, features) do

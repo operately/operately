@@ -14,7 +14,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.ListTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:alpha_space, name: "Alpha Space")
     |> Factory.add_space(:beta_space, name: "Beta Space")
     |> Factory.add_project_template(:launch, :alpha_space,

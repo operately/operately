@@ -14,7 +14,6 @@ defmodule Operately.Support.Features.ProjectTemplatesSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space, name: "Product Space")
     |> Factory.add_space(:growth_space, name: "Growth Space")
     |> Factory.add_space_member(:editor, :space, permissions: :edit_access, name: "Erin Editor")

@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectTemplates.Update d
   def mutation_name, do: "project_templates/update"
 
   @impl true
-  def setup(ctx), do: ctx |> Factory.setup() |> Factory.enable_feature("project_templates") |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space)
+  def setup(ctx), do: ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space)
 
   @impl true
   def inputs(ctx), do: %{id: Paths.project_template_id(ctx.template), name: "Updated"}

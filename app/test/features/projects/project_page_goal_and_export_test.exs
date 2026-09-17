@@ -39,7 +39,6 @@ defmodule Operately.Features.Projects.ProjectPageGoalAndExportTest do
   @tag login_as: :champion
   feature "offer save as template to Space editors", ctx do
     ctx
-    |> Factory.enable_feature("project_templates")
     |> Steps.visit_project_page()
     |> Steps.assert_save_as_template_is_visible()
   end
