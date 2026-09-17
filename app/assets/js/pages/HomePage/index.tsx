@@ -4,11 +4,8 @@ import React from "react";
 import { Activity } from "@/api";
 import { PageModule } from "@/routes/types";
 
-import * as Pages from "@/components/Pages";
-import * as Companies from "@/models/companies";
+import { loader, useLoadedData } from "./loader";
 import * as People from "@/models/people";
-import * as Spaces from "@/models/spaces";
-import { getWorkMap } from "@/models/workMap";
 
 export default { name: "HomePage", loader, Page } as PageModule;
 
@@ -19,41 +16,6 @@ import { HomePage, showErrorToast } from "turboui";
 import { Navigate } from "react-router";
 import { canDeleteFeedItems } from "./feedPermissions";
 import { shouldOpenCompanyWorkMap } from "./firstRun";
-
-interface LoaderData {
-  company: Companies.Company;
-  spaces: Spaces.Space[];
-  adminIds: string[];
-  ownerIds: string[];
-  hasWorkItems: boolean;
-}
-
-async function loader(): Promise<LoaderData> {
-  const company = await Companies.getCompany({
-    includeOwners: true,
-    includeAdmins: true,
-    includePermissions: true,
-  }).then((d) => d.company);
-
-  const [spaces, hasWorkItems] = await Promise.all([
-    Spaces.getSpaces({ includeAccessLevels: true }),
-    company.setupCompleted ? Promise.resolve(false) : getWorkMap({}).then((data) => data.workMap.length > 0),
-  ]);
-  const adminIds = company.admins?.map((a) => a.id);
-  const ownerIds = company.owners?.map((o) => o.id);
-
-  return {
-    company,
-    spaces,
-    adminIds: adminIds || [],
-    ownerIds: ownerIds || [],
-    hasWorkItems,
-  };
-}
-
-function useLoadedData(): LoaderData {
-  return Pages.useLoadedData() as LoaderData;
-}
 
 function Page() {
   const paths = usePaths();
