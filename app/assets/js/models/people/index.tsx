@@ -5,6 +5,8 @@ import Api from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { Paths } from "../../routes/paths";
 export type Person = api.Person;
+export { prefetchPersonWithFallback } from "./prefetchPersonWithFallback";
+export { useUpdateProfile, useUpdateProfilePicture } from "./profileLifecycle";
 
 export { useGetTheme } from "@/api";
 export type { AccountTheme, InviteLink } from "@/api";
@@ -13,10 +15,7 @@ export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
 
 export const getPeople = Api.people.list;
-export const getPerson = Api.people.get;
 export const updateProfile = Api.people.update;
-export const updateProfilePicture = Api.people.updatePicture;
-export const getMe = Api.people.getMe;
 export const updateTheme = Api.people.updateTheme;
 
 export function useGetPeople(input: api.PeopleListInput) {
