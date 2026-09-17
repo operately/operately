@@ -48,6 +48,8 @@ describe("FeatureFlagsSection", () => {
     );
 
     expect(markup).toContain("no-feature-flags");
+    expect(markup).toContain("border-y");
     expect(markup).not.toContain("enable-feature");
+    expect(markup).not.toContain("feature-flags-list");
   });
 });

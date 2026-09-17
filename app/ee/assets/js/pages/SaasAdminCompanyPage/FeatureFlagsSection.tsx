@@ -14,6 +14,7 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
   const enableFeature = useEnableCompanyFeature();
   const disableFeatures = useDisableCompanyFeatures();
   const [localFeatures, setLocalFeatures] = React.useState(enabledFeatures);
+  const [togglePending, setTogglePending] = React.useState(false);
   const toggleLock = React.useRef(createFeatureToggleLock()).current;
 
   React.useEffect(() => {
@@ -24,6 +25,7 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
     if (!toggleLock.tryStart()) return;
 
     const previous = localFeatures;
+    setTogglePending(true);
     setLocalFeatures(nextEnabledFeatures(localFeatures, feature, enabled));
 
     try {
@@ -39,6 +41,7 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
       showErrorToast("Could not update feature flag", "Please try again.");
     } finally {
       toggleLock.finish();
+      setTogglePending(false);
     }
   };
 
@@ -53,13 +56,15 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
         </p>
       </div>
 
-      {features.length === 0 ? (
-        <div className="py-4 text-sm text-content-dimmed" data-test-id="no-feature-flags">
-          No feature flags are available.
-        </div>
-      ) : (
-        <div className="border-y border-stroke-base mt-3" data-test-id="feature-flags-list">
-          {features.map((feature) => (
+      <div
+        className={`border-y border-stroke-base mt-3${togglePending ? " pointer-events-none opacity-60" : ""}`}
+        aria-busy={togglePending}
+        data-test-id={features.length === 0 ? "no-feature-flags" : "feature-flags-list"}
+      >
+        {features.length === 0 ? (
+          <div className="py-3 px-1 text-sm text-content-dimmed">No feature flags are available.</div>
+        ) : (
+          features.map((feature) => (
             <div
               key={feature}
               className="flex items-center justify-between gap-4 py-3 px-1 border-b border-stroke-base last:border-b-0"
@@ -76,9 +81,9 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
                 testId={`feature-flag-toggle-${feature}`}
               />
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }

@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AVAILABLE_FEATURE_FLAGS } from "./featureFlags";
 import { FeatureFlagsSection } from "./FeatureFlagsSection";
 
 import { Avatar, SecondaryButton, FormattedTime, formatStorageBytes } from "turboui";
@@ -15,7 +14,7 @@ import { useLoadedData } from "./loader";
 export { loader } from "./loader";
 
 export function Page() {
-  const { company, companyId } = useLoadedData();
+  const { company, companyId, availableFeatures } = useLoadedData();
   const { startSupportSession, supportSessionStarting } = useStartSupportSession(companyId);
 
   return (
@@ -35,7 +34,7 @@ export function Page() {
 
           <FeatureFlagsSection
             companyId={companyId}
-            availableFeatures={AVAILABLE_FEATURE_FLAGS}
+            availableFeatures={availableFeatures}
             enabledFeatures={company.enabledFeatures ?? []}
           />
 

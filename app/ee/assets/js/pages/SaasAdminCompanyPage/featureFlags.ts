@@ -36,8 +36,6 @@ export function createFeatureToggleLock() {
   };
 }
 
-export const AVAILABLE_FEATURE_FLAGS = ["project_templates"];
-
 export function listedFeatureFlags(availableFeatures: string[], enabledFeatures: string[]): string[] {
   const extras = enabledFeatures.filter((feature) => !availableFeatures.includes(feature));
   return [...availableFeatures, ...extras];

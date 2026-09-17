@@ -12,7 +12,7 @@ export async function loader({ params }) {
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
-export function useLoadedData(): { company: AdminApi.Company; companyId: string } {
+export function useLoadedData(): { company: AdminApi.Company; companyId: string; availableFeatures: string[] } {
   const { queryInput } = Pages.useLoadedData<LoaderResult>();
   const { data } = useLoadedQuery(AdminApi.getCompanyQueryOptions(queryInput));
 
@@ -24,5 +24,9 @@ export function useLoadedData(): { company: AdminApi.Company; companyId: string 
     throw new Error(`Company id is unavailable for company "${queryInput.id}"`);
   }
 
-  return { company: data.company, companyId: data.company.id };
+  return {
+    company: data.company,
+    companyId: data.company.id,
+    availableFeatures: data.availableFeatures ?? [],
+  };
 }
