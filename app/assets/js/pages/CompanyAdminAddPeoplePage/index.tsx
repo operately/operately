@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import Api from "@/api";
 import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as Permissions from "@/models/permissions";
@@ -116,6 +115,7 @@ function useInviteSubmit(
   setLimitGuidance: React.Dispatch<React.SetStateAction<Billing.BillingLimitGuidance | null>>,
   setState: React.Dispatch<React.SetStateAction<CompanyAdminAddPeoplePage.PageState>>,
 ) {
+  const loadCollaboratorResources = Companies.useLoadCollaboratorResources();
   const { mutateAsync: add } = Companies.useAddCompanyMember();
   const { mutateAsync: inviteGuest } = Companies.useInviteGuest();
 
@@ -147,17 +147,11 @@ function useInviteSubmit(
 
       const personId = res.personId || "";
 
-      // Load resources for the access granting form (only for outside collaborators)
       if (memberType === "outside_collaborator") {
-        const [spacesData, goalsData, projectsData] = await Promise.all([
-          Api.spaces.listQuery({}),
-          Api.goals.listQuery({ includeSpace: true }),
-          Api.projects.listQuery({}),
-        ]);
-
-        setSpaces((spacesData.spaces || []).map((s) => ({ id: s.id, name: s.name })));
-        setGoals((goalsData.goals || []).map((g) => ({ id: g.id, name: g.name })));
-        setProjects((projectsData.projects || []).map((p) => ({ id: p.id, name: p.name })));
+        const resources = await loadCollaboratorResources();
+        setSpaces(resources.spaces);
+        setGoals(resources.goals);
+        setProjects(resources.projects);
       }
 
       if (res.newAccount && res.inviteLink?.token) {
@@ -209,6 +203,7 @@ function useInviteSubmit(
     isSubmitting,
     memberType,
     paths,
+    loadCollaboratorResources,
     setErrors,
     setLimitGuidance,
     setState,
