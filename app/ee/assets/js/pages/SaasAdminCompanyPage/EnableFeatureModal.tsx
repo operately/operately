@@ -1,18 +1,16 @@
 import React from "react";
 
 import { Forms, Modal } from "turboui";
-import * as AdminApi from "@/ee/admin_api";
-import { useLoadedData } from "./loader";
+import { useEnableCompanyFeature } from "./featureFlagsLifecycle";
 
 interface EnableFeatureModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaved?: () => void;
+  companyId: string;
 }
 
-export function EnableFeatureModal({ isOpen, onClose, onSaved }: EnableFeatureModalProps) {
-  const { company } = useLoadedData();
-  const [enableFeature] = AdminApi.useEnableFeature();
+export function EnableFeatureModal({ isOpen, onClose, companyId }: EnableFeatureModalProps) {
+  const enableFeature = useEnableCompanyFeature();
 
   const form = Forms.useForm({
     fields: {
@@ -20,21 +18,23 @@ export function EnableFeatureModal({ isOpen, onClose, onSaved }: EnableFeatureMo
     },
     cancel: onClose,
     submit: async () => {
-      await enableFeature({
-        companyId: company.id!,
-        feature: form.values.feature,
+      const feature = form.values.feature.trim();
+      if (feature === "") return;
+
+      await enableFeature.mutateAsync({
+        companyId,
+        feature,
       });
 
-      onSaved?.();
       onClose();
       form.actions.reset();
     },
   });
 
   return (
-    <Modal title="Enable Feature Flag" isOpen={isOpen} onClose={onClose}>
+    <Modal title="Add feature flag" isOpen={isOpen} onClose={onClose}>
       <Forms.Form form={form}>
-        <div className="mb-4 text-sm text-content-accent">Enable an experimental feature for this company.</div>
+        <div className="mb-4 text-sm text-content-accent">Turn on an experimental feature for this company.</div>
 
         <Forms.FieldGroup>
           <Forms.TextInput field="feature" testId="feature-name" autoFocus placeholder="e.g. new_dashboard" />
