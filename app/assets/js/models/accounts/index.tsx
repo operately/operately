@@ -15,7 +15,7 @@ export type {
   Account,
 } from "@/api";
 
-export { changePassword, useJoinCompany } from "@/api";
+export { changePassword } from "@/api";
 
 export function listApiTokens() {
   return Api.api_tokens.list({});
