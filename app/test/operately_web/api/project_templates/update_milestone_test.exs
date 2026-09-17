@@ -13,7 +13,6 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateMilestoneTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_templates")
     |> Factory.add_space(:space)
     |> Factory.add_project_template(:template, :space)
     |> Factory.add_project_template_milestone(:milestone, :template)

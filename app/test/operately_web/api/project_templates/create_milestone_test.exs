@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.CreateMilestoneTest do
   ]
 
   setup ctx do
-    ctx |> Factory.setup() |> Factory.enable_feature("project_templates") |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space) |> Factory.log_in_person(:creator)
+    ctx |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_project_template(:template, :space) |> Factory.log_in_person(:creator)
   end
 
   test "creates a milestone", ctx do
