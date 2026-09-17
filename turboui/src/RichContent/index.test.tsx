@@ -85,4 +85,72 @@ describe("Summary", () => {
       expectMentionContent(container);
     });
   });
+
+  it("renders an image thumbnail for attached files", async () => {
+    const content = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "See attached" }],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "blob",
+              attrs: {
+                src: "https://example.com/photo.png",
+                alt: "photo.png",
+                title: "photo.png",
+                filetype: "image/png",
+                filesize: 2048,
+                status: "uploaded",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    render(<Summary content={content} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("img", { name: "photo.png" })).toHaveAttribute("src", "https://example.com/photo.png");
+    });
+  });
+
+  it("still shows a file preview when the text is truncated", async () => {
+    const content = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "A".repeat(80) }],
+        },
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "blob",
+              attrs: {
+                src: "https://example.com/notes.pdf",
+                alt: "notes.pdf",
+                title: "notes.pdf",
+                filetype: "application/pdf",
+                filesize: 1024,
+                status: "uploaded",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    render(<Summary content={content} characterCount={20} mentionedPersonLookup={mentionedPersonLookup} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("notes.pdf")).toBeInTheDocument();
+    });
+  });
 });
