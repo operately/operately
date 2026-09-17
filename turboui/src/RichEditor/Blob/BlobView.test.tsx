@@ -132,4 +132,27 @@ describe("BlobView image preview", () => {
 
     expect(screen.getByRole("img", { name: "legacy.png" })).toHaveAttribute("src", "https://example.com/legacy.png");
   });
+
+  it("renders a compact file thumbnail as a download link", () => {
+    render(
+      <BlobView
+        node={{
+          attrs: {
+            filetype: "application/pdf",
+            src: "https://example.com/notes.pdf",
+            title: "notes.pdf",
+          },
+        }}
+        deleteNode={jest.fn()}
+        updateAttributes={jest.fn()}
+        editor={{ view: { editable: false } }}
+        extension={{ options: { thumbnail: true } }}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "notes.pdf" })).toHaveAttribute(
+      "href",
+      "https://example.com/notes.pdf?disposition=attachment",
+    );
+  });
 });

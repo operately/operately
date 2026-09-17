@@ -4,7 +4,9 @@ import { createPortal } from "react-dom";
 import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
 
+import { UnstyledButton } from "../../Button/UnstalyedButton";
 import { IconFileFilled, IconFileZip, IconPdf, IconTrash, IconX } from "../../icons";
+import { DivLink } from "../../Link";
 import classNames from "../../utils/classnames";
 
 let imagePreviewScrollLockCount = 0;
@@ -99,11 +101,11 @@ function ImageThumbnail({ node }: { node: BlobNode }) {
 
   return (
     <NodeViewWrapper className="blob-container blob-image blob-thumbnail relative">
-      <button
+      <UnstyledButton
         type="button"
         className="block max-w-full appearance-none bg-transparent border-0 p-0"
         onClick={() => setIsModalOpen(true)}
-        aria-label={`Open ${label} preview`}
+        ariaLabel={`Open ${label} preview`}
       >
         <img
           src={src}
@@ -111,7 +113,7 @@ function ImageThumbnail({ node }: { node: BlobNode }) {
           title={node.attrs.title || undefined}
           className="max-h-20 max-w-32 rounded-md object-cover"
         />
-      </button>
+      </UnstyledButton>
 
       <ImagePreviewModal
         isOpen={isModalOpen}
@@ -135,14 +137,15 @@ function VideoThumbnail({ node }: { node: BlobNode }) {
 function FileThumbnail({ node }: { node: BlobNode }) {
   return (
     <NodeViewWrapper className="blob-container blob-thumbnail relative bg-surface-dimmed rounded-md px-2 py-1">
-      <a
-        href={downloadableUrl(blobSrcUrl(node.attrs.src))}
+      <DivLink
+        to={downloadableUrl(blobSrcUrl(node.attrs.src))}
         title={node.attrs.title || undefined}
         className="flex items-center gap-1.5 min-w-0"
+        external
       >
         <FileIcon filetype={node.attrs.filetype} size={18} />
         <span className="truncate max-w-[8rem] text-xs text-content-accent">{node.attrs.title}</span>
-      </a>
+      </DivLink>
     </NodeViewWrapper>
   );
 }
