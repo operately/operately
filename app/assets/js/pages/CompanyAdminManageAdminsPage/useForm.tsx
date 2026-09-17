@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 import * as Companies from "@/models/companies";
 
-import { useRefresh, useLoadedData } from "./loader";
+import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export interface FormState {
@@ -36,45 +36,45 @@ export function useFrom(): FormState {
 }
 
 function useAddOwners() {
-  const refresh = useRefresh();
+  const { mutateAsync: add } = Companies.useAddCompanyOwners();
 
-  const [add] = Companies.useAddCompanyOwners();
-
-  return React.useCallback(async (peopleIds: string[]) => {
-    await add({ peopleIds });
-    refresh();
-  }, []);
+  return React.useCallback(
+    async (peopleIds: string[]) => {
+      await add({ peopleIds });
+    },
+    [add],
+  );
 }
 
 function useRemoveOwner() {
-  const refresh = useRefresh();
+  const { mutateAsync: remove } = Companies.useRemoveCompanyOwner();
 
-  const [remove] = Companies.useRemoveCompanyOwner();
-
-  return React.useCallback(async (personId: string) => {
-    await remove({ personId });
-    refresh();
-  }, []);
+  return React.useCallback(
+    async (personId: string) => {
+      await remove({ personId });
+    },
+    [remove],
+  );
 }
 
 function useRemoveAdmin() {
-  const refresh = useRefresh();
+  const { mutateAsync: remove } = Companies.useRemoveCompanyAdmin();
 
-  const [remove] = Companies.useRemoveCompanyAdmin();
-
-  return React.useCallback(async (personId: string) => {
-    await remove({ personId });
-    refresh();
-  }, []);
+  return React.useCallback(
+    async (personId: string) => {
+      await remove({ personId });
+    },
+    [remove],
+  );
 }
 
 function useAddAdmins() {
-  const refresh = useRefresh();
+  const { mutateAsync: add } = Companies.useAddCompanyAdmins();
 
-  const [add] = Companies.useAddCompanyAdmins();
-
-  return React.useCallback(async (peopleIds: string[]) => {
-    await add({ peopleIds });
-    refresh();
-  }, []);
+  return React.useCallback(
+    async (peopleIds: string[]) => {
+      await add({ peopleIds });
+    },
+    [add],
+  );
 }

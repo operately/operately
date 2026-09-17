@@ -10,32 +10,12 @@ import { includesId, usePaths } from "@/routes/paths";
 import { useNavigate, useSearchParams } from "react-router";
 import { CompanyAdminAddPeoplePage, InviteMemberForm, showErrorToast } from "turboui";
 
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  company: Companies.Company;
-  ownerIds: string[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ includeOwners: true, includePermissions: true }).then(
-    (res) => res.company,
-  );
-
-  if (!company.permissions?.isAdmin) {
-    throw new Response("Not Found", { status: 404 });
-  }
-
-  return {
-    company: company,
-    ownerIds: company.owners?.map((owner) => owner.id) || [],
-  };
-}
-
 function Page() {
-  const { company, ownerIds } = Pages.useLoadedData<LoaderResult>();
+  const { company, ownerIds } = useLoadedData();
   const navigate = useNavigate();
   const paths = usePaths();
   const me = useMe();
@@ -50,7 +30,7 @@ function Page() {
     memberTypeParam === "outside_collaborator" ? "outside_collaborator" : "team_member";
   const viewerRole: Billing.BillingLimitViewerRole = includesId(ownerIds, me?.id) ? "owner" : "company_admin";
 
-  const [grantAccess, { loading: isGrantingAccess }] = Permissions.useGrantResourceAccess();
+  const { mutateAsync: grantAccess, isPending: isGrantingAccess } = Permissions.useGrantResourceAccess();
 
   const navigationItems = React.useMemo(
     () => [
@@ -136,8 +116,8 @@ function useInviteSubmit(
   setLimitGuidance: React.Dispatch<React.SetStateAction<Billing.BillingLimitGuidance | null>>,
   setState: React.Dispatch<React.SetStateAction<CompanyAdminAddPeoplePage.PageState>>,
 ) {
-  const [add] = Companies.useAddCompanyMember();
-  const [inviteGuest] = Api.companies.useInviteGuest();
+  const { mutateAsync: add } = Companies.useAddCompanyMember();
+  const { mutateAsync: inviteGuest } = Companies.useInviteGuest();
 
   const [spaces, setSpaces] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);
   const [goals, setGoals] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);
@@ -170,9 +150,9 @@ function useInviteSubmit(
       // Load resources for the access granting form (only for outside collaborators)
       if (memberType === "outside_collaborator") {
         const [spacesData, goalsData, projectsData] = await Promise.all([
-          Api.spaces.list({}),
-          Api.goals.list({ includeSpace: true }),
-          Api.projects.list({}),
+          Api.spaces.listQuery({}),
+          Api.goals.listQuery({ includeSpace: true }),
+          Api.projects.listQuery({}),
         ]);
 
         setSpaces((spacesData.spaces || []).map((s) => ({ id: s.id, name: s.name })));

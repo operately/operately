@@ -3,7 +3,7 @@ import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 
 export async function loader() {
-  const companyInput = { includeAdmins: true, includeOwners: true, includePermissions: true };
+  const companyInput = {};
 
   await Api.companies.getQuery(companyInput);
 
@@ -19,9 +19,5 @@ export function useLoadedData() {
 
   if (!company) throw new Error("Company administration data is unavailable");
 
-  return {
-    company,
-    adminIds: (company.admins ?? []).map((a) => a.id),
-    ownerIds: (company.owners ?? []).map((o) => o.id),
-  };
+  return { company };
 }
