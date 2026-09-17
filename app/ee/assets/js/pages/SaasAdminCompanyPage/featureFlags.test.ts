@@ -1,4 +1,4 @@
-import { createFeatureToggleLock, nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
+import { createFeatureToggleLock, listedFeatureFlags, nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
 
 const mockEnableFeature = jest.fn();
 const mockDisableFeatures = jest.fn();
@@ -13,6 +13,19 @@ describe("createFeatureToggleLock", () => {
     lock.finish();
 
     expect(lock.tryStart()).toBe(true);
+  });
+});
+
+describe("listedFeatureFlags", () => {
+  it("always includes available flags even when none are enabled", () => {
+    expect(listedFeatureFlags(["project_templates"], [])).toEqual(["project_templates"]);
+  });
+
+  it("keeps extra enabled flags that are not in the available list", () => {
+    expect(listedFeatureFlags(["project_templates"], ["legacy_flag", "project_templates"])).toEqual([
+      "project_templates",
+      "legacy_flag",
+    ]);
   });
 });
 

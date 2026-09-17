@@ -10,35 +10,44 @@ jest.mock("./featureFlagsLifecycle", () => ({
 
 jest.mock("turboui", () => ({
   showErrorToast: jest.fn(),
-  SecondaryButton: ({ children, testId }: { children: React.ReactNode; testId?: string }) => (
-    <button data-test-id={testId}>{children}</button>
-  ),
-  IconPlus: () => null,
-  SwitchToggle: ({ label, testId }: { label: string; testId?: string }) => (
-    <button data-test-id={testId} aria-label={label}>
+  SwitchToggle: ({ label, testId, value }: { label: string; testId?: string; value: boolean }) => (
+    <button data-test-id={testId} aria-label={label} data-enabled={value ? "true" : "false"}>
       toggle
     </button>
   ),
 }));
 
 describe("FeatureFlagsSection", () => {
-  it("renders enabled feature flags with toggles", () => {
+  it("renders available feature flags with toggles even when none are enabled", () => {
     const markup = renderToStaticMarkup(
-      <FeatureFlagsSection companyId="company-1" enabledFeatures={["feature_a", "feature_b"]} onAdd={() => {}} />,
+      <FeatureFlagsSection companyId="company-1" availableFeatures={["project_templates"]} enabledFeatures={[]} />,
     );
 
-    expect(markup).toContain("feature_a");
-    expect(markup).toContain("feature_b");
-    expect(markup).toContain("feature-flag-toggle-feature_a");
-    expect(markup).toContain("feature-flag-toggle-feature_b");
-    expect(markup).toContain("enable-feature");
+    expect(markup).toContain("feature-flag-toggle-project_templates");
+    expect(markup).toContain('data-enabled="false"');
+    expect(markup).not.toContain("enable-feature");
+    expect(markup).not.toContain("no-feature-flags");
   });
 
-  it("shows empty state when no features are enabled", () => {
+  it("renders enabled feature flags as on", () => {
     const markup = renderToStaticMarkup(
-      <FeatureFlagsSection companyId="company-1" enabledFeatures={[]} onAdd={() => {}} />,
+      <FeatureFlagsSection
+        companyId="company-1"
+        availableFeatures={["project_templates"]}
+        enabledFeatures={["project_templates"]}
+      />,
+    );
+
+    expect(markup).toContain("feature-flag-toggle-project_templates");
+    expect(markup).toContain('data-enabled="true"');
+  });
+
+  it("shows empty state when there are no available or enabled flags", () => {
+    const markup = renderToStaticMarkup(
+      <FeatureFlagsSection companyId="company-1" availableFeatures={[]} enabledFeatures={[]} />,
     );
 
     expect(markup).toContain("no-feature-flags");
+    expect(markup).not.toContain("enable-feature");
   });
 });

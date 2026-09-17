@@ -3,14 +3,13 @@ import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { EnableFeatureModal } from "./EnableFeatureModal";
+import { AVAILABLE_FEATURE_FLAGS } from "./featureFlags";
 import { FeatureFlagsSection } from "./FeatureFlagsSection";
 
 import { Avatar, SecondaryButton, FormattedTime, formatStorageBytes } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useStartSupportSession } from "@/features/SupportSessions";
-import { useBoolState } from "@/hooks/useBoolState";
 import { useLoadedData } from "./loader";
 
 export { loader } from "./loader";
@@ -18,7 +17,6 @@ export { loader } from "./loader";
 export function Page() {
   const { company, companyId } = useLoadedData();
   const { startSupportSession, supportSessionStarting } = useStartSupportSession(companyId);
-  const [showEnableFeatureModal, toggleEnableFeatureModal] = useBoolState(false);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -37,8 +35,8 @@ export function Page() {
 
           <FeatureFlagsSection
             companyId={companyId}
+            availableFeatures={AVAILABLE_FEATURE_FLAGS}
             enabledFeatures={company.enabledFeatures ?? []}
-            onAdd={toggleEnableFeatureModal}
           />
 
           <h2 className="mt-8 font-bold">Support Mode</h2>
@@ -60,8 +58,6 @@ export function Page() {
           <ActivitySection companyId={companyId} />
         </Paper.Body>
       </Paper.Root>
-
-      <EnableFeatureModal isOpen={showEnableFeatureModal} onClose={toggleEnableFeatureModal} companyId={companyId} />
     </Pages.Page>
   );
 }

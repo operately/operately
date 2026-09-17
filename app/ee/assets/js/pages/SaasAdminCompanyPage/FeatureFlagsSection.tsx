@@ -1,16 +1,16 @@
 import React from "react";
 
-import { SecondaryButton, IconPlus, SwitchToggle, showErrorToast } from "turboui";
-import { createFeatureToggleLock, nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
+import { SwitchToggle, showErrorToast } from "turboui";
+import { createFeatureToggleLock, listedFeatureFlags, nextEnabledFeatures, setFeatureEnabled } from "./featureFlags";
 import { useDisableCompanyFeatures, useEnableCompanyFeature } from "./featureFlagsLifecycle";
 
 interface FeatureFlagsSectionProps {
   companyId: string;
+  availableFeatures: string[];
   enabledFeatures: string[];
-  onAdd: () => void;
 }
 
-export function FeatureFlagsSection({ companyId, enabledFeatures, onAdd }: FeatureFlagsSectionProps) {
+export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatures }: FeatureFlagsSectionProps) {
   const enableFeature = useEnableCompanyFeature();
   const disableFeatures = useDisableCompanyFeatures();
   const [localFeatures, setLocalFeatures] = React.useState(enabledFeatures);
@@ -45,27 +45,24 @@ export function FeatureFlagsSection({ companyId, enabledFeatures, onAdd }: Featu
     }
   };
 
+  const features = listedFeatureFlags(availableFeatures, localFeatures);
+
   return (
     <div className="mt-8" data-test-id="feature-flags-section">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="font-bold">Feature flags</h2>
-          <p className="text-sm text-content-accent mt-1 max-w-lg">
-            Turn experimental features on or off for this company.
-          </p>
-        </div>
-        <SecondaryButton size="sm" icon={IconPlus} onClick={onAdd} testId="enable-feature">
-          Add feature flag
-        </SecondaryButton>
+      <div>
+        <h2 className="font-bold">Feature flags</h2>
+        <p className="text-sm text-content-accent mt-1 max-w-lg">
+          Turn experimental features on or off for this company.
+        </p>
       </div>
 
-      {localFeatures.length === 0 ? (
+      {features.length === 0 ? (
         <div className="py-4 text-sm text-content-dimmed" data-test-id="no-feature-flags">
-          No feature flags are enabled.
+          No feature flags are available.
         </div>
       ) : (
         <div className="border-y border-stroke-base mt-3" data-test-id="feature-flags-list">
-          {localFeatures.map((feature) => (
+          {features.map((feature) => (
             <div
               key={feature}
               className="flex items-center justify-between gap-4 py-3 px-1 border-b border-stroke-base last:border-b-0"
@@ -75,7 +72,7 @@ export function FeatureFlagsSection({ companyId, enabledFeatures, onAdd }: Featu
               <SwitchToggle
                 label={`Toggle ${feature}`}
                 labelHidden
-                value={true}
+                value={localFeatures.includes(feature)}
                 setValue={(enabled) => {
                   void handleToggle(feature, enabled);
                 }}
