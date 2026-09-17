@@ -7,12 +7,20 @@ interface Props {
   className?: string;
   mentionedPersonLookup: MentionedPersonLookupFn;
   parseContent?: boolean;
+  thumbnailBlobs?: boolean;
 }
 
-export default function RichContent({ content, className, mentionedPersonLookup, parseContent }: Props) {
+export default function RichContent({
+  content,
+  className,
+  mentionedPersonLookup,
+  parseContent,
+  thumbnailBlobs,
+}: Props) {
   const editor = useEditor({
     content: parseContent ? JSON.parse(content) : content,
     editable: false,
+    thumbnailBlobs,
     handlers: {
       mentionedPersonLookup,
     },
