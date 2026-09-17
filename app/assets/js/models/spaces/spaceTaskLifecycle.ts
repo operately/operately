@@ -9,6 +9,7 @@ export async function invalidateSpaceTaskQueries(
   refetchType: RefetchType = "active",
 ): Promise<void> {
   await Promise.all([
+    queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.spaces.getQueryKeyPrefix(), refetchType }),
     queryClient.invalidateQueries({ queryKey: Api.spaces.listTasksQueryKeyPrefix(), refetchType }),
   ]);

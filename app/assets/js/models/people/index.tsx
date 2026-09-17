@@ -5,6 +5,8 @@ import Api from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { Paths } from "../../routes/paths";
 export type Person = api.Person;
+export { prefetchPersonWithFallback } from "./prefetchPersonWithFallback";
+export { useUpdateProfile, useUpdateProfilePicture } from "./profileLifecycle";
 
 export { useGetTheme } from "@/api";
 export type { AccountTheme, InviteLink } from "@/api";

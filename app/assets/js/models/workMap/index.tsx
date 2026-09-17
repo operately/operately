@@ -53,7 +53,10 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
 export type { WorkMapItem };
 
 export async function invalidateWorkMapQueries(queryClient: QueryClient): Promise<void> {
-  await queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() });
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
+  ]);
 }
 
 interface WorkMapItemOptions {

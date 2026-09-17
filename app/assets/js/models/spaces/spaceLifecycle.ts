@@ -69,6 +69,7 @@ export async function invalidateSpaceLifecycleQueries(
       ? invalidateMatchingSpaceQueries(queryClient, Api.spaces.listToolsQueryKeyPrefix(), "spaceId", spaceId)
       : queryClient.invalidateQueries({ queryKey: Api.spaces.listToolsQueryKeyPrefix() }),
     queryClient.invalidateQueries({ queryKey: Api.companies.getWorkMapQueryKeyPrefix() }),
+    queryClient.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
     invalidateEmbeddedSpaceNameQueries(queryClient),
   ]);
 }
@@ -118,6 +119,7 @@ export async function invalidateDeletedSpaceQueries(client: QueryClient, spaceId
   const workMapPrefix = Api.companies.getWorkMapQueryKeyPrefix();
 
   await Promise.all([
+    client.invalidateQueries({ queryKey: Api.companies.getFlatWorkMapQueryKeyPrefix() }),
     // Revalidate on the next visit, after navigating away from the deleted space.
     invalidateMatchingSpaceQueries(client, Api.spaces.getQueryKeyPrefix(), "id", spaceId, "none"),
     client.invalidateQueries({ queryKey: Api.spaces.listQueryKeyPrefix() }),
