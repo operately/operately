@@ -3,7 +3,13 @@ import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 
 async function invalidateProfileQueries(client: QueryClient): Promise<void> {
   // A manager change also changes other people's reports and peers.
-  const prefixes = [Api.people.getQueryKeyPrefix(), Api.people.getMeQueryKeyPrefix(), Api.people.listQueryKeyPrefix()];
+  const prefixes = [
+    Api.people.getQueryKeyPrefix(),
+    Api.people.getMeQueryKeyPrefix(),
+    Api.people.listQueryKeyPrefix(),
+    Api.companies.getFlatWorkMapQueryKeyPrefix(),
+    Api.companies.getWorkMapQueryKeyPrefix(),
+  ];
 
   await Promise.all(prefixes.map((queryKey) => client.invalidateQueries({ queryKey })));
 }

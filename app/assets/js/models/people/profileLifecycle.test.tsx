@@ -21,10 +21,10 @@ describe.each([
     name: "profile",
     useUpdate: () => {
       const mutation = useUpdateProfile();
-      return () => mutation.mutateAsync({ id: "person1", managerId: "manager2" });
+      return () => mutation.mutateAsync({ id: "person1", fullName: "Updated", managerId: "manager2" });
     },
     endpoint: "/people/update",
-    payload: { id: "person1", manager_id: "manager2" },
+    payload: { id: "person1", full_name: "Updated", manager_id: "manager2" },
   },
   ...["/avatar.png", null].map((avatarUrl) => ({
     name: avatarUrl ? "avatar upload" : "avatar removal",
@@ -36,7 +36,7 @@ describe.each([
     payload: { person_id: "person1", avatar_blob_id: avatarUrl ? "blob1" : null, avatar_url: avatarUrl },
   })),
 ])("$name", ({ useUpdate, endpoint, payload }) => {
-  it("invalidates related people queries only after success and leaves work maps cached", async () => {
+  it("invalidates related people and work-map queries only after success", async () => {
     const client = new QueryClient();
     const related = [
       Api.people.getQueryKey({ id: "person1" }),
@@ -45,12 +45,12 @@ describe.each([
       Api.people.listQueryKey({ includeManager: true }),
       Api.people.listQueryKey({ includeSuspended: true }),
       Api.people.getMeQueryKey({ includeManager: true }),
-    ];
-    const unrelated = [
-      Api.spaces.getQueryKey({ id: "space1" }),
       Api.companies.getFlatWorkMapQueryKey({ championId: "person1" }),
+      Api.companies.getFlatWorkMapQueryKey({ reviewerId: "person1" }),
       Api.companies.getWorkMapQueryKey({}),
+      Api.companies.getWorkMapQueryKey({ spaceId: "space1" }),
     ];
+    const unrelated = [Api.spaces.getQueryKey({ id: "space1" })];
     [...related, ...unrelated].forEach((key) => client.setQueryData(key, {}));
     const wrapper = ({ children }: React.PropsWithChildren) => (
       <QueryClientProvider client={client}>{children}</QueryClientProvider>
