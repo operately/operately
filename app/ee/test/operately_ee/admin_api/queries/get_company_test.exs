@@ -37,5 +37,9 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompanyTest do
       assert result.available_features == ExperimentalFeatures.available()
       assert "project_templates" in result.available_features
     end
+
+    test "returns not found for an unknown company", ctx do
+      assert {404, _} = admin_query(ctx.conn, :get_company, %{id: Operately.Companies.ShortId.encode!(999_999_999)})
+    end
   end
 end
