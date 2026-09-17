@@ -9,7 +9,6 @@ import { parseTaskStatusForTurboUi } from "../tasks";
 import { parseSpaceForTurboUI } from "../spaces";
 
 export const getWorkMap = Api.companies.getWorkMap;
-export const getFlatWorkMap = Api.companies.getFlatWorkMap;
 
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type

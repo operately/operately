@@ -1,7 +1,7 @@
 import Api from "@/api";
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export async function invalidateProfileQueries(client: QueryClient): Promise<void> {
+async function invalidateProfileQueries(client: QueryClient): Promise<void> {
   // A manager change also changes other people's reports and peers.
   const prefixes = [Api.people.getQueryKeyPrefix(), Api.people.getMeQueryKeyPrefix(), Api.people.listQueryKeyPrefix()];
 
