@@ -1,8 +1,8 @@
-import Api from "@/api";
+import { loader, useLoadedData } from "./loader";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Accounts from "@/models/accounts";
+import * as Invitations from "@/models/invitations";
 import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -10,48 +10,33 @@ import * as React from "react";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { logIn } from "@/routes/auth";
-import { redirect } from "react-router";
 
 import { Forms } from "turboui";
 
 export default { name: "JoinPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  member: People.Person;
-  inviteLink: People.InviteLink;
-  token: string;
-}
-
-async function loader({ request }): Promise<any> {
-  const token = Pages.getSearchParam(request, "token");
-  if (!token) return redirect("/");
-
-  const { inviteLink, member } = await Api.invitations.getInvitation({ token: token }).then((res) => res);
-
-  if (!inviteLink) return redirect("/");
-
-  return { inviteLink, member, token };
-}
+type LoadedData = NonNullable<ReturnType<typeof useLoadedData>>;
 
 function Page() {
+  const data = useLoadedData();
+  if (!data) return null;
+
   return (
     <Pages.Page title="Welcome to Operately!">
       <Paper.Root size="small">
         <div className="mt-24"></div>
 
         <Paper.Body>
-          <Header />
-          <Form />
+          <Header inviteLink={data.inviteLink} member={data.member} />
+          <Form {...data} />
         </Paper.Body>
-        <WhatHappensNext />
+        <WhatHappensNext inviteLink={data.inviteLink} />
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Header() {
-  const { inviteLink, member } = Pages.useLoadedData() as LoaderResult;
-
+function Header({ inviteLink, member }: Pick<LoadedData, "inviteLink" | "member">) {
   return (
     <div className="flex items-center justify-between mb-10">
       <div className="">
@@ -70,9 +55,7 @@ function Header() {
   );
 }
 
-function WhatHappensNext() {
-  const { inviteLink } = Pages.useLoadedData() as LoaderResult;
-
+function WhatHappensNext({ inviteLink }: Pick<LoadedData, "inviteLink">) {
   return (
     <div className="my-8 text-center px-20">
       <span className="font-bold">What happens next?</span> You will join the {inviteLink.company?.name} company.
@@ -80,9 +63,8 @@ function WhatHappensNext() {
   );
 }
 
-function Form() {
-  const [join] = Accounts.useJoinCompany();
-  const { inviteLink, token, member } = Pages.useLoadedData() as LoaderResult;
+function Form({ inviteLink, token, member }: LoadedData) {
+  const { mutateAsync: join } = Invitations.useJoinCompany();
 
   const form = Forms.useForm({
     fields: {
@@ -123,7 +105,7 @@ function Form() {
         </>
       )}
 
-      {window.appConfig.allowLoginWithGoogle && <GoogleLogin />}
+      {window.appConfig.allowLoginWithGoogle && <GoogleLogin member={member} />}
     </Forms.Form>
   );
 }
@@ -132,9 +114,7 @@ async function logInAndGotoCompany(inviteLink: People.InviteLink, member: People
   await logIn(member.email, password, { redirectTo: `/${inviteLink.company?.id}` });
 }
 
-function GoogleLogin() {
-  const { member } = Pages.useLoadedData() as LoaderResult;
-
+function GoogleLogin({ member }: Pick<LoadedData, "member">) {
   return (
     <div>
       {window.appConfig.allowLoginWithEmail && <OrSeparator />}
