@@ -3,8 +3,9 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Api, { type Notification } from "@/api";
-import { useReadNotifications } from "./notificationLifecycle";
+import { useMarkNotificationRead, useMarkAllNotificationsRead, useReadNotifications } from "./notificationLifecycle";
 import { publish } from "@/signals";
+import { renderHook } from "@/__tests__/renderHook";
 
 jest.mock("@/signals", () => ({ publish: jest.fn(), LocalSignal: { RefreshNotificationCount: "refresh" } }));
 jest.mock("react-router", () => ({}));
@@ -134,4 +135,58 @@ it("invalidates the original resource when a notification read finishes after na
     client.clear();
     jest.restoreAllMocks();
   }
+});
+
+describe.each([
+  {
+    name: "single notification",
+    options: "markAsReadMutationOptions" as const,
+    useRun: () => {
+      const mutation = useMarkNotificationRead();
+      return () => mutation.mutateAsync({ id: "notification1" });
+    },
+  },
+  {
+    name: "all notifications",
+    options: "markAllAsReadMutationOptions" as const,
+    useRun: () => {
+      const mutation = useMarkAllNotificationsRead();
+      return () => mutation.mutateAsync({});
+    },
+  },
+])("mark $name read", ({ options, useRun }) => {
+  it("invalidates notification lists and the navbar count only after success", async () => {
+    const save = jest.fn().mockRejectedValueOnce(new Error("Failed")).mockResolvedValue({});
+    jest.spyOn(Api.notifications, options).mockReturnValue({ mutationFn: save });
+    const client = new QueryClient();
+    const related = [
+      Api.notifications.listQueryKey({ page: 1 }),
+      Api.notifications.listQueryKey({ page: 2 }),
+      Api.notifications.getUnreadCountQueryKey({}),
+    ];
+    const unrelated = Api.spaces.listQueryKey({});
+    [...related, unrelated].forEach((key) => client.setQueryData(key, {}));
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
+    const { result, unmount } = renderHook((): (() => Promise<unknown>) => useRun(), {
+      initialProps: undefined,
+      wrapper,
+    });
+    try {
+      await act(async () => {
+        await expect(result.current()).rejects.toThrow("Failed");
+      });
+      related.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(false));
+      await act(async () => {
+        await result.current();
+      });
+      related.forEach((key) => expect(client.getQueryState(key)?.isInvalidated).toBe(true));
+      expect(client.getQueryState(unrelated)?.isInvalidated).toBe(false);
+    } finally {
+      unmount();
+      client.clear();
+      jest.restoreAllMocks();
+    }
+  });
 });

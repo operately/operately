@@ -5,6 +5,29 @@ import { LocalSignal, publish } from "@/signals";
 
 type InvalidateResourceQueries = (client: QueryClient) => Promise<void>;
 
+export async function invalidateNotificationQueries(client: QueryClient): Promise<void> {
+  await Promise.all([
+    client.invalidateQueries({ queryKey: Api.notifications.listQueryKeyPrefix() }),
+    client.invalidateQueries({ queryKey: Api.notifications.getUnreadCountQueryKeyPrefix() }),
+  ]);
+}
+
+export function useMarkNotificationRead() {
+  const client = useQueryClient();
+  return useMutation({
+    ...Api.notifications.markAsReadMutationOptions(),
+    onSuccess: () => invalidateNotificationQueries(client),
+  });
+}
+
+export function useMarkAllNotificationsRead() {
+  const client = useQueryClient();
+  return useMutation({
+    ...Api.notifications.markAllAsReadMutationOptions(),
+    onSuccess: () => invalidateNotificationQueries(client),
+  });
+}
+
 export function useReadNotifications(invalidateResourceQueries?: InvalidateResourceQueries) {
   const client = useQueryClient();
   const read = useMutation({

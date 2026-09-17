@@ -1,8 +1,8 @@
-import Api, { type Notification } from "@/api";
+import type { Notification } from "@/api";
+import { loader, useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Notifications from "@/models/notifications";
-import * as Signals from "@/signals";
 import * as React from "react";
 import { IconSparkles, NotificationRow, SecondaryButton } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -14,31 +14,15 @@ import { optimisticallyMarkNotificationAsRead } from "./optimisticMarkAsRead";
 
 export default { name: "NotificationsPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  notifications: Notification[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const data = await Api.notifications.list({
-    page: 1,
-    perPage: 100,
-  });
-
-  return {
-    notifications: data.notifications as Notification[],
-  };
-}
-
 function Page() {
-  const { notifications: loadedNotifications } = Pages.useLoadedData<LoaderResult>();
+  const { notifications: loadedNotifications } = useLoadedData();
   const [notifications, setNotifications] = React.useState(loadedNotifications);
-  const [markNotificationAsRead] = Notifications.useMarkNotificationAsRead();
+  const { mutateAsync: markNotificationAsRead } = Notifications.useMarkNotificationRead();
 
   React.useEffect(() => {
     setNotifications(loadedNotifications);
   }, [loadedNotifications]);
 
-  const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshNotificationCount);
   const handleMarkAsRead = React.useCallback(
     (notification: Notification) =>
       optimisticallyMarkNotificationAsRead(notification, setNotifications, () =>
@@ -48,7 +32,7 @@ function Page() {
   );
 
   return (
-    <Pages.Page title="Notifications" onLoad={onLoad}>
+    <Pages.Page title="Notifications">
       <Paper.Root size="medium">
         <Paper.Body className="relative flex flex-col items-stretch">
           <h1 className="text-2xl font-bold text-center">Notifications</h1>
@@ -93,13 +77,11 @@ function UnreadNotifications({ notifications, onMarkAsRead }: NotificationListPr
 }
 
 function MarkAllReadButton() {
-  const refresh = Pages.useRefresh();
-  const [markAllRead, { loading }] = Notifications.useMarkAllNotificationsAsRead();
+  const { mutateAsync: markAllRead, isPending: loading } = Notifications.useMarkAllNotificationsRead();
 
   const onClick = React.useCallback(async () => {
     await markAllRead({});
-    refresh();
-  }, [markAllRead, refresh]);
+  }, [markAllRead]);
 
   return (
     <SecondaryButton size="xs" testId="mark-all-read" onClick={onClick} loading={loading}>
@@ -158,7 +140,7 @@ function NotificationItemWithActivity({
   const testId = `notification-item-${activity.action}`;
 
   const goToActivity = useNavigateTo(ActivityHandler.pagePath(paths, activity));
-  const [mark] = Notifications.useMarkNotificationAsRead();
+  const { mutateAsync: mark } = Notifications.useMarkNotificationRead();
 
   const clickHandler = React.useCallback(async () => {
     await mark({ id: notification.id });

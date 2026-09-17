@@ -8,8 +8,6 @@ import { parseContextualDate } from "../contextualDates";
 import { parseTaskStatusForTurboUi } from "../tasks";
 import { parseSpaceForTurboUI } from "../spaces";
 
-export const getWorkMap = Api.companies.getWorkMap;
-
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type
  * This handles type differences including nullable fields and ensures
