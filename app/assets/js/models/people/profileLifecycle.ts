@@ -9,6 +9,8 @@ async function invalidateProfileQueries(client: QueryClient): Promise<void> {
     Api.people.listQueryKeyPrefix(),
     Api.companies.getFlatWorkMapQueryKeyPrefix(),
     Api.companies.getWorkMapQueryKeyPrefix(),
+    // Company administration embeds people in the admin and owner lists.
+    Api.companies.getQueryKeyPrefix(),
   ];
 
   await Promise.all(prefixes.map((queryKey) => client.invalidateQueries({ queryKey })));

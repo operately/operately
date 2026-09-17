@@ -1,4 +1,4 @@
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
@@ -22,25 +22,8 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  company: Companies.Company;
-  ownerIds: string[];
-  suspendedPeople: People.Person[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ includeOwners: true }).then((res) => res.company!);
-  const people = await People.getPeople({ onlySuspended: true }).then((res) => res.people!);
-
-  return {
-    company: company,
-    ownerIds: company.owners?.map((owner) => owner.id) || [],
-    suspendedPeople: people,
-  };
-}
-
 function Page() {
-  const { company, ownerIds, suspendedPeople } = Pages.useLoadedData() as LoaderResult;
+  const { company, ownerIds, suspendedPeople } = useLoadedData();
   const me = useMe();
   const paths = usePaths();
   const viewerRole: Billing.BillingLimitViewerRole = includesId(ownerIds, me?.id) ? "owner" : "company_admin";
@@ -78,7 +61,7 @@ function Page() {
 
 function NoSuspenedPeopleMessage() {
   const paths = usePaths();
-  const { company } = Pages.useLoadedData<LoaderResult>();
+  const { company } = useLoadedData();
 
   return (
     <div className="max-w-xl mx-auto">
@@ -104,7 +87,7 @@ function SuspendedPeopleList({
   viewerRole: Billing.BillingLimitViewerRole;
   paths: ReturnType<typeof usePaths>;
 }) {
-  const { suspendedPeople } = Pages.useLoadedData<LoaderResult>();
+  const { suspendedPeople } = useLoadedData();
 
   return (
     <div>
@@ -168,14 +151,12 @@ function RestoreButton({
   viewerRole: Billing.BillingLimitViewerRole;
   paths: ReturnType<typeof usePaths>;
 }) {
-  const [restore, { loading }] = Companies.useRestoreCompanyMember();
-  const refresh = Pages.useRefresh();
+  const { mutateAsync: restore, isPending: loading } = Companies.useRestoreCompanyMember();
 
   const handler = async () => {
     try {
       onLimitError(null);
       await restore({ personId: person.id! });
-      refresh();
     } catch (error) {
       console.error(error);
 

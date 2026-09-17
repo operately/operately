@@ -1,30 +1,22 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
-import * as Companies from "@/models/companies";
-import * as People from "@/models/people";
 
-interface LoaderResult {
-  company: Companies.Company;
-  admins: People.Person[];
-  owners: People.Person[];
+export async function loader() {
+  const companyInput = { includeAdmins: true, includeOwners: true };
+  await Api.companies.getQuery(companyInput);
+
+  return { companyInput };
 }
 
-export async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({
-    includeAdmins: true,
-    includeOwners: true,
-  }).then((d) => d.company!);
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
-  return {
-    company: company,
-    admins: company.admins!,
-    owners: company.owners!,
-  };
-}
+export function useLoadedData() {
+  const { companyInput } = Pages.useLoadedData<LoaderResult>();
+  const { data } = useLoadedQuery(Api.companies.getQueryOptions(companyInput));
+  const company = data?.company;
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
-}
+  if (!company) throw new Error("Company administration data is unavailable");
 
-export function useRefresh() {
-  return Pages.useRefresh();
+  return { company, admins: company.admins ?? [], owners: company.owners ?? [] };
 }

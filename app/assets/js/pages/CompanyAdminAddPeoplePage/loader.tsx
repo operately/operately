@@ -3,9 +3,10 @@ import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 
 export async function loader() {
-  const companyInput = { includeAdmins: true, includeOwners: true, includePermissions: true };
+  const companyInput = { includeOwners: true, includePermissions: true };
+  const { company } = await Api.companies.getQuery(companyInput);
 
-  await Api.companies.getQuery(companyInput);
+  if (!company.permissions?.isAdmin) throw new Response("Not Found", { status: 404 });
 
   return { companyInput };
 }
@@ -18,10 +19,7 @@ export function useLoadedData() {
   const company = data?.company;
 
   if (!company) throw new Error("Company administration data is unavailable");
+  if (!company.permissions?.isAdmin) throw new Response("Not Found", { status: 404 });
 
-  return {
-    company,
-    adminIds: (company.admins ?? []).map((a) => a.id),
-    ownerIds: (company.owners ?? []).map((o) => o.id),
-  };
+  return { company, ownerIds: (company.owners ?? []).map((owner) => owner.id) };
 }
