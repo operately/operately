@@ -126,11 +126,9 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.find([testid: "add-milestone-form"], fn el ->
       UI.click_button(el, "Add milestone")
     end)
-    |> UI.sleep(300)
+    |> UI.wait_until_text(milestone_name)
     |> then(fn ctx ->
-      milestone = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
-
-      Map.put(ctx, :milestone, milestone)
+      Map.put(ctx, :milestone, wait_until_milestone_created(ctx.project, milestone_name))
     end)
   end
 
@@ -621,6 +619,21 @@ defmodule Operately.Support.Features.ReviewSteps do
   #
   # Helpers
   #
+
+  defp wait_until_milestone_created(project, name, attempts \\ [50, 100, 200, 400, 800, 1600, 3200]) do
+    case Operately.Projects.get_milestone_by_name(project, name) do
+      nil when attempts == [] ->
+        flunk("Timed out waiting for milestone #{name} to be created")
+
+      nil ->
+        [delay | remaining] = attempts
+        :timer.sleep(delay)
+        wait_until_milestone_created(project, name, remaining)
+
+      milestone ->
+        milestone
+    end
+  end
 
   defp past_date do
     Date.utc_today()
