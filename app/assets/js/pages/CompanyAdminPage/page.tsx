@@ -11,7 +11,7 @@ export function Page() {
   const paths = usePaths();
   const { company, adminIds, ownerIds } = useLoadedData();
   const me = useMe();
-  const [deleteCompany] = Companies.useDeleteCompany();
+  const { mutateAsync: deleteCompany } = Companies.useDeleteCompany();
 
   const isAdmin = includesId(adminIds, me?.id);
   const isOwner = includesId(ownerIds, me?.id);

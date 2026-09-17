@@ -45,6 +45,7 @@ describe.each([
       Api.people.listQueryKey({ includeManager: true }),
       Api.people.listQueryKey({ includeSuspended: true }),
       Api.people.getMeQueryKey({ includeManager: true }),
+      Api.companies.getQueryKey({ includeAdmins: true, includeOwners: true }),
       Api.companies.getFlatWorkMapQueryKey({ championId: "person1" }),
       Api.companies.getFlatWorkMapQueryKey({ reviewerId: "person1" }),
       Api.companies.getWorkMapQueryKey({}),

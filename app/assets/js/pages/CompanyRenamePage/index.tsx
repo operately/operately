@@ -1,4 +1,4 @@
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import * as Companies from "@/models/companies";
 import * as React from "react";
 
@@ -9,22 +9,12 @@ import { useNavigate, useRevalidator } from "react-router";
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyRenamePage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  company: Companies.Company;
-}
-
-async function loader(): Promise<LoaderResult> {
-  return {
-    company: await Companies.getCompany({}).then((d) => d.company!),
-  };
-}
-
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
-  const { company } = Pages.useLoadedData<LoaderResult>();
-  const [edit] = Companies.useEditCompany();
+  const { company } = useLoadedData();
+  const { mutateAsync: edit } = Companies.useEditCompany();
 
   const form = Forms.useForm({
     fields: {
@@ -34,6 +24,7 @@ function Page() {
       await edit({ name: form.values.name });
 
       navigate(paths.companyAdminPath());
+      // The shared company layout still reads from the router's companyLoader.
       revalidate();
     },
     cancel: () => navigate(paths.companyAdminPath()),

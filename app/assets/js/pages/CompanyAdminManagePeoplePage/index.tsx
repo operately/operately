@@ -1,7 +1,6 @@
-import Api from "@/api";
 import { PageModule } from "@/routes/types";
 
-import * as Pages from "@/components/Pages";
+import { loader, useLoadedData } from "./loader";
 import * as Companies from "@/models/companies";
 import * as Permissions from "@/models/permissions";
 import * as People from "@/models/people";
@@ -15,44 +14,14 @@ import { CompanyAdminManagePeoplePage } from "turboui";
 
 export default { name: "CompanyAdminManagePeoplePage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  company: Companies.Company;
-  invitedPeople: People.Person[];
-  currentMembers: People.Person[];
-  guests: People.Person[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ includePermissions: true }).then((res) => res.company);
-  const people = await People.getPeople({
-    includeManager: true,
-    includeCompanyAccessLevels: true,
-    includeInviteLink: true,
-    includeAccount: true,
-  }).then((res) => res.people);
-  const { invitedPeople, currentMembers, guests } = People.separatePeople(people);
-
-  if (!company.permissions?.isAdmin) {
-    throw new Response("Not Found", { status: 404 });
-  }
-
-  return {
-    company: company,
-    invitedPeople: People.sortByName(invitedPeople),
-    currentMembers: People.sortByName(currentMembers),
-    guests: People.sortByName(guests),
-  };
-}
-
 function Page() {
-  const { company, invitedPeople, currentMembers, guests } = Pages.useLoadedData() as LoaderResult;
+  const { company, invitedPeople, currentMembers, guests } = useLoadedData();
   const paths = usePaths();
   const me = useMe()!;
-  const refresh = Pages.useRefresh();
-  const [remove] = Companies.useRemoveCompanyMember();
-  const [createInvite] = Api.invitations.useNewInvitationToken();
-  const [convertToGuest] = Api.companies.useConvertMemberToGuest();
-  const [editPermissions] = Api.companies.useUpdateMembersPermissions();
+  const { mutateAsync: remove } = Companies.useRemoveCompanyMember();
+  const { mutateAsync: createInvite } = Companies.useNewInvitationToken();
+  const { mutateAsync: convertToGuest } = Companies.useConvertMemberToGuest();
+  const { mutateAsync: editPermissions } = Companies.useUpdateMembersPermissions();
 
   const buildPerson = React.useCallback(
     (person: People.Person): CompanyAdminManagePeoplePage.Person => {
@@ -87,22 +56,21 @@ function Page() {
   const handleRemove = React.useCallback(
     async (personId: string) => {
       await remove({ personId });
-      refresh();
     },
-    [remove, refresh],
+    [remove],
   );
 
   const handleConvertToGuest = React.useCallback(
     async (personId: string) => {
       await convertToGuest({ personId });
-      refresh();
     },
-    [convertToGuest, refresh],
+    [convertToGuest],
   );
 
   const handleCreateInvite = React.useCallback(
     async (personId: string) => {
       const res = await createInvite({ personId });
+      if (!res.inviteLink?.token) throw new Error("Invitation token is unavailable");
       return Companies.createInvitationUrl(res.inviteLink.token);
     },
     [createInvite],
@@ -111,9 +79,8 @@ function Page() {
   const handleChangeAccessLevel = React.useCallback(
     async (personId: string, accessLevel: Permissions.AccessOptions) => {
       await editPermissions({ members: [{ id: personId, accessLevel }] });
-      refresh();
     },
-    [editPermissions, refresh],
+    [editPermissions],
   );
 
   const navigationItems = React.useMemo(
@@ -134,7 +101,6 @@ function Page() {
       onReissueInvitation={handleCreateInvite}
       onRenewInvitation={handleCreateInvite}
       onChangeAccessLevel={handleChangeAccessLevel}
-      onRenewModalClose={refresh}
       testId="manage-people-page"
       permissions={company.permissions || {}}
     />
