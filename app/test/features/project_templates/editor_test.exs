@@ -56,4 +56,33 @@ defmodule Operately.Features.ProjectTemplates.EditorTest do
     |> Steps.visit_template_page()
     |> Steps.create_resources_and_return_to_cached_editor()
   end
+
+  feature "discussion edits and comments survive cached navigation", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.visit_template_page()
+    |> Steps.edit_cached_template_discussion()
+  end
+
+  feature "document edits and comments survive cached navigation", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.visit_template_page()
+    |> Steps.edit_cached_template_document()
+  end
+
+  feature "create and edit a link through cached template pages", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.visit_template_page()
+    |> Steps.create_and_edit_cached_template_link()
+  end
+
+  feature "file edits and comments survive cached navigation", ctx do
+    ctx
+    |> Steps.given_rich_template_exists()
+    |> Steps.given_template_file_exists()
+    |> Steps.visit_template_page()
+    |> Steps.edit_cached_template_file()
+  end
 end
