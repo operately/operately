@@ -65,7 +65,11 @@ Router loader **prefetches** and returns **inputs**, not payload:
 3. `return { queryInput }`.
 4. `useLoadedData` reads `Pages.useLoadedData()`, then
    `useLoadedQuery(Api.namespace.fooQueryOptions(queryInput))`.
-5. Throw if the expected field is missing.
+5. Check the declared types: do not assert fields that are already non-nullable.
+   For nullable data, prefer safe defaults (for example, `items ?? []` or
+   `permissions?.canCreateSpace ?? false`), or hide optional UI when valid.
+   Use `assertPresent(value, message)` only for data that may be absent but is
+   essential and has no safe fallback, rather than an inline null check that throws.
 
 Use `useLoadedQuery`, not `useQuery`, when the loader prefetched. It uses
 `loaderBackedQueryOptions` so the page does not refetch on mount unless the
@@ -136,4 +140,5 @@ visit the migrated route.
 - Introduce `PageCache.fetch` on new work.
 - Extract a shared loader helper for two similar pages unless duplication is
   already painful. Include flags and parent APIs usually differ.
-- Use `!` / `assertPresent` to silence missing query data. Throw or fall back.
+- Use `!` to bypass missing query data, or `assertPresent` for non-nullable fields
+  or data with a safe fallback. Assert only potentially absent data that is essential.
