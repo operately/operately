@@ -1,5 +1,5 @@
+import { loader, useLoadedData } from "./loader";
 import * as Accounts from "@/models/accounts";
-import * as Pages from "@/components/Pages";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
@@ -11,23 +11,15 @@ export default { name: "AccountApiTokensPage", loader, Page } as PageModule;
 
 type PendingAction = "toggling" | "deleting" | "renaming";
 
-interface LoaderResult {
-  apiTokens: Accounts.ApiToken[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const data = await Accounts.listApiTokens();
-
-  return {
-    apiTokens: (data.apiTokens || []) as Accounts.ApiToken[],
-  };
-}
-
 function Page() {
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const refresh = Pages.useRefresh();
-  const { apiTokens } = Pages.useLoadedData<LoaderResult>();
+  const { apiTokens } = useLoadedData();
+  const { mutateAsync: createToken } = Accounts.useCreateApiToken();
+  const { mutateAsync: deleteToken } = Accounts.useDeleteApiToken();
+  const { mutateAsync: setReadOnly } = Accounts.useSetApiTokenReadOnly();
+  const { mutateAsync: updateName } = Accounts.useUpdateApiTokenName();
+
   const [tokens, setTokens] = React.useState<Accounts.ApiToken[]>(apiTokens);
 
   const [creatingToken, setCreatingToken] = React.useState(false);
@@ -57,16 +49,15 @@ function Page() {
     setCreatingToken(true);
 
     try {
-      const result = await Accounts.createApiToken({ readOnly: newTokenReadOnly });
+      const result = await createToken({ readOnly: newTokenReadOnly });
       setNewlyCreatedToken(result.token);
       showSuccessToast("API Token Created", "Copy the token now. For security reasons, it will only be shown once.");
-      refresh();
     } catch {
       showErrorToast("Failed To Create Token", "Please try again.");
     } finally {
       setCreatingToken(false);
     }
-  }, [creatingToken, newTokenReadOnly, refresh]);
+  }, [creatingToken, newTokenReadOnly, createToken]);
 
   const handleToggleReadOnly = React.useCallback(
     async (tokenId: string, readOnly: boolean) => {
@@ -79,7 +70,7 @@ function Page() {
       setTokens((prev) => prev.map((token) => (token.id === tokenId ? { ...token, readOnly } : token)));
 
       try {
-        await Accounts.setApiTokenReadOnly(tokenId, readOnly);
+        await setReadOnly({ id: tokenId, readOnly });
         showSuccessToast("Token Updated", readOnly ? "Token is now read-only." : "Token now has full access.");
       } catch {
         setTokens((prev) =>
@@ -90,7 +81,7 @@ function Page() {
         setPendingTokenAction(tokenId, null);
       }
     },
-    [pendingTokenActions, setPendingTokenAction, tokens],
+    [pendingTokenActions, setPendingTokenAction, tokens, setReadOnly],
   );
 
   const handleDeleteToken = React.useCallback(
@@ -106,7 +97,7 @@ function Page() {
       setTokens((prev) => prev.filter((token) => token.id !== tokenId));
 
       try {
-        await Accounts.deleteApiToken(tokenId);
+        await deleteToken({ id: tokenId });
         showSuccessToast("Token Deleted", "The API token was removed.");
       } catch {
         setTokens((prev) => {
@@ -119,7 +110,7 @@ function Page() {
         setPendingTokenAction(tokenId, null);
       }
     },
-    [pendingTokenActions, setPendingTokenAction, tokens],
+    [pendingTokenActions, setPendingTokenAction, tokens, deleteToken],
   );
 
   const handleUpdateName = React.useCallback(
@@ -136,7 +127,7 @@ function Page() {
       setTokens((prev) => prev.map((token) => (token.id === tokenId ? { ...token, name: nextName } : token)));
 
       try {
-        await Accounts.updateApiTokenName(tokenId, name);
+        await updateName({ id: tokenId, name });
         showSuccessToast("Token Updated", "Token name updated.");
         return true;
       } catch {
@@ -149,7 +140,7 @@ function Page() {
         setPendingTokenAction(tokenId, null);
       }
     },
-    [pendingTokenActions, setPendingTokenAction, tokens],
+    [pendingTokenActions, setPendingTokenAction, tokens, updateName],
   );
 
   return (
