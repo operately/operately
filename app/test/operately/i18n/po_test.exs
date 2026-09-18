@@ -26,7 +26,7 @@ defmodule Operately.I18n.PoTest do
     Po.merge_file!(path, [%Message{msgid: "Task", msgid_plural: "Tasks"}])
 
     assert [%Expo.Message.Plural{msgstr: %{0 => [""], 1 => [""]}}] = Expo.PO.parse_string!(File.read!(path)).messages
-    assert Converter.from_po(File.read!(path), "pt_BR") == %{"Task_one" => "Task", "Task_other" => "Tasks"}
+    assert Converter.from_po(File.read!(path), "pt_BR") == %{"Task_one" => "Task", "Task_many" => "Tasks", "Task_other" => "Tasks"}
   end
 
   test "changed plural text does not reuse translations of the previous plural", %{path: path} do
@@ -38,6 +38,7 @@ defmodule Operately.I18n.PoTest do
 
     assert Converter.from_po(File.read!(path), "pt_BR") == %{
              "Task_one" => "Task",
+             "Task_many" => "{{count}} tasks remaining",
              "Task_other" => "{{count}} tasks remaining"
            }
   end

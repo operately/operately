@@ -32,11 +32,10 @@ defmodule Operately.I18n.Converter do
   end
 
   defp entries(%Message{} = message, locale) do
-    categories = Locale.plural_categories(locale)
     key = i18next_key(message)
 
-    categories
-    |> Enum.with_index()
+    locale
+    |> Locale.plural_forms()
     |> Enum.map(fn {category, index} ->
       value = translated_plural(message, index)
       {key <> @plural_separator <> Atom.to_string(category), Placeholders.to_i18next(value)}

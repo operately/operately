@@ -29,9 +29,9 @@ mix operately.i18n.extract   # Scan Elixir and frontend code, write POT, merge P
 mix operately.i18n.convert   # Write i18next JSON from POT/PO
 ```
 
-Extraction unions Elixir and frontend messages. Re-running extract does not drop the other runtime's strings or overwrite reviewed PO translations.
+Extraction unions Elixir and frontend messages. Re-running extract does not drop the other runtime's strings or overwrite reviewed PO translations. Frontend extraction uses the installed TypeScript parser and requires Node and the app's npm dependencies (installed by `make dev.build`). Files are parsed together in one Node process.
 
-The default scan includes `.ex`, `.exs`, and `.heex` files under `app/lib` and `app/ee/lib`, plus `.js`, `.jsx`, `.ts`, and `.tsx` files under `app/assets/js`, `app/ee/assets/js`, and `turboui/src`. Configuration and scripts outside these directories are not scanned. Test files, generated files, and dependencies are excluded. HEEx expressions and attributes are parsed with Phoenix's template engine; invalid Elixir or HEEx stops extraction with an error.
+The default scan includes `.ex`, `.exs`, and `.heex` files under `app/lib` and `app/ee/lib`, plus `.js`, `.jsx`, `.ts`, and `.tsx` files under `app/assets/js`, `app/ee/assets/js`, and `turboui/src`. Configuration and scripts outside these directories are not scanned. Test files, generated files, and dependencies are excluded. HEEx expressions and attributes, including inline `~H` sigils, are parsed with Phoenix's template engine. Invalid Elixir, HEEx, or frontend syntax in scanned translation sources stops extraction with an error.
 
 Extraction preserves locale headers and translator metadata. Messages missing from the source become obsolete (`#~`) in PO files and are excluded from generated JSON. If the source message returns, extraction restores its saved translation.
 
@@ -62,7 +62,9 @@ t("Save");
 t("Hello {{name}}", { name });
 t("Close", { context: "button" });
 tn("1 task", "{{count}} tasks", count);
+tn("1 task", "{{count}} tasks", count, { context: "inbox" });
 <Trans i18nKey="Click <link>here</link> to continue" components={{ link: <a href="/help" /> }} />;
+<Trans i18nKey={"Save"} />;
 ```
 
 Outside React components, `import i18n from "@/i18n"` and `i18n.t("Save")` are also supported. Keep message identifiers as literal strings so extraction can find them.
@@ -70,3 +72,5 @@ Outside React components, `import i18n from "@/i18n"` and `i18n.t("Save")` are a
 The app and TurboUI share catalog lookup settings, including the `|` context separator, so translations work whichever package initializes i18next first.
 
 Named placeholders, context, plurals, and rich-text tags are preserved when converting Gettext catalogs to i18next JSON. Locale directories use Gettext names (`pt_BR`); generated JSON uses BCP 47 (`pt-BR`). Missing translations fall back to English.
+
+Plural conversion maps i18next categories to Gettext translation indexes explicitly. For Brazilian Portuguese, both `_many` (whole millions) and `_other` use `msgstr[1]`.

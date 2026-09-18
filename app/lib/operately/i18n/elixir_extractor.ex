@@ -17,14 +17,22 @@ defmodule Operately.I18n.ElixirExtractor do
 
   defp parse_source(source, path) do
     if Path.extname(path) == ".heex" do
-      Phoenix.LiveView.TagEngine.compile(source,
-        file: path,
-        caller: __ENV__,
-        tag_handler: Phoenix.LiveView.HTMLEngine
-      )
+      parse_heex(source, path)
     else
       Code.string_to_quoted!(source, file: path, columns: true)
     end
+  end
+
+  defp parse_heex(source, path, opts \\ []) do
+    Phoenix.LiveView.TagEngine.compile(source,
+      Keyword.merge(opts, file: path, caller: __ENV__, tag_handler: Phoenix.LiveView.HTMLEngine)
+    )
+  end
+
+  defp collect({:sigil_H, meta, [{:<<>>, contents_meta, [source]}, _modifiers]}, acc, path) when is_binary(source) do
+    line = meta[:line] + if(meta[:delimiter] in ["\"\"\"", "'''"], do: 1, else: 0)
+    ast = parse_heex(source, path, line: line, indentation: contents_meta[:indentation] || 0)
+    {ast, acc}
   end
 
   defp collect({:gettext, meta, args} = ast, acc, path) do

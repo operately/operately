@@ -1,12 +1,13 @@
 defmodule Operately.I18n.Locale do
   @moduledoc false
 
-  @plural_categories %{
-    "en" => [:one, :other],
-    "pt-BR" => [:one, :other],
-    "pt_BR" => [:one, :other],
-    "ru" => [:one, :few, :many],
-    "ru_RU" => [:one, :few, :many]
+  # i18next uses CLDR categories, which do not map one-to-one to Gettext indexes.
+  # Both Portuguese `many` (whole millions) and `other` use msgstr[1].
+  @plural_forms %{
+    "en" => [one: 0, other: 1],
+    "pt-BR" => [one: 0, many: 1, other: 1],
+    "ru" => [one: 0, few: 1, many: 2],
+    "ru-RU" => [one: 0, few: 1, many: 2]
   }
 
   def to_bcp47(locale) when is_binary(locale) do
@@ -29,12 +30,8 @@ defmodule Operately.I18n.Locale do
     |> String.replace("-", "_")
   end
 
-  def plural_categories(locale) when is_binary(locale) do
-    bcp47 = to_bcp47(locale)
-
-    Map.get(@plural_categories, bcp47) ||
-      Map.get(@plural_categories, to_gettext(locale)) ||
-      [:one, :other]
+  def plural_forms(locale) when is_binary(locale) do
+    Map.get(@plural_forms, to_bcp47(locale), one: 0, other: 1)
   end
 
   defp split_tag(locale) do

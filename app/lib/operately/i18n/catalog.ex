@@ -31,7 +31,7 @@ defmodule Operately.I18n.Catalog do
     messages =
       elixir_files
       |> Enum.flat_map(&ElixirExtractor.extract_file/1)
-      |> Kernel.++(Enum.flat_map(frontend_files, &FrontendExtractor.extract_file/1))
+      |> Kernel.++(FrontendExtractor.extract_files(frontend_files))
       |> merge_messages()
 
     Po.write!(pot_path, messages)

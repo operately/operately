@@ -48,8 +48,33 @@ defmodule Operately.I18n.ConverterTest do
              "Hello {{name}}" => "Olá {{name}}",
              "Only in English" => "Only in English",
              "1 task_one" => "1 tarefa",
+             "1 task_many" => "{{count}} tarefas",
              "1 task_other" => "{{count}} tarefas"
            }
+  end
+
+  test "uses the Portuguese plural translation for whole millions in i18next" do
+    po = """
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 tarefa"
+    msgstr[1] "%{count} tarefas"
+    """
+
+    translations = Converter.from_po(po, "pt_BR")
+
+    script = """
+    const i18next = require('i18next').createInstance();
+    i18next.init({lng: 'pt-BR', fallbackLng: 'en', resources: {
+      'pt-BR': {translation: JSON.parse(process.argv[1])},
+      en: {translation: {'1 task_other': '{{count}} tasks'}}
+    }});
+    process.stdout.write(JSON.stringify([1, 2, 1000000, 2000000].map(count => i18next.t('1 task', {count}))));
+    """
+
+    {output, 0} = System.cmd("node", ["-e", script, Jason.encode!(translations)], cd: Path.expand("../../..", __DIR__))
+
+    assert Jason.decode!(output) == ["1 tarefa", "2 tarefas", "1000000 tarefas", "2000000 tarefas"]
   end
 
   test "maps Russian plural forms onto i18next categories" do

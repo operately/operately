@@ -89,6 +89,19 @@ defmodule Operately.I18n.CatalogTest do
     assert File.read!(po_path) == original
   end
 
+  test "changing a JSX key to a literal expression preserves its translation", ctx do
+    source_path = Path.join(ctx.tmp, "sample.tsx")
+    opts = [elixir_files: [], frontend_files: [source_path], pot_path: ctx.pot_path, po_root: ctx.po_root, json_dir: ctx.json_dir]
+
+    File.write!(source_path, ~s|import { Trans } from "react-i18next"; <Trans i18nKey="Save" />|)
+    Catalog.extract_and_convert(opts)
+    assert json(ctx.json_dir, "pt-BR.json")["Save"] == "Salvar"
+
+    File.write!(source_path, ~s|import { Trans } from "react-i18next"; <Trans i18nKey={"Save"} />|)
+    Catalog.extract_and_convert(opts)
+    assert json(ctx.json_dir, "pt-BR.json")["Save"] == "Salvar"
+  end
+
   test "maps gettext directory names to BCP 47 locale codes" do
     assert Locale.to_bcp47("pt_BR") == "pt-BR"
     assert Locale.to_gettext("pt-BR") == "pt_BR"

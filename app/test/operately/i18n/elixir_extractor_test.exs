@@ -6,6 +6,32 @@ defmodule Operately.I18n.ElixirExtractorTest do
 
   @fixture Path.expand("fixtures/elixir/sample.ex", __DIR__)
 
+  test "extracts inline HEEx sigils with original source lines" do
+    source = ~S'''
+    defmodule Sample do
+      def render(assigns) do
+        ~H"""
+        <div title={gettext("Title")}>
+          {pgettext("button", "Close")}
+          {ngettext("1 task", "%{count} tasks", @count)}
+          <%!-- {gettext("Commented out")} --%>
+        </div>
+        """
+      end
+
+      def label(assigns), do: ~H|<span>{gettext("Label")}</span>|
+    end
+    '''
+
+    messages = Map.new(ElixirExtractor.extract_contents(source, "sample.ex"), &{Message.key(&1), &1})
+
+    assert map_size(messages) == 4
+    assert messages[{"", "Title"}].references == [{"sample.ex", 4}]
+    assert messages[{"button", "Close"}].references == [{"sample.ex", 5}]
+    assert messages[{"", "1 task"}].msgid_plural == "%{count} tasks"
+    assert messages[{"", "Label"}].references == [{"sample.ex", 12}]
+  end
+
   test "extracts HEEx expressions and attributes with source references" do
     source = """
     <div title={gettext("Title")}>
