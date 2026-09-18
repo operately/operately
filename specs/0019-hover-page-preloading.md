@@ -20,13 +20,13 @@ The September 18, 2026 audit covered all 126 page modules, including enterprise 
 - All 109 pages with data-fetching loaders use TanStack Query.
 - The other 17 pages have empty or redirect-only loaders and need no fetching migration.
 - No `PageCache` references remain in either frontend.
-- The shared `app/assets/js/routes/companyLoader.tsx` remains unmigrated, so the prerequisites are not yet satisfied.
+- The shared `app/assets/js/routes/companyLoader.tsx` now uses TanStack Query. Separating active-company context changes from data fetching remains outstanding, along with the other preloading requirements below.
 
-Required work before enabling preloading:
+Migration status and remaining work before enabling preloading:
 
 | Surface | Finding | Decision |
 | --- | --- | --- |
-| Shared company loader | Directly fetches company details, space access counts, site messages, and billing access state. | Use TanStack queries, subscribe layout consumers to the same cache entries, and replace affected router refreshes with query invalidation. |
+| Shared company loader | Migration complete: company details, space access counts, site messages, and billing access state use TanStack Query. | Layout consumers subscribe to the same cache entries, and affected refresh and mutation paths use query invalidation. Company-context separation remains a separate requirement below. |
 | Company context | The company loader changes global API and socket headers. | Separate active-company changes from data fetching. Change active context only during navigation; initially skip cross-company preloads. |
 | `CompanyImportPage` | Its loader clears global API and socket headers. | Move header clearing to actual navigation. Use an explicit account-level request and cache context for its data without changing the active page's context. Do not enable preloading for this route until that separation is complete. |
 | `InviteTeamPage` | Its TanStack query wraps a get-or-create endpoint that can create an invitation link. | Exclude the route initially. Future support requires separating reading an existing link from creating one. |
