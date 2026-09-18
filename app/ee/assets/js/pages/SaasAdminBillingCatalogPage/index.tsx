@@ -1,8 +1,16 @@
+import {
+  useArchiveBillingPlanDefinition,
+  useUnarchiveBillingPlanDefinition,
+  useArchiveBillingProduct,
+  useSetActiveBillingProduct,
+  useSyncBillingProductsFromPolar,
+  useRefreshBillingCatalog,
+} from "@/ee/models/billingCatalogLifecycle";
+import { useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
-import { redirect } from "react-router";
 
 import classNames from "classnames";
 import {
@@ -26,6 +34,8 @@ import {
 
 import { PlanDefinitionModal } from "./PlanDefinitionModal";
 import { ProductModal } from "./ProductModal";
+
+export { loader } from "./loader";
 
 export async function syncBillingCatalogProducts(sync: (input: {}) => Promise<unknown>, refresh: () => void) {
   await sync({});
@@ -72,32 +82,13 @@ export async function unarchiveBillingPlanDefinition(
   refresh();
 }
 
-export const loader = async () => {
-  if (!window.appConfig.billingEnabled) {
-    throw redirect("/admin");
-  }
-
-  const [productsData, planDefinitionsData] = await Promise.all([
-    AdminApi.listBillingProducts({}),
-    AdminApi.listBillingPlanDefinitions({}),
-  ]);
-
-  return {
-    products: productsData.products ?? [],
-    planDefinitions: planDefinitionsData.planDefinitions ?? [],
-  };
-};
-
 export function Page() {
-  const { products, planDefinitions } = Pages.useLoadedData() as {
-    products: AdminApi.BillingProduct[];
-    planDefinitions: AdminApi.BillingPlanDefinition[];
-  };
+  const { products, planDefinitions } = useLoadedData();
   const tabs = useTabs("products", [
     { id: "products", label: "Products", icon: <IconBuilding size={16} /> },
     { id: "plans", label: "Plans", icon: <IconSettings size={16} /> },
   ]);
-  const refresh = Pages.useRefresh();
+  const refresh = useRefreshBillingCatalog();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<AdminApi.BillingProduct | undefined>(undefined);
   const [isPlanModalOpen, setIsPlanModalOpen] = React.useState(false);
@@ -213,7 +204,7 @@ function PlanHeaderActions({ onCreate }: { onCreate: () => void }) {
 }
 
 function SyncButton({ onRefresh }: { onRefresh: () => void }) {
-  const [sync, { loading }] = AdminApi.useSyncBillingProductsFromPolar();
+  const { mutateAsync: sync, isPending: loading } = useSyncBillingProductsFromPolar();
 
   const handleSync = async () => {
     await syncBillingCatalogProducts(sync, onRefresh);
@@ -309,8 +300,8 @@ function PlanDefinitionRow({
   onEdit: (planDefinition: AdminApi.BillingPlanDefinition) => void;
   onRefresh: () => void;
 }) {
-  const [archive] = AdminApi.useArchiveBillingPlanDefinition();
-  const [unarchive] = AdminApi.useUnarchiveBillingPlanDefinition();
+  const { mutateAsync: archive } = useArchiveBillingPlanDefinition();
+  const { mutateAsync: unarchive } = useUnarchiveBillingPlanDefinition();
   const [confirmArchive, setConfirmArchive] = React.useState(false);
   const isArchived = Boolean(planDefinition.archivedAt);
 
@@ -399,8 +390,8 @@ function ProductRow({
   onEdit: (product: AdminApi.BillingProduct) => void;
   onRefresh: () => void;
 }) {
-  const [archive] = AdminApi.useArchiveBillingProduct();
-  const [setActive] = AdminApi.useSetActiveBillingProduct();
+  const { mutateAsync: archive } = useArchiveBillingProduct();
+  const { mutateAsync: setActive } = useSetActiveBillingProduct();
   const [confirmArchive, setConfirmArchive] = React.useState(false);
 
   const handleArchive = async () => {

@@ -1,3 +1,4 @@
+import { useCreateSiteMessage, useUpdateSiteMessage, useSiteMessageCompanies } from "@/ee/models/siteMessageLifecycle";
 import { useDebouncedValue } from "@/ee/hooks/useDebouncedValue";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
@@ -16,8 +17,8 @@ interface SiteMessageModalProps {
 }
 
 export function SiteMessageModal({ isOpen, onClose, onSuccess, message }: SiteMessageModalProps) {
-  const [create] = AdminApi.useCreateSiteMessage();
-  const [update] = AdminApi.useUpdateSiteMessage();
+  const { mutateAsync: create } = useCreateSiteMessage();
+  const { mutateAsync: update } = useUpdateSiteMessage();
   const isEdit = message !== undefined;
   const richTextHandlers = useRichEditorHandlers();
 
@@ -112,7 +113,7 @@ function CompanyPicker({
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const debouncedSearchQuery = useDebouncedValue(searchQuery, SEARCH_DEBOUNCE_MS);
-  const { data, loading, error: loadError } = AdminApi.useGetCompanies({});
+  const { data, isPending: loading, error: loadError } = useSiteMessageCompanies();
 
   const companies = data?.companies ?? [];
   const filteredCompanies = filterCompanies(companies, debouncedSearchQuery);

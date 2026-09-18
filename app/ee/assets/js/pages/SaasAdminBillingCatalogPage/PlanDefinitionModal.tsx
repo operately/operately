@@ -1,3 +1,4 @@
+import { useCreateBillingPlanDefinition, useUpdateBillingPlanDefinition } from "@/ee/models/billingCatalogLifecycle";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
@@ -13,8 +14,8 @@ interface PlanDefinitionModalProps {
 type LimitMode = "limited" | "unlimited";
 
 export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition }: PlanDefinitionModalProps) {
-  const [create] = AdminApi.useCreateBillingPlanDefinition();
-  const [update] = AdminApi.useUpdateBillingPlanDefinition();
+  const { mutateAsync: create } = useCreateBillingPlanDefinition();
+  const { mutateAsync: update } = useUpdateBillingPlanDefinition();
   const isEdit = planDefinition !== undefined;
 
   const form = Forms.useForm({
