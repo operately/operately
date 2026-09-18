@@ -4,6 +4,7 @@ import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 async function invalidateCompanyMembershipQueries(client: QueryClient) {
   const prefixes = [
     Api.companies.getQueryKeyPrefix(),
+    Api.spaces.countByAccessLevelQueryKeyPrefix(),
     Api.companies.listQueryKeyPrefix(),
     Api.people.listQueryKeyPrefix(),
     Api.people.getQueryKeyPrefix(),

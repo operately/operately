@@ -1,6 +1,15 @@
 import { useRouteLoaderData } from "react-router";
-import { CompanyLoadedData } from "./companyLoader";
+import { useCompanyLayoutQueries, useRefreshCompanyLayout } from "@/models/companies/companyLayoutQueries";
+import type { CompanyLoaderResult } from "./companyLoader";
 
 export function useCompanyLoaderData() {
-  return useRouteLoaderData("companyRoot") as CompanyLoadedData;
+  const inputs = useRouteLoaderData("companyRoot") as CompanyLoaderResult;
+
+  return useCompanyLayoutQueries(inputs);
+}
+
+export function useRefreshCompanyLoader() {
+  const inputs = useRouteLoaderData("companyRoot") as CompanyLoaderResult;
+
+  return useRefreshCompanyLayout(inputs);
 }
