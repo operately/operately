@@ -22,6 +22,15 @@ jest.mock("../icons", () => ({
   IconX: () => <span>close</span>,
 }));
 
+jest.mock("../RichEditor", () => ({
+  Editor: () => <div data-testid="rich-editor" />,
+  useEditor: () => ({
+    editor: { commands: { setContent: jest.fn() }, getJSON: () => null },
+    localDraftRestored: false,
+    clearLocalDraft: jest.fn(),
+  }),
+}));
+
 import { ResourceHubPage } from "./index";
 import {
   createMockDocumentNode,
@@ -36,15 +45,18 @@ import {
 function ResourceHubPageHarness({
   initialNodes = [],
   openAddFolderOnMount = false,
+  selectedUploadFile,
   showSearch = false,
   search,
 }: {
   initialNodes?: React.ComponentProps<typeof ResourceHubPage>["nodesListProps"]["nodes"];
   openAddFolderOnMount?: boolean;
+  selectedUploadFile?: File;
   showSearch?: boolean;
   search?: ResourceHubPage.SearchFn;
 }) {
   const hasOpenedAddFolderRef = React.useRef(false);
+  const hasSelectedUploadFileRef = React.useRef(false);
   const [resourceHub] = React.useState(() =>
     createMockResourceHub({
       permissions: createMockPermissions({
@@ -85,6 +97,15 @@ function ResourceHubPageHarness({
     hasOpenedAddFolderRef.current = true;
     sharedProps.newFileModals.toggleShowAddFolder();
   }, [openAddFolderOnMount, sharedProps.newFileModals]);
+
+  React.useEffect(() => {
+    if (!selectedUploadFile || hasSelectedUploadFileRef.current) {
+      return;
+    }
+
+    hasSelectedUploadFileRef.current = true;
+    sharedProps.newFileModals.setFiles([selectedUploadFile]);
+  }, [selectedUploadFile, sharedProps.newFileModals]);
 
   return (
     <MemoryRouter>
@@ -139,6 +160,25 @@ describe("ResourceHubPage", () => {
 
     expect(searchInput).toHaveAttribute("type", "text");
     expect(searchInput.compareDocumentPosition(sortControl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  test("keeps search and sort above the file upload form", async () => {
+    render(
+      <ResourceHubPageHarness
+        showSearch
+        initialNodes={[createMockDocumentNode()]}
+        selectedUploadFile={new File(["notes"], "Roadmap.pdf", { type: "application/pdf" })}
+      />,
+    );
+
+    const searchInput = screen.getByRole("searchbox", { name: "Search documents and files…" });
+    const sortControl = screen.getByRole("button", { name: /Sort by/ });
+    const uploadForm = await screen.findByDisplayValue("Roadmap");
+    const saveButton = screen.getByRole("button", { name: "Save" });
+
+    expect(searchInput.compareDocumentPosition(sortControl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(sortControl.compareDocumentPosition(uploadForm) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(uploadForm.compareDocumentPosition(saveButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   test("disables sorting while search is active", () => {
