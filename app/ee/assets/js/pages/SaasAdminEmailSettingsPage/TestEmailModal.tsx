@@ -1,7 +1,7 @@
+import { useSendTestEmail } from "@/ee/models/emailSettingsLifecycle";
 import * as React from "react";
 
 import classNames from "classnames";
-import * as AdminApi from "@/ee/admin_api";
 import { useBoolState } from "@/hooks/useBoolState";
 import { Forms, Modal, SecondaryButton } from "turboui";
 
@@ -32,7 +32,7 @@ export function TestEmailAction() {
 }
 
 function TestEmailForm({ onClose }: { onClose: () => void }) {
-  const [sendTestEmail] = AdminApi.useSendTestEmail();
+  const { mutateAsync: sendTestEmail } = useSendTestEmail();
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const [statusTone, setStatusTone] = React.useState<"success" | "error">("success");
 

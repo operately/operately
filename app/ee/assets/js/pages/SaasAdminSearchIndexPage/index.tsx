@@ -1,3 +1,5 @@
+import { useStartSearchIndexMaintenance, useRefreshSearchIndex } from "@/ee/models/searchIndexLifecycle";
+import { useLoadedData } from "./loader";
 import * as React from "react";
 
 import * as AdminApi from "@/ee/admin_api";
@@ -6,24 +8,17 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { SearchIndexAdminPage, showSuccessToast } from "turboui";
 import type { MaintenanceKind, SearchIndexSourceStatus, StartMaintenanceResult } from "turboui";
 
-interface LoaderResult {
-  sources: AdminApi.SearchIndexSourceStatus[];
-}
+export { loader } from "./loader";
 
 type StartMaintenance = (
   input: AdminApi.StartSearchIndexMaintenanceInput,
 ) => Promise<AdminApi.StartSearchIndexMaintenanceResult>;
 
-export async function loader(): Promise<LoaderResult> {
-  const response = await AdminApi.getSearchIndexStatus({});
-  return { sources: response.sources };
-}
-
 export function Page() {
-  const { sources } = Pages.useLoadedData<LoaderResult>();
-  const refresh = Pages.useRefresh();
+  const { sources } = useLoadedData();
+  const refresh = useRefreshSearchIndex();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const [startMaintenance] = AdminApi.useStartSearchIndexMaintenance();
+  const { mutateAsync: startMaintenance } = useStartSearchIndexMaintenance();
 
   React.useEffect(() => scheduleActiveRunRefresh(sources, refresh), [sources, refresh]);
 

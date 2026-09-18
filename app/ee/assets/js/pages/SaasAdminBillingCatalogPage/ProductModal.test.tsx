@@ -8,9 +8,9 @@ let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockSelectOptions: Record<string, { label: string; value: string }[]> = {};
 
-jest.mock("@/ee/admin_api", () => ({
-  useCreateBillingProduct: () => [mockCreate],
-  useUpdateBillingProduct: () => [mockUpdate],
+jest.mock("@/ee/models/billingCatalogLifecycle", () => ({
+  useCreateBillingProduct: () => ({ mutateAsync: mockCreate }),
+  useUpdateBillingProduct: () => ({ mutateAsync: mockUpdate }),
 }));
 
 jest.mock("turboui", () => {

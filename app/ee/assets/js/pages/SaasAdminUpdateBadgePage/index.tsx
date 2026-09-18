@@ -1,23 +1,17 @@
+import { useUpdateUpdateBadgeSettings } from "@/ee/models/updateBadgeLifecycle";
+import { useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import * as AdminApi from "@/ee/admin_api";
 import { PageSection, SwitchToggle, showErrorToast, showSuccessToast } from "turboui";
 
-interface LoaderResult {
-  enabled: boolean;
-}
-
-export async function loader(): Promise<LoaderResult> {
-  const data = await AdminApi.getUpdateBadgeSettings({});
-  return { enabled: data.enabled };
-}
+export { loader } from "./loader";
 
 export function Page() {
-  const { enabled: initialEnabled } = Pages.useLoadedData<LoaderResult>();
+  const { enabled: initialEnabled } = useLoadedData();
   const [enabled, setEnabled] = React.useState(initialEnabled);
-  const [updateSettings] = AdminApi.useUpdateUpdateBadgeSettings();
+  const { mutateAsync: updateSettings } = useUpdateUpdateBadgeSettings();
   const [saving, setSaving] = React.useState(false);
 
   React.useEffect(() => {

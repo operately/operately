@@ -1,3 +1,4 @@
+import { useUpdateEmailSettings } from "@/ee/models/emailSettingsLifecycle";
 import * as React from "react";
 
 import * as AdminApi from "@/ee/admin_api";
@@ -31,7 +32,7 @@ interface FormProps {
 }
 
 function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
-  const [updateEmailSettings] = AdminApi.useUpdateEmailSettings();
+  const { mutateAsync: updateEmailSettings } = useUpdateEmailSettings();
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const [statusTone, setStatusTone] = React.useState<"success" | "error">("success");
 

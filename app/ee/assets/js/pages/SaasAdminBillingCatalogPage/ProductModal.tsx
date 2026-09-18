@@ -1,3 +1,4 @@
+import { useCreateBillingProduct, useUpdateBillingProduct } from "@/ee/models/billingCatalogLifecycle";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
@@ -12,8 +13,8 @@ interface ProductModalProps {
 }
 
 export function ProductModal({ isOpen, onClose, onSuccess, product, planDefinitions }: ProductModalProps) {
-  const [create] = AdminApi.useCreateBillingProduct();
-  const [update] = AdminApi.useUpdateBillingProduct();
+  const { mutateAsync: create } = useCreateBillingProduct();
+  const { mutateAsync: update } = useUpdateBillingProduct();
   const isEdit = product !== undefined;
   const availablePlanDefinitions = planDefinitions
     .filter((planDefinition) => planDefinition.billingBehavior === "provider_managed" && !planDefinition.archivedAt)
