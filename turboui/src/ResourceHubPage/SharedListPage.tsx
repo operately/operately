@@ -77,8 +77,12 @@ function SharedListContent({
       />
 
       {beforeList}
-      <AddFileWidget {...addFileWidgetProps} />
-      <NodesList {...nodesListProps} search={search} formattedTimePreferences={formattedTimePreferences} />
+      <NodesList
+        {...nodesListProps}
+        search={search}
+        formattedTimePreferences={formattedTimePreferences}
+        beforeItems={<AddFileWidget {...addFileWidgetProps} />}
+      />
       <AddFolderModal {...addFolderModalProps} />
     </div>
   );

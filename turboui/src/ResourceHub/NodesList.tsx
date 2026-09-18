@@ -23,6 +23,7 @@ interface NodesListProps {
   getNodeTestId?: (node: ResourceHubNode, index: number) => string;
   search?: ResourceHubSearchProps;
   formattedTimePreferences?: FormattedTimePreferences;
+  beforeItems?: React.ReactNode;
 }
 
 export function NodesList({
@@ -35,6 +36,7 @@ export function NodesList({
   getNodeTestId,
   search,
   formattedTimePreferences,
+  beforeItems,
 }: NodesListProps) {
   const { filesSelected } = useNewFileModalsContext();
   const searchState = useResourceHubSearch(search);
@@ -66,6 +68,7 @@ export function NodesList({
         </div>
       )}
 
+      {beforeItems}
       {content}
     </ResourceHubNodesListProvider>
   );
