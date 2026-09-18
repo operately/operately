@@ -1,3 +1,5 @@
+import { useDeleteSiteMessage, useRefreshSiteMessages } from "@/ee/models/siteMessageLifecycle";
+import { useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
@@ -21,22 +23,15 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 
 import { SiteMessageModal } from "./SiteMessageModal";
 
-interface LoaderResult {
-  messages: AdminApi.SiteMessage[];
-}
-
-export const loader = async (): Promise<LoaderResult> => {
-  const data = await AdminApi.listSiteMessages({});
-  return { messages: data.messages ?? [] };
-};
+export { loader } from "./loader";
 
 export function Page() {
-  const { messages } = Pages.useLoadedData<LoaderResult>();
-  const refresh = Pages.useRefresh();
+  const { messages } = useLoadedData();
+  const refresh = useRefreshSiteMessages();
   const [modalMessage, setModalMessage] = React.useState<AdminApi.SiteMessage | undefined>();
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
   const [messageToDelete, setMessageToDelete] = React.useState<AdminApi.SiteMessage | undefined>();
-  const [deleteMessage] = AdminApi.useDeleteSiteMessage();
+  const { mutateAsync: deleteMessage } = useDeleteSiteMessage();
 
   const closeModal = () => {
     setModalMessage(undefined);

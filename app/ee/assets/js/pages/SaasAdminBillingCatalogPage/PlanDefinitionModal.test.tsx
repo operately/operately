@@ -9,9 +9,9 @@ let mockReset = jest.fn();
 let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 
-jest.mock("@/ee/admin_api", () => ({
-  useCreateBillingPlanDefinition: () => [mockCreate],
-  useUpdateBillingPlanDefinition: () => [mockUpdate],
+jest.mock("@/ee/models/billingCatalogLifecycle", () => ({
+  useCreateBillingPlanDefinition: () => ({ mutateAsync: mockCreate }),
+  useUpdateBillingPlanDefinition: () => ({ mutateAsync: mockUpdate }),
 }));
 
 jest.mock("turboui", () => {

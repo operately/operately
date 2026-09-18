@@ -243,3 +243,14 @@ describe("SaasAdminBillingCatalogPage refresh helpers", () => {
     expect(mockRefresh).toHaveBeenCalledTimes(1);
   });
 });
+
+// Loader and mutation behavior is covered separately with a real query client.
+jest.mock("./loader", () => ({ loader: jest.fn(), useLoadedData: () => mockLoadedData }));
+jest.mock("@/ee/models/billingCatalogLifecycle", () => ({
+  useRefreshBillingCatalog: () => mockRefresh,
+  useSyncBillingProductsFromPolar: () => ({ mutateAsync: jest.fn(), isPending: false }),
+  useArchiveBillingPlanDefinition: () => ({ mutateAsync: jest.fn() }),
+  useUnarchiveBillingPlanDefinition: () => ({ mutateAsync: jest.fn() }),
+  useArchiveBillingProduct: () => ({ mutateAsync: jest.fn() }),
+  useSetActiveBillingProduct: () => ({ mutateAsync: jest.fn() }),
+}));
