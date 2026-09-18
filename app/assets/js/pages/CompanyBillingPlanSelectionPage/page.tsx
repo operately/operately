@@ -22,6 +22,7 @@ interface CompanyRootData {
 }
 
 export function Page() {
+  const billingActions = Billing.useBillingActions();
   const location = useLocation();
   const navigate = useNavigate();
   const paths = usePaths();
@@ -79,7 +80,7 @@ export function Page() {
     setActionError(null);
     setIsSubmitting(true);
 
-    const result = await Billing.beginCheckout(selection.target);
+    const result = await billingActions.beginCheckout(selection.target);
 
     if (result.outcome === "missing_target") {
       setIsSubmitting(false);
@@ -105,13 +106,13 @@ export function Page() {
     setActionError("We couldn't start checkout right now. Please try again.");
     showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
     setIsSubmitting(false);
-  }, [selection.target]);
+  }, [billingActions, selection.target]);
 
   const submitPlanChange = React.useCallback(async () => {
     setActionError(null);
     setIsSubmitting(true);
 
-    const result = await Billing.changePlan(selection.target);
+    const result = await billingActions.changePlan(selection.target);
 
     if (result.outcome === "missing_target") {
       setIsSubmitting(false);
@@ -142,7 +143,7 @@ export function Page() {
     setActionError("We couldn't change the plan right now. Please try again.");
     showErrorToast("Failed to change plan", "We couldn't change the plan right now. Please try again.");
     setIsSubmitting(false);
-  }, [navigate, paths, selection.target]);
+  }, [billingActions, navigate, paths, selection.target]);
 
   const handleSubmit = React.useCallback(() => {
     if (canManagePaidSubscription) {

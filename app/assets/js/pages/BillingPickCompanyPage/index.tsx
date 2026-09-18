@@ -1,4 +1,5 @@
-import Api, { Company } from "@/api";
+import { Company } from "@/api";
+import { loader, useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -14,20 +15,8 @@ import { formatCompanyBillingPlanName } from "turboui/CompanyBilling";
 
 export default { name: "BillingPickCompanyPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  companies: Company[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const companies = await Api.companies
-    .list({ includeMemberCount: true, canManageBilling: true })
-    .then((res) => res.companies || []);
-
-  return { companies };
-}
-
 function Page() {
-  const { companies } = Pages.useLoadedData<LoaderResult>();
+  const { companies } = useLoadedData();
   const params = new URLSearchParams(window.location.search);
   const plan = params.get("plan");
   const billingPeriod = params.get("billing_period");

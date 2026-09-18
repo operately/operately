@@ -1,3 +1,7 @@
+import Api from "@/api";
+import { useLoadedQuery } from "@/api/queryClient";
+import { useMemo } from "react";
+import { assertPresent } from "@/utils/assertions";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 
@@ -7,7 +11,7 @@ import { Paths } from "@/routes/paths";
 import { redirect } from "react-router";
 
 interface LoaderResult {
-  billing: Billing.BillingOverview;
+  queryInput: {};
 }
 
 interface LoaderArgs {
@@ -20,9 +24,10 @@ export async function loader({ params }: LoaderArgs): Promise<LoaderResult> {
   await Billing.authorizeBillingManagementPageAccess(params.companyId);
 
   try {
-    return {
-      billing: await Billing.getBilling({}),
-    };
+    const queryInput = {};
+    await Billing.fetchBilling(queryInput);
+
+    return { queryInput };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 403) {
       throw redirect(new Paths({ companyId: params.companyId }).companyAdminPath());
@@ -32,6 +37,14 @@ export async function loader({ params }: LoaderArgs): Promise<LoaderResult> {
   }
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+export function useLoadedData() {
+  const { queryInput } = Pages.useLoadedData<LoaderResult>();
+
+  // Navigation can change company headers before this page unmounts.
+  const options = useMemo(() => Api.billing.getQueryOptions(queryInput), [queryInput]);
+  const { data } = useLoadedQuery(options);
+
+  assertPresent(data, "Billing is unavailable");
+
+  return { billing: data.billing };
 }
