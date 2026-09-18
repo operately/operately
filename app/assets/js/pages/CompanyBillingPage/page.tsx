@@ -50,6 +50,7 @@ export function resolveCheckoutConfirmation(
 }
 
 export function Page() {
+  const billingActions = Billing.useBillingActions();
   const location = useLocation();
   const navigate = useNavigate();
   const paths = usePaths();
@@ -144,7 +145,7 @@ export function Page() {
     setFeedback(null);
     setIsStartingCheckout(true);
 
-    const result = await Billing.beginCheckout(target);
+    const result = await billingActions.beginCheckout(target);
 
     if (result.outcome === "missing_target") {
       setIsStartingCheckout(false);
@@ -170,12 +171,12 @@ export function Page() {
     setActionError("We couldn't start checkout right now. Please try again.");
     showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
     setIsStartingCheckout(false);
-  }, []);
+  }, [billingActions]);
 
   const openPaymentMethodSession = React.useCallback(async () => {
     setActionError(null);
 
-    const result = await Billing.beginPaymentMethodSession(paths.companyBillingPath());
+    const result = await billingActions.beginPaymentMethodSession(paths.companyBillingPath());
 
     if (result.outcome === "session_created") {
       Billing.redirectToExternalBillingUrl(result.session.url);
@@ -191,12 +192,12 @@ export function Page() {
       "Payment method unavailable",
       "We couldn't open payment method details right now. Please try again.",
     );
-  }, [paths]);
+  }, [billingActions, paths]);
 
   const openCustomerPortalSession = React.useCallback(async () => {
     setActionError(null);
 
-    const result = await Billing.beginCustomerPortalSession(paths.companyBillingPath());
+    const result = await billingActions.beginCustomerPortalSession(paths.companyBillingPath());
 
     if (result.outcome === "session_created") {
       Billing.redirectToExternalBillingUrl(result.session.url);
@@ -209,13 +210,13 @@ export function Page() {
 
     setActionError("We couldn't open billing history right now. Please try again.");
     showErrorToast("Billing management unavailable", "We couldn't open billing history right now. Please try again.");
-  }, [paths]);
+  }, [billingActions, paths]);
 
   const reactivatePlan = React.useCallback(async () => {
     setActionError(null);
     setFeedback(null);
 
-    const result = await Billing.reactivateSubscription();
+    const result = await billingActions.reactivateSubscription();
 
     if (result.outcome === "billing_updated") {
       setBilling(result.billing);
@@ -229,13 +230,13 @@ export function Page() {
 
     setActionError("We couldn't keep the current plan right now. Please try again.");
     showErrorToast("Reactivation unavailable", "We couldn't keep the current plan right now. Please try again.");
-  }, []);
+  }, [billingActions]);
 
   const refreshFromBillingUpdate = React.useCallback(() => {
-    void Billing.refreshBilling({}).then((refreshed) => {
+    void billingActions.refreshBilling({}).then((refreshed) => {
       applyRefreshedBilling(refreshed);
     });
-  }, [applyRefreshedBilling]);
+  }, [applyRefreshedBilling, billingActions]);
 
   Billing.useBillingUpdatedSignal(refreshFromBillingUpdate);
 

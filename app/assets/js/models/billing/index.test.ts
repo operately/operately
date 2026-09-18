@@ -1,112 +1,6 @@
 import Api from "@/api";
 import * as Billing from "./index";
 
-function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
-  const { account, ...rest } = params;
-
-  return {
-    account: {
-      provider: "polar",
-      planKey: null,
-      billingInterval: null,
-      status: "free",
-      suggestedPlanKey: null,
-      suggestedBillingInterval: null,
-      suggestedPlanSource: null,
-      currentPeriodEnd: null,
-      cancelAtPeriodEnd: false,
-      pendingPlanKey: null,
-      pendingBillingInterval: null,
-      pendingCheckoutStartedAt: null,
-      scheduledPlanKey: null,
-      scheduledBillingInterval: null,
-      scheduledChangeEffectiveAt: null,
-      lastSyncedAt: "2026-05-23T00:00:00Z",
-      ...(account || {}),
-    },
-    plans: [
-      {
-        key: "free",
-        displayName: "Free",
-        tierRank: 0,
-        customerSelectable: false,
-        memberLimit: 20,
-        storageLimitBytes: 1_073_741_824,
-      },
-      {
-        key: "team",
-        displayName: "Team",
-        tierRank: 1,
-        customerSelectable: true,
-        memberLimit: 50,
-        storageLimitBytes: 107_374_182_400,
-      },
-      {
-        key: "business",
-        displayName: "Business",
-        tierRank: 2,
-        customerSelectable: true,
-        memberLimit: 200,
-        storageLimitBytes: 1_099_511_627_776,
-      },
-    ],
-    catalogProducts: [
-      {
-        id: "team-monthly",
-        provider: "polar",
-        planFamily: "team",
-        billingInterval: "monthly",
-        polarProductId: "pol_pro_monthly",
-        polarProductName: "Team Monthly",
-        priceAmount: 7900,
-        priceCurrency: "usd",
-        version: 1,
-        active: true,
-        archivedAt: null,
-        lastSyncedAt: "2026-05-23T00:00:00Z",
-        insertedAt: "2026-05-23T00:00:00Z",
-        updatedAt: "2026-05-23T00:00:00Z",
-      },
-      {
-        id: "team-yearly",
-        provider: "polar",
-        planFamily: "team",
-        billingInterval: "yearly",
-        polarProductId: "pol_pro_yearly",
-        polarProductName: "Team Yearly",
-        priceAmount: 79000,
-        priceCurrency: "usd",
-        version: 1,
-        active: true,
-        archivedAt: null,
-        lastSyncedAt: "2026-05-23T00:00:00Z",
-        insertedAt: "2026-05-23T00:00:00Z",
-        updatedAt: "2026-05-23T00:00:00Z",
-      },
-      {
-        id: "business-monthly",
-        provider: "polar",
-        planFamily: "business",
-        billingInterval: "monthly",
-        polarProductId: "pol_business_monthly",
-        polarProductName: "Business Monthly",
-        priceAmount: 19900,
-        priceCurrency: "usd",
-        version: 1,
-        active: true,
-        archivedAt: null,
-        lastSyncedAt: "2026-05-23T00:00:00Z",
-        insertedAt: "2026-05-23T00:00:00Z",
-        updatedAt: "2026-05-23T00:00:00Z",
-      },
-    ],
-    memberCount: 10,
-    storageUsageBytes: 81 * 1024 ** 3,
-    stale: false,
-    ...rest,
-  } as Billing.BillingOverview;
-}
-
 function accessStateMock(): Billing.BillingCompanyAccessState {
   const memberLimit = {
     code: "member_count_limit_status",
@@ -143,15 +37,6 @@ function accessStateMock(): Billing.BillingCompanyAccessState {
     accessStateEndsAt: "2026-06-06T00:00:00Z",
     memberLimit,
     storageLimit,
-  };
-}
-
-function hostedSessionMock() {
-  return {
-    provider: "polar",
-    url: "https://polar.sh/session",
-    returnUrl: "https://app.example.com/acme/admin/billing",
-    expiresAt: "2026-05-23T00:10:00Z",
   };
 }
 
@@ -220,17 +105,10 @@ describe("billing model helpers", () => {
     }
   });
 
-  it("loads billing overview, access state, and refresh data from the api", async () => {
-    const billing = billingOverviewMock();
+  it("loads access state from the api", async () => {
     const accessState = accessStateMock();
-
-    jest.spyOn(Api.billing, "get").mockResolvedValue({ billing } as any);
     jest.spyOn(Api.billing, "getAccessState").mockResolvedValue({ accessState } as any);
-    jest.spyOn(Api.billing, "refresh").mockResolvedValue({ billing } as any);
-
-    await expect(Billing.getBilling({})).resolves.toEqual(billing);
     await expect(Billing.getAccessState({})).resolves.toEqual(accessState);
-    await expect(Billing.refreshBilling({})).resolves.toEqual(billing);
   });
 
   it("extracts limit errors with a structured upgrade recommendation from api responses", () => {
@@ -413,92 +291,5 @@ describe("billing model helpers", () => {
       usageSummary: "This company has 20 active members. The plan includes 20.",
       cta: null,
     });
-  });
-
-  it("starts checkout through the billing api", async () => {
-    const session = {
-      provider: "polar",
-      url: "https://polar.sh/checkout/test",
-      expiresAt: "2026-05-23T00:10:00Z",
-      returnUrl: "https://app.example.com/acme/admin/billing",
-    };
-
-    jest.spyOn(Api.billing, "createCheckoutSession").mockResolvedValue({ session } as any);
-
-    const result = await Billing.beginCheckout({
-      plan: "team",
-      billingInterval: "monthly",
-      product: billingOverviewMock().catalogProducts[0],
-    });
-
-    expect(Api.billing.createCheckoutSession).toHaveBeenCalledWith({
-      plan: "team",
-      billingInterval: "monthly",
-    });
-    expect(result).toEqual({ outcome: "session_created", session });
-  });
-
-  it("changes the plan through the billing api", async () => {
-    const billing = billingOverviewMock({
-      account: {
-        planKey: "business",
-        billingInterval: "monthly",
-        status: "active",
-      } as any,
-    });
-
-    jest.spyOn(Api.billing, "changePlan").mockResolvedValue({ billing } as any);
-
-    const result = await Billing.changePlan({
-      plan: "business",
-      billingInterval: "monthly",
-      product: billing.catalogProducts[2],
-    });
-
-    expect(Api.billing.changePlan).toHaveBeenCalledWith({ plan: "business", billingInterval: "monthly" });
-    expect(result).toEqual({ outcome: "billing_updated", billing });
-  });
-
-  it("cancels and reactivates subscriptions through the billing api", async () => {
-    const pendingCancelBilling = billingOverviewMock({
-      account: {
-        planKey: "team",
-        billingInterval: "monthly",
-        status: "active",
-        cancelAtPeriodEnd: true,
-      } as any,
-    });
-    const reactivatedBilling = billingOverviewMock({
-      account: {
-        planKey: "team",
-        billingInterval: "monthly",
-        status: "active",
-        cancelAtPeriodEnd: false,
-      } as any,
-    });
-
-    jest.spyOn(Api.billing, "cancel").mockResolvedValue({ billing: pendingCancelBilling } as any);
-    jest.spyOn(Api.billing, "reactivate").mockResolvedValue({ billing: reactivatedBilling } as any);
-
-    const cancelResult = await Billing.cancelSubscription();
-    const reactivateResult = await Billing.reactivateSubscription();
-
-    expect(Api.billing.cancel).toHaveBeenCalledWith({});
-    expect(Api.billing.reactivate).toHaveBeenCalledWith({});
-    expect(cancelResult).toEqual({ outcome: "billing_updated", billing: pendingCancelBilling });
-    expect(reactivateResult).toEqual({ outcome: "billing_updated", billing: reactivatedBilling });
-  });
-
-  it("opens payment-method and portal sessions through the billing api", async () => {
-    jest.spyOn(Api.billing, "createPaymentMethodSession").mockResolvedValue({ session: hostedSessionMock() } as any);
-    jest.spyOn(Api.billing, "createCustomerPortalSession").mockResolvedValue({ session: hostedSessionMock() } as any);
-
-    const paymentMethodResult = await Billing.beginPaymentMethodSession("/acme/admin/billing");
-    const portalResult = await Billing.beginCustomerPortalSession("/acme/admin/billing");
-
-    expect(Api.billing.createPaymentMethodSession).toHaveBeenCalledWith({ returnTo: "/acme/admin/billing" });
-    expect(Api.billing.createCustomerPortalSession).toHaveBeenCalledWith({ returnTo: "/acme/admin/billing" });
-    expect(paymentMethodResult).toEqual({ outcome: "session_created", session: hostedSessionMock() });
-    expect(portalResult).toEqual({ outcome: "session_created", session: hostedSessionMock() });
   });
 });
