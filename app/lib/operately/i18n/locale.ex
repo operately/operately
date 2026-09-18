@@ -2,12 +2,13 @@ defmodule Operately.I18n.Locale do
   @moduledoc false
 
   # i18next uses CLDR categories, which do not map one-to-one to Gettext indexes.
-  # Both Portuguese `many` (whole millions) and `other` use msgstr[1].
+  # Portuguese `many` (whole millions) and `other` both use msgstr[1].
+  # Russian `other` (fractional counts) uses msgstr[2] (`many`).
   @plural_forms %{
     "en" => [one: 0, other: 1],
     "pt-BR" => [one: 0, many: 1, other: 1],
-    "ru" => [one: 0, few: 1, many: 2],
-    "ru-RU" => [one: 0, few: 1, many: 2]
+    "ru" => [one: 0, few: 1, many: 2, other: 2],
+    "ru-RU" => [one: 0, few: 1, many: 2, other: 2]
   }
 
   def to_bcp47(locale) when is_binary(locale) do

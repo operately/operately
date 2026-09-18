@@ -89,7 +89,33 @@ defmodule Operately.I18n.ConverterTest do
     assert Converter.from_po(po, "ru") == %{
              "1 apple_one" => "{{count}} яблоко",
              "1 apple_few" => "{{count}} яблока",
-             "1 apple_many" => "{{count}} яблок"
+             "1 apple_many" => "{{count}} яблок",
+             "1 apple_other" => "{{count}} яблок"
            }
+  end
+
+  test "uses the Russian plural translation for fractional counts in i18next" do
+    po = """
+    msgid "1 apple"
+    msgid_plural "%{count} apples"
+    msgstr[0] "%{count} яблоко"
+    msgstr[1] "%{count} яблока"
+    msgstr[2] "%{count} яблок"
+    """
+
+    translations = Converter.from_po(po, "ru")
+
+    script = """
+    const i18next = require('i18next').createInstance();
+    i18next.init({lng: 'ru', fallbackLng: 'en', resources: {
+      ru: {translation: JSON.parse(process.argv[1])},
+      en: {translation: {'1 apple_other': '{{count}} apples'}}
+    }});
+    process.stdout.write(JSON.stringify([1, 2, 5, 1.5].map(count => i18next.t('1 apple', {count}))));
+    """
+
+    {output, 0} = System.cmd("node", ["-e", script, Jason.encode!(translations)], cd: Path.expand("../../..", __DIR__))
+
+    assert Jason.decode!(output) == ["1 яблоко", "2 яблока", "5 яблок", "1.5 яблок"]
   end
 end
