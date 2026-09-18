@@ -24,6 +24,7 @@ Generated `*Query` / `*QueryOptions` / `*MutationOptions` names are in
 import Api, { Project } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
+import { assertPresent } from "@/utils/assertions";
 
 export async function loader({ params }) {
   const queryInput = {
@@ -43,9 +44,7 @@ export function useLoadedData(): { project: Project } {
   const { queryInput } = Pages.useLoadedData<LoaderResult>();
   const { data } = useLoadedQuery(Api.projects.getQueryOptions(queryInput));
 
-  if (!data?.project) {
-    throw new Error(`Project data is unavailable for project "${queryInput.id}"`);
-  }
+  assertPresent(data?.project, `Project data is unavailable for project "${queryInput.id}"`);
 
   return { project: data.project };
 }
