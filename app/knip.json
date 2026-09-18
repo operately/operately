@@ -4,7 +4,7 @@
   "project": [
     "assets/js/**/*.ts",
     "assets/js/**/*.tsx",
-    "assets/js/i18n.js",
+    "assets/js/i18n.ts",
     "ee/assets/js/**/*.ts",
     "ee/assets/js/**/*.tsx"
   ],

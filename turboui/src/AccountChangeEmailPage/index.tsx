@@ -38,7 +38,7 @@ export function AccountChangeEmailPage(props: AccountChangeEmailPage.Props) {
     return () => clearInterval(timer);
   }, []);
 
-  const retrySeconds = Math.max(0, Math.ceil((retryAt - clock) / 1000));
+  const retrySeconds = state.retryAfter <= 0 ? 0 : Math.max(0, Math.ceil((retryAt - clock) / 1000));
 
   React.useEffect(() => {
     if (resentEmail && resentEmail !== state.pending?.codeRecipient) setResentEmail(null);
