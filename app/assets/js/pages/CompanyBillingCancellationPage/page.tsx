@@ -21,6 +21,7 @@ interface BillingPageLocationState {
 }
 
 export function Page() {
+  const billingActions = Billing.useBillingActions();
   const navigate = useNavigate();
   const paths = usePaths();
   const { billing: loadedBilling } = useLoadedData();
@@ -44,7 +45,7 @@ export function Page() {
     setActionError(null);
     setIsSubmitting(true);
 
-    const result = await Billing.cancelSubscription();
+    const result = await billingActions.cancelSubscription();
 
     if (result.outcome === "billing_updated") {
       navigate(paths.companyBillingPath(), {
@@ -70,7 +71,7 @@ export function Page() {
     setActionError("We couldn't schedule the cancellation right now. Please try again.");
     showErrorToast("Cancellation unavailable", "We couldn't schedule the cancellation right now. Please try again.");
     setIsSubmitting(false);
-  }, [navigate, paths]);
+  }, [billingActions, navigate, paths]);
 
   return (
     <TurboCompanyBillingCancellationPage

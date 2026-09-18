@@ -1,4 +1,6 @@
-import * as Billing from "@/models/billing";
+import Api from "@/api";
+import { queryClient } from "@/api/queryClient";
+import { assertPresent } from "@/utils/assertions";
 
 import { Paths } from "@/routes/paths";
 import { redirect } from "react-router";
@@ -14,22 +16,21 @@ interface LoaderArgs {
   };
 }
 
-interface LoaderResult {
-  billing: Billing.BillingOverview;
-}
+type LoaderResult = Awaited<ReturnType<typeof companyBillingLoader>>;
 
 export async function loader(args: LoaderArgs): Promise<LoaderResult> {
-  await Billing.authorizeBillingManagementPageAccess(args.params.companyId);
-
   const data = await companyBillingLoader(args);
 
-  if (!isCompanyBillingPaidStatus(data.billing.account.status) || data.billing.account.cancelAtPeriodEnd) {
+  const result = queryClient.getQueryData(Api.billing.getQueryOptions(data.queryInput).queryKey);
+  assertPresent(result, "Billing is unavailable");
+
+  if (!isCompanyBillingPaidStatus(result.billing.account.status) || result.billing.account.cancelAtPeriodEnd) {
     throw redirect(new Paths({ companyId: args.params.companyId }).companyBillingPath());
   }
 
   return data;
 }
 
-export function useLoadedData(): LoaderResult {
+export function useLoadedData() {
   return useCompanyBillingLoadedData();
 }
