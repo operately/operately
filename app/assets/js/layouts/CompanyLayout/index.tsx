@@ -7,7 +7,6 @@ import { Outlet, useNavigate } from "react-router";
 
 import { KeyboardShortcutsModal, useKeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 
-import { useRefresh } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
@@ -17,7 +16,7 @@ import * as Notifications from "@/models/notifications";
 import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
 import { useProductRelease } from "@/models/productReleases/useProductRelease";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
+import { useCompanyLoaderData, useRefreshCompanyLoader } from "@/routes/useCompanyLoaderData";
 import { toAvailableUpdate } from "@/utils/versions";
 import { BillingDangerBanner } from "./BillingDangerBanner";
 import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
@@ -27,7 +26,7 @@ import { SupportSessionBanner } from "./SupportSessionBanner";
 export default function CompanyLayout() {
   const outletDiv = React.useRef<HTMLDivElement>(null);
   const keyboardShortcutsModal = useKeyboardShortcutsModal();
-  const refresh = useRefresh();
+  const refresh = useRefreshCompanyLoader();
   const productRelease = useProductRelease();
 
   useScrollToTopOnNavigationChange({ outletDiv });

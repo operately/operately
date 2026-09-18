@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { Forms, Page as TurboUIPage } from "turboui";
 import { PageModule } from "@/routes/types";
-import { useNavigate, useRevalidator } from "react-router";
+import { useNavigate } from "react-router";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyRenamePage", loader, Page } as PageModule;
@@ -12,7 +12,6 @@ export default { name: "CompanyRenamePage", loader, Page } as PageModule;
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { revalidate } = useRevalidator();
   const { company } = useLoadedData();
   const { mutateAsync: edit } = Companies.useEditCompany();
 
@@ -24,8 +23,6 @@ function Page() {
       await edit({ name: form.values.name });
 
       navigate(paths.companyAdminPath());
-      // The shared company layout still reads from the router's companyLoader.
-      revalidate();
     },
     cancel: () => navigate(paths.companyAdminPath()),
   });

@@ -1,4 +1,18 @@
-import { Paths } from "./paths";
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import { Paths, useOptionalPaths } from "./paths";
+import { useRouteLoaderData } from "react-router";
+import { renderHook } from "@/__tests__/renderHook";
+
+jest.mock("react-router", () => ({ useRouteLoaderData: jest.fn() }));
+
+it("builds paths from canonical company metadata and supports non-company routes", () => {
+  jest.mocked(useRouteLoaderData).mockReturnValue({ companyId: "canonical-company" });
+  const { result, rerender } = renderHook(useOptionalPaths, { initialProps: undefined });
+  expect(result.current?.homePath()).toBe("/canonical-company");
+  jest.mocked(useRouteLoaderData).mockReturnValue(undefined);
+  rerender(undefined);
+  expect(result.current).toBeNull();
+});
 
 describe("Paths", () => {
   test("uses the company home path for the deprecated feed path", () => {

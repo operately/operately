@@ -32,6 +32,8 @@ it.each([
   ["cancelSubscription", "/billing/cancel", {}],
   ["reactivateSubscription", "/billing/reactivate", {}],
 ] as const)("%s preserves its result and updates cached billing", async (action, path, input) => {
+  const accessKey = Api.billing.getAccessStateQueryKey({});
+  queryClient.setQueryData(accessKey, {});
   jest.mocked(axios.post).mockResolvedValue({ data: { billing } });
   const { result } = renderHook(useBillingActions, { initialProps: undefined, wrapper });
   await act(async () => {
@@ -39,14 +41,18 @@ it.each([
   });
   expect(axios.post).toHaveBeenCalledWith(`/api/v2${path}`, input, { headers: { "x-company-id": "company" } });
   expect(queryClient.getQueryData(Api.billing.getQueryKey({}))).toEqual({ billing });
+  expect(queryClient.getQueryState(accessKey)?.isInvalidated).toBe(true);
 });
 
 it("refreshes billing and synchronizes the query cache", async () => {
+  const accessKey = Api.billing.getAccessStateQueryKey({});
+  queryClient.setQueryData(accessKey, {});
   jest.mocked(axios.post).mockResolvedValue({ data: { billing } });
   const { result } = renderHook(useBillingActions, { initialProps: undefined, wrapper });
   await act(async () => expect(await result.current.refreshBilling({})).toEqual(billing));
   expect(axios.post).toHaveBeenCalledWith("/api/v2/billing/refresh", {}, expect.anything());
   expect(queryClient.getQueryData(Api.billing.getQueryKey({}))).toEqual({ billing });
+  expect(queryClient.getQueryState(accessKey)?.isInvalidated).toBe(true);
 });
 
 it("invalidates billing after creating checkout and preserves the external session", async () => {
@@ -118,6 +124,8 @@ it("preserves existing cache data when both the operation and recovery refresh f
 
 it("writes a mutation response to the originating company after headers change", async () => {
   const originalKey = Api.billing.getQueryKey({});
+  const originalAccessKey = Api.billing.getAccessStateQueryKey({});
+  queryClient.setQueryData(originalAccessKey, {});
   let resolveResponse: (value: unknown) => void = () => {
     throw new Error("Request has not started");
   };
@@ -135,12 +143,16 @@ it("writes a mutation response to the originating company after headers change",
   await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
   Api.default.setHeaders({ "x-company-id": "other-company" });
   const otherKey = Api.billing.getQueryKey({});
+  const otherAccessKey = Api.billing.getAccessStateQueryKey({});
+  queryClient.setQueryData(otherAccessKey, {});
   queryClient.setQueryData(otherKey, { billing: { account: { status: "free" } } });
   await act(async () => {
     resolveResponse({ data: { billing } });
     await operation;
   });
   expect(queryClient.getQueryData(originalKey)).toEqual({ billing });
+  expect(queryClient.getQueryState(originalAccessKey)?.isInvalidated).toBe(true);
+  expect(queryClient.getQueryState(otherAccessKey)?.isInvalidated).toBe(false);
   expect(queryClient.getQueryData(otherKey)).toEqual({ billing: { account: { status: "free" } } });
 });
 
