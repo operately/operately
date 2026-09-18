@@ -26,4 +26,12 @@ defmodule Operately.Features.McpConnectionsTest do
     |> Steps.revoke_first_connection()
     |> Steps.assert_grant_removed_from_list()
   end
+
+  feature "switching between client tabs shows client-specific instructions", ctx do
+    ctx
+    |> Steps.visit_mcp_connections_page()
+    |> Steps.assert_client_instructions_contains("ChatGPT")
+    |> Steps.click_mcp_client_tab("cursor")
+    |> Steps.assert_client_instructions_contains("Cursor")
+  end
 end
