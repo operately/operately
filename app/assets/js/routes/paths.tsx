@@ -658,13 +658,13 @@ export class Paths {
 }
 
 export function useOptionalPaths(): Paths | null {
-  const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } } | undefined;
+  const data = useRouteLoaderData("companyRoot") as { companyId: string } | undefined;
 
   return React.useMemo(() => {
-    if (!data?.company?.id) return null;
+    if (!data?.companyId) return null;
 
-    return new Paths({ companyId: data.company.id });
-  }, [data?.company?.id]);
+    return new Paths({ companyId: data.companyId });
+  }, [data?.companyId]);
 }
 
 export function usePaths() {

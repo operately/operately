@@ -19,7 +19,7 @@ export default function ErrorPage() {
 
 function ServerErrorPage() {
   const error = useRouteError() as AxiosError | null;
-  const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } };
+  const data = useRouteLoaderData("companyRoot") as { companyId: string } | undefined;
 
   React.useEffect(() => {
     if (!error) return;
@@ -39,7 +39,7 @@ function ServerErrorPage() {
         <div className="text-3xl font-bold mt-4">Oops! Something went wrong.</div>
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
-        {data && data.company ? <LinkToHome /> : <LinkToLobby />}
+        {data?.companyId ? <LinkToHome /> : <LinkToLobby />}
         <StackTrace />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import * as Companies from "@/models/companies";
+import Api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import { redirect } from "react-router";
 
@@ -40,7 +40,7 @@ async function getCachedEnabledFeatures(companyId: string): Promise<string[]> {
   if (cached) {
     return cached;
   } else {
-    const company = await Companies.getCompany({}).then((data) => data.company!);
+    const { company } = await Api.companies.getQuery({});
     ENABLED_FEATURES_CACHE[companyId] = company.enabledExperimentalFeatures || [];
     return ENABLED_FEATURES_CACHE[companyId]!;
   }

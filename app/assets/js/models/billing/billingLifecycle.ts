@@ -1,9 +1,14 @@
 import Api, * as api from "@/api";
-import { hashKey, useMutation, useQueryClient } from "@tanstack/react-query";
+import { hashKey, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "turboui/CompanyBillingPage";
 
 type BillingTarget = CompanyBillingPageTypes.BillingTarget;
+
+type BillingSnapshotContext = {
+  billingKey: ReturnType<typeof Api.billing.getQueryKey>;
+  accessKey: ReturnType<typeof Api.billing.getAccessStateQueryKey>;
+};
 
 type BeginCheckoutResult =
   | { outcome: "missing_target" }
@@ -28,17 +33,12 @@ type BeginHostedSessionResult =
 export function useBillingActions() {
   const client = useQueryClient();
   const snapshotOptions = {
-    onMutate: () => Api.billing.getQueryKey({}),
-    onSuccess: async (
-      result: api.BillingGetResult,
-      _input: unknown,
-      key: ReturnType<typeof Api.billing.getQueryKey> | undefined,
-    ) => {
-      if (!key) return;
-      // A read started before the mutation must not overwrite its confirmed result.
-      await client.cancelQueries({ queryKey: key, exact: true });
-      client.setQueryData(key, result);
-    },
+    onMutate: () => ({
+      billingKey: Api.billing.getQueryKey({}),
+      accessKey: Api.billing.getAccessStateQueryKey({}),
+    }),
+    onSuccess: (result: api.BillingGetResult, _input: unknown, context: BillingSnapshotContext | undefined) =>
+      applyBillingSnapshot(client, result, context),
   };
   const { mutateAsync: refresh } = useMutation({ ...Api.billing.refreshMutationOptions(), ...snapshotOptions });
   const { mutateAsync: updatePlan } = useMutation({ ...Api.billing.changePlanMutationOptions(), ...snapshotOptions });
@@ -173,4 +173,24 @@ export function useBillingActions() {
       beginCustomerPortalSession,
     };
   }, [refresh, updatePlan, cancel, reactivate, checkout, paymentMethod, portal]);
+}
+
+async function applyBillingSnapshot(
+  client: QueryClient,
+  result: api.BillingGetResult,
+  context: BillingSnapshotContext | undefined,
+) {
+  if (!context) return;
+  const { billingKey, accessKey } = context;
+
+  // A read started before the mutation must not overwrite its confirmed result.
+  await client.cancelQueries({ queryKey: billingKey, exact: true });
+
+  client.setQueryData(billingKey, result);
+
+  await client.invalidateQueries({
+    queryKey: accessKey,
+    exact: true,
+    refetchType: hashKey(accessKey) === hashKey(Api.billing.getAccessStateQueryKey({})) ? "active" : "none",
+  });
 }

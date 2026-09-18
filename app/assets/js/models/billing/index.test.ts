@@ -1,44 +1,4 @@
-import Api from "@/api";
 import * as Billing from "./index";
-
-function accessStateMock(): Billing.BillingCompanyAccessState {
-  const memberLimit = {
-    code: "member_count_limit_status",
-    limitKey: "member_count",
-    planKey: "team" as const,
-    currentUsage: 10,
-    requestedDelta: 0,
-    projectedUsage: 10,
-    limit: 50,
-    remaining: 40,
-    nearLimit: false,
-    blocked: false,
-    enforced: true,
-  };
-
-  const storageLimit = {
-    code: "storage_bytes_limit_status",
-    limitKey: "storage_bytes",
-    planKey: "team" as const,
-    currentUsage: 81 * 1024 ** 3,
-    requestedDelta: 0,
-    projectedUsage: 81 * 1024 ** 3,
-    limit: 107_374_182_400,
-    remaining: 19 * 1024 ** 3,
-    nearLimit: true,
-    blocked: false,
-    enforced: true,
-  };
-
-  return {
-    accessState: "payment_grace",
-    accessStateReason: "past_due",
-    accessStateStartedAt: "2026-05-23T00:00:00Z",
-    accessStateEndsAt: "2026-06-06T00:00:00Z",
-    memberLimit,
-    storageLimit,
-  };
-}
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -103,12 +63,6 @@ describe("billing model helpers", () => {
         delete (globalThis as { window?: Window }).window;
       }
     }
-  });
-
-  it("loads access state from the api", async () => {
-    const accessState = accessStateMock();
-    jest.spyOn(Api.billing, "getAccessState").mockResolvedValue({ accessState } as any);
-    await expect(Billing.getAccessState({})).resolves.toEqual(accessState);
   });
 
   it("extracts limit errors with a structured upgrade recommendation from api responses", () => {

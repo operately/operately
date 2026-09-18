@@ -98,6 +98,7 @@ describe.each([
   it("invalidates related cached inputs only after success", async () => {
     const client = new QueryClient();
     const related = [
+      Api.spaces.countByAccessLevelQueryKey({ accessLevel: "edit_access" }),
       Api.companies.getQueryKey({}),
       Api.companies.getQueryKey({ includeOwners: true, includeAdmins: true }),
       Api.companies.listQueryKey({ includeMemberCount: true }),
