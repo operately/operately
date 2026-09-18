@@ -1,4 +1,5 @@
-import Api from "@/api";
+import { loader, useLoadedData } from "./loader";
+import * as Companies from "@/models/companies";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -9,29 +10,14 @@ import { useNavigate } from "react-router";
 
 import { Forms, Link } from "turboui";
 import { PageModule } from "@/routes/types";
-import { BillingCatalog, parseBillingIntent } from "./billingIntent";
+import { parseBillingIntent } from "./billingIntent";
 
 export default { name: "NewCompanyPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  billingCatalog: BillingCatalog;
-}
-
-async function loader(): Promise<LoaderResult> {
-  const result = await Api.billing.getCatalog({});
-
-  return {
-    billingCatalog: {
-      plans: result.plans ?? [],
-      catalogProducts: result.catalogProducts ?? [],
-    },
-  };
-}
-
 function Page() {
   const navigate = useNavigate();
-  const [add] = Api.companies.useCreate();
-  const { billingCatalog } = Pages.useLoadedData<LoaderResult>();
+  const { mutateAsync: add } = Companies.useCreateCompany();
+  const { billingCatalog } = useLoadedData();
   const billingIntent = React.useMemo(
     () => parseBillingIntent(window.location.search, billingCatalog),
     [billingCatalog],

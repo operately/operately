@@ -1,20 +1,23 @@
-import Api, { CompanyImportRun } from "@/api";
-import * as Socket from "@/api/socket";
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
+import * as CompanyExports from "@/models/companyExports";
+import * as Socket from "@/api/socket";
 
-interface LoaderResult {
-  importRuns: CompanyImportRun[];
-}
-
-export async function loader(): Promise<LoaderResult> {
+export async function loader() {
   Api.default.setHeaders({});
   Socket.setHeaders({});
+  const queryInput = {};
 
-  return {
-    importRuns: await Api.company_transfers.listImportRuns({}).then((res) => res.importRuns),
-  };
+  await Api.company_transfers.listImportRunsQuery(queryInput);
+
+  return { queryInput };
 }
 
-export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+type LoaderResult = Awaited<ReturnType<typeof loader>>;
+
+export function useLoadedData() {
+  const { queryInput } = Pages.useLoadedData<LoaderResult>();
+  const { data: importRuns } = CompanyExports.useImportRuns(queryInput);
+
+  return { importRuns: importRuns ?? [] };
 }

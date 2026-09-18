@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import Api from "@/api";
 import * as Blobs from "@/models/blobs";
 import * as CompanyExports from "@/models/companyExports";
 import { Paths } from "@/routes/paths";
@@ -12,8 +11,6 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 
 export default { name: "CompanyImportPage", loader, Page } as PageModule;
 
-const POLL_INTERVAL_MS = 2_000;
-
 const EMPTY_UPLOAD_STATE: CompanyImportPage.UploadedFileState = {
   blobId: null,
   fileName: null,
@@ -22,26 +19,10 @@ const EMPTY_UPLOAD_STATE: CompanyImportPage.UploadedFileState = {
 };
 
 function Page() {
-  const { importRuns } = useLoadedData();
+  const { importRuns: runs } = useLoadedData();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const [runs, setRuns] = React.useState(() => CompanyExports.sortRuns(importRuns));
   const [packageFile, setPackageFile] = React.useState<CompanyImportPage.UploadedFileState>(EMPTY_UPLOAD_STATE);
-  const [starting, setStarting] = React.useState(false);
-
-  const refreshRuns = React.useCallback(async () => {
-    const response = await Api.company_transfers.listImportRuns({});
-    setRuns(CompanyExports.sortRuns(response.importRuns));
-  }, []);
-
-  React.useEffect(() => {
-    if (!runs.some(CompanyExports.isActiveRun)) return;
-
-    const interval = window.setInterval(() => {
-      refreshRuns().catch(() => null);
-    }, POLL_INTERVAL_MS);
-
-    return () => window.clearInterval(interval);
-  }, [refreshRuns, runs]);
+  const { mutateAsync: startImport, isPending: starting } = CompanyExports.useStartImport();
 
   const uploadArtifact = React.useCallback(async (file: File) => {
     setPackageFile({
@@ -77,22 +58,17 @@ function Page() {
   const handleStartImport = React.useCallback(async () => {
     if (starting || !packageFile.blobId) return;
 
-    setStarting(true);
-
     try {
-      await Api.company_transfers.startImport({
+      await startImport({
         packageBlobId: packageFile.blobId,
       });
 
       setPackageFile(EMPTY_UPLOAD_STATE);
       showSuccessToast("Import started", "The company is being imported in the background.");
-      await refreshRuns();
     } catch {
       showErrorToast("Failed to start import", "Please confirm the package finished uploading and try again.");
-    } finally {
-      setStarting(false);
     }
-  }, [packageFile.blobId, refreshRuns, starting]);
+  }, [packageFile.blobId, startImport, starting]);
 
   const handleClearPackageFile = React.useCallback(() => {
     if (starting) return;
