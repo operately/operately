@@ -52,3 +52,19 @@ it("allows an empty company list while requiring the account", async () => {
   expect(result.current.companies).toEqual([]);
   expect(result.current.account.fullName).toBe("Person");
 });
+
+it("keeps the prefetched account and companies while navigation changes company headers", async () => {
+  const account = { fullName: "Person" };
+  const companies = [{ id: "company", name: "Company" }];
+  jest.mocked(axios.get).mockImplementation(async (url) => ({
+    data: url.endsWith("get_account") ? { account } : { companies },
+  }));
+  jest.mocked(Pages.useLoadedData).mockReturnValue(await loader());
+  const { result, rerender } = renderHook(useLoadedData, { initialProps: undefined, wrapper });
+
+  Api.default.setHeaders({ "x-company-id": "company" });
+  rerender(undefined);
+
+  expect(result.current).toEqual({ account, companies });
+  expect(axios.get).toHaveBeenCalledTimes(2);
+});
