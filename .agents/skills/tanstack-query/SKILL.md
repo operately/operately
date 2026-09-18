@@ -141,4 +141,4 @@ visit the migrated route.
 - Extract a shared loader helper for two similar pages unless duplication is
   already painful. Include flags and parent APIs usually differ.
 - Use `!` to bypass missing query data, or `assertPresent` for non-nullable fields
-  or data with a safe fallback. Assert only potentially absent data that is essential.
+  or data with a safe fallback.
