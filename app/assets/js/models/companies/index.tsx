@@ -15,6 +15,7 @@ export function createInvitationUrl(token: string) {
 }
 
 export {
+  useCreateCompany,
   useEditCompany,
   useAddCompanyTrustedEmailDomain,
   useRemoveCompanyTrustedEmailDomain,

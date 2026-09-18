@@ -3,7 +3,7 @@ import { normalizeCompanyBillingPlanKey } from "turboui";
 
 const BILLING_INTERVALS: BillingInterval[] = ["monthly", "yearly"];
 
-export interface BillingCatalog {
+interface BillingCatalog {
   plans: BillingPlanDefinition[];
   catalogProducts: BillingCatalogProduct[];
 }

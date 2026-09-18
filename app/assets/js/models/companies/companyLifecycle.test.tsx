@@ -80,3 +80,25 @@ describe.each([
     }
   });
 });
+
+it("refreshes cached company lists across company headers after creation", async () => {
+  const queryClient = new QueryClient();
+  const wrapper = ({ children }: React.PropsWithChildren) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+  const lobbyKey = Api.companies.listQueryKey({ includeMemberCount: true });
+  Api.default.setHeaders({ "x-company-id": "previous" });
+  const otherKey = Api.companies.listQueryKey({ includeMemberCount: true });
+  const unrelated = Api.people.listQueryKey({});
+  [lobbyKey, otherKey, unrelated].forEach((key) => queryClient.setQueryData(key, {}));
+  const { result, unmount } = renderHook(Lifecycle.useCreateCompany, { initialProps: undefined, wrapper });
+  jest.mocked(axios.post).mockResolvedValue({ data: { company: { id: "new" } } });
+  await act(async () => {
+    await result.current.mutateAsync({ companyName: "New", title: "Owner" });
+  });
+  expect(queryClient.getQueryState(lobbyKey)?.isInvalidated).toBe(true);
+  expect(queryClient.getQueryState(otherKey)?.isInvalidated).toBe(true);
+  expect(queryClient.getQueryState(unrelated)?.isInvalidated).toBe(false);
+  unmount();
+  queryClient.clear();
+});
