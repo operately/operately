@@ -31,6 +31,7 @@ beforeEach(() => {
 it("invalidates space detail, list, tools, and embedded name queries for include-flag variants", async () => {
   const queryClient = createQueryClient();
   const affected = [
+    Api.spaces.countByAccessLevelQueryKey({ accessLevel: "edit_access" }),
     Api.spaces.getQueryKey({ id: "space-1" }),
     Api.spaces.getQueryKey({ id: "space-1", includePermissions: true }),
     Api.spaces.getQueryKey({ id: "renamed-space-1", includeMembers: true }),
@@ -192,7 +193,11 @@ it("deleting a space invalidates its details and surviving lists without refresh
     Api.spaces.getQueryKey({ id: "space1" }),
     Api.spaces.getQueryKey({ id: "renamed-space1", includeMembers: true }),
   ];
-  const lists = [Api.spaces.listQueryKey({}), Api.spaces.searchQueryKey({ query: "marketing" })];
+  const lists = [
+    Api.spaces.listQueryKey({}),
+    Api.spaces.searchQueryKey({ query: "marketing" }),
+    Api.spaces.countByAccessLevelQueryKey({ accessLevel: "edit_access" }),
+  ];
   const companyMap = Api.companies.getWorkMapQueryKey({});
   const otherMap = Api.companies.getWorkMapQueryKey({ spaceId: "space2" });
   const untouched = [

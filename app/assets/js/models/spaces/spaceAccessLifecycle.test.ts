@@ -25,6 +25,7 @@ beforeAll(() => {
 it("invalidates access data for every space ID variant without touching unrelated resources", async () => {
   const client = new QueryClient();
   const affected = [
+    Api.spaces.countByAccessLevelQueryKey({ accessLevel: "edit_access" }),
     Api.spaces.getQueryKey({ id: "space1" }),
     Api.spaces.getQueryKey({ id: "renamed-space1", includePermissions: true }),
     Api.spaces.listToolsQueryKey({ spaceId: "space1" }),
