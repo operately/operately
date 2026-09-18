@@ -1,5 +1,5 @@
+import { loader, useLoadedData } from "./loader";
 import * as Accounts from "@/models/accounts";
-import * as Pages from "@/components/Pages";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
@@ -9,23 +9,12 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 
 export default { name: "AccountMcpConnectionsPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  mcpGrants: Accounts.McpGrant[];
-}
-
-async function loader(): Promise<LoaderResult> {
-  const data = await Accounts.listMcpGrants();
-
-  return {
-    mcpGrants: sortMcpGrants((data.mcpGrants || []) as Accounts.McpGrant[]),
-  };
-}
-
 function Page() {
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mcpGrants } = Pages.useLoadedData<LoaderResult>();
-  const [grants, setGrants] = React.useState<Accounts.McpGrant[]>(mcpGrants);
+  const { mcpGrants } = useLoadedData();
+  const { mutateAsync: revokeGrant } = Accounts.useRevokeMcpGrant();
+  const [grants, setGrants] = React.useState<Accounts.McpGrant[]>(() => sortMcpGrants(mcpGrants));
   const [pendingRevokeIds, setPendingRevokeIds] = React.useState<Record<string, boolean>>({});
 
   React.useEffect(() => {
@@ -43,7 +32,7 @@ function Page() {
       setGrants((prev) => prev.filter((grant) => grant.id !== grantId));
 
       try {
-        await Accounts.revokeMcpGrant(grantId);
+        await revokeGrant({ id: grantId });
         showSuccessToast("Connection Revoked", "The MCP client can no longer access your account.");
       } catch {
         setGrants((prev) => restoreGrant(prev, revokedGrant));
@@ -56,7 +45,7 @@ function Page() {
         });
       }
     },
-    [grants, pendingRevokeIds],
+    [grants, pendingRevokeIds, revokeGrant],
   );
 
   return (
