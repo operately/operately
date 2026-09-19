@@ -5,6 +5,7 @@ import { useCallback } from "react";
 
 async function invalidateSiteMessages(client: QueryClient) {
   const prefix = Api.site_messages.listActiveQueryKeyPrefix();
+
   await Promise.all([
     client.invalidateQueries({ queryKey: AdminApi.listSiteMessagesQueryKeyPrefix(), refetchType: "none" }),
     // Admin edits can change the audience, so mark every company's banner stale.

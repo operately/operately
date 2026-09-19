@@ -2,11 +2,12 @@
 import React from "react";
 import axios from "axios";
 import Api from "@/api";
+import * as Socket from "@/api/socket";
 import { queryClient } from "@/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Pages from "@/components/Pages";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
-import { loader, useLoadedData } from "./loader";
+import { loader, onNavigate, useLoadedData } from "./loader";
 
 jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
@@ -47,13 +48,23 @@ it("propagates authorization errors", async () => {
   await expect(loader()).rejects.toBe(error);
 });
 
-it("clears the company scope before fetching account imports", async () => {
+it("clears the company scope only during navigation before fetching account imports", async () => {
   Api.default.setHeaders({ "x-company-id": "previous" });
   jest.mocked(axios.get).mockResolvedValue({ data: { importRuns: [] } });
+  onNavigate();
   await loader();
   expect(Api.default.getHeaders()).toEqual({});
+  expect(Socket.setHeaders).toHaveBeenCalledWith({});
   expect(axios.get).toHaveBeenCalledWith(
     "/api/v2/company_transfers/list_import_runs",
     expect.objectContaining({ headers: {} }),
   );
+});
+
+it("does not change company context during data loading", async () => {
+  jest.mocked(axios.get).mockResolvedValue({ data: { importRuns: [] } });
+  const headers = Api.default.getHeaders();
+  await loader();
+  expect(Api.default.getHeaders()).toBe(headers);
+  expect(Socket.setHeaders).not.toHaveBeenCalled();
 });

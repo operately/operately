@@ -6,10 +6,10 @@ import * as CompanyExports from "@/models/companyExports";
 import { Paths } from "@/routes/paths";
 import { CompanyImportPage, showErrorToast, showSuccessToast } from "turboui";
 
-import { useLoadedData, loader } from "./loader";
+import { useLoadedData, loader, onNavigate } from "./loader";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
-export default { name: "CompanyImportPage", loader, Page } as PageModule;
+export default { name: "CompanyImportPage", loader, onNavigate, Page } as PageModule;
 
 const EMPTY_UPLOAD_STATE: CompanyImportPage.UploadedFileState = {
   blobId: null,
