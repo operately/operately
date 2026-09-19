@@ -4,14 +4,16 @@ import { setDevData } from "@/features/DevBar/useDevBarData";
 import { isUnauthorizedError, loginPath } from "@/utils/unauthorized";
 import nprogress from "nprogress";
 import { redirect } from "react-router";
-import { Loader, PageModule } from "./types";
+import { PageModule } from "./types";
 
 interface Options {
   auth?: boolean;
+  preload?: boolean;
 }
 
 const defaultOptions: Options = {
   auth: true,
+  preload: true,
 };
 
 export function pageRoute(path: string, pageModule: PageModule, options: Options = {}) {
@@ -22,13 +24,15 @@ export function pageRoute(path: string, pageModule: PageModule, options: Options
 
   return {
     path: path,
-    loader: pageLoader(path, pageModule.name, loader, options),
+    loader: pageLoader(path, pageModule, options),
+    // Used for preloading, which doesn't need navigation effects or authentication redirects.
+    handle: { dataLoader: loader, auth: options.auth, preload: options.preload },
     element: <Element />,
     shouldRevalidate: pageModule.shouldRevalidate,
   };
 }
 
-function pageLoader(path: string, pageName: string, loader: Loader, options: Options = {}) {
+function pageLoader(path: string, page: PageModule, options: Options) {
   return async (req: any) => {
     if (options.auth) {
       checkAuth();
@@ -40,12 +44,13 @@ function pageLoader(path: string, pageName: string, loader: Loader, options: Opt
       const start = performance.now();
       startProgressIndicator(req);
 
-      const data = await loader(req);
+      page.onNavigate?.(req);
+      const data = await page.loader(req);
 
       stopProgressIndicator();
       const end = performance.now();
 
-      setDevData({ pageName: pageName, loadTime: end - start });
+      setDevData({ pageName: page.name, loadTime: end - start });
 
       return data;
     } catch (error) {

@@ -9,11 +9,14 @@ describe("authentication cache isolation", () => {
     });
 
     global.fetch = jest.fn();
-    jest.spyOn(queryClient, "clear").mockImplementation();
+    queryClient.clear();
+    queryClient.setQueryData(["company-layout", "previous-account"], { company: "private" });
+    jest.spyOn(queryClient, "clear");
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    queryClient.clear();
     Reflect.deleteProperty(global, "document");
   });
 
@@ -23,6 +26,7 @@ describe("authentication cache isolation", () => {
     await expect(logIn("user@example.com", "password", { skipRedirect: true })).resolves.toBe("success");
 
     expect(queryClient.clear).toHaveBeenCalledTimes(1);
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
   });
 
   it("clears cached queries after a successful logout", async () => {
@@ -31,6 +35,7 @@ describe("authentication cache isolation", () => {
     await expect(logOut()).resolves.toBe("success");
 
     expect(queryClient.clear).toHaveBeenCalledTimes(1);
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
   });
 
   it("preserves cached queries when authentication fails", async () => {
@@ -40,5 +45,6 @@ describe("authentication cache isolation", () => {
     await expect(logOut()).resolves.toBe("failure");
 
     expect(queryClient.clear).not.toHaveBeenCalled();
+    expect(queryClient.getQueryData(["company-layout", "previous-account"])).toEqual({ company: "private" });
   });
 });
