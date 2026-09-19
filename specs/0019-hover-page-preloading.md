@@ -20,22 +20,50 @@ The September 18, 2026 audit covered all 126 page modules, including enterprise 
 - All 109 pages with data-fetching loaders use TanStack Query.
 - The other 17 pages have empty or redirect-only loaders and need no fetching migration.
 - No `PageCache` references remain in either frontend.
-- The shared `app/assets/js/routes/companyLoader.tsx` now uses TanStack Query. Separating active-company context changes from data fetching remains outstanding, along with the other preloading requirements below.
+- The shared `app/assets/js/routes/companyLoader.tsx` now uses TanStack Query. It remains navigation-only, including authentication checks and active-company header changes; it is not exposed through `handle.dataLoader`.
 
 Migration status and remaining work before enabling preloading:
 
 | Surface | Finding | Decision |
 | --- | --- | --- |
-| Shared company loader | Migration complete: company details, space access counts, site messages, and billing access state use TanStack Query. | Layout consumers subscribe to the same cache entries, and affected refresh and mutation paths use query invalidation. Company-context separation remains a separate requirement below. |
-| Company context | The company loader changes global API and socket headers. | Separate active-company changes from data fetching. Change active context only during navigation; initially skip cross-company preloads. |
-| `CompanyImportPage` | Its loader clears global API and socket headers. | Move header clearing to actual navigation. Use an explicit account-level request and cache context for its data without changing the active page's context. Do not enable preloading for this route until that separation is complete. |
-| `InviteTeamPage` | Its TanStack query wraps a get-or-create endpoint that can create an invitation link. | Exclude the route initially. Future support requires separating reading an existing link from creating one. |
-| `SetupPage` | Its loader assigns `window.location.href` and fetches no data. | Exclude the route; execute its browser redirect only during actual navigation. |
-| Billing and invitation checks | Loaders use `staleTime: 0` to enforce fresh checks, so a completed preload would not prevent another request on navigation. | Preserve freshness and exclude these routes initially. Do not relax permission, billing, capacity, or invitation-validity checks to enable preloading. |
+| Shared company loader | Migration complete: company details, space access counts, site messages, and billing access state use TanStack Query. | Layout consumers subscribe to the same cache entries, and affected refresh and mutation paths use query invalidation. The layout is already loaded for same-company navigation, so it is outside the initial preloading scope. |
+| Company context | The shared company loader changes global API and socket headers during navigation only. | The preloader must skip cross-company links, including company cards in the lobby, and must not invoke the shared company loader. PR 2 must also handle context changes while a preload is in flight. |
+| `CompanyImportPage` | Header clearing now runs in `onNavigate`, before the data loader. Its requests still use the global API client. | Excluded with `preload: false`. Use an explicit account-level request and cache context before enabling this route. |
+| `InviteTeamPage` | Its TanStack query wraps a get-or-create endpoint that can create an invitation link. | Excluded with `preload: false`. Future support requires separating reading an existing link from creating one. |
+| `SetupPage` | Its browser redirect now runs in `onNavigate`; its data loader is empty. | Excluded with `preload: false`; normal navigation retains the redirect. |
+| Billing and invitation checks | Loaders use `staleTime: 0` to enforce fresh checks, so a completed preload would not prevent another request on navigation. | Preserve freshness; these routes are excluded with `preload: false`. Do not relax permission, billing, capacity, or invitation-validity checks to enable preloading. |
 
 The freshness exclusions cover `BillingPickCompanyPage`, `CompanyBillingPage`, `CompanyBillingPlanSelectionPage`, `CompanyBillingCancellationPage`, `JoinPage`, `InviteLinkJoinPage`, and `InviteLinkFullPage`.
 
 Using TanStack alone does not make a loader safe for speculative execution. Verify side effects and request context separately before enabling a route.
+
+## Implementation tasks
+
+Implement these as two ordered PRs. Complete and merge preparation before enabling automatic preloading.
+
+### Task 1 / PR 1: Prepare loaders for preloading
+
+- [x] Separate page data fetching from navigation-only effects: authentication redirects, progress indicators, page timing, and import-page header clearing. Keep the shared company loader navigation-only. Preserve normal navigation behavior and API authorization.
+- [x] Add the optional `preload` route option and store it in route `handle` metadata. Mark `InviteTeamPage`, `SetupPage`, and the billing/invitation routes listed above as excluded. Exclude `CompanyImportPage` until its request context is safe.
+- [x] Audit eligible loaders and the backend endpoints they call for mutations and other user-visible side effects. Move visit effects to actual navigation or exclude the affected routes. Put substantial backend changes in separate follow-up PRs.
+- [x] Test the separation of fetching and navigation effects, route exclusion metadata, and account/company cache isolation. Keep automatic preloading disabled in this PR.
+
+Initial preparation validation: 152 focused JavaScript tests and 7 setup/login/company-settings browser tests passed, along with TypeScript, changed-code formatting, and dead-code checks. Automatic preloading remains disabled.
+
+### Preparation audit findings
+
+- `pageRoute` exposes the original loader as `handle.dataLoader`, alongside `handle.auth` and `handle.preload`. Its router loader retains authentication redirects, progress indicators, timing, and the optional synchronous `PageModule.onNavigate` hook. The shared company route has no preload data loader; normal navigation continues to run `companyLoader`. No listener invokes these data loaders speculatively yet.
+- Reviewed main and enterprise loaders, their model helpers, and the backend query paths for company/people administration, work maps, spaces, projects, goals, tasks, milestones, discussions, resources, notifications, account settings, transfers, and site administration. No additional mutating endpoints were found among eligible loaders. Notification read mutations already run in mounted-page effects; `UnreadNotificationsLoader` only reads notifications.
+- The excluded billing overview endpoint also synchronizes provider state; the shared layout's `billing/get_access_state` reads the local projection and limits without that sync. `InviteTeamPage` remains the other known loader with a mutating endpoint.
+- Two request-level requirements must be handled in PR 2 before enabling preloading: generated API clients call `handleStaleClientError`, which can toast and reload on version-mismatch errors; and loaders with sequential requests can outlive a company/authentication change. A final catch around the loader is insufficient for either. Preserve normal request error handling, keep speculative errors silent, and prevent subsequent speculative requests from using a changed context. Do not use a global suppression flag that affects concurrent navigation or mutations.
+
+### Task 2 / PR 2: Implement hover preloading
+
+- [ ] Add `preloadPage(href)` using existing route definitions and page data loaders. Do not invoke parent/layout loaders in the initial scope. Respect matched-route exclusions and deduplicate concurrent preloads by URL and authentication/company context.
+- [ ] Add the shared application-root hover/focus listener with the 150 ms delay, cancellation rules, nested/dynamic link handling, and `data-preload="false"` support.
+- [ ] Enforce link eligibility, keep cross-company preloading disabled, and handle preload errors and redirects silently without affecting normal navigation. Include request-scoped handling of stale-client toast/reload behavior and context changes during sequential loader requests, as identified in the preparation audit.
+- [ ] Add concise agent guidance to the TanStack Query skill and its reference, with a minimal page/route example. Explain shared query inputs and cache keys for navigation and preloading, `emptyLoader` when no data is needed, synchronous navigation-only effects in `onNavigate`, and `pageRoute` options (`auth`, `preload`). Cover when to exclude a route with `preload: false`, the link-level `data-preload="false"` escape hatch, and why freshness checks and company context must be preserved. Distinguish `route.loader` from `handle.dataLoader` and keep the shared company loader navigation-only.
+- [ ] Verify all acceptance criteria below, including timer and route-matching tests, cache reuse during and after preloading, invalidation, and representative Home and Work Map navigation in end-to-end tests.
 
 ## Interaction
 
@@ -75,7 +103,7 @@ Use route configuration when a page must always be excluded. For an individual l
 
 - Add a shared `preloadPage(href)` entry point in the routing layer.
 - Resolve URLs using existing route definitions, preserving route parameters and search parameters, including selected tabs. Do not maintain a separate URL-to-loader registry.
-- Reuse the destination's data loader as the single source of query requirements. Include required parent/layout data loaders when their inputs change.
+- Reuse the destination page's data loader as the single source of query requirements. Do not invoke parent/layout loaders in the initial scope; the current company's layout is already loaded. Loading another company's layout is deferred along with cross-company preloading.
 - Invoke data loaders separately from navigation wrappers that manage authentication redirects, progress indicators, and page timing. Existing API authorization remains enforced.
 - Deduplicate concurrent preloads by destination URL (excluding fragments) and authentication/company context. TanStack Query deduplicates shared requests and reuses valid cached data.
 - Navigation still runs its loaders. They reuse cached or pending queries and fetch missing or invalidated data. Keep existing freshness, invalidation, and garbage-collection behavior; do not add a second payload cache.

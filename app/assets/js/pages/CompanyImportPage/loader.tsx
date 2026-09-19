@@ -3,9 +3,12 @@ import * as Pages from "@/components/Pages";
 import * as CompanyExports from "@/models/companyExports";
 import * as Socket from "@/api/socket";
 
-export async function loader() {
+export function onNavigate() {
   Api.default.setHeaders({});
   Socket.setHeaders({});
+}
+
+export async function loader() {
   const queryInput = {};
 
   await Api.company_transfers.listImportRunsQuery(queryInput);

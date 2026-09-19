@@ -1,5 +1,11 @@
 import { PageModule } from "@/routes/types";
-import { loader } from "./loader";
+import { emptyLoader } from "@/components/Pages";
 import { Page } from "./page";
 
-export default { name: "SetupPage", loader, Page } as PageModule;
+export default { name: "SetupPage", loader: emptyLoader, onNavigate, Page } as PageModule;
+
+function onNavigate() {
+  if (window.appConfig.configured) {
+    window.location.href = "/";
+  }
+}
