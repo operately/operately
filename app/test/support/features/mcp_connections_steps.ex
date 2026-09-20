@@ -50,8 +50,17 @@ defmodule Operately.Support.Features.McpConnectionsSteps do
   step :assert_on_mcp_connections_page, ctx do
     ctx
     |> UI.assert_has(testid: "account-mcp-connections-page")
+    |> UI.assert_has(testid: "mcp-connect-section")
     |> UI.assert_has(testid: "mcp-server-url")
     |> UI.assert_has(testid: "mcp-setup-guides-link")
+  end
+
+  step :click_mcp_client_tab, ctx, client_id do
+    ctx |> UI.click(testid: UI.testid(["mcp-client-tab", client_id]))
+  end
+
+  step :assert_client_instructions_contains, ctx, text do
+    ctx |> UI.assert_text(text, testid: "mcp-client-instructions")
   end
 
   step :given_an_mcp_grant_exists, ctx do
