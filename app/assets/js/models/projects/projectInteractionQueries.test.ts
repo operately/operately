@@ -98,6 +98,49 @@ it.each([
   client.clear();
 });
 
+it("matches retrospective comment activities by project and invalidates their cached variants", async () => {
+  const client = new QueryClient();
+  const activityKey = Api.companies.getActivityQueryKey({ id: "activity1" });
+  const variantKey = Api.companies.getActivityQueryKey({ id: "old-activity1", includePermissions: true });
+  const otherProjectKey = Api.companies.getActivityQueryKey({ id: "activity2" });
+  const otherActionKey = Api.companies.getActivityQueryKey({ id: "activity3" });
+  const activity = {
+    id: "activity1",
+    action: "project_retrospective_commented",
+    content: {
+      __typename: "activity_content_project_retrospective_commented",
+      project: { id: "old-project1" },
+      comment: { id: "comment1", content: "Original comment" },
+    },
+  };
+
+  client.setQueryData(activityKey, { activity });
+  client.setQueryData(variantKey, {});
+  client.setQueryData(otherProjectKey, {
+    activity: { ...activity, id: "activity2", content: { ...activity.content, project: { id: "project2" } } },
+  });
+  client.setQueryData(otherActionKey, {
+    activity: {
+      id: "activity3",
+      action: "project_renamed",
+      content: { __typename: "activity_content_project_renamed", project: { id: "project1" } },
+    },
+  });
+
+  await invalidateProjectInteractionQueries(client, {
+    projectId: "project1",
+    resourceId: "retrospective1",
+    resourceType: "project_retrospective",
+  });
+
+  expect(client.getQueryState(activityKey)?.isInvalidated).toBe(true);
+  expect(client.getQueryState(variantKey)?.isInvalidated).toBe(true);
+  expect(client.getQueryState(otherProjectKey)?.isInvalidated).toBe(false);
+  expect(client.getQueryState(otherActionKey)?.isInvalidated).toBe(false);
+
+  client.clear();
+});
+
 it("matches activity threads and honors none versus active refetch modes", async () => {
   const client = new QueryClient();
   const queryKey = Api.companies.getActivityQueryKey({ id: "activity1" });

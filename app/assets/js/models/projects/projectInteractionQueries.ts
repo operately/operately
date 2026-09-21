@@ -124,6 +124,11 @@ function isRelatedActivity(activity: Activity, context: ProjectInteractionContex
         ("checkInId" in content && compareIds(content.checkInId, resourceId))
       );
     case "project_retrospective":
+      // Retrospective comment activities include the project, but no retrospective ID.
+      if (activity.action === "project_retrospective_commented") {
+        return "project" in content && compareIds(content.project?.id, projectId);
+      }
+
       return (
         ("retrospective" in content && compareIds(content.retrospective?.id, resourceId)) ||
         ("retrospectiveId" in content && compareIds(content.retrospectiveId, resourceId)) ||
