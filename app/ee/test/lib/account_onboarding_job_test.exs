@@ -42,6 +42,15 @@ defmodule OperatelyEE.AccountOnboardingJobTest do
     end
   end
 
+  test "retries when SendGrid times out the request", ctx do
+    mock_response = {:ok, %{status: 408, body: "request timeout"}}
+
+    with_mock Req, put: fn _url, headers: _headers, json: _body -> mock_response end do
+      assert {:error, reason} = OperatelyEE.AccountOnboardingJob.perform(%{args: %{"account_id" => ctx.account.id}})
+      assert reason =~ "408"
+    end
+  end
+
   test "retries when SendGrid rate-limits the request", ctx do
     mock_response = {:ok, %{status: 429, body: %{"errors" => [%{"message" => "too many requests"}]}}}
 

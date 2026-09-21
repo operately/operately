@@ -76,7 +76,7 @@ defmodule OperatelyEE.AccountOnboardingJob do
     end
   end
 
-  defp retryable_status?(429), do: true
+  defp retryable_status?(status) when status in [408, 429], do: true
   defp retryable_status?(status) when status >= 500, do: true
   defp retryable_status?(_status), do: false
 
