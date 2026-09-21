@@ -56,11 +56,20 @@ defmodule TurboConnect.TsGen do
   def generate_tanstack_helpers do
     """
     function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
-      return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+      return ["operately-api", client.getBasePath(), { ...client.getHeaders() }, path] as const;
     }
 
     function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
       return [...buildApiQueryKeyPrefix(client, path), input] as const;
+    }
+
+    function buildApiQueryOptions<InputT, ResultT>(client: ApiClient, path: string, input: InputT) {
+      return queryOptions({
+        queryKey: buildApiQueryKey(client, path, input),
+        // Read the effective key so layout scope overrides also apply to the request.
+        queryFn: ({ queryKey: [, basePath, headers, queryPath, queryInput] }): Promise<ResultT> =>
+          client.get(queryPath, queryInput, basePath, headers),
+      });
     }
     """
   end
@@ -183,13 +192,13 @@ defmodule TurboConnect.TsGen do
           "const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });"
 
         :get ->
-          "const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });"
+          "const response = await axios.get(basePath + path, { params: toSnake(params), headers });"
       end
 
     args =
       case method do
         :post -> "path: string, data: any"
-        :get -> "path: string, params: any"
+        :get -> "path: string, params: any, basePath = this.getBasePath(), headers = this.getHeaders()"
       end
 
     block =
@@ -376,13 +385,10 @@ defmodule TurboConnect.TsGen do
             #{hookName}: (input: #{input_type}) => useQuery<#{result_type}>(() => #{fnCall}),
             #{fnName}QueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "#{path}"),
             #{fnName}QueryKey: (input: #{input_type}) => buildApiQueryKey(defaultApiClient, "#{path}", input),
-            #{fnName}QueryOptions: (input: #{input_type}) => queryOptions({
-              queryKey: buildApiQueryKey(defaultApiClient, "#{path}", input),
-              queryFn: () => #{fnCall},
-            }),
+            #{fnName}QueryOptions: (input: #{input_type}) =>
+              buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input),
             #{fnName}Query: (input: #{input_type}) => queryClient.query({
-              queryKey: buildApiQueryKey(defaultApiClient, "#{path}", input),
-              queryFn: () => #{fnCall},
+              ...buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input),
               staleTime: Infinity,
             }),
         """
