@@ -151,6 +151,16 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
     }
   }, [isOpen]);
 
+  React.useEffect(() => {
+    if (statusOptions.length === 0 && isOpen) {
+      if (!isOpenControlled) {
+        setInternalIsOpen(false);
+      }
+
+      onOpenChange?.(false);
+    }
+  }, [statusOptions.length, isOpen, isOpenControlled, onOpenChange]);
+
   if (statusOptions.length === 0) return null;
 
   const handleOpenChange = (open: boolean) => {

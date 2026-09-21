@@ -80,4 +80,62 @@ describe("StatusSelector", () => {
 
     expect(document.querySelector('[data-test-id="status-selector"]')).toBeNull();
   });
+
+  it("closes a controlled selector when status options become empty", () => {
+    const onOpenChange = jest.fn();
+    const { rerender } = render(
+      <StatusSelector
+        statusOptions={statuses}
+        status={statuses[0]}
+        onChange={jest.fn()}
+        isOpen
+        onOpenChange={onOpenChange}
+        testId="status-selector"
+      />,
+    );
+
+    expect(screen.getByPlaceholderText("Change status...")).toBeInTheDocument();
+
+    rerender(
+      <StatusSelector
+        statusOptions={[]}
+        status={null}
+        onChange={jest.fn()}
+        isOpen
+        onOpenChange={onOpenChange}
+        testId="status-selector"
+      />,
+    );
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+
+    rerender(
+      <StatusSelector
+        statusOptions={statuses}
+        status={statuses[0]}
+        onChange={jest.fn()}
+        isOpen={false}
+        onOpenChange={onOpenChange}
+        testId="status-selector"
+      />,
+    );
+
+    expect(screen.queryByPlaceholderText("Change status...")).not.toBeInTheDocument();
+  });
+
+  it("stays closed after status options return", async () => {
+    const { rerender } = render(
+      <StatusSelector statusOptions={statuses} status={statuses[0]} onChange={jest.fn()} testId="status-selector" />,
+    );
+
+    fireEvent.click(document.querySelector('[data-test-id="status-selector"]')!);
+    expect(await screen.findByPlaceholderText("Change status...")).toBeInTheDocument();
+
+    rerender(<StatusSelector statusOptions={[]} status={null} onChange={jest.fn()} testId="status-selector" />);
+    rerender(
+      <StatusSelector statusOptions={statuses} status={statuses[0]} onChange={jest.fn()} testId="status-selector" />,
+    );
+
+    expect(screen.queryByPlaceholderText("Change status...")).not.toBeInTheDocument();
+  });
 });
