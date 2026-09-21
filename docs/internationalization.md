@@ -4,6 +4,14 @@ Operately keeps one Gettext catalog as the source of truth for Elixir, React, an
 
 User-authored content, API field names, and CLI command names are not translated.
 
+## Language preference
+
+A person can store an explicit language separately from timezone and time-format preferences. English is the default until they select another supported language. Browser `Accept-Language` never selects or persists a language.
+
+The `i18n` company experimental feature is off by default. While it is off, the app and emails stay English even if a non-English preference is saved. Turning the flag off later forces English without deleting the saved preference. Missing or unsupported preferences also resolve to English.
+
+Web requests and recipient-specific email rendering share the same effective-language rules. Background workers scope Gettext to the recipient for the duration of rendering and restore the previous locale afterward, including when rendering fails.
+
 ## Catalog files
 
 ```text

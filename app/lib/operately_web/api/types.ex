@@ -2293,6 +2293,8 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:time_format, values: Operately.People.Preferences.time_format_values())
 
+  enum(:language, values: Operately.I18n.Languages.api_values())
+
   object :person, for: Operately.People.Person do
     field :id, :string
     field? :url, :string
@@ -2305,6 +2307,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
 
     field? :timezone, :string, null: true
+    field? :language, :language, null: true
     field? :time_format, :time_format, null: false
     field? :email_preference, :email_preference_values, null: false
     field? :email_window_minutes, :email_window_minutes, null: false

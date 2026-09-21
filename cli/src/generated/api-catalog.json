@@ -395,6 +395,10 @@
       "email_change_stage": [
         "current_email",
         "new_email"
+      ],
+      "language": [
+        "en",
+        "pt-BR"
       ]
     },
     "int_enums": {
@@ -15246,6 +15250,17 @@
             "name": "timezone",
             "type": {
               "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": true,
+            "has_default": false
+          },
+          {
+            "default": null,
+            "name": "language",
+            "type": {
+              "name": "language",
               "kind": "named"
             },
             "optional": true,
@@ -31485,6 +31500,17 @@
           },
           "optional": true,
           "nullable": false,
+          "has_default": false
+        },
+        {
+          "default": null,
+          "name": "language",
+          "type": {
+            "name": "language",
+            "kind": "named"
+          },
+          "optional": true,
+          "nullable": true,
           "has_default": false
         },
         {
