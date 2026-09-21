@@ -240,9 +240,9 @@ defmodule TurboConnect.TsGenTest do
     }
 
     // @ts-ignore
-    async get(path: string, params: any) {
+    async get(path: string, params: any, basePath = this.getBasePath(), headers = this.getHeaders()) {
       try {
-        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
+        const response = await axios.get(basePath + path, { params: toSnake(params), headers });
         return toCamel(response.data);
       } catch (error) {
         handleStaleClientError(error);
@@ -292,11 +292,20 @@ defmodule TurboConnect.TsGenTest do
 
   @ts_tanstack_helpers """
   function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
-    return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+    return ["operately-api", client.getBasePath(), { ...client.getHeaders() }, path] as const;
   }
 
   function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
     return [...buildApiQueryKeyPrefix(client, path), input] as const;
+  }
+
+  function buildApiQueryOptions<InputT, ResultT>(client: ApiClient, path: string, input: InputT) {
+    return queryOptions({
+      queryKey: buildApiQueryKey(client, path, input),
+      // Read the effective key so layout scope overrides also apply to the request.
+      queryFn: ({ queryKey: [, basePath, headers, queryPath, queryInput] }): Promise<ResultT> =>
+        client.get(queryPath, queryInput, basePath, headers),
+    });
   }
   """
 
@@ -319,10 +328,7 @@ defmodule TurboConnect.TsGenTest do
   }
 
   export function getUserQueryOptions(input: GetUserInput) {
-    return queryOptions({
-      queryKey: getUserQueryKey(input),
-      queryFn: () => defaultApiClient.getUser(input),
-    });
+    return buildApiQueryOptions<GetUserInput, GetUserResult>(defaultApiClient, "/get_user", input);
   }
 
   export function getUserQuery(input: GetUserInput) {
@@ -364,13 +370,10 @@ defmodule TurboConnect.TsGenTest do
       useGetUser: (input: UsersGetUserInput) => useQuery<UsersGetUserResult>(() => defaultApiClient.apiNamespaceUsers.getUser(input)),
       getUserQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/users/get_user"),
       getUserQueryKey: (input: UsersGetUserInput) => buildApiQueryKey(defaultApiClient, "/users/get_user", input),
-      getUserQueryOptions: (input: UsersGetUserInput) => queryOptions({
-        queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
-        queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
-      }),
+      getUserQueryOptions: (input: UsersGetUserInput) =>
+        buildApiQueryOptions<UsersGetUserInput, UsersGetUserResult>(defaultApiClient, "/users/get_user", input),
       getUserQuery: (input: UsersGetUserInput) => queryClient.query({
-        queryKey: buildApiQueryKey(defaultApiClient, "/users/get_user", input),
-        queryFn: () => defaultApiClient.apiNamespaceUsers.getUser(input),
+        ...buildApiQueryOptions<UsersGetUserInput, UsersGetUserResult>(defaultApiClient, "/users/get_user", input),
         staleTime: Infinity,
       }),
 
