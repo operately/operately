@@ -41,6 +41,19 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.assert_comment_submitted("Updated comment")
   end
 
+  feature "reactions survive navigation through the cached discussion list", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.visit_project_page()
+    |> Steps.click_on_discussion()
+    |> Steps.add_discussion_reaction()
+    |> Steps.reopen_discussion_through_list()
+    |> Steps.assert_discussion_reaction()
+    |> Steps.remove_discussion_reaction()
+    |> Steps.reopen_discussion_through_list()
+    |> Steps.assert_no_discussion_reaction()
+  end
+
   feature "delete comment from discussion", ctx do
     ctx
     |> Steps.given_a_discussion_exists()

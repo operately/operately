@@ -1,5 +1,4 @@
 export { useReactionHandlers } from "./useReactionHandlers";
-export { useReactionsForm } from "./useReactionsForm";
-export { entity, type Entity } from "./entity";
+export { type Entity } from "./entity";
 export { parseReactionsForTurboUi } from "./parseReactionsForTurboUi";
 export { useOptimisticReactions } from "./useOptimisticReactions";
