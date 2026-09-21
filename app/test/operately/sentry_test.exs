@@ -75,6 +75,13 @@ defmodule Operately.SentryTest do
     end
   end
 
+  describe "attach_oban_handler/0" do
+    test "is idempotent when the handler already exists" do
+      assert :ok = Operately.Sentry.attach_oban_handler()
+      assert :ok = Operately.Sentry.attach_oban_handler()
+    end
+  end
+
   describe "endpoint integration" do
     test "Endpoint uses Sentry.PlugCapture and Sentry.PlugContext" do
       source = read_app_file("lib/operately_web/endpoint.ex")

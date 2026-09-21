@@ -48,12 +48,15 @@ defmodule Operately.Sentry do
   def logger_handler_id, do: @handler_id
 
   def attach_oban_handler do
-    :telemetry.attach_many(
-      @oban_telemetry_id,
-      [[:oban, :job, :exception]],
-      &__MODULE__.handle_oban_exception/4,
-      %{}
-    )
+    case :telemetry.attach_many(
+           @oban_telemetry_id,
+           [[:oban, :job, :exception]],
+           &__MODULE__.handle_oban_exception/4,
+           %{}
+         ) do
+      :ok -> :ok
+      {:error, :already_exists} -> :ok
+    end
   end
 
   def handle_oban_exception([:oban, :job, :exception], measurements, %{job: job} = metadata, _config) do
