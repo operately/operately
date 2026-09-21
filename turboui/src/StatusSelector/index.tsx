@@ -110,8 +110,6 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   onOpenChange,
   onCloseAutoFocus,
 }: StatusSelector.Props<T>) {
-  if (statusOptions.length === 0) return null;
-
   const { iconSize, containerSize } = SIZE_CONFIG[size];
   const isOpenControlled = controlledIsOpen !== undefined;
   const [internalIsOpen, setInternalIsOpen] = React.useState(false);
@@ -152,6 +150,18 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
       setSelectedIndex(0);
     }
   }, [isOpen]);
+
+  React.useEffect(() => {
+    if (statusOptions.length === 0 && isOpen) {
+      if (!isOpenControlled) {
+        setInternalIsOpen(false);
+      }
+
+      onOpenChange?.(false);
+    }
+  }, [statusOptions.length, isOpen, isOpenControlled, onOpenChange]);
+
+  if (statusOptions.length === 0) return null;
 
   const handleOpenChange = (open: boolean) => {
     const nextOpen = readonly ? false : open;
