@@ -21,7 +21,16 @@ jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePrefer
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn(() => ({})) }));
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
 
-it.each(["goal_update", "goal_discussion", "project_check_in", "message"] as const)(
+const commentTypes = [
+  "goal_update",
+  "goal_discussion",
+  "project_check_in",
+  "project_discussion",
+  "project_retrospective",
+  "message",
+] as const;
+
+it.each(commentTypes)(
   "preserves ordering, acknowledgements and drafts while editing %s comments",
   async (resourceType) => {
     (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -87,7 +96,7 @@ it.each(["goal_update", "goal_discussion", "project_check_in", "message"] as con
     const other = Api.comments.listQueryKey({ entityId: "resource2", entityType: resourceType });
     client.setQueryData(other, { comments: [] });
 
-    const otherType = Api.comments.listQueryKey({ entityId: "resource1", entityType: "project_retrospective" });
+    const otherType = Api.comments.listQueryKey({ entityId: "resource1", entityType: "project_task" });
     client.setQueryData(otherType, { comments: [] });
 
     const root = createRoot(document.createElement("div"));
