@@ -47,6 +47,8 @@ defmodule Operately.Sentry do
 
   def logger_handler_id, do: @handler_id
 
+  def oban_handler_id, do: @oban_telemetry_id
+
   def attach_oban_handler do
     case :telemetry.attach_many(
            @oban_telemetry_id,

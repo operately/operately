@@ -76,9 +76,25 @@ defmodule Operately.SentryTest do
   end
 
   describe "attach_oban_handler/0" do
+    setup do
+      detach_oban_handler()
+
+      on_exit(fn ->
+        detach_oban_handler()
+      end)
+
+      :ok
+    end
+
+    test "attaches the Oban telemetry handler" do
+      assert :ok = Operately.Sentry.attach_oban_handler()
+      assert oban_handler_attached?()
+    end
+
     test "is idempotent when the handler already exists" do
       assert :ok = Operately.Sentry.attach_oban_handler()
       assert :ok = Operately.Sentry.attach_oban_handler()
+      assert oban_handler_attached?()
     end
   end
 
@@ -139,5 +155,16 @@ defmodule Operately.SentryTest do
   defp remove_handler do
     _ = :logger.remove_handler(@handler_id)
     :ok
+  end
+
+  defp detach_oban_handler do
+    :telemetry.detach(Operately.Sentry.oban_handler_id())
+    :ok
+  end
+
+  defp oban_handler_attached? do
+    [:oban, :job, :exception]
+    |> :telemetry.list_handlers()
+    |> Enum.any?(fn handler -> handler.id == Operately.Sentry.oban_handler_id() end)
   end
 end
