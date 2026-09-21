@@ -31,9 +31,11 @@ import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router";
 import { match } from "ts-pattern";
 import { useLoadedData } from "./loader";
+import { useSpacePagePreloading } from "./useSpacePagePreloading";
 
 export function Page() {
   const { space, tools } = useLoadedData();
+  useSpacePagePreloading({ spaceId: space.id, tools });
 
   useReadNotificationsOnLoad(space.notifications ?? [], (client) =>
     invalidateSpaceToolsQueries(client, space.id, "none"),

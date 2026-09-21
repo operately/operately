@@ -6,6 +6,8 @@ const preloader = {
   isEligible: jest.fn(() => true),
   scope: jest.fn(() => "acme"),
   preloadPage: jest.fn(async () => {}),
+  hasPending: () => false,
+  subscribeToCompletion: () => () => {},
   dispose: jest.fn(),
 };
 
@@ -130,6 +132,26 @@ it("cancels for navigation and removes listeners on unmount", () => {
   jest.advanceTimersByTime(150);
 
   expect(preloader.preloadPage).not.toHaveBeenCalled();
+});
+
+it("keeps predictive work paused until both pointer and focus timers are gone", () => {
+  listener.dispose();
+  const onPendingChange = jest.fn();
+  listener = listenForPagePreloads(preloader, document, onPendingChange);
+  const { anchor } = link();
+
+  pointer(anchor, "pointerover");
+  anchor.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+  pointer(anchor, "pointerout");
+  expect(onPendingChange).toHaveBeenLastCalledWith(true);
+
+  anchor.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+  expect(onPendingChange).toHaveBeenLastCalledWith(false);
+
+  pointer(anchor, "pointerover");
+  jest.advanceTimersByTime(150);
+  expect(preloader.preloadPage).toHaveBeenCalledTimes(1);
+  expect(onPendingChange).toHaveBeenLastCalledWith(false);
 });
 
 it("cancels pending timers on authentication changes", () => {

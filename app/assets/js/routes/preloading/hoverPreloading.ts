@@ -3,8 +3,18 @@ import { subscribePreloadSession } from "./preloadSession";
 
 const HOVER_DELAY_MS = 150;
 
-/** Delegation also covers links inserted after mount and their nested content. */
-export function listenForPagePreloads(preloader: PagePreloader, document: Document) {
+/**
+ * Delegation also covers links inserted after mount and their nested content.
+ * onPendingChange reports whether any hover/focus timer is waiting to fire, so
+ * predictive preloading pauses while the user signals interest in a link.
+ * It reports false once all timers fire or are canceled; running requests are
+ * tracked separately by the preloader before predictive work can resume.
+ */
+export function listenForPagePreloads(
+  preloader: PagePreloader,
+  document: Document,
+  onPendingChange = (_pending: boolean) => {},
+) {
   const timers = new Map<"pointer" | "focus", { anchor: HTMLAnchorElement; timer: ReturnType<typeof setTimeout> }>();
   let keyboardFocus = true;
 
@@ -26,6 +36,8 @@ export function listenForPagePreloads(preloader: PagePreloader, document: Docume
   function cancel(kind: "pointer" | "focus") {
     clearTimeout(timers.get(kind)?.timer);
     timers.delete(kind);
+
+    onPendingChange(timers.size > 0);
   }
 
   function cancelAll() {
@@ -46,8 +58,12 @@ export function listenForPagePreloads(preloader: PagePreloader, document: Docume
     const timer = setTimeout(() => {
       timers.delete(kind);
       if (anchor.href === href && preloader.scope() === scope && eligible(anchor)) void preloader.preloadPage(href);
+
+      onPendingChange(timers.size > 0);
     }, HOVER_DELAY_MS);
+
     timers.set(kind, { anchor, timer });
+    onPendingChange(true);
   }
 
   const pointerOver = (event: PointerEvent) => {
