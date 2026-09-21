@@ -5,7 +5,7 @@ import * as ReactionsModel from "@/models/reactions";
 import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { CommentSection, useForProjectRetrospective } from "@/features/CommentSection";
+import { Comments } from "./Comments";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import {
   AvatarWithName,
@@ -21,7 +21,8 @@ import {
 } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 import { AckCTA } from "./AckCTA";
@@ -31,8 +32,18 @@ import { usePaths } from "@/routes/paths";
 export function Page() {
   const { retrospective } = useLoadedData();
 
-  assertPresent(retrospective.notifications, "Retrospective notifications must be defined");
-  useClearNotificationsOnLoad(retrospective.notifications);
+  useReadNotificationsOnLoad(retrospective.notifications, (client) =>
+    invalidateProjectInteractionQueries(
+      client,
+      {
+        projectId: retrospective.project.id,
+        spaceId: retrospective.project.space?.id,
+        resourceId: retrospective.id,
+        resourceType: "project_retrospective",
+      },
+      "none",
+    ),
+  );
 
   return (
     <Pages.Page title={["Retrospective", retrospective.project!.name!]}>
@@ -147,23 +158,6 @@ function RetroReactions() {
   const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   return <Reactions {...form} size={24} canAddReaction={retrospective.permissions.canComment} />;
-}
-
-function Comments() {
-  const { retrospective } = useLoadedData();
-  const commentsForm = useForProjectRetrospective(retrospective);
-
-  return (
-    <>
-      <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="project_retrospective"
-        canComment={retrospective.permissions.canComment}
-        ackLabel="Retrospective"
-      />
-    </>
-  );
 }
 
 function Subscriptions() {

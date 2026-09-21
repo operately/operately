@@ -30,6 +30,17 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.assert_comment_feed_posted()
   end
 
+  feature "edited comments survive navigation through the cached discussion list", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.visit_project_page()
+    |> Steps.click_on_discussion()
+    |> Steps.leave_comment("Original comment")
+    |> Steps.edit_comment("Updated comment")
+    |> Steps.return_to_discussion_through_list()
+    |> Steps.assert_comment_submitted("Updated comment")
+  end
+
   feature "delete comment from discussion", ctx do
     ctx
     |> Steps.given_a_discussion_exists()
