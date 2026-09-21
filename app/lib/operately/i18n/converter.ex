@@ -19,6 +19,8 @@ defmodule Operately.I18n.Converter do
   end
 
   def to_i18next(messages, locale) when is_list(messages) do
+    locale = Locale.to_bcp47(locale)
+
     messages
     |> Enum.flat_map(&entries(&1, locale))
     |> Map.new()
@@ -36,9 +38,14 @@ defmodule Operately.I18n.Converter do
 
     locale
     |> Locale.plural_forms()
-    |> Enum.map(fn {category, index} ->
-      value = translated_plural(message, index)
-      {key <> @plural_separator <> Atom.to_string(category), Placeholders.to_i18next(value)}
+    |> Enum.flat_map(fn {category, index} ->
+      value = translated_plural(message, index, locale)
+
+      if blank?(value) do
+        []
+      else
+        [{key <> @plural_separator <> Atom.to_string(category), Placeholders.to_i18next(value)}]
+      end
     end)
   end
 
@@ -55,12 +62,17 @@ defmodule Operately.I18n.Converter do
     if blank?(msgstr), do: msgid, else: msgstr
   end
 
-  defp translated_plural(%Message{} = message, 0) do
+  defp translated_plural(%Message{} = message, 0, "en") do
     Map.get(message.msgstr_plural, 0) |> present_or(message.msgid)
   end
 
-  defp translated_plural(%Message{} = message, index) do
+  defp translated_plural(%Message{} = message, index, "en") do
     Map.get(message.msgstr_plural, index) |> present_or(message.msgid_plural || message.msgid)
+  end
+
+  # Missing forms must fall through to English resources so i18next applies English plural rules.
+  defp translated_plural(%Message{} = message, index, _locale) do
+    Map.get(message.msgstr_plural, index)
   end
 
   defp present_or(value, fallback) do
