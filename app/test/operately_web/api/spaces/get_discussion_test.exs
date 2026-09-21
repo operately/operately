@@ -57,6 +57,57 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussionTest do
     end
   end
 
+  describe "unpublished discussions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:space_member, :space, permissions: :view_access)
+      |> Factory.add_messages_board(:messages_board, :space)
+      |> Factory.add_draft_message(:draft, :messages_board)
+      |> Factory.add_message(:scheduled, :messages_board,
+        state: :scheduled,
+        scheduled_at: Operately.Time.days_from_now(1)
+      )
+    end
+
+    test "space members can retrieve another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :space_member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.draft)})
+      assert res.discussion.id == Paths.message_id(ctx.draft)
+    end
+
+    test "space members can retrieve another person's scheduled discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :space_member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.scheduled)})
+      assert res.discussion.id == Paths.message_id(ctx.scheduled)
+    end
+
+    test "people without space access cannot retrieve a draft", ctx do
+      ctx = Factory.log_in_person(ctx, :member)
+
+      assert {404, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.draft)})
+      assert res.message == "The requested resource was not found"
+    end
+
+    test "people without space access cannot retrieve a scheduled discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :member)
+
+      assert {404, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.scheduled)})
+      assert res.message == "The requested resource was not found"
+    end
+
+    test "authors can retrieve their own draft", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.draft)})
+      assert res.discussion.id == Paths.message_id(ctx.draft)
+    end
+  end
+
   describe "space_discussions/get functionality" do
     setup :register_and_log_in_account
 
