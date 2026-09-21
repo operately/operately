@@ -68,7 +68,7 @@ defmodule TurboConnect.TsGen do
         queryKey: buildApiQueryKey(client, path, input),
         // Read the effective key so layout scope overrides also apply to the request.
         queryFn: ({ queryKey: [, basePath, headers, queryPath, queryInput] }): Promise<ResultT> =>
-          client.get(queryPath, queryInput, basePath, headers),
+          client.queryRequest(queryPath, queryInput, basePath, headers),
       });
     }
     """
@@ -154,6 +154,12 @@ defmodule TurboConnect.TsGen do
 
 #{generate_request_fn(:post)}
 #{generate_request_fn(:get)}
+      // Cached queries report errors at their caller boundaries, never during speculation.
+      async queryRequest(path: string, params: any, basePath: string, headers: any) {
+        const response = await axios.get(basePath + path, { params: toSnake(params), headers });
+        return toCamel(response.data);
+      }
+
 #{generate_root_namespace_delegators(api_module)}
     }
     """
@@ -189,10 +195,10 @@ defmodule TurboConnect.TsGen do
     response_line =
       case method do
         :post ->
-          "const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });"
+          "const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });\n    return toCamel(response.data);"
 
         :get ->
-          "const response = await axios.get(basePath + path, { params: toSnake(params), headers });"
+          "return await this.queryRequest(path, params, basePath, headers);"
       end
 
     args =
@@ -207,7 +213,6 @@ defmodule TurboConnect.TsGen do
       async #{method}(#{args}) {
         try {
           #{response_line}
-          return toCamel(response.data);
         } catch (error) {
           handleStaleClientError(error);
           throw error;

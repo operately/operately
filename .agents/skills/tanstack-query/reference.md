@@ -125,3 +125,52 @@ lifecycle tests so keys include the company prefix.
 
 `Api.projects.get` still exists for unmigrated callers and for typeahead-style
 search functions. Do not use it in a page loader you are touching.
+
+## Navigation and preloading
+
+```tsx
+// ExamplePage/loader.tsx
+export async function loader({ params }) {
+  const queryInput = { id: params.id, includePermissions: true };
+  await Api.projects.getQuery(queryInput);
+  return { queryInput };
+}
+
+export function useLoadedData() {
+  const { queryInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
+  return useLoadedQuery(Api.projects.getQueryOptions(queryInput));
+}
+
+// ExamplePage/index.tsx
+export default { name: "ExamplePage", Page, loader } satisfies PageModule;
+
+// routes/index.tsx: authentication and preloading default to true
+pageRoute("projects/:id/example", pages.ExamplePage);
+pageRoute("invite-team", pages.InviteTeamPage, { preload: false });
+pageRoute("/setup", pages.SetupPage, { auth: false, preload: false });
+```
+
+Use `emptyLoader` from `@/components/Pages` for pages without data. A page may
+export synchronous `onNavigate` alongside `Page` and `loader` for navigation-only
+preparation, such as clearing company headers or redirecting the browser. Routes
+requiring that preparation to fetch correctly must use `preload: false`.
+
+`route.loader` is the navigation wrapper; `handle.dataLoader` is the original
+page loader used by the preloader. Do not invoke `onNavigate`, authentication
+redirects, or shared company/layout loaders during speculation. The preloader
+skips excluded matched routes and cross-company links. For one link use
+`<Link to={path} data-preload="false">...</Link>`.
+
+Navigation reruns the same page loader and shares TanStack's pending/cached
+queries. Preserve the query inputs, key scope, invalidation, and freshness rules.
+Generated query functions send the headers captured in their effective cache key;
+never temporarily switch global headers to preload another company.
+
+Generated cached queries throw without toast/reload effects. Navigation errors
+and enabled query observers (including cached optional errors on mount) report
+centrally. Imperative cached queries without either boundary retain their local
+error handling but do not trigger stale-client toast/reload effects. This accepted
+tradeoff can delay detection until another qualifying request fails; do not add
+per-action reporting wrappers. Raw API calls and mutations
+retain their transport error handling. Successful login/logout clears the query
+cache and disables preloading until the existing document reload.

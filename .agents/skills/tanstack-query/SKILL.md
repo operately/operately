@@ -142,3 +142,20 @@ visit the migrated route.
   already painful. Include flags and parent APIs usually differ.
 - Use `!` to bypass missing query data, or `assertPresent` for non-nullable fields
   or data with a safe fallback.
+
+## Navigation and hover preloading
+
+- `pageRoute` runs `route.loader` for navigation: authentication, progress,
+  synchronous `onNavigate`, then the page loader. Hover/focus runs only
+  `handle.dataLoader` after 150 ms; the shared company loader stays navigation-only.
+- Keep page loaders read-only and reuse the same generated query inputs/options
+  in `useLoadedQuery`. Use `emptyLoader` when no data is needed. Put navigation-only
+  effects in synchronous `onNavigate`; never change headers in a preloadable loader.
+- `auth` defaults to `true`. Set `preload: false` for mutating reads, redirects
+  with browser effects, context changes, and mandatory fresh checks. Do not relax
+  freshness or company isolation for preloading. Individual links can opt out with
+  `data-preload="false"`; cross-company links are skipped automatically.
+- Cached-query transport has no toast/reload effects. Navigation and active query
+  observers report errors centrally. Imperative cached queries without an observer
+  keep local error handling; delayed stale-client detection is an accepted tradeoff.
+- See the [minimal route example](reference.md#navigation-and-preloading).
