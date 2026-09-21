@@ -73,6 +73,21 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
       assert Operately.People.Person.time_format(person) == :hour_24
     end
 
+    test "it returns a saved language preference", ctx do
+      {:ok, person} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
+
+      assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
+
+      assert data.language == "pt-BR"
+      assert person.language == "pt-BR"
+    end
+
+    test "it returns null language when no preference is saved", ctx do
+      assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
+
+      assert data.language == nil
+    end
+
     test "it returns a dismissed product release id when set", ctx do
       {:ok, person} =
         Operately.People.update_person(ctx.person, %{
