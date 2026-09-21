@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as ReactionsModel from "@/models/reactions";
+import { RetroReactions } from "./RetroReactions";
 import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
@@ -14,7 +14,6 @@ import {
   StatusBadge,
   CurrentSubscriptions,
   parseContent,
-  Reactions,
   RichContent,
   FormattedTime,
   Spacer,
@@ -149,15 +148,6 @@ function RetrospectiveContent() {
       <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
-}
-
-function RetroReactions() {
-  const { retrospective } = useLoadedData();
-  const reactions = retrospective.reactions!.map((r) => r!);
-  const entity = ReactionsModel.entity(retrospective.id!, "project_retrospective");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
-
-  return <Reactions {...form} size={24} canAddReaction={retrospective.permissions.canComment} />;
 }
 
 function Subscriptions() {
