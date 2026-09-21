@@ -18,7 +18,9 @@ defmodule OperatelyEmail.Cron.Assignments do
 
     Enum.each(people, fn person ->
       catch_and_log_errors(fn ->
-        OperatelyEmail.Emails.AssignmentsEmail.send(person, mode: mode)
+        Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+          OperatelyEmail.Emails.AssignmentsEmail.send(person, mode: mode)
+        end)
       end)
     end)
 
@@ -42,7 +44,8 @@ defmodule OperatelyEmail.Cron.Assignments do
 
     from(
       p in Person,
-      inner_join: a in Account, on: p.account_id == a.id,
+      inner_join: a in Account,
+      on: p.account_id == a.id,
       where: not is_nil(a.email),
       where: fragment("COALESCE((?->'notifications'->>'notify_about_assignments')::boolean, true)", p.preferences)
     )

@@ -1951,6 +1951,7 @@ export interface Person {
   type: string;
   description?: string | null;
   timezone?: string | null;
+  language?: Language | null;
   timeFormat?: TimeFormat;
   emailPreference?: EmailPreferenceValues;
   emailWindowMinutes?: EmailWindowMinutes;
@@ -3095,6 +3096,8 @@ export type GoalStatus =
   | "off_track"
   | "pending"
   | "outdated";
+
+export type Language = "en" | "pt-BR";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -5462,6 +5465,7 @@ export interface PeopleUpdateInput {
   fullName?: string;
   title?: string;
   timezone?: string;
+  language?: Language | null;
   timeFormat?: TimeFormat;
   managerId?: Id | null;
   theme?: string;
