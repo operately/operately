@@ -16,6 +16,7 @@ import {
   useNavigationType,
 } from "react-router";
 
+import { PagePreloading } from "./routes/preloading/PagePreloading";
 import { createAppRoutes } from "./routes";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -68,6 +69,7 @@ const App: JSX.Element = (
     <QueryClientProvider client={queryClient}>
       <ToasterBar />
       <ThemeProvider>
+        <PagePreloading router={routes} />
         <RouterProvider router={routes} />
       </ThemeProvider>
     </QueryClientProvider>

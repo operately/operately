@@ -1,3 +1,4 @@
+import { reportQueryError } from "@/api/queryErrors";
 import Api from "@/api";
 import * as Socket from "@/api/socket";
 import { companyLayoutInputs, prefetchCompanyLayout } from "@/models/companies/companyLayoutQueries";
@@ -18,6 +19,8 @@ export async function companyLoader({ params }: { params: { companyId?: string }
 
     return { ...inputs, companyId };
   } catch (error) {
+    reportQueryError(error);
+
     // If the company ID is invalid, the API will return a 400 message, but for the rest of the application, we can treat it as 404.
     if (
       typeof error === "object" &&

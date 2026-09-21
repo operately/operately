@@ -1,3 +1,4 @@
+import { reportQueryError } from "@/api/queryErrors";
 import React from "react";
 
 import { setDevData } from "@/features/DevBar/useDevBarData";
@@ -54,6 +55,7 @@ function pageLoader(path: string, page: PageModule, options: Options) {
 
       return data;
     } catch (error) {
+      reportQueryError(error);
       stopProgressIndicator();
       redirectToLoginIfUnauthorized(error);
 

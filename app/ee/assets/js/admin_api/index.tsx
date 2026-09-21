@@ -750,12 +750,17 @@ export class ApiClient {
   // @ts-ignore
   async get(path: string, params: any, basePath = this.getBasePath(), headers = this.getHeaders()) {
     try {
-      const response = await axios.get(basePath + path, { params: toSnake(params), headers });
-      return toCamel(response.data);
+      return await this.queryRequest(path, params, basePath, headers);
     } catch (error) {
       handleStaleClientError(error);
       throw error;
     }
+  }
+
+  // Cached queries report errors at their caller boundaries, never during speculation.
+  async queryRequest(path: string, params: any, basePath: string, headers: any) {
+    const response = await axios.get(basePath + path, { params: toSnake(params), headers });
+    return toCamel(response.data);
   }
 
   getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
@@ -902,7 +907,7 @@ function buildApiQueryOptions<InputT, ResultT>(client: ApiClient, path: string, 
     queryKey: buildApiQueryKey(client, path, input),
     // Read the effective key so layout scope overrides also apply to the request.
     queryFn: ({ queryKey: [, basePath, headers, queryPath, queryInput] }): Promise<ResultT> =>
-      client.get(queryPath, queryInput, basePath, headers),
+      client.queryRequest(queryPath, queryInput, basePath, headers),
   });
 }
 
