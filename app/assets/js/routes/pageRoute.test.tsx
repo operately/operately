@@ -1,4 +1,5 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import { reportQueryError } from "@/api/queryErrors";
 import { redirect } from "react-router";
 import nprogress from "nprogress";
 import { setDevData } from "@/features/DevBar/useDevBarData";
@@ -6,6 +7,7 @@ import { pageRoute } from "./pageRoute";
 import type { PageModule } from "./types";
 
 jest.mock("@/features/DevBar/useDevBarData", () => ({ setDevData: jest.fn() }));
+jest.mock("@/api/queryErrors", () => ({ reportQueryError: jest.fn() }));
 jest.mock("nprogress", () => ({ start: jest.fn(), done: jest.fn(), isStarted: jest.fn(() => true) }));
 jest.mock("react-router", () => ({ redirect: jest.fn((url) => ({ redirect: url })) }));
 
@@ -67,6 +69,8 @@ it("only translates unauthorized errors to login redirects during navigation", a
   const route = pageRoute("example", page);
   await expect(route.handle.dataLoader(request)).rejects.toBe(error);
   expect(redirect).not.toHaveBeenCalled();
+  expect(reportQueryError).not.toHaveBeenCalled();
   await expect(route.loader(request)).rejects.toEqual({ redirect: expect.any(String) });
   expect(nprogress.done).toHaveBeenCalled();
+  expect(reportQueryError).toHaveBeenCalledWith(error);
 });
