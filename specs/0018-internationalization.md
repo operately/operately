@@ -25,7 +25,7 @@ The build generates English JSON from the source catalog and other languages fro
 
 ### Language and rollout
 
-- Store a user's preferred language. Suggest a supported browser language on first selection; use English when no preference is saved.
+- Store a user's explicitly selected language preference. Use English until the user manually selects another language; never automatically select a language from browser settings.
 - Keep language, regional formatting preferences, and timezone separate. Reuse existing formatting helpers.
 - Gate the language selector and access to additional languages behind the existing company feature-flag mechanism. Catalog infrastructure and English extraction run for everyone.
 - Resolve the effective language consistently for web requests and each email recipient, including buffered notifications and digests. Workers explicitly scope the locale while rendering; they cannot depend on request state.
@@ -38,8 +38,8 @@ The build generates English JSON from the source catalog and other languages fro
 
 | PR | Change | Production behavior and validation |
 | --- | --- | --- |
-| 1 | Add Gettext, shared extraction/conversion tooling, and unified frontend initialization. Document catalog commands. | English only. Verify deterministic generation, fallback, context, placeholders, rich text, and plural conversion using fixtures. |
-| 2 | Add the language preference, effective-language resolver, and default-off flag. | English only. Use an additive migration; verify absent preferences, unsupported locales, and flag-off behavior. Audit preference API consumers and regenerate the CLI catalog if its contract changes. |
+| 1 — Complete | Add Gettext, shared extraction/conversion tooling, and unified frontend initialization. Document catalog commands. | English only. Verified deterministic generation, fallback, context, placeholders, rich text, and plural conversion. Fixed missing plural translations to fall back using English plural rules; all 36 focused i18n tests pass. |
+| 2 — Next | Add the language preference, effective-language resolver, and default-off flag. | English only. Use an additive migration; verify absent preferences, unsupported locales, and flag-off behavior. Audit preference API consumers and regenerate the CLI catalog if its contract changes. |
 | 3 | Extract one complete English workflow: navigation → project → task → activity notification/email. Include validation and accessible labels. | Existing English copy and behavior remain intact. Verify the workflow and immediate/buffered emails. |
 | 4 | Translate the pilot workflow into Brazilian Portuguese (`pt-BR`) and add the gated language selector. | Enable for an internal company only. Verify saved selection, recipient language, pluralization, layout, and switching the flag off. Unmigrated surfaces remain English. |
 | 5 | Extract remaining shared controls, account/onboarding screens, and company/space administration copy. | English remains unchanged; pilot users receive English fallback for newly extracted messages. Audit these surfaces for untranslated literals. |
