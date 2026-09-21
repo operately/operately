@@ -2293,7 +2293,7 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:time_format, values: Operately.People.Preferences.time_format_values())
 
-  enum(:language, values: Operately.I18n.Languages.api_values())
+  enum :language, values: Operately.I18n.Languages.api_values()
 
   object :person, for: Operately.People.Person do
     field :id, :string
