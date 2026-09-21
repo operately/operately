@@ -24,10 +24,9 @@ defmodule Operately.Application do
 
     :ok = Oban.Telemetry.attach_default_logger()
 
-    # Attach Sentry telemetry for Oban job failures and Logger errors
     if Operately.Sentry.enabled?() do
       :ok = Operately.Sentry.setup_logger_handler()
-      attach_sentry_telemetry()
+      :ok = Operately.Sentry.attach_oban_handler()
     end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -42,50 +41,5 @@ defmodule Operately.Application do
   def config_change(changed, _new, removed) do
     OperatelyWeb.Endpoint.config_change(changed, removed)
     :ok
-  end
-
-  # Attach Sentry telemetry for Oban job failures
-  defp attach_sentry_telemetry do
-    events = [
-      [:oban, :job, :exception]
-    ]
-
-    :telemetry.attach_many(
-      "sentry-oban-errors",
-      events,
-      &__MODULE__.handle_oban_exception/4,
-      %{}
-    )
-  end
-
-  # Attach Sentry telemetry for Oban job failures
-  # This function is public for testing purposes
-  def handle_oban_exception(
-        [:oban, :job, :exception],
-        measurements,
-        %{job: job} = metadata,
-        _config
-      ) do
-    extra = %{
-      job_id: job.id,
-      queue: job.queue,
-      worker: job.worker,
-      args: job.args,
-      attempt: job.attempt,
-      max_attempts: job.max_attempts,
-      duration: Map.get(measurements, :duration),
-      queue_time: Map.get(measurements, :queue_time)
-    }
-
-    Sentry.capture_exception(
-      Map.get(metadata, :error, RuntimeError.exception("Unknown Oban job error")),
-      stacktrace: Map.get(metadata, :stacktrace, []),
-      tags: %{
-        worker: job.worker,
-        queue: job.queue,
-        oban_job: true
-      },
-      extra: extra
-    )
   end
 end
