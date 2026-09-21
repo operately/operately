@@ -1,3 +1,4 @@
+import { reportQueryError } from "./queryErrors";
 import {
   QueryClient,
   useQuery,
@@ -20,6 +21,13 @@ export const queryClient = new QueryClient({
       retry: false,
     },
   },
+});
+
+// Trigger stale-client toast/reload handling only while a mounted component watches
+// the query. Unobserved hover preloads stay silent; their cached errors are reported
+// if a component later mounts and starts watching the query.
+queryClient.getQueryCache().subscribe(({ query }) => {
+  if (query.isActive() && query.state.error) reportQueryError(query.state.error);
 });
 
 export function loaderBackedQueryOptions<

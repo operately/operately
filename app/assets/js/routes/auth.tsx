@@ -1,3 +1,4 @@
+import { disablePreloading } from "./preloading/preloadSession";
 import { queryClient } from "@/api/queryClient";
 
 type LogOutResult = "success" | "failure";
@@ -10,6 +11,7 @@ export async function logOut(): Promise<LogOutResult> {
     return "failure";
   }
 
+  disablePreloading();
   queryClient.clear();
 
   return "success";
@@ -28,6 +30,7 @@ export async function logIn(email: string, password: string, options: LogInOptio
   const res = await fetch("/accounts/log_in", { method: "POST", headers: autheaders(), body: JSON.stringify(data) });
 
   if (res.status === 200) {
+    disablePreloading();
     queryClient.clear();
 
     if (onSuccess) {

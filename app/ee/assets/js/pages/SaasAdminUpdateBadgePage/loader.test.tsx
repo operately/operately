@@ -9,6 +9,7 @@ import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import { loader, useLoadedData } from "./loader";
 
 jest.mock("axios");
+jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/ee/admin_api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn() }));
 jest.mock("react-router", () => ({ redirect: (location: string) => ({ location }) }));

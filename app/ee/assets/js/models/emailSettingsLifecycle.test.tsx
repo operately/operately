@@ -7,6 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 
 jest.mock("axios");
+jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/ee/admin_api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 const wrapper = ({ children }: React.PropsWithChildren) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
