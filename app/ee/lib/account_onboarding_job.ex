@@ -81,5 +81,4 @@ defmodule OperatelyEE.AccountOnboardingJob do
   defp retryable_status?(_status), do: false
 
   defp sendgrid_error(%{status: status, body: body}), do: "Unexpected status code: #{status} (#{inspect(body)})"
-  defp sendgrid_error(%{status: status}), do: "Unexpected status code: #{status}"
 end
