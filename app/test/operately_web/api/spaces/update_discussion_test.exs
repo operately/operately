@@ -87,6 +87,43 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
     end
   end
 
+  describe "unpublished discussions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:viewer, :space, permissions: :view_access)
+      |> Factory.add_space_member(:editor, :space, permissions: :edit_access)
+      |> Factory.add_messages_board(:messages_board, :space)
+      |> Factory.add_draft_message(:draft, :messages_board)
+      |> Factory.add_message(:scheduled, :messages_board,
+        state: :scheduled,
+        scheduled_at: Operately.Time.days_from_now(1)
+      )
+    end
+
+    test "space members with edit access can edit another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {200, _} = request(ctx.conn, ctx.draft)
+      assert_discussion_edited(ctx.draft)
+    end
+
+    test "space members with view access cannot edit another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :viewer)
+
+      assert {403, res} = request(ctx.conn, ctx.draft)
+      assert res.message == "You don't have permission to perform this action"
+    end
+
+    test "space members with edit access can edit another person's scheduled discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {200, _} = request(ctx.conn, ctx.scheduled)
+      assert_discussion_edited(ctx.scheduled)
+    end
+  end
+
   describe "space_discussions/update functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
