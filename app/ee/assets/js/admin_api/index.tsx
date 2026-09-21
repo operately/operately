@@ -748,12 +748,9 @@ export class ApiClient {
   }
 
   // @ts-ignore
-  async get(path: string, params: any) {
+  async get(path: string, params: any, basePath = this.getBasePath(), headers = this.getHeaders()) {
     try {
-      const response = await axios.get(this.getBasePath() + path, {
-        params: toSnake(params),
-        headers: this.getHeaders(),
-      });
+      const response = await axios.get(basePath + path, { params: toSnake(params), headers });
       return toCamel(response.data);
     } catch (error) {
       handleStaleClientError(error);
@@ -893,11 +890,20 @@ export class ApiClient {
 }
 
 function buildApiQueryKeyPrefix(client: ApiClient, path: string) {
-  return ["operately-api", client.getBasePath(), client.getHeaders(), path] as const;
+  return ["operately-api", client.getBasePath(), { ...client.getHeaders() }, path] as const;
 }
 
 function buildApiQueryKey<InputT>(client: ApiClient, path: string, input: InputT) {
   return [...buildApiQueryKeyPrefix(client, path), input] as const;
+}
+
+function buildApiQueryOptions<InputT, ResultT>(client: ApiClient, path: string, input: InputT) {
+  return queryOptions({
+    queryKey: buildApiQueryKey(client, path, input),
+    // Read the effective key so layout scope overrides also apply to the request.
+    queryFn: ({ queryKey: [, basePath, headers, queryPath, queryInput] }): Promise<ResultT> =>
+      client.get(queryPath, queryInput, basePath, headers),
+  });
 }
 
 const defaultApiClient = new ApiClient();
@@ -1032,10 +1038,7 @@ export function getAccountsQueryKey(input: GetAccountsInput) {
 }
 
 export function getAccountsQueryOptions(input: GetAccountsInput) {
-  return queryOptions({
-    queryKey: getAccountsQueryKey(input),
-    queryFn: () => defaultApiClient.getAccounts(input),
-  });
+  return buildApiQueryOptions<GetAccountsInput, GetAccountsResult>(defaultApiClient, "/get_accounts", input);
 }
 
 export function getAccountsQuery(input: GetAccountsInput) {
@@ -1054,10 +1057,11 @@ export function getActiveCompaniesQueryKey(input: GetActiveCompaniesInput) {
 }
 
 export function getActiveCompaniesQueryOptions(input: GetActiveCompaniesInput) {
-  return queryOptions({
-    queryKey: getActiveCompaniesQueryKey(input),
-    queryFn: () => defaultApiClient.getActiveCompanies(input),
-  });
+  return buildApiQueryOptions<GetActiveCompaniesInput, GetActiveCompaniesResult>(
+    defaultApiClient,
+    "/get_active_companies",
+    input,
+  );
 }
 
 export function getActiveCompaniesQuery(input: GetActiveCompaniesInput) {
@@ -1076,10 +1080,7 @@ export function getActivitiesQueryKey(input: GetActivitiesInput) {
 }
 
 export function getActivitiesQueryOptions(input: GetActivitiesInput) {
-  return queryOptions({
-    queryKey: getActivitiesQueryKey(input),
-    queryFn: () => defaultApiClient.getActivities(input),
-  });
+  return buildApiQueryOptions<GetActivitiesInput, GetActivitiesResult>(defaultApiClient, "/get_activities", input);
 }
 
 export function getActivitiesQuery(input: GetActivitiesInput) {
@@ -1098,10 +1099,7 @@ export function getCompaniesQueryKey(input: GetCompaniesInput) {
 }
 
 export function getCompaniesQueryOptions(input: GetCompaniesInput) {
-  return queryOptions({
-    queryKey: getCompaniesQueryKey(input),
-    queryFn: () => defaultApiClient.getCompanies(input),
-  });
+  return buildApiQueryOptions<GetCompaniesInput, GetCompaniesResult>(defaultApiClient, "/get_companies", input);
 }
 
 export function getCompaniesQuery(input: GetCompaniesInput) {
@@ -1120,10 +1118,7 @@ export function getCompanyQueryKey(input: GetCompanyInput) {
 }
 
 export function getCompanyQueryOptions(input: GetCompanyInput) {
-  return queryOptions({
-    queryKey: getCompanyQueryKey(input),
-    queryFn: () => defaultApiClient.getCompany(input),
-  });
+  return buildApiQueryOptions<GetCompanyInput, GetCompanyResult>(defaultApiClient, "/get_company", input);
 }
 
 export function getCompanyQuery(input: GetCompanyInput) {
@@ -1142,10 +1137,11 @@ export function getEmailSettingsQueryKey(input: GetEmailSettingsInput) {
 }
 
 export function getEmailSettingsQueryOptions(input: GetEmailSettingsInput) {
-  return queryOptions({
-    queryKey: getEmailSettingsQueryKey(input),
-    queryFn: () => defaultApiClient.getEmailSettings(input),
-  });
+  return buildApiQueryOptions<GetEmailSettingsInput, GetEmailSettingsResult>(
+    defaultApiClient,
+    "/get_email_settings",
+    input,
+  );
 }
 
 export function getEmailSettingsQuery(input: GetEmailSettingsInput) {
@@ -1164,10 +1160,11 @@ export function getSearchIndexStatusQueryKey(input: GetSearchIndexStatusInput) {
 }
 
 export function getSearchIndexStatusQueryOptions(input: GetSearchIndexStatusInput) {
-  return queryOptions({
-    queryKey: getSearchIndexStatusQueryKey(input),
-    queryFn: () => defaultApiClient.getSearchIndexStatus(input),
-  });
+  return buildApiQueryOptions<GetSearchIndexStatusInput, GetSearchIndexStatusResult>(
+    defaultApiClient,
+    "/get_search_index_status",
+    input,
+  );
 }
 
 export function getSearchIndexStatusQuery(input: GetSearchIndexStatusInput) {
@@ -1186,10 +1183,11 @@ export function getUpdateBadgeSettingsQueryKey(input: GetUpdateBadgeSettingsInpu
 }
 
 export function getUpdateBadgeSettingsQueryOptions(input: GetUpdateBadgeSettingsInput) {
-  return queryOptions({
-    queryKey: getUpdateBadgeSettingsQueryKey(input),
-    queryFn: () => defaultApiClient.getUpdateBadgeSettings(input),
-  });
+  return buildApiQueryOptions<GetUpdateBadgeSettingsInput, GetUpdateBadgeSettingsResult>(
+    defaultApiClient,
+    "/get_update_badge_settings",
+    input,
+  );
 }
 
 export function getUpdateBadgeSettingsQuery(input: GetUpdateBadgeSettingsInput) {
@@ -1208,10 +1206,11 @@ export function listBillingPlanDefinitionsQueryKey(input: ListBillingPlanDefinit
 }
 
 export function listBillingPlanDefinitionsQueryOptions(input: ListBillingPlanDefinitionsInput) {
-  return queryOptions({
-    queryKey: listBillingPlanDefinitionsQueryKey(input),
-    queryFn: () => defaultApiClient.listBillingPlanDefinitions(input),
-  });
+  return buildApiQueryOptions<ListBillingPlanDefinitionsInput, ListBillingPlanDefinitionsResult>(
+    defaultApiClient,
+    "/list_billing_plan_definitions",
+    input,
+  );
 }
 
 export function listBillingPlanDefinitionsQuery(input: ListBillingPlanDefinitionsInput) {
@@ -1230,10 +1229,11 @@ export function listBillingProductsQueryKey(input: ListBillingProductsInput) {
 }
 
 export function listBillingProductsQueryOptions(input: ListBillingProductsInput) {
-  return queryOptions({
-    queryKey: listBillingProductsQueryKey(input),
-    queryFn: () => defaultApiClient.listBillingProducts(input),
-  });
+  return buildApiQueryOptions<ListBillingProductsInput, ListBillingProductsResult>(
+    defaultApiClient,
+    "/list_billing_products",
+    input,
+  );
 }
 
 export function listBillingProductsQuery(input: ListBillingProductsInput) {
@@ -1252,10 +1252,11 @@ export function listSiteMessagesQueryKey(input: ListSiteMessagesInput) {
 }
 
 export function listSiteMessagesQueryOptions(input: ListSiteMessagesInput) {
-  return queryOptions({
-    queryKey: listSiteMessagesQueryKey(input),
-    queryFn: () => defaultApiClient.listSiteMessages(input),
-  });
+  return buildApiQueryOptions<ListSiteMessagesInput, ListSiteMessagesResult>(
+    defaultApiClient,
+    "/list_site_messages",
+    input,
+  );
 }
 
 export function listSiteMessagesQuery(input: ListSiteMessagesInput) {

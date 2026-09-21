@@ -74,6 +74,7 @@ defmodule TurboConnect.TsGen.Queries do
     |> Enum.map_join("\n", fn {name, query} ->
       input_type = ts_type(name) <> "Input"
       fn_name = ts_function_name(name)
+      result_type = ts_type(name) <> "Result"
       path = endpoint_path(query)
 
       """
@@ -86,10 +87,7 @@ defmodule TurboConnect.TsGen.Queries do
       }
 
       export function #{fn_name}QueryOptions(input: #{input_type}) {
-        return queryOptions({
-          queryKey: #{fn_name}QueryKey(input),
-          queryFn: () => defaultApiClient.#{fn_name}(input),
-        });
+        return buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input);
       }
 
       export function #{fn_name}Query(input: #{input_type}) {
