@@ -20,7 +20,3 @@ export type Entity = {
   type: EntityType;
   parentType?: ParentType;
 };
-
-export function entity(id: string, type: EntityType, parentType?: ParentType): Entity {
-  return { id, type, parentType };
-}

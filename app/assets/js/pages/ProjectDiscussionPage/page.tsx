@@ -1,14 +1,14 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as ReactionsModel from "@/models/reactions";
+import { DiscussionReactions } from "./DiscussionReactions";
 import * as React from "react";
 
 import { Comments } from "./Comments";
 
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
-import { Avatar, IconEdit, CurrentSubscriptions, Reactions, RichContent, FormattedTime } from "turboui";
+import { Avatar, IconEdit, CurrentSubscriptions, RichContent, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
@@ -123,16 +123,6 @@ function Title() {
       </div>
     </div>
   );
-}
-
-function DiscussionReactions() {
-  const { discussion } = useLoadedData();
-
-  const reactions = (discussion.reactions || []).map((r) => r);
-  const entity = ReactionsModel.entity(discussion.id, "project_discussion");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
-
-  return <Reactions {...form} size={24} canAddReaction={discussion.projectPermissions?.canComment || false} />;
 }
 
 function Subscriptions() {

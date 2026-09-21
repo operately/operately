@@ -2,12 +2,12 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Activities from "@/models/activities";
-import * as ReactionsModel from "@/models/reactions";
+import { ActivityReactions } from "./ActivityReactions";
 
 import { usePaths } from "@/routes/paths";
 import { Comments } from "./Comments";
 
-import { Avatar, CurrentSubscriptions, FormattedTime, Reactions } from "turboui";
+import { Avatar, CurrentSubscriptions, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
@@ -104,21 +104,6 @@ function Title({ activity }: { activity: Activities.Activity }) {
       </div>
     </div>
   );
-}
-
-function ActivityReactions() {
-  const { activity } = useLoadedData();
-  const { commentThread, permissions } = activity;
-
-  if (!commentThread?.reactions || !commentThread.id || !permissions) {
-    return null;
-  }
-
-  const reactions = commentThread.reactions.filter((reaction): reaction is NonNullable<typeof reaction> => !!reaction);
-  const entity = ReactionsModel.entity(commentThread.id, "project_discussion");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
-
-  return <Reactions {...form} size={24} canAddReaction={!!permissions.canCommentOnThread} />;
 }
 
 function Subscriptions() {

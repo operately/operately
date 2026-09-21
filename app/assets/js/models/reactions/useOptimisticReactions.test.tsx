@@ -61,29 +61,41 @@ afterEach(async () => {
   jest.restoreAllMocks();
 });
 
-it("rolls back failed writes and refreshes only after success", async () => {
-  create.mockRejectedValueOnce(new Error("failed")).mockResolvedValue({ reaction });
-  await render();
-  await act(async () => {
-    await hook.onAddReaction("👍");
-  });
-  expect(hook.reactions).toEqual([]);
-  expect(onRefresh).not.toHaveBeenCalled();
-  await act(async () => {
-    await hook.onAddReaction("👍");
-  });
-  expect(hook.reactions.map((r) => r.id)).toEqual(["saved"]);
-  expect(onRefresh).toHaveBeenCalledTimes(1);
-  remove.mockRejectedValueOnce(new Error("failed"));
-  await act(async () => {
-    await hook.onRemoveReaction("saved");
-  });
-  expect(hook.reactions.map((r) => r.id)).toEqual(["saved"]);
-  expect(onRefresh).toHaveBeenCalledTimes(1);
-});
+it.each(["project_check_in", "project_discussion", "project_retrospective"] as const)(
+  "rolls back failed %s writes and refreshes only after success",
+  async (type) => {
+    entity = { id: "resource1", type };
+    create.mockRejectedValueOnce(new Error("failed")).mockResolvedValue({ reaction });
+    await render();
+
+    await act(async () => {
+      await hook.onAddReaction("👍");
+    });
+
+    expect(hook.reactions).toEqual([]);
+    expect(onRefresh).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await hook.onAddReaction("👍");
+    });
+
+    expect(hook.reactions.map((r) => r.id)).toEqual(["saved"]);
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+
+    remove.mockRejectedValueOnce(new Error("failed"));
+    await act(async () => {
+      await hook.onRemoveReaction("saved");
+    });
+
+    expect(hook.reactions.map((r) => r.id)).toEqual(["saved"]);
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+  },
+);
 
 it.each([
   { id: "project1", type: "project_check_in" },
+  { id: "discussion1", type: "project_discussion" },
+  { id: "retrospective1", type: "project_retrospective" },
   { id: "message1", type: "message" },
   { id: "comment1", type: "comment", parentType: "project_task" },
 ] satisfies Entity[])("sends the entity and parent type for $type", async (resource) => {
@@ -102,34 +114,43 @@ it.each([
   expect(onRefresh).toHaveBeenCalledTimes(1);
 });
 
-it("resolves a queued removal of an optimistic reaction to its server ID", async () => {
-  let finish: (value: unknown) => void = () => {};
-  create.mockReturnValue(
-    new Promise((resolve) => {
-      finish = resolve;
-    }),
-  );
-  await render();
-  let adding: Promise<void>;
-  let removing: Promise<void>;
-  await act(async () => {
-    adding = hook.onAddReaction("👍");
-  });
-  const id = hook.reactions[0]?.id;
-  if (!id) throw new Error("Missing optimistic reaction");
-  await act(async () => {
-    removing = hook.onRemoveReaction(id);
-  });
-  expect(hook.reactions).toEqual([]);
-  await act(async () => {
-    finish({ reaction });
-    await adding;
-    await removing;
-  });
-  expect(remove.mock.calls[0]?.[0]).toEqual({ reactionId: "saved" });
-  expect(hook.reactions).toEqual([]);
-  expect(onRefresh).toHaveBeenCalledTimes(1);
-});
+it.each(["project_check_in", "project_discussion", "project_retrospective"] as const)(
+  "resolves a queued %s removal to its server ID",
+  async (type) => {
+    entity = { id: "resource1", type };
+    let finish: (value: unknown) => void = () => {};
+    create.mockReturnValue(
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+    );
+    await render();
+
+    let adding: Promise<void>;
+    let removing: Promise<void>;
+    await act(async () => {
+      adding = hook.onAddReaction("👍");
+    });
+
+    const id = hook.reactions[0]?.id;
+    if (!id) throw new Error("Missing optimistic reaction");
+
+    await act(async () => {
+      removing = hook.onRemoveReaction(id);
+    });
+    expect(hook.reactions).toEqual([]);
+
+    await act(async () => {
+      finish({ reaction });
+      await adding;
+      await removing;
+    });
+
+    expect(remove.mock.calls[0]?.[0]).toEqual({ reactionId: "saved" });
+    expect(hook.reactions).toEqual([]);
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+  },
+);
 
 it.each(["id", "type", "parentType"] as const)(
   "isolates pending writes and refresh callbacks when the entity %s changes",

@@ -186,6 +186,35 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> UI.refute_text("Original comment")
   end
 
+  step :reopen_discussion_through_list, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["nav-item", "Discussions"]))
+    |> click_on_discussion()
+    |> assert_discussion_page_displayed()
+  end
+
+  step :add_discussion_reaction, ctx do
+    ctx
+    |> UI.click(css: "[aria-haspopup='dialog']:has(.tabler-icon-mood-plus)")
+    |> UI.click(testid: "reaction-👍-button")
+    |> assert_discussion_reaction()
+  end
+
+  step :assert_discussion_reaction, ctx do
+    UI.assert_has(ctx, css: "[data-reaction-item]")
+  end
+
+  step :remove_discussion_reaction, ctx do
+    ctx
+    |> UI.click(css: "[data-reaction-item]")
+    |> UI.click(css: "[title='Remove reaction']")
+    |> assert_no_discussion_reaction()
+  end
+
+  step :assert_no_discussion_reaction, ctx do
+    UI.refute_has(ctx, css: "[data-reaction-item]")
+  end
+
   step :assert_comment_submitted, ctx, message do
     attempts(ctx, 5, fn ->
       comment = last_comment(ctx)

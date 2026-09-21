@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as ReactionsModel from "@/models/reactions";
+import { CheckInReactions } from "./CheckInReactions";
 import * as React from "react";
 
 import { useNavigate } from "react-router";
@@ -16,7 +16,6 @@ import {
   IconTrash,
   CurrentSubscriptions,
   Modal,
-  Reactions,
   Spacer,
   showSuccessToast,
   displayDate,
@@ -85,15 +84,6 @@ export function Page() {
       </Paper.Root>
     </Pages.Page>
   );
-}
-
-function CheckInReactions() {
-  const { checkIn } = useLoadedData();
-  const reactions = checkIn.reactions!.map((r) => r!);
-  const entity = ReactionsModel.entity(checkIn.id!, "project_check_in");
-  const form = ReactionsModel.useReactionsForm(entity, reactions);
-
-  return <Reactions {...form} size={24} canAddReaction={checkIn.project?.permissions?.canComment || false} />;
 }
 
 function SubscriptionsSection() {
