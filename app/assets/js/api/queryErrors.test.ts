@@ -120,14 +120,16 @@ it("binds the effective cache key and request headers even across company change
 it("retains mutation transport reporting", async () => {
   const error = new Error("mutation failed");
   jest.mocked(axios.post).mockRejectedValue(error);
+  const { mutationFn } = Api.projects.pauseMutationOptions();
+
   await expect(
-    Api.projects.pauseMutationOptions().mutationFn?.({ projectId: "one", message: "Paused" }, {} as any),
+    mutationFn?.({ projectId: "one", message: "Paused" }, { client: queryClient, meta: undefined }),
   ).rejects.toBe(error);
   expect(handleStaleClientError).toHaveBeenCalledWith(error);
 });
 
 it("keeps sequential requests in matching cache scopes across a company switch and back", async () => {
-  let finish: (value: any) => void = () => {};
+  let finish: (value: { data: { project: { id: string } } }) => void = () => {};
   jest.mocked(axios.get).mockImplementationOnce(
     () =>
       new Promise((resolve) => {

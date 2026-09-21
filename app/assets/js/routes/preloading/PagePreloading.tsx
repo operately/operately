@@ -1,9 +1,18 @@
 import { useEffect } from "react";
-import type { createBrowserRouter } from "react-router";
+import type { Navigation, RouteObject } from "react-router";
 import { createPagePreloader } from "./preloadPage";
 import { listenForPagePreloads } from "./hoverPreloading";
 
-export function PagePreloading({ router }: { router: ReturnType<typeof createBrowserRouter> }) {
+interface PreloadingRouter {
+  routes: RouteObject[];
+  state: {
+    location: { pathname: string; search: string };
+    navigation: Pick<Navigation, "state">;
+  };
+  subscribe: (listener: (state: PreloadingRouter["state"]) => void) => () => void;
+}
+
+export function PagePreloading({ router }: { router: PreloadingRouter }) {
   useEffect(() => {
     const preloader = createPagePreloader({
       routes: router.routes,

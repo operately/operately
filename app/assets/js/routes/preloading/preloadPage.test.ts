@@ -8,7 +8,9 @@ import { disablePreloading } from "./preloadSession";
 
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
 
-const dataLoader = jest.fn(async (_args: any): Promise<void> => undefined);
+const dataLoader = jest.fn(
+  async (_args: { params?: Record<string, string>; request?: Request }): Promise<void> => undefined,
+);
 const navigationLoader = jest.fn();
 
 const routes = [
@@ -44,7 +46,10 @@ beforeEach(() => {
   Api.default.setBasePath("/api/v2");
   AdminApi.default.setBasePath("/admin/api/v1");
   Api.default.setHeaders({ "x-company-id": "acme" });
-  global.window = { appConfig: { configured: true, account: { id: 1 } } } as any;
+  Object.defineProperty(global, "window", {
+    configurable: true,
+    value: { appConfig: { configured: true, account: { id: 1 } } },
+  });
   location = "/acme/home";
   navigating = false;
 });
@@ -55,7 +60,7 @@ it("calls only the page data loader with parameters and search intact", async ()
   const service = preloader();
   await service.preloadPage("/acme/projects/one?tab=tasks#top");
   expect(dataLoader).toHaveBeenCalledWith({ params: { companyId: "acme", id: "one" }, request: expect.any(Request) });
-  expect(dataLoader.mock.calls[0]?.[0].request.url).toBe("http://localhost/acme/projects/one?tab=tasks");
+  expect(dataLoader.mock.calls[0]?.[0].request?.url).toBe("http://localhost/acme/projects/one?tab=tasks");
   expect(navigationLoader).not.toHaveBeenCalled();
   service.dispose();
 });

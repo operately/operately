@@ -5,7 +5,9 @@ import { PagePreloading } from "./PagePreloading";
 import { createPagePreloader } from "./preloadPage";
 
 jest.mock("./preloadPage", () => ({ createPagePreloader: jest.fn() }));
-(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+
+type Router = React.ComponentProps<typeof PagePreloading>["router"];
 
 it("cancels on router navigation and cleans up subscriptions and document listeners", () => {
   jest.useFakeTimers();
@@ -17,9 +19,9 @@ it("cancels on router navigation and cleans up subscriptions and document listen
   };
   jest.mocked(createPagePreloader).mockReturnValue(service);
 
-  let onNavigation = (_state: any) => {};
+  let onNavigation = (_state: Router["state"]) => {};
   const unsubscribe = jest.fn();
-  const router = {
+  const router: Router = {
     routes: [],
     state: { location: { pathname: "/company", search: "" }, navigation: { state: "idle" } },
     subscribe: (callback: typeof onNavigation) => {
@@ -31,14 +33,14 @@ it("cancels on router navigation and cleans up subscriptions and document listen
   const container = document.createElement("div");
   document.body.append(container);
   const root = createRoot(container);
-  act(() => root.render(<PagePreloading router={router as any} />));
+  act(() => root.render(<PagePreloading router={router} />));
 
   const anchor = document.createElement("a");
   anchor.href = "/company/project";
   document.body.append(anchor);
 
   anchor.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }));
-  onNavigation({ navigation: { state: "loading" } });
+  onNavigation({ ...router.state, navigation: { state: "loading" } });
   jest.advanceTimersByTime(150);
 
   expect(service.preloadPage).not.toHaveBeenCalled();
