@@ -3,6 +3,46 @@ defmodule Operately.I18n.ConverterTest do
 
   alias Operately.I18n.Converter
 
+  @untranslated_tasks """
+  msgctxt "inbox"
+  msgid "1 task"
+  msgid_plural "%{count} tasks"
+  msgstr[0] ""
+  msgstr[1] ""
+  """
+
+  test "untranslated Portuguese plurals fall back using English plural rules" do
+    assert render_task_counts(@untranslated_tasks, "pt-BR", [0, 0.5, 1, 1.5, 2, 1_000_000]) ==
+             ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "1000000 tasks"]
+  end
+
+  test "missing Portuguese singular translations fall back while translated plurals remain available" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] ""
+    msgstr[1] "%{count} tarefas"
+    """
+
+    assert render_task_counts(po, "pt-BR", [0, 0.5, 1, 2, 1_000_000]) ==
+             ["0 tasks", "0.5 tasks", "1 task", "2 tarefas", "1000000 tarefas"]
+  end
+
+  test "missing Russian plural translations use English rules for counts ending in one" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] ""
+    msgstr[1] "%{count} задачи"
+    msgstr[2] "%{count} задач"
+    """
+
+    assert render_task_counts(po, "ru", [1, 2, 5, 21]) ==
+             ["1 task", "2 задачи", "5 задач", "21 tasks"]
+  end
+
   test "converts English source catalog placeholders, context, plurals, and rich text" do
     pot = """
     msgid "Hello %{name}"
@@ -117,5 +157,24 @@ defmodule Operately.I18n.ConverterTest do
     {output, 0} = System.cmd("node", ["-e", script, Jason.encode!(translations)], cd: Path.expand("../../..", __DIR__))
 
     assert Jason.decode!(output) == ["1 яблоко", "2 яблока", "5 яблок", "1.5 яблок"]
+  end
+
+  defp render_task_counts(po, locale, counts) do
+    resources = %{
+      locale => %{translation: Converter.from_po(po, locale)},
+      "en" => %{translation: Converter.from_pot(@untranslated_tasks)}
+    }
+
+    script = """
+    const i18next = require('i18next').createInstance();
+    const {locale, counts, resources} = JSON.parse(process.argv[1]);
+    i18next.init({lng: locale, fallbackLng: 'en', contextSeparator: '|', resources});
+    process.stdout.write(JSON.stringify(counts.map(count => i18next.t('1 task', {count, context: 'inbox'}))));
+    """
+
+    input = Jason.encode!(%{locale: locale, counts: counts, resources: resources})
+    {output, 0} = System.cmd("node", ["-e", script, input], cd: Path.expand("../../..", __DIR__))
+
+    Jason.decode!(output)
   end
 end

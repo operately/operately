@@ -35,7 +35,7 @@ The default scan includes `.ex`, `.exs`, and `.heex` files under `app/lib` and `
 
 Extraction preserves locale headers and translator metadata. Messages missing from the source become obsolete (`#~`) in PO files and are excluded from generated JSON. If the source message returns, extraction restores its saved translation.
 
-If a message switches between singular and plural, or its plural source text changes, extraction clears the incompatible translation for review. Generated JSON falls back to the current English source until the new form is translated.
+If a message switches between singular and plural, or its plural source text changes, extraction clears the incompatible translation for review. Missing plural translations are omitted from locale JSON so i18next falls back to the current English resources and applies English plural rules. Existing translated forms remain available.
 
 ## Marking copy
 
