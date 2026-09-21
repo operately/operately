@@ -16,6 +16,7 @@ import { HomePage, showErrorToast } from "turboui";
 import { Navigate } from "react-router";
 import { canDeleteFeedItems } from "./feedPermissions";
 import { shouldOpenCompanyWorkMap } from "./firstRun";
+import { useHomePagePreloading } from "./useHomePagePreloading";
 
 function Page() {
   const paths = usePaths();
@@ -23,13 +24,10 @@ function Page() {
   const { company, spaces, hasWorkItems } = useLoadedData();
   const isOwner = useIsOwner();
 
-  if (
-    shouldOpenCompanyWorkMap({
-      isOwner,
-      setupCompleted: company.setupCompleted,
-      hasWorkItems,
-    })
-  ) {
+  const openWorkMap = shouldOpenCompanyWorkMap({ isOwner, setupCompleted: company.setupCompleted, hasWorkItems });
+  useHomePagePreloading({ spaces, personId: me.id, enabled: !openWorkMap });
+
+  if (openWorkMap) {
     return <Navigate to={paths.workMapPath()} replace />;
   }
 

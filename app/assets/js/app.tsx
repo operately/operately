@@ -69,8 +69,9 @@ const App: JSX.Element = (
     <QueryClientProvider client={queryClient}>
       <ToasterBar />
       <ThemeProvider>
-        <PagePreloading router={routes} />
-        <RouterProvider router={routes} />
+        <PagePreloading router={routes}>
+          <RouterProvider router={routes} />
+        </PagePreloading>
       </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>

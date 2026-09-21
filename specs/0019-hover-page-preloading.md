@@ -152,3 +152,17 @@ skill and reference.
 - Preloading never changes the active API/socket company headers, creates invitation links, or triggers browser navigation. Excluded billing and invitation routes retain their fresh checks on navigation.
 - Invalidated data refreshes on navigation; authentication/company changes cannot reuse another context's data.
 - Verify representative Home and Work Map links to spaces, projects, and goals, plus timer, route-matching, and cache-reuse tests.
+
+## Predictive preloading
+
+Mounted Home and Space pages also declare likely destinations through small page hooks. A shared queue in `routes/preloading/` calls the same `preloadPage` service, preserving its route exclusions, company checks, silent failures, and TanStack cache reuse.
+
+- Home queues company Work Map, My Work (the current person's profile), Review, and spaces whose member list includes the current person. The first-run Home redirect does not enqueue work.
+- Space queues Goals & Projects and enabled Discussions, Docs & Files, Tasks, KPIs, and Templates tool landing pages. Resource hubs and discussion boards must exist before their links are queued.
+- Process one destination loader at a time, starting after mount and continuing as soon as the previous loader finishes, without a fixed delay. A loader can still make several API requests.
+- Hover/focus intent pauses the queue until the hover is canceled or its preload finishes. Completion notifications resume the queue without polling; hover and navigation never wait for the predictive queue.
+- Navigation start, page cleanup, authentication changes, and root cleanup discard queued work. Check eligibility and company scope again before execution. Equivalent destination lists do not restart the queue on rerender.
+- Already-started loaders may finish into the cache. This bounds speculative traffic but does not guarantee zero network/server contention. Do not cancel shared queries that navigation may be using.
+- Only mounted page hooks enqueue work. Preloading a space from Home does not recursively preload that space's tools.
+
+Validation covers queue timing/concurrency, hover priority, disposal, authentication/scope changes, StrictMode, stable rerenders, membership/tool selection, and browser navigation reusing automatically warmed Home and Space destinations.

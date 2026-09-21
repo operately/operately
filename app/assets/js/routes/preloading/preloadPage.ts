@@ -11,9 +11,14 @@ interface PreloadRouter {
   isNavigating: () => boolean;
 }
 
-/** Reuse page data loaders without running navigation or layout effects. */
+/**
+ * Shared service for hover and predictive preloading. Runs eligible page loaders
+ * to warm TanStack's cache without navigation effects, deduplicates pending
+ * destinations, and notifies the predictive queue when preloads finish.
+ */
 export function createPagePreloader(router: PreloadRouter) {
   const pending = new Map<string, Promise<void>>();
+  const completionListeners = new Set<() => void>();
   const unsubscribe = subscribePreloadSession(() => pending.clear());
 
   function scope() {
@@ -48,6 +53,7 @@ export function createPagePreloader(router: PreloadRouter) {
       await promise;
     } finally {
       if (pending.get(key) === promise) pending.delete(key);
+      completionListeners.forEach((listener) => listener());
     }
   }
 
@@ -55,7 +61,17 @@ export function createPagePreloader(router: PreloadRouter) {
     preloadPage,
     isEligible: (href: string) => Boolean(resolvePreloadDestination(href, router)),
     scope,
-    dispose: unsubscribe,
+    hasPending: () => pending.size > 0,
+    subscribeToCompletion(listener: () => void) {
+      completionListeners.add(listener);
+      return () => {
+        completionListeners.delete(listener);
+      };
+    },
+    dispose() {
+      unsubscribe();
+      completionListeners.clear();
+    },
   };
 }
 
