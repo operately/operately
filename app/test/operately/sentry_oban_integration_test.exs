@@ -11,7 +11,7 @@ defmodule Operately.SentryObanIntegrationTest do
         :telemetry.attach_many(
           "test-sentry-oban-errors",
           events,
-          &Operately.Application.handle_oban_exception/4,
+          &Operately.Sentry.handle_oban_exception/4,
           %{}
         )
 
@@ -63,30 +63,30 @@ defmodule Operately.SentryObanIntegrationTest do
       }
 
       with_mock Sentry,
-                capture_exception: fn exc, opts ->
-                  assert exc == error
-                  refute Keyword.has_key?(opts, :contexts)
+        capture_exception: fn exc, opts ->
+          assert exc == error
+          refute Keyword.has_key?(opts, :contexts)
 
-                  tags = Keyword.get(opts, :tags, %{})
-                  assert tags[:worker] == "Operately.Notifications.EmailWorker"
-                  assert tags[:queue] == "mailer"
-                  assert tags[:oban_job] == true
+          tags = Keyword.get(opts, :tags, %{})
+          assert tags[:worker] == "Operately.Notifications.EmailWorker"
+          assert tags[:queue] == "mailer"
+          assert tags[:oban_job] == true
 
-                  extra = Keyword.get(opts, :extra, %{})
-                  assert extra[:job_id] == 456
-                  assert extra[:attempt] == 2
-                  assert extra[:max_attempts] == 5
-                  assert extra[:duration] == 2500
-                  assert extra[:queue_time] == 100
+          extra = Keyword.get(opts, :extra, %{})
+          assert extra[:job_id] == 456
+          assert extra[:attempt] == 2
+          assert extra[:max_attempts] == 5
+          assert extra[:duration] == 2500
+          assert extra[:queue_time] == 100
 
-                  {:ok, "fake-event-id"}
-                end do
+          {:ok, "fake-event-id"}
+        end do
         events = [[:oban, :job, :exception]]
 
         :telemetry.attach_many(
           "test-sentry-oban-errors-context",
           events,
-          &Operately.Application.handle_oban_exception/4,
+          &Operately.Sentry.handle_oban_exception/4,
           %{}
         )
 
@@ -117,12 +117,75 @@ defmodule Operately.SentryObanIntegrationTest do
       # Call the real Sentry API so NimbleOptions validates option keys.
       # Without a DSN this returns :ignored instead of sending an event.
       assert :ignored ==
-               Operately.Application.handle_oban_exception(
+               Operately.Sentry.handle_oban_exception(
                  [:oban, :job, :exception],
                  measurements,
                  metadata,
                  %{}
                )
+    end
+
+    test "reports Oban :reason when :error is absent" do
+      job = %Oban.Job{
+        id: 101,
+        queue: "default",
+        worker: "TestWorker",
+        args: %{},
+        attempt: 1,
+        max_attempts: 3
+      }
+
+      error = %RuntimeError{message: "oban reason"}
+      metadata = %{job: job, reason: error, stacktrace: []}
+
+      with_mock Sentry,
+        capture_exception: fn exc, opts ->
+          assert exc == error
+          refute Keyword.has_key?(opts, :contexts)
+          {:ok, "fake-event-id"}
+        end do
+        assert {:ok, "fake-event-id"} ==
+                 Operately.Sentry.handle_oban_exception(
+                   [:oban, :job, :exception],
+                   %{duration: 1, queue_time: 1},
+                   metadata,
+                   %{}
+                 )
+      end
+    end
+
+    test "does not raise when Sentry rejects capture options" do
+      job = %Oban.Job{
+        id: 202,
+        queue: "default",
+        worker: "TestWorker",
+        args: %{},
+        attempt: 1,
+        max_attempts: 3
+      }
+
+      metadata = %{
+        job: job,
+        error: %RuntimeError{message: "job failed"},
+        stacktrace: []
+      }
+
+      with_mock Sentry,
+        capture_exception: fn _exc, _opts ->
+          raise NimbleOptions.ValidationError,
+            message: "unknown options [:contexts]",
+            key: [:contexts],
+            value: nil,
+            keys_path: []
+        end do
+        assert {:error, %NimbleOptions.ValidationError{}} =
+                 Operately.Sentry.handle_oban_exception(
+                   [:oban, :job, :exception],
+                   %{duration: 1, queue_time: 1},
+                   metadata,
+                   %{}
+                 )
+      end
     end
   end
 end

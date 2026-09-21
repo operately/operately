@@ -7,7 +7,10 @@ defmodule Operately.Sentry do
   frontend errors also reports backend errors.
   """
 
+  require Logger
+
   @handler_id :sentry_handler
+  @oban_telemetry_id "sentry-oban-errors"
 
   @doc """
   DSN used by the Elixir SDK, or `nil` when frontend Sentry is off or unset.
@@ -43,6 +46,53 @@ defmodule Operately.Sentry do
   end
 
   def logger_handler_id, do: @handler_id
+
+  def attach_oban_handler do
+    :telemetry.attach_many(
+      @oban_telemetry_id,
+      [[:oban, :job, :exception]],
+      &__MODULE__.handle_oban_exception/4,
+      %{}
+    )
+  end
+
+  def handle_oban_exception([:oban, :job, :exception], measurements, %{job: job} = metadata, _config) do
+    extra = %{
+      job_id: job.id,
+      queue: job.queue,
+      worker: job.worker,
+      args: job.args,
+      attempt: job.attempt,
+      max_attempts: job.max_attempts,
+      duration: Map.get(measurements, :duration),
+      queue_time: Map.get(measurements, :queue_time)
+    }
+
+    Sentry.capture_exception(
+      oban_exception(metadata),
+      stacktrace: Map.get(metadata, :stacktrace, []),
+      tags: %{
+        worker: job.worker,
+        queue: job.queue,
+        oban_job: true
+      },
+      extra: extra
+    )
+  rescue
+    error ->
+      Logger.warning("Failed to report Oban exception to Sentry: #{Exception.message(error)}")
+      {:error, error}
+  end
+
+  defp oban_exception(metadata) do
+    error = Map.get(metadata, :error) || Map.get(metadata, :reason)
+
+    if is_exception(error) do
+      error
+    else
+      RuntimeError.exception("Unknown Oban job error")
+    end
+  end
 
   defp valid_dsn?(dsn) when is_binary(dsn), do: String.trim(dsn) != ""
 

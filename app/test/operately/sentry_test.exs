@@ -102,6 +102,7 @@ defmodule Operately.SentryTest do
       source = read_app_file("lib/operately/application.ex")
 
       assert source =~ "Operately.Sentry.enabled?"
+      assert source =~ "Operately.Sentry.attach_oban_handler()"
       refute source =~ ~s[System.get_env("SENTRY_DSN")]
     end
   end
