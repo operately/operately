@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.People.Update do
     :full_name,
     :title,
     :timezone,
+    :language,
     :manager_id,
     :theme,
     :time_format,
@@ -29,6 +30,7 @@ defmodule OperatelyWeb.Api.People.Update do
     field? :full_name, :string, null: false
     field? :title, :string, null: false
     field? :timezone, :string, null: false
+    field? :language, :language, null: true
     field? :time_format, :time_format, null: false
     field? :manager_id, :id, null: true
     field? :theme, :string, null: false
