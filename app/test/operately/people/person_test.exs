@@ -42,6 +42,13 @@ defmodule Operately.People.PersonTest do
       assert Keyword.has_key?(changeset.errors, :language)
     end
 
+    test "rejects malformed language values instead of raising" do
+      changeset = Person.changeset(%Person{}, %{language: 123})
+
+      refute changeset.valid?
+      assert Keyword.has_key?(changeset.errors, :language)
+    end
+
     test "does not change language when only formatting preferences are updated" do
       person = %Person{
         language: "pt-BR",

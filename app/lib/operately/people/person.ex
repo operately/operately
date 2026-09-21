@@ -149,4 +149,5 @@ defmodule Operately.People.Person do
   defp normalize_language(nil), do: nil
   defp normalize_language(language) when is_atom(language), do: Atom.to_string(language)
   defp normalize_language(language) when is_binary(language), do: language
+  defp normalize_language(language), do: language
 end
