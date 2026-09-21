@@ -4,9 +4,10 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as ReactionsModel from "@/models/reactions";
 import * as React from "react";
 
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { Comments } from "./Comments";
 
-import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
 import { Avatar, IconEdit, CurrentSubscriptions, Reactions, RichContent, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
@@ -18,7 +19,23 @@ import { useLoadedData, useRefresh } from "./loader";
 export function Page() {
   const { discussion } = useLoadedData();
 
-  useClearNotificationsOnLoad(discussion.notifications || []);
+  const project = discussion.project;
+  useReadNotificationsOnLoad(
+    discussion.notifications ?? [],
+    project
+      ? (client) =>
+          invalidateProjectInteractionQueries(
+            client,
+            {
+              projectId: project.id,
+              spaceId: discussion.space?.id,
+              resourceId: discussion.id,
+              resourceType: "project_discussion",
+            },
+            "none",
+          )
+      : undefined,
+  );
 
   return (
     <Pages.Page title={[discussion.title || "Discussion", discussion.project?.name || ""]}>
@@ -116,27 +133,6 @@ function DiscussionReactions() {
   const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   return <Reactions {...form} size={24} canAddReaction={discussion.projectPermissions?.canComment || false} />;
-}
-
-function Comments() {
-  const { discussion } = useLoadedData();
-
-  const commentsForm = useComments({
-    thread: discussion,
-    parentType: "project_discussion",
-    project: discussion.project,
-  });
-
-  return (
-    <>
-      <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="project_discussion"
-        canComment={discussion.projectPermissions?.canComment || false}
-      />
-    </>
-  );
 }
 
 function Subscriptions() {
