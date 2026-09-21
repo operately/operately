@@ -1,17 +1,17 @@
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
 import * as ReactionsModel from "@/models/reactions";
 
 import { usePaths } from "@/routes/paths";
-import { CommentSection, useComments } from "@/features/CommentSection";
+import { Comments } from "./Comments";
 
 import { Avatar, CurrentSubscriptions, FormattedTime, Reactions } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import ActivityHandler from "@/features/activities";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
 import { PageModule } from "@/routes/types";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 
@@ -22,7 +22,24 @@ export default { name: "ProjectActivityPage", loader, Page } as PageModule;
 function Page() {
   const { activity, project } = useLoadedData();
 
-  useClearNotificationsOnLoad(activity.notifications || []);
+  const thread = activity.commentThread;
+  useReadNotificationsOnLoad(
+    activity.notifications ?? [],
+    thread
+      ? (client) =>
+          invalidateProjectInteractionQueries(
+            client,
+            {
+              projectId: project.id,
+              spaceId: project.space?.id,
+              resourceId: thread.id,
+              resourceType: "project_discussion",
+              activityId: activity.id,
+            },
+            "none",
+          )
+      : undefined,
+  );
 
   return (
     <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), project.name]}>
@@ -37,7 +54,7 @@ function Page() {
           </div>
 
           <ActivityReactions />
-          <Comments project={project} />
+          <Comments />
 
           <Subscriptions />
         </Paper.Body>
@@ -102,29 +119,6 @@ function ActivityReactions() {
   const form = ReactionsModel.useReactionsForm(entity, reactions);
 
   return <Reactions {...form} size={24} canAddReaction={!!permissions.canCommentOnThread} />;
-}
-
-function Comments({ project }: { project: Projects.Project }) {
-  const { activity } = useLoadedData();
-  const { commentThread, permissions } = activity;
-
-  if (!commentThread || !permissions) {
-    return null;
-  }
-
-  const thread = { ...commentThread, project };
-  const commentsForm = useComments({ thread: thread, project: project, parentType: "project_discussion" });
-
-  return (
-    <>
-      <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="project_discussion"
-        canComment={!!permissions.canCommentOnThread}
-      />
-    </>
-  );
 }
 
 function Subscriptions() {

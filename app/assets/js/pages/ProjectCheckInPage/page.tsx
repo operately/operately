@@ -26,11 +26,12 @@ import { AckCTA } from "./AckCTA";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 
-import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
+import { Comments } from "./Comments";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
+import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";
 import { useLoadedData, useRefresh } from "./loader";
@@ -44,7 +45,14 @@ export function Page() {
 
   assertPresent(checkIn.project, "Check-in project must be defined");
 
-  useClearNotificationsOnLoad(checkIn.notifications || []);
+  const project = checkIn.project;
+  useReadNotificationsOnLoad(checkIn.notifications ?? [], (client) =>
+    invalidateProjectInteractionQueries(
+      client,
+      { projectId: project.id, spaceId: checkIn.space?.id, resourceId: checkIn.id, resourceType: "project_check_in" },
+      "none",
+    ),
+  );
 
   return (
     <Pages.Page title={["Check-In", checkIn.project.name]} testId="project-check-in-page">
@@ -76,19 +84,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function Comments() {
-  const { checkIn } = useLoadedData();
-  const commentsForm = useForProjectCheckIn(checkIn);
-
-  return (
-    <CommentSection
-      form={commentsForm}
-      commentParentType="project_check_in"
-      canComment={checkIn.project?.permissions?.canComment || false}
-    />
   );
 }
 

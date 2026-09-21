@@ -168,6 +168,24 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     end)
   end
 
+  step :edit_comment, ctx, content do
+    ctx
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "edit-comment")
+    |> UI.fill_rich_text(content)
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "edit-comment-form")
+    |> UI.assert_text(content)
+  end
+
+  step :return_to_discussion_through_list, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["nav-item", "Discussions"]))
+    |> click_on_discussion()
+    |> UI.assert_text("Updated comment")
+    |> UI.refute_text("Original comment")
+  end
+
   step :assert_comment_submitted, ctx, message do
     attempts(ctx, 5, fn ->
       comment = last_comment(ctx)
