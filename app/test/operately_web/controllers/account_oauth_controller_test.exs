@@ -151,6 +151,14 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert conn.status == 302
       assert redirected_to(conn) == Paths.invite_join_full_path(invite_link.token)
     end
+
+    test "when Google authentication fails, redirects home with an error flash", ctx do
+      conn = get(ctx.conn, "/accounts/auth/google/callback")
+
+      assert conn.status == 302
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Authentication failed"
+    end
   end
 
   describe "OAuth redirect" do
