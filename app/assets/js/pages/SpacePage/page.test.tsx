@@ -9,6 +9,8 @@ import { Page } from "./page";
 import { useLoadedData } from "./loader";
 import { showErrorToast, showSuccessToast } from "turboui";
 
+jest.mock("./useSpacePagePreloading", () => ({ useSpacePagePreloading: jest.fn() }));
+
 const mockNavigate = jest.fn();
 
 jest.mock("axios");

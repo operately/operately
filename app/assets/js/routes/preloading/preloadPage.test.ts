@@ -56,6 +56,34 @@ beforeEach(() => {
 
 afterEach(() => queryClient.clear());
 
+it.each([false, true])("notifies the predictive queue when a preload settles (failure=%s)", async (failure) => {
+  const service = preloader();
+  const completed = jest.fn();
+  const unsubscribe = service.subscribeToCompletion(completed);
+  let finish = () => {};
+  dataLoader.mockImplementation(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        finish = () => (failure ? reject(new Error("Failed preload")) : resolve());
+      }),
+  );
+  const request = service.preloadPage("/acme/projects/one");
+
+  expect(service.hasPending()).toBe(true);
+  expect(completed).not.toHaveBeenCalled();
+
+  finish();
+  await request;
+  expect(service.hasPending()).toBe(false);
+  expect(completed).toHaveBeenCalledTimes(1);
+
+  unsubscribe();
+  dataLoader.mockResolvedValue(undefined);
+  await service.preloadPage("/acme/projects/two");
+  expect(completed).toHaveBeenCalledTimes(1);
+  service.dispose();
+});
+
 it("calls only the page data loader with parameters and search intact", async () => {
   const service = preloader();
   await service.preloadPage("/acme/projects/one?tab=tasks#top");

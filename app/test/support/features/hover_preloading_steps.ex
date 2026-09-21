@@ -28,7 +28,8 @@ defmodule Operately.Support.Features.HoverPreloadingSteps do
 
     selector = if resource == :space, do: "[data-test-id=company-home] a[href='#{path}'][title]", else: "a[href='#{path}']"
     ctx = UI.assert_has(ctx, css: selector)
-    assert_request_count(ctx, endpoint, 0)
+    # Home may already have warmed its space links before the pointer reaches them.
+    if resource != :space, do: assert_request_count(ctx, endpoint, 0)
     original_path = Wallaby.Browser.current_path(ctx.session)
 
     ctx = UI.hover(ctx, css: selector)
@@ -43,7 +44,10 @@ defmodule Operately.Support.Features.HoverPreloadingSteps do
   defp assert_request_count(ctx, endpoint, expected) do
     script = """
     return performance.getEntriesByType('resource').filter(entry =>
-      new URL(entry.name).pathname === #{Jason.encode!(endpoint)}
+      new URL(entry.name).pathname === #{Jason.encode!(endpoint)} &&
+      (#{Jason.encode!(endpoint)} !== "/api/v2/spaces/get" ||
+        (new URL(entry.name).searchParams.get("id") === #{Jason.encode!(Paths.space_id(ctx.space))} &&
+         new URL(entry.name).searchParams.get("include_unread_notifications") === "true"))
     ).length;
     """
 
