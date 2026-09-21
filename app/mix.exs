@@ -67,6 +67,7 @@ defmodule Operately.MixProject do
       {:sentry, "~> 10.0"},
       {:swoosh, "~> 1.26.3"},
       {:gen_smtp, "~> 1.1"},
+      {:gettext, "~> 0.26"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},

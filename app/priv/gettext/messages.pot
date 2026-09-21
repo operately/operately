@@ -1,0 +1,40 @@
+msgid ""
+msgstr "Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Operately I18n\n"
+
+#.frontend
+#: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
+#: ../turboui/src/FormattedTime/ShortDate.tsx:31
+msgid "Today"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:20
+msgid "Tomorrow"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:16
+#: ../turboui/src/FormattedTime/ShortDate.tsx:33
+msgid "Yesterday"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:48
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:54
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:56
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:58
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:60
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:62
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:64
+msgid "intlRelativeDateTime"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:46
+msgid "just now"
+msgstr ""

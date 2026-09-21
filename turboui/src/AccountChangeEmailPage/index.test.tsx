@@ -95,11 +95,44 @@ test("keeps the entry form and draft visible after delivery failure", () => {
   expect(screen.queryByTestId("verification-code")).not.toBeInTheDocument();
 });
 
+test("resend is available immediately when there is no cooldown", () => {
+  const now = 1_700_000_000_000;
+  const spy = jest.spyOn(Date, "now");
+  spy.mockReturnValueOnce(now).mockReturnValue(now + 5);
+
+  try {
+    setup({ state: pending });
+    expect(screen.getByTestId("resend-email-code")).toBeEnabled();
+  } finally {
+    spy.mockRestore();
+  }
+});
+
 test("resend becomes available after the server-provided cooldown", () => {
   jest.useFakeTimers();
   setup({ state: { ...pending, retryAfter: 60 } });
   expect(screen.getByTestId("resend-email-code")).toBeDisabled();
   act(() => jest.advanceTimersByTime(60000));
+  expect(screen.getByTestId("resend-email-code")).toBeEnabled();
+  jest.useRealTimers();
+});
+
+test("resend cooldown uses current time when retryAfter arrives between ticks", () => {
+  jest.useFakeTimers();
+  jest.setSystemTime(1_700_000_000_000);
+  const { props, rerender } = setup({ state: pending });
+
+  act(() => jest.advanceTimersByTime(999));
+  rerender(
+    <MemoryRouter>
+      <AccountChangeEmailPage {...props} state={{ ...pending, retryAfter: 60 }} />
+    </MemoryRouter>,
+  );
+
+  expect(screen.getByTestId("resend-email-code")).toBeDisabled();
+  act(() => jest.advanceTimersByTime(59001));
+  expect(screen.getByTestId("resend-email-code")).toBeDisabled();
+  act(() => jest.advanceTimersByTime(2000));
   expect(screen.getByTestId("resend-email-code")).toBeEnabled();
   jest.useRealTimers();
 });
@@ -147,6 +180,7 @@ test("resend shows progress and preserves success feedback when the request is r
   const onResend = jest.fn(() => response);
   const { props, rerender } = setup({ state: pending, onResend });
   fireEvent.change(screen.getByTestId("verification-code"), { target: { value: "ABC123" } });
+  expect(screen.getByTestId("resend-email-code")).toBeEnabled();
   fireEvent.click(screen.getByTestId("resend-email-code"));
 
   expect(screen.getByTestId("resend-email-code")).toBeDisabled();

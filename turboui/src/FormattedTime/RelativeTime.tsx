@@ -43,7 +43,7 @@ export default function RelativeTime({
   let label = "";
 
   if (seconds < 10) {
-    label = t("intlRelativeDateTimeJustNow");
+    label = t("just now");
   } else if (seconds < 60) {
     label = t("intlRelativeDateTime", { val: -seconds, range: "second" });
   } else if (minutes < 60) {
