@@ -20,7 +20,13 @@ defmodule Operately.Notifications.DigestItemsTest do
   end
 
   test "skips items when a related record has been deleted", ctx do
-    activity = activity_fixture(author_id: ctx.creator.id, action: "task_adding", content: %{"task_id" => ctx.task.id})
+    activity =
+      activity_fixture(
+        author_id: ctx.creator.id,
+        action: "task_assignee_updating",
+        content: %{"task_id" => ctx.task.id, "old_assignee_id" => nil, "new_assignee_id" => ctx.creator.id}
+      )
+
     notification = notification_fixture(activity_id: activity.id, person_id: ctx.creator.id) |> Repo.preload(:activity)
 
     Operately.Repo.delete!(ctx.task)

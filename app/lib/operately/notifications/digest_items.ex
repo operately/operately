@@ -34,10 +34,6 @@ defmodule Operately.Notifications.DigestItems do
     ArgumentError ->
       Logger.warning("Activity #{activity.action} does not map to a known email module, skipping digest item")
       :skip
-
-    Ecto.NoResultsError ->
-      Logger.warning("Skipping digest item for #{activity.action}: related record not found")
-      :skip
   end
 
   defp email_module(activity) do
