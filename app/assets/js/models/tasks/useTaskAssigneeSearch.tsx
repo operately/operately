@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useSearchResults } from "@/models/search/useSearchResults";
+import { usePeopleSearchError } from "@/models/people/usePeopleSearchError";
 import Api, { Person } from "@/api";
-import { showErrorToast } from "turboui";
 
 interface UseTaskAssigneeSearchParams<T> {
   id: string;
@@ -15,39 +15,19 @@ interface SearchData<T> {
 }
 
 export function useTaskAssigneeSearch<T>(hookParams: UseTaskAssigneeSearchParams<T>): SearchData<T> {
-  const [people, setPeople] = useState<T[]>([]);
-
-  const onSearch = useCallback(
-    async (query: string) => {
-      try {
-        const transform = hookParams.transformResult || ((person) => person as unknown as T);
-
-        const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
-        const trimmedQuery = query.trim();
-
-        const result = await Api.tasks.listPotentialAssignees({
-          id: hookParams.id,
-          type: hookParams.type,
-          ignoredIds,
-          query: trimmedQuery === "" ? undefined : trimmedQuery,
-        });
-
-        const fetchedPeople = result.people || [];
-        const transformedPeople = fetchedPeople
-          .filter((person): person is Person => !!person)
-          .map((person) => transform(person)) as T[];
-        setPeople(transformedPeople);
-      } catch {
-        showErrorToast("Couldn't load people", "Please try again.");
-      }
-    },
-    [hookParams.id, hookParams.type, hookParams.ignoredIds, hookParams.transformResult],
+  const search = useSearchResults((query) =>
+    Api.tasks.listPotentialAssigneesQueryOptions({
+      id: hookParams.id,
+      type: hookParams.type,
+      ignoredIds: (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id)),
+      query: query.trim() || undefined,
+    }),
   );
 
-  // Load initial people on mount
-  useEffect(() => {
-    onSearch("");
-  }, [onSearch]);
+  usePeopleSearchError(search);
 
-  return { people, onSearch };
+  const transform = hookParams.transformResult || ((person: Person) => person as unknown as T);
+  const people = (search.data?.people ?? []).filter((person): person is Person => !!person).map(transform);
+
+  return { people, onSearch: search.onSearch };
 }

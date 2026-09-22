@@ -5,7 +5,7 @@ import Api from "@/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import { showErrorToast } from "turboui";
-import { usePersonFieldSearch } from "./usePersonFieldSearch";
+import { usePossibleManagersSearch } from "./usePossibleManagersSearch";
 
 jest.mock("axios");
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
@@ -24,7 +24,7 @@ beforeEach(() => {
 afterEach(() => client.clear());
 
 function mount() {
-  return renderHook(() => usePersonFieldSearch({ scope: { type: "space", id: "space1" }, ignoredIds: ["ignored"] }), {
+  return renderHook(() => usePossibleManagersSearch({ personId: "person1" }), {
     initialProps: undefined,
     wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
   });
@@ -40,23 +40,11 @@ it("loads initial options and caches searches with their context and exclusions"
   });
 
   await waitFor(() =>
-    expect(
-      client.getQueryData(
-        Api.people.searchQueryKey({
-          query: "Ada",
-          ignoredIds: ["ignored"],
-          searchScopeType: "space",
-          searchScopeId: "space1",
-        }),
-      ),
-    ).toEqual({ people: [{ id: "ada", fullName: "Ada" }] }),
+    expect(client.getQueryData(Api.people.listPossibleManagersQueryKey({ userId: "person1", query: " Ada " }))).toEqual(
+      { people: [{ id: "ada", fullName: "Ada" }] },
+    ),
   );
-  expect(jest.mocked(axios.get).mock.calls.at(-1)?.[1]?.params).toEqual({
-    query: "Ada",
-    ignored_ids: ["ignored"],
-    search_scope_type: "space",
-    search_scope_id: "space1",
-  });
+  expect(jest.mocked(axios.get).mock.calls.at(-1)?.[1]?.params).toEqual({ user_id: "person1", query: " Ada " });
 
   await act(async () => {
     await hook.result.current.onSearch(" Ada ");

@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useQuerySearch } from "@/models/search/useQuerySearch";
 import Api from "@/api";
 import { Person, SearchScope } from ".";
 
@@ -15,20 +17,23 @@ interface ContributorsSearchParams {
 type ContributorsSearchFn<T> = (callParams: ContributorsSearchParams) => Promise<T[]>;
 
 export function useMentionedPersonSearch<T>(hookParams: UseContributorsSearch<T>): ContributorsSearchFn<T> {
-  const transform = hookParams.transformResult || ((person) => person as unknown as T);
+  const search = useQuerySearch(
+    (callParams: ContributorsSearchParams) =>
+      Api.people.searchQueryOptions({
+        query: callParams.query?.trim(),
+        ignoredIds: (hookParams.ignoredIds || []).concat(callParams.ignoredIds || []),
+        searchScopeType: hookParams.scope.type,
+        searchScopeId: hookParams.scope.id,
+      }),
+    {},
+  );
 
-  return async (callParams: ContributorsSearchParams): Promise<T[]> => {
-    const ignoredIds = (hookParams.ignoredIds || []).concat(callParams.ignoredIds || []);
-
-    const result = await Api.people.search({
-      query: callParams.query?.trim(),
-      ignoredIds,
-      searchScopeType: hookParams.scope.type,
-      searchScopeId: hookParams.scope.id,
-    });
-
-    const people = result.people || [];
-
-    return people.filter((person): person is Person => !!person).map((person) => transform(person)) as T[];
-  };
+  return useCallback(
+    async (callParams: ContributorsSearchParams): Promise<T[]> => {
+      const result = await search(callParams);
+      const transform = hookParams.transformResult || ((person: Person) => person as unknown as T);
+      return (result.people ?? []).filter((person): person is Person => !!person).map(transform);
+    },
+    [search, hookParams.transformResult],
+  );
 }
