@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useQuerySearch } from "@/models/search/useQuerySearch";
 import Api, * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
@@ -77,24 +79,33 @@ interface ProjectSearchAttrs {
 export function useProjectSearch(attrs?: ProjectSearchAttrs): ProjectField.SearchProjectFn {
   const paths = usePaths();
 
-  return async ({ query }: { query: string }): Promise<ProjectField.Project[]> => {
-    const data = await Api.projects.search({
-      query,
-      accessLevel: attrs?.accessLevel,
-      ignoredIds: attrs?.ignoredIds || [],
-      activeOnly: attrs?.activeOnly,
-    });
+  const search = useQuerySearch(
+    ({ query }: { query: string }) =>
+      Api.projects.searchQueryOptions({
+        query,
+        accessLevel: attrs?.accessLevel,
+        ignoredIds: attrs?.ignoredIds || [],
+        activeOnly: attrs?.activeOnly,
+      }),
+    { query: "" },
+  );
 
-    return data.projects.flatMap((project) => {
-      if (!project.id || !project.name) return [];
+  return useCallback(
+    async ({ query }: { query: string }) => {
+      const data = await search({ query });
 
-      return [
-        {
-          id: project.id,
-          name: project.name,
-          link: paths.projectPath(project.id),
-        },
-      ];
-    });
-  };
+      return data.projects.flatMap((project) => {
+        if (!project.id || !project.name) return [];
+
+        return [
+          {
+            id: project.id,
+            name: project.name,
+            link: paths.projectPath(project.id),
+          },
+        ];
+      });
+    },
+    [search, paths],
+  );
 }

@@ -1,3 +1,4 @@
+import { useAsyncSearch } from "../utils/useAsyncSearch";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -65,7 +66,7 @@ export function ProjectField(props: ProjectField.Props) {
   const containerClass = state.variant === "form-field" ? "w-full" : undefined;
 
   return (
-    <div className={containerClass} >
+    <div className={containerClass}>
       {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
       <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
         <Popover.Anchor asChild>
@@ -86,13 +87,7 @@ export function useProjectFieldState(p: ProjectField.Props): ProjectField.State 
   const [isOpen, setIsOpen] = React.useState(p.isOpen ?? DefaultProps.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">(initialMode);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<ProjectField.Project[]>([]);
-
-  React.useEffect(() => {
-    if (dialogMode === "search") {
-      p.search({ query: searchQuery }).then(setSearchResults);
-    }
-  }, [dialogMode, searchQuery, p.search]);
+  const searchResults = useAsyncSearch(p.search, searchQuery, dialogMode === "search");
 
   const closeDialog = React.useCallback(() => {
     setIsOpen(false);

@@ -1,4 +1,6 @@
-import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
+import { useSpaceSearch } from "@/models/spaces";
+import { useParentGoalSearch } from "@/models/goals/useParentGoalSearch";
+import { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -148,7 +150,7 @@ function Page() {
     transformResult: transformPerson,
   });
 
-  const parentGoalSearch = useParentGoalSearch(goal);
+  const parentGoalSearch = useParentGoalSearch({ type: "goal", id: goal.id });
   const spaceSearch = useSpaceSearch();
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
@@ -493,30 +495,5 @@ function prepareRetrospective(
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
     author: People.parsePersonForTurboUi(paths, retrospective.author)!,
-  };
-}
-
-function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
-    const data = await Api.goals.searchParentGoal({ query: query.trim(), goalId: goal.id });
-    const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
-
-    return goals.map((g) => g!);
-  };
-}
-
-function useSpaceSearch(): (params: { query: string }) => Promise<GoalPage.Space[]> {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
-    const data = await Api.spaces.search({ query: query });
-
-    return data.spaces.map((space) => ({
-      id: space.id,
-      name: space.name,
-      link: paths.spacePath(space.id),
-    }));
   };
 }

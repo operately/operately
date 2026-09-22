@@ -1,7 +1,31 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import React from "react";
+import axios from "axios";
+import Api from "@/api";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook } from "@/__tests__/renderHook";
+
+jest.mock("axios");
+jest.mock("react-router", () => ({}));
+jest.mock("turboui", () => ({}));
+
+beforeEach(() => {
+  Api.default.setBasePath("/api/v2");
+  Api.default.setHeaders({ "x-company-id": "company1" });
+});
+
+jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
+jest.mock("@/routes/paths", () => {
+  const actual = jest.requireActual("@/routes/paths");
+  const paths = new actual.Paths({ companyId: "company-1" });
+
+  return { ...actual, usePaths: () => paths };
+});
+
 import { CompaniesQuickSearchResult } from "@/api";
 import { Paths } from "@/routes/paths";
 
-import { companySearchPathBuilder, loadQuickSearchResults, mapQuickSearchResult } from "./useGlobalSearch";
+import { companySearchPathBuilder, useGlobalSearchHandler, mapQuickSearchResult } from "./useGlobalSearch";
 
 const paths = new Paths({ companyId: "company-1" });
 
@@ -149,9 +173,21 @@ describe("global quick-search adapter", () => {
 
   test("propagates quick-search failures", async () => {
     const failure = new Error("search unavailable");
-    const search = jest.fn().mockRejectedValue(failure);
+    const client = new QueryClient();
+    jest.mocked(axios.get).mockRejectedValueOnce(failure);
+    const hook = renderHook(() => useGlobalSearchHandler(), {
+      initialProps: undefined,
+      wrapper: ({ children }) => React.createElement(QueryClientProvider, { client }, children),
+    });
 
-    await expect(loadQuickSearchResults(paths, "roadmap", search)).rejects.toBe(failure);
+    try {
+      await expect(hook.result.current({ query: "roadmap" })).rejects.toBe(failure);
+      jest.mocked(axios.get).mockResolvedValue({ data: apiResult });
+      expect(await hook.result.current({ query: "roadmap" })).toEqual(mapQuickSearchResult(paths, apiResult));
+      expect(client.getQueryData(Api.companies.quickSearchQueryKey({ query: "roadmap" }))).toEqual(apiResult);
+    } finally {
+      client.clear();
+    }
   });
 
   test("builds full-text search paths for the current query", () => {

@@ -1,3 +1,4 @@
+import { useAsyncSearch } from "../utils/useAsyncSearch";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -84,7 +85,7 @@ export function useGoalFieldState(p: GoalField.Props): GoalField.State {
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<GoalField.Goal[]>([]);
+  const searchResults = useAsyncSearch(props.searchGoals, searchQuery, isOpen && dialogMode === "search");
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -92,14 +93,6 @@ export function useGoalFieldState(p: GoalField.Props): GoalField.State {
       setDialogMode(props.goal ? "menu" : "search");
     }
   }, [isOpen, props.goal]);
-
-  React.useEffect(() => {
-    if (!isOpen || dialogMode !== "search") return;
-
-    props.searchGoals({ query: searchQuery }).then((goals: GoalField.Goal[]) => {
-      setSearchResults(goals);
-    });
-  }, [searchQuery, props.searchGoals, isOpen, dialogMode]);
 
   const setIsOpen = (open: boolean) => {
     if (props.readonly) {
