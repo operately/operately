@@ -42,6 +42,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
   );
   const [timezone, setTimezone] = useState("America/New_York");
   const [timeFormat, setTimeFormat] = useState<ProfileEditPage.TimeFormat>("automatic");
+  const [language, setLanguage] = useState<ProfileEditPage.Language>("en");
 
   const [manager, setManager] = useState<ProfileEditPage.Person | null>(() => {
     if ("manager" in args) {
@@ -107,12 +108,14 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       aboutMe={aboutMe}
       timezone={timezone}
       timeFormat={timeFormat}
+      language={language}
       manager={manager}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
       onTimeFormatChange={setTimeFormat}
+      onLanguageChange={setLanguage}
       onManagerChange={setManager}
       onSubmit={handleSubmit}
       onAvatarUpload={args.canChangeAvatar !== false ? handleAvatarUpload : undefined}
@@ -125,6 +128,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       richTextHandlers={mockRichTextHandlers}
       timezones={timezones}
       isCurrentUser={args.isCurrentUser ?? true}
+      showLanguageSelector={args.showLanguageSelector ?? false}
       fromLocation={args.fromLocation ?? null}
       companyAdminPath="/admin"
       managePeoplePath="/admin/people"
@@ -136,6 +140,10 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
 
 export const UserEditingOwnProfile: Story = {
   render: () => <DefaultStory isCurrentUser={true} />,
+};
+
+export const LanguageSelectorEnabled: Story = {
+  render: () => <DefaultStory isCurrentUser={true} showLanguageSelector={true} />,
 };
 
 export const AdminEditingOtherUser: Story = {

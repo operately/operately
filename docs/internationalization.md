@@ -1,6 +1,6 @@
 # Internationalization
 
-Operately keeps one Gettext catalog as the source of truth for Elixir, React, and TurboUI copy. English source text is the message identifier. Brazilian Portuguese is the first additional language, but this catalog infrastructure always runs in English until language selection is enabled.
+Operately keeps one Gettext catalog as the source of truth for Elixir, React, and TurboUI copy. English source text is the message identifier. Brazilian Portuguese is the first additional language.
 
 User-authored content, API field names, and CLI command names are not translated.
 
@@ -8,7 +8,52 @@ User-authored content, API field names, and CLI command names are not translated
 
 A person can store an explicit language separately from timezone and time-format preferences. English is the default until they select another supported language. Browser `Accept-Language` never selects or persists a language.
 
-The `i18n` company experimental feature is off by default. While it is off, the app and emails stay English even if a non-English preference is saved. Turning the flag off later forces English without deleting the saved preference. Missing or unsupported preferences also resolve to English.
+The `i18n` company experimental feature is off by default. While it is off, the language selector is hidden and the app and emails stay English even if a non-English preference is saved. Turning the flag off later forces English without deleting the saved preference. Missing or unsupported preferences also resolve to English.
+
+When the flag is on, the profile editor offers English and Português (Brasil). The selected language is persisted through the existing person preference API and applied to React, TurboUI, and recipient-scoped emails.
+
+## Pilot setup
+
+Enable the flag for an internal company only. The flag remains off by default.
+
+1. Enable the `i18n` experimental feature for that company.
+2. Open Account → Profile.
+3. Choose **English** or **Português (Brasil)** and save.
+4. Reload the app. Navigation, the project/task pilot, and task-adding emails should follow the saved language.
+
+Existing users stay on English until they select another language.
+
+## Verification
+
+- With the flag off, the selector is hidden and web/email output stays English, including for people who already saved `pt-BR`.
+- With the flag on, a missing preference, an unsupported preference, and browser language headers all resolve to English.
+- Selecting a language updates the interface and survives reloads. Disabling the flag restores English; re-enabling it honors the saved preference.
+- Immediate task-adding emails, buffered notifications, and digests render in each recipient's effective language for both HTML and plain text. Locale does not leak between recipients.
+- Missing translations, including plural forms, fall back to English.
+
+## Rollback
+
+Disable the `i18n` company feature. The selector disappears and every surface returns to English. Saved language preferences are kept so the same company can turn the flag back on later.
+
+## Terminology glossary
+
+Use these Brazilian Portuguese terms for product nouns in the pilot and later translations:
+
+| English | Português (Brasil) |
+| --- | --- |
+| company | empresa |
+| space | espaço |
+| project | projeto |
+| goal | objetivo |
+| task | tarefa |
+| milestone | marco |
+| check-in | check-in |
+| champion | champion |
+| home | início |
+| my work | meu trabalho |
+| review | revisão |
+
+AI may draft translations. A native speaker reviews them against this glossary before they ship.
 
 ## Pilot workflow
 
