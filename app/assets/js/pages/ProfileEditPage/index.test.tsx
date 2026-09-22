@@ -8,6 +8,7 @@ import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import * as Pages from "@/components/Pages";
 import * as Blobs from "@/models/blobs";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { ProfileEditPage } from "turboui";
 import pageModule from ".";
 
@@ -15,6 +16,7 @@ jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn(), getSearchParam: () => null }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: jest.fn() }));
+jest.mock("@/routes/useCompanyLoaderData", () => ({ useCompanyLoaderData: jest.fn() }));
 jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: () => ({}) }));
 jest.mock("@/models/blobs", () => ({ uploadAvatarFile: jest.fn() }));
 jest.mock("@/models/people/usePossibleManagersSearch", () => ({ usePossibleManagersSearch: () => ({}) }));
@@ -51,6 +53,9 @@ beforeEach(() => {
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "company1" });
   jest.mocked(useMe).mockReturnValue(person as ReturnType<typeof useMe>);
+  jest.mocked(useCompanyLoaderData).mockReturnValue({
+    company: { enabledExperimentalFeatures: [] },
+  } as ReturnType<typeof useCompanyLoaderData>);
   jest.mocked(axios.get).mockResolvedValue({ data: { person } });
   jest.mocked(axios.post).mockResolvedValue({ data: { person } });
 });
@@ -90,6 +95,24 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   }
   expect(mockNavigate).toHaveBeenCalledWith(self ? "/account" : "/admin/manage-people");
   expect(props().isSubmitting).toBe(false);
+});
+
+it("hides the language selector and does not persist language when i18n is off", async () => {
+  await mountPage();
+  expect(props().showLanguageSelector).toBe(false);
+  await act(() => props().onSubmit());
+  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).not.toHaveProperty("language");
+});
+
+it("shows the language selector and persists the chosen language when i18n is on", async () => {
+  jest.mocked(useCompanyLoaderData).mockReturnValue({
+    company: { enabledExperimentalFeatures: ["i18n"] },
+  } as ReturnType<typeof useCompanyLoaderData>);
+  await mountPage();
+  expect(props().showLanguageSelector).toBe(true);
+  act(() => props().onLanguageChange?.("pt-BR"));
+  await act(() => props().onSubmit());
+  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language: "pt-BR" });
 });
 
 it("keeps the draft and stays on the form after a failed save", async () => {

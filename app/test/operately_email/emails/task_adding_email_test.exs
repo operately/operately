@@ -75,12 +75,88 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     end)
   end
 
+  test "renders Portuguese copy when i18n is enabled for a pt-BR recipient", ctx do
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
+    person = %{person | company: company}
+    activity = task_adding_activity(ctx)
+
+    flush_emails()
+
+    Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+      TaskAddingEmail.send(person, activity)
+    end)
+
+    assert_email_sent(fn email ->
+      assert email.subject == "(Paper Expansion) Michael S. adicionou a tarefa \"Call leads\""
+      assert email.html_body =~ "Uma nova tarefa chamada Call leads foi criada neste projeto."
+      assert email.html_body =~ "Ver tarefa"
+      assert email.text_body =~ "Michael S. adicionou a tarefa \"Call leads\"."
+      task_url = OperatelyWeb.Paths.task_path(ctx.company, ctx.task) |> OperatelyWeb.Paths.to_url()
+      assert email.text_body =~ "Link: #{task_url}"
+      true
+    end)
+  end
+
+  test "renders each recipient in their own language without leaking locale", ctx do
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+    Gettext.put_locale(OperatelyWeb.Gettext, "en")
+    on_exit(fn -> Gettext.put_locale(OperatelyWeb.Gettext, previous) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, portuguese} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
+    portuguese = %{portuguese | company: company}
+    english = %{ctx.author | company: company}
+    activity = task_adding_activity(ctx)
+
+    flush_emails()
+
+    Operately.I18n.EffectiveLanguage.with_locale(portuguese, fn ->
+      TaskAddingEmail.send(portuguese, activity)
+    end)
+
+    Operately.I18n.EffectiveLanguage.with_locale(english, fn ->
+      TaskAddingEmail.send(english, activity)
+    end)
+
+    assert_email_sent(fn email ->
+      email_to?(email, portuguese) &&
+        email.html_body =~ "Uma nova tarefa chamada Call leads foi criada neste projeto." &&
+        email.text_body =~ "adicionou a tarefa" &&
+        not String.contains?(email.html_body, "A new task named")
+    end)
+
+    assert_email_sent(fn email ->
+      email_to?(email, english) &&
+        email.html_body =~ "A new task named Call leads was created in this project." &&
+        email.text_body =~ "added the task" &&
+        not String.contains?(email.html_body, "Uma nova tarefa")
+    end)
+
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == "en"
+  end
+
   test "translates the digest headline at render time", ctx do
     activity = task_adding_activity(ctx)
 
     item = TaskAddingEmail.buffered_item(ctx.recipient, activity)
 
     assert item.headline == "created the task \"Call leads\""
+    assert item.parent_name == ctx.project.name
+  end
+
+  test "translates the digest headline into Portuguese at render time", ctx do
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
+    person = %{person | company: company}
+    activity = task_adding_activity(ctx)
+
+    item =
+      Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+        TaskAddingEmail.buffered_item(person, activity)
+      end)
+
+    assert item.headline == "criou a tarefa \"Call leads\""
     assert item.parent_name == ctx.project.name
   end
 
@@ -110,5 +186,12 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     after
       0 -> :ok
     end
+  end
+
+  defp email_to?(email, person) do
+    Enum.any?(List.wrap(email.to), fn
+      {_name, address} -> address == person.email
+      address when is_binary(address) -> address == person.email
+    end)
   end
 end

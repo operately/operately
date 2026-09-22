@@ -297,6 +297,52 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert email.text_body =~ "Goal 1 (2 updates)"
   end
 
+  test "renders Portuguese digest copy when i18n is enabled for a pt-BR recipient", ctx do
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
+    person = %{person | company: company}
+
+    digest_items = [
+      %{
+        parent_id: "goal-1",
+        parent_type: :goal,
+        parent_name: "Goal 1",
+        headline: "criou a tarefa \"Call leads\"",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://example.com/goal-1/activity-1",
+        actor_name: "John D.",
+        occurred_at: ~N[2026-04-02 10:01:00],
+        coalesce_key: nil
+      },
+      %{
+        parent_id: "goal-1",
+        parent_type: :goal,
+        parent_name: "Goal 1",
+        headline: "criou a tarefa \"Follow up\"",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://example.com/goal-1/activity-2",
+        actor_name: "Jane D.",
+        occurred_at: ~N[2026-04-02 10:02:00],
+        coalesce_key: nil
+      }
+    ]
+
+    email =
+      Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+        DigestMailer.build_digest_email(person, ctx.batch, digest_items)
+      end)
+
+    assert email.subject == "Você tem 2 novas atualizações"
+    assert email.html_body =~ "Você tem 2 novas atualizações"
+    assert email.html_body =~ "Objetivo"
+    assert email.html_body =~ "Gerenciar configurações de e-mail"
+    assert email.html_body =~ "Ver atualização"
+    assert email.text_body =~ "Você tem 2 novas atualizações"
+    assert email.text_body =~ "Goal 1 (2 atualizações)"
+  end
+
   test "builds daily summary digest email with the same grouped rendering", ctx do
     digest_items = [
       %{
