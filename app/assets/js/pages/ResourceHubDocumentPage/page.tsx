@@ -33,7 +33,9 @@ export function Page() {
   const navigate = useNavigate();
   const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const { mentionedPersonLookup, resourceLinkTitles } = useRichEditorHandlers({
+    resourceLinkContents: document.content,
+  });
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
@@ -117,6 +119,7 @@ export function Page() {
     formattedTimePreferences,
     content: document.content!,
     mentionedPersonLookup,
+    resourceLinkTitles,
     reactions: {
       ...reactionsForm,
       size: 24,

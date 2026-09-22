@@ -54,6 +54,7 @@ export function LinkPage(props: LinkPageNS.Props) {
             <RichContent
               content={props.description}
               mentionedPersonLookup={props.mentionedPersonLookup}
+              resourceLinkTitles={props.resourceLinkTitles}
               parseContent
             />
           </>
@@ -94,4 +95,3 @@ export function LinkPage(props: LinkPageNS.Props) {
     </Page>
   );
 }
-
