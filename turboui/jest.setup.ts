@@ -1,4 +1,5 @@
 import { TextDecoder, TextEncoder } from "util";
+import "./src/i18n";
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
