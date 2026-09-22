@@ -10,7 +10,8 @@ import {
   useDeleteDocument,
   usePublishDocument,
 } from "@/models/resourceHubs";
-import { usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { useCommentSection } from "@/features/CommentSection/useCommentSection";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
@@ -27,6 +28,7 @@ import { useDocumentPageOptions } from "./Options";
 
 export function Page() {
   const { document, folder, resourceHub, isCurrentUserSubscribed } = useLoadedData();
+  const me = useMe();
   const paths = usePaths();
   const navigate = useNavigate();
   const refresh = useRefresh();
@@ -83,6 +85,7 @@ export function Page() {
   });
 
   const isDraft = document.state === "draft";
+  const canPublish = Boolean(document.author && me && compareIds(me.id, document.author.id));
 
   async function handleDelete() {
     await remove({ documentId: document.id });
@@ -147,7 +150,7 @@ export function Page() {
           state: "draft",
           updatedAt: document.updatedAt!,
           editPath: paths.resourceHubEditDocumentPath(document.id),
-          onPublish: handlePublish,
+          onPublish: canPublish ? handlePublish : undefined,
           formattedTimePreferences,
         }}
       />
