@@ -22,7 +22,7 @@ it("ignores old responses after typing, switching search context, and closing", 
 
   expect(hook.result.current).toEqual(["new"]);
 
-  const nextSearch = jest.fn(async () => ["other context"]);
+  const nextSearch = jest.fn<Promise<string[]>, [{ query: string }]>().mockResolvedValue(["other context"]);
 
   hook.rerender({ query: "new", enabled: true, search: nextSearch });
 
