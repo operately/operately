@@ -2,7 +2,6 @@ import Api from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
@@ -166,14 +165,7 @@ function RemoveMemberButton({ index }) {
 function useSearch() {
   const { space } = useLoadedData();
 
-  return React.useCallback(
-    async (query: string): Promise<People.Person[]> => {
-      const res = await Spaces.searchPotentialSpaceMembers({ spaceId: space.id, query });
-
-      return res.people ?? [];
-    },
-    [space.id],
-  );
+  return Spaces.usePotentialSpaceMembersSearch(space.id);
 }
 
 function uniqueMemberList(members: MemberField[]): { id: string; accessLevel: PermissionLevels }[] {

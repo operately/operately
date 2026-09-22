@@ -1,14 +1,8 @@
+import { useQuerySearch } from "./useQuerySearch";
 import * as React from "react";
 import { useSearchParams } from "react-router";
 
-import Api, {
-  CompaniesSearchInput,
-  CompaniesSearchResult,
-  SearchResult,
-  SearchResultType,
-  SearchSort,
-  SearchTimeRange,
-} from "@/api";
+import Api, { CompaniesSearchInput, SearchResult, SearchResultType, SearchSort, SearchTimeRange } from "@/api";
 import {
   IconCalendar,
   IconLayoutGrid,
@@ -17,8 +11,6 @@ import {
   SEARCH_TIME_FILTER_OPTIONS,
   SEARCH_TYPE_FILTER_OPTIONS,
 } from "turboui";
-
-type Search = (input: CompaniesSearchInput) => Promise<CompaniesSearchResult>;
 
 interface SearchSpaceOption {
   id: string;
@@ -65,10 +57,8 @@ const EMPTY_SELECTIONS: FilterSelections = {
   time: [],
 };
 
-export function useCompanySearch(
-  spaces: SearchSpaceOption[],
-  search: Search = Api.companies.search,
-): CompanySearchState {
+export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchState {
+  const search = useQuerySearch(Api.companies.searchQueryOptions, { query: "" });
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
   const [query, setQuery] = React.useState(urlQuery);
@@ -124,11 +114,14 @@ export function useCompanySearch(
 
     if (!wasEdited && !refineChanged) {
       runSearch();
-      return;
+      return () => requests.current.invalidate();
     }
 
     const timer = window.setTimeout(runSearch, SEARCH_DELAY);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      requests.current.invalidate();
+    };
   }, [query, refineKey, search, selections.spaces, selections.time, selections.types, sort]);
 
   // Sync browser-driven URL changes without replaying local edits.

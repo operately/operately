@@ -1,3 +1,4 @@
+import { useAsyncSearch } from "../utils/useAsyncSearch";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -80,13 +81,7 @@ export function useSpaceFieldState(p: SpaceField.Props): SpaceField.State {
   const [isOpen, setIsOpen] = React.useState(p.isOpen ?? DefaultProps.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">(initialMode);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<SpaceField.Space[]>([]);
-
-  React.useEffect(() => {
-    if (dialogMode === "search") {
-      p.search({ query: searchQuery }).then(setSearchResults);
-    }
-  }, [dialogMode, searchQuery, p.search]);
+  const searchResults = useAsyncSearch(p.search, searchQuery, dialogMode === "search");
 
   const closeDialog = React.useCallback(() => {
     setIsOpen(false);
