@@ -51,7 +51,7 @@ defmodule Operately.People.Person do
   @doc false
   def changeset(person, attrs) do
     person
-    |> cast(normalize_language_attrs(attrs), [
+    |> cast(attrs, [
       :full_name,
       :title,
       :avatar_url,
@@ -135,19 +135,4 @@ defmodule Operately.People.Person do
     perms = Operately.People.Permissions.calculate(person.request_info.access_level, company_read_only: company_read_only)
     Map.put(person, :permissions, perms)
   end
-
-  defp normalize_language_attrs(attrs) when is_map(attrs) do
-    cond do
-      Map.has_key?(attrs, :language) -> Map.update!(attrs, :language, &normalize_language/1)
-      Map.has_key?(attrs, "language") -> Map.update!(attrs, "language", &normalize_language/1)
-      true -> attrs
-    end
-  end
-
-  defp normalize_language_attrs(attrs), do: attrs
-
-  defp normalize_language(nil), do: nil
-  defp normalize_language(language) when is_atom(language), do: Atom.to_string(language)
-  defp normalize_language(language) when is_binary(language), do: language
-  defp normalize_language(language), do: language
 end

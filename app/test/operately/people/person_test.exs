@@ -28,13 +28,6 @@ defmodule Operately.People.PersonTest do
       assert person.preferences.time_format == :hour_24
     end
 
-    test "accepts API enum atoms for language" do
-      changeset = Person.changeset(%Person{}, %{language: :"pt-BR"})
-      person = Ecto.Changeset.apply_changes(changeset)
-
-      assert person.language == "pt-BR"
-    end
-
     test "rejects unsupported languages" do
       changeset = Person.changeset(%Person{}, %{language: "fr"})
 
