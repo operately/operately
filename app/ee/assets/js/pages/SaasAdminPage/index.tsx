@@ -131,7 +131,7 @@ function AllCompanyList({ searchQuery }: { searchQuery: string }) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-test-id="saas-admin-all-error">
         <p className="text-red-500">Error loading companies: {error.message}</p>
       </div>
     );
@@ -169,7 +169,7 @@ function AllAccountList({ searchQuery }: { searchQuery: string }) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-test-id="saas-admin-accounts-error">
         <p className="text-red-500">Error loading accounts: {error.message}</p>
       </div>
     );
@@ -207,7 +207,7 @@ function ActiveCompanyList({ searchQuery }: { searchQuery: string }) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-test-id="saas-admin-active-error">
         <p className="text-red-500">Error loading active companies: {error.message}</p>
       </div>
     );

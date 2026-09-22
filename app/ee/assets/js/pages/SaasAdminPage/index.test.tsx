@@ -211,7 +211,8 @@ it.each(["active", "all", "accounts"])("renders request errors for the %s tab", 
   jest.mocked(axios.get).mockRejectedValue(new Error("Forbidden"));
   mount();
   if (tab !== "active") click(`tab-${tab}`);
-  await waitFor(() => expect(container.textContent).toContain("Forbidden"));
+  expect(control(`saas-admin-${tab}-error`)).toBeNull();
+  await waitFor(() => expect(control(`saas-admin-${tab}-error`)).not.toBeNull());
   expect(companyLinks()).toEqual([]);
   expect(control("promote-account-alice")).toBeNull();
 });
