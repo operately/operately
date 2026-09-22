@@ -1917,6 +1917,14 @@ defmodule OperatelyWeb.Api.Types do
   enum :search_time_range, values: Operately.Search.CompanyQuery.Filters.time_ranges()
   enum :search_sort, values: Operately.Search.CompanyQuery.Filters.sorts()
 
+  enum :resource_link_type, values: Operately.RichContent.ResourceLinks.types()
+
+  object :resource_link do
+    field :type, :resource_link_type, null: false
+    field :id, :string, null: false
+    field :title, :string, null: false
+  end
+
   object :search_navigation_target do
     field? :resource_hub_id, :string, null: true
     field? :folder_id, :string, null: true

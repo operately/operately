@@ -142,6 +142,7 @@ export function CommentItem({
           <CommentViewMode
             content={parsedContent}
             mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+            resourceLinkTitles={richTextHandlers.resourceLinkTitles}
             reactions={comment.reactions}
             currentUserId={currentUserId}
             canAddReaction={canAddReaction}
@@ -187,7 +188,11 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
       </MenuActionItem>
       {canEdit && (
         <>
-          <MenuActionItem onClick={onEdit} icon={IconEdit} testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}>
+          <MenuActionItem
+            onClick={onEdit}
+            icon={IconEdit}
+            testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}
+          >
             Edit
           </MenuActionItem>
           {onDelete && (
@@ -209,6 +214,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
 interface CommentViewModeProps {
   content: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  resourceLinkTitles?: RichEditorHandlers["resourceLinkTitles"];
   reactions: Reactions.Reaction[];
   currentUserId?: string;
   canAddReaction: boolean;
@@ -219,6 +225,7 @@ interface CommentViewModeProps {
 function CommentViewMode({
   content,
   mentionedPersonLookup,
+  resourceLinkTitles,
   reactions,
   currentUserId,
   canAddReaction,
@@ -230,7 +237,11 @@ function CommentViewMode({
   return (
     <div>
       <div className="mb-2">
-        <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+        <RichContent
+          content={content}
+          mentionedPersonLookup={mentionedPersonLookup}
+          resourceLinkTitles={resourceLinkTitles}
+        />
       </div>
       {shouldShowReactions && (
         <Reactions

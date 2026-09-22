@@ -5,6 +5,7 @@ import type { Page } from "../Page";
 import type { Navigation } from "../Page/Navigation";
 import type { Reactions } from "../Reactions";
 import type { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import type { ResourceLinkTitle } from "../RichContent/resourceLinks";
 import type { ResourceHubLinkType } from "../ResourceHub/types";
 import type { CurrentSubscriptions } from "../Subscriptions";
 
@@ -24,6 +25,7 @@ export namespace LinkPage {
 
     description: unknown | null;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    resourceLinkTitles?: ResourceLinkTitle[];
   }
 
   type WithReactions = {
