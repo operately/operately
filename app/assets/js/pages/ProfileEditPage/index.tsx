@@ -5,7 +5,10 @@ import { useNavigate } from "react-router";
 import { Timezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { I18N_FEATURE_FLAG, isSupportedLanguage } from "@/i18n/languages";
+import { hasFeature } from "@/models/companies";
 import { PageModule } from "@/routes/types";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { usePaths } from "@/routes/paths";
 import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
@@ -22,9 +25,11 @@ function Page() {
   const me = useMe();
   const navigate = useNavigate();
   const { person, from } = useLoadedData();
+  const { company } = useCompanyLoaderData();
   const { mutateAsync: updateProfile } = People.useUpdateProfile();
 
   const isCurrentUser = me?.id === person.id;
+  const showLanguageSelector = isCurrentUser && hasFeature(company, I18N_FEATURE_FLAG);
 
   // Form state
   const [fullName, setFullName] = React.useState(person.fullName || "");
@@ -35,6 +40,9 @@ function Page() {
   });
   const [timezone, setTimezone] = React.useState(person.timezone || "");
   const [timeFormat, setTimeFormat] = React.useState<ProfileEditPage.TimeFormat>(person.timeFormat || "automatic");
+  const [language, setLanguage] = React.useState<ProfileEditPage.Language>(
+    isSupportedLanguage(person.language) ? person.language : "en",
+  );
   const [manager, setManager] = React.useState<ProfileEditPage.Person | null>(
     person.manager ? People.parsePersonForTurboUi(paths, person.manager) : null,
   );
@@ -78,6 +86,10 @@ function Page() {
         updateParams.timeFormat = timeFormat;
       }
 
+      if (showLanguageSelector) {
+        updateParams.language = language;
+      }
+
       await updateProfile(updateParams);
 
       if (isCurrentUser) {
@@ -96,9 +108,11 @@ function Page() {
     aboutMe,
     timezone,
     timeFormat,
+    language,
     manager,
     person.id,
     isCurrentUser,
+    showLanguageSelector,
     navigate,
     paths,
     updateProfile,
@@ -120,12 +134,14 @@ function Page() {
       aboutMe={aboutMe}
       timezone={timezone}
       timeFormat={timeFormat}
+      language={language}
       manager={manager}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
       onTimeFormatChange={setTimeFormat}
+      onLanguageChange={setLanguage}
       onManagerChange={setManager}
       onSubmit={handleSubmit}
       onAvatarUpload={avatar.handleAvatarUpload}
@@ -139,6 +155,7 @@ function Page() {
       localDraftKeyBase={`profile:${person.id}`}
       timezones={Timezones}
       isCurrentUser={isCurrentUser}
+      showLanguageSelector={showLanguageSelector}
       fromLocation={from}
       companyAdminPath={paths.companyAdminPath()}
       managePeoplePath={paths.companyManagePeoplePath()}
