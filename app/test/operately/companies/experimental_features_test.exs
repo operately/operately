@@ -4,6 +4,6 @@ defmodule Operately.Companies.ExperimentalFeaturesTest do
   alias Operately.Companies.ExperimentalFeatures
 
   test "available/0 lists the current experimental features" do
-    assert ExperimentalFeatures.available() == ["project_templates"]
+    assert ExperimentalFeatures.available() == ["project_templates", "i18n"]
   end
 end
