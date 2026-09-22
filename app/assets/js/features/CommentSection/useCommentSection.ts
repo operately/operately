@@ -34,7 +34,6 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
   const paths = usePaths();
   const me = useMe();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const richTextHandlers = useRichEditorHandlers({ scope: mentionSearchScope });
   const readNotifications = useReadNotifications((queryClient) => invalidateQueries(queryClient, "none"));
   const query = useQuery(Api.comments.listQueryOptions({ entityId: entity.id, entityType: entity.type }));
 
@@ -43,6 +42,11 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
     parentType: entity.type,
     initialComments: query.data?.comments ?? EMPTY_COMMENTS,
     invalidateQueries,
+  });
+  const commentContents = useMemo(() => comments.comments.map((comment) => comment.content), [comments.comments]);
+  const richTextHandlers = useRichEditorHandlers({
+    scope: mentionSearchScope,
+    resourceLinkContents: commentContents,
   });
 
   Comments.useReloadCommentsSignal(
