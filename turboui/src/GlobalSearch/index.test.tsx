@@ -56,6 +56,28 @@ describe("GlobalSearch", () => {
     jest.restoreAllMocks();
   });
 
+  test("ignores an earlier response while the next query is debouncing", async () => {
+    let resolveOld: (value: GlobalSearch.SearchResult) => void = () => {};
+    const search = jest
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveOld = resolve;
+          }),
+      )
+      .mockResolvedValue({});
+    const { input } = openSearch(search);
+    await enterQuery(input, "old");
+    fireEvent.change(input, { target: { value: "new" } });
+    await act(async () => resolveOld(results));
+    expect(screen.queryByRole("option", { name: "Space result" })).not.toBeInTheDocument();
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
+    expect(search).toHaveBeenLastCalledWith({ query: "new" });
+  });
+
   test("opens with Cmd/Ctrl + K", () => {
     render(<GlobalSearch search={jest.fn().mockResolvedValue({})} onNavigate={jest.fn()} />);
 

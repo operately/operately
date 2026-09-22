@@ -116,12 +116,14 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [searchError, setSearchError] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
+  const requestSequence = React.useRef(0);
   const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
 
   const performSearch = React.useCallback(
-    async (searchQuery: string) => {
+    async (searchQuery: string, requestId: number) => {
       if (searchQuery.trim().length < 2) {
         setResults({});
+        setIsSearching(false);
         setSearchError(false);
         setSelectedIndex(-1);
         setIsOpen(false);
@@ -133,30 +135,34 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 
       try {
         const searchResults = await props.search({ query: searchQuery.trim() });
+        if (requestSequence.current !== requestId) return;
         setResults(searchResults);
         setSelectedIndex(-1);
         setIsOpen(true);
       } catch {
+        if (requestSequence.current !== requestId) return;
         setResults({});
         setSearchError(true);
         setSelectedIndex(-1);
       } finally {
-        setIsSearching(false);
+        if (requestSequence.current === requestId) setIsSearching(false);
       }
     },
     [props.search],
   );
 
   React.useEffect(() => {
+    const requestId = ++requestSequence.current;
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
 
     searchTimeoutRef.current = setTimeout(() => {
-      performSearch(query);
+      performSearch(query, requestId);
     }, 300);
 
     return () => {
+      requestSequence.current += 1;
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
       }
