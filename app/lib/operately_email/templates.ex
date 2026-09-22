@@ -24,8 +24,13 @@ defmodule OperatelyEmail.Templates do
   end
 
   def digest_group(group) do
-    render("partials/_digest_group.html", group: group)
+    parent_type = hd(hd(group.author_groups).items).parent_type
+    render("partials/_digest_group.html", group: group, parent_type_label: digest_parent_type_label(parent_type))
   end
+
+  defp digest_parent_type_label(:project), do: gettext("Project")
+  defp digest_parent_type_label(:space), do: gettext("Space")
+  defp digest_parent_type_label(:goal), do: gettext("Goal")
 
   def digest_empty_state(title, body) do
     render("partials/_digest_empty_state.html", title: title, body: body)

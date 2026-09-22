@@ -37,7 +37,7 @@ msgid "%{author} added the task <task>%{taskName}</task> in <location>%{location
 msgstr ""
 
 #.elixir
-#: lib/operately_email/templates.ex:88
+#: lib/operately_email/templates.ex:93
 msgid "%{name} (1 update)"
 msgid_plural "%{name} (%{count} updates)"
 msgstr[0] ""
@@ -54,27 +54,27 @@ msgid "%{percentage}% tasks completed, %{completed}/%{total} tasks completed"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:67
+#: lib/operately_email/emails/task_adding_email.ex:69
 msgid "%{who} added the task \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:59
+#: lib/operately_email/emails/task_adding_email.ex:61
 msgid "%{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:66
+#: lib/operately_email/emails/task_adding_email.ex:68
 msgid "(%{where}) %{who} added the task \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:58
+#: lib/operately_email/emails/task_adding_email.ex:60
 msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:68
+#: lib/operately_email/emails/task_adding_email.ex:70
 msgid "A new task named %{task_name} was created in this project."
 msgstr ""
 
@@ -95,6 +95,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:409
+#: ../turboui/src/TaskPage/Overview.tsx:18
 msgid "Add notes about this task..."
 msgstr ""
 
@@ -133,6 +134,17 @@ msgid "Check-ins"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/Modal/index.tsx:133
+msgid "Close"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskPage/Overview.tsx:34
+#: ../turboui/src/TaskPage/Overview.tsx:64
+msgid "Comments & Activity"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:113
 msgid "Company Admin"
 msgstr ""
@@ -151,6 +163,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:391
 msgid "Create task"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TaskPage/Overview.tsx:17
+msgid "Describe the task..."
 msgstr ""
 
 #.frontend
@@ -175,8 +192,26 @@ msgid "Enter task title"
 msgstr ""
 
 #.frontend
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
+msgid "Error"
+msgstr ""
+
+#.frontend
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
+msgid "Failed to create task"
+msgstr ""
+
+#.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:291
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
+#: assets/js/pages/TaskPage/index.tsx:74
 msgid "Failed to update task name."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates.ex:33
+msgid "Goal"
 msgstr ""
 
 #.frontend
@@ -189,6 +224,11 @@ msgstr ""
 #: ../turboui/src/CompanyNavigation/index.tsx:185
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
 msgid "Home"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_adding_email.ex:34
+msgid "Link: %{url}"
 msgstr ""
 
 #.frontend
@@ -262,6 +302,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:190
 #: ../turboui/src/TaskCreationModal/index.tsx:333
+#: ../turboui/src/TaskPage/Overview.tsx:16
 msgid "Notes"
 msgstr ""
 
@@ -290,6 +331,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:104
 msgid "Previous Notifications"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates.ex:31
+msgid "Project"
 msgstr ""
 
 #.frontend
@@ -340,6 +386,11 @@ msgstr ""
 msgid "Set relative date"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates.ex:32
+msgid "Space"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:307
 msgid "Status"
@@ -378,6 +429,11 @@ msgid "Template"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/TaskPage/Overview.tsx:65
+msgid "Timeline data not available"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
 #: ../turboui/src/FormattedTime/ShortDate.tsx:31
 msgid "Today"
@@ -389,17 +445,17 @@ msgid "Tomorrow"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:93
+#: lib/operately_email/emails/task_adding_email.ex:95
 msgid "Unknown"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:31
+#: lib/operately_email/emails/task_adding_email.ex:32
 msgid "View Task"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/templates.ex:84
+#: lib/operately_email/templates.ex:89
 msgid "View update"
 msgstr ""
 
@@ -417,7 +473,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:60
+#: lib/operately_email/emails/task_adding_email.ex:62
 msgid "You were mentioned in the description for %{task_name}."
 msgstr ""
 
@@ -432,7 +488,7 @@ msgid "You're all caught up."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:46
+#: lib/operately_email/emails/task_adding_email.ex:48
 msgid "created the task \"%{task_name}\""
 msgstr ""
 

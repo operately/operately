@@ -20,6 +20,7 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
     where = find_where_name(task)
     mentioned = mentioned?(person, activity)
     {subject, title, body} = copy(mentioned, where, who, task.name)
+    cta_url = Paths.task_path(company, task) |> Paths.to_url()
 
     company
     |> new()
@@ -29,7 +30,8 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
     |> assign(:title, title)
     |> assign(:body, body)
     |> assign(:cta, gettext("View Task"))
-    |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
+    |> assign(:cta_url, cta_url)
+    |> assign(:text_link, gettext("Link: %{url}", url: cta_url))
     |> render("task_adding")
   end
 
