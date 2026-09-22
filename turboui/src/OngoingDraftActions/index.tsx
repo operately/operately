@@ -15,7 +15,7 @@ export namespace OngoingDraftActions {
     updatedAt: string;
     scheduledAt?: string | null;
     editPath: string;
-    onPublish: () => void;
+    onPublish?: () => void;
     formattedTimePreferences: FormattedTimePreferences;
     shareUrl?: string;
   }
@@ -79,9 +79,11 @@ function ContinueEditingActions({
         <PrimaryButton linkTo={editPath} size="base" testId="continue-editing">
           Continue editing
         </PrimaryButton>
-        <GhostButton onClick={onPublish} size="base" testId="publish-now">
-          Publish now
-        </GhostButton>
+        {onPublish && (
+          <GhostButton onClick={onPublish} size="base" testId="publish-now">
+            Publish now
+          </GhostButton>
+        )}
       </div>
 
       <div className="flex items-center justify-center gap-2 mt-4">

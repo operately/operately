@@ -109,9 +109,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
             body: JSON.stringify(form.values.body),
             ...(canSchedule && scheduleFlow.isScheduledLocally
               ? { state: "scheduled" as const, scheduledAt: scheduleFlow.scheduledAtIso }
-              : canSchedule && discussion.state === "scheduled"
-                ? { state: "draft" as const, scheduledAt: null }
-                : {}),
+              : {}),
           });
 
           navigate(paths.discussionPath(res.discussion.id));

@@ -245,11 +245,13 @@ function DiscussionComments() {
 
 function ContinueEditingDraft() {
   const paths = usePaths();
+  const me = useMe();
   const { discussion } = useLoadedData();
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const { mutateAsync: publish } = Discussions.usePublishDiscussion(discussion.space.id);
   const editPath = paths.discussionEditPath(discussion.id);
+  const isAuthor = Boolean(discussion.author && me && compareIds(me.id, discussion.author.id));
 
   if (discussion.state !== "draft" && discussion.state !== "scheduled") {
     return null;
@@ -265,7 +267,7 @@ function ContinueEditingDraft() {
       updatedAt={discussion.updatedAt}
       scheduledAt={discussion.scheduledAt}
       editPath={editPath}
-      onPublish={publishHandler}
+      onPublish={isAuthor ? publishHandler : undefined}
       formattedTimePreferences={formattedTimePreferences}
     />
   );

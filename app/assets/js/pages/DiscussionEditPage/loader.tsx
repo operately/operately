@@ -3,7 +3,7 @@ import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
 
 export async function loader({ params }) {
-  const queryInput = { id: params.id, includeSpace: true };
+  const queryInput = { id: params.id, includeSpace: true, includeAuthor: true };
   await Api.spaces.getDiscussionQuery(queryInput);
   return { queryInput };
 }
