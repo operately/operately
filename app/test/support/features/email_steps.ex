@@ -24,10 +24,6 @@ defmodule Operately.Support.Features.EmailSteps do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} closed the #{ctx.project.name} project and submitted a retrospective")
   end
 
-  def assert_project_archived_sent(ctx, author: author, project: project, to: to) do
-    ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} archived the #{project.name} project")
-  end
-
   def assert_goal_archived_sent(ctx, author: author, goal: goal, to: to) do
     ctx |> assert_sent(to: to, subject: "#{Person.short_name(author)} archived the #{goal.name} goal in Operately")
   end
