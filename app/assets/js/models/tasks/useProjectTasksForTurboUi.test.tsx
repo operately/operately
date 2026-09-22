@@ -138,7 +138,7 @@ describe("useProjectTasksForTurboUi", () => {
             milestone: null,
             dueDate: null,
             assignees: [],
-          } as any),
+          }),
         ).toEqual({ success: false });
       });
     } finally {
