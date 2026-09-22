@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useSearchResults } from "@/models/search/useSearchResults";
 import Api from "@/api";
 import { parseMilestonesForTurboUi, type ParsedMilestoneForTurboUi } from "./index";
 import { usePaths } from "@/routes/paths";
@@ -10,28 +10,10 @@ interface UseMilestonesResult {
 
 export function useMilestones(projectId: string): UseMilestonesResult {
   const paths = usePaths();
-  const [milestones, setMilestones] = useState<ParsedMilestoneForTurboUi[]>([]);
-
-  const search = useCallback(
-    async (query: string) => {
-      const data = await Api.projects.listMilestones({
-        projectId,
-        query: query.trim(),
-      });
-
-      const parsed = parseMilestonesForTurboUi(paths, data.milestones || []);
-      setMilestones(parsed.orderedMilestones);
-    },
-    [projectId, paths],
+  const search = useSearchResults((query) =>
+    Api.projects.listMilestonesQueryOptions({ projectId, query: query.trim() }),
   );
+  const parsed = parseMilestonesForTurboUi(paths, search.data?.milestones ?? []);
 
-  // Milestones are loaded on mount
-  useEffect(() => {
-    search("");
-  }, [search]);
-
-  return {
-    milestones,
-    search,
-  };
+  return { milestones: parsed.orderedMilestones, search: search.onSearch };
 }

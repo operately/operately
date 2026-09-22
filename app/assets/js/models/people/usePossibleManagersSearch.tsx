@@ -1,7 +1,7 @@
-import * as React from "react";
+import { useSearchResults } from "@/models/search/useSearchResults";
+import { usePeopleSearchError } from "./usePeopleSearchError";
 
 import Api from "@/api";
-import { showErrorToast } from "turboui";
 import { Person } from ".";
 
 interface UsePossibleManagersSearch<T> {
@@ -15,34 +15,11 @@ export function usePossibleManagersSearch<T = Person>(
   const personId = typeof params === "string" ? params : params.personId;
   const transformResult = typeof params === "string" ? undefined : params.transformResult;
 
-  const [people, setPeople] = React.useState<T[]>([]);
+  const search = useSearchResults((query) => Api.people.listPossibleManagersQueryOptions({ userId: personId, query }));
+  usePeopleSearchError(search);
 
-  const onSearch = React.useCallback(
-    async (query: string) => {
-      try {
-        const res = await Api.people.listPossibleManagers({
-          userId: personId,
-          query: query,
-        });
+  const transform = transformResult || ((person: Person) => person as unknown as T);
+  const people = (search.data?.people ?? []).filter((person): person is Person => !!person).map(transform);
 
-        const transform = transformResult || ((person: Person) => person as unknown as T);
-        const fetchedPeople = res.people || [];
-        const transformedPeople = fetchedPeople
-          .filter((person): person is Person => !!person)
-          .map((person) => transform(person)) as T[];
-
-        setPeople(transformedPeople);
-      } catch {
-        showErrorToast("Couldn't load people", "Please try again.");
-      }
-    },
-    [personId, transformResult],
-  );
-
-  // Load initial people on mount
-  React.useEffect(() => {
-    onSearch("");
-  }, [onSearch]);
-
-  return { people, onSearch };
+  return { people, onSearch: search.onSearch };
 }
