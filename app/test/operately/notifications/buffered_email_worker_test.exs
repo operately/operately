@@ -347,7 +347,7 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_project_task(:task, :milestone)
 
-    skipped = task_assignee_notification(ctx, ctx.task)
+    skipped = task_adding_notification(ctx, ctx.task)
     sent = project_created_notification(ctx)
     Operately.Repo.delete!(ctx.task)
 
@@ -378,12 +378,12 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     )
   end
 
-  defp task_assignee_notification(ctx, task) do
+  defp task_adding_notification(ctx, task) do
     activity =
       activity_fixture(
         author_id: ctx.creator.id,
-        action: "task_assignee_updating",
-        content: %{"task_id" => task.id, "old_assignee_id" => nil, "new_assignee_id" => ctx.creator.id}
+        action: "task_adding",
+        content: %{"task_id" => task.id}
       )
 
     notification_fixture(
