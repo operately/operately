@@ -90,6 +90,31 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert email.html_body =~ "Activity 3"
   end
 
+  for {parent_type, label} <- [project: "Project", space: "Space", goal: "Goal"] do
+    test "preserves the English #{label} label in buffered and daily digests", ctx do
+      items = [
+        %{
+          parent_id: "parent-1",
+          parent_type: unquote(parent_type),
+          parent_name: "User-authored name",
+          headline: "created the task \"Call leads\"",
+          excerpt_html: nil,
+          excerpt_text: nil,
+          item_url: "https://example.com/task-1",
+          actor_name: "John D.",
+          occurred_at: ~N[2026-04-02 10:01:00],
+          coalesce_key: nil
+        }
+      ]
+
+      for email <- [DigestMailer.build_digest_email(ctx.person, ctx.batch, items), DigestMailer.build_daily_summary_email(ctx.person, items)] do
+        assert email.html_body =~ ~r/>\s*#{unquote(label)}\s*</
+        assert email.html_body =~ "User-authored name"
+        assert email.text_body =~ "User-authored name (1 update)"
+      end
+    end
+  end
+
   test "links parent group title when parent url is available", ctx do
     digest_items = [
       %{

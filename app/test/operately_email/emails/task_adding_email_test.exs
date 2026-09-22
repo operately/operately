@@ -35,7 +35,8 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
       assert email.html_body =~ "A new task named Call leads was created in this project."
       assert email.html_body =~ "View Task"
       assert email.text_body =~ "Michael S. added the task \"Call leads\"."
-      assert email.text_body =~ "Link:"
+      task_url = OperatelyWeb.Paths.task_path(ctx.company, ctx.task) |> OperatelyWeb.Paths.to_url()
+      assert email.text_body =~ "Link: #{task_url}"
       refute email.html_body =~ "mentioned you"
       true
     end)

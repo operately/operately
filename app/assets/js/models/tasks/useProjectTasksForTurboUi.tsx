@@ -198,7 +198,7 @@ export function useProjectTasksForTurboUi({
       return { success: true };
     } catch (e) {
       console.error("Failed to create task", e);
-      showErrorToast("Error", "Failed to create task");
+      showErrorToast(translationText(i18n.t("Error")), translationText(i18n.t("Failed to create task")));
       restoreSnapshot(snapshot);
       return { success: false };
     }
@@ -310,7 +310,7 @@ export function useProjectTasksForTurboUi({
         return true;
       } catch (e) {
         console.error("Failed to update task name", e);
-        showErrorToast("Error", "Failed to update task name.");
+        showErrorToast(translationText(i18n.t("Error")), translationText(i18n.t("Failed to update task name.")));
         restoreSnapshot(snapshot);
         return false;
       }
