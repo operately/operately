@@ -153,7 +153,10 @@ function Page() {
   const parentGoalSearch = useParentGoalSearch({ type: "goal", id: goal.id });
   const spaceSearch = useSpaceSearch();
 
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
+  const richEditorHandlers = useRichEditorHandlers({
+    scope: { type: "goal", id: goal.id },
+    resourceLinkContents: description,
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const initialChecklist = React.useMemo(() => goal.checklist ?? [], [goal.checklist]);

@@ -26,10 +26,16 @@ export function Page() {
   const navigate = useNavigate();
   const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const { mentionedPersonLookup, resourceLinkTitles } = useRichEditorHandlers({
+    resourceLinkContents: link.description,
+  });
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
-  const mutationScope = { spaceId: link.space?.id, resourceHubId: link.resourceHubId, parentFolderId: link.parentFolderId };
+  const mutationScope = {
+    spaceId: link.space?.id,
+    resourceHubId: link.resourceHubId,
+    parentFolderId: link.parentFolderId,
+  };
   const { mutateAsync: remove } = useDeleteLink(mutationScope);
   const options = useLinkPageOptions({ showDeleteModal: toggleDeleteModal });
 
@@ -95,6 +101,7 @@ export function Page() {
       formattedTimePreferences={formattedTimePreferences}
       description={link.description}
       mentionedPersonLookup={mentionedPersonLookup}
+      resourceLinkTitles={resourceLinkTitles}
       reactions={{
         ...reactionsForm,
         size: 24,

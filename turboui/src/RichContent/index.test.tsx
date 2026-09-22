@@ -38,9 +38,18 @@ const plainContent = {
   ],
 };
 
-function renderRichContent(content: unknown, parseContent = false) {
+function renderRichContent(
+  content: unknown,
+  parseContent = false,
+  resourceLinkTitles?: { type: "project"; id: string; title: string }[],
+) {
   return render(
-    <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} parseContent={parseContent} />,
+    <RichContent
+      content={content}
+      mentionedPersonLookup={mentionedPersonLookup}
+      parseContent={parseContent}
+      resourceLinkTitles={resourceLinkTitles}
+    />,
   );
 }
 
@@ -71,6 +80,31 @@ describe("RichContent", () => {
 
     await waitFor(() => {
       expectMentionContent(container);
+    });
+  });
+
+  it("renders resolved resource titles in read mode without changing the destination", async () => {
+    const href = `${window.location.origin}/acme-0abc/projects/website-xyz?tab=overview`;
+    const content = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: href,
+              marks: [{ type: "link", attrs: { href } }],
+            },
+          ],
+        },
+      ],
+    };
+
+    renderRichContent(content, false, [{ type: "project", id: "website-xyz", title: "Website" }]);
+
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "Website" })).toHaveAttribute("href", href);
     });
   });
 });

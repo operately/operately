@@ -50,7 +50,11 @@ function ReadonlyContent(props: ResolvedRichTextAreaProps) {
 
   return (
     <div className={className}>
-      <RichContent content={value} mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup} />
+      <RichContent
+        content={value}
+        mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+        resourceLinkTitles={props.richTextHandlers.resourceLinkTitles}
+      />
     </div>
   );
 }
