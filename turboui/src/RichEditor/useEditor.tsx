@@ -4,14 +4,9 @@ import * as TipTap from "@tiptap/react";
 
 import { isUploadInProgress } from "./Blob";
 import { createRichEditorExtensions } from "./createRichEditorExtensions";
-import {
-  clearLocalDraft,
-  isRichTextEmpty,
-  LocalDraftOptions,
-  readLocalDraft,
-  writeLocalDraft,
-} from "./localDrafts";
+import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, writeLocalDraft } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
+import { ResourceLinkTitle } from "../RichContent/resourceLinks";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -39,6 +34,7 @@ export interface RichEditorHandlers {
   mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
+  resourceLinkTitles?: ResourceLinkTitle[];
 }
 
 interface UseEditorProps {

@@ -3,6 +3,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { ResourceLinkTitle } from "../RichContent/resourceLinks";
 
 const PREVIEW_CHARACTER_LIMIT = 450;
 
@@ -58,7 +59,11 @@ export function PageDescription({
       <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
 
       {mode === "view" && (
-        <ViewMode rawDescription={description} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
+        <ViewMode
+          rawDescription={description}
+          mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+          resourceLinkTitles={richTextHandlers.resourceLinkTitles}
+        />
       )}
       {mode === "edit" && (
         <EditMode
@@ -96,14 +101,19 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
 interface ViewModeProps {
   rawDescription: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  resourceLinkTitles?: ResourceLinkTitle[];
 }
 
-function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
+function ViewMode({ rawDescription, mentionedPersonLookup, resourceLinkTitles }: ViewModeProps) {
   const { description, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
 
   return (
     <div className="mt-2">
-      <RichContent content={description} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent
+        content={description}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resourceLinkTitles={resourceLinkTitles}
+      />
 
       {length > PREVIEW_CHARACTER_LIMIT && (
         <button onClick={toggleExpand} className="text-content-dimmed hover:underline text-sm mt-1 font-medium">
@@ -123,7 +133,14 @@ interface EditModeProps {
   localDraftKey?: string;
 }
 
-function EditMode({ description, richTextHandlers, onDescriptionChange, setMode, placeholder, localDraftKey }: EditModeProps) {
+function EditMode({
+  description,
+  richTextHandlers,
+  onDescriptionChange,
+  setMode,
+  placeholder,
+  localDraftKey,
+}: EditModeProps) {
   const editor = useEditor({
     content: description,
     editable: true,

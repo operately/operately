@@ -2512,6 +2512,12 @@ export interface ResourceHubUploadedFile {
   description?: string | null;
 }
 
+export interface ResourceLink {
+  type: ResourceLinkType;
+  id: string;
+  title: string;
+}
+
 export interface ReviewAssignment {
   __typename: "review_assignment";
   resourceId: string;
@@ -2980,9 +2986,7 @@ export type ActivityContent =
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
-  | ActivityEventDataProjectCreate
-  | ActivityEventDataMilestoneCreate
-  | ActivityEventDataCommentPost;
+  ActivityEventDataProjectCreate | ActivityEventDataMilestoneCreate | ActivityEventDataCommentPost;
 
 export type ActivityResourceUnion = Project | Update | Milestone | Comment;
 
@@ -3006,13 +3010,7 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AccessOptions =
-  | "no_access"
-  | "minimal_access"
-  | "view_access"
-  | "comment_access"
-  | "edit_access"
-  | "admin_access"
-  | "full_access";
+  "no_access" | "minimal_access" | "view_access" | "comment_access" | "edit_access" | "admin_access" | "full_access";
 
 export type AccountTheme = "dark" | "light" | "system";
 
@@ -3088,14 +3086,7 @@ export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type Language = "en" | "pt-BR";
 
@@ -3120,15 +3111,7 @@ export type ProjectTemplateCommentParentType = "discussion" | "document" | "file
 export type ProjectTemplatePersonRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTemplateResourceLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
 
 export type ProjectTemplateResourceType = "folder" | "document" | "file" | "link";
 
@@ -3168,15 +3151,20 @@ export type ReactionParentType =
 export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ResourceHubLinkType =
-  | "airtable"
-  | "dropbox"
-  | "figma"
-  | "google"
-  | "google_doc"
-  | "google_sheet"
-  | "google_slides"
-  | "notion"
-  | "other";
+  "airtable" | "dropbox" | "figma" | "google" | "google_doc" | "google_sheet" | "google_slides" | "notion" | "other";
+
+export type ResourceLinkType =
+  | "discussion"
+  | "document"
+  | "file"
+  | "folder"
+  | "goal"
+  | "link"
+  | "milestone"
+  | "person"
+  | "project"
+  | "space"
+  | "task";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -3247,14 +3235,7 @@ export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secre
 export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
-  | "on_track"
-  | "achieved"
-  | "missed"
-  | "paused"
-  | "caution"
-  | "off_track"
-  | "pending"
-  | "outdated";
+  "on_track" | "achieved" | "missed" | "paused" | "caution" | "off_track" | "pending" | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
 
@@ -4114,6 +4095,15 @@ export interface ResourceHubsSearchInput {
 
 export interface ResourceHubsSearchResult {
   nodes: ResourceHubNode[];
+}
+
+export interface RichContentResolveLinksInput {
+  types: ResourceLinkType[];
+  ids: string[];
+}
+
+export interface RichContentResolveLinksResult {
+  links: ResourceLink[];
 }
 
 export interface SiteMessagesListActiveInput {}
@@ -6611,6 +6601,14 @@ export interface TasksUpdateStatusResult {
   updatedMilestone: Milestone | null;
 }
 
+class ApiNamespaceRichContent {
+  constructor(private client: ApiClient) {}
+
+  async resolveLinks(input: RichContentResolveLinksInput): Promise<RichContentResolveLinksResult> {
+    return this.client.get("/rich_content/resolve_links", input);
+  }
+}
+
 class ApiNamespaceCompanyTransfers {
   constructor(private client: ApiClient) {}
 
@@ -8096,6 +8094,7 @@ class ApiNamespaceReactions {
 export class ApiClient {
   private basePath: string;
   private headers: any;
+  public apiNamespaceRichContent: ApiNamespaceRichContent;
   public apiNamespaceCompanyTransfers: ApiNamespaceCompanyTransfers;
   public apiNamespaceCliAuth: ApiNamespaceCliAuth;
   public apiNamespaceMcpGrants: ApiNamespaceMcpGrants;
@@ -8123,6 +8122,7 @@ export class ApiClient {
   public apiNamespaceReactions: ApiNamespaceReactions;
 
   constructor() {
+    this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
     this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
     this.apiNamespaceMcpGrants = new ApiNamespaceMcpGrants(this);
@@ -8564,6 +8564,30 @@ export default {
   resetPassword,
   useResetPassword,
   resetPasswordMutationOptions,
+
+  rich_content: {
+    resolveLinks: (input: RichContentResolveLinksInput) => defaultApiClient.apiNamespaceRichContent.resolveLinks(input),
+    useResolveLinks: (input: RichContentResolveLinksInput) =>
+      useQuery<RichContentResolveLinksResult>(() => defaultApiClient.apiNamespaceRichContent.resolveLinks(input)),
+    resolveLinksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/rich_content/resolve_links"),
+    resolveLinksQueryKey: (input: RichContentResolveLinksInput) =>
+      buildApiQueryKey(defaultApiClient, "/rich_content/resolve_links", input),
+    resolveLinksQueryOptions: (input: RichContentResolveLinksInput) =>
+      buildApiQueryOptions<RichContentResolveLinksInput, RichContentResolveLinksResult>(
+        defaultApiClient,
+        "/rich_content/resolve_links",
+        input,
+      ),
+    resolveLinksQuery: (input: RichContentResolveLinksInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<RichContentResolveLinksInput, RichContentResolveLinksResult>(
+          defaultApiClient,
+          "/rich_content/resolve_links",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+  },
 
   company_transfers: {
     listExportRuns: (input: CompanyTransfersListExportRunsInput) =>

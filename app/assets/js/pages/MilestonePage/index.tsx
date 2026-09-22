@@ -129,7 +129,10 @@ function Page() {
     }
   }, [deleteMilestone, milestone.id, milestone.project, navigate, paths]);
 
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
+  const richEditorHandlers = useRichEditorHandlers({
+    scope: { type: "project", id: milestone.project.id },
+    resourceLinkContents: description,
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
   const { milestones: searchableMilestones, search: searchMilestones } = useProjectMilestones(milestone.project.id);
   const taskProjectSearch = Projects.useProjectSearch({
