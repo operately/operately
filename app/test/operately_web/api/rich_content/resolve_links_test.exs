@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.RichContent.ResolveLinksTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
+  alias Operately.RichContent.ResourceLinkResolver
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
@@ -99,6 +100,25 @@ defmodule OperatelyWeb.Api.RichContent.ResolveLinksTest do
     other_conn = log_in_account(ctx.conn, other_person.account, ctx.other_company)
 
     assert {200, %{links: []}} = resolve(other_conn, [{"project", Paths.project_id(ctx.project)}])
+  end
+
+  test "caps unique resource lookups per request", ctx do
+    limit = ResourceLinkResolver.max_unique_refs()
+
+    ctx =
+      Enum.reduce(1..limit, ctx, fn index, ctx ->
+        Factory.add_project_task(ctx, :"capped_task_#{index}", :milestone, name: "Capped #{index}")
+      end)
+      |> Factory.log_in_person(:creator)
+
+    resources =
+      [ctx.task | Enum.map(1..limit, &Map.fetch!(ctx, :"capped_task_#{&1}"))]
+      |> Enum.map(&{"task", Paths.task_id(&1)})
+
+    assert length(resources) == limit + 1
+    assert {200, %{links: links}} = resolve(ctx.conn, resources)
+    assert length(links) == limit
+    refute Enum.any?(links, &(&1.id == Paths.task_id(Map.fetch!(ctx, :"capped_task_#{limit}"))))
   end
 
   test "hides draft discussions from people who are not the author", ctx do

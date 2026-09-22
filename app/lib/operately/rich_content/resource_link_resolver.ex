@@ -13,10 +13,15 @@ defmodule Operately.RichContent.ResourceLinkResolver do
   alias Operately.Tasks.Task
   alias OperatelyWeb.Api.Helpers
 
+  @max_unique_refs 100
+
+  def max_unique_refs, do: @max_unique_refs
+
   def resolve(person, company, resources) when is_list(resources) do
     resources
     |> Enum.flat_map(&normalize_ref/1)
     |> Enum.uniq_by(&{&1.type, id_key(&1.id)})
+    |> Enum.take(@max_unique_refs)
     |> Enum.flat_map(&resolve_one(person, company, &1))
   end
 
