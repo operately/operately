@@ -17,6 +17,7 @@ import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import i18n, { translationText } from "@/i18n";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMilestones } from "@/models/milestones/useMilestones";
@@ -61,7 +62,7 @@ function Page() {
     value: () => project.name,
     update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
-    validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Project name cannot be empty")) : null)],
     refreshPageData,
     projectIdToInvalidate: project.id,
   });
@@ -71,7 +72,7 @@ function Page() {
     value: () => task.name,
     update: (v) => updateTaskName.mutateAsync({ taskId: task.id, name: v, type: "project" }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
-    validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Task name cannot be empty")) : null)],
     refreshPageData,
   });
 

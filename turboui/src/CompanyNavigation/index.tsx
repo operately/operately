@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { GlobalSearch } from "../GlobalSearch";
 import {
@@ -50,6 +51,7 @@ export function CompanyNavigation(props: CompanyNavigation.Props) {
 }
 
 function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Props) {
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const displayName = truncateCompanyName(companyName);
 
@@ -80,43 +82,43 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
           onClick={() => setOpen(false)}
         >
           <MobileSectionLink to={links.home} icon={IconHome2}>
-            Home
+            {t("Home")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.workMap} icon={IconBuildingEstate}>
-            Company
+            {t("Company", { context: "navigation" })}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.profile} icon={IconBriefcase}>
-            My work
+            {t("My work")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.review} icon={IconCoffee}>
-            Review
+            {t("Review")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.people} icon={IconUserCircle}>
-            People
+            {t("People")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.notifications} icon={IconBell}>
-            Notifications
+            {t("Notifications")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.account} icon={IconUser}>
-            Account
+            {t("Account")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.companyAdmin} icon={IconCircleKey}>
-            Company Admin
+            {t("Company Admin")}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.lobby} icon={IconSwitch}>
-            Switch Company
+            {t("Switch Company")}
           </MobileSectionLink>
 
           <MobileSectionAction onClick={onLogOut} icon={IconDoorExit}>
-            Log Out
+            {t("Log Out")}
           </MobileSectionAction>
         </div>
       )}
@@ -157,6 +159,7 @@ function MobileSectionAction({
 }
 
 function DesktopNavigation(props: CompanyNavigationProps) {
+  const { t } = useTranslation();
   const { companyName, links, canAddGoal, canAddProject, canAddSpace, canInvitePeople } = props;
 
   return (
@@ -179,15 +182,15 @@ function DesktopNavigation(props: CompanyNavigationProps) {
 
           <div className="flex items-center gap-1 lg:gap-2.5 border-l border-surface-outline px-4">
             <SectionLink to={links.home} icon={IconHome2}>
-              Home
+              {t("Home")}
             </SectionLink>
 
             <SectionLink to={links.workMap} icon={IconBuildingEstate} testId="company-work-map-link">
-              Company
+              {t("Company", { context: "navigation" })}
             </SectionLink>
 
             <SectionLink to={links.profile} icon={IconBriefcase}>
-              My work
+              {t("My work")}
             </SectionLink>
           </div>
 

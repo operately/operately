@@ -10,6 +10,20 @@ A person can store an explicit language separately from timezone and time-format
 
 The `i18n` company experimental feature is off by default. While it is off, the app and emails stay English even if a non-English preference is saved. Turning the flag off later forces English without deleting the saved preference. Missing or unsupported preferences also resolve to English.
 
+## Pilot workflow
+
+The first cataloged English workflow is company navigation → project → task → task-adding activity, notification, and email.
+
+| Step | System copy |
+| --- | --- |
+| Company navigation | Home, Company, My work, Review, and the matching mobile labels (People, Notifications, Account, Company Admin, Switch Company, Log Out) |
+| Project | Breadcrumbs (Home, Projects), tabs, task-completion text and accessible label, project name validation |
+| Task | New task, inline creator (placeholder, Add, Cancel, Add task accessible name), creation modal labels, task name validation, Mark task as done |
+| Activity and notifications | Task-adding feed titles, in-app notification title, Notifications page chrome, Mark as read |
+| Emails | Immediate task-adding subjects and bodies (including mentions), buffered digest subject/empty state/CTAs, and the task-adding digest headline |
+
+Activity presentation is translated at render time. Stored activity payloads and user-authored names stay in the original language.
+
 Web requests and recipient-specific email rendering share the same effective-language rules. Background workers scope Gettext to the recipient for the duration of rendering and restore the previous locale afterward, including when rendering fails.
 
 ## Catalog files
