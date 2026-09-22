@@ -34,6 +34,13 @@ defmodule Operately.Support.Features.KpiCommentsSteps do
     |> UI.refute_has(testid: "post-comment")
   end
 
+  step :reopen_update_comments, ctx do
+    ctx
+    |> UI.click(testid: "slide-in-close-button")
+    |> UI.refute_has(testid: "entry-comments-slide-in")
+    |> open_update_comments()
+  end
+
   step :assert_comment_visible, ctx do
     UI.assert_text(ctx, "This is a comment.")
   end
@@ -42,6 +49,17 @@ defmodule Operately.Support.Features.KpiCommentsSteps do
   # has to catch up while the thread is still open.
   step :assert_update_comment_count, ctx, count do
     UI.assert_text(ctx, to_string(count), testid: "entry-comments-toggle-#{Paths.kpi_entry_id(ctx.entry)}")
+  end
+
+  step :delete_comment, ctx do
+    ctx
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.refute_text("This is a comment.")
+  end
+
+  step :assert_update_has_no_comments, ctx do
+    UI.refute_text(ctx, "1", testid: "entry-comments-toggle-#{Paths.kpi_entry_id(ctx.entry)}")
   end
 
   step :log_update, ctx, opts do

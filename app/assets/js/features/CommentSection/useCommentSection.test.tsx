@@ -28,6 +28,7 @@ const commentTypes = [
   "project_discussion",
   "project_retrospective",
   "message",
+  "kpi_entry",
 ] as const;
 
 it.each(commentTypes)(

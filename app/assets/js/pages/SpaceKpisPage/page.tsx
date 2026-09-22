@@ -201,9 +201,9 @@ export function Page() {
           ? (entry) => (
               <KpiEntryComments
                 entryId={entry.id}
+                kpiId={selectedKpi.id}
                 spaceId={space.id!}
                 canComment={space.permissions?.canComment ?? false}
-                onCommentsChanged={refresh}
               />
             )
           : undefined

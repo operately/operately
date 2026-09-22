@@ -9,7 +9,7 @@ import * as Comments from "@/models/comments";
 import { parsePersonForTurboUi, type SearchScope } from "@/models/people";
 import { useReadNotifications } from "@/models/notifications/notificationLifecycle";
 import { type CommentQueryInvalidator } from "@/models/comments/commentLifecycle";
-import { mapFormItemsToCommentSectionItems } from "./useCommentSectionProps";
+import { mapCommentSectionItems } from "./mapCommentSectionItems";
 import { type CommentSectionProps } from "turboui";
 
 const EMPTY_COMMENTS: Comment[] = [];
@@ -62,7 +62,7 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
     if (options.acknowledgedAt && options.acknowledgedBy) {
       items = Comments.insertAcknowledgement(items, options.acknowledgedAt, options.acknowledgedBy);
     }
-    return mapFormItemsToCommentSectionItems(paths, items);
+    return mapCommentSectionItems(paths, items);
   }, [comments.comments, options.acknowledgedAt, options.acknowledgedBy, paths]);
 
   const currentUser = parsePersonForTurboUi(paths, me);
