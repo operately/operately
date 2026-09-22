@@ -3,7 +3,7 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import type { Task } from "@/api";
 import { showErrorToast, type TaskBoard } from "turboui";
-import "@/i18n";
+import i18n from "@/i18n";
 import { renderHook } from "@/__tests__/renderHook";
 import { useProjectTasksForTurboUi, buildProjectTaskCreateInput } from "./useProjectTasksForTurboUi";
 
@@ -69,6 +69,7 @@ jest.mock("./taskLifecycle", () => {
 });
 
 const { createTaskMutateAsync, updateTaskNameMutateAsync } = jest.requireMock("./taskLifecycle");
+const englishTranslations = { ...i18n.getResourceBundle("en", "translation") };
 
 const richTextWithMention = {
   type: "doc",
@@ -106,6 +107,10 @@ describe("useProjectTasksForTurboUi", () => {
     updateTaskNameMutateAsync.mockReset();
   });
 
+  afterEach(() => {
+    i18n.addResourceBundle("en", "translation", englishTranslations, true, true);
+  });
+
   it("passes rich-text task notes through the create task API input", () => {
     const input = buildProjectTaskCreateInput(
       {
@@ -125,7 +130,11 @@ describe("useProjectTasksForTurboUi", () => {
     );
   });
 
-  it("shows a translated toast when task creation fails", async () => {
+  it.each([
+    ["Error", "Failed to create task"],
+    ["Translated error", "Translated creation failure"],
+  ])("shows catalog copy when task creation fails: %s / %s", async (title, message) => {
+    i18n.addResourceBundle("en", "translation", { Error: title, "Failed to create task": message }, true, true);
     createTaskMutateAsync.mockRejectedValue(new Error("network"));
     const { result } = setupHook();
     const log = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -145,10 +154,14 @@ describe("useProjectTasksForTurboUi", () => {
       log.mockRestore();
     }
 
-    expect(showErrorToast).toHaveBeenCalledWith("Error", "Failed to create task");
+    expect(showErrorToast).toHaveBeenCalledWith(title, message);
   });
 
-  it("shows a translated toast when renaming a task fails", async () => {
+  it.each([
+    ["Error", "Failed to update task name."],
+    ["Translated error", "Translated rename failure"],
+  ])("shows catalog copy when renaming a task fails: %s / %s", async (title, message) => {
+    i18n.addResourceBundle("en", "translation", { Error: title, "Failed to update task name.": message }, true, true);
     updateTaskNameMutateAsync.mockRejectedValue(new Error("network"));
     const { result } = setupHook();
     const log = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -161,10 +174,20 @@ describe("useProjectTasksForTurboUi", () => {
       log.mockRestore();
     }
 
-    expect(showErrorToast).toHaveBeenCalledWith("Error", "Failed to update task name.");
+    expect(showErrorToast).toHaveBeenCalledWith(title, message);
   });
 
-  it("shows a translated toast when the renamed task name is empty", async () => {
+  it.each([
+    ["Task name cannot be empty", "Failed to update task name."],
+    ["Translated empty name", "Translated rename failure"],
+  ])("shows catalog copy when the renamed task name is empty: %s / %s", async (title, message) => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      { "Task name cannot be empty": title, "Failed to update task name.": message },
+      true,
+      true,
+    );
     const { result } = setupHook();
 
     await act(async () => {
@@ -172,7 +195,7 @@ describe("useProjectTasksForTurboUi", () => {
     });
 
     expect(updateTaskNameMutateAsync).not.toHaveBeenCalled();
-    expect(showErrorToast).toHaveBeenCalledWith("Task name cannot be empty", "Failed to update task name.");
+    expect(showErrorToast).toHaveBeenCalledWith(title, message);
   });
 });
 

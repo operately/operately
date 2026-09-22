@@ -2,7 +2,7 @@
 <%= row(%{padding_top: 8, padding_bottom: 4}) do %>
   <div style="font-family: sans-serif;">
     <div style="font-size: 10px; line-height: 1.4; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px;">
-      <%= Phoenix.Naming.humanize(to_string(hd(hd(@group.author_groups).items).parent_type)) %>
+      <%= @parent_type_label %>
     </div>
     <div style="font-weight: 600; font-size: 16px;">
       <%= if @group.parent_url do %>

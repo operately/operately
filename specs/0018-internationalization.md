@@ -55,4 +55,4 @@ The build generates English JSON from the source catalog and other languages fro
 - Representative workflows, emails, formatting, and expanded-text layouts pass review.
 - Coverage gaps are tracked during migration and closed before general availability.
 
-Pilot audit notes (after PR 3): task create/rename failure toasts are cataloged. Shared navigation chrome beyond the listed labels is deferred to PR 5. Remaining project/task operation copy is deferred to PR 6. Non-pilot emails are deferred to PR 7.
+Pilot audit notes (after PR 3): task create/rename failure toasts, the modal Close accessible label, task notes/activity headings and fallback, the task email's plain-text link label, and digest resource labels are cataloged. Toast and modal tests use substituted translations to verify catalog lookup as well as unchanged English. Shared navigation chrome beyond the listed labels is deferred to PR 5. Remaining project/task operation copy is deferred to PR 6. Non-pilot emails are deferred to PR 7.
