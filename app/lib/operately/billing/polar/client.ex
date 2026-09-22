@@ -107,6 +107,7 @@ defmodule Operately.Billing.Polar.Client do
           url: config.base_url <> path,
           headers: [
             {"authorization", "Bearer #{config.access_token}"},
+            {"polar-version", "2026-04"},
             {"accept", "application/json"},
             {"content-type", "application/json"}
           ]
