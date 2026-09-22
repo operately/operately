@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useQuerySearch } from "@/models/search/useQuerySearch";
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 
@@ -40,36 +42,18 @@ export const CompanyWideSearchScope = { type: "company" } as SearchScope;
 export const NoneSearchScope = { type: "none" } as SearchScope;
 
 export function usePeopleSearch(scope: SearchScope) {
-  //
-  // There are multiple components that use this hook. Some of them
-  // pass in a string, others pass in an object with a query property.
-  // These components are not maintained in this repo, so we can't
-  // change them easily to all use the same format.
-  //
-  // This is a bit of a hack to make it work with both.
-  //
-  return async (arg: string | { query: string; ignoredIds?: string[] }): Promise<Person[]> => {
-    if (scope.type === "none") return [];
+  const search = useQuerySearch((arg: string | { query: string; ignoredIds?: string[] }) => {
+    const { query, ignoredIds = [] } = typeof arg === "string" ? { query: arg } : arg;
+    return Api.people.searchQueryOptions({ query, ignoredIds, searchScopeType: scope.type, searchScopeId: scope.id });
+  }, "");
 
-    let query = "";
-    let ignoredIds: string[] = [];
-
-    if (typeof arg === "string") {
-      query = arg;
-      ignoredIds = [];
-    } else {
-      query = arg.query;
-      ignoredIds = arg.ignoredIds || [];
-    }
-
-    const res = await Api.people.search({
-      query,
-      ignoredIds,
-      searchScopeType: scope.type,
-      searchScopeId: scope.id,
-    });
-    return res.people as Person[];
-  };
+  return useCallback(
+    async (arg: string | { query: string; ignoredIds?: string[] }): Promise<Person[]> => {
+      if (scope.type === "none") return [];
+      return (await search(arg)).people ?? [];
+    },
+    [search, scope.type],
+  );
 }
 
 export function parsePeopleForTurboUi(paths: Paths, people: Person[]) {
