@@ -120,22 +120,24 @@ defmodule OperatelyEmail.Cron.DailySummary do
   end
 
   defp send_daily_summary(person, start_at, end_at) do
-    notifications = notifications_for_window(person.id, start_at, end_at)
-    {digest_items, _notifications_with_digest_items} = DigestItems.build(notifications, person)
+    Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+      notifications = notifications_for_window(person.id, start_at, end_at)
+      {digest_items, _notifications_with_digest_items} = DigestItems.build(notifications, person)
 
-    case digest_items do
-      [] ->
-        :ok
+      case digest_items do
+        [] ->
+          :ok
 
-      _ ->
-        case DigestMailer.send_daily_summary(person, digest_items) do
-          {:ok, _result} ->
-            :ok
+        _ ->
+          case DigestMailer.send_daily_summary(person, digest_items) do
+            {:ok, _result} ->
+              :ok
 
-          {:error, reason} ->
-            Logger.error("Error sending daily summary for person #{person.id}: #{inspect(reason)}")
-        end
-    end
+            {:error, reason} ->
+              Logger.error("Error sending daily summary for person #{person.id}: #{inspect(reason)}")
+          end
+      end
+    end)
   end
 
   defp notifications_for_window(person_id, start_at, end_at) do
