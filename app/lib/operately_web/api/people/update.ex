@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.People.Update do
     :full_name,
     :title,
     :timezone,
+    :language,
     :manager_id,
     :theme,
     :time_format,
@@ -29,6 +30,7 @@ defmodule OperatelyWeb.Api.People.Update do
     field? :full_name, :string, null: false
     field? :title, :string, null: false
     field? :timezone, :string, null: false
+    field? :language, :language, null: true
     field? :time_format, :time_format, null: false
     field? :manager_id, :id, null: true
     field? :theme, :string, null: false
@@ -75,6 +77,7 @@ defmodule OperatelyWeb.Api.People.Update do
         Map.take(inputs, @updatable_fields_for_oneself)
         |> normalize_display_preferences()
         |> normalize_notification_preferences()
+        |> stringify_language()
       else
         Map.take(inputs, @updatable_fields_for_others)
       end
@@ -116,6 +119,14 @@ defmodule OperatelyWeb.Api.People.Update do
   defp put_preference(inputs, key, value) do
     put_preferences(inputs, %{key => value})
   end
+
+  defp stringify_language(%{language: nil} = inputs), do: inputs
+
+  defp stringify_language(%{language: language} = inputs) when is_atom(language) do
+    %{inputs | language: Atom.to_string(language)}
+  end
+
+  defp stringify_language(inputs), do: inputs
 
   defp changeset_error_message(%Ecto.Changeset{} = changeset) do
     case Enum.find_value(changeset.errors, fn

@@ -23,6 +23,7 @@ defmodule Operately.People.Person do
     field :avatar_url, :string
     field :email, :string
     field :timezone, :string
+    field :language, :string
     field :description, :map
 
     embeds_one :preferences, Preferences, on_replace: :update, defaults_to_struct: true
@@ -55,6 +56,7 @@ defmodule Operately.People.Person do
       :title,
       :avatar_url,
       :timezone,
+      :language,
       :email,
       :account_id,
       :company_id,
@@ -66,6 +68,7 @@ defmodule Operately.People.Person do
       :type
     ])
     |> cast_embed(:preferences, with: &Preferences.changeset/2)
+    |> validate_inclusion(:language, Operately.I18n.Languages.supported())
     |> validate_required([:full_name, :company_id])
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
     |> unique_constraint([:company_id, :account_id], name: :people_company_id_account_id_index, message: "Email has already been taken")
@@ -83,6 +86,9 @@ defmodule Operately.People.Person do
 
   def time_format(%__MODULE__{preferences: %Preferences{time_format: time_format}}) when not is_nil(time_format), do: time_format
   def time_format(_), do: Preferences.default_time_format()
+
+  def language(%__MODULE__{language: language}), do: language
+  def language(_), do: nil
 
   def dismissed_product_release_id(%__MODULE__{preferences: %Preferences{dismissed_product_release_id: id}}), do: id
   def dismissed_product_release_id(_), do: nil
