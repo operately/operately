@@ -122,6 +122,29 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
       assert {200, _} = request(ctx.conn, ctx.scheduled)
       assert_discussion_edited(ctx.scheduled)
     end
+
+    test "space members with edit access cannot publish another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {403, res} = request(ctx.conn, ctx.draft, state: "published")
+      assert res.message == "You don't have permission to perform this action"
+      assert Repo.reload(ctx.draft).state == :draft
+    end
+
+    test "space members with edit access cannot publish another person's scheduled discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {403, res} = request(ctx.conn, ctx.scheduled, state: "published")
+      assert res.message == "You don't have permission to perform this action"
+      assert Repo.reload(ctx.scheduled).state == :scheduled
+    end
+
+    test "authors can publish their own draft", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = request(ctx.conn, ctx.draft, state: "published")
+      assert Repo.reload(ctx.draft).state == :published
+    end
   end
 
   describe "space_discussions/update functionality" do
@@ -188,12 +211,12 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
   # Steps
   #
 
-  defp request(conn, message) do
-    mutation(conn, [:spaces, :update_discussion], %{
+  defp request(conn, message, attrs \\ []) do
+    mutation(conn, [:spaces, :update_discussion], Map.merge(%{
       id: Paths.message_id(message),
       title: "New title",
       body: RichText.rich_text("New body", :as_string),
-    })
+    }, Map.new(attrs)))
   end
 
   defp assert_discussion_edited(message) do
