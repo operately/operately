@@ -56,8 +56,6 @@ defmodule Operately.RichContent.ResourceLinks do
     end
   end
 
-  defp validate_origin(_, _), do: :error
-
   defp origin_key(%URI{scheme: scheme, host: host, port: port}) do
     {scheme, host, port || default_port(scheme)}
   end
