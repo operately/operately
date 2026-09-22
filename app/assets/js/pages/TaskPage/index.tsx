@@ -71,7 +71,7 @@ function Page() {
     queryData: task,
     value: () => task.name,
     update: (v) => updateTaskName.mutateAsync({ taskId: task.id, name: v, type: "project" }),
-    onError: (e: string) => showErrorToast(e, "Failed to update task name."),
+    onError: (e: string) => showErrorToast(e, translationText(i18n.t("Failed to update task name."))),
     validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Task name cannot be empty")) : null)],
     refreshPageData,
   });

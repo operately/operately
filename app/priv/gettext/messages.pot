@@ -175,7 +175,20 @@ msgid "Enter task title"
 msgstr ""
 
 #.frontend
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
+msgid "Error"
+msgstr ""
+
+#.frontend
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
+msgid "Failed to create task"
+msgstr ""
+
+#.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:291
+#: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
+#: assets/js/pages/TaskPage/index.tsx:74
 msgid "Failed to update task name."
 msgstr ""
 
