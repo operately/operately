@@ -26,6 +26,7 @@ import { parseContextualDate, serializeContextualDate } from "../../models/conte
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import i18n, { translationText } from "@/i18n";
 import {
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
@@ -85,7 +86,7 @@ function LoadedPage() {
     value: (data) => data.project.name!,
     update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }).then(() => true),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
-    validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Project name cannot be empty")) : null)],
   });
 
   const [description, setDescription] = usePageField({

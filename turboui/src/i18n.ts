@@ -19,4 +19,8 @@ if (!i18n.isInitialized) {
   });
 }
 
+export function translationText(value: string | null | undefined): string {
+  return value ?? "";
+}
+
 export default i18n;

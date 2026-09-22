@@ -44,4 +44,8 @@ export function tn(singular: string, plural: string, count: number, options: TOp
   });
 }
 
+export function translationText(value: string | null | undefined): string {
+  return value ?? "";
+}
+
 export default i18n;
