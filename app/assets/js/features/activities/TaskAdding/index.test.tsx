@@ -2,6 +2,7 @@ import { usePaths } from "@/routes/paths";
 import "@/i18n";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import type { Activity } from "@/models/activities";
 
 import Handler from ".";
 
@@ -18,13 +19,34 @@ jest.mock("@/routes/paths", () => ({
   }),
 }));
 
-const activity: any = {
+const activity: Activity = {
+  __typename: "activity",
+  id: "activity-1",
   action: "task_adding",
-  author: { fullName: "Alex Rivera" },
+  insertedAt: "2026-09-22T12:00:00Z",
+  author: {
+    __typename: "person",
+    id: "author",
+    fullName: "Alex Rivera",
+    title: "Designer",
+    avatarUrl: null,
+    email: "alex@example.com",
+    type: "human",
+  },
   content: {
-    project: { id: "project-1", name: "Website" },
-    space: { id: "space-1", name: "Product" },
-    task: { id: "task-1", name: "Write copy" },
+    __typename: "activity_content_task_adding",
+    project: {
+      __typename: "project",
+      id: "project-1",
+      name: "Website",
+      status: "active",
+      successStatus: "achieved",
+      goalId: "goal",
+      spaceId: "space-1",
+    },
+    space: { __typename: "space", id: "space-1", name: "Product" },
+    milestone: null,
+    task: { __typename: "task", id: "task-1", name: "Write copy", type: "project" },
     taskName: "Write copy",
   },
 };
