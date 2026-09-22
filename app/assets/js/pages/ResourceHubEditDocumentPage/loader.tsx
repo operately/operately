@@ -11,6 +11,7 @@ export async function loader({ params }) {
     includeResourceHub: true,
     includeParentFolder: true,
     includePathToDocument: true,
+    includeAuthor: true,
     includeSubscriptionsList: true,
     includePotentialSubscribers: true,
   };

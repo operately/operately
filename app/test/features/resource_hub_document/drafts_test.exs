@@ -103,6 +103,17 @@ defmodule Operately.Features.ResourceHubDocument.DraftsTest do
       |> Steps.assert_draft_document_not_visible_and_state_is_zero()
     end
 
+    feature "Shared draft does not show publish for non-authors", ctx do
+      ctx
+      |> Steps.given_a_single_draft_document_exists()
+      |> Steps.login_as_other_user()
+      |> Steps.visit_document_page()
+      |> Steps.assert_document_is_draft()
+      |> Steps.refute_publish_now()
+      |> Steps.click_continue_editing()
+      |> Steps.refute_publish_draft()
+    end
+
     feature "Draft document can be published", ctx do
       ctx
       |> Steps.given_a_single_draft_document_exists()
