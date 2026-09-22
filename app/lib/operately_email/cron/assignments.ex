@@ -44,8 +44,7 @@ defmodule OperatelyEmail.Cron.Assignments do
 
     from(
       p in Person,
-      inner_join: a in Account,
-      on: p.account_id == a.id,
+      inner_join: a in Account, on: p.account_id == a.id,
       where: not is_nil(a.email),
       where: fragment("COALESCE((?->'notifications'->>'notify_about_assignments')::boolean, true)", p.preferences)
     )
