@@ -220,15 +220,22 @@ function LanguageField({
   onLanguageChange?: (value: ProfileEditPage.Language) => void;
 }) {
   const { t } = useTranslation();
+  const languageFieldId = "profile-language";
+  const languageLabelId = "profile-language-label";
+  const languageLabel = translationText(t("Language"));
 
   return (
     <div>
-      <label className="font-bold text-sm mb-1 block">{translationText(t("Language"))}</label>
+      <label id={languageLabelId} htmlFor={languageFieldId} className="font-bold text-sm mb-1 block">
+        {languageLabel}
+      </label>
       <Dropdown
         items={LANGUAGE_OPTIONS}
         value={language}
         onSelect={(item) => onLanguageChange?.(item.id)}
         testId="language"
+        id={languageFieldId}
+        ariaLabelledBy={languageLabelId}
       />
     </div>
   );
