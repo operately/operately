@@ -26,12 +26,21 @@ defmodule Operately.Data.Change036AddSpaceToProjectActivitiesTest do
       projects = [ctx.p1, ctx.p2, ctx.p3]
 
       Enum.each(projects, fn p ->
-        {:ok, _} = Operately.Projects.archive_project(ctx.creator, p)
+        Repo.soft_delete!(p)
+
+        Operately.ActivitiesFixtures.activity_fixture(%{
+          action: "project_archived",
+          author_id: ctx.creator.id,
+          content: %{company_id: ctx.company.id, project_id: p.id}
+        })
       end)
 
       Operately.Data.Change036AddSpaceToProjectActivities.run()
 
-      fetch_activities("project_archived")
+      activities = fetch_activities("project_archived")
+      assert length(activities) == length(projects)
+
+      activities
       |> Enum.each(fn activity ->
         assert activity.content["company_id"] == ctx.company.id
         assert activity.content["space_id"] == ctx.space.id

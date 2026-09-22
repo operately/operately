@@ -351,9 +351,8 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert res.project.reviewer == Serializer.serialize(person, level: :essential)
     end
 
-    test "include_archived", ctx do
-      project = create_project(ctx)
-      {:ok, project} = Operately.Projects.archive_project(ctx.person, project)
+    test "includes historically archived projects", ctx do
+      project = create_project(ctx) |> Repo.soft_delete!()
 
       assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.is_archived == true

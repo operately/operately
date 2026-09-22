@@ -177,7 +177,7 @@ defmodule Operately.Search.CheckInsAndRetrospectivesIndexingTest do
     end)
   end
 
-  test "archiving a project removes its check-in and retrospective entries", ctx do
+  test "reindexing excludes check-ins and retrospectives of historically archived projects", ctx do
     ctx =
       ctx
       |> Factory.add_project_check_in(:check_in, :project, :creator)
@@ -186,13 +186,12 @@ defmodule Operately.Search.CheckInsAndRetrospectivesIndexingTest do
     sync("project_check_in", ctx.check_in.id)
     sync("project_retrospective", ctx.retrospective.id)
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      assert {:ok, _project} = Operately.Projects.archive_project(ctx.creator, ctx.project)
-      run_refresh_jobs()
+    Repo.soft_delete!(ctx.project)
+    sync("project_check_in", ctx.check_in.id)
+    sync("project_retrospective", ctx.retrospective.id)
 
-      refute_entry(:project_check_in, ctx.check_in.id)
-      refute_entry(:project_retrospective, ctx.retrospective.id)
-    end)
+    refute_entry(:project_check_in, ctx.check_in.id)
+    refute_entry(:project_retrospective, ctx.retrospective.id)
   end
 
   test "hard parent deletion synchronously removes every scoped check-in and retrospective entry", ctx do
