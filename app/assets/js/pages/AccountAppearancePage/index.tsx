@@ -36,6 +36,7 @@ function Form() {
   const paths = usePaths();
   const currentTheme = useTheme();
   const navigate = useNavigate();
+  const updateTheme = People.useUpdateTheme();
 
   const form = Forms.useForm({
     fields: {
@@ -43,7 +44,7 @@ function Form() {
     },
     submit: async () => {
       try {
-        await People.updateTheme({ theme: form.values.theme });
+        await updateTheme.mutateAsync({ theme: form.values.theme });
         navigate(paths.accountPath());
       } catch {
         showErrorToast("Error", "Failed to update theme");
