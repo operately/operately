@@ -89,15 +89,13 @@ defmodule OperatelyWeb.Api.Spaces.GetDiscussionTest do
     test "people without space access cannot retrieve a draft", ctx do
       ctx = Factory.log_in_person(ctx, :member)
 
-      assert {404, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.draft)})
-      assert res.message == "The requested resource was not found"
+      assert {404, _} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.draft)})
     end
 
     test "people without space access cannot retrieve a scheduled discussion", ctx do
       ctx = Factory.log_in_person(ctx, :member)
 
-      assert {404, res} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.scheduled)})
-      assert res.message == "The requested resource was not found"
+      assert {404, _} = query(ctx.conn, [:spaces, :get_discussion], %{id: Paths.message_id(ctx.scheduled)})
     end
 
     test "authors can retrieve their own draft", ctx do

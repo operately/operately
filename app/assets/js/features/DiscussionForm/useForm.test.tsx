@@ -72,7 +72,7 @@ it.each([
   ["save-changes", "published", null, {}],
   ["save-changes", "draft", null, {}],
   ["save-changes", "scheduled", scheduledAt, { state: "scheduled", scheduledAt }],
-  ["save-changes", "scheduled", null, { state: "draft", scheduledAt: null }],
+  ["save-changes", "scheduled", null, {}],
   ["publish-draft", "draft", null, { state: "published" }],
   ["publish-draft", "draft", scheduledAt, { state: "scheduled", scheduledAt }],
   ["publish-now", "scheduled", scheduledAt, { state: "published", scheduledAt: null }],

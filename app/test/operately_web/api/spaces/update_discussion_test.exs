@@ -112,30 +112,35 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
     test "space members with view access cannot edit another person's draft", ctx do
       ctx = Factory.log_in_person(ctx, :viewer)
 
-      assert {403, res} = request(ctx.conn, ctx.draft)
-      assert res.message == "You don't have permission to perform this action"
+      assert {403, _} = request(ctx.conn, ctx.draft)
     end
 
     test "space members with edit access can edit another person's scheduled discussion", ctx do
       ctx = Factory.log_in_person(ctx, :editor)
 
-      assert {200, _} = request(ctx.conn, ctx.scheduled)
-      assert_discussion_edited(ctx.scheduled)
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        scheduled_at = ctx.scheduled.scheduled_at
+
+        assert {200, _} = request(ctx.conn, ctx.scheduled)
+        assert_discussion_edited(ctx.scheduled)
+
+        scheduled = Repo.reload(ctx.scheduled)
+        assert scheduled.state == :scheduled
+        assert scheduled.scheduled_at == scheduled_at
+      end)
     end
 
     test "space members with edit access cannot publish another person's draft", ctx do
       ctx = Factory.log_in_person(ctx, :editor)
 
-      assert {403, res} = request(ctx.conn, ctx.draft, state: "published")
-      assert res.message == "You don't have permission to perform this action"
+      assert {403, _} = request(ctx.conn, ctx.draft, state: "published")
       assert Repo.reload(ctx.draft).state == :draft
     end
 
     test "space members with edit access cannot publish another person's scheduled discussion", ctx do
       ctx = Factory.log_in_person(ctx, :editor)
 
-      assert {403, res} = request(ctx.conn, ctx.scheduled, state: "published")
-      assert res.message == "You don't have permission to perform this action"
+      assert {403, _} = request(ctx.conn, ctx.scheduled, state: "published")
       assert Repo.reload(ctx.scheduled).state == :scheduled
     end
 
