@@ -1,5 +1,5 @@
 import { usePaths } from "@/routes/paths";
-import "@/i18n";
+import { applyLanguage } from "@/i18n";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Activity } from "@/models/activities";
@@ -73,5 +73,16 @@ describe("task_adding activities", () => {
   it("translates the notification title at render time", () => {
     expect(Handler.NotificationTitle({ activity })).toBe('New task "Write copy" was created');
     expect(Handler.NotificationLocation({ activity })).toBe("Website");
+  });
+
+  it("translates the notification title into Portuguese at render time", async () => {
+    await applyLanguage("pt-BR");
+
+    try {
+      expect(Handler.NotificationTitle({ activity })).toBe('Nova tarefa "Write copy" foi criada');
+      expect(Handler.NotificationLocation({ activity })).toBe("Website");
+    } finally {
+      await applyLanguage("en");
+    }
   });
 });
