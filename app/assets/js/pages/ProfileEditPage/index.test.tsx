@@ -47,15 +47,29 @@ const wrapper = ({ children }: React.PropsWithChildren) => (
   </QueryClientProvider>
 );
 
+function mockCompanyLoader(features: string[]) {
+  jest.mocked(useCompanyLoaderData).mockReturnValue({
+    company: {
+      __typename: "company",
+      id: "company1",
+      name: "Company",
+      setupCompleted: true,
+      enabledExperimentalFeatures: features,
+    },
+    canAddProject: false,
+    canAddGoal: false,
+    siteMessages: [],
+    billingAccessState: null,
+  });
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
   queryClient.clear();
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "company1" });
   jest.mocked(useMe).mockReturnValue(person as ReturnType<typeof useMe>);
-  jest.mocked(useCompanyLoaderData).mockReturnValue({
-    company: { enabledExperimentalFeatures: [] },
-  } as ReturnType<typeof useCompanyLoaderData>);
+  mockCompanyLoader([]);
   jest.mocked(axios.get).mockResolvedValue({ data: { person } });
   jest.mocked(axios.post).mockResolvedValue({ data: { person } });
 });
@@ -105,9 +119,7 @@ it("hides the language selector and does not persist language when i18n is off",
 });
 
 it("shows the language selector and persists the chosen language when i18n is on", async () => {
-  jest.mocked(useCompanyLoaderData).mockReturnValue({
-    company: { enabledExperimentalFeatures: ["i18n"] },
-  } as ReturnType<typeof useCompanyLoaderData>);
+  mockCompanyLoader(["i18n"]);
   await mountPage();
   expect(props().showLanguageSelector).toBe(true);
   act(() => props().onLanguageChange?.("pt-BR"));
