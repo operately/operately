@@ -19,7 +19,8 @@ import {
 } from "turboui";
 import { useNavigate } from "react-router";
 
-import { usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { compareIds, usePaths } from "@/routes/paths";
 export default { name: "DiscussionEditPage", loader, Page } as PageModule;
 
 function Page() {
@@ -47,16 +48,18 @@ function Page() {
 }
 
 function Submit({ form }: { form: FormState }) {
+  const me = useMe();
   const { discussion } = useLoadedData();
   const isUnpublished = discussion.state === "draft" || discussion.state === "scheduled";
   const isScheduled = discussion.state === "scheduled";
+  const isAuthor = Boolean(discussion.author && me && compareIds(me.id, discussion.author.id));
   const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <Paper.DimmedSection>
       <div className="flex flex-col gap-8">
         <div>
-          {form.canSchedule ? (
+          {form.canSchedule && isAuthor ? (
             <ScheduleFlowControls
               scheduleFlow={form.scheduleFlow}
               primaryLabel={isScheduled ? "Save Changes" : "Publish Now"}

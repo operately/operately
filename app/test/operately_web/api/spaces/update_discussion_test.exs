@@ -87,6 +87,71 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
     end
   end
 
+  describe "unpublished discussions" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:viewer, :space, permissions: :view_access)
+      |> Factory.add_space_member(:editor, :space, permissions: :edit_access)
+      |> Factory.add_messages_board(:messages_board, :space)
+      |> Factory.add_draft_message(:draft, :messages_board)
+      |> Factory.add_message(:scheduled, :messages_board,
+        state: :scheduled,
+        scheduled_at: Operately.Time.days_from_now(1)
+      )
+    end
+
+    test "space members with edit access can edit another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {200, _} = request(ctx.conn, ctx.draft)
+      assert_discussion_edited(ctx.draft)
+    end
+
+    test "space members with view access cannot edit another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :viewer)
+
+      assert {403, _} = request(ctx.conn, ctx.draft)
+    end
+
+    test "space members with edit access can edit another person's scheduled discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        scheduled_at = ctx.scheduled.scheduled_at
+
+        assert {200, _} = request(ctx.conn, ctx.scheduled)
+        assert_discussion_edited(ctx.scheduled)
+
+        scheduled = Repo.reload(ctx.scheduled)
+        assert scheduled.state == :scheduled
+        assert scheduled.scheduled_at == scheduled_at
+      end)
+    end
+
+    test "space members with edit access cannot publish another person's draft", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {403, _} = request(ctx.conn, ctx.draft, state: "published")
+      assert Repo.reload(ctx.draft).state == :draft
+    end
+
+    test "space members with edit access cannot publish another person's scheduled discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {403, _} = request(ctx.conn, ctx.scheduled, state: "published")
+      assert Repo.reload(ctx.scheduled).state == :scheduled
+    end
+
+    test "authors can publish their own draft", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = request(ctx.conn, ctx.draft, state: "published")
+      assert Repo.reload(ctx.draft).state == :published
+    end
+  end
+
   describe "space_discussions/update functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
@@ -151,12 +216,12 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
   # Steps
   #
 
-  defp request(conn, message) do
-    mutation(conn, [:spaces, :update_discussion], %{
+  defp request(conn, message, attrs \\ []) do
+    mutation(conn, [:spaces, :update_discussion], Map.merge(%{
       id: Paths.message_id(message),
       title: "New title",
       body: RichText.rich_text("New body", :as_string),
-    })
+    }, Map.new(attrs)))
   end
 
   defp assert_discussion_edited(message) do
