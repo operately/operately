@@ -453,6 +453,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
             preload: [:assigned_people, :milestone, subscription_list: [subscriptions: :person]]
           )
           |> Operately.Repo.all()
+          |> Operately.Tasks.Task.load_comments_count()
 
         {:ok, tasks}
       end)
