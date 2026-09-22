@@ -8,14 +8,13 @@ export type Person = api.Person;
 export { prefetchPersonWithFallback } from "./prefetchPersonWithFallback";
 export { useUpdateProfile, useUpdateProfilePicture } from "./profileLifecycle";
 
-export { useGetTheme } from "@/api";
+export { useGetTheme, useUpdateTheme } from "./themeLifecycle";
 export type { AccountTheme, InviteLink } from "@/api";
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
 
 export const updateProfile = Api.people.update;
-export const updateTheme = Api.people.updateTheme;
 
 export function useGetPeople(input: api.PeopleListInput) {
   return useQuery(Api.people.listQueryOptions(input));

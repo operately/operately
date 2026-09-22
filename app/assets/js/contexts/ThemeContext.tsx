@@ -33,14 +33,14 @@ function Context({ userTheme, children }: { userTheme: AccountTheme; children: R
     if (theme === "system") {
       setColorMode(getSystemMode());
     } else {
-      setColorMode(theme as "dark" | "light");
+      setColorMode(theme);
     }
   }, [theme]);
 
   useSystemColorModeListener(theme, setColorMode);
 
   React.useEffect(() => {
-    const html = document.querySelector("html")!;
+    const html = document.documentElement;
     html.classList.remove("dark", "light");
     html.classList.add(colorMode);
   }, [colorMode]);
