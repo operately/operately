@@ -1,11 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Page } from "../Page";
 import { Avatar } from "../Avatar";
 import { SecondaryButton, PrimaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
+import { Dropdown } from "../FormElements/Dropdown";
 import { Textfield } from "../FormElements/Textfield";
 import { PersonField } from "../PersonField";
 import { IconPencil } from "../icons";
+import { translationText } from "../i18n";
 import { Editor, useEditor } from "../RichEditor";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
@@ -24,6 +27,7 @@ export namespace ProfileEditPage {
   }
 
   export type TimeFormat = "automatic" | "hour_12" | "hour_24";
+  export type Language = "en" | "pt-BR";
 
   export interface Props {
     // Person data
@@ -35,6 +39,7 @@ export namespace ProfileEditPage {
     aboutMe: any;
     timezone: string;
     timeFormat: TimeFormat;
+    language?: Language;
     manager: Person | null;
 
     // Form handlers
@@ -43,6 +48,7 @@ export namespace ProfileEditPage {
     onAboutMeChange: (value: any) => void;
     onTimezoneChange: (value: string) => void;
     onTimeFormatChange: (value: TimeFormat) => void;
+    onLanguageChange?: (value: Language) => void;
     onManagerChange: (person: Person | null) => void;
     onSubmit: () => Promise<void>;
     onCancel?: () => void;
@@ -65,6 +71,7 @@ export namespace ProfileEditPage {
     // Options
     timezones: Timezone[];
     isCurrentUser: boolean;
+    showLanguageSelector?: boolean;
 
     // Navigation paths
     fromLocation: string | null;
@@ -164,6 +171,10 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
               </div>
             )}
 
+            {props.isCurrentUser && props.showLanguageSelector && (
+              <LanguageField language={props.language ?? "en"} onLanguageChange={props.onLanguageChange} />
+            )}
+
             {/* Manager Section */}
             <div>
               <label className="font-bold text-sm mb-1 block">{managerLabel}</label>
@@ -193,6 +204,40 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
         </form>
       </div>
     </Page>
+  );
+}
+
+const LANGUAGE_OPTIONS: (Dropdown.Item & { id: ProfileEditPage.Language })[] = [
+  { id: "en", name: "English", testId: "language-option-en" },
+  { id: "pt-BR", name: "Português (Brasil)", testId: "language-option-pt-BR" },
+];
+
+function LanguageField({
+  language,
+  onLanguageChange,
+}: {
+  language: ProfileEditPage.Language;
+  onLanguageChange?: (value: ProfileEditPage.Language) => void;
+}) {
+  const { t } = useTranslation();
+  const languageFieldId = "profile-language";
+  const languageLabelId = "profile-language-label";
+  const languageLabel = translationText(t("Language"));
+
+  return (
+    <div>
+      <label id={languageLabelId} htmlFor={languageFieldId} className="font-bold text-sm mb-1 block">
+        {languageLabel}
+      </label>
+      <Dropdown
+        items={LANGUAGE_OPTIONS}
+        value={language}
+        onSelect={(item) => onLanguageChange?.(item.id)}
+        testId="language"
+        id={languageFieldId}
+        ariaLabelledBy={languageLabelId}
+      />
+    </div>
   );
 }
 
