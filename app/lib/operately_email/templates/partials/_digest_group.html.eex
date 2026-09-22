@@ -29,7 +29,7 @@
             </div>
           <% end %>
           <div style="margin-top: 4px; font-size: 12px;">
-            <%= link(item.item_url, "View update") %>
+            <%= link(item.item_url, view_update_label()) %>
           </div>
         </div>
       <% end %>
@@ -51,7 +51,7 @@
               </div>
             <% end %>
             <div style="margin-top: 4px; font-size: 12px;">
-              <%= link(item.item_url, "View update") %>
+              <%= link(item.item_url, view_update_label()) %>
             </div>
           </div>
         <% end %>

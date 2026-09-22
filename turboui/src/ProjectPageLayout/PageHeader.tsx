@@ -1,23 +1,26 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { IconChevronRight, IconProject } from "../icons";
 import { BlackLink } from "../Link";
 import { PieChart } from "../PieChart";
 import { PrivacyIndicator } from "../PrivacyIndicator";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
+import { translationText } from "../i18n";
 import { ProjectPageLayout } from ".";
 
 export function PageHeader(props: ProjectPageLayout.Props) {
+  const { t } = useTranslation();
   const navigation =
     "space" in props
       ? [
           { to: props.space.link, label: props.space.name },
           {
             to: props.mode === "template" ? props.projectTemplatesLink || props.workmapLink : props.workmapLink,
-            label: props.mode === "template" ? "Project Templates" : "Projects",
+            label: props.mode === "template" ? translationText(t("Project Templates")) : translationText(t("Projects")),
           },
         ]
-      : [{ to: props.homeLink, label: "Home" }];
+      : [{ to: props.homeLink, label: translationText(t("Home")) }];
 
   const isInviteOnly = props.accessLevels?.company === "no_access" && props.accessLevels?.space === "no_access";
 
@@ -50,8 +53,8 @@ export function PageHeader(props: ProjectPageLayout.Props) {
 
           {props.mode === "template" ? (
             <>
-              <StatusBadge status="pending" customLabel="Template" hideIcon />
-              {props.archived && <StatusBadge status="paused" customLabel="Archived" hideIcon />}
+              <StatusBadge status="pending" customLabel={translationText(t("Template"))} hideIcon />
+              {props.archived && <StatusBadge status="paused" customLabel={translationText(t("Archived"))} hideIcon />}
             </>
           ) : (
             props.status && (
@@ -67,8 +70,14 @@ export function PageHeader(props: ProjectPageLayout.Props) {
 }
 
 function TaskCompletionIndicator({ stats }: { stats: ProjectPageLayout.TaskCompletionStats }) {
-  const title = `${stats.completedCount}/${stats.totalCount} tasks completed`;
-  const ariaLabel = `${stats.percentage}% tasks completed, ${title}`;
+  const { t } = useTranslation();
+  const ariaLabel = translationText(
+    t("{{percentage}}% tasks completed, {{completed}}/{{total}} tasks completed", {
+      percentage: stats.percentage,
+      completed: stats.completedCount,
+      total: stats.totalCount,
+    }),
+  );
 
   return (
     <div
@@ -80,7 +89,7 @@ function TaskCompletionIndicator({ stats }: { stats: ProjectPageLayout.TaskCompl
         slices={[{ percentage: stats.percentage, color: "var(--color-brand-1)" }]}
         ariaLabel={ariaLabel}
       />
-      <span>{stats.percentage}% tasks completed</span>
+      <span>{t("{{percentage}}% tasks completed", { percentage: stats.percentage })}</span>
       <span className="text-content-subtle dark:text-content-dimmed">
         {stats.completedCount}/{stats.totalCount}
       </span>

@@ -1,12 +1,12 @@
-You have <%= @total_updates %> new <%= if @total_updates == 1, do: "update", else: "updates" %>
+<%= @subject %>
 
 <%= if Enum.empty?(@parent_groups) do %>
-You're all caught up.
-No new updates.
+<%= @empty_title_text %>
+<%= @empty_body %>
 <% else %>
 <%= for group <- @parent_groups do %>
 <% group_total = Enum.reduce(group.author_groups, 0, fn ag, acc -> acc + length(ag.items) end) %>
-<%= group.parent_name %> (<%= group_total %> <%= if group_total == 1, do: "update", else: "updates" %>)
+<%= parent_updates_heading(group.parent_name, group_total) %>
 <%= if group.parent_url do %>
 <%= group.parent_url %>
 <% end %>
@@ -37,4 +37,4 @@ No new updates.
 <% end %>
 
 ---
-Manage email settings: <%= @settings_url %>
+<%= @settings_label %>: <%= @settings_url %>

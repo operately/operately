@@ -8,6 +8,7 @@ import { compareIds, usePaths } from "@/routes/paths";
 import { serializeContextualDate } from "../contextualDates";
 import * as Signals from "@/signals";
 
+import i18n, { translationText } from "@/i18n";
 import { DateField, showErrorToast, TaskBoard, TaskPage } from "turboui";
 import { serializeTaskDescription } from "./descriptionSerialization";
 import { applyTaskMove } from "./listOrdering";
@@ -285,7 +286,10 @@ export function useProjectTasksForTurboUi({
   const updateTaskName = React.useCallback(
     async (taskId: string, title: string) => {
       if (title.trim() === "") {
-        showErrorToast("Task name cannot be empty", "Failed to update task name.");
+        showErrorToast(
+          translationText(i18n.t("Task name cannot be empty")),
+          translationText(i18n.t("Failed to update task name.")),
+        );
         return false;
       }
 
