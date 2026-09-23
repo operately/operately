@@ -21,7 +21,6 @@ defmodule TurboConnect.TsGen do
     #{generate_imports()}
     #{to_camel_case()}
     #{to_snake_case()}
-    #{Queries.define_generic_use_query_hook()}
     #{Mutations.define_generic_use_mutation_hook()}
     #{generate_types(api_module)}
     #{generate_namespaces(api_module)}
@@ -99,15 +98,12 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_namespaces(api_module) do
-    api_module.__namespaces__()
+    mutation_namespaces(api_module)
     |> Enum.map(fn namespace -> generate_namespace(api_module, namespace) end)
     |> Enum.join("\n")
   end
 
   defp generate_namespace(api_module, namespace) do
-    queries =
-      api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
-
     mutations =
       api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
 
@@ -118,7 +114,6 @@ defmodule TurboConnect.TsGen do
     class #{Macro.camelize(namespace_name)} {
       constructor(private client: ApiClient) {}
 
-    #{Queries.generate_functions(queries)}
     #{Mutations.generate_functions(mutations)}
     };
     """
@@ -152,21 +147,21 @@ defmodule TurboConnect.TsGen do
         return this.headers || {};
       }
 
-#{generate_request_fn(:post)}
-#{generate_request_fn(:get)}
+    #{generate_request_fn(:post)}
+    #{generate_request_fn(:get)}
       // Cached queries report errors at their caller boundaries, never during speculation.
       async queryRequest(path: string, params: any, basePath: string, headers: any) {
         const response = await axios.get(basePath + path, { params: toSnake(params), headers });
         return toCamel(response.data);
       }
 
-#{generate_root_namespace_delegators(api_module)}
+    #{generate_root_namespace_delegators(api_module)}
     }
     """
   end
 
   def namespace_definitions(api_module) do
-    api_module.__namespaces__()
+    mutation_namespaces(api_module)
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
       "  public apiNamespace#{ns}: ApiNamespace#{ns};"
@@ -175,7 +170,7 @@ defmodule TurboConnect.TsGen do
   end
 
   def namespace_initializers(api_module) do
-    api_module.__namespaces__()
+    mutation_namespaces(api_module)
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
 
@@ -184,9 +179,15 @@ defmodule TurboConnect.TsGen do
     |> Enum.join("\n")
   end
 
+  defp mutation_namespaces(api_module) do
+    api_module.__namespaces__()
+    |> Enum.filter(fn namespace ->
+      Enum.any?(api_module.__mutations__(), fn {_, %{namespace: ns}} -> ns == namespace end)
+    end)
+  end
+
   def generate_root_namespace_delegators(api_module) do
     """
-    #{Queries.generate_root_namespace_delegators(api_module.__queries__())}
     #{Mutations.generate_root_namespace_delegators(api_module.__mutations__())}
     """
   end
@@ -343,12 +344,10 @@ defmodule TurboConnect.TsGen do
     """
     const defaultApiClient = new ApiClient();
 
-    #{Queries.generate_default_functions(root_queries)}
     #{Mutations.generate_default_functions(root_mutations)}
 
     #{Queries.generate_tanstack_options(root_queries)}
     #{Mutations.generate_tanstack_options(root_mutations)}
-    #{Queries.generate_hooks(root_queries)}
     #{Mutations.generate_hooks(root_mutations)}
     export default {
       default: defaultApiClient,
@@ -374,31 +373,7 @@ defmodule TurboConnect.TsGen do
     queries =
       api_module.__queries__()
       |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
-      |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
-        fnName = ts_function_name(name)
-        hookName = ts_function_name("use_#{name}")
-
-        fnCall =
-          "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}(input)"
-
-        input_type = ts_type(fullname) <> "Input"
-        result_type = ts_type(fullname) <> "Result"
-        path = "/#{ns}/#{name}"
-
-        """
-            #{fnName}: (input: #{input_type}) => #{fnCall},
-            #{hookName}: (input: #{input_type}) => useQuery<#{result_type}>(() => #{fnCall}),
-            #{fnName}QueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "#{path}"),
-            #{fnName}QueryKey: (input: #{input_type}) => buildApiQueryKey(defaultApiClient, "#{path}", input),
-            #{fnName}QueryOptions: (input: #{input_type}) =>
-              buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input),
-            #{fnName}Query: (input: #{input_type}) => queryClient.query({
-              ...buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input),
-              staleTime: Infinity,
-            }),
-        """
-      end)
-      |> Enum.join("\n")
+      |> Queries.generate_namespace_exports()
 
     mutations =
       api_module.__mutations__()

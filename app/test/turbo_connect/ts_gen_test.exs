@@ -255,10 +255,6 @@ defmodule TurboConnect.TsGenTest do
       return toCamel(response.data);
     }
 
-    getUser(input: GetUserInput): Promise<GetUserResult> {
-      return this.apiNamespaceRoot.getUser(input);
-    }
-
     createUser(input: CreateUserInput): Promise<CreateUserResult> {
       return this.apiNamespaceRoot.createUser(input);
     }
@@ -271,10 +267,6 @@ defmodule TurboConnect.TsGenTest do
   class ApiNamespaceUsers {
     constructor(private client: ApiClient) {}
 
-    async getUser(input: UsersGetUserInput): Promise<UsersGetUserResult> {
-      return this.client.get("/users/get_user", input);
-    }
-
     async createUser(input: UsersCreateUserInput): Promise<UsersCreateUserResult> {
       return this.client.post("/users/create_user", input);
     }
@@ -283,10 +275,6 @@ defmodule TurboConnect.TsGenTest do
 
   class ApiNamespaceRoot {
     constructor(private client: ApiClient) {}
-
-    async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return this.client.get("/get_user", input);
-    }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
       return this.client.post("/create_user", input);
@@ -317,9 +305,6 @@ defmodule TurboConnect.TsGenTest do
   @ts_default """
   const defaultApiClient = new ApiClient();
 
-  export async function getUser(input: GetUserInput) : Promise<GetUserResult> {
-    return defaultApiClient.getUser(input);
-  }
   export async function createUser(input: CreateUserInput) : Promise<CreateUserResult> {
     return defaultApiClient.createUser(input);
   }
@@ -349,10 +334,6 @@ defmodule TurboConnect.TsGenTest do
     });
   }
 
-  export function useGetUser(input: GetUserInput) : UseQueryHookResult<GetUserResult> {
-    return useQuery<GetUserResult>(() => defaultApiClient.getUser(input));
-  }
-
   export function useCreateUser() : UseMutationHookResult<CreateUserInput, CreateUserResult> {
     return useMutation<CreateUserInput, CreateUserResult>((input) => defaultApiClient.createUser(input));
   }
@@ -360,8 +341,6 @@ defmodule TurboConnect.TsGenTest do
   export default {
     default: defaultApiClient,
 
-    getUser,
-    useGetUser,
     getUserQueryKeyPrefix,
     getUserQueryKey,
     getUserQueryOptions,
@@ -371,8 +350,6 @@ defmodule TurboConnect.TsGenTest do
     createUserMutationOptions,
 
     users: {
-      getUser: (input: UsersGetUserInput) => defaultApiClient.apiNamespaceUsers.getUser(input),
-      useGetUser: (input: UsersGetUserInput) => useQuery<UsersGetUserResult>(() => defaultApiClient.apiNamespaceUsers.getUser(input)),
       getUserQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/users/get_user"),
       getUserQueryKey: (input: UsersGetUserInput) => buildApiQueryKey(defaultApiClient, "/users/get_user", input),
       getUserQueryOptions: (input: UsersGetUserInput) =>
@@ -485,7 +462,6 @@ defmodule TurboConnect.TsGenTest do
       #{@ts_imports}
       #{TurboConnect.TsGen.to_camel_case()}
       #{TurboConnect.TsGen.to_snake_case()}
-      #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
       #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
       #{@ts_types}
       #{@ts_namespaces}
