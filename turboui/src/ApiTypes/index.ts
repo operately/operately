@@ -811,6 +811,16 @@ export interface ActivityContentResourceHubDocumentEdited {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentPublicSharingChanged {
+  __typename: "activity_content_resource_hub_document_public_sharing_changed";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  enabled: boolean;
+}
+
 export interface ActivityContentResourceHubDocumentVersionRestored {
   __typename: "activity_content_resource_hub_document_version_restored";
   goal?: Goal | null;
@@ -2205,6 +2215,14 @@ export interface ProjectTemplateUploadedFile {
   description?: Json | null;
 }
 
+export interface PublicDocument {
+  __typename: "public_document";
+  name: string;
+  content: string;
+  publishedAt: string;
+  updatedAt: string;
+}
+
 export interface QuickSearchDiscussion {
   id: string;
   title: string;
@@ -2249,6 +2267,7 @@ export interface ResourceHub {
 
 export interface ResourceHubDocument {
   __typename: "resource_hub_document";
+  publicUrl?: string | null;
   id: string;
   url?: string;
   author?: Person | null;
@@ -2828,6 +2847,7 @@ export type ActivityContent =
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubDocumentPublicSharingChanged
   | ActivityContentResourceHubDocumentVersionRestored
   | ActivityContentResourceHubFileCommented
   | ActivityContentResourceHubFileCreated

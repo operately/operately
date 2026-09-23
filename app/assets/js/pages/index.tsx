@@ -91,6 +91,7 @@ import ProjectTemplateNewDocumentPage from "./ProjectTemplateNewDocumentPage";
 import ProjectTemplateNewLinkPage from "./ProjectTemplateNewLinkPage";
 import ProjectTemplatePage from "./ProjectTemplatePage";
 import ProjectTemplatesPage from "./ProjectTemplatesPage";
+import PublicDocumentPage from "./PublicDocumentPage";
 import ResetPasswordPage from "./ResetPasswordPage";
 import ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import ResourceHubDocumentVersionComparisonPage from "./ResourceHubDocumentVersionComparisonPage";
@@ -216,6 +217,7 @@ export default {
   ProjectTemplateNewLinkPage,
   ProjectTemplatePage,
   ProjectTemplatesPage,
+  PublicDocumentPage,
   ResetPasswordPage,
   ResourceHubDocumentPage,
   ResourceHubDocumentVersionComparisonPage,

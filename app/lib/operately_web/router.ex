@@ -142,6 +142,12 @@ defmodule OperatelyWeb.Router do
 
   forward("/media", OperatelyLocalMediaStorage.Plug)
 
+  scope "/public/documents", OperatelyWeb do
+    pipe_through [:browser]
+    get "/:token", PublicDocumentController, :show
+    get "/:token/blobs/:id", PublicDocumentController, :blob
+  end
+
   scope "/admin/api" do
     pipe_through([:api])
 

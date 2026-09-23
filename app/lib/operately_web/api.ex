@@ -356,6 +356,11 @@ defmodule OperatelyWeb.Api do
 
   defmacro internal_endpoints do
     quote do
+      namespace :documents do
+        query :get_public, OperatelyWeb.Api.Documents.GetPublic
+        mutation :update_public_sharing, OperatelyWeb.Api.Documents.UpdatePublicSharing
+      end
+
       common_endpoints()
 
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)

@@ -20,7 +20,8 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
-import { DocumentPage, displayDate } from "turboui";
+import { DocumentPage, DocumentPublicSharingModal, displayDate } from "turboui";
+import { useUpdateDocumentPublicSharing } from "@/models/resourceHubs/documentPublicSharingLifecycle";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentPageNavigation, buildNavigationDocument } from "./navigation";
@@ -36,6 +37,8 @@ export function Page() {
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
+  const [sharingOpen, setSharingOpen] = React.useState(false);
+  const { mutateAsync: updatePublicSharing } = useUpdateDocumentPublicSharing();
 
   const mutationScope = {
     spaceId: document.space?.id,
@@ -49,7 +52,11 @@ export function Page() {
   const navigationDocument = buildNavigationDocument(document, resourceHub);
   const pageResourceHub = navigationDocument.resourceHub;
   const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
-  const options = useDocumentPageOptions({ showCopyModal: openCopyForm, showDeleteModal: toggleDeleteConfirmModal });
+  const options = useDocumentPageOptions({
+    showCopyModal: openCopyForm,
+    showDeleteModal: toggleDeleteConfirmModal,
+    showPublicSharingModal: () => setSharingOpen(true),
+  });
 
   assertPresent(document.notifications, "notifications must be present in document");
   assertPresent(document.author, "author must be present in document");
@@ -157,5 +164,17 @@ export function Page() {
     );
   }
 
-  return <DocumentPage {...shared} hideDraftActions />;
+  return (
+    <>
+      <DocumentPage {...shared} hideDraftActions />
+      <DocumentPublicSharingModal
+        isOpen={sharingOpen}
+        onClose={() => setSharingOpen(false)}
+        publicUrl={document.publicUrl ?? null}
+        onChange={async (enabled) => {
+          await updatePublicSharing({ documentId: document.id, enabled });
+        }}
+      />
+    </>
+  );
 }
