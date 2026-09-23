@@ -12,7 +12,6 @@ describe("LastCheckIn", () => {
       <MemoryRouter>
         <LastCheckIn
           mentionedPersonLookup={async () => null}
-          resolveResourceLinkTitles={async () => []}
           formattedTimePreferences={defaultFormattedTimePreferences}
           checkIns={[
             {

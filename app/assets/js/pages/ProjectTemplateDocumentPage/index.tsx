@@ -74,7 +74,6 @@ function Page() {
       formattedTimePreferences={formattedTimePreferences}
       content={document.content}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       hideDraftActions
       hideReactions
       comments={commentsProps}

@@ -6,6 +6,21 @@ defmodule Operately.RichContent.ResourceLinksTest do
   @origin "https://app.operately.com"
   @company "acme-0abc"
 
+  test "URL labels ignore fragments and trailing slashes while preserving custom labels" do
+    href = "#{@origin}/#{@company}/projects/website-xyz?tab=overview#comment"
+    assert ResourceLinks.url_label?(href, href)
+    assert ResourceLinks.url_label?(String.replace(href, "#comment", "#other"), href)
+    assert ResourceLinks.url_label?("#{@origin}/#{@company}/projects/website-xyz/", href)
+    assert ResourceLinks.url_label?("/#{@company}/projects/website-xyz", "/#{@company}/projects/website-xyz#comment")
+    refute ResourceLinks.url_label?("Website", href)
+    refute ResourceLinks.url_label?(nil, href)
+  end
+
+  test "rejects non-web schemes and accepts same-origin protocol-relative links" do
+    assert :error = ResourceLinks.parse("javascript:/#{@company}/projects/website-xyz", @origin)
+    assert {:ok, %{type: :project}} = ResourceLinks.parse("//app.operately.com/#{@company}/projects/website-xyz", @origin)
+  end
+
   describe "parse/2" do
     test "extracts company, type, and id from recognized resource routes" do
       assert {:ok, %{company_id: @company, type: :project, id: "website-xyz"}} =

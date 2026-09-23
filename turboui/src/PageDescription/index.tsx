@@ -1,4 +1,3 @@
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
@@ -59,11 +58,7 @@ export function PageDescription({
       <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
 
       {mode === "view" && (
-        <ViewMode
-          rawDescription={description}
-          mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-          resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
-        />
+        <ViewMode rawDescription={description} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
       )}
       {mode === "edit" && (
         <EditMode
@@ -101,10 +96,9 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
 interface ViewModeProps {
   rawDescription: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
-  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
-function ViewMode({ rawDescription, mentionedPersonLookup, resolveResourceLinkTitles }: ViewModeProps) {
+function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
   const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
 
   return (
@@ -113,7 +107,6 @@ function ViewMode({ rawDescription, mentionedPersonLookup, resolveResourceLinkTi
         content={rawDescription}
         transformContent={transformContent}
         mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
       />
 
       {length > PREVIEW_CHARACTER_LIMIT && (

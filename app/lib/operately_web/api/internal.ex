@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Api.Internal do
   use TurboConnect.Api
 
+  defdelegate prepare_inputs(conn, inputs), to: OperatelyWeb.Api.RichContent.Preparation
+  defdelegate prepare_response(conn, response), to: OperatelyWeb.Api.RichContent.Preparation
+
   plug OperatelyWeb.Api.Plugs.PublicDocumentHeaders
 
   plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,

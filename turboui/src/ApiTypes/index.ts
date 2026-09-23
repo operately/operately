@@ -2409,12 +2409,6 @@ export interface ResourceHubUploadedFile {
   description?: string | null;
 }
 
-export interface ResourceLink {
-  type: ResourceLinkType;
-  id: string;
-  title: string;
-}
-
 export interface ReviewAssignment {
   __typename: "review_assignment";
   resourceId: string;
@@ -3081,19 +3075,6 @@ export type ResourceHubLinkType =
   | "google_slides"
   | "notion"
   | "other";
-
-export type ResourceLinkType =
-  | "discussion"
-  | "document"
-  | "file"
-  | "folder"
-  | "goal"
-  | "link"
-  | "milestone"
-  | "person"
-  | "project"
-  | "space"
-  | "task";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 

@@ -5,8 +5,6 @@ import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { genPeople } from "../utils/storybook/genPeople";
 import RichContent from "./index";
 
-const resolveResourceLinkTitles = async () => [];
-
 const meta: Meta<typeof RichContent> = {
   title: "Components/RichContent",
   component: RichContent,
@@ -43,7 +41,7 @@ export const ResolvedResourceLinks: Story = {
           content: [
             {
               type: "text",
-              text: "/acme-0abc/projects/website-xyz",
+              text: "Website redesign",
               marks: [{ type: "link", attrs: { href: "/acme-0abc/projects/website-xyz" } }],
             },
           ],
@@ -51,14 +49,6 @@ export const ResolvedResourceLinks: Story = {
       ],
     },
     mentionedPersonLookup: async () => null,
-    resolveResourceLinkTitles: async () => [{ type: "project", id: "xyz", title: "Website redesign" }],
-  },
-};
-
-export const ResourceTitleLookupDisabled: Story = {
-  args: {
-    ...ResolvedResourceLinks.args,
-    resolveResourceLinkTitles: null,
   },
 };
 
@@ -148,7 +138,6 @@ export const SimpleParagraph: Story = {
   args: {
     content: simpleParagraphContent,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
   },
 };
 
@@ -157,7 +146,6 @@ export const FormattedText: Story = {
   args: {
     content: formattedContent,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
   },
 };
 
@@ -166,7 +154,6 @@ export const ComplexContent: Story = {
   args: {
     content: complexContent,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
   },
 };
 
@@ -176,7 +163,6 @@ export const WithCustomClass: Story = {
     content: formattedContent,
     className: "custom-rich-content p-4 bg-gray-100 rounded",
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
   },
 };
 
@@ -204,7 +190,6 @@ function personToMention(person: { id: string; fullName: string }) {
 export const WithMentions: Story = {
   args: {
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
     content: {
       type: "doc",
       content: [

@@ -12,6 +12,29 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
   alias Operately.Access.Binding
   alias Operately.Billing
 
+  test "web and external responses include accessible titles in rich text", ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_api_token(:token, :creator)
+      |> Factory.log_in_person(:creator)
+
+    source = Operately.Support.RichText.resource_link(Paths.project_path(ctx.company, ctx.project))
+    ctx.project |> Ecto.Changeset.change(description: source) |> Repo.update!()
+
+    assert {200, %{project: web}} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+    assert {200, %{project: external}} = external_query(Phoenix.ConnTest.build_conn(), ctx.token, "projects/get", %{id: Paths.project_id(ctx.project)})
+    assert web.description == external.description
+
+    doc = Jason.decode!(web.description)
+
+    assert get_in(doc, ["content", Access.at(0), "content", Access.at(0), "text"]) == ctx.project.name
+    assert Operately.RichContent.LinkEnrichment.restore_source(doc) == source
+    assert Repo.reload!(ctx.project).description == source
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:projects, :get], %{})

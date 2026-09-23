@@ -47,7 +47,7 @@ const ProjectTaskCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
     const { comment } = content(activity);
 
     if (!comment?.content) {
@@ -60,14 +60,7 @@ const ProjectTaskCommented: ActivityHandler = {
       return null;
     }
 
-    return (
-      <Summary
-        content={commentContent}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

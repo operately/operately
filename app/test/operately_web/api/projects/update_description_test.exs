@@ -11,6 +11,25 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
   alias Operately.Support.RichText
   alias Operately.Repo
 
+  test "web and external writes restore enriched source before persistence", ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_api_token(:token, :creator, read_only: false)
+      |> Factory.log_in_person(:creator)
+
+    source = RichText.resource_link(Paths.project_path(ctx.company, ctx.project))
+    enriched = Operately.RichContent.LinkEnrichment.enrich(source, %{person: ctx.creator, company: ctx.company, origin: OperatelyWeb.Endpoint.url()})
+    inputs = %{project_id: Paths.project_id(ctx.project), description: Jason.encode!(enriched)}
+
+    assert {200, _} = mutation(ctx.conn, [:projects, :update_description], inputs)
+    assert Repo.reload!(ctx.project).description == source
+    assert {200, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "projects/update_description", inputs)
+    assert Repo.reload!(ctx.project).description == source
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_description], %{})

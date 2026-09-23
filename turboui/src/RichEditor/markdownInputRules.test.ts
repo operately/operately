@@ -4,7 +4,6 @@ import { createRichEditorExtensions } from "./createRichEditorExtensions";
 
 const handlers = {
   mentionedPersonLookup: async () => null,
-  resolveResourceLinkTitles: async () => [],
   uploadFile: async () => ({ id: "1", url: "u" }),
 } as any;
 

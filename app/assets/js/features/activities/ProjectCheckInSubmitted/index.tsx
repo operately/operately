@@ -48,17 +48,12 @@ const ProjectCheckInSubmitted: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { checkIn } = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div className="flex flex-col gap-2">
         {checkIn?.status && <SmallStatusIndicator status={checkIn?.status} />}
-        <Summary
-          content={checkIn?.description}
-          characterCount={200}
-          mentionedPersonLookup={mentionedPersonLookup}
-          resolveResourceLinkTitles={resolveResourceLinkTitles}
-        />
+        <Summary content={checkIn?.description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />
       </div>
     );
   },

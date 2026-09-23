@@ -19,6 +19,28 @@ defmodule Operately.RichContent.ResourceLinks do
 
   def types, do: Map.values(@path_types)
 
+  @doc "Whether the link label is still a URL rather than a custom label."
+  def url_label?(text, href) when is_binary(text) and is_binary(href) do
+    normalized_text = normalize_label(text)
+    normalized_href = normalize_label(href)
+    uri = URI.merge("https://resource-link.invalid", href)
+    without_query = uri |> Map.put(:query, nil) |> Map.put(:fragment, nil) |> URI.to_string() |> String.trim_trailing("/")
+
+    normalized_text == normalized_href || normalized_text == without_query || normalized_text == String.trim_trailing(uri.path || "", "/")
+  rescue
+    ArgumentError -> String.trim(text) == String.trim(href)
+  end
+
+  def url_label?(_, _), do: false
+
+  defp normalize_label(value) do
+    "https://resource-link.invalid"
+    |> URI.merge(String.trim(value))
+    |> Map.put(:fragment, nil)
+    |> URI.to_string()
+    |> String.trim_trailing("/")
+  end
+
   def parse(url, origin) when is_binary(url) and is_binary(origin) do
     with {:ok, uri} <- parse_uri(url),
          :ok <- validate_origin(uri, origin),
@@ -41,20 +63,22 @@ defmodule Operately.RichContent.ResourceLinks do
   defp validate_origin(%URI{host: host} = uri, origin) when is_binary(host) do
     canonical = URI.parse(origin)
 
-    if origin_key(uri) == origin_key(canonical) do
+    if origin_key(%{uri | scheme: uri.scheme || canonical.scheme}) == origin_key(canonical) do
       :ok
     else
       :error
     end
   end
 
-  defp validate_origin(%URI{host: nil, path: path}, _origin) when is_binary(path) do
+  defp validate_origin(%URI{scheme: nil, host: nil, path: path}, _origin) when is_binary(path) do
     if String.starts_with?(path, "/") do
       :ok
     else
       :error
     end
   end
+
+  defp validate_origin(_, _), do: :error
 
   defp origin_key(%URI{scheme: scheme, host: host, port: port}) do
     {scheme, host, port || default_port(scheme)}

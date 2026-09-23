@@ -23,7 +23,7 @@ export function Page() {
   const { mutateAsync: restoreVersion } = Hub.useRestoreDocumentVersion(mutationScope);
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   assertPresent(document.id, "document id must be present");
   assertPresent(document.permissions, "permissions must be present in document");
@@ -34,7 +34,6 @@ export function Page() {
     versions,
     formattedTimePreferences,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
     getComparisonPath: (versionNumber) => paths.resourceHubDocumentVersionPath(document.id!, versionNumber),
     canRestore: Boolean(document.permissions.canEditDocument),
     currentVersionNumber: document.currentVersion ?? null,

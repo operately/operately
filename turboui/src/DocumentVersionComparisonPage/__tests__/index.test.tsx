@@ -7,8 +7,6 @@ import { defaultFormattedTimePreferences } from "../../FormattedTime";
 import * as M from "../../DocumentVersionHistoryPage/mockData";
 import { DocumentVersionComparisonPage } from "../index";
 
-const resolveResourceLinkTitles = async () => [];
-
 const mentionedPersonLookup = async () => null;
 
 function byTestId(id: string) {
@@ -25,7 +23,6 @@ function renderPage(overrides: Partial<DocumentVersionComparisonPage.Props> = {}
     comparisonStatus: "ready",
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
     onRetryComparison: jest.fn(),
     ...overrides,
   };

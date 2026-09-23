@@ -79,15 +79,11 @@ function Options() {
 function Content() {
   const { discussion } = useLoadedData();
   const message = JSON.parse(discussion.message || "{}");
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <div className="my-8">
-      <RichContent
-        content={message}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
+      <RichContent content={message} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

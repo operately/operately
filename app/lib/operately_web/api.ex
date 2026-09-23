@@ -479,10 +479,6 @@ defmodule OperatelyWeb.Api do
         mutation(:start_export, OperatelyWeb.Api.CompanyTransfers.StartExport)
         mutation(:start_import, OperatelyWeb.Api.CompanyTransfers.StartImport)
       end
-
-      namespace(:rich_content, catalog: :omit) do
-        query(:resolve_links, OperatelyWeb.Api.RichContent.ResolveLinks)
-      end
     end
   end
 

@@ -30,7 +30,6 @@ const descriptionWithEmptyTextNodes = {
 };
 const richTextHandlers = {
   mentionedPersonLookup: jest.fn(),
-  resolveResourceLinkTitles: async () => [],
   mentionSearchScope: { type: "none" as const },
   onUpload: jest.fn(),
 };

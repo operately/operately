@@ -1,4 +1,3 @@
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import * as React from "react";
 
 import RichContent, { parseContent, richContentToString, shortenContent } from ".";
@@ -8,15 +7,9 @@ interface SummaryProps {
   content: any;
   characterCount: number;
   mentionedPersonLookup: MentionedPersonLookupFn;
-  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
-export function Summary({
-  content,
-  characterCount,
-  mentionedPersonLookup,
-  resolveResourceLinkTitles,
-}: SummaryProps): JSX.Element {
+export function Summary({ content, characterCount, mentionedPersonLookup }: SummaryProps): JSX.Element {
   const transformContent = React.useCallback((value: any) => summarizeContent(value, characterCount), [characterCount]);
 
   return (
@@ -24,7 +17,6 @@ export function Summary({
       content={parseContent(content)}
       transformContent={transformContent}
       mentionedPersonLookup={mentionedPersonLookup}
-      resolveResourceLinkTitles={resolveResourceLinkTitles}
       className="rich-text-summary"
       thumbnailBlobs
     />

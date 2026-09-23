@@ -1,3 +1,4 @@
+import { restoreRichTextSource } from "../RichContent/restoreSource";
 import type { JSONContent } from "@tiptap/core";
 import type { Schema } from "@tiptap/pm/model";
 import { ChangeSet, simplifyChanges } from "@tiptap/pm/changeset";
@@ -32,6 +33,9 @@ function isTipTapDoc(content: unknown): content is JSONContent {
  * Pure, DOM-independent semantic diff of two TipTap JSON documents.
  */
 export function diffRichContent(schema: Schema, before: unknown, after: unknown): DiffRichContentResult {
+  before = restoreRichTextSource(before);
+  after = restoreRichTextSource(after);
+
   if (!isTipTapDoc(before) || !isTipTapDoc(after)) {
     return { ok: false, error: "parse_error" };
   }

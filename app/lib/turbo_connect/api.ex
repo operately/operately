@@ -23,6 +23,11 @@ defmodule TurboConnect.Api do
       plug TurboConnect.Plugs.ParseInputs
 
       def __default_source__, do: @turbo_connect_default_source
+
+      def prepare_inputs(_conn, inputs), do: inputs
+      def prepare_response(_conn, response), do: response
+
+      defoverridable prepare_inputs: 2, prepare_response: 2
     end
   end
 

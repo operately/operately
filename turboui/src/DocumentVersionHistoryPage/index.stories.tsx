@@ -39,7 +39,6 @@ function baseProps(overrides: Partial<DocumentVersionHistoryPageProps> = {}): Do
     versions: M.multiVersionList,
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup: handlers.mentionedPersonLookup,
-    resolveResourceLinkTitles: handlers.resolveResourceLinkTitles,
     getComparisonPath: (versionNumber) => `/documents/1/versions/${versionNumber}`,
     ...overrides,
   };

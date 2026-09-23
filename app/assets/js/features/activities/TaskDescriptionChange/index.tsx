@@ -59,7 +59,7 @@ const TaskDescriptionChange: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     const rawDescription = data.description ?? data.task?.description;
 
@@ -67,14 +67,7 @@ const TaskDescriptionChange: ActivityHandler = {
 
     const description = typeof rawDescription === "string" ? JSON.parse(rawDescription) : rawDescription;
 
-    return (
-      <Summary
-        content={description}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

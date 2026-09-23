@@ -1,4 +1,3 @@
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import type { JSONContent } from "@tiptap/core";
 
 import type { DocumentVersion } from "../ApiTypes";
@@ -23,7 +22,6 @@ export type DocumentVersionHistoryPageProps = {
   versions: DocumentVersion[];
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
-  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
   getComparisonPath: (versionNumber: number) => string;
   canRestore?: boolean;
   /** Canonical document current_version used for optimistic concurrency. */

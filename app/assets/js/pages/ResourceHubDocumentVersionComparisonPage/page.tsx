@@ -14,7 +14,7 @@ export function Page() {
   const { document, resourceHub, versions, routeVersionNumber } = useLoadedData();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   const selection = React.useMemo(() => resolveSelection(versions, routeVersionNumber), [versions, routeVersionNumber]);
 
@@ -27,7 +27,6 @@ export function Page() {
     ...comparison,
     formattedTimePreferences,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
   };
 
   return <DocumentVersionComparisonPage {...props} />;

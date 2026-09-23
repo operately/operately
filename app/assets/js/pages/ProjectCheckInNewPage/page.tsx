@@ -75,7 +75,6 @@ export function Page() {
       cancelLink={paths.projectCheckInsPath(project.id!)}
       richTextHandlers={richTextHandlers}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       formattedTimePreferences={formattedTimePreferences}
       reviewer={project.reviewer}
       previousCheckIn={previousCheckIn}
