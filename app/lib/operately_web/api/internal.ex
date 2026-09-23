@@ -1,8 +1,11 @@
 defmodule OperatelyWeb.Api.Internal do
   use TurboConnect.Api
 
+  plug OperatelyWeb.Api.Plugs.PublicDocumentHeaders
+
   plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
+      {:query, "documents/get_public"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
       {:mutation, "cli_auth/auth_password"},

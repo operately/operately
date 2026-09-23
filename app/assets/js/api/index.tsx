@@ -933,6 +933,16 @@ export interface ActivityContentResourceHubDocumentEdited {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentPublicSharingChanged {
+  __typename: "activity_content_resource_hub_document_public_sharing_changed";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  enabled: boolean;
+}
+
 export interface ActivityContentResourceHubDocumentVersionRestored {
   __typename: "activity_content_resource_hub_document_version_restored";
   goal?: Goal | null;
@@ -2327,6 +2337,14 @@ export interface ProjectTemplateUploadedFile {
   description?: Json | null;
 }
 
+export interface PublicDocument {
+  __typename: "public_document";
+  name: string;
+  content: string;
+  publishedAt: string;
+  updatedAt: string;
+}
+
 export interface QuickSearchDiscussion {
   id: string;
   title: string;
@@ -2371,6 +2389,7 @@ export interface ResourceHub {
 
 export interface ResourceHubDocument {
   __typename: "resource_hub_document";
+  publicUrl?: string | null;
   id: string;
   url?: string;
   author?: Person | null;
@@ -2950,6 +2969,7 @@ export type ActivityContent =
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubDocumentPublicSharingChanged
   | ActivityContentResourceHubDocumentVersionRestored
   | ActivityContentResourceHubFileCommented
   | ActivityContentResourceHubFileCreated
@@ -3473,6 +3493,14 @@ export interface DocumentsGetInput {
 
 export interface DocumentsGetResult {
   document: ResourceHubDocument;
+}
+
+export interface DocumentsGetPublicInput {
+  token: string;
+}
+
+export interface DocumentsGetPublicResult {
+  document: PublicDocument;
 }
 
 export interface DocumentsGetVersionInput {
@@ -4807,6 +4835,15 @@ export interface DocumentsUpdateInput {
 
 export interface DocumentsUpdateResult {
   document?: ResourceHubDocument | null;
+}
+
+export interface DocumentsUpdatePublicSharingInput {
+  documentId: Id;
+  enabled: boolean;
+}
+
+export interface DocumentsUpdatePublicSharingResult {
+  publicUrl: string | null;
 }
 
 export interface EmailChangesCancelInput {
@@ -7044,6 +7081,10 @@ class ApiNamespaceDocuments {
     return this.client.get("/documents/get", input);
   }
 
+  async getPublic(input: DocumentsGetPublicInput): Promise<DocumentsGetPublicResult> {
+    return this.client.get("/documents/get_public", input);
+  }
+
   async getVersion(input: DocumentsGetVersionInput): Promise<DocumentsGetVersionResult> {
     return this.client.get("/documents/get_version", input);
   }
@@ -7070,6 +7111,10 @@ class ApiNamespaceDocuments {
 
   async update(input: DocumentsUpdateInput): Promise<DocumentsUpdateResult> {
     return this.client.post("/documents/update", input);
+  }
+
+  async updatePublicSharing(input: DocumentsUpdatePublicSharingInput): Promise<DocumentsUpdatePublicSharingResult> {
+    return this.client.post("/documents/update_public_sharing", input);
   }
 }
 
@@ -9589,6 +9634,28 @@ export default {
   },
 
   documents: {
+    getPublic: (input: DocumentsGetPublicInput) => defaultApiClient.apiNamespaceDocuments.getPublic(input),
+    useGetPublic: (input: DocumentsGetPublicInput) =>
+      useQuery<DocumentsGetPublicResult>(() => defaultApiClient.apiNamespaceDocuments.getPublic(input)),
+    getPublicQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/documents/get_public"),
+    getPublicQueryKey: (input: DocumentsGetPublicInput) =>
+      buildApiQueryKey(defaultApiClient, "/documents/get_public", input),
+    getPublicQueryOptions: (input: DocumentsGetPublicInput) =>
+      buildApiQueryOptions<DocumentsGetPublicInput, DocumentsGetPublicResult>(
+        defaultApiClient,
+        "/documents/get_public",
+        input,
+      ),
+    getPublicQuery: (input: DocumentsGetPublicInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<DocumentsGetPublicInput, DocumentsGetPublicResult>(
+          defaultApiClient,
+          "/documents/get_public",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
     get: (input: DocumentsGetInput) => defaultApiClient.apiNamespaceDocuments.get(input),
     useGet: (input: DocumentsGetInput) =>
       useQuery<DocumentsGetResult>(() => defaultApiClient.apiNamespaceDocuments.get(input)),
@@ -9696,6 +9763,18 @@ export default {
     createMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: DocumentsCreateInput) => defaultApiClient.apiNamespaceDocuments.create(input),
+      }),
+
+    updatePublicSharing: (input: DocumentsUpdatePublicSharingInput) =>
+      defaultApiClient.apiNamespaceDocuments.updatePublicSharing(input),
+    useUpdatePublicSharing: () =>
+      useMutation<DocumentsUpdatePublicSharingInput, DocumentsUpdatePublicSharingResult>((input) =>
+        defaultApiClient.apiNamespaceDocuments.updatePublicSharing(input),
+      ),
+    updatePublicSharingMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: DocumentsUpdatePublicSharingInput) =>
+          defaultApiClient.apiNamespaceDocuments.updatePublicSharing(input),
       }),
   },
 

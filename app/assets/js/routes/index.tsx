@@ -35,6 +35,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
       element: <NonCompanyRoutes />,
       errorElement: <ErrorPage />,
       children: [
+        pageRoute("/public/documents/:token", pages.PublicDocumentPage, { auth: false, preload: false }),
         pageRoute("/log_in", pages.LoginPage, { auth: false }),
         pageRoute("/sign_up", pages.SignUpPage, { auth: false }),
         pageRoute("/sign_up/email", pages.SignUpWithEmailPage, { auth: false }),
