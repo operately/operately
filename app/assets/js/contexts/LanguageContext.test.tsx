@@ -65,3 +65,27 @@ it("applies English when no language preference is saved", () => {
 
   expect(applyLanguage).toHaveBeenCalledWith("en");
 });
+
+it("applies English for an unsupported saved preference", () => {
+  jest.mocked(useMe).mockReturnValue({ language: "fr" } as ReturnType<typeof useMe>);
+  mockCompanyLoader(["i18n"]);
+
+  renderProvider();
+
+  expect(applyLanguage).toHaveBeenCalledWith("en");
+});
+
+it("applies language again after the saved preference changes", () => {
+  jest.mocked(useMe).mockReturnValue({ language: "en" } as ReturnType<typeof useMe>);
+  mockCompanyLoader(["i18n"]);
+
+  const wrapper = ({ children }: React.PropsWithChildren) => <LanguageProvider>{children}</LanguageProvider>;
+  const { rerender } = renderHook(() => null, { initialProps: undefined, wrapper });
+
+  expect(applyLanguage).toHaveBeenCalledWith("en");
+
+  jest.mocked(useMe).mockReturnValue({ language: "pt-BR" } as ReturnType<typeof useMe>);
+  rerender(undefined);
+
+  expect(applyLanguage).toHaveBeenCalledWith("pt-BR");
+});
