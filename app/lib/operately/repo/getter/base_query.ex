@@ -18,7 +18,9 @@ defmodule Operately.Repo.Getter.BaseQuery do
 
   defp restrict_ids(query, nil), do: query
   defp restrict_ids(query, ids) when is_list(ids), do: where(query, [resource: resource], resource.id in ^ids)
-  defp restrict_ids(_query, _ids), do: raise ArgumentError, "Expected :ids to be a list"
+  defp restrict_ids(_query, _ids) do
+    raise ArgumentError, "Expected :ids to be a list"
+  end
 
   defp add_field_matchers(query, field_matchers) do
     Enum.reduce(field_matchers, query, fn {name, value}, query ->
