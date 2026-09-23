@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { Page } from "turboui";
-import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash } from "turboui";
+import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash, IconLink } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
@@ -12,9 +12,14 @@ import { useLoadedData } from "./loader";
 interface Props {
   showCopyModal: () => void;
   showDeleteModal: () => void;
+  showPublicSharingModal: () => void;
 }
 
-export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props): Page.Option[] {
+export function useDocumentPageOptions({
+  showCopyModal,
+  showDeleteModal,
+  showPublicSharingModal,
+}: Props): Page.Option[] {
   const paths = usePaths();
   const { document } = useLoadedData();
 
@@ -22,6 +27,14 @@ export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props
 
   return React.useMemo(() => {
     const options: Page.Option[] = [
+      {
+        type: "action",
+        icon: IconLink,
+        label: document.publicUrl ? "Manage public sharing" : "Share publicly",
+        onClick: showPublicSharingModal,
+        hidden: document.state !== "published" || !document.permissions?.canEditDocument,
+        testId: "share-document-publicly",
+      },
       {
         type: "link",
         icon: IconEdit,
@@ -72,6 +85,8 @@ export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props
     return options;
   }, [
     document.content,
+    document.state,
+    document.publicUrl,
     document.id,
     document.name,
     document.permissions?.canCreateDocument,
@@ -81,5 +96,6 @@ export function useDocumentPageOptions({ showCopyModal, showDeleteModal }: Props
     paths,
     showCopyModal,
     showDeleteModal,
+    showPublicSharingModal,
   ]);
 }

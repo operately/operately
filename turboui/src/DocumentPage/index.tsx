@@ -20,7 +20,7 @@ import { CurrentSubscriptions } from "../Subscriptions";
 export namespace DocumentPage {
   export interface BaseProps {
     pageTitle: Page.Props["title"];
-    navigation: Navigation.Item[];
+    navigation?: Navigation.Item[];
     options?: Page.Option[];
     testId?: string;
 
@@ -189,4 +189,3 @@ export function DocumentPage(props: DocumentPage.Props) {
     </Page>
   );
 }
-
