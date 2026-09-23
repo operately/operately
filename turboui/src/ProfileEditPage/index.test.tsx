@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import "../i18n";
 
 import { ProfileEditPage } from "./index";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 jest.mock("../RichEditor", () => ({
   Editor: () => <div />,
@@ -32,11 +33,7 @@ function renderPage(overrides: Partial<ProfileEditPage.Props> = {}) {
     onManagerChange: jest.fn(),
     onSubmit: jest.fn().mockResolvedValue(undefined),
     managerSearch: { people: [], onSearch: jest.fn().mockResolvedValue(undefined) },
-    richTextHandlers: {
-      mentionedPersonLookup: jest.fn(),
-      peopleSearch: jest.fn(),
-      uploadFile: jest.fn(),
-    },
+    richTextHandlers: createMockRichEditorHandlers(),
     timezones: [{ value: "America/New_York", label: "Eastern Time (ET)" }],
     isCurrentUser: true,
     showLanguageSelector: true,
