@@ -7,13 +7,12 @@ import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 import { BadgeStatus } from "../StatusBadge/types";
 import { MentionedPersonLookupFn } from "../RichEditor";
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 
 export interface LastCheckInProps {
   checkIns: CheckIn[];
   state?: "active" | "closed";
   mentionedPersonLookup?: MentionedPersonLookupFn;
-  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
+
   formattedTimePreferences: FormattedTimePreferences;
 }
 
@@ -31,7 +30,6 @@ export function LastCheckIn({
   checkIns,
   state,
   mentionedPersonLookup,
-  resolveResourceLinkTitles,
   formattedTimePreferences,
 }: LastCheckInProps) {
   if (checkIns.length === 0) return null;
@@ -68,7 +66,6 @@ export function LastCheckIn({
         <Summary
           content={checkIn.content}
           characterCount={130}
-          resolveResourceLinkTitles={resolveResourceLinkTitles}
           mentionedPersonLookup={mentionedPersonLookup || (async () => null)}
         />
 

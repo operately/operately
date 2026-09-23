@@ -106,7 +106,6 @@ const baseProps = {
   formattedTimePreferences: defaultFormattedTimePreferences,
   description: JSON.stringify(asRichText("Notes")),
   mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
-  resolveResourceLinkTitles: richTextHandlers.resolveResourceLinkTitles,
 };
 
 describe("LinkPage", () => {

@@ -45,7 +45,6 @@ export function FilePage(props: FilePageNS.Props) {
               content={props.description}
               className="text-md sm:text-lg"
               mentionedPersonLookup={props.mentionedPersonLookup}
-              resolveResourceLinkTitles={props.resolveResourceLinkTitles}
               parseContent
             />
           </>

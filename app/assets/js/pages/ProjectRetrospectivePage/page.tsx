@@ -141,15 +141,11 @@ function RetrospectiveContent() {
   const { retrospective } = useLoadedData();
 
   const content = React.useMemo(() => parseContent(retrospective.content), [retrospective.content]);
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <div className="my-8">
-      <RichContent
-        content={content}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
+      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

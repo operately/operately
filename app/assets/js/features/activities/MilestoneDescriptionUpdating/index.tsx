@@ -51,7 +51,7 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const data = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     const rawDescription = data.description ?? data.milestone?.description;
     if (!rawDescription) return null;
@@ -60,14 +60,7 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
 
     if (!description) return null;
 
-    return (
-      <Summary
-        content={description}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

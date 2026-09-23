@@ -124,7 +124,6 @@ const baseProps = {
   blob: imageBlob,
   description: JSON.stringify(asRichText("Hero image for the launch campaign.")),
   mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
-  resolveResourceLinkTitles: richTextHandlers.resolveResourceLinkTitles,
 };
 
 export const Default: Story = {
@@ -207,7 +206,6 @@ export const Template: Story = {
       blob={imageBlob}
       description={JSON.stringify(asRichText("Template file notes."))}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       hideReactions
       hideComments
       hideSubscriptions

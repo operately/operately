@@ -48,18 +48,11 @@ const ResourceHubDocumentCreating: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { document } = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers({
+    const { mentionedPersonLookup } = useRichEditorHandlers({
       scope: People.NoneSearchScope,
     });
 
-    return (
-      <Summary
-        content={document?.content}
-        characterCount={160}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={document?.content} characterCount={160} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

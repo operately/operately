@@ -50,16 +50,9 @@ const ResourceHubFileEdited: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const { file } = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
-    return (
-      <Summary
-        content={file?.description}
-        characterCount={160}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={file?.description} characterCount={160} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

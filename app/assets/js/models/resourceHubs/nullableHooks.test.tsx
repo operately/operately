@@ -32,7 +32,6 @@ jest.mock("@/contexts/CurrentCompanyContext", () => ({
 jest.mock("@/hooks/useRichEditorHandlers", () => ({
   useRichEditorHandlers: () => ({
     mentionedPersonLookup: jest.fn(),
-    resolveResourceLinkTitles: async () => [],
     peopleSearch: jest.fn(),
     uploadFile: jest.fn(),
   }),

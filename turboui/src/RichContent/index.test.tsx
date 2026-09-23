@@ -6,8 +6,6 @@ import RichContent from "./index";
 import { Summary } from "./Summary";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 
-const resolveResourceLinkTitles = async () => [];
-
 const mentionedPersonLookup: MentionedPersonLookupFn = async (id) => ({
   id,
   fullName: "Jane Doe",
@@ -40,18 +38,9 @@ const plainContent = {
   ],
 };
 
-function renderRichContent(
-  content: unknown,
-  parseContent = false,
-  resourceLinkTitles?: { type: "project"; id: string; title: string }[],
-) {
+function renderRichContent(content: unknown, parseContent = false) {
   return render(
-    <RichContent
-      content={content}
-      mentionedPersonLookup={mentionedPersonLookup}
-      resolveResourceLinkTitles={async () => resourceLinkTitles ?? []}
-      parseContent={parseContent}
-    />,
+    <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} parseContent={parseContent} />,
   );
 }
 
@@ -61,7 +50,7 @@ function expectMentionContent(container: HTMLElement) {
 }
 
 describe("RichContent", () => {
-  it("keeps URLs and synchronizes content when title resolution is explicitly disabled", async () => {
+  it("keeps unresolved URLs and synchronizes content", async () => {
     const href = `${window.location.origin}/acme-0abc/projects/website-xyz`;
     const content = {
       type: "doc",
@@ -70,18 +59,12 @@ describe("RichContent", () => {
       ],
     };
     const { rerender, container } = render(
-      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} resolveResourceLinkTitles={null} />,
+      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />,
     );
 
     expect(await screen.findByRole("link", { name: href })).toHaveAttribute("href", href);
 
-    rerender(
-      <RichContent
-        content={plainContent}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={null}
-      />,
-    );
+    rerender(<RichContent content={plainContent} mentionedPersonLookup={mentionedPersonLookup} />);
     await waitFor(() => expect(container).toHaveTextContent("Plain discussion body."));
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
@@ -120,7 +103,7 @@ describe("RichContent", () => {
           content: [
             {
               type: "text",
-              text: href,
+              text: "Website",
               marks: [{ type: "link", attrs: { href } }],
             },
           ],
@@ -128,7 +111,7 @@ describe("RichContent", () => {
       ],
     };
 
-    renderRichContent(content, false, [{ type: "project", id: "website-xyz", title: "Website" }]);
+    renderRichContent(content);
 
     await waitFor(() => {
       expect(screen.getByRole("link", { name: "Website" })).toHaveAttribute("href", href);
@@ -137,35 +120,23 @@ describe("RichContent", () => {
 });
 
 describe("Summary", () => {
-  it("resolves titles before shortening the original URL", async () => {
+  it("summarizes backend-resolved titles", async () => {
     const href = `${window.location.origin}/acme-0abc/projects/a-very-long-project-name-xyz`;
     const content = {
       type: "doc",
       content: [
-        { type: "paragraph", content: [{ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] }] },
+        { type: "paragraph", content: [{ type: "text", text: "Website", marks: [{ type: "link", attrs: { href } }] }] },
       ],
     };
-    const resolver = jest.fn().mockResolvedValue([{ type: "project", id: "xyz", title: "Website" }]);
     const { findByText } = render(
-      <Summary
-        content={content}
-        characterCount={10}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolver}
-      />,
+      <Summary content={content} characterCount={10} mentionedPersonLookup={mentionedPersonLookup} />,
     );
     expect(await findByText("Website")).toBeInTheDocument();
-    expect(resolver).toHaveBeenCalledWith(content);
   });
 
   it("renders summarized content that includes mentions", async () => {
     const { container } = render(
-      <Summary
-        content={contentWithMention}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />,
+      <Summary content={contentWithMention} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />,
     );
 
     await waitFor(() => {
@@ -200,14 +171,7 @@ describe("Summary", () => {
       ],
     };
 
-    render(
-      <Summary
-        content={content}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />,
-    );
+    render(<Summary content={content} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />);
 
     await waitFor(() => {
       expect(screen.getByRole("img", { name: "photo.png" })).toHaveAttribute("src", "https://example.com/photo.png");
@@ -241,14 +205,7 @@ describe("Summary", () => {
       ],
     };
 
-    render(
-      <Summary
-        content={content}
-        characterCount={20}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />,
-    );
+    render(<Summary content={content} characterCount={20} mentionedPersonLookup={mentionedPersonLookup} />);
 
     await waitFor(() => {
       expect(screen.getByText("notes.pdf")).toBeInTheDocument();

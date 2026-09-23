@@ -1,4 +1,3 @@
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import type { Person, ProjectCheckIn, ProjectCheckInStatus } from "../ApiTypes";
@@ -53,7 +52,6 @@ export namespace ProjectCheckInFormPage {
     cancelLink: string;
     richTextHandlers: RichEditorHandlers;
     mentionedPersonLookup: MentionedPersonLookupFn;
-    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
     formattedTimePreferences: FormattedTimePreferences;
     reviewer?: Person | null;
     testId?: string;
@@ -258,7 +256,6 @@ function DescriptionSection({ props }: { props: ProjectCheckInFormPage.Props }) 
       previousCheckIn={props.previousCheckIn}
       richTextHandlers={props.richTextHandlers}
       mentionedPersonLookup={props.mentionedPersonLookup}
-      resolveResourceLinkTitles={props.resolveResourceLinkTitles}
       formattedTimePreferences={props.formattedTimePreferences}
     />
   );
@@ -268,13 +265,11 @@ function CreateDescriptionSection({
   previousCheckIn,
   richTextHandlers,
   mentionedPersonLookup,
-  resolveResourceLinkTitles,
   formattedTimePreferences,
 }: {
   previousCheckIn?: ProjectCheckInFormPage.PreviousCheckIn | null;
   richTextHandlers: ProjectCheckInFormPage.CreateProps["richTextHandlers"];
   mentionedPersonLookup: ProjectCheckInFormPage.CreateProps["mentionedPersonLookup"];
-  resolveResourceLinkTitles: ProjectCheckInFormPage.CreateProps["resolveResourceLinkTitles"];
   formattedTimePreferences: ProjectCheckInFormPage.CreateProps["formattedTimePreferences"];
 }) {
   const [showPrevious, setShowPrevious] = React.useState(false);
@@ -299,7 +294,6 @@ function CreateDescriptionSection({
         <PreviousCheckInPreview
           previousCheckIn={previousCheckIn}
           mentionedPersonLookup={mentionedPersonLookup}
-          resolveResourceLinkTitles={resolveResourceLinkTitles}
           formattedTimePreferences={formattedTimePreferences}
         />
       )}
@@ -316,12 +310,10 @@ function CreateDescriptionSection({
 function PreviousCheckInPreview({
   previousCheckIn,
   mentionedPersonLookup,
-  resolveResourceLinkTitles,
   formattedTimePreferences,
 }: {
   previousCheckIn: ProjectCheckInFormPage.PreviousCheckIn;
   mentionedPersonLookup: ProjectCheckInFormPage.CreateProps["mentionedPersonLookup"];
-  resolveResourceLinkTitles: ProjectCheckInFormPage.CreateProps["resolveResourceLinkTitles"];
   formattedTimePreferences: ProjectCheckInFormPage.CreateProps["formattedTimePreferences"];
 }) {
   const { checkIn, link } = previousCheckIn;
@@ -347,11 +339,7 @@ function PreviousCheckInPreview({
         </div>
       </div>
 
-      <RichContent
-        content={content}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
+      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

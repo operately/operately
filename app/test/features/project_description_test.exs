@@ -11,6 +11,14 @@ defmodule Operately.Features.ProjectsDescriptionTest do
   end
 
   @tag login_as: :contributor
+  feature "resource titles arrive with the description without a follow-up request", ctx do
+    ctx
+    |> Operately.Support.Features.ProjectDescriptionSteps.given_description_links_to_project()
+    |> Steps.visit_project_page()
+    |> Operately.Support.Features.ProjectDescriptionSteps.assert_resolved_link_without_title_request()
+  end
+
+  @tag login_as: :contributor
   feature "writing a project description", ctx do
     ctx
     |> Steps.assert_logged_in_contributor_has_edit_access()

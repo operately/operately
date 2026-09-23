@@ -1,4 +1,3 @@
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import { MentionedPersonLookupFn } from "../RichEditor";
@@ -26,7 +25,6 @@ namespace CheckInCard {
   export interface Props {
     checkIn: CheckIn;
     mentionedPersonLookup: MentionedPersonLookupFn;
-    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
     type: "goal" | "project";
     formattedTimePreferences: FormattedTimePreferences;
   }
@@ -35,7 +33,6 @@ namespace CheckInCard {
 export function CheckInCard({
   checkIn,
   mentionedPersonLookup,
-  resolveResourceLinkTitles,
   type,
   formattedTimePreferences,
 }: CheckInCard.Props) {
@@ -67,12 +64,7 @@ export function CheckInCard({
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
           </div>
           <div className="break-words">
-            <Summary
-              content={checkIn.content}
-              characterCount={130}
-              mentionedPersonLookup={mentionedPersonLookup}
-              resolveResourceLinkTitles={resolveResourceLinkTitles}
-            />
+            <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
           </div>
 
           <div className="flex gap-1 mt-1 text-xs">

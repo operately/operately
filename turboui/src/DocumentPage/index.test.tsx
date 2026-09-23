@@ -123,7 +123,6 @@ const baseProps = {
   formattedTimePreferences: defaultFormattedTimePreferences,
   content: JSON.stringify(asRichText("Body")),
   mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
-  resolveResourceLinkTitles: richTextHandlers.resolveResourceLinkTitles,
 };
 
 function renderPage(ui: React.ReactElement) {

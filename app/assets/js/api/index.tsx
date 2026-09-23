@@ -2505,12 +2505,6 @@ export interface ResourceHubUploadedFile {
   description?: string | null;
 }
 
-export interface ResourceLink {
-  type: ResourceLinkType;
-  id: string;
-  title: string;
-}
-
 export interface ReviewAssignment {
   __typename: "review_assignment";
   resourceId: string;
@@ -3177,19 +3171,6 @@ export type ResourceHubLinkType =
   | "google_slides"
   | "notion"
   | "other";
-
-export type ResourceLinkType =
-  | "discussion"
-  | "document"
-  | "file"
-  | "folder"
-  | "goal"
-  | "link"
-  | "milestone"
-  | "person"
-  | "project"
-  | "space"
-  | "task";
 
 export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
@@ -4135,15 +4116,6 @@ export interface ResourceHubsSearchInput {
 
 export interface ResourceHubsSearchResult {
   nodes: ResourceHubNode[];
-}
-
-export interface RichContentResolveLinksInput {
-  types: ResourceLinkType[];
-  ids: string[];
-}
-
-export interface RichContentResolveLinksResult {
-  links: ResourceLink[];
 }
 
 export interface SiteMessagesListActiveInput {}
@@ -8202,27 +8174,6 @@ export default {
   resetPassword,
   useResetPassword,
   resetPasswordMutationOptions,
-
-  rich_content: {
-    resolveLinksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/rich_content/resolve_links"),
-    resolveLinksQueryKey: (input: RichContentResolveLinksInput) =>
-      buildApiQueryKey(defaultApiClient, "/rich_content/resolve_links", input),
-    resolveLinksQueryOptions: (input: RichContentResolveLinksInput) =>
-      buildApiQueryOptions<RichContentResolveLinksInput, RichContentResolveLinksResult>(
-        defaultApiClient,
-        "/rich_content/resolve_links",
-        input,
-      ),
-    resolveLinksQuery: (input: RichContentResolveLinksInput) =>
-      queryClient.query({
-        ...buildApiQueryOptions<RichContentResolveLinksInput, RichContentResolveLinksResult>(
-          defaultApiClient,
-          "/rich_content/resolve_links",
-          input,
-        ),
-        staleTime: Infinity,
-      }),
-  },
 
   company_transfers: {
     getExportRunQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/company_transfers/get_export_run"),

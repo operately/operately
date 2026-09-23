@@ -36,7 +36,6 @@ export function CheckIns(props: GoalPage.State) {
               key={checkIn.id}
               checkIn={checkIn}
               mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
-              resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
               type="goal"
               formattedTimePreferences={props.formattedTimePreferences}
             />

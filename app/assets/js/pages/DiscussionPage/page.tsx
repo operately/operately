@@ -67,7 +67,7 @@ export function Page() {
 
 function DiscussionBody() {
   const { discussion } = useLoadedData();
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <>
@@ -76,7 +76,6 @@ function DiscussionBody() {
         content={discussion.body}
         className="text-md sm:text-lg"
         mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
         parseContent
       />
     </>

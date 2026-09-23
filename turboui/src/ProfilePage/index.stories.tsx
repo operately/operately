@@ -72,7 +72,6 @@ const defaultArgs: ProfilePage.Props = {
 
   aboutMe: asRichText("Coffee nerd, jazz fan, and always happy to share shortcuts."),
   mentionedPersonLookup: createMockRichEditorHandlers().mentionedPersonLookup,
-  resolveResourceLinkTitles: createMockRichEditorHandlers().resolveResourceLinkTitles,
   formattedTimePreferences: defaultFormattedTimePreferences,
 };
 

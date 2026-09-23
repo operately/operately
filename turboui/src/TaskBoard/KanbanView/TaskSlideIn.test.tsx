@@ -61,15 +61,15 @@ const baseProps: TaskPage.ContentProps = {
 };
 
 describe("TaskSlideIn", () => {
-  it("resolves its task description without needing titles from the parent page", async () => {
+  it("renders backend-resolved task links", async () => {
     const href = `${window.location.origin}/acme-0abc/projects/project-xyz`;
     const description = {
       type: "doc",
       content: [
-        { type: "paragraph", content: [{ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] }] },
+        { type: "paragraph", content: [{ type: "text", text: "Website", marks: [{ type: "link", attrs: { href } }] }] },
       ],
     };
-    const resolveResourceLinkTitles = jest.fn().mockResolvedValue([{ type: "project", id: "xyz", title: "Website" }]);
+
     const { findByRole } = renderSlideIn(
       <TaskSlideIn
         isOpen
@@ -77,12 +77,11 @@ describe("TaskSlideIn", () => {
         taskPageProps={{
           ...baseProps,
           description,
-          richTextHandlers: { ...baseProps.richTextHandlers, resolveResourceLinkTitles },
+          richTextHandlers: { ...baseProps.richTextHandlers },
         }}
       />,
     );
     expect(await findByRole("link", { name: "Website" })).toHaveAttribute("href", href);
-    expect(resolveResourceLinkTitles).toHaveBeenCalledWith(description);
   });
 
   it("renders project task content when taskPageProps are provided", () => {

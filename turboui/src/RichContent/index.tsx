@@ -1,6 +1,6 @@
 import React from "react";
 import { Content, useEditor } from "../RichEditor";
-import { MentionedPersonLookupFn, ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
+import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 
 interface Props {
   content: any;
@@ -9,8 +9,6 @@ interface Props {
   parseContent?: boolean;
   thumbnailBlobs?: boolean;
   transformContent?: (content: any) => any;
-  /** Pass null to explicitly disable resource title lookup. */
-  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
 export default function RichContent({
@@ -20,7 +18,6 @@ export default function RichContent({
   parseContent,
   thumbnailBlobs,
   transformContent,
-  resolveResourceLinkTitles,
 }: Props) {
   const parsed = React.useMemo(() => (parseContent ? JSON.parse(content) : content), [content, parseContent]);
   const editor = useEditor({
@@ -28,7 +25,7 @@ export default function RichContent({
     editable: false,
     thumbnailBlobs,
     transformContent,
-    handlers: { mentionedPersonLookup, resolveResourceLinkTitles },
+    handlers: { mentionedPersonLookup },
   });
 
   return <Content editor={editor} className={className} />;
@@ -38,4 +35,4 @@ export * from "./contentOps";
 export * from "./Summary";
 export * from "./isContentEmpty";
 export * from "./types";
-export * from "./resourceLinks";
+export * from "./restoreSource";
