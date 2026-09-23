@@ -41,16 +41,40 @@ defmodule OperatelyWeb.PublicDocumentController do
     try do
       case Blobs.download_blob_to_file(blob, path) do
         :ok ->
-          inline = disposition != "attachment" and blob.content_type in ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif", "video/mp4", "video/webm"]
-
-          conn
-          |> put_resp_header("x-content-type-options", "nosniff")
-          |> send_download({:file, path}, filename: blob.filename, content_type: blob.content_type, disposition: if(inline, do: :inline, else: :attachment))
+          stream_blob(conn, blob, path, disposition)
 
         {:error, _} -> send_resp(conn, 502, "Unable to load attachment")
       end
     after
       File.rm(path)
     end
+  end
+
+  defp stream_blob(conn, blob, path, disposition) do
+    conn =
+      conn
+      |> put_resp_header("x-content-type-options", "nosniff")
+      |> put_resp_content_type(blob.content_type, nil)
+      |> put_resp_header("content-disposition", content_disposition(blob, disposition))
+      |> send_chunked(200)
+
+    # Cowboy defers send_file reads. Send bytes here before the temporary file is removed.
+    path
+    |> File.stream!([], 64 * 1024)
+    |> Enum.reduce_while(conn, fn bytes, conn ->
+      case chunk(conn, bytes) do
+        {:ok, conn} -> {:cont, conn}
+        {:error, _reason} -> {:halt, conn}
+      end
+    end)
+  end
+
+  defp content_disposition(blob, requested_disposition) do
+    inline = requested_disposition != "attachment" and blob.content_type in ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif", "video/mp4", "video/webm"]
+    disposition = if inline, do: "inline", else: "attachment"
+    filename = URI.encode(blob.filename, &URI.char_unreserved?/1)
+    header = ~s[#{disposition}; filename="#{filename}"]
+
+    if filename == blob.filename, do: header, else: header <> "; filename*=utf-8''#{filename}"
   end
 end
