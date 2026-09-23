@@ -67,7 +67,7 @@ it("applies English when no language preference is saved", () => {
 });
 
 it("applies English for an unsupported saved preference", () => {
-  jest.mocked(useMe).mockReturnValue({ language: "fr" } as ReturnType<typeof useMe>);
+  jest.mocked(useMe).mockReturnValue({ language: "fr" } as unknown as ReturnType<typeof useMe>);
   mockCompanyLoader(["i18n"]);
 
   renderProvider();
