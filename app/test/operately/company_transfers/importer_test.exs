@@ -911,7 +911,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     {:ok, document} =
       ctx.document
-      |> Ecto.Changeset.change(%{current_version: 3})
+      |> Ecto.Changeset.change(%{current_version: 3, public_token: "original-public-link"})
       |> Repo.update()
 
     ctx = Map.put(ctx, :document, document)
@@ -943,6 +943,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       )
 
     assert imported_document.current_version == 3
+    assert imported_document.public_token == nil
     assert imported_document.id != ctx.document.id
 
     imported_versions =
