@@ -52,6 +52,10 @@ Use these Brazilian Portuguese terms for product nouns in the pilot and later tr
 | home | início |
 | my work | meu trabalho |
 | review | revisão |
+| due date | data de conclusão |
+| Docs & Files | Docs & Arquivos |
+| Comments & Activity | Comentários & Atividade |
+| template | Template |
 
 AI may draft translations. A native speaker reviews them against this glossary before they ship.
 

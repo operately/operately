@@ -143,7 +143,7 @@ msgstr "Fechar"
 #: ../turboui/src/TaskPage/Overview.tsx:34
 #: ../turboui/src/TaskPage/Overview.tsx:64
 msgid "Comments & Activity"
-msgstr "Comentários e atividade"
+msgstr "Comentários & Atividade"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:113
@@ -179,12 +179,12 @@ msgstr "Discussões"
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:52
 msgid "Docs & Files"
-msgstr "Docs e arquivos"
+msgstr "Docs & Arquivos"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:125
 msgid "Due date"
-msgstr "Data de vencimento"
+msgstr "Data de conclusão"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:118
@@ -347,7 +347,7 @@ msgstr "Projeto"
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 msgid "Project Templates"
-msgstr "Modelos de projeto"
+msgstr "Templates de projeto"
 
 #.frontend
 #: assets/js/pages/ProjectPage/index.tsx:89
@@ -363,7 +363,7 @@ msgstr "Projetos"
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:301
 msgid "Relative due date"
-msgstr "Data de vencimento relativa"
+msgstr "Data de conclusão relativa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
@@ -385,12 +385,12 @@ msgstr "Selecionar marco"
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:130
 msgid "Set due date"
-msgstr "Definir data de vencimento"
+msgstr "Definir data de conclusão"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:304
 msgid "Set relative date"
-msgstr "Definir data relativa"
+msgstr "Definir data de conclusão relativa"
 
 #.elixir
 #: lib/operately_email/templates.ex:32
@@ -432,7 +432,7 @@ msgstr "Tarefas"
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
 msgid "Template"
-msgstr "Modelo"
+msgstr "Template"
 
 #.frontend
 #: ../turboui/src/TaskPage/Overview.tsx:65
