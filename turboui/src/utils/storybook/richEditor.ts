@@ -36,6 +36,7 @@ const mockUploadFile: UploadFileFn = async (file: File, onProgress: (progress: n
 export function createMockRichEditorHandlers(): RichEditorHandlers {
   return {
     mentionedPersonLookup: mockMentionedPersonLookup,
+    resolveResourceLinkTitles: async () => [],
     peopleSearch: mockPeopleSearch,
     uploadFile: mockUploadFile,
   };

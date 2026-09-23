@@ -9,6 +9,8 @@ import { DocumentVersionHistoryPage } from "../index";
 import * as M from "../mockData";
 import type { DocumentVersionHistoryPageProps } from "../types";
 
+const resolveResourceLinkTitles = async () => [];
+
 const mentionedPersonLookup = async () => null;
 
 function byTestId(id: string) {
@@ -22,6 +24,7 @@ function renderPage(overrides: Partial<DocumentVersionHistoryPageProps> = {}) {
     versions: M.multiVersionList,
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
     getComparisonPath: (versionNumber) => `/documents/1/versions/${versionNumber}`,
     ...overrides,
   };
@@ -104,6 +107,7 @@ describe("DocumentVersionHistoryPage", () => {
           versions={versions}
           formattedTimePreferences={defaultFormattedTimePreferences}
           mentionedPersonLookup={mentionedPersonLookup}
+          resolveResourceLinkTitles={resolveResourceLinkTitles}
           getComparisonPath={(versionNumber) => `/documents/1/versions/${versionNumber}`}
           canRestore
           currentVersionNumber={currentVersionNumber}

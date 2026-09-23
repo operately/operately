@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import { Page } from "../Page";
@@ -18,6 +19,7 @@ export namespace DocumentVersionComparisonPage {
     comparisonStatus: ComparisonStatus;
     formattedTimePreferences: FormattedTimePreferences;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
     onRetryComparison: () => void;
   };
 }
@@ -39,6 +41,7 @@ export function DocumentVersionComparisonPage(props: DocumentVersionComparisonPa
           comparisonStatus={props.comparisonStatus}
           formattedTimePreferences={props.formattedTimePreferences}
           mentionedPersonLookup={props.mentionedPersonLookup}
+          resolveResourceLinkTitles={props.resolveResourceLinkTitles}
           onRetryComparison={props.onRetryComparison}
         />
       </div>

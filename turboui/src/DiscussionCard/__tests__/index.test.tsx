@@ -13,6 +13,7 @@ describe("DiscussionCard", () => {
       <MemoryRouter>
         <DiscussionCard
           mentionedPersonLookup={async () => null}
+          resolveResourceLinkTitles={async () => []}
           formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",
@@ -26,7 +27,7 @@ describe("DiscussionCard", () => {
             state: "scheduled",
           }}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Scheduled")).toBeInTheDocument();
@@ -38,6 +39,7 @@ describe("DiscussionCard", () => {
       <MemoryRouter>
         <DiscussionCard
           mentionedPersonLookup={async () => null}
+          resolveResourceLinkTitles={async () => []}
           formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",
@@ -49,7 +51,7 @@ describe("DiscussionCard", () => {
             commentCount: 4,
           }}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Imported discussion")).toBeInTheDocument();

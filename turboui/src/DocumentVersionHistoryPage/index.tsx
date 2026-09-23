@@ -111,6 +111,7 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
               <RichContent
                 content={versionPreviewContent(selectedVersion)}
                 mentionedPersonLookup={props.mentionedPersonLookup}
+                resolveResourceLinkTitles={props.resolveResourceLinkTitles}
               />
             </div>
           </section>

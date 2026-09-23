@@ -50,7 +50,7 @@ const SpaceTaskCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
     const { comment } = content(activity);
 
     if (!comment?.content) {
@@ -63,7 +63,14 @@ const SpaceTaskCommented: ActivityHandler = {
       return null;
     }
 
-    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
+    return (
+      <Summary
+        content={commentContent}
+        characterCount={200}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

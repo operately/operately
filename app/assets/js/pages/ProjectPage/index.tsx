@@ -171,7 +171,9 @@ function LoadedPage() {
   });
 
   const parentGoalSearch = useParentGoalSearch({ type: "project", id: project.id });
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+  const richEditorHandlers = useRichEditorHandlers({
+    scope: { type: "project", id: project.id },
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({

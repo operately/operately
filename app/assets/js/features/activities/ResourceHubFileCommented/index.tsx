@@ -58,14 +58,23 @@ const ResourceHubFileCommented: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers({
+      scope: People.NoneSearchScope,
+    });
     const commentContent = parseCommentContent(comment?.content);
 
     if (!commentContent) {
       return null;
     }
 
-    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
+    return (
+      <Summary
+        content={commentContent}
+        characterCount={200}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

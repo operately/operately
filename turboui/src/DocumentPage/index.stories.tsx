@@ -144,6 +144,7 @@ const basePublished = {
   formattedTimePreferences: defaultFormattedTimePreferences,
   content: JSON.stringify(asRichText("How we interview candidates at Operately.")),
   mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
+  resolveResourceLinkTitles: richTextHandlers.resolveResourceLinkTitles,
 };
 
 export const Default: Story = {
@@ -230,6 +231,7 @@ export const TemplateReadOnly: Story = {
       formattedTimePreferences={defaultFormattedTimePreferences}
       content={JSON.stringify(asRichText("Template document content used when creating projects."))}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       hideDraftActions
       hideReactions
       hideComments

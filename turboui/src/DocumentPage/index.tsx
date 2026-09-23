@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import type { AvatarPerson } from "../Avatar";
@@ -34,6 +35,7 @@ export namespace DocumentPage {
 
     content: unknown;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
   }
 
   type WithDraftActions = {
@@ -142,6 +144,7 @@ export function DocumentPage(props: DocumentPage.Props) {
           content={props.content}
           className="text-md sm:text-lg"
           mentionedPersonLookup={props.mentionedPersonLookup}
+          resolveResourceLinkTitles={props.resolveResourceLinkTitles}
           parseContent
         />
 

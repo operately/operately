@@ -24,7 +24,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
     return (
       <div>
@@ -32,6 +32,7 @@ const GoalDiscussionCreation: ActivityHandler = {
           <RichContent
             content={activity.commentThread!.message!}
             mentionedPersonLookup={mentionedPersonLookup}
+            resolveResourceLinkTitles={resolveResourceLinkTitles}
             parseContent
           />
         )}
@@ -59,7 +60,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
     return (
       <div>
@@ -68,6 +69,7 @@ const GoalDiscussionCreation: ActivityHandler = {
             content={activity.commentThread.message}
             characterCount={300}
             mentionedPersonLookup={mentionedPersonLookup}
+            resolveResourceLinkTitles={resolveResourceLinkTitles}
           />
         )}
       </div>

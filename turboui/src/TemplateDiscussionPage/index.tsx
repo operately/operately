@@ -70,6 +70,7 @@ export function TemplateDiscussionPage(props: TemplateDiscussionPage.Props) {
           <RichContent
             content={props.discussion.body}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+            resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
           />
         </div>
 

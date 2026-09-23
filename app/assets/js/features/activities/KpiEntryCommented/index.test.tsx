@@ -10,7 +10,7 @@ jest.mock("turboui", () => ({
 }));
 
 jest.mock("@/hooks/useRichEditorHandlers", () => ({
-  useRichEditorHandlers: () => ({ mentionedPersonLookup: async () => null }),
+  useRichEditorHandlers: () => ({ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }),
 }));
 
 jest.mock("@/routes/paths", () => ({

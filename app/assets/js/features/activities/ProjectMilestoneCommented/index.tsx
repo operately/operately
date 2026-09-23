@@ -60,10 +60,17 @@ const ProjectMilestoneCommented: ActivityHandler = {
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
     const commentContent = parseCommentContent(comment?.content);
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
     if (commentContent) {
-      return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
+      return (
+        <Summary
+          content={commentContent}
+          characterCount={200}
+          mentionedPersonLookup={mentionedPersonLookup}
+          resolveResourceLinkTitles={resolveResourceLinkTitles}
+        />
+      );
     } else {
       return null;
     }

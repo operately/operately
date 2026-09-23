@@ -1,3 +1,4 @@
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import React from "react";
 
 import * as People from "@/models/people";
@@ -11,7 +12,7 @@ import { loader, useLoadedData } from "./loader";
 
 import { compareIds, usePaths } from "@/routes/paths";
 import { convertToWorkMapItems } from "../../models/workMap";
-import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export default { name: "ProfilePage", loader, Page } as PageModule;
@@ -19,7 +20,7 @@ export default { name: "ProfilePage", loader, Page } as PageModule;
 function Page() {
   const paths = usePaths();
   const me = useMe();
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
+  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { person, workMap, reviewerWorkMap } = useLoadedData();
 
@@ -47,6 +48,7 @@ function Page() {
     activityFeed: <ActivityFeed personId={person.id} />,
     aboutMe: person.description,
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
     formattedTimePreferences,
   };
 

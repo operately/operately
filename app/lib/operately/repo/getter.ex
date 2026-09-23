@@ -112,6 +112,12 @@ defmodule Operately.Repo.Getter do
   `list/2` uses the same access level rule and excludes rows below the required
   level.
 
+  ## ID batches
+
+  Restrict a batch to specific IDs with `opts: [ids: ids]`. An empty list
+  matches no records. This filter preserves authorization, profile scopes,
+  field matchers, and soft-deletion behavior.
+
   ## Ordering
 
   You can order list results by schema fields with the `:order_by` option:

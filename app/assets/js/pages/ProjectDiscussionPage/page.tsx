@@ -11,7 +11,8 @@ import { invalidateProjectInteractionQueries } from "@/models/projects/projectIn
 import { Avatar, IconEdit, CurrentSubscriptions, RichContent, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
-import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
+import { useMe } from "../../contexts/CurrentCompanyContext";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { compareIds, usePaths } from "../../routes/paths";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useLoadedData, useRefresh } from "./loader";
@@ -77,11 +78,16 @@ function Options() {
 
 function Content() {
   const { discussion } = useLoadedData();
-  const peopleLookup = useMentionedPersonLookupFn();
+  const message = JSON.parse(discussion.message || "{}");
+  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
   return (
     <div className="my-8">
-      <RichContent content={JSON.parse(discussion.message || "{}")} mentionedPersonLookup={peopleLookup} />
+      <RichContent
+        content={message}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
     </div>
   );
 }

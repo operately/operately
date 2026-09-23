@@ -91,6 +91,19 @@ defmodule Operately.Repo.GetterTest do
     {:ok, ctx}
   end
 
+  test "ID batches preserve authorization, matchers, and soft deletion", ctx do
+    ids = [ctx.restricted_project.id, ctx.open_project.id, ctx.closed_project.id]
+    Repo.soft_delete!(ctx.open_project)
+
+    assert [project] = Project.list(ctx.viewer, company_id: ctx.company.id, opts: [ids: ids])
+    assert project.id == ctx.restricted_project.id
+    assert Project.list(ctx.viewer, opts: [ids: []]) == []
+    assert Project.list(:system, name: "Not a matching name", opts: [ids: ids]) == []
+
+    assert length(Project.list(:system, opts: [ids: ids])) == 2
+    assert length(Project.list(:system, opts: [ids: ids, with_deleted: true])) == 3
+  end
+
   test "auth_preload filters a single association", ctx do
     # Viewer has no access to the project, so the goal is not loaded
     assert {:ok, project} =
@@ -436,6 +449,14 @@ defmodule Operately.Repo.GetterTest do
     test "applies profile scopes to system list requests", ctx do
       assert [project] = ProfiledProject.list(:system, opts: [getter_profile: :template])
       assert project.id == ctx.template_project.id
+    end
+
+    test "ID batches retain named profile scopes and access levels", ctx do
+      ids = [ctx.regular_project.id, ctx.template_project.id]
+      assert [project] = ProfiledProject.list(ctx.space_viewer, opts: [ids: ids, getter_profile: :template])
+      assert project.id == ctx.template_project.id
+      assert ProfiledProject.list(ctx.space_viewer, opts: [ids: ids, getter_profile: :template, required_access_level: Binding.edit_access()]) == []
+      assert ProfiledProject.list(:system, opts: [ids: [ctx.regular_project.id], getter_profile: :template]) == []
     end
 
     test "resources without getter_profile/1 keep the default getter behavior", ctx do

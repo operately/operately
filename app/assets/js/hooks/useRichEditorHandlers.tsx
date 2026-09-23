@@ -5,6 +5,7 @@ import * as Blobs from "@/models/blobs";
 
 import { useOptionalPaths } from "@/routes/paths";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useResourceLinkResolver } from "@/models/resourceLinks/useResourceLinkResolver";
 import { RichEditorHandlers } from "turboui";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
   const paths = useOptionalPaths();
   const mentionedPersonLookup = useMentionedPersonLookupFn();
+  const resolveResourceLinkTitles = useResourceLinkResolver();
 
   const peopleSearch = People.useMentionedPersonSearch({
     scope: attrs?.scope ?? People.NoneSearchScope,
@@ -40,6 +42,7 @@ export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
 
   return {
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
     ...(paths ? { peopleSearch, uploadFile } : {}),
   };
 }
