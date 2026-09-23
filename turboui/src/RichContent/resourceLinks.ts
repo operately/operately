@@ -1,4 +1,5 @@
 import type { ResourceLink, ResourceLinkType } from "../ApiTypes";
+import { idWithoutComments } from "../utils/ids";
 
 export type { ResourceLinkType };
 export type ResourceLinkTitle = ResourceLink;
@@ -66,8 +67,9 @@ export function parseResourceLinkUrl(
   if (!expectedOrigin || url.origin !== expectedOrigin.origin) return null;
 
   const parsed = parsePath(url);
+
   if (!parsed) return null;
-  if (idKey(parsed.companyId) !== idKey(options.companyId)) return null;
+  if (idWithoutComments(parsed.companyId) !== idWithoutComments(options.companyId)) return null;
 
   return parsed;
 }
@@ -99,6 +101,7 @@ function parseHref(href: string, origin: string): URL | null {
 
 function parsePath(url: URL): (ResourceLinkRef & { companyId: string }) | null {
   const segments = url.pathname.split("/").filter(Boolean).map(stripFragment);
+
   if (segments.length === 4 && segments[1] === "spaces" && segments[3] === "kanban") {
     const taskId = url.searchParams.get("taskId");
     const companyId = segments[0];
@@ -111,6 +114,7 @@ function parsePath(url: URL): (ResourceLinkRef & { companyId: string }) | null {
 
   const [companyId, typeSegment, resourceId] = segments;
   const type = typeSegment ? PATH_TYPES[typeSegment] : undefined;
+
   if (!companyId || !type || !resourceId) return null;
 
   return { companyId, type, id: stripFragment(resourceId) };
@@ -155,6 +159,7 @@ function walkNode(node: Record<string, unknown>, visit: (href: string, text: str
   }
 }
 
+/** Recursively copies rich-text nodes, replacing URL labels with resource titles while preserving custom labels and links. */
 function transformNode(
   node: Record<string, unknown>,
   titles: ResourceLinkTitle[],
@@ -213,7 +218,9 @@ function isLinkMark(mark: unknown): mark is { type: "link"; attrs: { href: strin
 }
 
 function findTitle(titles: ResourceLinkTitle[], ref: ResourceLinkRef): string | null {
-  const match = titles.find((title) => title.type === ref.type && idKey(title.id) === idKey(ref.id));
+  const match = titles.find(
+    (title) => title.type === ref.type && idWithoutComments(title.id) === idWithoutComments(ref.id),
+  );
   return match?.title ?? null;
 }
 
@@ -222,7 +229,7 @@ function uniqueRefs(refs: ResourceLinkRef[]): ResourceLinkRef[] {
   const unique: ResourceLinkRef[] = [];
 
   for (const ref of refs) {
-    const key = `${ref.type}:${idKey(ref.id)}`;
+    const key = `${ref.type}:${idWithoutComments(ref.id)}`;
     if (seen.has(key)) continue;
     seen.add(key);
     unique.push(ref);
@@ -231,6 +238,7 @@ function uniqueRefs(refs: ResourceLinkRef[]): ResourceLinkRef[] {
   return unique;
 }
 
+/** Normalizes URL labels for comparison, ignoring fragments and a trailing slash; falls back to trimmed text. */
 function normalizeUrlLabel(value: string): string {
   try {
     const url = new URL(value, "https://resource-link.invalid");
@@ -242,9 +250,4 @@ function normalizeUrlLabel(value: string): string {
 
 function stripFragment(value: string): string {
   return value.split("#")[0] ?? value;
-}
-
-function idKey(id: string): string {
-  const parts = id.split("-");
-  return parts[parts.length - 1] ?? id;
 }

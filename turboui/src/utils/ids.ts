@@ -34,7 +34,7 @@ function isUUID(id: string) {
   return id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 }
 
-function idWithoutComments(id: string) {
+export function idWithoutComments(id: string) {
   const parts = id.split("-");
   return parts[parts.length - 1];
 }
