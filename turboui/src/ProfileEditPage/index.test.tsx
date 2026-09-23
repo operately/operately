@@ -59,3 +59,15 @@ test("associates the language label with the language dropdown", () => {
   expect(trigger).toHaveAccessibleName("Language");
   expect(trigger).toHaveTextContent("English");
 });
+
+test("hides the language picker when the parent does not request it", () => {
+  renderPage({ showLanguageSelector: false });
+
+  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+});
+
+test("hides the language picker when editing someone else", () => {
+  renderPage({ isCurrentUser: false, showLanguageSelector: true });
+
+  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+});
