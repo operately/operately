@@ -8,9 +8,10 @@ import {
   IconLayoutGrid,
   IconWorld,
   SearchPage,
-  SEARCH_TIME_FILTER_OPTIONS,
-  SEARCH_TYPE_FILTER_OPTIONS,
+  searchTimeFilterOptions,
+  searchTypeFilterOptions,
 } from "turboui";
+import i18n from "@/i18n";
 
 interface SearchSpaceOption {
   id: string;
@@ -174,7 +175,7 @@ export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchStat
       filters: [
         {
           id: "spaces",
-          label: "All spaces",
+          label: i18n.t("All spaces"),
           icon: IconWorld,
           selectionMode: "multiple",
           selectedOptionIds: selections.spaces,
@@ -182,24 +183,24 @@ export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchStat
         },
         {
           id: "types",
-          label: "All types",
+          label: i18n.t("All types"),
           icon: IconLayoutGrid,
           selectionMode: "multiple",
           selectedOptionIds: selections.types,
-          options: SEARCH_TYPE_FILTER_OPTIONS,
+          options: searchTypeFilterOptions(),
         },
         {
           id: "time",
-          label: "All time",
+          label: i18n.t("All time"),
           icon: IconCalendar,
           selectionMode: "single",
           selectedOptionIds: selections.time,
-          options: SEARCH_TIME_FILTER_OPTIONS,
+          options: searchTimeFilterOptions(),
         },
       ],
       onFilterChange,
     }),
-    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces],
+    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces, i18n.language],
   );
 
   return { query, status, results, onQueryChange, refine };

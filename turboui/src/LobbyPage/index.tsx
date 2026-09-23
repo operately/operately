@@ -1,12 +1,13 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { CurrentVersion } from "../CurrentVersion";
 import { IconBuildingEstate, IconSparkles } from "../icons";
 import { DivLink, Link } from "../Link";
 import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
+import { tn, translationText } from "../i18n";
 import classNames from "../utils/classnames";
-import { plurarize } from "../utils/plurarize";
 
 export namespace LobbyPage {
   export interface Company {
@@ -27,15 +28,18 @@ export namespace LobbyPage {
 }
 
 export function LobbyPage(props: LobbyPage.Props) {
-  useHtmlTitle("Lobby");
+  const { t } = useTranslation();
+  useHtmlTitle(translationText(t("Lobby")));
 
   return (
     <div data-test-id="lobby-page">
       <div className="flex min-h-dvh flex-col p-4 py-8 sm:p-8 lg:p-12">
         <div>
           <OperatelyLogo width="32px" height="32px" />
-          <div className="font-medium mt-4 sm:mt-8">Welcome to Operately, {props.firstName}!</div>
-          <div className="font-medium hidden sm:block">Let's get you started</div>
+          <div className="font-medium mt-4 sm:mt-8">
+            {t("Welcome to Operately, {{name}}!", { name: props.firstName })}
+          </div>
+          <div className="font-medium hidden sm:block">{t("Let's get you started")}</div>
           <CompanyCards companies={props.companies} newCompanyPath={props.newCompanyPath} />
           <AdminsLink adminPath={props.adminPath} />
         </div>
@@ -53,13 +57,17 @@ export function LobbyPage(props: LobbyPage.Props) {
 function AdminsLink({ adminPath }: { adminPath?: string | null }) {
   if (!adminPath) return null;
 
-  const adminLink = (
-    <Link to={adminPath} className="font-medium">
-      Admin Panel
-    </Link>
+  return (
+    <div className="font-medium mt-8">
+      <Trans i18nKey="Or, visit the <link>Admin Panel</link>.">
+        Or, visit the{" "}
+        <Link to={adminPath} className="font-medium">
+          Admin Panel
+        </Link>
+        .
+      </Trans>
+    </div>
   );
-
-  return <div className="font-medium mt-8">Or, visit the {adminLink}.</div>;
 }
 
 function CompanyCards({ companies, newCompanyPath }: { companies: LobbyPage.Company[]; newCompanyPath: string }) {
@@ -89,12 +97,13 @@ function CompanyCard({ company }: { company: LobbyPage.Company }) {
     <DivLink to={company.link} className={className}>
       <IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
       <div className="font-medium mt-2">{company.name}</div>
-      <div className="text-xs">{plurarize(company.memberCount, "member", "members")}</div>
+      <div className="text-xs">{tn("1 member", "{{count}} members", company.memberCount)}</div>
     </DivLink>
   );
 }
 
 function AddCompanyCard({ newCompanyPath }: { newCompanyPath: string }) {
+  const { t } = useTranslation();
   const className = classNames(
     "cursor-pointer",
     "rounded-lg",
@@ -108,8 +117,8 @@ function AddCompanyCard({ newCompanyPath }: { newCompanyPath: string }) {
 
   return (
     <DivLink to={newCompanyPath} className={className} testId="add-company-card">
-      <div className="font-bold sm:text-lg">+ Create organization</div>
-      <div className="text-xs sm:text-sm font-medium">Start fresh with a new company account</div>
+      <div className="font-bold sm:text-lg">{t("+ Create organization")}</div>
+      <div className="text-xs sm:text-sm font-medium">{t("Start fresh with a new company account")}</div>
       <div className="absolute bottom-2 right-2">
         <IconSparkles size={24} className="text-white-1" strokeWidth={1.5} />
       </div>

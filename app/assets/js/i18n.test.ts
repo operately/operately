@@ -62,6 +62,17 @@ describe("i18n", () => {
       expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
     });
 
+    it("falls back to English for newly extracted account, navigation, and admin copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("My Account")).toBe("My Account");
+      expect(i18n.t("Help")).toBe("Help");
+      expect(i18n.t("Company Administration")).toBe("Company Administration");
+      expect(i18n.t("Sign In")).toBe("Sign In");
+      expect(tn("1 member", "{{count}} members", 3)).toBe("3 members");
+      expect(tn("1 result", "{{count}} results", 2)).toBe("2 results");
+    });
+
     it("ignores unsupported languages and keeps English", async () => {
       await applyLanguage("fr");
 

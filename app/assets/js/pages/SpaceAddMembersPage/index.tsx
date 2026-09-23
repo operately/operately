@@ -6,8 +6,10 @@ import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
 import { Forms, IconPlus, IconX, Link, SecondaryButton } from "turboui";
+import { useTranslation } from "react-i18next";
+import { translationText } from "@/i18n";
 
-import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
+import { permissionsList, PermissionLevels } from "@/features/Permissions";
 
 import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -48,6 +50,7 @@ function newMember() {
 }
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
 
@@ -70,21 +73,21 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={["Add members", space.name]}>
+    <Pages.Page title={[translationText(t("Add members")), space.name]}>
       <Paper.Root size="small">
-        <Paper.NavigateBack to={backPath} title="Back to Team & Access" />
-        <div className="text-2xl font-extrabold mb-4 text-center">Add members to {space.name}</div>
+        <Paper.NavigateBack to={backPath} title={t("Back to Team & Access")} />
+        <div className="text-2xl font-extrabold mb-4 text-center">{t("Add members to {{name}}", { name: space.name })}</div>
         <p className="text-sm text-center text-content-dimmed mb-4">
-          Only existing members can be added.{" "}
+          {t("Only existing members can be added.")}{" "}
           <Link to={paths.invitePeoplePath()} className="text-sm" underline="hover">
-            Invite someone new to the organization
+            {t("Invite someone new to the organization")}
           </Link>
         </p>
 
         <Forms.Form form={form}>
           <Members />
 
-          <Forms.Submit saveText="Add members" layout="centered" buttonSize="base" submitOnEnter={false} />
+          <Forms.Submit saveText={translationText(t("Add members"))} layout="centered" buttonSize="base" submitOnEnter={false} />
         </Forms.Form>
       </Paper.Root>
     </Pages.Page>
@@ -115,12 +118,14 @@ function Members() {
 }
 
 function Member({ field, search, index }) {
+  const { t } = useTranslation();
+
   return (
     <div data-test-id={`member-${index}`}>
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
-          <Forms.SelectPerson field={field + ".personId"} label="Member" searchFn={search} />
-          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
+          <Forms.SelectPerson field={field + ".personId"} label={translationText(t("Member"))} searchFn={search} />
+          <Forms.SelectBox field={field + ".accessLevel"} label={translationText(t("Access Level"))} options={permissionsList()} />
         </Forms.FieldGroup>
 
         <RemoveMemberButton index={index} />
@@ -140,6 +145,7 @@ function AddMoreMembersButton({ onClick }: { onClick: () => void }) {
 }
 
 function RemoveMemberButton({ index }) {
+  const { t } = useTranslation();
   const [value = [], setValue] = Forms.useFieldValue<MemberField[]>("members");
 
   const onClick = () => {
@@ -152,7 +158,7 @@ function RemoveMemberButton({ index }) {
   return (
     <div className="absolute" style={{ top: "-14px", right: "-14px" }}>
       <SecondaryButton
-        ariaLabel="Remove member"
+        ariaLabel={translationText(t("Remove member"))}
         className="!rounded-full !p-2 !text-content-subtle hover:!text-content-accent hover:!bg-surface-base"
         onClick={onClick}
       >

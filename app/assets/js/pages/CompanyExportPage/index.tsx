@@ -7,10 +7,12 @@ import * as CompanyExports from "@/models/companyExports";
 import { CompanyExportPage as TurboCompanyExportPage, showErrorToast, showSuccessToast } from "turboui";
 import { useLoadedData, loader } from "./loader";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
+import { useTranslation } from "react-i18next";
 
 export default { name: "CompanyExportPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { exportRuns: runs } = useLoadedData();
@@ -24,11 +26,11 @@ function Page() {
 
     try {
       await startExport({});
-      showSuccessToast("Export started", "You'll receive the package here when the job finishes.");
+      showSuccessToast(t("Export started"), t("You'll receive the package here when the job finishes."));
     } catch {
-      showErrorToast("Failed to start export", "Please try again.");
+      showErrorToast(t("Failed to start export"), t("Please try again."));
     }
-  }, [startExport, starting]);
+  }, [startExport, starting, t]);
 
   const handleDownload = React.useCallback(
     async (runId: string) => {
@@ -49,12 +51,12 @@ function Page() {
         link.click();
         document.body.removeChild(link);
       } catch {
-        showErrorToast("Download failed", "The export package is not ready yet.");
+        showErrorToast(t("Download failed"), t("The export package is not ready yet."));
       } finally {
         setDownloading(null);
       }
     },
-    [loadExportDownload],
+    [loadExportDownload, t],
   );
 
   return (

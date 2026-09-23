@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconBuilding, IconTent } from "../icons";
+import { translationText } from "../i18n";
 import { useFieldValue } from "./context";
 import { FieldGroup } from "./FieldGroup";
 import { SelectBox } from "./SelectBox";
@@ -13,6 +15,7 @@ export function AccessSelectors({
   showSpaceAccess = true,
   noAccessValue = ACCESS_NO_ACCESS_VALUE,
 }: AccessSelectorsProps) {
+  const { t } = useTranslation();
   const [companyMembersOptions] = useFieldValue<SelectBoxOption[]>(`${fieldPrefix}.companyMembersOptions`);
   const [spaceMembersOptions] = useFieldValue<SelectBoxOption[]>(`${fieldPrefix}.spaceMembersOptions`);
   const companyOptions = companyMembersOptions ?? [];
@@ -26,7 +29,7 @@ export function AccessSelectors({
   const companySelect = (
     <SelectBox
       field={`${fieldPrefix}.companyMembers`}
-      label="Company members"
+      label={translationText(t("Company members"))}
       labelIcon={<IconBuilding size={20} />}
       options={companyOptions}
       hidden={hideCompany}
@@ -43,7 +46,7 @@ export function AccessSelectors({
         {companySelect}
         <SelectBox
           field={`${fieldPrefix}.spaceMembers`}
-          label="Space members"
+          label={translationText(t("Space members"))}
           labelIcon={<IconTent size={20} />}
           options={spaceOptions}
         />

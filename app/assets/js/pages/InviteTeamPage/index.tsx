@@ -1,5 +1,6 @@
 import * as Invitations from "@/models/invitations";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { loader, useLoadedData } from "./loader";
 import { PageModule } from "@/routes/types";
@@ -16,16 +17,17 @@ interface DomainState {
 }
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { link } = useLoadedData();
   const data = useCompanyLoaderData();
   const company = data?.company;
   const navigationItems = React.useMemo(
     () => [
-      { to: paths.companyAdminPath(), label: "Company Administration" },
-      { to: paths.companyManagePeoplePath(), label: "Manage Team Members" },
+      { to: paths.companyAdminPath(), label: t("Company Administration") },
+      { to: paths.companyManagePeoplePath(), label: t("Manage Team Members") },
     ],
-    [paths],
+    [paths, t],
   );
 
   const { mutateAsync: updateLink } = Invitations.useUpdateCompanyInviteLink();
@@ -58,7 +60,7 @@ function Page() {
         allowedDomains: enabled ? domainState.value.split(",").map((e) => e.trim()) : [],
       });
     } catch (error) {
-      showErrorToast("Network Error", "Failed to update trusted domains");
+      showErrorToast(t("Network Error"), t("Failed to update trusted domains"));
       setDomainState(previousState);
     }
   };
@@ -70,7 +72,7 @@ function Page() {
         allowedDomains: value.split(",").map((e) => e.trim()),
       });
     } catch (error) {
-      showErrorToast("Network Error", "Failed to update trusted domains");
+      showErrorToast(t("Network Error"), t("Failed to update trusted domains"));
       setDomainState((prev) => ({ ...prev, value: oldValue }));
     }
   };
@@ -83,7 +85,7 @@ function Page() {
       setLinkEnabled(newValue);
       await updateLink({ isActive: newValue });
     } catch (error) {
-      showErrorToast("Network Error", "Failed to disable invite link.");
+      showErrorToast(t("Network Error"), t("Failed to disable invite link."));
       setLinkEnabled(oldValue);
     }
   };
@@ -94,8 +96,8 @@ function Page() {
     try {
       await resetLink({});
     } catch (error) {
-      showErrorToast("Network Error", "Failed to reset invite link.");
-      setPageError("Failed to reset invite link. Please try again.");
+      showErrorToast(t("Network Error"), t("Failed to reset invite link."));
+      setPageError(t("Failed to reset invite link. Please try again."));
     }
   };
 

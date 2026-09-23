@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import { Page } from "../Page";
@@ -7,6 +8,7 @@ import { ProgressBar } from "../ProgressBar";
 import { Tooltip } from "../Tooltip";
 import { IconX } from "../icons";
 import classNames from "../utils/classnames";
+import { translationText } from "../i18n";
 
 export namespace CompanyImportPage {
   export interface UploadedFileState {
@@ -48,39 +50,40 @@ export namespace CompanyImportPage {
 }
 
 export function CompanyImportPage(props: CompanyImportPage.Props) {
-  const navigation = React.useMemo(() => [{ to: props.backPath, label: "Back to the Lobby" }], [props.backPath]);
+  const { t } = useTranslation();
+  const navigation = React.useMemo(() => [{ to: props.backPath, label: t("Back to the Lobby") }], [props.backPath, t]);
 
   return (
-    <Page title="Import Company" size="small" testId="company-import-page" navigation={navigation}>
+    <Page title={translationText(t("Import Company"))} size="small" testId="company-import-page" navigation={navigation}>
       <div className="px-4 sm:px-10 py-8">
         <header>
           <div>
-            <div className="uppercase text-sm tracking-wide">Company Import</div>
-            <h1 className="text-content-accent text-3xl font-extrabold">Import company</h1>
+            <div className="uppercase text-sm tracking-wide">{t("Company Import")}</div>
+            <h1 className="text-content-accent text-3xl font-extrabold">{t("Import company")}</h1>
             <p className="mt-2 text-content-dimmed">
-              Upload the exported ZIP package, then start importing the company into this Operately instance.
+              {t("Upload the exported ZIP package, then start importing the company into this Operately instance.")}
             </p>
           </div>
         </header>
 
         <section className="mt-10">
-          <h2 className="font-bold">Package</h2>
+          <h2 className="font-bold">{t("Package")}</h2>
 
           {props.canUpload ? (
             <div className="mt-3">
               <ArtifactUploadCard
-                title="Operately package"
+                title={t("Operately package")}
                 testIdPrefix="import-package"
                 state={props.packageFile}
                 accept=".zip,application/zip"
-                buttonLabel="Choose ZIP"
+                buttonLabel={t("Choose ZIP")}
                 onSelectFile={props.onSelectPackageFile}
                 onClearFile={props.onClearPackageFile}
                 clearDisabled={props.starting}
                 action={
                   props.canStartImport ? (
                     <PrimaryButton size="sm" onClick={props.onStartImport} loading={props.starting} testId="start-import-button">
-                      Start import
+                      {t("Start import")}
                     </PrimaryButton>
                   ) : null
                 }
@@ -88,13 +91,13 @@ export function CompanyImportPage(props: CompanyImportPage.Props) {
             </div>
           ) : (
             <div className="rounded-lg border border-dashed border-surface-outline p-6 text-sm text-content-dimmed mt-3">
-              {props.uploadsUnavailableMessage || "Uploads are unavailable for this account right now."}
+              {props.uploadsUnavailableMessage || t("Uploads are unavailable for this account right now.")}
             </div>
           )}
         </section>
 
         <section className="mt-10">
-          <h2 className="font-bold">Imports</h2>
+          <h2 className="font-bold">{t("Imports")}</h2>
 
           {props.runs.length === 0 ? (
             <EmptyState />
@@ -134,6 +137,7 @@ function ArtifactUploadCard({
   clearDisabled,
   action,
 }: ArtifactUploadCardProps) {
+  const { t } = useTranslation();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const hasUploadedFile = !!state.blobId;
 
@@ -177,10 +181,10 @@ function ArtifactUploadCard({
           </SecondaryButton>
         )}
 
-        <Tooltip content={state.fileName || "No file selected"} size="sm">
+        <Tooltip content={state.fileName || t("No file selected")} size="sm">
           <div className="flex min-w-0 items-center gap-2">
             <div className="text-sm text-content-dimmed truncate" data-test-id={`${testIdPrefix}-filename`}>
-              {state.fileName || "No file selected"}
+              {state.fileName || t("No file selected")}
             </div>
 
             {hasUploadedFile && onClearFile && (
@@ -188,7 +192,7 @@ function ArtifactUploadCard({
                 type="button"
                 onClick={onClearFile}
                 disabled={clearDisabled}
-                aria-label="Clear ZIP"
+                aria-label={translationText(t("Clear ZIP"))}
                 data-test-id={`${testIdPrefix}-clear`}
                 className={classNames("shrink-0 rounded p-1 transition-colors", {
                   "cursor-pointer text-content-subtle hover:bg-surface-highlight hover:text-content-base": !clearDisabled,
@@ -222,6 +226,7 @@ function ImportRunCard({
   latest: boolean;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   const latestStatusTestId = latest ? "latest-import-run-status" : undefined;
   const latestProgressTestId = latest ? "latest-import-run-progress" : undefined;
 
@@ -256,7 +261,7 @@ function ImportRunCard({
             data-test-id={latest ? "latest-import-open-company" : undefined}
             className="cursor-pointer text-sm text-link-base transition-colors hover:text-link-hover"
           >
-            Open company
+            {t("Open company")}
           </a>
         )}
       </div>
@@ -265,7 +270,7 @@ function ImportRunCard({
         <div className="mt-3">
           <div className="mb-1 flex items-center justify-between text-xs text-content-dimmed">
             <span data-test-id={latestProgressTestId}>{Math.round(run.percentage ?? 0)}%</span>
-            <span>{humanizeStep(run.currentStep)}</span>
+            <span>{humanizeStep(run.currentStep, t)}</span>
           </div>
 
           <ProgressBar progress={run.percentage ?? 0} status={progressStatus(run.status)} />
@@ -276,15 +281,18 @@ function ImportRunCard({
 }
 
 function EmptyState() {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-lg border border-dashed border-surface-outline p-6 text-sm text-content-dimmed mt-3">
-      No imports yet. Upload a package above to create the first one.
+      {t("No imports yet. Upload a package above to create the first one.")}
     </div>
   );
 }
 
 function RunStatus({ status }: { status: string }) {
-  return <span className={statusClassName(status)}>{status}</span>;
+  const { t } = useTranslation();
+  return <span className={statusClassName(status)}>{runStatusLabel(status, t)}</span>;
 }
 
 function RunStatusTooltip({
@@ -294,47 +302,54 @@ function RunStatusTooltip({
   run: CompanyImportPage.Run;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-1 text-left">
       <div>
-        Requested: <FormattedTime {...formattedTimePreferences} time={run.insertedAt} format="relative-time-or-date" />
+        {t("Requested:")} <FormattedTime {...formattedTimePreferences} time={run.insertedAt} format="relative-time-or-date" />
       </div>
 
       {run.completedAt && (
         <div>
-          Completed: <FormattedTime {...formattedTimePreferences} time={run.completedAt} format="relative-time-or-date" />
+          {t("Completed:")} <FormattedTime {...formattedTimePreferences} time={run.completedAt} format="relative-time-or-date" />
         </div>
       )}
 
-      <div>Rows: {run.rowsCount ?? 0}</div>
-      <div>Tables: {run.tablesCount ?? 0}</div>
-      <div>Step: {humanizeStep(run.currentStep)}</div>
+      <div>{t("Rows: {{count}}", { count: run.rowsCount ?? 0 })}</div>
+      <div>{t("Tables: {{count}}", { count: run.tablesCount ?? 0 })}</div>
+      <div>{t("Step: {{step}}", { step: humanizeStep(run.currentStep, t) })}</div>
     </div>
   );
 }
 
 function UploadStatusTooltip({ state }: { state: CompanyImportPage.UploadedFileState }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-1 text-left">
-      <div>File: {state.fileName || "No file selected"}</div>
-      <div>Status: {renderUploadStatus(state)}</div>
-      <div>Progress: {Math.round(state.progress)}%</div>
+      <div>{t("File: {{name}}", { name: state.fileName || t("No file selected") })}</div>
+      <div>{t("Status: {{status}}", { status: renderUploadStatus(state, t) })}</div>
+      <div>{t("Progress: {{progress}}%", { progress: Math.round(state.progress) })}</div>
     </div>
   );
 }
 
-function renderUploadStatus(state: CompanyImportPage.UploadedFileState) {
-  if (state.uploading) return `Uploading ${state.fileName ?? "file"}...`;
-  if (state.blobId) return "Uploaded";
-  if (state.fileName) return "Upload failed";
-  return "Waiting for file selection";
+function renderUploadStatus(state: CompanyImportPage.UploadedFileState, t: (key: string, options?: Record<string, string>) => string) {
+  if (state.uploading) {
+    return state.fileName ? t("Uploading {{name}}...", { name: state.fileName }) : t("Uploading file...");
+  }
+  if (state.blobId) return t("Uploaded");
+  if (state.fileName) return t("Upload failed");
+  return t("Waiting for file selection");
 }
 
 function shortUploadStatus(state: CompanyImportPage.UploadedFileState) {
-  if (state.uploading) return "Uploading";
-  if (state.blobId) return "Uploaded";
-  if (state.fileName) return "Failed";
-  return "Waiting";
+  const { t } = useTranslation();
+  if (state.uploading) return t("Uploading");
+  if (state.blobId) return t("Uploaded");
+  if (state.fileName) return t("Failed");
+  return t("Waiting");
 }
 
 function uploadStatusClassName(state: CompanyImportPage.UploadedFileState) {
@@ -377,8 +392,25 @@ function statusClassName(status: string) {
   });
 }
 
-function humanizeStep(step?: string | null) {
-  if (!step) return "Queued";
+function runStatusLabel(status: string, t: (key: string) => string) {
+  switch (status) {
+    case "completed":
+      return t("completed");
+    case "failed":
+      return t("failed");
+    case "running":
+      return t("running");
+    case "cancelled":
+      return t("cancelled");
+    case "pending":
+      return t("pending");
+    default:
+      return status;
+  }
+}
+
+function humanizeStep(step: string | null | undefined, t: (key: string) => string) {
+  if (!step) return t("Queued");
 
   return step
     .split("_")

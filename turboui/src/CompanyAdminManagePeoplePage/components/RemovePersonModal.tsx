@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import type { CompanyAdminManagePerson } from "../types";
@@ -17,16 +18,22 @@ export function RemovePersonModal({
   onConfirm: () => void;
   loading: boolean;
 }) {
+  const { t } = useTranslation();
   if (!person) return null;
 
   const firstName = firstNameFromFullName(person.fullName);
   const isInvitation = person.hasOpenInvitation;
 
-  const title = isInvitation ? `Revoke invitation for ${firstName}?` : `Remove ${firstName} from the company?`;
+  const title = isInvitation
+    ? t("Revoke invitation for {{name}}?", { name: firstName })
+    : t("Remove {{name}} from the company?", { name: firstName });
   const message = isInvitation
-    ? `This will revoke ${firstName}'s invitation. You can create a new invitation later if needed.`
-    : `This will deactivate ${firstName}'s account, restricting access to company resources. You can restore access later if needed.`;
-  const buttonText = isInvitation ? "Revoke" : "Deactivate";
+    ? t("This will revoke {{name}}'s invitation. You can create a new invitation later if needed.", { name: firstName })
+    : t(
+        "This will deactivate {{name}}'s account, restricting access to company resources. You can restore access later if needed.",
+        { name: firstName },
+      );
+  const buttonText = isInvitation ? t("Revoke") : t("Deactivate");
 
   return (
     <LegacyModal title={title} isOpen={isOpen} onClose={onClose} size="base">
@@ -36,7 +43,7 @@ export function RemovePersonModal({
           {buttonText}
         </PrimaryButton>
         <SecondaryButton onClick={onClose} testId="cancel-remove-member" size="sm">
-          Cancel
+          {t("Cancel")}
         </SecondaryButton>
       </div>
     </LegacyModal>
