@@ -1,501 +1,502 @@
 msgid ""
-msgstr "Language: \n"
+msgstr ""
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Operately I18n\n"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:67
 msgid "%{author} added tasks <tasks/>"
-msgstr ""
+msgstr "%{author} adicionou as tarefas <tasks/>"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:59
 msgid "%{author} added tasks <tasks/> in <location>%{locationName}</location>"
-msgstr ""
+msgstr "%{author} adicionou as tarefas <tasks/> em <location>%{locationName}</location>"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:84
 msgid "%{author} added the task \"%{taskName}\""
-msgstr ""
+msgstr "%{author} adicionou a tarefa \"%{taskName}\""
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:76
 msgid "%{author} added the task \"%{taskName}\" in <location>%{locationName}</location>"
-msgstr ""
+msgstr "%{author} adicionou a tarefa \"%{taskName}\" em <location>%{locationName}</location>"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:98
 msgid "%{author} added the task <task>%{taskName}</task>"
-msgstr ""
+msgstr "%{author} adicionou a tarefa <task>%{taskName}</task>"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:89
 msgid "%{author} added the task <task>%{taskName}</task> in <location>%{locationName}</location>"
-msgstr ""
+msgstr "%{author} adicionou a tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
 
 #.elixir
 #: lib/operately_email/templates.ex:93
 msgid "%{name} (1 update)"
 msgid_plural "%{name} (%{count} updates)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%{name} (1 atualização)"
+msgstr[1] "%{name} (%{count} atualizações)"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:92
 msgid "%{percentage}% tasks completed"
-msgstr ""
+msgstr "%{percentage}% das tarefas concluídas"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:75
 msgid "%{percentage}% tasks completed, %{completed}/%{total} tasks completed"
-msgstr ""
+msgstr "%{percentage}% das tarefas concluídas, %{completed}/%{total} tarefas concluídas"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:69
 msgid "%{who} added the task \"%{task_name}\""
-msgstr ""
+msgstr "%{who} adicionou a tarefa \"%{task_name}\""
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:61
 msgid "%{who} mentioned you in the description for \"%{task_name}\""
-msgstr ""
+msgstr "%{who} mencionou você na descrição de \"%{task_name}\""
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:68
 msgid "(%{where}) %{who} added the task \"%{task_name}\""
-msgstr ""
+msgstr "(%{where}) %{who} adicionou a tarefa \"%{task_name}\""
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:60
 msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
-msgstr ""
+msgstr "(%{where}) %{who} mencionou você na descrição de \"%{task_name}\""
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:70
 msgid "A new task named %{task_name} was created in this project."
-msgstr ""
+msgstr "Uma nova tarefa chamada %{task_name} foi criada neste projeto."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:109
 msgid "Account"
-msgstr ""
+msgstr "Conta"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 msgid "Activity"
-msgstr ""
+msgstr "Atividade"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
 msgid "Add"
-msgstr ""
+msgstr "Adicionar"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:409
 #: ../turboui/src/TaskPage/Overview.tsx:18
 msgid "Add notes about this task..."
-msgstr ""
+msgstr "Adicione notas sobre esta tarefa..."
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:83
 #: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:217
 #: ../turboui/src/TaskBoard/components/index.tsx:395
 msgid "Add task"
-msgstr ""
+msgstr "Adicionar tarefa"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:57
 msgid "Archived"
-msgstr ""
+msgstr "Arquivado"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:345
 msgid "Assign people"
-msgstr ""
+msgstr "Atribuir pessoas"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:137
 #: ../turboui/src/TaskCreationModal/index.tsx:339
 msgid "Assignees"
-msgstr ""
+msgstr "Responsáveis"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:100
 #: ../turboui/src/TaskCreationModal/index.tsx:388
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:40
 msgid "Check-ins"
-msgstr ""
+msgstr "Check-ins"
 
 #.frontend
 #: ../turboui/src/Modal/index.tsx:133
 msgid "Close"
-msgstr ""
+msgstr "Fechar"
 
 #.frontend
 #: ../turboui/src/TaskPage/Overview.tsx:34
 #: ../turboui/src/TaskPage/Overview.tsx:64
 msgid "Comments & Activity"
-msgstr ""
+msgstr "Comentários & Atividade"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:113
 msgid "Company Admin"
-msgstr ""
+msgstr "Administração da empresa"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:111
 #: ../turboui/src/TaskCreationModal/index.tsx:285
 msgid "Create Task"
-msgstr ""
+msgstr "Criar tarefa"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:382
 msgid "Create more"
-msgstr ""
+msgstr "Criar mais"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:391
 msgid "Create task"
-msgstr ""
+msgstr "Criar tarefa"
 
 #.frontend
 #: ../turboui/src/TaskPage/Overview.tsx:17
 msgid "Describe the task..."
-msgstr ""
+msgstr "Descreva a tarefa..."
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:46
 msgid "Discussions"
-msgstr ""
+msgstr "Discussões"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:52
 msgid "Docs & Files"
-msgstr ""
+msgstr "Docs & Arquivos"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:125
 msgid "Due date"
-msgstr ""
+msgstr "Data de conclusão"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:118
 #: ../turboui/src/TaskCreationModal/index.tsx:292
 msgid "Enter task title"
-msgstr ""
+msgstr "Digite o título da tarefa"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
 msgid "Failed to create task"
-msgstr ""
+msgstr "Falha ao criar a tarefa"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:291
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:313
 #: assets/js/pages/TaskPage/index.tsx:74
 msgid "Failed to update task name."
-msgstr ""
+msgstr "Falha ao atualizar o nome da tarefa."
 
 #.elixir
 #: lib/operately_email/templates.ex:33
 msgid "Goal"
-msgstr ""
+msgstr "Objetivo"
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:42
 msgid "Here's every notification you've received from Operately."
-msgstr ""
+msgstr "Aqui estão todas as notificações que você recebeu do Operately."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:85
 #: ../turboui/src/CompanyNavigation/index.tsx:185
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
 msgid "Home"
-msgstr ""
+msgstr "Início"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:226
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:34
 msgid "Link: %{url}"
-msgstr ""
+msgstr "Link: %{url}"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:121
 msgid "Log Out"
-msgstr ""
+msgstr "Sair"
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:59
 msgid "Manage email settings"
-msgstr ""
+msgstr "Gerenciar configurações de e-mail"
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:93
 msgid "Mark all read"
-msgstr ""
+msgstr "Marcar todas como lidas"
 
 #.frontend
 #: ../turboui/src/NotificationRow/index.tsx:33
 msgid "Mark as read"
-msgstr ""
+msgstr "Marcar como lida"
 
 #.frontend
 #: ../turboui/src/TaskPage/TaskCheckbox.tsx:29
 msgid "Mark task as done"
-msgstr ""
+msgstr "Marcar tarefa como concluída"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:161
 #: ../turboui/src/TaskCreationModal/index.tsx:319
 msgid "Milestone"
-msgstr ""
+msgstr "Marco"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:93
 #: ../turboui/src/CompanyNavigation/index.tsx:193
 msgid "My work"
-msgstr ""
+msgstr "Meu trabalho"
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:64
 msgid "New for you"
-msgstr ""
+msgstr "Novidades para você"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/index.tsx:497
 msgid "New milestone"
-msgstr ""
+msgstr "Novo marco"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/index.tsx:491
 msgid "New task"
-msgstr ""
+msgstr "Nova tarefa"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:124
 msgid "New task \"%{taskName}\" was created"
-msgstr ""
+msgstr "Nova tarefa \"%{taskName}\" foi criada"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/index.tsx:385
 #: ../turboui/src/TaskCreationModal/index.tsx:326
 msgid "No milestone"
-msgstr ""
+msgstr "Sem marco"
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:57
 msgid "No new updates."
-msgstr ""
+msgstr "Nenhuma atualização nova."
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:190
 #: ../turboui/src/TaskCreationModal/index.tsx:333
 #: ../turboui/src/TaskPage/Overview.tsx:16
 msgid "Notes"
-msgstr ""
+msgstr "Notas"
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:72
 msgid "Nothing new for you."
-msgstr ""
+msgstr "Nada novo para você."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:105
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
 msgid "Notifications"
-msgstr ""
+msgstr "Notificações"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:31
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:101
 msgid "People"
-msgstr ""
+msgstr "Pessoas"
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:104
 msgid "Previous Notifications"
-msgstr ""
+msgstr "Notificações anteriores"
 
 #.elixir
 #: lib/operately_email/templates.ex:31
 msgid "Project"
-msgstr ""
+msgstr "Projeto"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 msgid "Project Templates"
-msgstr ""
+msgstr "Templates de projeto"
 
 #.frontend
 #: assets/js/pages/ProjectPage/index.tsx:89
 #: assets/js/pages/TaskPage/index.tsx:65
 msgid "Project name cannot be empty"
-msgstr ""
+msgstr "O nome do projeto não pode ficar em branco"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 msgid "Projects"
-msgstr ""
+msgstr "Projetos"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:301
 msgid "Relative due date"
-msgstr ""
+msgstr "Data de conclusão relativa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
 #: ../turboui/src/CompanyNavigation/index.tsx:97
 msgid "Review"
-msgstr ""
+msgstr "Revisão"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:143
 #: ../turboui/src/TaskCreationModal/index.tsx:152
 msgid "Select assignees"
-msgstr ""
+msgstr "Selecionar responsáveis"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:180
 msgid "Select milestone"
-msgstr ""
+msgstr "Selecionar marco"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:130
 msgid "Set due date"
-msgstr ""
+msgstr "Definir data de conclusão"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:304
 msgid "Set relative date"
-msgstr ""
+msgstr "Definir data de conclusão relativa"
 
 #.elixir
 #: lib/operately_email/templates.ex:32
 msgid "Space"
-msgstr ""
+msgstr "Espaço"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:307
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:117
 msgid "Switch Company"
-msgstr ""
+msgstr "Trocar de empresa"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:24
 msgid "Task name"
-msgstr ""
+msgstr "Nome da tarefa"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:290
 #: assets/js/pages/TaskPage/index.tsx:75
 msgid "Task name cannot be empty"
-msgstr ""
+msgstr "O nome da tarefa não pode ficar em branco"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:115
 #: ../turboui/src/TaskCreationModal/index.tsx:289
 msgid "Task title"
-msgstr ""
+msgstr "Título da tarefa"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 msgid "Tasks"
-msgstr ""
+msgstr "Tarefas"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
 msgid "Template"
-msgstr ""
+msgstr "Template"
 
 #.frontend
 #: ../turboui/src/TaskPage/Overview.tsx:65
 msgid "Timeline data not available"
-msgstr ""
+msgstr "Dados da linha do tempo indisponíveis"
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
 #: ../turboui/src/FormattedTime/ShortDate.tsx:31
 msgid "Today"
-msgstr ""
+msgstr "Hoje"
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:20
 msgid "Tomorrow"
-msgstr ""
+msgstr "Amanhã"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:95
 msgid "Unknown"
-msgstr ""
+msgstr "Desconhecido"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:32
 msgid "View Task"
-msgstr ""
+msgstr "Ver tarefa"
 
 #.elixir
 #: lib/operately_email/templates.ex:89
 msgid "View update"
-msgstr ""
+msgstr "Ver atualização"
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:16
 #: ../turboui/src/FormattedTime/ShortDate.tsx:33
 msgid "Yesterday"
-msgstr ""
+msgstr "Ontem"
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:64
 msgid "You have 1 new update"
 msgid_plural "You have %{count} new updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Você tem 1 nova atualização"
+msgstr[1] "Você tem %{count} novas atualizações"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:62
 msgid "You were mentioned in the description for %{task_name}."
-msgstr ""
+msgstr "Você foi mencionado na descrição de %{task_name}."
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:56
 msgid "You're all caught up"
-msgstr ""
+msgstr "Você está em dia"
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:58
 msgid "You're all caught up."
-msgstr ""
+msgstr "Você está em dia."
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:48
 msgid "created the task \"%{task_name}\""
-msgstr ""
+msgstr "criou a tarefa \"%{task_name}\""
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeTime.tsx:48
@@ -511,11 +512,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeTime.tsx:46
 msgid "just now"
-msgstr ""
+msgstr "agora mesmo"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:89
 #: ../turboui/src/CompanyNavigation/index.tsx:189
 msgctxt "navigation"
 msgid "Company"
-msgstr ""
+msgstr "Empresa"

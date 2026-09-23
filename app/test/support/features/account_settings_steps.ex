@@ -95,6 +95,34 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     ctx
   end
 
+  step :enable_i18n, ctx do
+    ctx
+    |> Factory.enable_feature("i18n")
+    |> UI.visit(Paths.home_path(ctx.company))
+  end
+
+  step :assert_language_selector_hidden, ctx do
+    ctx
+    |> UI.refute_has(testid: "language")
+  end
+
+  step :change_language, ctx, option do
+    ctx
+    |> UI.select(testid: "language", option: option)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "my-account-page")
+  end
+
+  step :assert_interface_in_portuguese, ctx do
+    person = Operately.People.get_person!(ctx.person.id)
+
+    assert person.language == "pt-BR"
+
+    ctx
+    |> UI.assert_text("Início")
+    |> UI.assert_text("Meu trabalho")
+  end
+
   step :given_a_person_exists_in_company, ctx, manager_name do
     {:ok, _} =
       ctx.person
