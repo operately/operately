@@ -57,7 +57,7 @@ describe("CommentSection", () => {
           onAddComment={jest.fn()}
           onEditComment={jest.fn()}
           onDeleteComment={jest.fn()}
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
           formattedTimePreferences={defaultFormattedTimePreferences}
           ackLabel="Check-In"
         />
@@ -79,7 +79,7 @@ describe("CommentSection", () => {
           canComment={false}
           onAddComment={jest.fn()}
           onEditComment={jest.fn()}
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,

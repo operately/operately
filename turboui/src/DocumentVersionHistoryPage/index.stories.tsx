@@ -39,6 +39,7 @@ function baseProps(overrides: Partial<DocumentVersionHistoryPageProps> = {}): Do
     versions: M.multiVersionList,
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup: handlers.mentionedPersonLookup,
+    resolveResourceLinkTitles: handlers.resolveResourceLinkTitles,
     getComparisonPath: (versionNumber) => `/documents/1/versions/${versionNumber}`,
     ...overrides,
   };
@@ -82,9 +83,7 @@ export const RestoreConflict: Story = {
     const restore = canvasElement.querySelector('[data-test-id="restore-this-version"]') as HTMLButtonElement | null;
     restore?.click();
     await new Promise((resolve) => setTimeout(resolve, 0));
-    const confirm = Array.from(document.querySelectorAll("button")).find(
-      (button) => button.textContent === "Restore",
-    );
+    const confirm = Array.from(document.querySelectorAll("button")).find((button) => button.textContent === "Restore");
     confirm?.click();
   },
 };

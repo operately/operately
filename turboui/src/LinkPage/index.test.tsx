@@ -106,6 +106,7 @@ const baseProps = {
   formattedTimePreferences: defaultFormattedTimePreferences,
   description: JSON.stringify(asRichText("Notes")),
   mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
+  resolveResourceLinkTitles: richTextHandlers.resolveResourceLinkTitles,
 };
 
 describe("LinkPage", () => {
@@ -130,7 +131,10 @@ describe("LinkPage", () => {
 
     expect(document.querySelector('[data-test-id="resource-hub-link-page"]')).toBeInTheDocument();
     expect(screen.getByText("Design Spec")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Open Link" })).toHaveAttribute("href", "https://www.figma.com/file/example");
+    expect(screen.getByRole("link", { name: "Open Link" })).toHaveAttribute(
+      "href",
+      "https://www.figma.com/file/example",
+    );
     expect(screen.getByText("Notes:")).toBeInTheDocument();
     expect(screen.getByText("👍")).toBeInTheDocument();
     expect(document.querySelector('[data-test-id="add-comment"]')).toBeInTheDocument();

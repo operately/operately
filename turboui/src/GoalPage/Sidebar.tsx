@@ -175,7 +175,7 @@ function Champion(props: GoalPage.State) {
 function Reviewer(props: GoalPage.State) {
   const readonly = !props.permissions.hasFullAccess;
   const testId = readonly ? "reviewer-field-readonly" : "reviewer-field";
-  
+
   return (
     <SidebarSection
       title={
@@ -258,6 +258,7 @@ function CheckInsSection(props: GoalPage.State) {
             checkIns={checkIns}
             state={lastCheckInState}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+            resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
             formattedTimePreferences={props.formattedTimePreferences}
           />
         ) : (
@@ -299,6 +300,7 @@ function Retrospective(props: GoalPage.State) {
           content={retro.content}
           characterCount={130}
           mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+          resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
         />
 
         <div className="mt-1.5 flex items-center justify-between">

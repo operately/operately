@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import { Avatar, AvatarPerson } from "../Avatar";
@@ -26,11 +27,17 @@ namespace DiscussionCard {
   export interface Props {
     discussion: Discussion;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
     formattedTimePreferences: FormattedTimePreferences;
   }
 }
 
-export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTimePreferences }: DiscussionCard.Props) {
+export function DiscussionCard({
+  discussion,
+  mentionedPersonLookup,
+  resolveResourceLinkTitles,
+  formattedTimePreferences,
+}: DiscussionCard.Props) {
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",
@@ -56,7 +63,12 @@ export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTim
             {discussion.state === "scheduled" && <ScheduledPostLabel />}
           </div>
           <div className="break-words">
-            <Summary content={discussion.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
+            <Summary
+              content={discussion.content}
+              characterCount={130}
+              mentionedPersonLookup={mentionedPersonLookup}
+              resolveResourceLinkTitles={resolveResourceLinkTitles}
+            />
           </div>
 
           <div className="flex gap-1 mt-1 text-xs">

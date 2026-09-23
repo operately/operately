@@ -5,6 +5,8 @@ import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { genPeople } from "../utils/storybook/genPeople";
 import RichContent from "./index";
 
+const resolveResourceLinkTitles = async () => [];
+
 const meta: Meta<typeof RichContent> = {
   title: "Components/RichContent",
   component: RichContent,
@@ -30,6 +32,35 @@ const meta: Meta<typeof RichContent> = {
 
 export default meta;
 type Story = StoryObj<typeof RichContent>;
+
+export const ResolvedResourceLinks: Story = {
+  args: {
+    content: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "/acme-0abc/projects/website-xyz",
+              marks: [{ type: "link", attrs: { href: "/acme-0abc/projects/website-xyz" } }],
+            },
+          ],
+        },
+      ],
+    },
+    mentionedPersonLookup: async () => null,
+    resolveResourceLinkTitles: async () => [{ type: "project", id: "xyz", title: "Website redesign" }],
+  },
+};
+
+export const ResourceTitleLookupDisabled: Story = {
+  args: {
+    ...ResolvedResourceLinks.args,
+    resolveResourceLinkTitles: null,
+  },
+};
 
 // Example of a simple paragraph
 const simpleParagraphContent = {
@@ -117,6 +148,7 @@ export const SimpleParagraph: Story = {
   args: {
     content: simpleParagraphContent,
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
   },
 };
 
@@ -125,6 +157,7 @@ export const FormattedText: Story = {
   args: {
     content: formattedContent,
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
   },
 };
 
@@ -133,6 +166,7 @@ export const ComplexContent: Story = {
   args: {
     content: complexContent,
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
   },
 };
 
@@ -142,6 +176,7 @@ export const WithCustomClass: Story = {
     content: formattedContent,
     className: "custom-rich-content p-4 bg-gray-100 rounded",
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
   },
 };
 
@@ -169,6 +204,7 @@ function personToMention(person: { id: string; fullName: string }) {
 export const WithMentions: Story = {
   args: {
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
     content: {
       type: "doc",
       content: [

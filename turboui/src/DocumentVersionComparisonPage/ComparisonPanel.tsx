@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import type { DocumentVersion } from "../ApiTypes";
@@ -9,12 +10,7 @@ import classNames from "../utils/classnames";
 
 import type { ComparisonStatus, VersionSnapshot } from "../DocumentVersionHistoryPage/types";
 
-import {
-  ComparisonErrorState,
-  ComparisonLoadingState,
-  NoChangesState,
-  VersionUnavailableState,
-} from "./states";
+import { ComparisonErrorState, ComparisonLoadingState, NoChangesState, VersionUnavailableState } from "./states";
 
 type Props = {
   versions: DocumentVersion[];
@@ -23,6 +19,7 @@ type Props = {
   comparisonStatus: ComparisonStatus;
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
   onRetryComparison: () => void;
 };
 
@@ -43,6 +40,7 @@ export function ComparisonPanel(props: Props) {
         after={props.after}
         formattedTimePreferences={props.formattedTimePreferences}
         mentionedPersonLookup={props.mentionedPersonLookup}
+        resolveResourceLinkTitles={props.resolveResourceLinkTitles}
       />
     );
   }
@@ -56,23 +54,16 @@ function ReadyComparison(props: {
   after: VersionSnapshot;
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }) {
   const contentEqual = JSON.stringify(props.before.content) === JSON.stringify(props.after.content);
   const beforeTime = versionInsertedAt(props.versions, props.before);
   const afterTime = versionInsertedAt(props.versions, props.after);
   const beforeLabel = (
-    <VersionTimeLabel
-      time={beforeTime}
-      preferences={props.formattedTimePreferences}
-      testId="version-label-before"
-    />
+    <VersionTimeLabel time={beforeTime} preferences={props.formattedTimePreferences} testId="version-label-before" />
   );
   const afterLabel = (
-    <VersionTimeLabel
-      time={afterTime}
-      preferences={props.formattedTimePreferences}
-      testId="version-label-after"
-    />
+    <VersionTimeLabel time={afterTime} preferences={props.formattedTimePreferences} testId="version-label-after" />
   );
 
   if (contentEqual) {
@@ -113,11 +104,7 @@ function versionInsertedAt(versions: DocumentVersion[], snapshot: VersionSnapsho
   );
 }
 
-function VersionTimeLabel(props: {
-  time: string | null;
-  preferences: FormattedTimePreferences;
-  testId: string;
-}) {
+function VersionTimeLabel(props: { time: string | null; preferences: FormattedTimePreferences; testId: string }) {
   return (
     <span className="text-xs font-normal text-content-dimmed" data-test-id={props.testId}>
       {props.time ? (

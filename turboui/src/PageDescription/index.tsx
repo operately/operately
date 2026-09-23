@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
@@ -58,7 +59,11 @@ export function PageDescription({
       <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
 
       {mode === "view" && (
-        <ViewMode rawDescription={description} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
+        <ViewMode
+          rawDescription={description}
+          mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+          resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
+        />
       )}
       {mode === "edit" && (
         <EditMode
@@ -96,14 +101,20 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
 interface ViewModeProps {
   rawDescription: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
-function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
-  const { description, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
+function ViewMode({ rawDescription, mentionedPersonLookup, resolveResourceLinkTitles }: ViewModeProps) {
+  const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
 
   return (
     <div className="mt-2">
-      <RichContent content={description} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent
+        content={rawDescription}
+        transformContent={transformContent}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
 
       {length > PREVIEW_CHARACTER_LIMIT && (
         <button onClick={toggleExpand} className="text-content-dimmed hover:underline text-sm mt-1 font-medium">
@@ -123,7 +134,14 @@ interface EditModeProps {
   localDraftKey?: string;
 }
 
-function EditMode({ description, richTextHandlers, onDescriptionChange, setMode, placeholder, localDraftKey }: EditModeProps) {
+function EditMode({
+  description,
+  richTextHandlers,
+  onDescriptionChange,
+  setMode,
+  placeholder,
+  localDraftKey,
+}: EditModeProps) {
   const editor = useEditor({
     content: description,
     editable: true,
@@ -198,18 +216,18 @@ function useExpandDescription(rawDescription: any) {
     return rawDescription ? countCharacters(rawDescription, { skipParse: true }) : 0;
   }, [rawDescription]);
 
-  const description = useMemo(() => {
-    if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) {
-      return rawDescription;
-    } else {
-      return shortenContent(rawDescription, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
-    }
-  }, [rawDescription, length, isExpanded]);
+  const transformContent = useCallback(
+    (content: any) => {
+      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) return content;
+      return shortenContent(content, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
+    },
+    [length, isExpanded],
+  );
 
   const toggleExpand = useCallback(() => setIsExpanded((prev) => !prev), [setIsExpanded]);
 
   return {
-    description,
+    transformContent,
     length,
     isExpanded,
     toggleExpand,

@@ -10,9 +10,16 @@ defmodule Operately.Repo.Getter.BaseQuery do
       from(resource in module, as: :resource, preload: ^AuthPreloader.ordinary_preloads(args.preload, args.auth_preload))
       |> Profile.apply_scope!(module, args.getter_profile, profile)
       |> add_field_matchers(args.field_matchers)
+      |> restrict_ids(args.ids)
       |> add_order_by(module, args.order_by)
 
     {query, profile}
+  end
+
+  defp restrict_ids(query, nil), do: query
+  defp restrict_ids(query, ids) when is_list(ids), do: where(query, [resource: resource], resource.id in ^ids)
+  defp restrict_ids(_query, _ids) do
+    raise ArgumentError, "Expected :ids to be a list"
   end
 
   defp add_field_matchers(query, field_matchers) do

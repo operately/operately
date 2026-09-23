@@ -32,7 +32,7 @@ const GoalTimeframeEditing: ActivityHandler = {
 
   PageContent({ activity }: { activity: Activity }) {
     const { newTimeframe, oldTimeframe } = content(activity);
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
     return (
       <div className="mt-2">
@@ -57,6 +57,7 @@ const GoalTimeframeEditing: ActivityHandler = {
             <RichContent
               content={activity.commentThread.message}
               mentionedPersonLookup={mentionedPersonLookup}
+              resolveResourceLinkTitles={resolveResourceLinkTitles}
               parseContent
             />
           </div>
@@ -82,7 +83,7 @@ const GoalTimeframeEditing: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
     assertPresent(data.newTimeframe, "newTimeframe must be present in activity");
     assertPresent(data.oldTimeframe, "oldTimeframe must be present in activity");
@@ -96,6 +97,7 @@ const GoalTimeframeEditing: ActivityHandler = {
             <RichContent
               content={activity.commentThread.message}
               mentionedPersonLookup={mentionedPersonLookup}
+              resolveResourceLinkTitles={resolveResourceLinkTitles}
               parseContent
             />
           </div>

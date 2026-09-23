@@ -74,6 +74,7 @@ function Page() {
       formattedTimePreferences={formattedTimePreferences}
       description={link.description ?? null}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       hideReactions
       comments={commentsProps}
       hideSubscriptions

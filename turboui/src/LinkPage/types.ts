@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import type { AvatarPerson } from "../Avatar";
 import type { CommentSectionProps } from "../CommentSection";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -24,6 +25,7 @@ export namespace LinkPage {
 
     description: unknown | null;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
   }
 
   type WithReactions = {

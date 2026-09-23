@@ -180,7 +180,9 @@ function Page() {
     transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
+  const richEditorHandlers = useRichEditorHandlers({
+    scope: { type: "project", id: task.project.id },
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const projectSearch = Projects.useProjectSearch({
