@@ -1,7 +1,6 @@
 import React from "react";
 import { Content, useEditor } from "../RichEditor";
-import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
-import { applyResourceLinkTitles, type ResourceLinkTitle } from "./resourceLinks";
+import { MentionedPersonLookupFn, ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 
 interface Props {
   content: any;
@@ -9,7 +8,9 @@ interface Props {
   mentionedPersonLookup: MentionedPersonLookupFn;
   parseContent?: boolean;
   thumbnailBlobs?: boolean;
-  resourceLinkTitles?: ResourceLinkTitle[];
+  transformContent?: (content: any) => any;
+  /** Pass null to explicitly disable resource title lookup. */
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
 export default function RichContent({
@@ -18,30 +19,17 @@ export default function RichContent({
   mentionedPersonLookup,
   parseContent,
   thumbnailBlobs,
-  resourceLinkTitles,
+  transformContent,
+  resolveResourceLinkTitles,
 }: Props) {
-  const displayContent = React.useMemo(() => {
-    const parsed = parseContent ? JSON.parse(content) : content;
-    const origin = typeof window === "undefined" ? undefined : window.location.origin;
-
-    return applyResourceLinkTitles(parsed, resourceLinkTitles ?? [], origin ? { origin } : undefined);
-  }, [content, parseContent, resourceLinkTitles]);
-
+  const parsed = React.useMemo(() => (parseContent ? JSON.parse(content) : content), [content, parseContent]);
   const editor = useEditor({
-    content: displayContent,
+    content: parsed,
     editable: false,
     thumbnailBlobs,
-    handlers: {
-      mentionedPersonLookup,
-    },
+    transformContent,
+    handlers: { mentionedPersonLookup, resolveResourceLinkTitles },
   });
-
-  React.useEffect(() => {
-    // Use setTimeout to avoid flushSync warning by deferring the update
-    setTimeout(() => {
-      editor.setContent(displayContent);
-    }, 0);
-  }, [displayContent]);
 
   return <Content editor={editor} className={className} />;
 }

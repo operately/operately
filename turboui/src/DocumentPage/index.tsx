@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import type { AvatarPerson } from "../Avatar";
@@ -10,7 +11,6 @@ import type { Navigation } from "../Page/Navigation";
 import { Reactions } from "../Reactions";
 import RichContent from "../RichContent";
 import type { MentionedPersonLookupFn } from "../RichEditor/useEditor";
-import { ResourceLinkTitle } from "../RichContent/resourceLinks";
 import { DeleteResourceConfirmModal } from "../ResourceHub/DeleteResourceConfirmModal";
 import { CopyDocumentModalWrapper } from "../ResourceHub/nodeMenus/CopyDocumentModal";
 import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/NodesListContext";
@@ -35,7 +35,7 @@ export namespace DocumentPage {
 
     content: unknown;
     mentionedPersonLookup: MentionedPersonLookupFn;
-    resourceLinkTitles?: ResourceLinkTitle[];
+    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
   }
 
   type WithDraftActions = {
@@ -144,7 +144,7 @@ export function DocumentPage(props: DocumentPage.Props) {
           content={props.content}
           className="text-md sm:text-lg"
           mentionedPersonLookup={props.mentionedPersonLookup}
-          resourceLinkTitles={props.resourceLinkTitles}
+          resolveResourceLinkTitles={props.resolveResourceLinkTitles}
           parseContent
         />
 

@@ -13,6 +13,7 @@ defmodule Operately.RichContent.ResourceLinkResolver do
   alias Operately.Tasks.Task
   alias OperatelyWeb.Api.Helpers
 
+  @supported_types Operately.RichContent.ResourceLinks.types()
   @max_unique_refs 100
 
   def max_unique_refs, do: @max_unique_refs
@@ -20,26 +21,47 @@ defmodule Operately.RichContent.ResourceLinkResolver do
   def resolve(person, company, resources) when is_list(resources) do
     resources
     |> Enum.flat_map(&normalize_ref/1)
-    |> Enum.uniq_by(&{&1.type, id_key(&1.id)})
+    |> Enum.uniq_by(&{&1.type, &1.decoded_id})
     |> Enum.take(@max_unique_refs)
-    |> Enum.flat_map(&resolve_one(person, company, &1))
+    |> resolve_batches(person, company)
   end
 
   def resolve(_person, _company, _resources), do: []
 
-  defp normalize_ref(%{type: type, id: id}) when is_atom(type) and is_binary(id) and id != "" do
-    [%{type: type, id: id}]
+  defp normalize_ref(%{type: type, id: id}) when type in @supported_types and is_binary(id) and id != "" do
+    case decode_id(id) do
+      {:ok, decoded_id} -> [%{type: type, id: id, decoded_id: decoded_id}]
+      :error -> []
+    end
   end
 
   defp normalize_ref(_), do: []
 
-  defp resolve_one(person, company, %{type: type, id: requested_id}) do
-    with {:ok, decoded_id} <- decode_id(requested_id),
-         {:ok, title} <- load_title(person, company, type, decoded_id) do
-      [%{type: type, id: requested_id, title: title}]
-    else
-      _ -> []
-    end
+  defp resolve_batches(refs, person, company) do
+    titles =
+      refs
+      |> Enum.group_by(& &1.type)
+      |> Enum.flat_map(fn {type, refs} ->
+        ids = Enum.map(refs, & &1.decoded_id)
+        {schema, field, matchers} = resource_schema(type, company)
+
+        schema.list(person, matchers ++ [opts: [ids: ids]])
+        |> Enum.filter(&visible?(&1, person))
+        |> Enum.flat_map(fn resource ->
+          case Map.get(resource, field) do
+            title when is_binary(title) and title != "" -> [{{type, resource.id}, title}]
+            _ -> []
+          end
+        end)
+      end)
+      |> Map.new()
+
+    Enum.flat_map(refs, fn ref ->
+      case Map.fetch(titles, {ref.type, ref.decoded_id}) do
+        {:ok, title} -> [%{type: ref.type, id: ref.id, title: title}]
+        :error -> []
+      end
+    end)
   end
 
   defp decode_id(id) do
@@ -53,55 +75,18 @@ defmodule Operately.RichContent.ResourceLinkResolver do
     end
   end
 
-  defp load_title(person, company, :project, id), do: fetch_title(Project, person, id, company_id: company.id, field: :name)
-  defp load_title(person, company, :goal, id), do: fetch_title(Goal, person, id, company_id: company.id, field: :name)
-  defp load_title(person, company, :space, id), do: fetch_title(Group, person, id, company_id: company.id, field: :name)
-  defp load_title(person, company, :person, id), do: fetch_title(Person, person, id, company_id: company.id, field: :full_name)
-  defp load_title(person, _company, :task, id), do: fetch_title(Task, person, id, field: :name)
-  defp load_title(person, _company, :milestone, id), do: fetch_title(Milestone, person, id, field: :title)
-  defp load_title(person, _company, :document, id), do: fetch_title(Document, person, id, field: :name)
-  defp load_title(person, _company, :file, id), do: fetch_title(File, person, id, field: :name)
-  defp load_title(person, _company, :link, id), do: fetch_title(Link, person, id, field: :name)
-  defp load_title(person, _company, :folder, id), do: fetch_title(Folder, person, id, field: :name)
-  defp load_title(person, _company, :discussion, id), do: fetch_discussion_title(person, id)
-  defp load_title(_person, _company, _type, _id), do: :error
+  defp resource_schema(:project, company), do: {Project, :name, [company_id: company.id]}
+  defp resource_schema(:goal, company), do: {Goal, :name, [company_id: company.id]}
+  defp resource_schema(:space, company), do: {Group, :name, [company_id: company.id]}
+  defp resource_schema(:person, company), do: {Person, :full_name, [company_id: company.id]}
+  defp resource_schema(:task, _company), do: {Task, :name, []}
+  defp resource_schema(:milestone, _company), do: {Milestone, :title, []}
+  defp resource_schema(:document, _company), do: {Document, :name, []}
+  defp resource_schema(:file, _company), do: {File, :name, []}
+  defp resource_schema(:link, _company), do: {Link, :name, []}
+  defp resource_schema(:folder, _company), do: {Folder, :name, []}
+  defp resource_schema(:discussion, _company), do: {Message, :title, []}
 
-  defp fetch_title(schema, person, id, opts) do
-    {field, matchers} = Keyword.pop(opts, :field)
-    args = Keyword.merge(matchers, id: id)
-
-    case schema.get(person, args) do
-      {:ok, resource} -> title_from(resource, field)
-      _ -> :error
-    end
-  end
-
-  defp fetch_discussion_title(person, id) do
-    with {:ok, message} <- Message.get(person, id: id),
-         true <- discussion_visible?(message, person),
-         {:ok, title} <- title_from(message, :title) do
-      {:ok, title}
-    else
-      _ -> :error
-    end
-  end
-
-  defp discussion_visible?(%{state: state, author_id: author_id}, %{id: person_id})
-       when state in [:draft, :scheduled] and author_id != person_id,
-       do: false
-
-  defp discussion_visible?(_message, _person), do: true
-
-  defp title_from(resource, field) do
-    case Map.get(resource, field) do
-      title when is_binary(title) and title != "" -> {:ok, title}
-      _ -> :error
-    end
-  end
-
-  defp id_key(id) do
-    id
-    |> String.split("-")
-    |> List.last()
-  end
+  defp visible?(%Message{} = message, person), do: Helpers.check_draft_access(message, person) == {:ok, :allowed}
+  defp visible?(_resource, _person), do: true
 end

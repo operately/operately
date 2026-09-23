@@ -44,9 +44,16 @@ const DiscussionPosting: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { discussion } = content(activity);
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
-    return <Summary content={discussion?.body} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
+    return (
+      <Summary
+        content={discussion?.body}
+        characterCount={200}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

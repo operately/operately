@@ -45,6 +45,7 @@ export function PublicDocumentPage({ document, loading, formattedTimePreferences
         formattedTimePreferences={formattedTimePreferences}
         content={document.content}
         mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={null}
         testId="public-document-page"
         hideDraftActions
         hideReactions

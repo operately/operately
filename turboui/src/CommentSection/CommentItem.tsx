@@ -1,3 +1,4 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React, { useCallback, useState } from "react";
 import { Link } from "react-router";
 import { Avatar } from "../Avatar";
@@ -142,7 +143,7 @@ export function CommentItem({
           <CommentViewMode
             content={parsedContent}
             mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-            resourceLinkTitles={richTextHandlers.resourceLinkTitles}
+            resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
             reactions={comment.reactions}
             currentUserId={currentUserId}
             canAddReaction={canAddReaction}
@@ -214,7 +215,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
 interface CommentViewModeProps {
   content: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
-  resourceLinkTitles?: RichEditorHandlers["resourceLinkTitles"];
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
   reactions: Reactions.Reaction[];
   currentUserId?: string;
   canAddReaction: boolean;
@@ -225,7 +226,7 @@ interface CommentViewModeProps {
 function CommentViewMode({
   content,
   mentionedPersonLookup,
-  resourceLinkTitles,
+  resolveResourceLinkTitles,
   reactions,
   currentUserId,
   canAddReaction,
@@ -240,7 +241,7 @@ function CommentViewMode({
         <RichContent
           content={content}
           mentionedPersonLookup={mentionedPersonLookup}
-          resourceLinkTitles={resourceLinkTitles}
+          resolveResourceLinkTitles={resolveResourceLinkTitles}
         />
       </div>
       {shouldShowReactions && (

@@ -1,9 +1,9 @@
+import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
-import { ResourceLinkTitle } from "../RichContent/resourceLinks";
 
 const PREVIEW_CHARACTER_LIMIT = 450;
 
@@ -62,7 +62,7 @@ export function PageDescription({
         <ViewMode
           rawDescription={description}
           mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-          resourceLinkTitles={richTextHandlers.resourceLinkTitles}
+          resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
         />
       )}
       {mode === "edit" && (
@@ -101,18 +101,19 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
 interface ViewModeProps {
   rawDescription: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
-  resourceLinkTitles?: ResourceLinkTitle[];
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
-function ViewMode({ rawDescription, mentionedPersonLookup, resourceLinkTitles }: ViewModeProps) {
-  const { description, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
+function ViewMode({ rawDescription, mentionedPersonLookup, resolveResourceLinkTitles }: ViewModeProps) {
+  const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
 
   return (
     <div className="mt-2">
       <RichContent
-        content={description}
+        content={rawDescription}
+        transformContent={transformContent}
         mentionedPersonLookup={mentionedPersonLookup}
-        resourceLinkTitles={resourceLinkTitles}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
       />
 
       {length > PREVIEW_CHARACTER_LIMIT && (
@@ -215,18 +216,18 @@ function useExpandDescription(rawDescription: any) {
     return rawDescription ? countCharacters(rawDescription, { skipParse: true }) : 0;
   }, [rawDescription]);
 
-  const description = useMemo(() => {
-    if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) {
-      return rawDescription;
-    } else {
-      return shortenContent(rawDescription, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
-    }
-  }, [rawDescription, length, isExpanded]);
+  const transformContent = useCallback(
+    (content: any) => {
+      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) return content;
+      return shortenContent(content, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
+    },
+    [length, isExpanded],
+  );
 
   const toggleExpand = useCallback(() => setIsExpanded((prev) => !prev), [setIsExpanded]);
 
   return {
-    description,
+    transformContent,
     length,
     isExpanded,
     toggleExpand,

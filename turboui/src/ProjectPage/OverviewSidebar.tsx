@@ -91,6 +91,7 @@ function CheckInsSection(props: ProjectPage.State) {
             checkIns={checkIns}
             state={lastCheckInState}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+            resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
             formattedTimePreferences={props.formattedTimePreferences}
           />
         ) : (

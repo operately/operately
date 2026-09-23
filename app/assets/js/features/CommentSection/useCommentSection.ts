@@ -43,10 +43,8 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
     initialComments: query.data?.comments ?? EMPTY_COMMENTS,
     invalidateQueries,
   });
-  const commentContents = useMemo(() => comments.comments.map((comment) => comment.content), [comments.comments]);
   const richTextHandlers = useRichEditorHandlers({
     scope: mentionSearchScope,
-    resourceLinkContents: commentContents,
   });
 
   Comments.useReloadCommentsSignal(

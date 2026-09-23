@@ -6,7 +6,7 @@ import { isUploadInProgress } from "./Blob";
 import { createRichEditorExtensions } from "./createRichEditorExtensions";
 import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, writeLocalDraft } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
-import { ResourceLinkTitle } from "../RichContent/resourceLinks";
+import { applyResourceLinkTitles, ResourceLinkTitle } from "../RichContent/resourceLinks";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -30,11 +30,14 @@ interface OnBlurData {
 export type UploadFileFn = (file: File, onProgress: (progress: number) => void) => Promise<{ id: string; url: string }>;
 export type MentionedPersonLookupFn = (id: string) => Promise<Person | null>;
 
+export type ResolveResourceLinkTitlesFn = (content: unknown) => Promise<ResourceLinkTitle[]>;
+
 export interface RichEditorHandlers {
   mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
-  resourceLinkTitles?: ResourceLinkTitle[];
+  /** Pass null to explicitly disable resource title lookup. */
+  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
 interface UseEditorProps {
@@ -50,6 +53,7 @@ interface UseEditorProps {
   tabindex?: string;
   localDraft?: LocalDraftOptions;
   thumbnailBlobs?: boolean;
+  transformContent?: (content: any) => any;
 
   handlers: RichEditorHandlers;
 }
@@ -86,7 +90,8 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [uploading, setUploading] = React.useState(false);
   const baseContent = React.useRef(normalizeRichTextContent(props.content));
   const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
-  const initialContent = normalizeRichTextContent(restoredDraft ?? baseContent.current);
+  const sourceContent = restoredDraft ?? baseContent.current;
+  const initialContent = normalizeRichTextContent(props.transformContent?.(sourceContent) ?? sourceContent);
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const extensions = React.useMemo(
@@ -166,10 +171,41 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(normalizeRichTextContent(content), { emitUpdate: false });
+      editor.commands.setContent(normalizeRichTextContent(props.transformContent?.(content) ?? content), {
+        emitUpdate: false,
+      });
     },
-    [editor],
+    [editor, props.transformContent],
   );
+
+  // Read-only rendering resolves its own content unless disabled. Editing keeps the original source.
+  const contentKey = props.editable ? "" : JSON.stringify(props.content ?? null);
+  const resolveResourceLinkTitles = props.handlers.resolveResourceLinkTitles;
+
+  React.useEffect(() => {
+    if (!editor || props.editable) return;
+
+    let cancelled = false;
+    const content = JSON.parse(contentKey);
+    const timer = setTimeout(async () => {
+      setContent(content);
+      if (resolveResourceLinkTitles === null) return;
+
+      try {
+        const titles = await resolveResourceLinkTitles(content);
+        if (cancelled || editor.isDestroyed || titles.length === 0) return;
+        const origin = typeof window === "undefined" ? undefined : window.location.origin;
+        setContent(applyResourceLinkTitles(content, titles, origin ? { origin } : undefined));
+      } catch {
+        // Title lookup is optional enrichment; the original URLs remain usable on failure.
+      }
+    }, 0);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [editor, props.editable, contentKey, resolveResourceLinkTitles, setContent]);
 
   const getJson = React.useCallback(() => {
     if (!editor) return null;

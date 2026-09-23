@@ -155,7 +155,6 @@ function Page() {
 
   const richEditorHandlers = useRichEditorHandlers({
     scope: { type: "goal", id: goal.id },
-    resourceLinkContents: description,
   });
   const formattedTimePreferences = useFormattedTimePreferences();
 

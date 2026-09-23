@@ -113,7 +113,6 @@ it.each([true, false])("preserves the entry type, space mentions, drafts, and ca
   expect(props().editCommentDraftKey?.("comment1")).toBe("kpi_entry:entry1:edit-comment:comment1");
   expect(useRichEditorHandlers).toHaveBeenCalledWith({
     scope: { type: "space", id: "space1" },
-    resourceLinkContents: expect.any(Array),
   });
 });
 

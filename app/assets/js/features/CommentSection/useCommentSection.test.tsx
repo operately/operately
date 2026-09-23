@@ -119,7 +119,6 @@ it.each(commentTypes)(
 
       expect(useRichEditorHandlers).toHaveBeenCalledWith({
         scope: mentionSearchScope,
-        resourceLinkContents: expect.any(Array),
       });
       expect(result.props?.editCommentDraftKey?.("earlier")).toBe(`${resourceType}:resource1:edit-comment:earlier`);
 

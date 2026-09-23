@@ -23,6 +23,30 @@ defmodule OperatelyWeb.Api.RichContent.ResolveLinksTest do
     |> Factory.add_folder(:folder, :hub)
   end
 
+  test "loads a batch with one query per resource type", ctx do
+    ctx = Factory.add_project(ctx, :second_project, :space)
+    handler_id = {__MODULE__, make_ref()}
+    caller = self()
+
+    :telemetry.attach(handler_id, [:operately, :repo, :query], fn _, _, metadata, _ ->
+      if self() == caller, do: send(caller, {:resource_query, metadata.query})
+    end, nil)
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
+    links = ResourceLinkResolver.resolve(ctx.creator, ctx.company, [
+      %{type: :project, id: Paths.project_id(ctx.project)},
+      %{type: :project, id: Paths.project_id(ctx.second_project)},
+      %{type: :project, id: Operately.ShortUuid.encode!(ctx.project.id)},
+      %{type: :goal, id: Paths.goal_id(ctx.goal)}
+    ])
+
+    assert length(links) == 3
+    assert_receive {:resource_query, _}
+    assert_receive {:resource_query, _}
+    refute_receive {:resource_query, _}
+  end
+
   test "requires authentication", ctx do
     assert {401, _} = query(ctx.conn, [:rich_content, :resolve_links], %{types: [], ids: []})
   end

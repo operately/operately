@@ -30,6 +30,7 @@ describe("Discussions", () => {
     newDiscussionLink: "/new-discussion",
     richTextHandlers: {
         mentionedPersonLookup: () => null,
+        resolveResourceLinkTitles: async () => [],
     },
   };
 

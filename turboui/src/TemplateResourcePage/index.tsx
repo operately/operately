@@ -66,12 +66,21 @@ function ResourceContent({
 
       {resource.type === "document" && resource.content && (
         <div className="my-8">
-          <RichContent content={resource.content} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
+          <RichContent
+            content={resource.content}
+            mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+            resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
+          />
         </div>
       )}
 
       {resource.type === "link" && resource.url && (
-        <DivLink to={resource.url} external target="_blank" className="mt-6 inline-block font-medium text-link-base underline">
+        <DivLink
+          to={resource.url}
+          external
+          target="_blank"
+          className="mt-6 inline-block font-medium text-link-base underline"
+        >
           Open link
         </DivLink>
       )}

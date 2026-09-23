@@ -46,6 +46,31 @@ function getByTestId(testId: string) {
 }
 
 describe("CommentItem", () => {
+  it("resolves links from its own comment content through the shared handlers", async () => {
+    const href = `${window.location.origin}/acme-0abc/projects/project-xyz`;
+    const content = {
+      type: "doc",
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] }] },
+      ],
+    };
+    const resolveResourceLinkTitles = jest.fn().mockResolvedValue([{ type: "project", id: "xyz", title: "Website" }]);
+    const { findByRole } = render(
+      <MemoryRouter>
+        <CommentItem
+          comment={{ ...comment, content: JSON.stringify(content) }}
+          form={form}
+          commentParentType="task"
+          canComment={false}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles }}
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
+      </MemoryRouter>,
+    );
+    expect(await findByRole("link", { name: "Website" })).toHaveAttribute("href", href);
+    expect(resolveResourceLinkTitles).toHaveBeenCalledWith(content);
+  });
+
   it("keeps long code blocks inside shrinkable comment content", async () => {
     const { container } = render(
       <MemoryRouter>
@@ -54,7 +79,7 @@ describe("CommentItem", () => {
           form={form}
           commentParentType="task"
           canComment={false}
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -80,7 +105,7 @@ describe("CommentItem", () => {
           canComment
           currentUserId="author-1"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -106,7 +131,7 @@ describe("CommentItem", () => {
           canManageComments
           currentUserId="someone-else"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -131,7 +156,7 @@ describe("CommentItem", () => {
           canManageComments
           currentUserId="author-1"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,

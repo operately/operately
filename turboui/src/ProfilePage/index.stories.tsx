@@ -26,7 +26,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function toProfilePerson(person: { id: string; fullName: string; title: string; avatarUrl: string | null; profileLink: string }): PersonCard.Person {
+function toProfilePerson(person: {
+  id: string;
+  fullName: string;
+  title: string;
+  avatarUrl: string | null;
+  profileLink: string;
+}): PersonCard.Person {
   const email = `${person.id}@example.com`;
 
   return {
@@ -56,9 +62,7 @@ const defaultArgs: ProfilePage.Props = {
   reviewerWorkMap: defaultReviewerWorkMap,
 
   activityFeed: (
-    <div className="bg-surface-base border border-surface-outline rounded-lg p-4">
-      Activity feed placeholder
-    </div>
+    <div className="bg-surface-base border border-surface-outline rounded-lg p-4">Activity feed placeholder</div>
   ),
 
   editProfilePath: "#",
@@ -68,6 +72,7 @@ const defaultArgs: ProfilePage.Props = {
 
   aboutMe: asRichText("Coffee nerd, jazz fan, and always happy to share shortcuts."),
   mentionedPersonLookup: createMockRichEditorHandlers().mentionedPersonLookup,
+  resolveResourceLinkTitles: createMockRichEditorHandlers().resolveResourceLinkTitles,
   formattedTimePreferences: defaultFormattedTimePreferences,
 };
 

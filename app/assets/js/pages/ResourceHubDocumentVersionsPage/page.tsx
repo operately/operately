@@ -15,11 +15,15 @@ import { buildDocumentVersionsPageNavigation } from "./navigation";
 export function Page() {
   const { document, resourceHub, versions } = useLoadedData();
   const refresh = useRefresh();
-  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+  const mutationScope = {
+    spaceId: document.space?.id,
+    resourceHubId: document.resourceHubId,
+    parentFolderId: document.parentFolderId,
+  };
   const { mutateAsync: restoreVersion } = Hub.useRestoreDocumentVersion(mutationScope);
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
   assertPresent(document.id, "document id must be present");
   assertPresent(document.permissions, "permissions must be present in document");
@@ -30,6 +34,7 @@ export function Page() {
     versions,
     formattedTimePreferences,
     mentionedPersonLookup,
+    resolveResourceLinkTitles,
     getComparisonPath: (versionNumber) => paths.resourceHubDocumentVersionPath(document.id!, versionNumber),
     canRestore: Boolean(document.permissions.canEditDocument),
     currentVersionNumber: document.currentVersion ?? null,

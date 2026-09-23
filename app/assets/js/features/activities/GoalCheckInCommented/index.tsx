@@ -49,7 +49,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
     const { comment } = content(activity);
     const commentContent = parseCommentContent(comment?.content);
 
@@ -57,7 +57,14 @@ const GoalUpdateCommented: ActivityHandler = {
       return null;
     }
 
-    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
+    return (
+      <Summary
+        content={commentContent}
+        characterCount={200}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

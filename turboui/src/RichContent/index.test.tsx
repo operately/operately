@@ -6,6 +6,8 @@ import RichContent from "./index";
 import { Summary } from "./Summary";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 
+const resolveResourceLinkTitles = async () => [];
+
 const mentionedPersonLookup: MentionedPersonLookupFn = async (id) => ({
   id,
   fullName: "Jane Doe",
@@ -47,8 +49,8 @@ function renderRichContent(
     <RichContent
       content={content}
       mentionedPersonLookup={mentionedPersonLookup}
+      resolveResourceLinkTitles={async () => resourceLinkTitles ?? []}
       parseContent={parseContent}
-      resourceLinkTitles={resourceLinkTitles}
     />,
   );
 }
@@ -59,6 +61,31 @@ function expectMentionContent(container: HTMLElement) {
 }
 
 describe("RichContent", () => {
+  it("keeps URLs and synchronizes content when title resolution is explicitly disabled", async () => {
+    const href = `${window.location.origin}/acme-0abc/projects/website-xyz`;
+    const content = {
+      type: "doc",
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] }] },
+      ],
+    };
+    const { rerender, container } = render(
+      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} resolveResourceLinkTitles={null} />,
+    );
+
+    expect(await screen.findByRole("link", { name: href })).toHaveAttribute("href", href);
+
+    rerender(
+      <RichContent
+        content={plainContent}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={null}
+      />,
+    );
+    await waitFor(() => expect(container).toHaveTextContent("Plain discussion body."));
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
   it("renders plain text content", async () => {
     const { container } = renderRichContent(plainContent);
 
@@ -110,9 +137,35 @@ describe("RichContent", () => {
 });
 
 describe("Summary", () => {
+  it("resolves titles before shortening the original URL", async () => {
+    const href = `${window.location.origin}/acme-0abc/projects/a-very-long-project-name-xyz`;
+    const content = {
+      type: "doc",
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] }] },
+      ],
+    };
+    const resolver = jest.fn().mockResolvedValue([{ type: "project", id: "xyz", title: "Website" }]);
+    const { findByText } = render(
+      <Summary
+        content={content}
+        characterCount={10}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolver}
+      />,
+    );
+    expect(await findByText("Website")).toBeInTheDocument();
+    expect(resolver).toHaveBeenCalledWith(content);
+  });
+
   it("renders summarized content that includes mentions", async () => {
     const { container } = render(
-      <Summary content={contentWithMention} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />,
+      <Summary
+        content={contentWithMention}
+        characterCount={200}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />,
     );
 
     await waitFor(() => {
@@ -147,7 +200,14 @@ describe("Summary", () => {
       ],
     };
 
-    render(<Summary content={content} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />);
+    render(
+      <Summary
+        content={content}
+        characterCount={200}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByRole("img", { name: "photo.png" })).toHaveAttribute("src", "https://example.com/photo.png");
@@ -181,7 +241,14 @@ describe("Summary", () => {
       ],
     };
 
-    render(<Summary content={content} characterCount={20} mentionedPersonLookup={mentionedPersonLookup} />);
+    render(
+      <Summary
+        content={content}
+        characterCount={20}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("notes.pdf")).toBeInTheDocument();

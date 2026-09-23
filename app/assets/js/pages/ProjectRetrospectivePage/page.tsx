@@ -1,3 +1,4 @@
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -19,7 +20,6 @@ import {
   Spacer,
 } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
 import { assertPresent } from "@/utils/assertions";
@@ -141,11 +141,15 @@ function RetrospectiveContent() {
   const { retrospective } = useLoadedData();
 
   const content = React.useMemo(() => parseContent(retrospective.content), [retrospective.content]);
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
+  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
 
   return (
     <div className="my-8">
-      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent
+        content={content}
+        mentionedPersonLookup={mentionedPersonLookup}
+        resolveResourceLinkTitles={resolveResourceLinkTitles}
+      />
     </div>
   );
 }

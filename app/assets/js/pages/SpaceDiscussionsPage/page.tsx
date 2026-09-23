@@ -114,7 +114,7 @@ function DiscussionList() {
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const paths = usePaths();
   const path = paths.discussionPath(discussion.id);
-  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const className = classNames(
@@ -139,7 +139,12 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           {discussion.state === "scheduled" && <ScheduledPostLabel />}
         </div>
         <div className="break-words">
-          <Summary content={discussion.body ?? ""} characterCount={150} mentionedPersonLookup={mentionedPersonLookup} />
+          <Summary
+            content={discussion.body ?? ""}
+            characterCount={150}
+            mentionedPersonLookup={mentionedPersonLookup}
+            resolveResourceLinkTitles={resolveResourceLinkTitles}
+          />
         </div>
 
         <div className="flex gap-1 mt-1 text-xs">

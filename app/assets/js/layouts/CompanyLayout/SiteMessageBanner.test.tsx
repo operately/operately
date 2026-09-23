@@ -5,9 +5,12 @@ import { SiteMessageBanner } from "./SiteMessageBanner";
 import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
+const mockRichContentProps = jest.fn();
+
 jest.mock("@/hooks/useRichEditorHandlers", () => ({
   useRichEditorHandlers: () => ({
     mentionedPersonLookup: async () => null,
+    resolveResourceLinkTitles: async () => [],
   }),
 }));
 
@@ -22,7 +25,9 @@ jest.mock("@/routes/useCompanyLoaderData", () => ({
 jest.mock("turboui", () => ({
   IconInfoCircleFilled: () => <span>info-icon</span>,
   IconX: () => <span>dismiss-icon</span>,
-  RichContent: ({ content, parseContent }: { content: string; parseContent?: boolean }) => {
+  RichContent: (props: { content: string; parseContent?: boolean }) => {
+    mockRichContentProps(props);
+    const { content, parseContent } = props;
     const parsed = parseContent ? JSON.parse(content) : content;
     const text = parsed?.content?.[0]?.content?.[0]?.text ?? "";
     return <div>{text}</div>;
@@ -62,6 +67,7 @@ describe("SiteMessageBanner", () => {
     expect(markup).toContain("Maintenance");
     expect(markup).toContain("Scheduled downtime tonight");
     expect(markup).not.toContain("Second");
+    expect(mockRichContentProps).toHaveBeenCalledWith(expect.objectContaining({ resolveResourceLinkTitles: null }));
   });
 
   it("does not render when all messages are dismissed", () => {
