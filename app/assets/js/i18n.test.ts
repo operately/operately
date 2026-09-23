@@ -1,4 +1,4 @@
-import i18n, { tn } from "./i18n";
+import i18n, { applyLanguage, tn } from "./i18n";
 
 describe("i18n", () => {
   it("falls back to the English message identifier", () => {
@@ -36,6 +36,38 @@ describe("i18n", () => {
     i18n.addResourceBundle("en", "translation", { [key]: key }, true, true);
 
     expect(i18n.t(key)).toEqual(key);
+  });
+
+  describe("Brazilian Portuguese", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("renders reviewed Portuguese copy for the pilot workflow", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.language).toBe("pt-BR");
+      expect(i18n.t("Home")).toBe("Início");
+      expect(i18n.t("New task")).toBe("Nova tarefa");
+      expect(i18n.t('New task "{{taskName}}" was created', { taskName: "Call leads" })).toBe(
+        'Nova tarefa "Call leads" foi criada',
+      );
+      expect(i18n.t("Close")).toBe("Fechar");
+    });
+
+    it("falls back to English for missing translations including plurals", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
+    });
+
+    it("ignores unsupported languages and keeps English", async () => {
+      await applyLanguage("fr");
+
+      expect(i18n.language).toBe("en");
+      expect(i18n.t("Home")).toBe("Home");
+    });
   });
 });
 

@@ -16,6 +16,8 @@ export namespace Dropdown {
     placeholder?: string;
     testId?: string;
     error?: string;
+    id?: string;
+    ariaLabelledBy?: string;
   }
 }
 
@@ -26,6 +28,8 @@ export function Dropdown<T extends Dropdown.Item>({
   placeholder = "Select an option",
   testId,
   error,
+  id,
+  ariaLabelledBy,
 }: Dropdown.Props<T>) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null);
@@ -56,7 +60,9 @@ export function Dropdown<T extends Dropdown.Item>({
         <Popover.Trigger asChild>
           <button
             ref={triggerRef}
+            id={id}
             type="button"
+            aria-labelledby={ariaLabelledBy}
             className={`w-full text-left border rounded px-2 py-1.5 text-sm bg-surface-base text-content-base focus:outline-none focus:ring-0 hover:bg-surface-dimmed flex items-center justify-between ${
               error ? "border-content-error" : "border-surface-outline"
             }`}
