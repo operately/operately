@@ -21,6 +21,7 @@ it("renders the document without private workspace controls", () => {
   expect(screen.getByTestId("document-content")).toBeTruthy();
   expect(screen.queryAllByRole("button")).toHaveLength(0);
   expect(screen.queryAllByRole("link")).toHaveLength(0);
+  expect(document.querySelector('[data-test-id="navigation"]')).toBeNull();
 });
 
 it("replaces the document with an unavailable state when access is lost", () => {

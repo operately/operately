@@ -21,6 +21,7 @@ defmodule Operately.Support.Features.ResourceHubDocument.PublicSharingSteps do
       ctx
       |> UI.visit(Paths.document_path(ctx.company, ctx.document))
       |> UI.click(testid: "options-button")
+      |> UI.assert_has(Wallaby.Query.css("[data-test-id='share-document-publicly']", text: "Share publicly"))
       |> UI.click(testid: "share-document-publicly")
       |> UI.click(testid: "enable-public-sharing")
       |> UI.assert_has(testid: "public-document-url")
@@ -36,6 +37,7 @@ defmodule Operately.Support.Features.ResourceHubDocument.PublicSharingSteps do
     |> UI.visit(ctx.public_path)
     |> UI.assert_has(testid: "public-document-page")
     |> UI.refute_has(testid: "options-button")
+    |> UI.refute_has(testid: "navigation")
     |> UI.take_screenshot()
   end
 
@@ -44,6 +46,7 @@ defmodule Operately.Support.Features.ResourceHubDocument.PublicSharingSteps do
     |> UI.login_as(ctx.creator)
     |> UI.visit(Paths.document_path(ctx.company, ctx.document))
     |> UI.click(testid: "options-button")
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='share-document-publicly']", text: "Manage public sharing"))
     |> UI.click(testid: "share-document-publicly")
     |> UI.click(testid: "disable-public-sharing")
     |> UI.assert_has(testid: "enable-public-sharing")

@@ -30,7 +30,7 @@ export function useDocumentPageOptions({
       {
         type: "action",
         icon: IconLink,
-        label: "Share publicly",
+        label: document.publicUrl ? "Manage public sharing" : "Share publicly",
         onClick: showPublicSharingModal,
         hidden: document.state !== "published" || !document.permissions?.canEditDocument,
         testId: "share-document-publicly",
@@ -86,6 +86,7 @@ export function useDocumentPageOptions({
   }, [
     document.content,
     document.state,
+    document.publicUrl,
     document.id,
     document.name,
     document.permissions?.canCreateDocument,

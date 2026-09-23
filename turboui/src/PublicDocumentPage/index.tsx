@@ -40,7 +40,6 @@ export function PublicDocumentPage({ document, loading, formattedTimePreferences
       publishedAt={document.publishedAt}
       modifiedAt={document.updatedAt}
       formattedTimePreferences={formattedTimePreferences}
-      navigation={[]}
       content={document.content}
       mentionedPersonLookup={mentionedPersonLookup}
       testId="public-document-page"

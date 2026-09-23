@@ -2,13 +2,13 @@ defmodule Operately.Activities.Content.ResourceHubDocumentPublicSharingChanged d
   use Operately.Activities.Content
 
   embedded_schema do
-    belongs_to :company, Operately.Companies.Company
-    belongs_to :space, Operately.Groups.Group
-    belongs_to :project, Operately.Projects.Project
-    belongs_to :goal, Operately.Goals.Goal
-    belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub
-    belongs_to :node, Operately.ResourceHubs.Node
-    belongs_to :document, Operately.ResourceHubs.Document
+    belongs_to :company, Operately.Companies.Company, type: :string
+    belongs_to :space, Operately.Groups.Group, type: :string
+    belongs_to :project, Operately.Projects.Project, type: :string
+    belongs_to :goal, Operately.Goals.Goal, type: :string
+    belongs_to :resource_hub, Operately.ResourceHubs.ResourceHub, type: :string
+    belongs_to :node, Operately.ResourceHubs.Node, type: :string
+    belongs_to :document, Operately.ResourceHubs.Document, type: :string
     field :enabled, :boolean
   end
 
