@@ -6650,32 +6650,8 @@ export interface TasksUpdateStatusResult {
   updatedMilestone: Milestone | null;
 }
 
-class ApiNamespaceRichContent {
-  constructor(private client: ApiClient) {}
-
-  async resolveLinks(input: RichContentResolveLinksInput): Promise<RichContentResolveLinksResult> {
-    return this.client.get("/rich_content/resolve_links", input);
-  }
-}
-
 class ApiNamespaceCompanyTransfers {
   constructor(private client: ApiClient) {}
-
-  async getExportRun(input: CompanyTransfersGetExportRunInput): Promise<CompanyTransfersGetExportRunResult> {
-    return this.client.get("/company_transfers/get_export_run", input);
-  }
-
-  async getImportRun(input: CompanyTransfersGetImportRunInput): Promise<CompanyTransfersGetImportRunResult> {
-    return this.client.get("/company_transfers/get_import_run", input);
-  }
-
-  async listExportRuns(input: CompanyTransfersListExportRunsInput): Promise<CompanyTransfersListExportRunsResult> {
-    return this.client.get("/company_transfers/list_export_runs", input);
-  }
-
-  async listImportRuns(input: CompanyTransfersListImportRunsInput): Promise<CompanyTransfersListImportRunsResult> {
-    return this.client.get("/company_transfers/list_import_runs", input);
-  }
 
   async createImportArtifactBlobs(
     input: CompanyTransfersCreateImportArtifactBlobsInput,
@@ -6694,14 +6670,6 @@ class ApiNamespaceCompanyTransfers {
 
 class ApiNamespaceCliAuth {
   constructor(private client: ApiClient) {}
-
-  async companyCreationStatus(input: CliAuthCompanyCreationStatusInput): Promise<CliAuthCompanyCreationStatusResult> {
-    return this.client.get("/cli_auth/company_creation_status", input);
-  }
-
-  async status(input: CliAuthStatusInput): Promise<CliAuthStatusResult> {
-    return this.client.get("/cli_auth/status", input);
-  }
 
   async authEmailCode(input: CliAuthAuthEmailCodeInput): Promise<CliAuthAuthEmailCodeResult> {
     return this.client.post("/cli_auth/auth_email_code", input);
@@ -6755,10 +6723,6 @@ class ApiNamespaceCliAuth {
 class ApiNamespaceMcpGrants {
   constructor(private client: ApiClient) {}
 
-  async list(input: McpGrantsListInput): Promise<McpGrantsListResult> {
-    return this.client.get("/mcp_grants/list", input);
-  }
-
   async revoke(input: McpGrantsRevokeInput): Promise<McpGrantsRevokeResult> {
     return this.client.post("/mcp_grants/revoke", input);
   }
@@ -6766,10 +6730,6 @@ class ApiNamespaceMcpGrants {
 
 class ApiNamespaceApiTokens {
   constructor(private client: ApiClient) {}
-
-  async list(input: ApiTokensListInput): Promise<ApiTokensListResult> {
-    return this.client.get("/api_tokens/list", input);
-  }
 
   async create(input: ApiTokensCreateInput): Promise<ApiTokensCreateResult> {
     return this.client.post("/api_tokens/create", input);
@@ -6790,22 +6750,6 @@ class ApiNamespaceApiTokens {
 
 class ApiNamespaceInvitations {
   constructor(private client: ApiClient) {}
-
-  async getInvitation(input: InvitationsGetInvitationInput): Promise<InvitationsGetInvitationResult> {
-    return this.client.get("/invitations/get_invitation", input);
-  }
-
-  async getInviteLinkAvailability(
-    input: InvitationsGetInviteLinkAvailabilityInput,
-  ): Promise<InvitationsGetInviteLinkAvailabilityResult> {
-    return this.client.get("/invitations/get_invite_link_availability", input);
-  }
-
-  async getInviteLinkByToken(
-    input: InvitationsGetInviteLinkByTokenInput,
-  ): Promise<InvitationsGetInviteLinkByTokenResult> {
-    return this.client.get("/invitations/get_invite_link_by_token", input);
-  }
 
   async getCompanyInviteLink(
     input: InvitationsGetCompanyInviteLinkInput,
@@ -6839,41 +6783,13 @@ class ApiNamespaceInvitations {
 class ApiNamespaceProductReleases {
   constructor(private client: ApiClient) {}
 
-  async getLatest(input: ProductReleasesGetLatestInput): Promise<ProductReleasesGetLatestResult> {
-    return this.client.get("/product_releases/get_latest", input);
-  }
-
   async dismiss(input: ProductReleasesDismissInput): Promise<ProductReleasesDismissResult> {
     return this.client.post("/product_releases/dismiss", input);
   }
 }
 
-class ApiNamespaceSiteMessages {
-  constructor(private client: ApiClient) {}
-
-  async listActive(input: SiteMessagesListActiveInput): Promise<SiteMessagesListActiveResult> {
-    return this.client.get("/site_messages/list_active", input);
-  }
-}
-
 class ApiNamespaceBilling {
   constructor(private client: ApiClient) {}
-
-  async get(input: BillingGetInput): Promise<BillingGetResult> {
-    return this.client.get("/billing/get", input);
-  }
-
-  async getAccessState(input: BillingGetAccessStateInput): Promise<BillingGetAccessStateResult> {
-    return this.client.get("/billing/get_access_state", input);
-  }
-
-  async getCatalog(input: BillingGetCatalogInput): Promise<BillingGetCatalogResult> {
-    return this.client.get("/billing/get_catalog", input);
-  }
-
-  async getLimitWarnings(input: BillingGetLimitWarningsInput): Promise<BillingGetLimitWarningsResult> {
-    return this.client.get("/billing/get_limit_warnings", input);
-  }
 
   async cancel(input: BillingCancelInput): Promise<BillingCancelResult> {
     return this.client.post("/billing/cancel", input);
@@ -6911,10 +6827,6 @@ class ApiNamespaceBilling {
 class ApiNamespaceEmailChanges {
   constructor(private client: ApiClient) {}
 
-  async get(input: EmailChangesGetInput): Promise<EmailChangesGetResult> {
-    return this.client.get("/email_changes/get", input);
-  }
-
   async cancel(input: EmailChangesCancelInput): Promise<EmailChangesCancelResult> {
     return this.client.post("/email_changes/cancel", input);
   }
@@ -6938,10 +6850,6 @@ class ApiNamespaceEmailChanges {
 
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
-
-  async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
-    return this.client.get("/get_theme", input);
-  }
 
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
     return this.client.post("/add_company_owners", input);
@@ -7005,18 +6913,6 @@ class ApiNamespaceRoot {
 class ApiNamespaceNotifications {
   constructor(private client: ApiClient) {}
 
-  async getUnreadCount(input: NotificationsGetUnreadCountInput): Promise<NotificationsGetUnreadCountResult> {
-    return this.client.get("/notifications/get_unread_count", input);
-  }
-
-  async isSubscribed(input: NotificationsIsSubscribedInput): Promise<NotificationsIsSubscribedResult> {
-    return this.client.get("/notifications/is_subscribed", input);
-  }
-
-  async list(input: NotificationsListInput): Promise<NotificationsListResult> {
-    return this.client.get("/notifications/list", input);
-  }
-
   async markAllAsRead(input: NotificationsMarkAllAsReadInput): Promise<NotificationsMarkAllAsReadResult> {
     return this.client.post("/notifications/mark_all_as_read", input);
   }
@@ -7047,10 +6943,6 @@ class ApiNamespaceNotifications {
 class ApiNamespaceFiles {
   constructor(private client: ApiClient) {}
 
-  async get(input: FilesGetInput): Promise<FilesGetResult> {
-    return this.client.get("/files/get", input);
-  }
-
   async create(input: FilesCreateInput): Promise<FilesCreateResult> {
     return this.client.post("/files/create", input);
   }
@@ -7067,10 +6959,6 @@ class ApiNamespaceFiles {
 class ApiNamespaceLinks {
   constructor(private client: ApiClient) {}
 
-  async get(input: LinksGetInput): Promise<LinksGetResult> {
-    return this.client.get("/links/get", input);
-  }
-
   async create(input: LinksCreateInput): Promise<LinksCreateResult> {
     return this.client.post("/links/create", input);
   }
@@ -7086,22 +6974,6 @@ class ApiNamespaceLinks {
 
 class ApiNamespaceDocuments {
   constructor(private client: ApiClient) {}
-
-  async get(input: DocumentsGetInput): Promise<DocumentsGetResult> {
-    return this.client.get("/documents/get", input);
-  }
-
-  async getPublic(input: DocumentsGetPublicInput): Promise<DocumentsGetPublicResult> {
-    return this.client.get("/documents/get_public", input);
-  }
-
-  async getVersion(input: DocumentsGetVersionInput): Promise<DocumentsGetVersionResult> {
-    return this.client.get("/documents/get_version", input);
-  }
-
-  async listVersions(input: DocumentsListVersionsInput): Promise<DocumentsListVersionsResult> {
-    return this.client.get("/documents/list_versions", input);
-  }
 
   async create(input: DocumentsCreateInput): Promise<DocumentsCreateResult> {
     return this.client.post("/documents/create", input);
@@ -7131,26 +7003,6 @@ class ApiNamespaceDocuments {
 class ApiNamespaceResourceHubs {
   constructor(private client: ApiClient) {}
 
-  async get(input: ResourceHubsGetInput): Promise<ResourceHubsGetResult> {
-    return this.client.get("/resource_hubs/get", input);
-  }
-
-  async getFolder(input: ResourceHubsGetFolderInput): Promise<ResourceHubsGetFolderResult> {
-    return this.client.get("/resource_hubs/get_folder", input);
-  }
-
-  async listDrafts(input: ResourceHubsListDraftsInput): Promise<ResourceHubsListDraftsResult> {
-    return this.client.get("/resource_hubs/list_drafts", input);
-  }
-
-  async listNodes(input: ResourceHubsListNodesInput): Promise<ResourceHubsListNodesResult> {
-    return this.client.get("/resource_hubs/list_nodes", input);
-  }
-
-  async search(input: ResourceHubsSearchInput): Promise<ResourceHubsSearchResult> {
-    return this.client.get("/resource_hubs/search", input);
-  }
-
   async copyFolder(input: ResourceHubsCopyFolderInput): Promise<ResourceHubsCopyFolderResult> {
     return this.client.post("/resource_hubs/copy_folder", input);
   }
@@ -7175,10 +7027,6 @@ class ApiNamespaceResourceHubs {
 class ApiNamespaceComments {
   constructor(private client: ApiClient) {}
 
-  async list(input: CommentsListInput): Promise<CommentsListResult> {
-    return this.client.get("/comments/list", input);
-  }
-
   async create(input: CommentsCreateInput): Promise<CommentsCreateResult> {
     return this.client.post("/comments/create", input);
   }
@@ -7194,38 +7042,6 @@ class ApiNamespaceComments {
 
 class ApiNamespaceCompanies {
   constructor(private client: ApiClient) {}
-
-  async get(input: CompaniesGetInput): Promise<CompaniesGetResult> {
-    return this.client.get("/companies/get", input);
-  }
-
-  async getActivity(input: CompaniesGetActivityInput): Promise<CompaniesGetActivityResult> {
-    return this.client.get("/companies/get_activity", input);
-  }
-
-  async getFlatWorkMap(input: CompaniesGetFlatWorkMapInput): Promise<CompaniesGetFlatWorkMapResult> {
-    return this.client.get("/companies/get_flat_work_map", input);
-  }
-
-  async getWorkMap(input: CompaniesGetWorkMapInput): Promise<CompaniesGetWorkMapResult> {
-    return this.client.get("/companies/get_work_map", input);
-  }
-
-  async list(input: CompaniesListInput): Promise<CompaniesListResult> {
-    return this.client.get("/companies/list", input);
-  }
-
-  async listActivities(input: CompaniesListActivitiesInput): Promise<CompaniesListActivitiesResult> {
-    return this.client.get("/companies/list_activities", input);
-  }
-
-  async quickSearch(input: CompaniesQuickSearchInput): Promise<CompaniesQuickSearchResult> {
-    return this.client.get("/companies/quick_search", input);
-  }
-
-  async search(input: CompaniesSearchInput): Promise<CompaniesSearchResult> {
-    return this.client.get("/companies/search", input);
-  }
 
   async convertMemberToGuest(input: CompaniesConvertMemberToGuestInput): Promise<CompaniesConvertMemberToGuestResult> {
     return this.client.post("/companies/convert_member_to_guest", input);
@@ -7291,42 +7107,6 @@ class ApiNamespaceCompanies {
 class ApiNamespacePeople {
   constructor(private client: ApiClient) {}
 
-  async get(input: PeopleGetInput): Promise<PeopleGetResult> {
-    return this.client.get("/people/get", input);
-  }
-
-  async getAccount(input: PeopleGetAccountInput): Promise<PeopleGetAccountResult> {
-    return this.client.get("/people/get_account", input);
-  }
-
-  async getAssignmentsCount(input: PeopleGetAssignmentsCountInput): Promise<PeopleGetAssignmentsCountResult> {
-    return this.client.get("/people/get_assignments_count", input);
-  }
-
-  async getBinded(input: PeopleGetBindedInput): Promise<PeopleGetBindedResult> {
-    return this.client.get("/people/get_binded", input);
-  }
-
-  async getMe(input: PeopleGetMeInput): Promise<PeopleGetMeResult> {
-    return this.client.get("/people/get_me", input);
-  }
-
-  async list(input: PeopleListInput): Promise<PeopleListResult> {
-    return this.client.get("/people/list", input);
-  }
-
-  async listAssignments(input: PeopleListAssignmentsInput): Promise<PeopleListAssignmentsResult> {
-    return this.client.get("/people/list_assignments", input);
-  }
-
-  async listPossibleManagers(input: PeopleListPossibleManagersInput): Promise<PeopleListPossibleManagersResult> {
-    return this.client.get("/people/list_possible_managers", input);
-  }
-
-  async search(input: PeopleSearchInput): Promise<PeopleSearchResult> {
-    return this.client.get("/people/search", input);
-  }
-
   async update(input: PeopleUpdateInput): Promise<PeopleUpdateResult> {
     return this.client.post("/people/update", input);
   }
@@ -7342,14 +7122,6 @@ class ApiNamespacePeople {
 
 class ApiNamespaceKpis {
   constructor(private client: ApiClient) {}
-
-  async getKpi(input: KpisGetKpiInput): Promise<KpisGetKpiResult> {
-    return this.client.get("/kpis/get_kpi", input);
-  }
-
-  async listKpis(input: KpisListKpisInput): Promise<KpisListKpisResult> {
-    return this.client.get("/kpis/list_kpis", input);
-  }
 
   async addKpiAnnotation(input: KpisAddKpiAnnotationInput): Promise<KpisAddKpiAnnotationResult> {
     return this.client.post("/kpis/add_kpi_annotation", input);
@@ -7390,46 +7162,6 @@ class ApiNamespaceKpis {
 
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
-
-  async countByAccessLevel(input: SpacesCountByAccessLevelInput): Promise<SpacesCountByAccessLevelResult> {
-    return this.client.get("/spaces/count_by_access_level", input);
-  }
-
-  async get(input: SpacesGetInput): Promise<SpacesGetResult> {
-    return this.client.get("/spaces/get", input);
-  }
-
-  async getDiscussion(input: SpacesGetDiscussionInput): Promise<SpacesGetDiscussionResult> {
-    return this.client.get("/spaces/get_discussion", input);
-  }
-
-  async list(input: SpacesListInput): Promise<SpacesListResult> {
-    return this.client.get("/spaces/list", input);
-  }
-
-  async listDiscussions(input: SpacesListDiscussionsInput): Promise<SpacesListDiscussionsResult> {
-    return this.client.get("/spaces/list_discussions", input);
-  }
-
-  async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
-    return this.client.get("/spaces/list_members", input);
-  }
-
-  async listTasks(input: SpacesListTasksInput): Promise<SpacesListTasksResult> {
-    return this.client.get("/spaces/list_tasks", input);
-  }
-
-  async listTools(input: SpacesListToolsInput): Promise<SpacesListToolsResult> {
-    return this.client.get("/spaces/list_tools", input);
-  }
-
-  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
-    return this.client.get("/spaces/search", input);
-  }
-
-  async searchPotentialMembers(input: SpacesSearchPotentialMembersInput): Promise<SpacesSearchPotentialMembersResult> {
-    return this.client.get("/spaces/search_potential_members", input);
-  }
 
   async addMembers(input: SpacesAddMembersInput): Promise<SpacesAddMembersResult> {
     return this.client.post("/spaces/add_members", input);
@@ -7497,22 +7229,6 @@ class ApiNamespaceSpaces {
 class ApiNamespaceTasks {
   constructor(private client: ApiClient) {}
 
-  async get(input: TasksGetInput): Promise<TasksGetResult> {
-    return this.client.get("/tasks/get", input);
-  }
-
-  async list(input: TasksListInput): Promise<TasksListResult> {
-    return this.client.get("/tasks/list", input);
-  }
-
-  async listPotentialAssignees(input: TasksListPotentialAssigneesInput): Promise<TasksListPotentialAssigneesResult> {
-    return this.client.get("/tasks/list_potential_assignees", input);
-  }
-
-  async listTaskStatuses(input: TasksListTaskStatusesInput): Promise<TasksListTaskStatusesResult> {
-    return this.client.get("/tasks/list_task_statuses", input);
-  }
-
   async create(input: TasksCreateInput): Promise<TasksCreateResult> {
     return this.client.post("/tasks/create", input);
   }
@@ -7562,22 +7278,6 @@ class ApiNamespaceTasks {
 
 class ApiNamespaceProjectTemplates {
   constructor(private client: ApiClient) {}
-
-  async get(input: ProjectTemplatesGetInput): Promise<ProjectTemplatesGetResult> {
-    return this.client.get("/project_templates/get", input);
-  }
-
-  async getDiscussion(input: ProjectTemplatesGetDiscussionInput): Promise<ProjectTemplatesGetDiscussionResult> {
-    return this.client.get("/project_templates/get_discussion", input);
-  }
-
-  async list(input: ProjectTemplatesListInput): Promise<ProjectTemplatesListResult> {
-    return this.client.get("/project_templates/list", input);
-  }
-
-  async listComments(input: ProjectTemplatesListCommentsInput): Promise<ProjectTemplatesListCommentsResult> {
-    return this.client.get("/project_templates/list_comments", input);
-  }
 
   async archive(input: ProjectTemplatesArchiveInput): Promise<ProjectTemplatesArchiveResult> {
     return this.client.post("/project_templates/archive", input);
@@ -7728,72 +7428,6 @@ class ApiNamespaceProjectTemplates {
 
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
-
-  async countChildren(input: ProjectsCountChildrenInput): Promise<ProjectsCountChildrenResult> {
-    return this.client.get("/projects/count_children", input);
-  }
-
-  async get(input: ProjectsGetInput): Promise<ProjectsGetResult> {
-    return this.client.get("/projects/get", input);
-  }
-
-  async getCheckIn(input: ProjectsGetCheckInInput): Promise<ProjectsGetCheckInResult> {
-    return this.client.get("/projects/get_check_in", input);
-  }
-
-  async getContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
-    return this.client.get("/projects/get_contributor", input);
-  }
-
-  async getDiscussion(input: ProjectsGetDiscussionInput): Promise<ProjectsGetDiscussionResult> {
-    return this.client.get("/projects/get_discussion", input);
-  }
-
-  async getMilestone(input: ProjectsGetMilestoneInput): Promise<ProjectsGetMilestoneResult> {
-    return this.client.get("/projects/get_milestone", input);
-  }
-
-  async getRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
-    return this.client.get("/projects/get_retrospective", input);
-  }
-
-  async list(input: ProjectsListInput): Promise<ProjectsListResult> {
-    return this.client.get("/projects/list", input);
-  }
-
-  async listCheckIns(input: ProjectsListCheckInsInput): Promise<ProjectsListCheckInsResult> {
-    return this.client.get("/projects/list_check_ins", input);
-  }
-
-  async listContributors(input: ProjectsListContributorsInput): Promise<ProjectsListContributorsResult> {
-    return this.client.get("/projects/list_contributors", input);
-  }
-
-  async listDiscussions(input: ProjectsListDiscussionsInput): Promise<ProjectsListDiscussionsResult> {
-    return this.client.get("/projects/list_discussions", input);
-  }
-
-  async listMilestoneTasks(input: ProjectsListMilestoneTasksInput): Promise<ProjectsListMilestoneTasksResult> {
-    return this.client.get("/projects/list_milestone_tasks", input);
-  }
-
-  async listMilestones(input: ProjectsListMilestonesInput): Promise<ProjectsListMilestonesResult> {
-    return this.client.get("/projects/list_milestones", input);
-  }
-
-  async search(input: ProjectsSearchInput): Promise<ProjectsSearchResult> {
-    return this.client.get("/projects/search", input);
-  }
-
-  async searchParentGoal(input: ProjectsSearchParentGoalInput): Promise<ProjectsSearchParentGoalResult> {
-    return this.client.get("/projects/search_parent_goal", input);
-  }
-
-  async searchPotentialContributors(
-    input: ProjectsSearchPotentialContributorsInput,
-  ): Promise<ProjectsSearchPotentialContributorsResult> {
-    return this.client.get("/projects/search_potential_contributors", input);
-  }
 
   async acknowledgeCheckIn(input: ProjectsAcknowledgeCheckInInput): Promise<ProjectsAcknowledgeCheckInResult> {
     return this.client.post("/projects/acknowledge_check_in", input);
@@ -7961,42 +7595,6 @@ class ApiNamespaceProjects {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
-  async countChildren(input: GoalsCountChildrenInput): Promise<GoalsCountChildrenResult> {
-    return this.client.get("/goals/count_children", input);
-  }
-
-  async get(input: GoalsGetInput): Promise<GoalsGetResult> {
-    return this.client.get("/goals/get", input);
-  }
-
-  async getCheckIn(input: GoalsGetCheckInInput): Promise<GoalsGetCheckInResult> {
-    return this.client.get("/goals/get_check_in", input);
-  }
-
-  async list(input: GoalsListInput): Promise<GoalsListResult> {
-    return this.client.get("/goals/list", input);
-  }
-
-  async listAccessMembers(input: GoalsListAccessMembersInput): Promise<GoalsListAccessMembersResult> {
-    return this.client.get("/goals/list_access_members", input);
-  }
-
-  async listCheckIns(input: GoalsListCheckInsInput): Promise<GoalsListCheckInsResult> {
-    return this.client.get("/goals/list_check_ins", input);
-  }
-
-  async listContributors(input: GoalsListContributorsInput): Promise<GoalsListContributorsResult> {
-    return this.client.get("/goals/list_contributors", input);
-  }
-
-  async listDiscussions(input: GoalsListDiscussionsInput): Promise<GoalsListDiscussionsResult> {
-    return this.client.get("/goals/list_discussions", input);
-  }
-
-  async searchParentGoal(input: GoalsSearchParentGoalInput): Promise<GoalsSearchParentGoalResult> {
-    return this.client.get("/goals/search_parent_goal", input);
-  }
-
   async acknowledgeCheckIn(input: GoalsAcknowledgeCheckInInput): Promise<GoalsAcknowledgeCheckInResult> {
     return this.client.post("/goals/acknowledge_check_in", input);
   }
@@ -8151,14 +7749,12 @@ class ApiNamespaceReactions {
 export class ApiClient {
   private basePath: string;
   private headers: any;
-  public apiNamespaceRichContent: ApiNamespaceRichContent;
   public apiNamespaceCompanyTransfers: ApiNamespaceCompanyTransfers;
   public apiNamespaceCliAuth: ApiNamespaceCliAuth;
   public apiNamespaceMcpGrants: ApiNamespaceMcpGrants;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceProductReleases: ApiNamespaceProductReleases;
-  public apiNamespaceSiteMessages: ApiNamespaceSiteMessages;
   public apiNamespaceBilling: ApiNamespaceBilling;
   public apiNamespaceEmailChanges: ApiNamespaceEmailChanges;
   public apiNamespaceRoot: ApiNamespaceRoot;
@@ -8179,14 +7775,12 @@ export class ApiClient {
   public apiNamespaceReactions: ApiNamespaceReactions;
 
   constructor() {
-    this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
     this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
     this.apiNamespaceMcpGrants = new ApiNamespaceMcpGrants(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceProductReleases = new ApiNamespaceProductReleases(this);
-    this.apiNamespaceSiteMessages = new ApiNamespaceSiteMessages(this);
     this.apiNamespaceBilling = new ApiNamespaceBilling(this);
     this.apiNamespaceEmailChanges = new ApiNamespaceEmailChanges(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);

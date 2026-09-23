@@ -267,10 +267,6 @@ defmodule TurboConnect.TsGenTest do
   class ApiNamespaceUsers {
     constructor(private client: ApiClient) {}
 
-    async getUser(input: UsersGetUserInput): Promise<UsersGetUserResult> {
-      return this.client.get("/users/get_user", input);
-    }
-
     async createUser(input: UsersCreateUserInput): Promise<UsersCreateUserResult> {
       return this.client.post("/users/create_user", input);
     }
@@ -279,10 +275,6 @@ defmodule TurboConnect.TsGenTest do
 
   class ApiNamespaceRoot {
     constructor(private client: ApiClient) {}
-
-    async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return this.client.get("/get_user", input);
-    }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
       return this.client.post("/create_user", input);

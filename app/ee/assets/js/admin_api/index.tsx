@@ -543,50 +543,6 @@ export interface UpdateUpdateBadgeSettingsResult {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
-  async getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
-    return this.client.get("/get_accounts", input);
-  }
-
-  async getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-    return this.client.get("/get_active_companies", input);
-  }
-
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.client.get("/get_activities", input);
-  }
-
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.client.get("/get_companies", input);
-  }
-
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.client.get("/get_company", input);
-  }
-
-  async getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
-    return this.client.get("/get_email_settings", input);
-  }
-
-  async getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
-    return this.client.get("/get_search_index_status", input);
-  }
-
-  async getUpdateBadgeSettings(input: GetUpdateBadgeSettingsInput): Promise<GetUpdateBadgeSettingsResult> {
-    return this.client.get("/get_update_badge_settings", input);
-  }
-
-  async listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
-    return this.client.get("/list_billing_plan_definitions", input);
-  }
-
-  async listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
-    return this.client.get("/list_billing_products", input);
-  }
-
-  async listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
-    return this.client.get("/list_site_messages", input);
-  }
-
   async archiveBillingPlanDefinition(
     input: ArchiveBillingPlanDefinitionInput,
   ): Promise<ArchiveBillingPlanDefinitionResult> {

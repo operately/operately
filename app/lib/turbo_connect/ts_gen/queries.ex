@@ -12,22 +12,6 @@ defmodule TurboConnect.TsGen.Queries do
     end)
   end
 
-  def generate_functions(queries) do
-    queries
-    |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {fullname, query} ->
-      fn_name = ts_function_name(query.name)
-      input_type = ts_type(fullname) <> "Input"
-      result_type = ts_type(fullname) <> "Result"
-
-      """
-        async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return this.client.get("#{endpoint_path(query)}", input);
-        }
-      """
-    end)
-  end
-
   def generate_tanstack_options(queries) do
     queries
     |> Enum.sort_by(&elem(&1, 0))

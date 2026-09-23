@@ -1,11 +1,11 @@
-import Api, { type CompaniesListActivitiesInput } from "@/api";
+import Api, { type CompaniesListActivitiesInput, type CompaniesListActivitiesResult } from "@/api";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { DISPLAYED_IN_FEED } from "@/features/activities";
 
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
-function fetchFeedPage(input: CompaniesListActivitiesInput) {
+function fetchFeedPage(input: CompaniesListActivitiesInput): Promise<CompaniesListActivitiesResult> {
   const [, basePath, headers, path, queryInput] = Api.companies.listActivitiesQueryOptions(input).queryKey;
 
   return Api.default.queryRequest(path, queryInput, basePath, headers);

@@ -98,15 +98,12 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_namespaces(api_module) do
-    api_module.__namespaces__()
+    mutation_namespaces(api_module)
     |> Enum.map(fn namespace -> generate_namespace(api_module, namespace) end)
     |> Enum.join("\n")
   end
 
   defp generate_namespace(api_module, namespace) do
-    queries =
-      api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
-
     mutations =
       api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
 
@@ -117,7 +114,6 @@ defmodule TurboConnect.TsGen do
     class #{Macro.camelize(namespace_name)} {
       constructor(private client: ApiClient) {}
 
-    #{Queries.generate_functions(queries)}
     #{Mutations.generate_functions(mutations)}
     };
     """
@@ -165,7 +161,7 @@ defmodule TurboConnect.TsGen do
   end
 
   def namespace_definitions(api_module) do
-    api_module.__namespaces__()
+    mutation_namespaces(api_module)
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
       "  public apiNamespace#{ns}: ApiNamespace#{ns};"
@@ -174,13 +170,20 @@ defmodule TurboConnect.TsGen do
   end
 
   def namespace_initializers(api_module) do
-    api_module.__namespaces__()
+    mutation_namespaces(api_module)
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
 
       "    this.apiNamespace#{ns} = new ApiNamespace#{ns}(this);"
     end)
     |> Enum.join("\n")
+  end
+
+  defp mutation_namespaces(api_module) do
+    api_module.__namespaces__()
+    |> Enum.filter(fn namespace ->
+      Enum.any?(api_module.__mutations__(), fn {_, %{namespace: ns}} -> ns == namespace end)
+    end)
   end
 
   def generate_root_namespace_delegators(api_module) do
