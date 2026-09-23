@@ -7,12 +7,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import * as Pages from "@/components/Pages";
 import * as Blobs from "@/models/blobs";
+import { applyLanguage } from "@/i18n";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { ProfileEditPage } from "turboui";
 import pageModule from ".";
 
 jest.mock("axios");
+jest.mock("@/i18n", () => ({ applyLanguage: jest.fn(() => Promise.resolve("en")) }));
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn(), getSearchParam: () => null }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: jest.fn() }));
@@ -116,15 +118,27 @@ it("hides the language selector and does not persist language when i18n is off",
   expect(props().showLanguageSelector).toBe(false);
   await act(() => props().onSubmit());
   expect(jest.mocked(axios.post).mock.calls[0]?.[1]).not.toHaveProperty("language");
+  expect(applyLanguage).not.toHaveBeenCalled();
 });
 
-it("shows the language selector and persists the chosen language when i18n is on", async () => {
+it("hides the language selector and does not persist language when editing someone else", async () => {
+  jest.mocked(useMe).mockReturnValue({ ...person, id: "admin1" } as ReturnType<typeof useMe>);
+  mockCompanyLoader(["i18n"]);
+  await mountPage();
+  expect(props().showLanguageSelector).toBe(false);
+  await act(() => props().onSubmit());
+  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).not.toHaveProperty("language");
+  expect(applyLanguage).not.toHaveBeenCalled();
+});
+
+it.each(["en", "pt-BR"] as const)("shows the language selector and persists %s when i18n is on", async (language) => {
   mockCompanyLoader(["i18n"]);
   await mountPage();
   expect(props().showLanguageSelector).toBe(true);
-  act(() => props().onLanguageChange?.("pt-BR"));
+  act(() => props().onLanguageChange?.(language));
   await act(() => props().onSubmit());
-  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language: "pt-BR" });
+  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language });
+  expect(applyLanguage).toHaveBeenCalledWith(language);
 });
 
 it("keeps the draft and stays on the form after a failed save", async () => {
