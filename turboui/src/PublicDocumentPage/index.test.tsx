@@ -20,7 +20,10 @@ it("renders the document without private workspace controls", () => {
   );
   expect(screen.getByTestId("document-content")).toBeTruthy();
   expect(screen.queryAllByRole("button")).toHaveLength(0);
-  expect(screen.queryAllByRole("link")).toHaveLength(0);
+  const attribution = screen.getByRole("link", { name: "Shared with Operately" });
+  expect(attribution.getAttribute("href")).toBe("https://operately.com");
+  expect(attribution.closest('[data-test-id="public-document-page"]')).toBeNull();
+  expect(screen.queryAllByRole("link")).toHaveLength(1);
   expect(document.querySelector('[data-test-id="navigation"]')).toBeNull();
 });
 

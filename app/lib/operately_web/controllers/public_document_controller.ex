@@ -60,7 +60,7 @@ defmodule OperatelyWeb.PublicDocumentController do
 
     # Cowboy defers send_file reads. Send bytes here before the temporary file is removed.
     path
-    |> File.stream!([], 64 * 1024)
+    |> File.stream!(64 * 1024)
     |> Enum.reduce_while(conn, fn bytes, conn ->
       case chunk(conn, bytes) do
         {:ok, conn} -> {:cont, conn}

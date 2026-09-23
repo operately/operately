@@ -3,6 +3,8 @@ import type { PublicDocument } from "../ApiTypes";
 import { DocumentPage } from "../DocumentPage";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import { Page } from "../Page";
+import { DivLink } from "../Link";
+import { OperatelyLogo } from "../Logo";
 
 const mentionedPersonLookup = async () => null;
 
@@ -32,23 +34,38 @@ export function PublicDocumentPage({ document, loading, formattedTimePreferences
   }
 
   return (
-    <DocumentPage
-      pageTitle={document.name}
-      title={document.name}
-      author={null}
-      state="published"
-      publishedAt={document.publishedAt}
-      modifiedAt={document.updatedAt}
-      formattedTimePreferences={formattedTimePreferences}
-      content={document.content}
-      mentionedPersonLookup={mentionedPersonLookup}
-      testId="public-document-page"
-      hideDraftActions
-      hideReactions
-      hideComments
-      hideSubscriptions
-      hideCopyModal
-      hideDeleteModal
-    />
+    <>
+      <DocumentPage
+        pageTitle={document.name}
+        title={document.name}
+        author={null}
+        state="published"
+        publishedAt={document.publishedAt}
+        modifiedAt={document.updatedAt}
+        formattedTimePreferences={formattedTimePreferences}
+        content={document.content}
+        mentionedPersonLookup={mentionedPersonLookup}
+        testId="public-document-page"
+        hideDraftActions
+        hideReactions
+        hideComments
+        hideSubscriptions
+        hideCopyModal
+        hideDeleteModal
+      />
+      <footer className="flex justify-center px-4 py-6">
+        <DivLink
+          to="https://operately.com"
+          external
+          testId="public-document-attribution"
+          className="inline-flex items-center gap-2 text-xs text-content-dimmed hover:text-content-base transition-colors"
+        >
+          <span aria-hidden="true">
+            <OperatelyLogo width="16px" height="16px" />
+          </span>
+          <span>Shared with Operately</span>
+        </DivLink>
+      </footer>
+    </>
   );
 }

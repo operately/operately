@@ -38,6 +38,7 @@ defmodule Operately.Support.Features.ResourceHubDocument.PublicSharingSteps do
     |> UI.assert_has(testid: "public-document-page")
     |> UI.refute_has(testid: "options-button")
     |> UI.refute_has(testid: "navigation")
+    |> UI.assert_has(testid: "public-document-attribution")
     |> UI.take_screenshot()
   end
 
