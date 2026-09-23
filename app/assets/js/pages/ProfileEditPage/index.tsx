@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { Timezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { applyLanguage } from "@/i18n";
 import { I18N_FEATURE_FLAG, isSupportedLanguage } from "@/i18n/languages";
 import { hasFeature } from "@/models/companies";
 import { PageModule } from "@/routes/types";
@@ -91,6 +92,14 @@ function Page() {
       }
 
       await updateProfile(updateParams);
+
+      if (showLanguageSelector) {
+        try {
+          await applyLanguage(language);
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
       if (isCurrentUser) {
         navigate(paths.accountPath());

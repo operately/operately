@@ -68,6 +68,12 @@ describe("i18n", () => {
       expect(i18n.language).toBe("en");
       expect(i18n.t("Home")).toBe("Home");
     });
+
+    it("does not select a language from the browser", () => {
+      expect(i18n.options.lng).toBe("en");
+      expect(i18n.services.languageDetector).toBeUndefined();
+      expect(i18n.language).toBe("en");
+    });
   });
 });
 

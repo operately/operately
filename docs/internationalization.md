@@ -10,7 +10,7 @@ A person can store an explicit language separately from timezone and time-format
 
 The `i18n` company experimental feature is off by default. While it is off, the language selector is hidden and the app and emails stay English even if a non-English preference is saved. Turning the flag off later forces English without deleting the saved preference. Missing or unsupported preferences also resolve to English.
 
-When the flag is on, the profile editor offers English and Português (Brasil). The selected language is persisted through the existing person preference API and applied to React, TurboUI, and recipient-scoped emails.
+When the flag is on, Account → Profile shows a Language picker with English and Português (Brasil). The selected language is persisted through the existing person preference API and applied to React, TurboUI, and recipient-scoped emails. Turning the flag off hides the picker and restores English without deleting the saved choice.
 
 ## Pilot setup
 
