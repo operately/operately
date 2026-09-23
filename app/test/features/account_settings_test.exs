@@ -53,11 +53,27 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.assert_language_selector_hidden()
   end
 
-  feature "selecting Brazilian Portuguese translates the interface", ctx do
+  feature "selecting a language translates the interface and survives reload", ctx do
     ctx
     |> Steps.enable_i18n()
     |> Steps.open_account_settings()
     |> Steps.change_language("Português (Brasil)")
+    |> Steps.assert_interface_in_portuguese()
+    |> Steps.reload_home()
+    |> Steps.assert_interface_in_portuguese()
+    |> Steps.open_account_settings()
+    |> Steps.change_language("English")
+    |> Steps.assert_interface_in_english()
+    |> Steps.assert_saved_language("en")
+    |> Steps.open_account_settings()
+    |> Steps.change_language("Português (Brasil)")
+    |> Steps.assert_interface_in_portuguese()
+    |> Steps.disable_i18n()
+    |> Steps.assert_interface_in_english()
+    |> Steps.assert_saved_language("pt-BR")
+    |> Steps.open_account_settings()
+    |> Steps.assert_language_selector_hidden()
+    |> Steps.enable_i18n()
     |> Steps.assert_interface_in_portuguese()
   end
 
