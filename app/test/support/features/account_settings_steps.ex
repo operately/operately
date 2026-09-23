@@ -36,19 +36,15 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :open_account_settings, ctx do
-    ctx =
-      try do
-        UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
-          UI.click(el, testid: "profile-link")
-        end)
-      rescue
-        _ ->
-          ctx
-          |> UI.click(testid: "account-menu")
-          |> UI.click(testid: "profile-link")
-      end
-
-    ctx
+    if Wallaby.Browser.has?(ctx.session, UI.query(testid: "my-account-page")) do
+      UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
+        UI.click(el, testid: "profile-link")
+      end)
+    else
+      ctx
+      |> UI.click(testid: "account-menu")
+      |> UI.click(testid: "profile-link")
+    end
   end
 
   step :change_name, ctx, name do

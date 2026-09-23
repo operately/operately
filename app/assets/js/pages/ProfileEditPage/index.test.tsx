@@ -141,6 +141,21 @@ it.each(["en", "pt-BR"] as const)("shows the language selector and persists %s w
   expect(applyLanguage).toHaveBeenCalledWith(language);
 });
 
+it("navigates after a successful save even if applying language fails", async () => {
+  mockCompanyLoader(["i18n"]);
+  jest.mocked(applyLanguage).mockRejectedValue(new Error("Failed to apply language"));
+  await mountPage();
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    await act(() => props().onSubmit());
+    expect(applyLanguage).toHaveBeenCalledWith("en");
+    expect(mockNavigate).toHaveBeenCalledWith("/account");
+    expect(props().isSubmitting).toBe(false);
+  } finally {
+    log.mockRestore();
+  }
+});
+
 it("keeps the draft and stays on the form after a failed save", async () => {
   await mountPage();
   act(() => props().onFullNameChange("Unsaved"));

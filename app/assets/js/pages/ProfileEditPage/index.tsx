@@ -94,7 +94,11 @@ function Page() {
       await updateProfile(updateParams);
 
       if (showLanguageSelector) {
-        await applyLanguage(language);
+        try {
+          await applyLanguage(language);
+        } catch (err) {
+          console.error(err);
+        }
       }
 
       if (isCurrentUser) {
