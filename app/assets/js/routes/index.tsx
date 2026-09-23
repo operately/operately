@@ -8,6 +8,7 @@ import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { TimezoneProvider } from "@/contexts/TimezoneContext";
 
 import { saasAdminRoutes } from "@/ee/routes";
@@ -22,7 +23,9 @@ function CompanyRoutes() {
   return (
     <CurrentCompanyProvider>
       <TimezoneProvider>
-        <CompanyLayout />
+        <LanguageProvider>
+          <CompanyLayout />
+        </LanguageProvider>
       </TimezoneProvider>
     </CurrentCompanyProvider>
   );
