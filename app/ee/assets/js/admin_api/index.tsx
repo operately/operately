@@ -66,32 +66,6 @@ function toSnake(o: any) {
   return newO;
 }
 
-type UseQueryHookResult<ResultT> = { data: ResultT | null; loading: boolean; error: Error | null; refetch: () => void };
-
-export function useQuery<ResultT>(fn: () => Promise<ResultT>): UseQueryHookResult<ResultT> {
-  const [data, setData] = React.useState<ResultT | null>(null);
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<Error | null>(null);
-
-  const fetchData = React.useCallback(() => {
-    setError(null);
-
-    fn()
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, []);
-
-  React.useEffect(() => fetchData(), []);
-
-  const refetch = React.useCallback(() => {
-    setLoading(true);
-    fetchData();
-  }, []);
-
-  return { data, loading, error, refetch };
-}
-
 type UseMutationHookResult<InputT, ResultT> = [
   (input: InputT) => Promise<ResultT | any>,
   { data: ResultT | null; loading: boolean; error: Error | null },
@@ -569,50 +543,6 @@ export interface UpdateUpdateBadgeSettingsResult {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
-  async getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
-    return this.client.get("/get_accounts", input);
-  }
-
-  async getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-    return this.client.get("/get_active_companies", input);
-  }
-
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.client.get("/get_activities", input);
-  }
-
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.client.get("/get_companies", input);
-  }
-
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.client.get("/get_company", input);
-  }
-
-  async getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
-    return this.client.get("/get_email_settings", input);
-  }
-
-  async getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
-    return this.client.get("/get_search_index_status", input);
-  }
-
-  async getUpdateBadgeSettings(input: GetUpdateBadgeSettingsInput): Promise<GetUpdateBadgeSettingsResult> {
-    return this.client.get("/get_update_badge_settings", input);
-  }
-
-  async listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
-    return this.client.get("/list_billing_plan_definitions", input);
-  }
-
-  async listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
-    return this.client.get("/list_billing_products", input);
-  }
-
-  async listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
-    return this.client.get("/list_site_messages", input);
-  }
-
   async archiveBillingPlanDefinition(
     input: ArchiveBillingPlanDefinitionInput,
   ): Promise<ArchiveBillingPlanDefinitionResult> {
@@ -763,50 +693,6 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
-    return this.apiNamespaceRoot.getAccounts(input);
-  }
-
-  getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-    return this.apiNamespaceRoot.getActiveCompanies(input);
-  }
-
-  getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.apiNamespaceRoot.getActivities(input);
-  }
-
-  getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.apiNamespaceRoot.getCompanies(input);
-  }
-
-  getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.apiNamespaceRoot.getCompany(input);
-  }
-
-  getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
-    return this.apiNamespaceRoot.getEmailSettings(input);
-  }
-
-  getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
-    return this.apiNamespaceRoot.getSearchIndexStatus(input);
-  }
-
-  getUpdateBadgeSettings(input: GetUpdateBadgeSettingsInput): Promise<GetUpdateBadgeSettingsResult> {
-    return this.apiNamespaceRoot.getUpdateBadgeSettings(input);
-  }
-
-  listBillingPlanDefinitions(input: ListBillingPlanDefinitionsInput): Promise<ListBillingPlanDefinitionsResult> {
-    return this.apiNamespaceRoot.listBillingPlanDefinitions(input);
-  }
-
-  listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
-    return this.apiNamespaceRoot.listBillingProducts(input);
-  }
-
-  listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
-    return this.apiNamespaceRoot.listSiteMessages(input);
-  }
-
   archiveBillingPlanDefinition(input: ArchiveBillingPlanDefinitionInput): Promise<ArchiveBillingPlanDefinitionResult> {
     return this.apiNamespaceRoot.archiveBillingPlanDefinition(input);
   }
@@ -913,43 +799,6 @@ function buildApiQueryOptions<InputT, ResultT>(client: ApiClient, path: string, 
 
 const defaultApiClient = new ApiClient();
 
-export async function getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
-  return defaultApiClient.getAccounts(input);
-}
-export async function getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-  return defaultApiClient.getActiveCompanies(input);
-}
-export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-  return defaultApiClient.getActivities(input);
-}
-export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-  return defaultApiClient.getCompanies(input);
-}
-export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-  return defaultApiClient.getCompany(input);
-}
-export async function getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
-  return defaultApiClient.getEmailSettings(input);
-}
-export async function getSearchIndexStatus(input: GetSearchIndexStatusInput): Promise<GetSearchIndexStatusResult> {
-  return defaultApiClient.getSearchIndexStatus(input);
-}
-export async function getUpdateBadgeSettings(
-  input: GetUpdateBadgeSettingsInput,
-): Promise<GetUpdateBadgeSettingsResult> {
-  return defaultApiClient.getUpdateBadgeSettings(input);
-}
-export async function listBillingPlanDefinitions(
-  input: ListBillingPlanDefinitionsInput,
-): Promise<ListBillingPlanDefinitionsResult> {
-  return defaultApiClient.listBillingPlanDefinitions(input);
-}
-export async function listBillingProducts(input: ListBillingProductsInput): Promise<ListBillingProductsResult> {
-  return defaultApiClient.listBillingProducts(input);
-}
-export async function listSiteMessages(input: ListSiteMessagesInput): Promise<ListSiteMessagesResult> {
-  return defaultApiClient.listSiteMessages(input);
-}
 export async function archiveBillingPlanDefinition(
   input: ArchiveBillingPlanDefinitionInput,
 ): Promise<ArchiveBillingPlanDefinitionResult> {
@@ -1397,56 +1246,6 @@ export function updateUpdateBadgeSettingsMutationOptions() {
   });
 }
 
-export function useGetAccounts(input: GetAccountsInput): UseQueryHookResult<GetAccountsResult> {
-  return useQuery<GetAccountsResult>(() => defaultApiClient.getAccounts(input));
-}
-
-export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
-  return useQuery<GetActiveCompaniesResult>(() => defaultApiClient.getActiveCompanies(input));
-}
-
-export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
-  return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input));
-}
-
-export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
-  return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
-}
-
-export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
-  return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
-}
-
-export function useGetEmailSettings(input: GetEmailSettingsInput): UseQueryHookResult<GetEmailSettingsResult> {
-  return useQuery<GetEmailSettingsResult>(() => defaultApiClient.getEmailSettings(input));
-}
-
-export function useGetSearchIndexStatus(
-  input: GetSearchIndexStatusInput,
-): UseQueryHookResult<GetSearchIndexStatusResult> {
-  return useQuery<GetSearchIndexStatusResult>(() => defaultApiClient.getSearchIndexStatus(input));
-}
-
-export function useGetUpdateBadgeSettings(
-  input: GetUpdateBadgeSettingsInput,
-): UseQueryHookResult<GetUpdateBadgeSettingsResult> {
-  return useQuery<GetUpdateBadgeSettingsResult>(() => defaultApiClient.getUpdateBadgeSettings(input));
-}
-
-export function useListBillingPlanDefinitions(
-  input: ListBillingPlanDefinitionsInput,
-): UseQueryHookResult<ListBillingPlanDefinitionsResult> {
-  return useQuery<ListBillingPlanDefinitionsResult>(() => defaultApiClient.listBillingPlanDefinitions(input));
-}
-
-export function useListBillingProducts(input: ListBillingProductsInput): UseQueryHookResult<ListBillingProductsResult> {
-  return useQuery<ListBillingProductsResult>(() => defaultApiClient.listBillingProducts(input));
-}
-
-export function useListSiteMessages(input: ListSiteMessagesInput): UseQueryHookResult<ListSiteMessagesResult> {
-  return useQuery<ListSiteMessagesResult>(() => defaultApiClient.listSiteMessages(input));
-}
-
 export function useArchiveBillingPlanDefinition(): UseMutationHookResult<
   ArchiveBillingPlanDefinitionInput,
   ArchiveBillingPlanDefinitionResult
@@ -1607,68 +1406,46 @@ export function useUpdateUpdateBadgeSettings(): UseMutationHookResult<
 export default {
   default: defaultApiClient,
 
-  getAccounts,
-  useGetAccounts,
   getAccountsQueryKeyPrefix,
   getAccountsQueryKey,
   getAccountsQueryOptions,
   getAccountsQuery,
-  getActiveCompanies,
-  useGetActiveCompanies,
   getActiveCompaniesQueryKeyPrefix,
   getActiveCompaniesQueryKey,
   getActiveCompaniesQueryOptions,
   getActiveCompaniesQuery,
-  getActivities,
-  useGetActivities,
   getActivitiesQueryKeyPrefix,
   getActivitiesQueryKey,
   getActivitiesQueryOptions,
   getActivitiesQuery,
-  getCompanies,
-  useGetCompanies,
   getCompaniesQueryKeyPrefix,
   getCompaniesQueryKey,
   getCompaniesQueryOptions,
   getCompaniesQuery,
-  getCompany,
-  useGetCompany,
   getCompanyQueryKeyPrefix,
   getCompanyQueryKey,
   getCompanyQueryOptions,
   getCompanyQuery,
-  getEmailSettings,
-  useGetEmailSettings,
   getEmailSettingsQueryKeyPrefix,
   getEmailSettingsQueryKey,
   getEmailSettingsQueryOptions,
   getEmailSettingsQuery,
-  getSearchIndexStatus,
-  useGetSearchIndexStatus,
   getSearchIndexStatusQueryKeyPrefix,
   getSearchIndexStatusQueryKey,
   getSearchIndexStatusQueryOptions,
   getSearchIndexStatusQuery,
-  getUpdateBadgeSettings,
-  useGetUpdateBadgeSettings,
   getUpdateBadgeSettingsQueryKeyPrefix,
   getUpdateBadgeSettingsQueryKey,
   getUpdateBadgeSettingsQueryOptions,
   getUpdateBadgeSettingsQuery,
-  listBillingPlanDefinitions,
-  useListBillingPlanDefinitions,
   listBillingPlanDefinitionsQueryKeyPrefix,
   listBillingPlanDefinitionsQueryKey,
   listBillingPlanDefinitionsQueryOptions,
   listBillingPlanDefinitionsQuery,
-  listBillingProducts,
-  useListBillingProducts,
   listBillingProductsQueryKeyPrefix,
   listBillingProductsQueryKey,
   listBillingProductsQueryOptions,
   listBillingProductsQuery,
-  listSiteMessages,
-  useListSiteMessages,
   listSiteMessagesQueryKeyPrefix,
   listSiteMessagesQueryKey,
   listSiteMessagesQueryOptions,
