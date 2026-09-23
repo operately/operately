@@ -25,15 +25,15 @@ afterEach(async () => {
   queryClient.clear();
 });
 
-it("keeps generated main and enterprise query failures silent, but raw calls still report", async () => {
+it("keeps generated main and enterprise query failures silent, but raw GET transport still reports", async () => {
   const error = new Error("request failed");
   jest.mocked(axios.get).mockRejectedValue(error);
   await expect(Api.projects.getQuery({ id: "one" })).rejects.toBe(error);
   await expect(AdminApi.getCompaniesQuery({})).rejects.toBe(error);
   expect(handleStaleClientError).not.toHaveBeenCalled();
   expect(handleAdminError).not.toHaveBeenCalled();
-  await expect(Api.projects.get({ id: "one" })).rejects.toBe(error);
-  await expect(AdminApi.getCompanies({})).rejects.toBe(error);
+  await expect(Api.default.get("/projects/get", { id: "one" })).rejects.toBe(error);
+  await expect(AdminApi.default.get("/get_companies", {})).rejects.toBe(error);
   expect(handleStaleClientError).toHaveBeenCalledWith(error);
   expect(handleAdminError).toHaveBeenCalledWith(error);
 });

@@ -1,9 +1,15 @@
-import Api from "@/api";
+import Api, { type CompaniesListActivitiesInput } from "@/api";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { DISPLAYED_IN_FEED } from "@/features/activities";
 
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
+
+function fetchFeedPage(input: CompaniesListActivitiesInput) {
+  const [, basePath, headers, path, queryInput] = Api.companies.listActivitiesQueryOptions(input).queryKey;
+
+  return Api.default.queryRequest(path, queryInput, basePath, headers);
+}
 
 export function useFeedItemsQuery(scopeType: ScopeType, scopeId: string) {
   const input = { scopeType, scopeId, actions: DISPLAYED_IN_FEED, paginate: true };
@@ -11,7 +17,7 @@ export function useFeedItemsQuery(scopeType: ScopeType, scopeId: string) {
   const query = useInfiniteQuery({
     // Share endpoint invalidation without sharing ordinary queries' data shape.
     queryKey: [...Api.companies.listActivitiesQueryKey(input), "infinite"],
-    queryFn: ({ pageParam }) => Api.companies.listActivities({ ...input, ...(pageParam ? { cursor: pageParam } : {}) }),
+    queryFn: ({ pageParam }) => fetchFeedPage({ ...input, ...(pageParam ? { cursor: pageParam } : {}) }),
     initialPageParam: null as string | null,
     getNextPageParam: (page) => page.nextCursor,
   });

@@ -20,50 +20,10 @@ defmodule TurboConnect.TsGen.Queries do
       input_type = ts_type(fullname) <> "Input"
       result_type = ts_type(fullname) <> "Result"
 
-      path =
-        if query.namespace == nil do
-          "/#{query.name}"
-        else
-          "/#{query.namespace}/#{query.name}"
-        end
-
       """
         async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return this.client.get("#{path}", input);
+          return this.client.get("#{endpoint_path(query)}", input);
         }
-      """
-    end)
-  end
-
-  def generate_root_namespace_delegators(queries) do
-    queries
-    |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
-    |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {fullname, query} ->
-      fn_name = ts_function_name(query.name)
-      input_type = ts_type(fullname) <> "Input"
-      result_type = ts_type(fullname) <> "Result"
-
-      """
-        #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return this.apiNamespaceRoot.#{fn_name}(input);
-        }
-      """
-    end)
-  end
-
-  def generate_hooks(queries) do
-    queries
-    |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, _query} ->
-      input_type = ts_type(name) <> "Input"
-      result_type = ts_type(name) <> "Result"
-      fn_name = ts_function_name(name)
-
-      """
-      export function use#{ts_type(name)}(input: #{input_type}) : UseQueryHookResult<#{result_type}> {
-        return useQuery<#{result_type}>(() => defaultApiClient.#{fn_name}(input));
-      }
       """
     end)
   end
@@ -100,28 +60,35 @@ defmodule TurboConnect.TsGen.Queries do
     end)
   end
 
-  def generate_default_functions(queries) do
-    queries
-    |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, _query} ->
-      Enum.join(
-        [
-          "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
-          "  return defaultApiClient.#{ts_function_name(name)}(input);",
-          "}"
-        ],
-        "\n"
-      )
-    end)
-  end
-
   def generate_default_root_exports(queries) do
     queries
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _query} ->
       fn_name = ts_function_name(name)
 
-      "  #{fn_name},\n  use#{ts_type(name)},\n  #{fn_name}QueryKeyPrefix,\n  #{fn_name}QueryKey,\n  #{fn_name}QueryOptions,\n  #{fn_name}Query,"
+      "  #{fn_name}QueryKeyPrefix,\n  #{fn_name}QueryKey,\n  #{fn_name}QueryOptions,\n  #{fn_name}Query,"
+    end)
+  end
+
+  def generate_namespace_exports(queries) do
+    queries
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {fullname, query} ->
+      fn_name = ts_function_name(query.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
+      path = endpoint_path(query)
+
+      """
+          #{fn_name}QueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "#{path}"),
+          #{fn_name}QueryKey: (input: #{input_type}) => buildApiQueryKey(defaultApiClient, "#{path}", input),
+          #{fn_name}QueryOptions: (input: #{input_type}) =>
+            buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input),
+          #{fn_name}Query: (input: #{input_type}) => queryClient.query({
+            ...buildApiQueryOptions<#{input_type}, #{result_type}>(defaultApiClient, "#{path}", input),
+            staleTime: Infinity,
+          }),
+      """
     end)
   end
 
@@ -131,32 +98,5 @@ defmodule TurboConnect.TsGen.Queries do
     else
       "/#{query.namespace}/#{query.name}"
     end
-  end
-
-  def define_generic_use_query_hook do
-    """
-    type UseQueryHookResult<ResultT> = { data: ResultT | null, loading: boolean, error: Error | null, refetch: () => void };
-
-    export function useQuery<ResultT>(fn: () => Promise<ResultT>) : UseQueryHookResult<ResultT> {
-      const [data, setData] = React.useState<ResultT | null>(null);
-      const [loading, setLoading] = React.useState<boolean>(true);
-      const [error, setError] = React.useState<Error | null>(null);
-
-      const fetchData = React.useCallback(() => {
-        setError(null);
-
-        fn().then(setData).catch(setError).finally(() => setLoading(false));
-      }, []);
-
-      React.useEffect(() => fetchData(), []);
-
-      const refetch = React.useCallback(() => {
-        setLoading(true);
-        fetchData();
-      }, []);
-
-      return { data, loading, error, refetch };
-    }
-    """
   end
 end
