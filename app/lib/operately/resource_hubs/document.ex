@@ -33,6 +33,7 @@ defmodule Operately.ResourceHubs.Document do
     field :name, :string
     field :content, :map
     field :current_version, :integer, default: 1
+    field :public_token, :string
     field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
 

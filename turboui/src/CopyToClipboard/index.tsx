@@ -11,9 +11,18 @@ interface CopyToClipboardProps {
   className?: string;
   iconProps?: TablerIconProps;
   testId?: string;
+  ariaLabel?: string;
 }
 
-export function CopyToClipboard({ text, size, padding = 1, className, iconProps, testId }: CopyToClipboardProps) {
+export function CopyToClipboard({
+  text,
+  size,
+  padding = 1,
+  className,
+  iconProps,
+  testId,
+  ariaLabel = "Copy to clipboard",
+}: CopyToClipboardProps) {
   const [copied, setCopied] = React.useState(false);
 
   const handleClick = async () => {
@@ -36,6 +45,7 @@ export function CopyToClipboard({ text, size, padding = 1, className, iconProps,
   return (
     <button
       type="button"
+      aria-label={ariaLabel}
       onClick={handleClick}
       className={containerClassName}
       style={{

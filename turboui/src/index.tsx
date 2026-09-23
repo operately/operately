@@ -11,6 +11,8 @@ export * from "./CheckInHeader";
 export * from "./CommentSection";
 export * from "./Circle";
 export * from "./CopyToClipboard";
+export * from "./DocumentPublicSharingModal";
+export * from "./PublicDocumentPage";
 export * from "./ConfirmDialog";
 export * from "./ContentListState";
 export { PageDocsAndFilesTab, type PageDocsAndFiles } from "./DocsAndFiles/PageDocsAndFiles";
