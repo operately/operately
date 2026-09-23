@@ -71,7 +71,7 @@ The first cataloged English workflow is company navigation → project → task 
 | Activity and notifications | Task-adding feed titles, in-app notification title, Notifications page chrome, Mark as read |
 | Emails | Immediate task-adding subjects and bodies (including mentions and the plain-text link label), buffered digest subject/empty state/CTAs and resource labels (Project, Space, Goal), and the task-adding digest headline |
 
-Desktop company-dropdown, account-menu, New, Help, search, and update-badge copy remain English until PR 5. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles remain English until PR 6. Other emails stay English until PR 7.
+Desktop company-dropdown, account-menu, New, Help, search, and update-badge copy are cataloged. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles remain English until PR 6. Other emails stay English until PR 7.
 
 Activity presentation is translated at render time. Stored activity payloads and user-authored names stay in the original language.
 

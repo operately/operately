@@ -1,25 +1,30 @@
+import i18n from "../i18n";
 import type { SearchResultType } from "../ApiTypes";
 import type { RefineFilterOption } from "./RefineControls";
 
-export const SEARCH_TYPE_FILTER_OPTIONS: Array<RefineFilterOption & { id: SearchResultType }> = [
-  { id: "project", label: "Projects" },
-  { id: "goal", label: "Goals" },
-  { id: "milestone", label: "Milestones" },
-  { id: "task", label: "Tasks" },
-  { id: "person", label: "People" },
-  { id: "discussion", label: "Discussions" },
-  { id: "project_check_in", label: "Project check-ins" },
-  { id: "goal_check_in", label: "Goal check-ins" },
-  { id: "project_retrospective", label: "Project retrospectives" },
-  { id: "resource_hub_document", label: "Documents" },
-  { id: "resource_hub_folder", label: "Folders" },
-  { id: "resource_hub_file", label: "Files" },
-  { id: "resource_hub_link", label: "Links" },
-];
+export function searchTypeFilterOptions(): Array<RefineFilterOption & { id: SearchResultType }> {
+  return [
+    { id: "project", label: i18n.t("Projects") },
+    { id: "goal", label: i18n.t("Goals") },
+    { id: "milestone", label: i18n.t("Milestones") },
+    { id: "task", label: i18n.t("Tasks") },
+    { id: "person", label: i18n.t("People") },
+    { id: "discussion", label: i18n.t("Discussions") },
+    { id: "project_check_in", label: i18n.t("Project check-ins") },
+    { id: "goal_check_in", label: i18n.t("Goal check-ins") },
+    { id: "project_retrospective", label: i18n.t("Project retrospectives") },
+    { id: "resource_hub_document", label: i18n.t("Documents") },
+    { id: "resource_hub_folder", label: i18n.t("Folders") },
+    { id: "resource_hub_file", label: i18n.t("Files") },
+    { id: "resource_hub_link", label: i18n.t("Links") },
+  ];
+}
 
-export const SEARCH_TIME_FILTER_OPTIONS: RefineFilterOption[] = [
-  { id: "last_7_days", label: "Last 7 days" },
-  { id: "last_30_days", label: "Last 30 days" },
-  { id: "last_90_days", label: "Last 90 days" },
-  { id: "last_12_months", label: "Last 12 months" },
-];
+export function searchTimeFilterOptions(): RefineFilterOption[] {
+  return [
+    { id: "last_7_days", label: i18n.t("Last 7 days") },
+    { id: "last_30_days", label: i18n.t("Last 30 days") },
+    { id: "last_90_days", label: i18n.t("Last 90 days") },
+    { id: "last_12_months", label: i18n.t("Last 12 months") },
+  ];
+}

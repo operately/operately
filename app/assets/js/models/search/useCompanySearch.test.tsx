@@ -11,7 +11,7 @@ jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("react-router", () => ({
   useSearchParams: () => jest.requireActual("react").useState(new URLSearchParams("q=roadmap")),
 }));
-jest.mock("turboui", () => ({ SEARCH_TIME_FILTER_OPTIONS: [], SEARCH_TYPE_FILTER_OPTIONS: [] }));
+jest.mock("turboui", () => ({ searchTimeFilterOptions: () => [], searchTypeFilterOptions: () => [] }));
 
 let client: QueryClient;
 

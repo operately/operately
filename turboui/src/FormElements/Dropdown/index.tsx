@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
+import { useTranslation } from "react-i18next";
 import { IconChevronDown } from "../../icons";
+import { translationText } from "../../i18n";
 
 export namespace Dropdown {
   export interface Item {
@@ -25,18 +27,20 @@ export function Dropdown<T extends Dropdown.Item>({
   items,
   value,
   onSelect,
-  placeholder = "Select an option",
+  placeholder,
   testId,
   error,
   id,
   ariaLabelledBy,
 }: Dropdown.Props<T>) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? translationText(t("Select an option"));
   const [isOpen, setIsOpen] = React.useState(false);
   const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const selectedItemRef = React.useRef<HTMLButtonElement>(null);
   const selectedItem = items.find((item) => item.id === value);
-  const selectedLabel = selectedItem?.name || placeholder;
+  const selectedLabel = selectedItem?.name || resolvedPlaceholder;
 
   React.useEffect(() => {
     if (triggerRef.current) {

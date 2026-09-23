@@ -13,6 +13,7 @@ import {
 } from "turboui/CompanyBilling";
 import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
 import { showErrorToast } from "turboui";
+import { useTranslation } from "react-i18next";
 import { useLoadedData } from "./loader";
 import { useLocation, useNavigate } from "react-router";
 import { usePaths } from "@/routes/paths";
@@ -50,6 +51,7 @@ export function resolveCheckoutConfirmation(
 }
 
 export function Page() {
+  const { t } = useTranslation();
   const billingActions = Billing.useBillingActions();
   const location = useLocation();
   const navigate = useNavigate();
@@ -85,7 +87,7 @@ export function Page() {
   const checkoutReturnTarget = pendingTarget || selection.target;
   const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
   const canManagePaidSubscription = isCompanyBillingPaidStatus(billing.account.status);
-  const companyName = company.name || "Billing";
+  const companyName = company.name || t("Billing");
   const isConfirmingCheckout = isAwaitingCheckoutConfirmation(billing, search.checkoutId, checkoutReturnTarget);
 
   const clearBillingSearch = React.useCallback(() => {
@@ -154,8 +156,8 @@ export function Page() {
 
     if (result.outcome === "target_unavailable") {
       setIsStartingCheckout(false);
-      setActionError("That plan is no longer available. Choose another plan.");
-      showErrorToast("Checkout unavailable", "That plan is no longer available. Choose another plan.");
+      setActionError(t("That plan is no longer available. Choose another plan."));
+      showErrorToast(t("Checkout unavailable"), t("That plan is no longer available. Choose another plan."));
       return;
     }
 
@@ -168,8 +170,8 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't start checkout right now. Please try again.");
-    showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
+    setActionError(t("We couldn't start checkout right now. Please try again."));
+    showErrorToast(t("Failed to start checkout"), t("We couldn't start checkout right now. Please try again."));
     setIsStartingCheckout(false);
   }, [billingActions]);
 
@@ -187,10 +189,10 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't open payment method details right now. Please try again.");
+    setActionError(t("We couldn't open payment method details right now. Please try again."));
     showErrorToast(
-      "Payment method unavailable",
-      "We couldn't open payment method details right now. Please try again.",
+      t("Payment method unavailable"),
+      t("We couldn't open payment method details right now. Please try again."),
     );
   }, [billingActions, paths]);
 
@@ -208,8 +210,8 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't open billing history right now. Please try again.");
-    showErrorToast("Billing management unavailable", "We couldn't open billing history right now. Please try again.");
+    setActionError(t("We couldn't open billing history right now. Please try again."));
+    showErrorToast(t("Billing management unavailable"), t("We couldn't open billing history right now. Please try again."));
   }, [billingActions, paths]);
 
   const reactivatePlan = React.useCallback(async () => {
@@ -228,8 +230,8 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't keep the current plan right now. Please try again.");
-    showErrorToast("Reactivation unavailable", "We couldn't keep the current plan right now. Please try again.");
+    setActionError(t("We couldn't keep the current plan right now. Please try again."));
+    showErrorToast(t("Reactivation unavailable"), t("We couldn't keep the current plan right now. Please try again."));
   }, [billingActions]);
 
   const refreshFromBillingUpdate = React.useCallback(() => {
@@ -250,8 +252,8 @@ export function Page() {
 
   return (
     <TurboCompanyBillingPage
-      title={[companyName, "Billing"]}
-      navigation={[{ label: "Company Administration", to: paths.companyAdminPath() }]}
+      title={[companyName, t("Billing")]}
+      navigation={[{ label: t("Company Administration"), to: paths.companyAdminPath() }]}
       billing={billing}
       isConfirmingCheckout={isConfirmingCheckout}
       confirmingTarget={checkoutReturnTarget}

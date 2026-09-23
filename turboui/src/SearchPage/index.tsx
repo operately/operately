@@ -1,8 +1,10 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import type { SearchResult, SearchResultState, SearchResultType } from "../ApiTypes";
 import { Input } from "../Forms/Input";
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
+import { tn, translationText } from "../i18n";
 import {
   IconCalendar,
   IconGoal,
@@ -18,10 +20,10 @@ import { DivLink } from "../Link";
 import { Page } from "../Page";
 import { ResourceHubTypeIcon } from "../ResourceHub";
 import { StatusBadge } from "../StatusBadge";
-import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS } from "./filterOptions";
+import { searchTimeFilterOptions, searchTypeFilterOptions } from "./filterOptions";
 import { RefineControls, type RefineControlsProps } from "./RefineControls";
 
-export { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS };
+export { searchTimeFilterOptions, searchTypeFilterOptions };
 
 export namespace SearchPage {
   export type Status = "initial" | "loading" | "success" | "error";
@@ -50,12 +52,13 @@ export function SearchPage({
   formattedTimePreferences,
   refine,
 }: SearchPage.Props) {
+  const { t } = useTranslation();
   const visibleResults = results.slice(0, RESULT_LIMIT);
 
   return (
-    <Page title="Search" size="large" testId="company-search-page">
+    <Page title={translationText(t("Search"))} size="large" testId="company-search-page">
       <main className="min-h-[75vh] px-4 py-8 sm:px-12 sm:py-10">
-        <h1 className="sr-only">Search</h1>
+        <h1 className="sr-only">{t("Search")}</h1>
         {refine ? (
           <div className="sticky top-0 z-10 -mx-4 border-b border-surface-outline bg-surface-base px-4 pb-4 pt-1 sm:-mx-12 sm:px-12">
             <SearchField query={query} onQueryChange={onQueryChange} />
@@ -78,10 +81,12 @@ export function SearchPage({
 }
 
 function SearchField({ query, onQueryChange }: Pick<SearchPage.Props, "query" | "onQueryChange">) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative">
       <label className="sr-only" htmlFor="company-search-input">
-        Search titles and content…
+        {t("Search titles and content…")}
       </label>
       <IconSearch
         aria-hidden="true"
@@ -95,7 +100,7 @@ function SearchField({ query, onQueryChange }: Pick<SearchPage.Props, "query" | 
         autoFocus
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Search titles and content…"
+        placeholder={translationText(t("Search titles and content…"))}
         className="py-3 pl-12 pr-4 text-base sm:text-lg"
       />
     </div>
@@ -108,30 +113,36 @@ function SearchContent({
   results,
   formattedTimePreferences,
 }: Pick<SearchPage.Props, "query" | "status" | "results" | "formattedTimePreferences">) {
+  const { t } = useTranslation();
+
   if (status === "loading") {
-    return <SearchMessage role="status">Searching…</SearchMessage>;
+    return <SearchMessage role="status">{t("Searching…")}</SearchMessage>;
   }
 
   if (status === "error") {
-    return <SearchMessage role="alert">Search is unavailable. Try again.</SearchMessage>;
+    return <SearchMessage role="alert">{t("Search is unavailable. Try again.")}</SearchMessage>;
   }
 
   if (status === "initial") {
     return (
-      <SearchMessage role="status">Search across projects, goals, discussions, documents, and more.</SearchMessage>
+      <SearchMessage role="status">{t("Search across projects, goals, discussions, documents, and more.")}</SearchMessage>
     );
   }
 
   if (results.length === 0) {
-    return <SearchMessage role="status">No content found for “{query}”. Try different keywords.</SearchMessage>;
+    return (
+      <SearchMessage role="status">
+        {t("No content found for “{{query}}”. Try different keywords.", { query })}
+      </SearchMessage>
+    );
   }
 
   return (
     <>
       <p role="status" className="sr-only">
-        {resultCountLabel(results.length)}
+        {tn("1 result found.", "{{count}} results found.", results.length)}
       </p>
-      <ol aria-label="Search results" className="divide-y divide-surface-outline">
+      <ol aria-label={translationText(t("Search results"))} className="divide-y divide-surface-outline">
         {results.map((result) => (
           <li key={`${result.type}-${result.id}`}>
             <SearchResultRow
@@ -163,7 +174,8 @@ function SearchResultRow({
   result: SearchPage.Result;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
-  const metadata = RESULT_TYPE_METADATA[result.type];
+  const { t } = useTranslation();
+  const metadata = resultTypeLabel(result.type, t);
   const highlightTerms = getHighlightTerms(query);
 
   return (
@@ -189,7 +201,7 @@ function SearchResultRow({
           {result.state ? (
             <StatusBadge
               status={result.state}
-              customLabel={STATE_LABELS[result.state]}
+              customLabel={stateLabel(result.state, t)}
               hideIcon
               className="shrink-0"
             />
@@ -289,29 +301,46 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function resultCountLabel(count: number) {
-  return count === 1 ? "1 result found." : `${count} results found.`;
+function resultTypeLabel(type: SearchResultType, t: (key: string) => string) {
+  switch (type) {
+    case "resource_hub_folder":
+      return { label: t("Folder") };
+    case "resource_hub_document":
+      return { label: t("Document") };
+    case "resource_hub_file":
+      return { label: t("File") };
+    case "resource_hub_link":
+      return { label: t("Link") };
+    case "project":
+      return { label: t("Project") };
+    case "goal":
+      return { label: t("Goal") };
+    case "milestone":
+      return { label: t("Milestone") };
+    case "task":
+      return { label: t("Task") };
+    case "person":
+      return { label: t("Person") };
+    case "discussion":
+      return { label: t("Discussion") };
+    case "project_check_in":
+      return { label: t("Project check-in") };
+    case "goal_check_in":
+      return { label: t("Goal check-in") };
+    case "project_retrospective":
+      return { label: t("Project retrospective") };
+  }
 }
 
-const RESULT_TYPE_METADATA: Record<SearchResultType, { label: string }> = {
-  resource_hub_folder: { label: "Folder" },
-  resource_hub_document: { label: "Document" },
-  resource_hub_file: { label: "File" },
-  resource_hub_link: { label: "Link" },
-  project: { label: "Project" },
-  goal: { label: "Goal" },
-  milestone: { label: "Milestone" },
-  task: { label: "Task" },
-  person: { label: "Person" },
-  discussion: { label: "Discussion" },
-  project_check_in: { label: "Project check-in" },
-  goal_check_in: { label: "Goal check-in" },
-  project_retrospective: { label: "Project retrospective" },
-};
-
-const STATE_LABELS: Record<SearchResultState, string> = {
-  closed: "Closed",
-  completed: "Completed",
-  archived: "Archived",
-  paused: "Paused",
-};
+function stateLabel(state: SearchResultState, t: (key: string) => string) {
+  switch (state) {
+    case "closed":
+      return t("Closed");
+    case "completed":
+      return t("Completed");
+    case "archived":
+      return t("Archived");
+    case "paused":
+      return t("Paused");
+  }
+}

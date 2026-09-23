@@ -3,6 +3,7 @@ import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import {
   BillingLimitGuidanceNotice,
@@ -18,11 +19,13 @@ import { includesId } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { Avatar } from "turboui";
 
+import { translationText } from "@/i18n";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { company, ownerIds, suspendedPeople } = useLoadedData();
   const me = useMe();
   const paths = usePaths();
@@ -32,15 +35,15 @@ function Page() {
   return (
     <>
       <TurboUIPage
-        title={["Restore Deactivated Team Members", company.name!]}
+        title={[translationText(t("Restore Deactivated Team Members")), company.name!]}
         size="medium"
         testId="restore-suspended-people-page"
-        navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+        navigation={[{ to: paths.companyAdminPath(), label: t("Company Administration") }]}
       >
         <div className="px-12 py-10">
           <div className="mb-6">
             <div className="text-content-accent text-lg md:text-2xl font-extrabold">
-              Restore Deactivated Team Members
+              {t("Restore Deactivated Team Members")}
             </div>
           </div>
 
@@ -60,17 +63,21 @@ function Page() {
 }
 
 function NoSuspenedPeopleMessage() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { company } = useLoadedData();
 
   return (
     <div className="max-w-xl mx-auto">
       <InfoCallout
-        message={`No deactivated team members`}
+        message={translationText(t("No deactivated team members"))}
         description={
           <p>
-            There are no deactivated team members in {company.name}. To remove access for departing team members, visit
-            the <Link to={paths.companyManagePeoplePath()}>Manage Team Members</Link> page.
+            <Trans
+              i18nKey="There are no deactivated team members in {{companyName}}. To remove access for departing team members, visit the <link>Manage Team Members</link> page."
+              values={{ companyName: company.name }}
+              components={{ link: <Link to={paths.companyManagePeoplePath()} /> }}
+            />
           </p>
         }
       />
@@ -151,6 +158,7 @@ function RestoreButton({
   viewerRole: Billing.BillingLimitViewerRole;
   paths: ReturnType<typeof usePaths>;
 }) {
+  const { t } = useTranslation();
   const { mutateAsync: restore, isPending: loading } = Companies.useRestoreCompanyMember();
 
   const handler = async () => {
@@ -174,13 +182,13 @@ function RestoreButton({
 
       const message = (error as any)?.response?.data?.message;
 
-      showErrorToast("Unable to restore member", typeof message === "string" ? message : "Please try again.");
+      showErrorToast(t("Unable to restore member"), typeof message === "string" ? message : t("Please try again."));
     }
   };
 
   return (
     <SecondaryButton size="xs" testId={createTestId("restore", person.id!)} onClick={handler} loading={loading}>
-      Reactivate Account
+      {t("Reactivate Account")}
     </SecondaryButton>
   );
 }

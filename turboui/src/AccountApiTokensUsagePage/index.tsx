@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { CopyToClipboard } from "../CopyToClipboard";
+import { translationText } from "../i18n";
 import { Page } from "../Page";
 
 export namespace AccountApiTokensUsagePage {
@@ -14,13 +16,14 @@ export namespace AccountApiTokensUsagePage {
 }
 
 export function AccountApiTokensUsagePage(props: AccountApiTokensUsagePage.Props) {
+  const { t } = useTranslation();
   const navigation = React.useMemo(
     () => [
-      { to: props.homePath, label: "Home" },
-      { to: props.securityPath, label: "Password & Security" },
-      { to: props.apiTokensPath, label: "API Tokens" },
+      { to: props.homePath, label: t("Home") },
+      { to: props.securityPath, label: t("Password & Security") },
+      { to: props.apiTokensPath, label: t("API Tokens") },
     ],
-    [props.apiTokensPath, props.homePath, props.securityPath],
+    [props.apiTokensPath, props.homePath, props.securityPath, t],
   );
 
   const querySnippet = `curl -X GET "${props.baseUrl}${props.externalBasePath}/get_account" \\
@@ -32,25 +35,40 @@ export function AccountApiTokensUsagePage(props: AccountApiTokensUsagePage.Props
   -d '{"full_name":"Updated Name"}'`;
 
   return (
-    <Page title="API Usage Instructions" size="small" navigation={navigation} testId="account-api-tokens-usage-page">
+    <Page
+      title={translationText(t("API Usage Instructions"))}
+      size="small"
+      navigation={navigation}
+      testId="account-api-tokens-usage-page"
+    >
       <div className="px-4 sm:px-10 py-8">
         <header>
-          <h1 className="text-2xl font-bold">API Usage Instructions</h1>
-          <p className="text-sm text-content-dimmed mt-2">Use these values when calling the external Operately API.</p>
+          <h1 className="text-2xl font-bold">{t("API Usage Instructions")}</h1>
+          <p className="text-sm text-content-dimmed mt-2">
+            {t("Use these values when calling the external Operately API.")}
+          </p>
         </header>
 
         <section className="mt-8 space-y-4">
-          <CopyableField label="Base Path" value={props.externalBasePath} testId="copy-base-path" />
-          <CopyableField label="Authorization Header" value="Authorization: Bearer <token>" testId="copy-auth-header" />
-          <CopyableField label="API Base URL" value={`${props.baseUrl}${props.externalBasePath}`} testId="copy-api-base-url" />
+          <CopyableField label={t("Base Path")} value={props.externalBasePath} testId="copy-base-path" />
+          <CopyableField
+            label={t("Authorization Header")}
+            value="Authorization: Bearer <token>"
+            testId="copy-auth-header"
+          />
+          <CopyableField
+            label={t("API Base URL")}
+            value={`${props.baseUrl}${props.externalBasePath}`}
+            testId="copy-api-base-url"
+          />
         </section>
 
         <section className="mt-8 space-y-4">
-          <CopyableSnippet title="Query Example (GET)" code={querySnippet} testId="copy-query-snippet" />
-          <CopyableSnippet title="Mutation Example (POST)" code={mutationSnippet} testId="copy-mutation-snippet" />
+          <CopyableSnippet title={t("Query Example (GET)")} code={querySnippet} testId="copy-query-snippet" />
+          <CopyableSnippet title={t("Mutation Example (POST)")} code={mutationSnippet} testId="copy-mutation-snippet" />
 
           <div className="text-sm text-content-dimmed" data-test-id="api-token-usage-note">
-            Read-only tokens are limited to queries. Full-access tokens can execute both queries and mutations.
+            {t("Read-only tokens are limited to queries. Full-access tokens can execute both queries and mutations.")}
           </div>
         </section>
       </div>

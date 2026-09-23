@@ -8,7 +8,7 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import plurarize from "@/utils/plurarize";
+import i18n, { tn } from "@/i18n";
 import { usePaths } from "@/routes/paths";
 import { CompanyAdminManagePeoplePage } from "turboui";
 
@@ -84,8 +84,8 @@ function Page() {
   );
 
   const navigationItems = React.useMemo(
-    () => [{ to: paths.companyAdminPath(), label: "Company Administration" }],
-    [paths],
+    () => [{ to: paths.companyAdminPath(), label: i18n.t("Company Administration") }],
+    [paths, i18n.language],
   );
 
   return (
@@ -117,19 +117,19 @@ function buildExpiresIn(inviteLink: People.InviteLink | null): string | null {
   if (diff < 0) return null;
 
   if (diff < 60 * 1000) {
-    return "less than a minute";
+    return i18n.t("less than a minute");
   }
 
   if (diff < 60 * 60 * 1000) {
     const value = Math.ceil(diff / (60 * 1000));
-    return plurarize(value, "minute", "minutes");
+    return tn("1 minute", "{{count}} minutes", value);
   }
 
   if (diff < 24 * 60 * 60 * 1000) {
     const value = Math.ceil(diff / (60 * 60 * 1000));
-    return plurarize(value, "hour", "hours");
+    return tn("1 hour", "{{count}} hours", value);
   }
 
   const value = Math.ceil(diff / (24 * 60 * 60 * 1000));
-  return plurarize(value, "day", "days");
+  return tn("1 day", "{{count}} days", value);
 }

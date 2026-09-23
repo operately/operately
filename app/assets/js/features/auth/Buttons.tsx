@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { DivLink, GoogleLogo, IconMail } from "turboui";
 
@@ -9,9 +10,11 @@ export function SignUpWithEmail({
   inviteToken?: string | null;
   redirectTo?: string | null;
 }) {
+  const { t } = useTranslation();
+
   return (
     <SignUpButton
-      title="Sign up with email"
+      title={t("Sign up with email")}
       link={signupEmailPath(inviteToken, redirectTo)}
       icon={<IconMail size={24} className="text-content-dimmed" />}
       testId="sign-up-with-email"
@@ -20,9 +23,11 @@ export function SignUpWithEmail({
 }
 
 export function SignInWithGoogleButton() {
+  const { t } = useTranslation();
+
   return (
     <SignUpButton
-      title="Sign in with Google"
+      title={t("Sign in with Google")}
       link={getGoogleAuthUrl()}
       icon={<GoogleLogo />}
       external
@@ -32,9 +37,11 @@ export function SignInWithGoogleButton() {
 }
 
 export function SignUpWithGoogleButton() {
+  const { t } = useTranslation();
+
   return (
     <SignUpButton
-      title="Sign up with Google"
+      title={t("Sign up with Google")}
       link={getGoogleAuthUrl()}
       icon={<GoogleLogo />}
       external

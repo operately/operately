@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconCheck, IconCopy, TablerIconProps } from "../icons";
+import { translationText } from "../i18n";
 import { showErrorToast } from "../Toasts";
 import classNames from "../utils/classnames";
 
@@ -21,8 +23,10 @@ export function CopyToClipboard({
   className,
   iconProps,
   testId,
-  ariaLabel = "Copy to clipboard",
+  ariaLabel,
 }: CopyToClipboardProps) {
+  const { t } = useTranslation();
+  const resolvedAriaLabel = ariaLabel ?? translationText(t("Copy to clipboard"));
   const [copied, setCopied] = React.useState(false);
 
   const handleClick = async () => {
@@ -31,7 +35,7 @@ export function CopyToClipboard({
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      showErrorToast("Copy failed", "Unable to copy to clipboard");
+      showErrorToast(t("Copy failed"), t("Unable to copy to clipboard"));
     }
   };
 
@@ -45,7 +49,7 @@ export function CopyToClipboard({
   return (
     <button
       type="button"
-      aria-label={ariaLabel}
+      aria-label={resolvedAriaLabel}
       onClick={handleClick}
       className={containerClassName}
       style={{
@@ -68,7 +72,7 @@ export function CopyToClipboard({
           transform: "translateY(-50%)",
         }}
       >
-        Copied
+        {t("Copied")}
       </span>
     </button>
   );

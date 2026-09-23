@@ -2,6 +2,7 @@ import { type InviteLink } from "@/api";
 import * as Invitations from "@/models/invitations";
 import * as Billing from "@/models/billing";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { loader, useLoadedData } from "./loader";
 
@@ -13,6 +14,7 @@ import { InviteLinkJoinPage } from "turboui";
 export default { name: "InviteLinkJoinPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { invite, token, pageState } = useLoadedData();
 
   const navigate = useNavigate();
@@ -49,9 +51,9 @@ function Page() {
         return;
       }
 
-      setJoinError("Something went wrong while joining. Please try again.");
+      setJoinError(t("Something went wrong while joining. Please try again."));
     }
-  }, [token, join, navigate]);
+  }, [token, join, navigate, t]);
 
   return (
     <InviteLinkJoinPage

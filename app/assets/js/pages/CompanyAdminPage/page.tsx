@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Companies from "@/models/companies";
+import { useTranslation } from "react-i18next";
 
 import { CompanyAdminPage, showErrorToast } from "turboui";
 
@@ -8,6 +9,7 @@ import { includesId, Paths, usePaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { company, adminIds, ownerIds } = useLoadedData();
   const me = useMe();
@@ -22,10 +24,10 @@ export function Page() {
       window.location.href = Paths.lobbyPath();
     } catch (e) {
       console.error("Failed to delete company", e);
-      showErrorToast("Error", "Failed to delete company");
+      showErrorToast(t("Error"), t("Failed to delete company"));
       throw e;
     }
-  }, [deleteCompany]);
+  }, [deleteCompany, t]);
 
   return (
     <CompanyAdminPage

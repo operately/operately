@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { createInstance } from "i18next";
 import React from "react";
+import { I18nextProvider } from "react-i18next";
 
 import { GlobalSearch } from "./index";
 
@@ -252,5 +254,41 @@ describe("GlobalSearch", () => {
 
     const name = await screen.findByText(longName);
     expect(name).toHaveClass("truncate");
+  });
+
+  test.each([
+    {
+      resources: {},
+      error: "Quick search is unavailable.",
+      fullText: "Search all content for “failure”",
+    },
+    {
+      resources: {
+        "Quick search is unavailable.": "Busca rápida indisponível.",
+        "Search all content for “{{query}}”": "Buscar todo o conteúdo por “{{query}}”",
+      },
+      error: "Busca rápida indisponível.",
+      fullText: "Buscar todo o conteúdo por “failure”",
+    },
+  ])("uses catalog copy for search errors and full-text action: $error", async ({ resources, error, fullText }) => {
+    const i18n = createInstance();
+    await i18n.init({ lng: "en", resources: { en: { translation: resources } } });
+
+    const fullTextSearchPath = (query: string) => `/search?q=${query}`;
+    render(
+      <I18nextProvider i18n={i18n}>
+        <GlobalSearch
+          search={jest.fn().mockRejectedValue(new Error("unavailable"))}
+          onNavigate={jest.fn()}
+          fullTextSearchPath={fullTextSearchPath}
+        />
+      </I18nextProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    const input = screen.getByRole("combobox");
+    await enterQuery(input, "failure");
+
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(error));
+    expect(screen.getByRole("option")).toHaveTextContent(fullText);
   });
 });

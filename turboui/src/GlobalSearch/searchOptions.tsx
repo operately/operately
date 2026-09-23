@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { Avatar } from "../Avatar";
+import i18n from "../i18n";
 import {
   IconFile,
   IconFileText,
@@ -36,13 +37,13 @@ export interface SearchGroup {
 export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: string): SearchGroup[] {
   const groups: SearchGroup[] = [
     {
-      title: "SPACES",
+      title: i18n.t("SPACES"),
       options: (results.spaces ?? []).map((space) =>
         buildOption(testId, "space", space.id, space.name, space.link, <IconTent size={24} />),
       ),
     },
     {
-      title: "GOALS",
+      title: i18n.t("GOALS"),
       options: (results.goals ?? []).map((goal) =>
         buildOption(
           testId,
@@ -56,7 +57,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: "PROJECTS",
+      title: i18n.t("PROJECTS"),
       options: (results.projects ?? []).map((project) =>
         buildOption(
           testId,
@@ -70,7 +71,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: "MILESTONES",
+      title: i18n.t("MILESTONES"),
       options: (results.milestones ?? []).map((milestone) =>
         buildOption(
           testId,
@@ -84,7 +85,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: "TASKS",
+      title: i18n.t("TASKS"),
       options: (results.tasks ?? []).map((task) =>
         buildOption(
           testId,
@@ -98,7 +99,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: "PEOPLE",
+      title: i18n.t("PEOPLE"),
       options: (results.people ?? []).map((person) =>
         buildOption(
           testId,
@@ -111,17 +112,17 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
         ),
       ),
     },
-    resourceGroup(testId, "DISCUSSIONS", "discussion", results.discussions, <IconMessage size={24} />),
-    resourceGroup(testId, "FOLDERS", "folder", results.folders, <IconFolderFilled size={24} />),
-    resourceGroup(testId, "DOCUMENTS", "document", results.documents, <IconFileText size={24} />),
-    resourceGroup(testId, "FILES", "file", results.files, <IconFile size={24} />),
-    resourceGroup(testId, "LINKS", "link", results.links, <IconLink size={24} />),
+    resourceGroup(testId, i18n.t("DISCUSSIONS"), "discussion", results.discussions, <IconMessage size={24} />),
+    resourceGroup(testId, i18n.t("FOLDERS"), "folder", results.folders, <IconFolderFilled size={24} />),
+    resourceGroup(testId, i18n.t("DOCUMENTS"), "document", results.documents, <IconFileText size={24} />),
+    resourceGroup(testId, i18n.t("FILES"), "file", results.files, <IconFile size={24} />),
+    resourceGroup(testId, i18n.t("LINKS"), "link", results.links, <IconLink size={24} />),
   ];
 
   return groups.filter((group) => group.options.length > 0);
 }
 
-export function buildFullTextSearchOption(state: GlobalSearch.State): SearchOption | undefined {
+export function buildFullTextSearchOption(state: GlobalSearch.State, name: string): SearchOption | undefined {
   const query = state.query.trim();
 
   if (!state.fullTextSearchPath || query.length < 2) {
@@ -132,7 +133,7 @@ export function buildFullTextSearchOption(state: GlobalSearch.State): SearchOpti
     id: "full-text-search",
     optionId: createTestId(state.testId, "option", "full-text-search"),
     resourceType: "full-text-search",
-    name: `Search all content for “${query}”`,
+    name,
     link: state.fullTextSearchPath(query),
     icon: <IconSearch size={24} />,
     testId: createTestId(state.testId, "full-text-search"),

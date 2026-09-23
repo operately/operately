@@ -1,5 +1,6 @@
 import { formatCompanyBillingPlanLabel } from "turboui/CompanyBilling";
 import type { BillingLimitError } from "./limitError";
+import i18n from "@/i18n";
 
 export type BillingLimitViewerRole = "owner" | "company_admin" | "regular";
 
@@ -28,16 +29,19 @@ export function buildMemberLimitGuidance(
       )
     : null;
 
-  const usageSummary = `This company has ${error.currentUsage} active members. The plan includes ${error.limit}.`;
+  const usageSummary = i18n.t("This company has {{currentUsage}} active members. The plan includes {{limit}}.", {
+    currentUsage: error.currentUsage,
+    limit: error.limit,
+  });
 
   if (role === "owner" || role === "company_admin") {
     return {
-      title: "This company has reached its member limit",
-      description: "Review billing to change the plan and add or restore people.",
+      title: i18n.t("This company has reached its member limit"),
+      description: i18n.t("Review billing to change the plan and add or restore people."),
       usageSummary,
       recommendedPlanLabel,
       cta: {
-        label: "Review billing",
+        label: i18n.t("Review billing"),
         to: error.recommendedUpgrade.target
           ? routes.companyBillingPlansPath({
               plan: error.recommendedUpgrade.target.plan,
@@ -49,8 +53,8 @@ export function buildMemberLimitGuidance(
   }
 
   return {
-    title: "This company has reached its member limit",
-    description: "Contact an admin or owner to review billing and change the plan before trying again.",
+    title: i18n.t("This company has reached its member limit"),
+    description: i18n.t("Contact an admin or owner to review billing and change the plan before trying again."),
     usageSummary,
     recommendedPlanLabel: null,
     cta: null,
