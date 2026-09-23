@@ -26,7 +26,7 @@ export function Page() {
   const navigate = useNavigate();
   const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   const mutationScope = {
@@ -107,7 +107,6 @@ export function Page() {
       }}
       description={file.description}
       mentionedPersonLookup={mentionedPersonLookup}
-      resolveResourceLinkTitles={resolveResourceLinkTitles}
       reactions={{
         ...reactionsForm,
         size: 24,

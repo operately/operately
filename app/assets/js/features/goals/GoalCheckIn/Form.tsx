@@ -47,12 +47,11 @@ interface Props {
 interface CheckInReferenceProps {
   lastCheckIns: ReturnType<typeof parseCheckInsForTurboUi>;
   mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
-  resolveResourceLinkTitles: ReturnType<typeof useRichEditorHandlers>["resolveResourceLinkTitles"];
 }
 
 export function Form(props: Props) {
   const paths = usePaths();
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
   const lastCheckIns =
     props.mode === "new" && props.goal.lastCheckIn ? parseCheckInsForTurboUi(paths, [props.goal.lastCheckIn]) : [];
 
@@ -64,12 +63,7 @@ export function Form(props: Props) {
           <StatusAndDueDate {...props} />
           <Targets {...props} />
           <Checks {...props} />
-          <Description
-            {...props}
-            lastCheckIns={lastCheckIns}
-            mentionedPersonLookup={mentionedPersonLookup}
-            resolveResourceLinkTitles={resolveResourceLinkTitles}
-          />
+          <Description {...props} lastCheckIns={lastCheckIns} mentionedPersonLookup={mentionedPersonLookup} />
         </div>
 
         <Subscribers {...props} />
@@ -300,26 +294,17 @@ function Description(props: Props & CheckInReferenceProps) {
 
 function DescriptionView() {
   const [value] = Forms.useFieldValue("description");
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <div>
       <Label text="Key wins, obstacles and needs" />
-      <RichContent
-        content={value}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
+      <RichContent content={value} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
 
-function DescriptionEdit({
-  goal,
-  lastCheckIns,
-  mentionedPersonLookup,
-  resolveResourceLinkTitles,
-}: { goal: Goals.Goal } & CheckInReferenceProps) {
+function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: Goals.Goal } & CheckInReferenceProps) {
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id! } });
   const [showPrevious, setShowPrevious] = React.useState(false);
 
@@ -339,13 +324,7 @@ function DescriptionEdit({
         )}
       </div>
 
-      {showPrevious && (
-        <PreviousCheckIn
-          checkIns={lastCheckIns}
-          mentionedPersonLookup={mentionedPersonLookup}
-          resolveResourceLinkTitles={resolveResourceLinkTitles}
-        />
-      )}
+      {showPrevious && <PreviousCheckIn checkIns={lastCheckIns} mentionedPersonLookup={mentionedPersonLookup} />}
 
       <Forms.FieldGroup>
         <Forms.RichTextArea
@@ -362,11 +341,9 @@ function DescriptionEdit({
 function PreviousCheckIn({
   checkIns,
   mentionedPersonLookup,
-  resolveResourceLinkTitles,
 }: {
   checkIns: ReturnType<typeof parseCheckInsForTurboUi>;
   mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
-  resolveResourceLinkTitles: ReturnType<typeof useRichEditorHandlers>["resolveResourceLinkTitles"];
 }) {
   const formattedTimePreferences = useFormattedTimePreferences();
   const checkIn = checkIns[0];
@@ -391,11 +368,7 @@ function PreviousCheckIn({
         </div>
       </div>
 
-      <RichContent
-        content={checkIn.content}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
+      <RichContent content={checkIn.content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

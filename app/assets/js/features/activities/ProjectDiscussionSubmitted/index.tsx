@@ -28,7 +28,7 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div>
@@ -37,7 +37,6 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
             content={activity.commentThread.message}
             characterCount={300}
             mentionedPersonLookup={mentionedPersonLookup}
-            resolveResourceLinkTitles={resolveResourceLinkTitles}
           />
         )}
       </div>

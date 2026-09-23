@@ -13,7 +13,6 @@ describe("DiscussionCard", () => {
       <MemoryRouter>
         <DiscussionCard
           mentionedPersonLookup={async () => null}
-          resolveResourceLinkTitles={async () => []}
           formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",
@@ -39,7 +38,6 @@ describe("DiscussionCard", () => {
       <MemoryRouter>
         <DiscussionCard
           mentionedPersonLookup={async () => null}
-          resolveResourceLinkTitles={async () => []}
           formattedTimePreferences={defaultFormattedTimePreferences}
           discussion={{
             id: "discussion-1",

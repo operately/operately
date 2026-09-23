@@ -14,7 +14,6 @@ describe("CheckInCard", () => {
         <CheckInCard
           type="goal"
           mentionedPersonLookup={async () => null}
-          resolveResourceLinkTitles={async () => []}
           formattedTimePreferences={defaultFormattedTimePreferences}
           checkIn={{
             link: "/goals/check-ins/1",

@@ -92,7 +92,6 @@ function Page() {
       }}
       description={file.description ?? null}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       hideReactions
       comments={commentsProps}
       hideSubscriptions

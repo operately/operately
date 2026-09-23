@@ -46,15 +46,15 @@ function getByTestId(testId: string) {
 }
 
 describe("CommentItem", () => {
-  it("resolves links from its own comment content through the shared handlers", async () => {
+  it("renders backend-resolved comment links", async () => {
     const href = `${window.location.origin}/acme-0abc/projects/project-xyz`;
     const content = {
       type: "doc",
       content: [
-        { type: "paragraph", content: [{ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] }] },
+        { type: "paragraph", content: [{ type: "text", text: "Website", marks: [{ type: "link", attrs: { href } }] }] },
       ],
     };
-    const resolveResourceLinkTitles = jest.fn().mockResolvedValue([{ type: "project", id: "xyz", title: "Website" }]);
+
     const { findByRole } = render(
       <MemoryRouter>
         <CommentItem
@@ -62,13 +62,12 @@ describe("CommentItem", () => {
           form={form}
           commentParentType="task"
           canComment={false}
-          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
     );
     expect(await findByRole("link", { name: "Website" })).toHaveAttribute("href", href);
-    expect(resolveResourceLinkTitles).toHaveBeenCalledWith(content);
   });
 
   it("keeps long code blocks inside shrinkable comment content", async () => {
@@ -79,7 +78,7 @@ describe("CommentItem", () => {
           form={form}
           commentParentType="task"
           canComment={false}
-          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -105,7 +104,7 @@ describe("CommentItem", () => {
           canComment
           currentUserId="author-1"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -131,7 +130,7 @@ describe("CommentItem", () => {
           canManageComments
           currentUserId="someone-else"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -156,7 +155,7 @@ describe("CommentItem", () => {
           canManageComments
           currentUserId="author-1"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinkTitles: async () => [] }}
+          richTextHandlers={{ mentionedPersonLookup: async () => null }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,

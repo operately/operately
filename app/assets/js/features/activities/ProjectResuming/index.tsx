@@ -27,7 +27,7 @@ const ProjectResuming: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div>
@@ -35,7 +35,6 @@ const ProjectResuming: ActivityHandler = {
           <RichContent
             content={activity.commentThread.message}
             mentionedPersonLookup={mentionedPersonLookup}
-            resolveResourceLinkTitles={resolveResourceLinkTitles}
             parseContent
           />
         )}
@@ -62,7 +61,7 @@ const ProjectResuming: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div>
@@ -71,7 +70,6 @@ const ProjectResuming: ActivityHandler = {
             content={activity.commentThread.message}
             characterCount={300}
             mentionedPersonLookup={mentionedPersonLookup}
-            resolveResourceLinkTitles={resolveResourceLinkTitles}
           />
         )}
       </div>

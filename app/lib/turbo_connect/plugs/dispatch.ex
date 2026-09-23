@@ -11,11 +11,12 @@ defmodule TurboConnect.Plugs.Dispatch do
   def init(_), do: []
 
   def call(conn, _opts) do
-    res = conn.assigns.turbo_req_handler.call(conn, conn.assigns.turbo_inputs)
+    inputs = conn.assigns.turbo_api.prepare_inputs(conn, conn.assigns.turbo_inputs)
+    res = conn.assigns.turbo_req_handler.call(conn, inputs)
 
     case res do
       {:ok, result} ->
-        ok(conn, result)
+        ok(conn, conn.assigns.turbo_api.prepare_response(conn, result))
 
       {:error, :not_found} ->
         not_found(conn, "The requested resource was not found")

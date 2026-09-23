@@ -31,7 +31,6 @@ export function Discussions({ props, canEdit }: { props: TemplateProjectPage.Pro
               key={discussion.id}
               discussion={{ ...discussion, commentCount: 0 }}
               mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
-              resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
               formattedTimePreferences={props.formattedTimePreferences}
             />
           ))

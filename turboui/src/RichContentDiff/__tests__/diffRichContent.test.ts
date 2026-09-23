@@ -15,6 +15,28 @@ describe("diffRichContent", () => {
     expect(diff(before, after)).toEqual({ ok: true, changes });
   }
 
+  test("automatic resource renames do not appear as document edits", () => {
+    const href = "/acme/projects/example";
+    const doc = (title: string) => ({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: title,
+              marks: [
+                { type: "link", attrs: { href, operatelyResourceLink: { originalText: href, resolvedText: title } } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    expectChanges(doc("Before"), doc("After"), []);
+  });
+
   test("identical documents produce no changes", () => {
     const result = diff(F.identicalDoc, F.identicalDoc);
     expect(result.ok).toBe(true);

@@ -40,7 +40,6 @@ export function CheckIns(props: ProjectPage.State) {
               key={checkIn.id}
               checkIn={checkIn}
               mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
-              resolveResourceLinkTitles={props.richTextHandlers.resolveResourceLinkTitles}
               type="project"
               formattedTimePreferences={props.formattedTimePreferences}
             />

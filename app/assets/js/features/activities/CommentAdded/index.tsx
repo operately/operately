@@ -172,21 +172,14 @@ const CommentAdded: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
     const commentContent = parseCommentContent(comment?.content);
 
     if (!commentContent) {
       return null;
     }
 
-    return (
-      <Summary
-        content={commentContent}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

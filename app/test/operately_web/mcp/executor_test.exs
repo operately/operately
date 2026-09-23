@@ -22,6 +22,26 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :bad_request}
   end
 
+  defmodule RichTextTool do
+    def call(_conn, %{"content" => content}) do
+      send(self(), {:tool_source, content})
+      {:ok, %{content: content}}
+    end
+  end
+
+  test "normalizes input and enriches both MCP output representations", %{conn: conn, company: company} do
+    source = Operately.Support.RichText.resource_link(OperatelyWeb.Paths.person_path(company, conn.assigns.current_person))
+    enriched = OperatelyWeb.Api.RichContent.Preparation.prepare_response(conn, source)
+    definition = Definition.new!(name: "rich_text", implementation: RichTextTool, input_schema: %{"type" => "object", "properties" => %{"content" => %{"type" => "string"}}})
+
+    assert {:ok, result} = Executor.execute(conn, definition, %{"content" => Jason.encode!(enriched)})
+    assert_receive {:tool_source, encoded_source}
+    assert Jason.decode!(encoded_source) == source
+    assert Jason.decode!(result["structuredContent"]["content"]) == enriched
+    assert get_in(enriched, ["content", Access.at(0), "content", Access.at(0), "text"]) == conn.assigns.current_person.full_name
+    assert Jason.decode!(hd(result["content"])["text"]) == result["structuredContent"]
+  end
+
   setup do
     account = account_fixture()
     company = company_fixture(%{company_name: "MCP Company"}, account)

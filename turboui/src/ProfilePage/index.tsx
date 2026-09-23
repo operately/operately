@@ -1,4 +1,3 @@
-import type { ResolveResourceLinkTitlesFn } from "../RichEditor/useEditor";
 import React from "react";
 
 import {
@@ -47,7 +46,6 @@ export namespace ProfilePage {
 
     aboutMe?: string | null;
     mentionedPersonLookup: MentionedPersonLookupFn;
-    resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
     formattedTimePreferences: FormattedTimePreferences;
   }
 
@@ -147,13 +145,7 @@ function About(props: ProfilePage.Props) {
   return (
     <div className="p-4 max-w-5xl mx-auto my-6">
       <div className="flex flex-col gap-y-6">
-        {showAboutMe && (
-          <AboutMe
-            content={props.aboutMe}
-            mentionedPersonLookup={props.mentionedPersonLookup}
-            resolveResourceLinkTitles={props.resolveResourceLinkTitles}
-          />
-        )}
+        {showAboutMe && <AboutMe content={props.aboutMe} mentionedPersonLookup={props.mentionedPersonLookup} />}
         <Contact person={props.person} />
         <Colleagues {...props} />
       </div>

@@ -114,7 +114,6 @@ const baseProps = {
   formattedTimePreferences: defaultFormattedTimePreferences,
   description: JSON.stringify(asRichText("Shared design reference for the launch.")),
   mentionedPersonLookup: richTextHandlers.mentionedPersonLookup,
-  resolveResourceLinkTitles: richTextHandlers.resolveResourceLinkTitles,
 };
 
 export const Default: Story = {
@@ -181,7 +180,6 @@ export const Template: Story = {
       formattedTimePreferences={defaultFormattedTimePreferences}
       description={JSON.stringify(asRichText("Template link notes."))}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
-      resolveResourceLinkTitles={richTextHandlers.resolveResourceLinkTitles}
       hideReactions
       hideComments
       hideSubscriptions

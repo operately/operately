@@ -51,19 +51,12 @@ const ProjectDescriptionChanged: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
-    const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     const description = decodeDescription(data.description ?? data.project?.description);
     if (!description) return null;
 
-    return (
-      <Summary
-        content={description}
-        characterCount={200}
-        mentionedPersonLookup={mentionedPersonLookup}
-        resolveResourceLinkTitles={resolveResourceLinkTitles}
-      />
-    );
+    return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

@@ -42,7 +42,6 @@ function baseProps(overrides: Partial<DocumentVersionComparisonPage.Props> = {})
     comparisonStatus: "ready",
     formattedTimePreferences: defaultFormattedTimePreferences,
     mentionedPersonLookup: handlers.mentionedPersonLookup,
-    resolveResourceLinkTitles: handlers.resolveResourceLinkTitles,
     onRetryComparison: () => undefined,
     ...overrides,
   };

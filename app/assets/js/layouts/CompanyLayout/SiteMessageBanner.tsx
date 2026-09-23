@@ -16,7 +16,6 @@ function MessageDescription({ description }: { description: string }) {
     <RichContent
       content={description}
       mentionedPersonLookup={mentionedPersonLookup}
-      resolveResourceLinkTitles={null}
       parseContent
       // RichContent renders block wrappers; contents + inline <p> lets the description
       // flow after the bold title as one paragraph instead of a separate column.

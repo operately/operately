@@ -399,19 +399,6 @@
       "language": [
         "en",
         "pt-BR"
-      ],
-      "resource_link_type": [
-        "discussion",
-        "document",
-        "file",
-        "folder",
-        "goal",
-        "link",
-        "milestone",
-        "person",
-        "project",
-        "space",
-        "task"
       ]
     },
     "int_enums": {
@@ -23550,43 +23537,6 @@
             "name": "updated_at",
             "type": {
               "name": "datetime",
-              "kind": "named"
-            },
-            "optional": false,
-            "nullable": false,
-            "has_default": false
-          }
-        ]
-      },
-      "resource_link": {
-        "fields": [
-          {
-            "default": null,
-            "name": "type",
-            "type": {
-              "name": "resource_link_type",
-              "kind": "named"
-            },
-            "optional": false,
-            "nullable": false,
-            "has_default": false
-          },
-          {
-            "default": null,
-            "name": "id",
-            "type": {
-              "name": "string",
-              "kind": "named"
-            },
-            "optional": false,
-            "nullable": false,
-            "has_default": false
-          },
-          {
-            "default": null,
-            "name": "title",
-            "type": {
-              "name": "string",
               "kind": "named"
             },
             "optional": false,

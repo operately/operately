@@ -20,7 +20,7 @@ export default { name: "ProfilePage", loader, Page } as PageModule;
 function Page() {
   const paths = usePaths();
   const me = useMe();
-  const { mentionedPersonLookup, resolveResourceLinkTitles } = useRichEditorHandlers();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { person, workMap, reviewerWorkMap } = useLoadedData();
 
@@ -48,7 +48,6 @@ function Page() {
     activityFeed: <ActivityFeed personId={person.id} />,
     aboutMe: person.description,
     mentionedPersonLookup,
-    resolveResourceLinkTitles,
     formattedTimePreferences,
   };
 

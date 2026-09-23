@@ -6,7 +6,7 @@ import { isUploadInProgress } from "./Blob";
 import { createRichEditorExtensions } from "./createRichEditorExtensions";
 import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, writeLocalDraft } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
-import { applyResourceLinkTitles, ResourceLinkTitle } from "../RichContent/resourceLinks";
+import { restoreRichTextSource } from "../RichContent/restoreSource";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -30,14 +30,10 @@ interface OnBlurData {
 export type UploadFileFn = (file: File, onProgress: (progress: number) => void) => Promise<{ id: string; url: string }>;
 export type MentionedPersonLookupFn = (id: string) => Promise<Person | null>;
 
-export type ResolveResourceLinkTitlesFn = (content: unknown) => Promise<ResourceLinkTitle[]>;
-
 export interface RichEditorHandlers {
   mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
-  /** Pass null to explicitly disable resource title lookup. */
-  resolveResourceLinkTitles: ResolveResourceLinkTitlesFn | null;
 }
 
 interface UseEditorProps {
@@ -88,9 +84,11 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
-  const baseContent = React.useRef(normalizeRichTextContent(props.content));
-  const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
-  const sourceContent = restoredDraft ?? baseContent.current;
+  const [baseContent] = React.useState(() =>
+    normalizeRichTextContent(props.editable ? restoreRichTextSource(props.content) : props.content),
+  );
+  const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent));
+  const sourceContent = props.editable ? (restoredDraft ?? baseContent) : baseContent;
   const initialContent = normalizeRichTextContent(props.transformContent?.(sourceContent) ?? sourceContent);
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
@@ -156,7 +154,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
 
       if (props.editable && !isUploading) {
-        writeLocalDraft(props.localDraft, json, baseContent.current);
+        writeLocalDraft(props.localDraft, json, baseContent);
       }
 
       if (props.onUpdate) {
@@ -171,41 +169,20 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(normalizeRichTextContent(props.transformContent?.(content) ?? content), {
+      const source = props.editable ? restoreRichTextSource(content) : content;
+      editor.commands.setContent(normalizeRichTextContent(props.transformContent?.(source) ?? source), {
         emitUpdate: false,
       });
     },
-    [editor, props.transformContent],
+    [editor, props.transformContent, props.editable],
   );
 
-  // Read-only rendering resolves its own content unless disabled. Editing keeps the original source.
+  // Synchronize read-only readers when their backend response changes.
   const contentKey = props.editable ? "" : JSON.stringify(props.content ?? null);
-  const resolveResourceLinkTitles = props.handlers.resolveResourceLinkTitles;
-
   React.useEffect(() => {
     if (!editor || props.editable) return;
-
-    let cancelled = false;
-    const content = JSON.parse(contentKey);
-    const timer = setTimeout(async () => {
-      setContent(content);
-      if (resolveResourceLinkTitles === null) return;
-
-      try {
-        const titles = await resolveResourceLinkTitles(content);
-        if (cancelled || editor.isDestroyed || titles.length === 0) return;
-        const origin = typeof window === "undefined" ? undefined : window.location.origin;
-        setContent(applyResourceLinkTitles(content, titles, origin ? { origin } : undefined));
-      } catch {
-        // Title lookup is optional enrichment; the original URLs remain usable on failure.
-      }
-    }, 0);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [editor, props.editable, contentKey, resolveResourceLinkTitles, setContent]);
+    setContent(JSON.parse(contentKey));
+  }, [editor, props.editable, contentKey, setContent]);
 
   const getJson = React.useCallback(() => {
     if (!editor) return null;
