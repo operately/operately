@@ -54,12 +54,6 @@ const catalogEnglish = {
 const catalogPortuguese = {
   Back: "Voltar",
   Next: "Next",
-  "What's your role?": "What's your role?",
-  "Your role": "Your role",
-  "Add your profile picture": "Add your profile picture",
-  "Step {{stepNumber}} of {{totalSteps}}": "Step {{stepNumber}} of {{totalSteps}}",
-  "Please choose an image file.": "Please choose an image file.",
-  Finish: "Finish",
 };
 
 it.each([
@@ -128,7 +122,7 @@ it.each([
   expect(screen.getByText(sizeError)).toBeInTheDocument();
 });
 
-it("uses Portuguese Back with English identity for untranslated role copy", async () => {
+it("falls back to English for missing Portuguese role copy", async () => {
   await renderWizard(catalogEnglish, { __initialStep: "role" }, { lng: "pt-BR", portuguese: catalogPortuguese });
 
   expect(screen.getByRole("heading", { name: "What's your role?" })).toBeInTheDocument();
@@ -137,7 +131,7 @@ it("uses Portuguese Back with English identity for untranslated role copy", asyn
   expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
 });
 
-it("uses English identity for untranslated avatar copy", async () => {
+it("falls back to English for missing Portuguese avatar copy", async () => {
   await renderWizard(catalogEnglish, { __initialStep: "avatar" }, { lng: "pt-BR", portuguese: catalogPortuguese });
 
   expect(screen.getByRole("heading", { name: "Add your profile picture" })).toBeInTheDocument();
