@@ -116,11 +116,14 @@ it("uses Portuguese catalog copy when present, including plurals", async () => {
     "translation",
     {
       "Welcome to Operately, {{name}}!": "Boas-vindas ao Operately, {{name}}!",
+      "Let's get you started": "Vamos começar",
       "1 member_one": "1 membro",
       "1 member_other": "{{count}} membros",
       "1 member_many": "{{count}} membros",
       "1 member_zero": "{{count}} membros",
       "+ Create organization": "+ Criar empresa",
+      "Start fresh with a new company account": "Comece do zero com uma nova conta de empresa",
+      "Or, visit the <actionLink>Admin Panel</actionLink>.": "Ou acesse o <actionLink>Painel de administração</actionLink>.",
     },
     true,
     true,
@@ -133,14 +136,18 @@ it("uses Portuguese catalog copy when present, including plurals", async () => {
         firstName="Ada"
         companies={[{ id: "1", name: "Acme", memberCount: 3, link: "/acme" }]}
         newCompanyPath="/new"
+        adminPath="/admin"
       />
     </MemoryRouter>,
   );
 
   try {
     expect(screen.getByText("Boas-vindas ao Operately, Ada!")).toBeInTheDocument();
+    expect(screen.getByText("Vamos começar")).toBeInTheDocument();
     expect(screen.getByText("3 membros")).toBeInTheDocument();
     expect(getByTestId("add-company-card")).toHaveTextContent("+ Criar empresa");
+    expect(getByTestId("add-company-card")).toHaveTextContent("Comece do zero com uma nova conta de empresa");
+    expect(screen.getByRole("link", { name: "Painel de administração" })).toHaveAttribute("href", "/admin");
   } finally {
     view.unmount();
     await i18n.changeLanguage("en");
