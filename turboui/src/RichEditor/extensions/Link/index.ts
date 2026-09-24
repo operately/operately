@@ -3,7 +3,7 @@ import Link from "@tiptap/extension-link";
 import { Fragment, Slice, type MarkType, type Node } from "@tiptap/pm/model";
 import { Plugin } from "@tiptap/pm/state";
 
-export default Link.extend({
+export const LinkExtension = Link.extend({
   inclusive: false,
   addPasteRules() {
     // Detect URLs before insertion, including content copied from ProseMirror,

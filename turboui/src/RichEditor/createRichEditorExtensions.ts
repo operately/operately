@@ -7,7 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Blob from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import Highlight from "./extensions/Highlight";
-import Link from "./extensions/Link";
+import { LinkExtension } from "./extensions/Link";
 import { mentionExtensions } from "./mentionExtensions";
 import type { RichEditorHandlers } from "./useEditor";
 
@@ -71,7 +71,7 @@ export function createRichEditorExtensions(
       editable,
       thumbnail: options.thumbnailBlobs,
     }),
-    Link,
+    LinkExtension,
   ];
 
   if (options.placeholder != null) {
