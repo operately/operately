@@ -79,3 +79,65 @@ it.each([
   );
   expect(screen.getByRole("link", { name: label })).toHaveAttribute("href", "/admin");
 });
+
+it.each([
+  ["Welcome to Operately, {{name}}!", "+ Create organization"],
+  ["Translated welcome, {{name}}!", "Translated create organization"],
+])("uses catalog copy for lobby chrome: %s", async (welcome, create) => {
+  const i18n = createInstance();
+  await i18n.init({
+    lng: "en",
+    resources: {
+      en: {
+        translation: {
+          "Welcome to Operately, {{name}}!": welcome,
+          "+ Create organization": create,
+        },
+      },
+    },
+  });
+
+  render(
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <LobbyPage firstName="Ada" companies={[]} newCompanyPath="/new" />
+      </MemoryRouter>
+    </I18nextProvider>,
+  );
+
+  expect(screen.getByText(welcome.replace("{{name}}", "Ada"))).toBeInTheDocument();
+  expect(getByTestId("add-company-card")).toHaveTextContent(create);
+});
+
+it("falls back to English for missing Portuguese copy, including plurals", async () => {
+  const i18n = createInstance();
+  await i18n.init({
+    lng: "pt-BR",
+    fallbackLng: "en",
+    resources: {
+      en: {
+        translation: {
+          "Welcome to Operately, {{name}}!": "Welcome to Operately, {{name}}!",
+          "1 member_one": "1 member",
+          "1 member_other": "{{count}} members",
+        },
+      },
+      "pt-BR": { translation: {} },
+    },
+  });
+
+  render(
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <LobbyPage
+          firstName="Ada"
+          companies={[{ id: "1", name: "Acme", memberCount: 3, link: "/acme" }]}
+          newCompanyPath="/new"
+        />
+      </MemoryRouter>
+    </I18nextProvider>,
+  );
+
+  expect(screen.getByText("Welcome to Operately, Ada!")).toBeInTheDocument();
+  expect(screen.getByText("3 members")).toBeInTheDocument();
+});
