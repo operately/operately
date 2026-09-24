@@ -1,8 +1,10 @@
 import React from "react";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { match } from "ts-pattern";
 import { IconBuilding, IconLock, IconLockFilled, IconWorld } from "../icons";
 import i18n from "../i18n";
+import { describeAccess } from "./descriptions";
 
 const PERMISSION_LEVELS = {
   FULL_ACCESS: 100,
@@ -29,7 +31,7 @@ export function AccessLevelSummary(props: AccessLevelSummaryProps) {
       {!props.hideIcon && <AccessIcon {...props} />}
       <div>
         <div className="font-semibold">{calcTitle(props, t)}</div>
-        <div className="text-sm">{calcDescription(props)}</div>
+        <div className="text-sm">{calcDescription(props, t)}</div>
       </div>
     </div>
   );
@@ -67,103 +69,67 @@ function calcTitle(props: AccessLevelSummaryProps, t: (key: string) => string = 
   return t("Invite-only Access");
 }
 
-export function calcDescription(props: AccessLevelSummaryProps) {
-  const t = i18n.t.bind(i18n);
-  const resource = props.resourceType;
+export function calcDescription(props: AccessLevelSummaryProps, t: TFunction = i18n.t.bind(i18n)) {
   const spaceLevel = props.space ?? 0;
   const future = props.tense === "future";
 
   if (props.anonymous >= PERMISSION_LEVELS.VIEW_ACCESS) {
+    const base = describeAccess({ ...props, access: "public" }, t);
     const extra =
       props.company > props.anonymous
         ? match(props.company)
-            .with(PERMISSION_LEVELS.VIEW_ACCESS, () => "")
             .with(PERMISSION_LEVELS.COMMENT_ACCESS, () =>
               future
-                ? t(", company members will be able to view and comment")
-                : t(", company members can view and comment"),
+                ? t("Company members will be able to view and comment.")
+                : t("Company members can view and comment."),
             )
             .with(PERMISSION_LEVELS.EDIT_ACCESS, () =>
-              future ? t(", company members will be able to edit") : t(", company members can edit"),
+              future ? t("Company members will have edit access.") : t("Company members have edit access."),
             )
             .with(PERMISSION_LEVELS.FULL_ACCESS, () =>
-              future ? t(", company members will have full access") : t(", company members have full access"),
+              future ? t("Company members will have full access.") : t("Company members have full access."),
             )
             .otherwise(() => "")
         : "";
 
-    const base = future
-      ? t("Anyone on the internet will be able to view this {{resource}}", { resource })
-      : t("Anyone on the internet can view this {{resource}}", { resource });
-
-    return `${base}${extra}`;
+    return [base, extra].filter(Boolean).join(" ");
   }
 
   if (props.company >= PERMISSION_LEVELS.VIEW_ACCESS) {
     const base = match(props.company)
-      .with(PERMISSION_LEVELS.VIEW_ACCESS, () =>
-        future
-          ? t("Everyone in the company will be able to view this {{resource}}", { resource })
-          : t("Everyone in the company can view this {{resource}}", { resource }),
-      )
-      .with(PERMISSION_LEVELS.COMMENT_ACCESS, () =>
-        future
-          ? t("Everyone in the company will be able to view and comment on this {{resource}}", { resource })
-          : t("Everyone in the company can view and comment on this {{resource}}", { resource }),
-      )
-      .with(PERMISSION_LEVELS.EDIT_ACCESS, () =>
-        future
-          ? t("Everyone in the company will be able to view and edit this {{resource}}", { resource })
-          : t("Everyone in the company can view and edit this {{resource}}", { resource }),
-      )
-      .with(PERMISSION_LEVELS.FULL_ACCESS, () =>
-        future
-          ? t("Everyone in the company will have full access to this {{resource}}", { resource })
-          : t("Everyone in the company has full access to this {{resource}}", { resource }),
-      )
+      .with(PERMISSION_LEVELS.VIEW_ACCESS, () => describeAccess({ ...props, access: "company_view" }, t))
+      .with(PERMISSION_LEVELS.COMMENT_ACCESS, () => describeAccess({ ...props, access: "company_comment" }, t))
+      .with(PERMISSION_LEVELS.EDIT_ACCESS, () => describeAccess({ ...props, access: "company_edit" }, t))
+      .with(PERMISSION_LEVELS.FULL_ACCESS, () => describeAccess({ ...props, access: "company_full" }, t))
       .otherwise(() => "");
 
     const extra =
       props.resourceType !== "space" && spaceLevel > props.company
         ? match(spaceLevel)
-            .with(PERMISSION_LEVELS.VIEW_ACCESS, () => "")
-            .with(PERMISSION_LEVELS.COMMENT_ACCESS, () => t(", space members can view and comment"))
-            .with(PERMISSION_LEVELS.EDIT_ACCESS, () => t(", space members can edit"))
+            .with(PERMISSION_LEVELS.COMMENT_ACCESS, () =>
+              future ? t("Space members will be able to view and comment.") : t("Space members can view and comment."),
+            )
+            .with(PERMISSION_LEVELS.EDIT_ACCESS, () =>
+              future ? t("Space members will have edit access.") : t("Space members have edit access."),
+            )
             .with(PERMISSION_LEVELS.FULL_ACCESS, () =>
-              future ? t(", space members will have full access") : t(", space members have full access"),
+              future ? t("Space members will have full access.") : t("Space members have full access."),
             )
             .otherwise(() => "")
         : "";
 
-    return `${base}${extra}`;
+    return [base, extra].filter(Boolean).join(" ");
   }
 
   if (props.resourceType !== "space" && spaceLevel >= PERMISSION_LEVELS.VIEW_ACCESS) {
     return match(spaceLevel)
-      .with(PERMISSION_LEVELS.VIEW_ACCESS, () =>
-        future
-          ? t("Everyone in the space will be able to view this {{resource}}", { resource })
-          : t("Everyone in the space can view this {{resource}}", { resource }),
-      )
-      .with(PERMISSION_LEVELS.COMMENT_ACCESS, () =>
-        future
-          ? t("Everyone in the space will be able to view and comment on this {{resource}}", { resource })
-          : t("Everyone in the space can view and comment on this {{resource}}", { resource }),
-      )
-      .with(PERMISSION_LEVELS.EDIT_ACCESS, () =>
-        future
-          ? t("Everyone in the space will be able to view and edit this {{resource}}", { resource })
-          : t("Everyone in the space can view and edit this {{resource}}", { resource }),
-      )
-      .with(PERMISSION_LEVELS.FULL_ACCESS, () =>
-        future
-          ? t("Everyone in the space will be able to view and edit this {{resource}}", { resource })
-          : t("Everyone in the space can view and edit this {{resource}}", { resource }),
+      .with(PERMISSION_LEVELS.VIEW_ACCESS, () => describeAccess({ ...props, access: "space_view" }, t))
+      .with(PERMISSION_LEVELS.COMMENT_ACCESS, () => describeAccess({ ...props, access: "space_comment" }, t))
+      .with(PERMISSION_LEVELS.EDIT_ACCESS, PERMISSION_LEVELS.FULL_ACCESS, () =>
+        describeAccess({ ...props, access: "space_edit" }, t),
       )
       .otherwise(() => "");
   }
 
-  return future
-    ? t("Only people you add to the {{resource}} will be able to view it", { resource })
-    : t("Only people you add to the {{resource}} can view it", { resource });
+  return describeAccess({ ...props, access: "invite_only" }, t);
 }

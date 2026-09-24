@@ -173,56 +173,6 @@ msgid "+ Create organization"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:87
-msgid ", company members can edit"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:84
-msgid ", company members can view and comment"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:90
-msgid ", company members have full access"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:87
-msgid ", company members will be able to edit"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:83
-msgid ", company members will be able to view and comment"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:90
-msgid ", company members will have full access"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:131
-msgid ", space members can edit"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:130
-msgid ", space members can view and comment"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:133
-msgid ", space members have full access"
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:133
-msgid ", space members will have full access"
-msgstr ""
-
-#.frontend
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:137
 msgid "1 day"
 msgid_plural "%{count} days"
@@ -658,13 +608,33 @@ msgid "An admin or owner needs to review billing or free up member space before 
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:97
-msgid "Anyone on the internet can view this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:29
+msgid "Anyone on the internet can view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:96
-msgid "Anyone on the internet will be able to view this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:26
+msgid "Anyone on the internet can view this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:32
+msgid "Anyone on the internet can view this space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:28
+msgid "Anyone on the internet will be able to view this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:25
+msgid "Anyone on the internet will be able to view this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:31
+msgid "Anyone on the internet will be able to view this space."
 msgstr ""
 
 #.frontend
@@ -1110,7 +1080,7 @@ msgid "Checkout unavailable"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:84
+#: ../turboui/src/CompanyImportPage/index.tsx:79
 msgid "Choose ZIP"
 msgstr ""
 
@@ -1161,7 +1131,7 @@ msgid "Choose what spaces, goals and projects %{name} should have access to:"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:210
+#: ../turboui/src/CompanyImportPage/index.tsx:195
 msgid "Clear ZIP"
 msgstr ""
 
@@ -1266,7 +1236,7 @@ msgid "Company Full"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:66
+#: ../turboui/src/CompanyImportPage/index.tsx:61
 msgid "Company Import"
 msgstr ""
 
@@ -1286,7 +1256,37 @@ msgid "Company members"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:60
+#: ../turboui/src/AccessLevelSummary/index.tsx:84
+msgid "Company members can view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:87
+msgid "Company members have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:90
+msgid "Company members have full access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:83
+msgid "Company members will be able to view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:87
+msgid "Company members will have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:90
+msgid "Company members will have full access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:62
 msgid "Company-wide Access"
 msgstr ""
 
@@ -1307,7 +1307,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:178
-#: ../turboui/src/CompanyImportPage/index.tsx:340
+#: ../turboui/src/CompanyImportPage/index.tsx:315
 msgid "Completed:"
 msgstr ""
 
@@ -1860,75 +1860,183 @@ msgid "Esc"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:112
-msgid "Everyone in the company can view and comment on this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:53
+msgid "Everyone in the company can view and comment on this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:117
-msgid "Everyone in the company can view and edit this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:50
+msgid "Everyone in the company can view and comment on this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:107
-msgid "Everyone in the company can view this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:56
+msgid "Everyone in the company can view and comment on this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:122
-msgid "Everyone in the company has full access to this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:65
+msgid "Everyone in the company can view and edit this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:111
-msgid "Everyone in the company will be able to view and comment on this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:62
+msgid "Everyone in the company can view and edit this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:116
-msgid "Everyone in the company will be able to view and edit this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:68
+msgid "Everyone in the company can view and edit this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:106
-msgid "Everyone in the company will be able to view this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:41
+msgid "Everyone in the company can view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:121
-msgid "Everyone in the company will have full access to this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:38
+msgid "Everyone in the company can view this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:151
-msgid "Everyone in the space can view and comment on this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:44
+msgid "Everyone in the company can view this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:156
-#: ../turboui/src/AccessLevelSummary/index.tsx:161
-msgid "Everyone in the space can view and edit this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:77
+msgid "Everyone in the company has full access to this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:146
-msgid "Everyone in the space can view this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:74
+msgid "Everyone in the company has full access to this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:150
-msgid "Everyone in the space will be able to view and comment on this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:80
+msgid "Everyone in the company has full access to this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:155
-#: ../turboui/src/AccessLevelSummary/index.tsx:160
-msgid "Everyone in the space will be able to view and edit this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:52
+msgid "Everyone in the company will be able to view and comment on this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:145
-msgid "Everyone in the space will be able to view this %{resource}"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:49
+msgid "Everyone in the company will be able to view and comment on this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:55
+msgid "Everyone in the company will be able to view and comment on this space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:64
+msgid "Everyone in the company will be able to view and edit this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:61
+msgid "Everyone in the company will be able to view and edit this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:67
+msgid "Everyone in the company will be able to view and edit this space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:40
+msgid "Everyone in the company will be able to view this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:37
+msgid "Everyone in the company will be able to view this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:43
+msgid "Everyone in the company will be able to view this space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:76
+msgid "Everyone in the company will have full access to this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:73
+msgid "Everyone in the company will have full access to this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:79
+msgid "Everyone in the company will have full access to this space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:100
+msgid "Everyone in the space can view and comment on this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:97
+msgid "Everyone in the space can view and comment on this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:110
+msgid "Everyone in the space can view and edit this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:107
+msgid "Everyone in the space can view and edit this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:90
+msgid "Everyone in the space can view this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:87
+msgid "Everyone in the space can view this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:99
+msgid "Everyone in the space will be able to view and comment on this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:96
+msgid "Everyone in the space will be able to view and comment on this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:109
+msgid "Everyone in the space will be able to view and edit this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:106
+msgid "Everyone in the space will be able to view and edit this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:89
+msgid "Everyone in the space will be able to view this goal."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:86
+msgid "Everyone in the space will be able to view this project."
 msgstr ""
 
 #.frontend
@@ -1978,7 +2086,7 @@ msgid "FOLDERS"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:379
+#: ../turboui/src/CompanyImportPage/index.tsx:350
 msgid "Failed"
 msgstr ""
 
@@ -2083,7 +2191,7 @@ msgid "File"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:357
+#: ../turboui/src/CompanyImportPage/index.tsx:331
 msgid "File: %{name}"
 msgstr ""
 
@@ -2324,12 +2432,12 @@ msgid "If you sign in with Google, you’ll need to use a Google account with th
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:58
+#: ../turboui/src/CompanyImportPage/index.tsx:57
 msgid "Import Company"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:67
+#: ../turboui/src/CompanyImportPage/index.tsx:62
 msgid "Import company"
 msgstr ""
 
@@ -2339,7 +2447,7 @@ msgid "Import started"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:110
+#: ../turboui/src/CompanyImportPage/index.tsx:100
 msgid "Imports"
 msgstr ""
 
@@ -2445,7 +2553,7 @@ msgid "Invite your whole team at once"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:67
+#: ../turboui/src/AccessLevelSummary/index.tsx:69
 msgid "Invite-only Access"
 msgstr ""
 
@@ -2904,14 +3012,14 @@ msgid "No exports yet. Start one when you need to move this company to another O
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:199
-#: ../turboui/src/CompanyImportPage/index.tsx:202
-#: ../turboui/src/CompanyImportPage/index.tsx:357
+#: ../turboui/src/CompanyImportPage/index.tsx:184
+#: ../turboui/src/CompanyImportPage/index.tsx:187
+#: ../turboui/src/CompanyImportPage/index.tsx:331
 msgid "No file selected"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:312
+#: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr ""
 
@@ -2995,13 +3103,33 @@ msgid "Only existing members can be added."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:168
-msgid "Only people you add to the %{resource} can view it"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:119
+msgid "Only people you add to the goal can view it."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:167
-msgid "Only people you add to the %{resource} will be able to view it"
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:118
+msgid "Only people you add to the goal will be able to view it."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:116
+msgid "Only people you add to the project can view it."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:115
+msgid "Only people you add to the project will be able to view it."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:122
+msgid "Only people you add to the space can view it."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:121
+msgid "Only people you add to the space will be able to view it."
 msgstr ""
 
 #.frontend
@@ -3010,7 +3138,7 @@ msgid "Open assignee picker for the selected task"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:288
+#: ../turboui/src/CompanyImportPage/index.tsx:264
 msgid "Open company"
 msgstr ""
 
@@ -3056,7 +3184,7 @@ msgid "Operately %{version} is available. This instance is running an older vers
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:80
+#: ../turboui/src/CompanyImportPage/index.tsx:75
 msgid "Operately package"
 msgstr ""
 
@@ -3122,7 +3250,7 @@ msgid "PROJECTS"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:75
+#: ../turboui/src/CompanyImportPage/index.tsx:70
 msgid "Package"
 msgstr ""
 
@@ -3354,7 +3482,7 @@ msgid "Profile"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:359
+#: ../turboui/src/CompanyImportPage/index.tsx:333
 msgid "Progress: %{progress}%"
 msgstr ""
 
@@ -3409,7 +3537,7 @@ msgid "Promote to manager"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:56
+#: ../turboui/src/AccessLevelSummary/index.tsx:58
 msgid "Public Access"
 msgstr ""
 
@@ -3426,7 +3554,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:232
-#: ../turboui/src/CompanyImportPage/index.tsx:441
+#: ../turboui/src/CompanyImportPage/index.tsx:412
 msgid "Queued"
 msgstr ""
 
@@ -3578,7 +3706,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:173
-#: ../turboui/src/CompanyImportPage/index.tsx:334
+#: ../turboui/src/CompanyImportPage/index.tsx:310
 msgid "Requested:"
 msgstr ""
 
@@ -3690,7 +3818,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:182
-#: ../turboui/src/CompanyImportPage/index.tsx:345
+#: ../turboui/src/CompanyImportPage/index.tsx:319
 msgid "Rows: %{count}"
 msgstr ""
 
@@ -4029,7 +4157,37 @@ msgid "Space members"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/index.tsx:64
+#: ../turboui/src/AccessLevelSummary/index.tsx:110
+msgid "Space members can view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:113
+msgid "Space members have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:116
+msgid "Space members have full access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:110
+msgid "Space members will be able to view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:113
+msgid "Space members will have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:116
+msgid "Space members will have full access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:66
 msgid "Space-wide Access"
 msgstr ""
 
@@ -4059,7 +4217,7 @@ msgid "Start fresh with a new company account"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:96
+#: ../turboui/src/CompanyImportPage/index.tsx:86
 msgid "Start import"
 msgstr ""
 
@@ -4075,7 +4233,7 @@ msgid "Status details"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:358
+#: ../turboui/src/CompanyImportPage/index.tsx:332
 msgid "Status: %{status}"
 msgstr ""
 
@@ -4096,7 +4254,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:184
-#: ../turboui/src/CompanyImportPage/index.tsx:347
+#: ../turboui/src/CompanyImportPage/index.tsx:321
 msgid "Step: %{step}"
 msgstr ""
 
@@ -4135,7 +4293,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:183
-#: ../turboui/src/CompanyImportPage/index.tsx:346
+#: ../turboui/src/CompanyImportPage/index.tsx:320
 msgid "Tables: %{count}"
 msgstr ""
 
@@ -4644,29 +4802,29 @@ msgid "Upgrade confirmed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:372
+#: ../turboui/src/CompanyImportPage/index.tsx:343
 #: assets/js/pages/CompanyImportPage/index.tsx:56
 msgid "Upload failed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:69
+#: ../turboui/src/CompanyImportPage/index.tsx:64
 msgid "Upload the exported ZIP package, then start importing the company into this Operately instance."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:371
-#: ../turboui/src/CompanyImportPage/index.tsx:378
+#: ../turboui/src/CompanyImportPage/index.tsx:342
+#: ../turboui/src/CompanyImportPage/index.tsx:349
 msgid "Uploaded"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:377
+#: ../turboui/src/CompanyImportPage/index.tsx:348
 msgid "Uploading"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:369
+#: ../turboui/src/CompanyImportPage/index.tsx:340
 msgid "Uploading %{name}..."
 msgstr ""
 
@@ -4676,7 +4834,7 @@ msgid "Uploading %{progress}%"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:369
+#: ../turboui/src/CompanyImportPage/index.tsx:340
 msgid "Uploading file..."
 msgstr ""
 
@@ -4686,7 +4844,7 @@ msgid "Uploading..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:104
+#: ../turboui/src/CompanyImportPage/index.tsx:94
 msgid "Uploads are unavailable for this account right now."
 msgstr ""
 
@@ -4812,12 +4970,12 @@ msgid "View update"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:380
+#: ../turboui/src/CompanyImportPage/index.tsx:351
 msgid "Waiting"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:373
+#: ../turboui/src/CompanyImportPage/index.tsx:344
 msgid "Waiting for file selection"
 msgstr ""
 
@@ -5070,13 +5228,13 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:223
-#: ../turboui/src/CompanyImportPage/index.tsx:432
+#: ../turboui/src/CompanyImportPage/index.tsx:403
 msgid "cancelled"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:217
-#: ../turboui/src/CompanyImportPage/index.tsx:426
+#: ../turboui/src/CompanyImportPage/index.tsx:397
 msgid "completed"
 msgstr ""
 
@@ -5135,7 +5293,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:219
-#: ../turboui/src/CompanyImportPage/index.tsx:428
+#: ../turboui/src/CompanyImportPage/index.tsx:399
 msgid "failed"
 msgstr ""
 
@@ -5187,13 +5345,13 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:225
-#: ../turboui/src/CompanyImportPage/index.tsx:434
+#: ../turboui/src/CompanyImportPage/index.tsx:405
 msgid "pending"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:221
-#: ../turboui/src/CompanyImportPage/index.tsx:430
+#: ../turboui/src/CompanyImportPage/index.tsx:401
 msgid "running"
 msgstr ""
 
