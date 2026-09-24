@@ -171,7 +171,7 @@ msgstr "(%{where}) %{who} mencionou você na descrição de \"%{task_name}\""
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:146
 msgid "* If you sign in with Google, you must use <email>%{email}</email>."
-msgstr ""
+msgstr "* Se você entrar com o Google, use o e-mail <email>%{email}</email>."
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:123
@@ -331,7 +331,7 @@ msgstr "<bold>O que acontece a seguir?</bold> Operately enviará um código para
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:73
 msgid "<bold>What happens next?</bold> You will join the %{company} company."
-msgstr ""
+msgstr "<bold>O que acontece a seguir?</bold> Você vai entrar para a empresa %{company}."
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:70
@@ -561,7 +561,7 @@ msgstr "Adicionar tarefa"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:181
 msgid "Add your profile picture"
-msgstr ""
+msgstr "Adicione sua foto de perfil"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:33
@@ -1185,7 +1185,7 @@ msgstr "Escolha um plano pago para esta empresa. Os dados de pagamento serão in
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:113
 msgid "Choose a password (minimum 12 characters)"
-msgstr ""
+msgstr "Escolha uma senha (mínimo de 12 caracteres)"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:36
@@ -1254,7 +1254,7 @@ msgstr "Fechado"
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:51
 msgid "Co-founder & CEO of Operately"
-msgstr ""
+msgstr "Cofundador e CEO da Operately"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:58
@@ -2333,7 +2333,7 @@ msgstr "Não foi possível iniciar a importação"
 #.frontend
 #: assets/js/pages/ProfileEditPage/index.tsx:241
 msgid "Failed to update avatar. Please try again."
-msgstr ""
+msgstr "Não foi possível atualizar a foto de perfil. Tente novamente."
 
 #.frontend
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:71
@@ -2366,7 +2366,7 @@ msgstr "Não foi possível enviar %{name}. Tente novamente."
 #.frontend
 #: assets/js/pages/ProfileEditPage/index.tsx:214
 msgid "Failed to upload avatar. Please try again."
-msgstr ""
+msgstr "Não foi possível enviar a foto de perfil. Tente novamente."
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:311
@@ -2386,7 +2386,7 @@ msgstr "Arquivos"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:176
 msgid "Finish"
-msgstr ""
+msgstr "Concluir"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:215
@@ -2572,7 +2572,7 @@ msgstr "Ajuda"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:182
 msgid "Help your teammates put a face to your name."
-msgstr ""
+msgstr "Ajude seus colegas a associar um rosto ao seu nome."
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:42
@@ -2621,7 +2621,7 @@ msgstr "Se o colaborador externo já tiver uma conta, ele será adicionado à su
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:45
 msgid "If you ever need a hand or want to talk shop, email me at marko@operately.com and I'll reply."
-msgstr ""
+msgstr "Se precisar de ajuda ou quiser conversar sobre o trabalho, envie um e-mail para marko@operately.com que eu respondo."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:56
@@ -2840,12 +2840,12 @@ msgstr "Deixe em branco para usar o nome padrão do token."
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:107
 msgid "Let teammates know what you focus on. You can change this later."
-msgstr ""
+msgstr "Mostre aos colegas no que você foca. Você pode alterar isso depois."
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:26
 msgid "Let's get started"
-msgstr ""
+msgstr "Vamos começar"
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:42
@@ -3005,7 +3005,7 @@ msgstr "Marcar tarefa como concluída"
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:33
 msgid "Marko Anastasov, CEO & Founder, Operately"
-msgstr ""
+msgstr "Marko Anastasov, CEO e fundador, Operately"
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:127
@@ -3188,7 +3188,7 @@ msgstr "Nova tarefa \"%{taskName}\" foi criada"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:97
 msgid "Next"
-msgstr ""
+msgstr "Próximo"
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
@@ -3367,7 +3367,7 @@ msgstr "Somente as pessoas que você adicionar ao espaço poderão visualizá-lo
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:47
 msgid "Onward,"
-msgstr ""
+msgstr "Vamos em frente,"
 
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:95
@@ -3423,7 +3423,7 @@ msgstr "Operately %{version} está disponível. Esta instância usa uma versão 
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:41
 msgid "Operately is what I wished I had when I started my first company. We had plenty of tools, but no single place where plans and daily work came together."
-msgstr ""
+msgstr "O Operately é o que eu gostaria de ter tido quando abri minha primeira empresa. Tínhamos várias ferramentas, mas nenhum lugar único em que o planejamento e o trabalho do dia a dia se encontrassem."
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:75
@@ -3494,7 +3494,7 @@ msgstr "PESSOAS"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:209
 msgid "PNG, JPG, or GIF up to 5MB. You can adjust or replace it later from your profile settings."
-msgstr ""
+msgstr "PNG, JPG ou GIF de até 5 MB. Você pode ajustar ou substituir depois nas configurações do perfil."
 
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:60
@@ -3672,17 +3672,17 @@ msgstr "Plano atualizado"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:134
 msgid "Please choose an image file."
-msgstr ""
+msgstr "Escolha um arquivo de imagem."
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/index.tsx:191
 msgid "Please choose an image smaller than 12 MB."
-msgstr ""
+msgstr "Escolha uma imagem menor que 12 MB."
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:140
 msgid "Please choose an image smaller than 5MB."
-msgstr ""
+msgstr "Escolha uma imagem menor que 5 MB."
 
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:71
@@ -3972,7 +3972,7 @@ msgstr "Repita a senha"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:201
 msgid "Replace photo"
-msgstr ""
+msgstr "Substituir foto"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:109
@@ -4317,7 +4317,7 @@ msgstr "Definir data de conclusão"
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:126
 msgid "Set password & Log in"
-msgstr ""
+msgstr "Definir senha e entrar"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:304
@@ -4520,7 +4520,7 @@ msgstr "Status: %{status}"
 #.frontend
 #: ../turboui/src/OnboardingWizard/WizardLayout.tsx:81
 msgid "Step %{stepNumber} of %{totalSteps}"
-msgstr ""
+msgstr "Etapa %{stepNumber} de %{totalSteps}"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:83
@@ -4639,7 +4639,7 @@ msgstr "Templates"
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:38
 msgid "Thanks for signing up!"
-msgstr ""
+msgstr "Obrigado por se cadastrar!"
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:102
@@ -5099,7 +5099,7 @@ msgstr "Mudança para um plano superior confirmada"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:193
 msgid "Upload a square image for best results."
-msgstr ""
+msgstr "Envie uma imagem quadrada para um resultado melhor."
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:343
@@ -5110,7 +5110,7 @@ msgstr "Falha no envio"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:201
 msgid "Upload photo"
-msgstr ""
+msgstr "Enviar foto"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:64
@@ -5419,7 +5419,7 @@ msgstr "O que é isso?"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:106
 msgid "What's your role?"
-msgstr ""
+msgstr "Qual é seu cargo?"
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:66
@@ -5476,12 +5476,12 @@ msgstr "Ontem"
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:170
 msgid "You"
-msgstr ""
+msgstr "Você"
 
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:56
 msgid "You are joining as <name>%{name}</name>"
-msgstr ""
+msgstr "Você está entrando como <name>%{name}</name>"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/FormElements.tsx:58
@@ -5505,7 +5505,7 @@ msgstr[1] "Você tem %{count} novas atualizações"
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:50
 msgid "You were invited by %{author} to join %{company}."
-msgstr ""
+msgstr "Você foi convidado por %{author} para entrar para %{company}."
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:62
@@ -5545,7 +5545,7 @@ msgstr "Sua senha foi atualizada com sucesso."
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:112
 msgid "Your role"
-msgstr ""
+msgstr "Seu cargo"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:36
@@ -5578,7 +5578,7 @@ msgstr "criou a tarefa \"%{task_name}\""
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:113
 msgid "e.g Product Manager, Designer, CEO"
-msgstr ""
+msgstr "ex.: Product Manager, Designer, CEO"
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:60
