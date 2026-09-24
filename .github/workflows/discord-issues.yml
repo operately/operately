@@ -20,8 +20,26 @@ jobs:
           CREATED_AT: ${{ github.event.issue.created_at }}
           CLOSED_AT: ${{ github.event.issue.closed_at }}
         run: |
+          SAFE_TITLE=$(python3 - <<'PY'
+          import os
+
+          title = os.environ["ISSUE_TITLE"]
+
+          # Keep the notification to one line.
+          title = title.replace("\r", " ").replace("\n", " ")
+
+          # Escape characters that can break out of a Markdown link label.
+          # Backslash must be escaped first.
+          title = title.replace("\\", "\\\\")
+          title = title.replace("[", "\\[")
+          title = title.replace("]", "\\]")
+
+          print(title)
+          PY
+          )
+
           if [ "$ACTION" = "opened" ]; then
-            MESSAGE="🎫 [#${ISSUE_NUMBER} ${ISSUE_TITLE}](${ISSUE_URL}) — ${ACTOR}"
+            MESSAGE="🎫 [#${ISSUE_NUMBER} ${SAFE_TITLE}](${ISSUE_URL}) — ${ACTOR}"
           else
             DURATION=$(python3 - <<'PY'
           import os
@@ -47,7 +65,7 @@ jobs:
           PY
           )
 
-            MESSAGE="✅ [#${ISSUE_NUMBER} ${ISSUE_TITLE}](${ISSUE_URL}) — ${ACTOR} — ${DURATION}"
+            MESSAGE="✅ [#${ISSUE_NUMBER} ${SAFE_TITLE}](${ISSUE_URL}) — ${ACTOR} — ${DURATION}"
           fi
 
           jq -n \
