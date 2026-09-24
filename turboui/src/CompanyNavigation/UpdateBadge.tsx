@@ -1,6 +1,8 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { DivLink } from "../Link";
+import { translationText } from "../i18n";
 import { PRODUCT_RELEASES_PAGE_URL } from "../ProductReleaseAnnouncement";
 import classNames from "../utils/classnames";
 import { CompanyNavigationUpdate } from "./types";
@@ -18,6 +20,8 @@ const badgeClassName = classNames(
 );
 
 export function UpdateBadge({ update }: { update?: CompanyNavigationUpdate | null }) {
+  const { t } = useTranslation();
+
   if (!update) return null;
 
   const href = update.link ?? PRODUCT_RELEASES_PAGE_URL;
@@ -28,12 +32,21 @@ export function UpdateBadge({ update }: { update?: CompanyNavigationUpdate | nul
       target="_blank"
       external={href.startsWith("http")}
       className={badgeClassName}
-      title={`Operately ${update.version} is available. This instance is running an older version. View release notes.`}
+      title={translationText(
+        t(
+          "Operately {{version}} is available. This instance is running an older version. View release notes.",
+          { version: update.version },
+        ),
+      )}
       testId="update-available-badge"
     >
       <span className="size-1.5 shrink-0 rounded-full bg-callout-info-content" aria-hidden="true" />
       <span>
-        <span className="font-semibold tabular-nums">{update.version}</span> available
+        <Trans
+          i18nKey="<version>{{version}}</version> available"
+          values={{ version: update.version }}
+          components={{ version: <span className="font-semibold tabular-nums" /> }}
+        />
       </span>
     </DivLink>
   );

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Avatar, type AvatarPerson } from "../Avatar";
+import { translationText } from "../i18n";
 import { ConfirmByTypingModal } from "../ConfirmByTypingModal";
 import {
   IconFileExport,
@@ -47,39 +49,40 @@ export namespace CompanyAdminPage {
 }
 
 export function CompanyAdminPage(props: CompanyAdminPage.Props) {
-  const navigation = React.useMemo(() => [{ to: props.homePath, label: "Home" }], [props.homePath]);
+  const { t } = useTranslation();
+  const navigation = React.useMemo(() => [{ to: props.homePath, label: t("Home") }], [props.homePath, t]);
 
   return (
     <Page
-      title={[props.companyName, "Administration"]}
+      title={[props.companyName, translationText(t("Administration"))]}
       size="small"
       testId="company-admin-page"
       navigation={navigation}
     >
       <div className="px-10 py-8">
-        <div className="uppercase text-sm tracking-wide">Company Administration</div>
+        <div className="uppercase text-sm tracking-wide">{t("Company Administration")}</div>
         <div className="text-content-accent text-3xl font-extrabold">{props.companyName}</div>
 
-        <PageSection title="What's this?">
+        <PageSection title={t("What's this?")}>
           <p>
-            This is the company administration page where owners and admins can manage the company's settings. They have
-            special permissions to add or remove team members, change who can access the application, and more. If you
-            need something done, contact one of them.
+            {t(
+              "This is the company administration page where owners and admins can manage the company's settings. They have special permissions to add or remove team members, change who can access the application, and more. If you need something done, contact one of them.",
+            )}
           </p>
 
           <p className="mt-2">
-            <Link to={props.permissionsPath}>View permission breakdown</Link>
+            <Link to={props.permissionsPath}>{t("View permission breakdown")}</Link>
           </p>
         </PageSection>
 
         {props.admins.length > 0 && (
-          <PageSection title="Administrators">
+          <PageSection title={t("Administrators")}>
             <PeopleList people={props.admins} />
           </PageSection>
         )}
 
         {props.owners.length > 0 && (
-          <PageSection title="Account Owners">
+          <PageSection title={t("Account Owners")}>
             <PeopleList people={props.owners} />
           </PageSection>
         )}
@@ -97,30 +100,32 @@ export function CompanyAdminPage(props: CompanyAdminPage.Props) {
 }
 
 function AdminsMenu(props: CompanyAdminPage.Props) {
+  const { t } = useTranslation();
+
   if (!(props.isAdmin || props.isOwner)) {
     return null;
   }
 
   return (
-    <PageSection title="As an admin or owner, you can:">
+    <PageSection title={t("As an admin or owner, you can:")}>
       <div>
-        <OptionsMenuItem linkTo={props.managePeoplePath} icon={IconUsers} title="Manage team members" />
+        <OptionsMenuItem linkTo={props.managePeoplePath} icon={IconUsers} title={t("Manage team members")} />
         <OptionsMenuItem
           linkTo={props.restoreSuspendedPeoplePath}
           icon={IconUser}
-          title="Restore access for deactivated team members"
+          title={t("Restore access for deactivated team members")}
         />
         <OptionsMenuItem
           hidden={!props.billingEnabled || !props.canManageBilling}
           linkTo={props.billingPath}
           icon={IconFileText}
-          title="Manage plan"
+          title={t("Manage plan")}
         />
         <OptionsMenuItem
           hidden={!props.canEditDetails}
           linkTo={props.renameCompanyPath}
           icon={IconLetterCase}
-          title="Rename the company"
+          title={t("Rename the company")}
         />
       </div>
     </PageSection>
@@ -128,25 +133,27 @@ function AdminsMenu(props: CompanyAdminPage.Props) {
 }
 
 function OwnersMenu(props: CompanyAdminPage.Props) {
+  const { t } = useTranslation();
+
   if (!props.isOwner) {
     return null;
   }
 
   return (
-    <PageSection title="As an owner, you can:">
+    <PageSection title={t("As an owner, you can:")}>
       <div>
         <OptionsMenuItem
           linkTo={props.manageAdminsPath}
           icon={IconShieldLock}
-          title="Manage administrators and owners"
+          title={t("Manage administrators and owners")}
         />
         <OptionsMenuItem
           hidden={!props.canEditTrustedEmailDomains}
           linkTo={props.trustedDomainsPath}
           icon={IconLock}
-          title="Manage trusted email domains"
+          title={t("Manage trusted email domains")}
         />
-        <OptionsMenuItem linkTo={props.exportPath} icon={IconFileExport} title="Export company data" />
+        <OptionsMenuItem linkTo={props.exportPath} icon={IconFileExport} title={t("Export company data")} />
       </div>
     </PageSection>
   );
@@ -174,10 +181,12 @@ function DangerZone({
   companyName: string;
   onDeleteCompany: () => Promise<void>;
 }) {
+  const { t } = useTranslation();
+
   if (!isOwner) return null;
 
   return (
-    <PageSection title="Danger Zone:">
+    <PageSection title={t("Danger Zone:")}>
       <div className="bg-surface-base">
         <DeleteCompanyItem companyName={companyName} onDeleteCompany={onDeleteCompany} />
       </div>
@@ -192,33 +201,35 @@ function DeleteCompanyItem({
   companyName: string;
   onDeleteCompany: () => Promise<void>;
 }) {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
 
   return (
     <>
       <OptionsMenuItem
         icon={IconTrash}
-        title="Delete this company"
+        title={t("Delete this company")}
         onClick={() => setShowModal(true)}
         danger
-        description="Permanently delete the company and all its resources. This action cannot be undone."
+        description={translationText(t("Permanently delete the company and all its resources. This action cannot be undone."))}
       />
 
       <ConfirmByTypingModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={onDeleteCompany}
-        title="Delete Company"
+        title={translationText(t("Delete Company"))}
         confirmationValue={companyName}
-        warningMessage="This action cannot be undone."
+        warningMessage={translationText(t("This action cannot be undone."))}
         warningDescription={
-          <>
-            This will permanently delete <strong>{companyName}</strong> and its spaces, goals, projects, and other
-            resources.
-          </>
+          <Trans
+            i18nKey="This will permanently delete <strong>{{companyName}}</strong> and its spaces, goals, projects, and other resources."
+            values={{ companyName }}
+            components={{ strong: <strong /> }}
+          />
         }
-        confirmLabel="Delete Company"
-        loadingLabel="Deleting..."
+        confirmLabel={translationText(t("Delete Company"))}
+        loadingLabel={translationText(t("Deleting..."))}
         inputTestId="confirm-delete-input"
         confirmTestId="confirm-delete-button"
       />

@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { match } from "ts-pattern";
 import { BillingLimitGuidanceNotice } from "../BillingLimitGuidanceNotice";
@@ -8,6 +9,7 @@ import { Navigation } from "../Page/Navigation";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
 import { AddedContent } from "./components/AddedContent";
 import { InvitedContent } from "./components/InvitedContent";
+import i18n from "../i18n";
 
 export namespace CompanyAdminAddPeoplePage {
   export type PageState = PageStateForm | PageStateInvited | PageStateAdded;
@@ -100,49 +102,47 @@ type MemberCopy = {
 
 const helperTextWrapper = (content: React.ReactNode) => (
   <div className="my-8 text-center px-8 sm:px-20">
-    <span className="font-bold">What happens next?</span> {content}
+    <span className="font-bold">{i18n.t("What happens next?")}</span> {content}
   </div>
 );
 
-const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
-  team_member: {
-    pageTitlePrefix: "Invite new team member",
-    formTitle: "Invite a new team member",
-    helperText: helperTextWrapper(
-      <>
-        If the new member already has an account, they will be added to your company. If they don&apos;t have an
-        account, we&apos;ll send them an email with an invitation link, and you&apos;ll get the same link here to share
-        if needed. The link will be valid for 24 hours.
-      </>,
-    ),
-    submitLabel: "Invite Member",
-    inviteAnotherLabel: "Invite Another Member",
-  },
-  outside_collaborator: {
-    pageTitlePrefix: "Invite new outside collaborator",
-    formTitle: "Invite a new outside collaborator",
-    helperText: helperTextWrapper(
-      <>
-        If the outside collaborator already has an account, they will be added to your company as an outside
-        collaborator. If they don&apos;t have an account, we&apos;ll send them an email with an invitation link, and
-        you&apos;ll get the same link here to share if needed. The link will be valid for 24 hours.
-      </>,
-    ),
-    submitLabel: "Invite Collaborator",
-    inviteAnotherLabel: "Invite Another Outside Collaborator",
-  },
-};
+function memberCopy(memberType: CompanyAdminAddPeoplePage.MemberType, t: (key: string) => string): MemberCopy {
+  if (memberType === "outside_collaborator") {
+    return {
+      pageTitlePrefix: t("Invite new outside collaborator"),
+      formTitle: t("Invite a new outside collaborator"),
+      helperText: helperTextWrapper(
+        <Trans i18nKey="If the outside collaborator already has an account, they will be added to your company as an outside collaborator. If they don't have an account, we'll send them an email with an invitation link, and you'll get the same link here to share if needed. The link will be valid for 24 hours." />,
+      ),
+      submitLabel: t("Invite Collaborator"),
+      inviteAnotherLabel: t("Invite Another Outside Collaborator"),
+    };
+  }
 
-const DEFAULT_PERMISSION_OPTIONS: CompanyAdminAddPeoplePage.PermissionOption[] = [
-  { value: "full_access", label: "Full Access" },
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
+  return {
+    pageTitlePrefix: t("Invite new team member"),
+    formTitle: t("Invite a new team member"),
+    helperText: helperTextWrapper(
+      <Trans i18nKey="If the new member already has an account, they will be added to your company. If they don't have an account, we'll send them an email with an invitation link, and you'll get the same link here to share if needed. The link will be valid for 24 hours." />,
+    ),
+    submitLabel: t("Invite Member"),
+    inviteAnotherLabel: t("Invite Another Member"),
+  };
+}
+
+function defaultPermissionOptions(t: (key: string) => string): CompanyAdminAddPeoplePage.PermissionOption[] {
+  return [
+    { value: "full_access", label: t("Full Access") },
+    { value: "edit_access", label: t("Edit Access") },
+    { value: "comment_access", label: t("Comment Access") },
+    { value: "view_access", label: t("View Access") },
+  ];
+}
 
 export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props) {
+  const { t } = useTranslation();
   const memberType = props.memberType ?? "team_member";
-  const copy = memberCopy[memberType];
+  const copy = memberCopy(memberType, t);
   const isGuest = memberType === "outside_collaborator";
 
   const resourceAccess = useResourceAccess();
@@ -163,7 +163,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
 
   const showSuccessActions = props.state.state !== "form" && (!isGuest || resourceAccess.accessGranted);
   const showGrantAccessButton = props.state.state !== "form" && isGuest && !resourceAccess.accessGranted;
-  const permissionOptions = props.permissionOptions ?? DEFAULT_PERMISSION_OPTIONS;
+  const permissionOptions = props.permissionOptions ?? defaultPermissionOptions(t);
 
   return (
     <div className={`mx-auto relative sm:my-10 ${sizeClassName}`}>
@@ -249,10 +249,12 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
 }
 
 function GrantAccessButton({ onClick, isLoading }: { onClick: () => void; isLoading?: boolean }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex justify-center mt-4 mb-16">
       <PrimaryButton onClick={onClick} testId="grant-access-button" loading={isLoading}>
-        Grant Access
+        {t("Grant Access")}
       </PrimaryButton>
     </div>
   );
@@ -269,6 +271,7 @@ function SuccessActions({
   onGoBack?: () => void;
   goBackLabel?: string;
 }) {
+  const { t } = useTranslation();
   const hasInviteAnother = Boolean(onInviteAnother);
   const hasGoBack = Boolean(onGoBack);
   if (!hasInviteAnother && !hasGoBack) return null;
@@ -277,12 +280,12 @@ function SuccessActions({
     <div className="flex flex-col items-center gap-3 mt-8 sm:flex-row sm:justify-center">
       {hasInviteAnother && (
         <PrimaryButton onClick={onInviteAnother} testId="invite-another-button">
-          {inviteAnotherLabel ?? "Invite Another Member"}
+          {inviteAnotherLabel ?? t("Invite Another Member")}
         </PrimaryButton>
       )}
       {hasGoBack && (
         <SecondaryButton onClick={onGoBack} testId="invite-success-go-back">
-          {goBackLabel ?? "Back to Manage Team Members"}
+          {goBackLabel ?? t("Back to Manage Team Members")}
         </SecondaryButton>
       )}
     </div>
@@ -341,7 +344,7 @@ function useResourceAccess() {
       const newErrors: Record<number, string> = {};
       entries.forEach((entry) => {
         if (!entry.resourceId) {
-          newErrors[entry.key] = "Please select a resource";
+          newErrors[entry.key] = i18n.t("Please select a resource");
         }
       });
 

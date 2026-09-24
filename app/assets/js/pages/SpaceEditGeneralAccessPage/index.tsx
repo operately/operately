@@ -6,6 +6,7 @@ import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
 import { Forms } from "turboui";
+import { useTranslation } from "react-i18next";
 
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
 import { PageModule } from "@/routes/types";
@@ -33,13 +34,14 @@ function useLoadedData() {
 }
 
 function Page() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit General Access", space.name]}>
+    <Pages.Page title={[t("Edit General Access"), space.name]}>
       <Paper.Root size="small">
         <Paper.Body>
-          <h1 className="text-2xl font-extrabold">Edit General Access</h1>
+          <h1 className="text-2xl font-extrabold">{t("Edit General Access")}</h1>
           <Form />
         </Paper.Body>
       </Paper.Root>

@@ -5,6 +5,7 @@ import * as Blobs from "@/models/blobs";
 import * as CompanyExports from "@/models/companyExports";
 import { Paths } from "@/routes/paths";
 import { CompanyImportPage, showErrorToast, showSuccessToast } from "turboui";
+import { useTranslation } from "react-i18next";
 
 import { useLoadedData, loader, onNavigate } from "./loader";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -19,6 +20,7 @@ const EMPTY_UPLOAD_STATE: CompanyImportPage.UploadedFileState = {
 };
 
 function Page() {
+  const { t } = useTranslation();
   const { importRuns: runs } = useLoadedData();
   const formattedTimePreferences = useFormattedTimePreferences();
   const [packageFile, setPackageFile] = React.useState<CompanyImportPage.UploadedFileState>(EMPTY_UPLOAD_STATE);
@@ -51,9 +53,9 @@ function Page() {
         uploading: false,
       });
 
-      showErrorToast("Upload failed", `Failed to upload ${file.name}. Please try again.`);
+      showErrorToast(t("Upload failed"), t("Failed to upload {{name}}. Please try again.", { name: file.name }));
     }
-  }, []);
+  }, [t]);
 
   const handleStartImport = React.useCallback(async () => {
     if (starting || !packageFile.blobId) return;
@@ -64,11 +66,11 @@ function Page() {
       });
 
       setPackageFile(EMPTY_UPLOAD_STATE);
-      showSuccessToast("Import started", "The company is being imported in the background.");
+      showSuccessToast(t("Import started"), t("The company is being imported in the background."));
     } catch {
-      showErrorToast("Failed to start import", "Please confirm the package finished uploading and try again.");
+      showErrorToast(t("Failed to start import"), t("Please confirm the package finished uploading and try again."));
     }
-  }, [packageFile.blobId, startImport, starting]);
+  }, [packageFile.blobId, startImport, starting, t]);
 
   const handleClearPackageFile = React.useCallback(() => {
     if (starting) return;
@@ -86,7 +88,7 @@ function Page() {
       canUpload={canUpload}
       canStartImport={canStartImport}
       backPath={Paths.lobbyPath()}
-      uploadsUnavailableMessage="Uploads are unavailable for this account."
+      uploadsUnavailableMessage={t("Uploads are unavailable for this account.")}
       onSelectPackageFile={uploadArtifact}
       onClearPackageFile={handleClearPackageFile}
       onStartImport={handleStartImport}

@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { PrimaryButton } from "../Button";
+import { translationText } from "../i18n";
 import { Navigation } from "../Page/Navigation";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
 import { PageSection } from "../PageSection";
@@ -29,8 +31,9 @@ const defaultReissueState = { inviteUrl: "", isGenerated: false, loading: false 
 const defaultRenewState = { inviteUrl: "", loading: false };
 
 export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage.Props) {
+  const { t } = useTranslation();
   const windowSize = useWindowSizeBreakpoints();
-  const pageTitle = ["Manage Team Members", props.companyName];
+  const pageTitle = [translationText(t("Manage Team Members")), props.companyName];
   useHtmlTitle(pageTitle);
   const outsideCollaborators = props.outsideCollaborators ?? [];
   const showOutsideCollaborators = outsideCollaborators.length > 0;
@@ -142,8 +145,8 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
         <div className="px-4 lg:px-12 py-10">
           <PageHeader
-            title="Manage Team Members"
-            subtitle="Add new team members, update profiles, or remove access as needed."
+            title={t("Manage Team Members")}
+            subtitle={translationText(t("Add new team members, update profiles, or remove access as needed."))}
             actions={
               props.permissions.canInviteMembers && (
                 <PrimaryButton
@@ -152,14 +155,14 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                   className="whitespace-nowrap"
                   size={windowSize === "xs" ? "sm" : "base"}
                 >
-                  Invite people
+                  {t("Invite people")}
                 </PrimaryButton>
               )
             }
           />
 
           {props.invitedPeople.length > 0 && (
-            <PageSection title="Invitations Awaiting Response">
+            <PageSection title={t("Invitations Awaiting Response")}>
               <PeopleList
                 people={props.invitedPeople}
                 testId="invited-people-list"
@@ -177,7 +180,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
           )}
 
           {props.currentMembers.length > 0 && (
-            <PageSection title="Current Team Members">
+            <PageSection title={t("Current Team Members")}>
               <PeopleList
                 people={props.currentMembers}
                 testId="current-members-list"
@@ -195,7 +198,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
           )}
 
           {showOutsideCollaborators && (
-            <PageSection title="Outside collaborators">
+            <PageSection title={t("Outside collaborators")}>
               <PeopleList
                 people={outsideCollaborators}
                 testId="outside-collaborators-list"
@@ -277,10 +280,11 @@ function ViewInvitationModal({
   person: CompanyAdminManagePeoplePage.Person | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   if (!person || !person.inviteLinkUrl) return null;
 
   return (
-    <LegacyModal title="Invitation URL" isOpen={isOpen} onClose={onClose} size="lg">
+    <LegacyModal title={translationText(t("Invitation URL"))} isOpen={isOpen} onClose={onClose} size="lg">
       <InvitationUrl url={person.inviteLinkUrl} personName={person.fullName} />
     </LegacyModal>
   );
@@ -297,10 +301,11 @@ function RenewInvitationModal({
   onClose: () => void;
   inviteUrl: string;
 }) {
+  const { t } = useTranslation();
   if (!person) return null;
 
   return (
-    <LegacyModal title="New invitation URL" isOpen={isOpen} onClose={onClose} size="lg">
+    <LegacyModal title={translationText(t("New invitation URL"))} isOpen={isOpen} onClose={onClose} size="lg">
       <InvitationUrl url={inviteUrl} personName={person.fullName} />
     </LegacyModal>
   );

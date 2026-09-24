@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconBrandDiscordFilled, IconLifebuoy, IconMail, IconMap2, IconQuestionMark, IconSpeakerphone } from "../icons";
 import { DropdownActionItem, DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
@@ -15,10 +16,12 @@ export function HelpDropdown({
   discordUrl: string;
   onOpenKeyboardShortcuts: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <DropdownMenu
       testId="help-dropdown"
-      name="Help"
+      name={t("Help")}
       icon={IconLifebuoy}
       align="center"
       minWidth={220}
@@ -26,15 +29,15 @@ export function HelpDropdown({
     >
       <DropdownActionItem
         icon={IconQuestionMark}
-        title="Keyboard shortcuts"
+        title={t("Keyboard shortcuts")}
         onClick={onOpenKeyboardShortcuts}
         testId="keyboard-shortcuts-menu-item"
       />
       <DropdownSeparator />
-      <DropdownLinkItem path={contactUsHref} icon={IconMail} title="Contact us" />
-      <DropdownLinkItem path={discordUrl} icon={IconBrandDiscordFilled} title="Discord chat" target="_blank" />
-      <DropdownLinkItem path={newsLink} icon={IconSpeakerphone} title="What's new" target="_blank" />
-      <DropdownLinkItem path={roadmap} icon={IconMap2} title="Roadmap" target="_blank" />
+      <DropdownLinkItem path={contactUsHref} icon={IconMail} title={t("Contact us")} />
+      <DropdownLinkItem path={discordUrl} icon={IconBrandDiscordFilled} title={t("Discord chat")} target="_blank" />
+      <DropdownLinkItem path={newsLink} icon={IconSpeakerphone} title={t("What's new")} target="_blank" />
+      <DropdownLinkItem path={roadmap} icon={IconMap2} title={t("Roadmap")} target="_blank" />
     </DropdownMenu>
   );
 }

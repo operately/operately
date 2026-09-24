@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { match } from "ts-pattern";
 import { Avatar } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
+import { translationText } from "../i18n";
 import { IconMoodSad } from "../icons";
 import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
@@ -39,12 +41,13 @@ export namespace InviteLinkJoinPage {
 }
 
 export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
-  useHtmlTitle("Join Company");
+  const { t } = useTranslation();
+  useHtmlTitle(translationText(t("Join Company")));
 
   return (
     <div className="">
       <div className="flex items-center justify-center gap-2 text-xl font-bold mb-6 mt-12">
-        <OperatelyLogo width="30" height="30" /> Operately
+        <OperatelyLogo width="30" height="30" /> {t("Operately")}
       </div>
 
       {match(props.pageState)
@@ -57,11 +60,13 @@ export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
 }
 
 function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
       <div className="text-center flex flex-col items-center mb-8">
         <Avatar person={props.invitation?.author!} size={64} className="mb-4" />
-        {props.invitation?.author?.fullName} invited you to join
+        {t("{{name}} invited you to join", { name: props.invitation?.author?.fullName })}
         <div className="text-xl font-semibold">{props.invitation?.company?.name}</div>
       </div>
 
@@ -72,7 +77,7 @@ function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
           loading={props.joining}
           disabled={props.joining}
         >
-          Join {props.invitation?.company?.name}
+          {t("Join {{companyName}}", { companyName: props.invitation?.company?.name })}
         </PrimaryButton>
         {props.joinError && <div className="text-sm text-red-500 mt-4 text-center">{props.joinError}</div>}
       </div>
@@ -81,27 +86,29 @@ function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
 }
 
 function AnonymousValidTokenState(props: InviteLinkJoinPage.Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
       <div className="text-center flex flex-col items-center mb-8">
         <Avatar person={props.invitation?.author!} size={64} className="mb-4" />
-        {props.invitation?.author?.fullName} invited you to join
+        {t("{{name}} invited you to join", { name: props.invitation?.author?.fullName })}
         <div className="text-xl font-semibold">{props.invitation?.company?.name}</div>
       </div>
 
       <div className="flex items-center flex-col items-stretch">
         <SecondaryButton onClick={props.handleSignUpAndJoin} testId="sign-up-and-join">
-          Sign Up & Join {props.invitation?.company?.name}
+          {t("Sign Up & Join {{companyName}}", { companyName: props.invitation?.company?.name })}
         </SecondaryButton>
 
         <div className="flex items-center my-4 w-full gap-4">
           <div className="border-t border-surface-outline flex-grow" />
-          <div className="text-content-dimmed text-sm">Or, if you've used Operately before</div>
+          <div className="text-content-dimmed text-sm">{t("Or, if you've used Operately before")}</div>
           <div className="border-t border-surface-outline flex-grow" />
         </div>
 
         <SecondaryButton onClick={props.handleLogInAndJoin} testId="log-in-and-join">
-          Log in with your account
+          {t("Log in with your account")}
         </SecondaryButton>
       </div>
     </div>
@@ -109,15 +116,19 @@ function AnonymousValidTokenState(props: InviteLinkJoinPage.Props) {
 }
 
 function InvalidTokenState() {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
       <div className="bg-callout-warning-bg p-4 rounded-md">
         <div className="flex items-center text-center gap-2">
           <IconMoodSad size={24} className="text-callout-warning-content mb-2" />
-          <div className="font-semibold mb-2">Invalid Link</div>
+          <div className="font-semibold mb-2">{t("Invalid Link")}</div>
         </div>
         <div>
-          Hmm, something's not right with this link. Double-check it or ask whoever sent it to you for a fresh one.
+          {t(
+            "Hmm, something's not right with this link. Double-check it or ask whoever sent it to you for a fresh one.",
+          )}
         </div>
       </div>
     </div>
