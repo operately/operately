@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface WizardModalProps {
   children: React.ReactNode;
@@ -72,10 +73,12 @@ export interface WizardHeadingProps {
 }
 
 export function WizardHeading(props: WizardHeadingProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-2xl">
       <div className="uppercase text-xs mb-4 text-content-dimmed">
-        Step {props.stepNumber} of {props.totalSteps}
+        {t("Step {{stepNumber}} of {{totalSteps}}", { stepNumber: props.stepNumber, totalSteps: props.totalSteps })}
       </div>
       <h1 className="text-2xl font-semibold text-content-accent focus:outline-none" tabIndex={-1} id={props.id}>
         {props.title}
