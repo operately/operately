@@ -6,6 +6,7 @@ import { Timezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { applyLanguage } from "@/i18n";
+import { useTranslation } from "react-i18next";
 import { I18N_FEATURE_FLAG, isSupportedLanguage } from "@/i18n/languages";
 import { hasFeature } from "@/models/companies";
 import { PageModule } from "@/routes/types";
@@ -175,6 +176,7 @@ function Page() {
 }
 
 function useAvatarHandlers(personId: string) {
+  const { t } = useTranslation();
   const { mutateAsync: updateProfilePicture } = People.useUpdateProfilePicture();
   const MAX_AVATAR_FILE_BYTES = 12 * 1024 * 1024; // 12 MB
 
@@ -186,7 +188,7 @@ function useAvatarHandlers(personId: string) {
   const handleAvatarUpload = React.useCallback(
     async (file: File) => {
       if (file.size > MAX_AVATAR_FILE_BYTES) {
-        setAvatarError("Please choose an image smaller than 12 MB.");
+        setAvatarError(t("Please choose an image smaller than 12 MB."));
         return;
       }
 
@@ -209,13 +211,13 @@ function useAvatarHandlers(personId: string) {
         }
       } catch (err) {
         console.error(err);
-        setAvatarError("Failed to upload avatar. Please try again.");
+        setAvatarError(t("Failed to upload avatar. Please try again."));
       } finally {
         setAvatarUploading(false);
         setAvatarUploadProgress(null);
       }
     },
-    [personId, updateProfilePicture],
+    [personId, t, updateProfilePicture],
   );
 
   const handleAvatarRemove = React.useCallback(async () => {
@@ -236,11 +238,11 @@ function useAvatarHandlers(personId: string) {
       }
     } catch (err) {
       console.error(err);
-      setAvatarError("Failed to update avatar. Please try again.");
+      setAvatarError(t("Failed to update avatar. Please try again."));
     } finally {
       setAvatarUploading(false);
     }
-  }, [personId, updateProfilePicture]);
+  }, [personId, t, updateProfilePicture]);
 
   return {
     avatarUrl,
