@@ -8,9 +8,10 @@ import {
   IconLayoutGrid,
   IconWorld,
   SearchPage,
-  SEARCH_TIME_FILTER_OPTIONS,
-  SEARCH_TYPE_FILTER_OPTIONS,
+  searchTimeFilterOptions,
+  searchTypeFilterOptions,
 } from "turboui";
+import { useTranslation } from "react-i18next";
 
 interface SearchSpaceOption {
   id: string;
@@ -58,6 +59,7 @@ const EMPTY_SELECTIONS: FilterSelections = {
 };
 
 export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchState {
+  const { t } = useTranslation();
   const search = useQuerySearch(Api.companies.searchQueryOptions, { query: "" });
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
@@ -174,7 +176,7 @@ export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchStat
       filters: [
         {
           id: "spaces",
-          label: "All spaces",
+          label: t("All spaces"),
           icon: IconWorld,
           selectionMode: "multiple",
           selectedOptionIds: selections.spaces,
@@ -182,24 +184,24 @@ export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchStat
         },
         {
           id: "types",
-          label: "All types",
+          label: t("All types"),
           icon: IconLayoutGrid,
           selectionMode: "multiple",
           selectedOptionIds: selections.types,
-          options: SEARCH_TYPE_FILTER_OPTIONS,
+          options: searchTypeFilterOptions(t),
         },
         {
           id: "time",
-          label: "All time",
+          label: t("All time"),
           icon: IconCalendar,
           selectionMode: "single",
           selectedOptionIds: selections.time,
-          options: SEARCH_TIME_FILTER_OPTIONS,
+          options: searchTimeFilterOptions(t),
         },
       ],
       onFilterChange,
     }),
-    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces],
+    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces, t],
   );
 
   return { query, status, results, onQueryChange, refine };

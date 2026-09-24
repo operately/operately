@@ -10,10 +10,13 @@ import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/spa
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { AccessLevelSummary, Forms, SecondaryButton, useFormContext } from "turboui";
+import { useTranslation } from "react-i18next";
+import { translationText } from "@/i18n";
 
 export default { name: "SpaceAddPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const create = Spaces.useCreateSpace();
   const paths = usePaths();
@@ -44,16 +47,16 @@ function Page() {
     },
     onError: (error) => {
       const data = error.response?.data as { error?: string; message?: string } | undefined;
-      const message = data?.message || "There was an unexpected error. Please try again later.";
+      const message = data?.message || translationText(t("There was an unexpected error. Please try again later."));
 
       form.actions.addErrors({ _submit: message });
     },
   });
 
   return (
-    <Pages.Page title="Create a new space">
+    <Pages.Page title={translationText(t("Create a new space"))}>
       <Paper.Root size="small">
-        <Paper.NavigateBack to={paths.homePath()} title="Back to Home" />
+        <Paper.NavigateBack to={paths.homePath()} title={t("Back to Home")} />
         <Title />
 
         <Forms.Form form={form}>
@@ -68,7 +71,7 @@ function Page() {
             <PrivacyLevel />
           </Paper.Body>
 
-          <Forms.Submit saveText="Create Space" layout="centered" buttonSize="base" />
+          <Forms.Submit saveText={translationText(t("Create Space"))} layout="centered" buttonSize="base" />
         </Forms.Form>
       </Paper.Root>
     </Pages.Page>
@@ -76,20 +79,23 @@ function Page() {
 }
 
 function Title() {
+  const { t } = useTranslation();
+
   return (
     <div className="text-center mb-6">
-      <h1 className="text-3xl font-bold">Create a new space</h1>
-      <span className="text-content-dimmed">Spaces help organize projects, goals, and team members in one place.</span>
+      <h1 className="text-3xl font-bold">{t("Create a new space")}</h1>
+      <span className="text-content-dimmed">{t("Spaces help organize projects, goals, and team members in one place.")}</span>
     </div>
   );
 }
 
 function NameInput({ field }: { field: string }) {
+  const { t } = useTranslation();
   const form = useFormContext();
 
   return (
     <Forms.TextInput
-      label="Space Name"
+      label={translationText(t("Space Name"))}
       field={field}
       placeholder="e.g. Marketing"
       required
@@ -103,9 +109,11 @@ function NameInput({ field }: { field: string }) {
 }
 
 function PurposeInput({ field }: { field: string }) {
+  const { t } = useTranslation();
+
   return (
     <Forms.TextInput
-      label="Purpose"
+      label={translationText(t("Purpose"))}
       field={field}
       placeholder="e.g. Create product awareness and bring new leads"
       required
@@ -140,12 +148,13 @@ function PrivacyLevelTitle({ field }: { field: string }) {
 }
 
 function PrivacyEdit() {
+  const { t } = useTranslation();
   const [isAdvanced, setIsAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
   if (isAdvanced) return null;
 
   return (
     <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)} testId="edit-access-levels">
-      Edit
+      {t("Edit")}
     </SecondaryButton>
   );
 }

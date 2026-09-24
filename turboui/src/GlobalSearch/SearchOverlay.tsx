@@ -1,7 +1,9 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import { IconSearch, IconX } from "../icons";
+import { tn, translationText } from "../i18n";
 import { createTestId } from "../TestableElement";
 import type { GlobalSearch } from "./index";
 import { buildFullTextSearchOption, buildSearchGroups, type SearchGroup, type SearchOption } from "./searchOptions";
@@ -13,11 +15,15 @@ interface SearchOverlayProps {
 }
 
 export function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
+  const { t } = useTranslation();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { query, setIsOpen, testId, setQuery } = state;
-  const groups = React.useMemo(() => buildSearchGroups(state.results, testId), [state.results, testId]);
+  const groups = React.useMemo(() => buildSearchGroups(state.results, testId, t), [state.results, testId, t]);
   const visibleGroups = state.isSearching || state.searchError ? [] : groups;
-  const fullTextSearchOption = buildFullTextSearchOption(state);
+  const fullTextSearchOption = buildFullTextSearchOption(
+    state,
+    translationText(t("Search all content for “{{query}}”", { query: state.query.trim() })),
+  );
   const options = visibleGroups.flatMap((group) => group.options);
   if (fullTextSearchOption) options.push(fullTextSearchOption);
   const listboxId = createTestId(testId, "results");
@@ -105,13 +111,13 @@ export function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
                 state.setSelectedIndex(-1);
               }}
               onKeyDown={handleInputKeyDown}
-              placeholder="Search for spaces, projects, goals, milestones, tasks, or people..."
+              placeholder={translationText(t("Search for spaces, projects, goals, milestones, tasks, or people..."))}
               className="w-full pl-10 pr-12 py-2.5 text-base bg-surface-base border-b border-surface-outline focus:outline-none rounded-b-lg"
               data-test-id={testId}
             />
             <button
               type="button"
-              aria-label="Close search"
+              aria-label={translationText(t("Close search"))}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-content-dimmed uppercase tracking-wide"
               onClick={onClose}
             >
@@ -187,6 +193,7 @@ function SearchResults({
   fullTextSearchOption?: SearchOption;
   listboxId: string;
 }) {
+  const { t } = useTranslation();
   const quickResultCount = groups.reduce((count, group) => count + group.options.length, 0);
   const hasListbox = quickResultCount > 0 || Boolean(fullTextSearchOption);
 
@@ -202,25 +209,25 @@ function SearchResults({
     <>
       {state.isSearching && (
         <div role="status" aria-live="polite" className="p-4 text-center text-content-dimmed text-sm">
-          Searching…
+          {t("Searching…")}
         </div>
       )}
 
       {!state.isSearching && state.searchError && (
         <div role="alert" className="p-4 text-center text-content-error text-sm">
-          Quick search is unavailable.
+          {t("Quick search is unavailable.")}
         </div>
       )}
 
       {!state.isSearching && !state.searchError && quickResultCount === 0 && (
         <div role="status" aria-live="polite" className="p-4 text-center text-content-dimmed text-sm">
-          No title or name matches for “{state.query.trim()}”.
+          {t("No title or name matches for “{{query}}”.", { query: state.query.trim() })}
         </div>
       )}
 
       {!state.isSearching && !state.searchError && quickResultCount > 0 && (
         <div role="status" aria-live="polite" className="sr-only">
-          {quickResultCount} {quickResultCount === 1 ? "result" : "results"}
+          {tn("1 result", "{{count}} results", quickResultCount)}
         </div>
       )}
 
@@ -228,7 +235,7 @@ function SearchResults({
         <div
           id={listboxId}
           role="listbox"
-          aria-label="Quick search results"
+          aria-label={translationText(t("Quick search results"))}
           className="flex max-h-[60vh] min-h-0 flex-col"
         >
           <div className="min-h-0 overflow-y-auto py-1">

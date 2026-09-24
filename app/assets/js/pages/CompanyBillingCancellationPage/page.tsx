@@ -5,8 +5,10 @@ import { buildCompanyBillingCancellationFeedback, isCompanyBillingPaidStatus } f
 import { CompanyBillingPage as TurboCompanyBillingPage } from "turboui/CompanyBillingPage";
 import { CompanyBillingCancellationPage as TurboCompanyBillingCancellationPage } from "turboui/CompanyBillingCancellationPage";
 import { showErrorToast } from "turboui";
+import { useTranslation } from "react-i18next";
 import { useLoadedData } from "./loader";
 import { useNavigate, useRouteLoaderData } from "react-router";
+import { translationText } from "@/i18n";
 import { usePaths } from "@/routes/paths";
 
 interface CompanyRootData {
@@ -21,6 +23,7 @@ interface BillingPageLocationState {
 }
 
 export function Page() {
+  const { t } = useTranslation();
   const billingActions = Billing.useBillingActions();
   const navigate = useNavigate();
   const paths = usePaths();
@@ -35,7 +38,7 @@ export function Page() {
     setBilling(loadedBilling);
   }, [loadedBilling]);
 
-  const companyName = companyRootData?.company?.name || "Billing";
+  const companyName = companyRootData?.company?.name || translationText(t("Billing"));
 
   const keepCurrentPlan = React.useCallback(() => {
     navigate(paths.companyBillingPath());
@@ -68,17 +71,20 @@ export function Page() {
       }
     }
 
-    setActionError("We couldn't schedule the cancellation right now. Please try again.");
-    showErrorToast("Cancellation unavailable", "We couldn't schedule the cancellation right now. Please try again.");
+    setActionError(t("We couldn't schedule the cancellation right now. Please try again."));
+    showErrorToast(
+      t("Cancellation unavailable"),
+      t("We couldn't schedule the cancellation right now. Please try again."),
+    );
     setIsSubmitting(false);
-  }, [billingActions, navigate, paths]);
+  }, [billingActions, navigate, paths, t]);
 
   return (
     <TurboCompanyBillingCancellationPage
-      title={[companyName, "Cancel plan"]}
+      title={[companyName, translationText(t("Cancel plan"))]}
       navigation={[
-        { label: "Company Administration", to: paths.companyAdminPath() },
-        { label: "Billing", to: paths.companyBillingPath() },
+        { label: t("Company Administration"), to: paths.companyAdminPath() },
+        { label: t("Billing"), to: paths.companyBillingPath() },
       ]}
       billing={billing}
       actionError={actionError}

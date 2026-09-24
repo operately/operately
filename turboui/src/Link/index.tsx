@@ -6,7 +6,7 @@ import classNames from "../utils/classnames";
 export { GhostLink } from "./GhostLink";
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   target?: string;
   testId?: string;
   className?: string;
@@ -14,6 +14,7 @@ interface Props {
   onMouseOver?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   onMouseOut?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   title?: string;
+  "aria-label"?: string;
 }
 
 interface LinkProps extends Props {

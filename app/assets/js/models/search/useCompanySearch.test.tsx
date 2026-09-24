@@ -5,13 +5,14 @@ import Api from "@/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
 import { useCompanySearch } from "./useCompanySearch";
+import i18n, { applyLanguage } from "@/i18n";
 
 jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("react-router", () => ({
   useSearchParams: () => jest.requireActual("react").useState(new URLSearchParams("q=roadmap")),
 }));
-jest.mock("turboui", () => ({ SEARCH_TIME_FILTER_OPTIONS: [], SEARCH_TYPE_FILTER_OPTIONS: [] }));
+jest.mock("turboui", () => jest.requireActual("turboui/SearchPage/filterOptions"));
 
 let client: QueryClient;
 
@@ -23,7 +24,12 @@ beforeEach(() => {
   jest.mocked(axios.get).mockResolvedValue({ data: { results: [{ id: "first" }] } });
 });
 
-afterEach(() => client.clear());
+afterEach(async () => {
+  client.clear();
+  await act(async () => {
+    await applyLanguage("en");
+  });
+});
 
 function mount() {
   return renderHook(() => useCompanySearch([{ id: "space1", name: "Space" }]), {
@@ -31,6 +37,44 @@ function mount() {
     wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>,
   });
 }
+
+it("updates filter labels when the language changes without repeating the search", async () => {
+  i18n.addResourceBundle(
+    "pt-BR",
+    "translation",
+    {
+      "All spaces": "Todos os espaços",
+      "All types": "Todos os tipos",
+      "All time": "Todo o período",
+      Projects: "Projetos",
+      "Last 7 days": "Últimos 7 dias",
+    },
+    true,
+    true,
+  );
+  const hook = mount();
+  await waitFor(() => expect(hook.result.current.status).toBe("success"));
+
+  await act(async () => {
+    await applyLanguage("pt-BR");
+  });
+
+  expect(hook.result.current.refine.filters.map((filter) => filter.label)).toEqual([
+    "Todos os espaços",
+    "Todos os tipos",
+    "Todo o período",
+  ]);
+  expect(axios.get).toHaveBeenCalledTimes(1);
+  expect(hook.result.current.results).toEqual([{ id: "first" }]);
+  expect(hook.result.current.refine.filters.find((filter) => filter.id === "types")?.options[0]).toEqual({
+    id: "project",
+    label: "Projetos",
+  });
+  expect(hook.result.current.refine.filters.find((filter) => filter.id === "time")?.options[0]).toEqual({
+    id: "last_7_days",
+    label: "Últimos 7 dias",
+  });
+});
 
 it("loads URL queries immediately and debounces typing and filter changes with distinct cache keys", async () => {
   const hook = mount();

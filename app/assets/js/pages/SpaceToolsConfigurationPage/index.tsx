@@ -7,6 +7,7 @@ import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router";
 
 import { SpaceToolsConfigurationPage, showErrorToast } from "turboui";
+import { useTranslation } from "react-i18next";
 
 import { loader, useLoadedData } from "./loader";
 
@@ -20,6 +21,7 @@ function Page() {
 }
 
 function ToolsForm({ space, loadedTools }: { space: Spaces.Space; loadedTools: Spaces.SpaceTools }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const { mutateAsync: updateTools, isPending } = Spaces.useUpdateSpaceTools();
@@ -41,9 +43,9 @@ function ToolsForm({ space, loadedTools }: { space: Spaces.Space; loadedTools: S
 
       navigate(paths.spacePath(space.id));
     } catch {
-      showErrorToast("Could not save tool settings", "Please try again.");
+      showErrorToast(t("Could not save tool settings"), t("Please try again."));
     }
-  }, [navigate, paths, space.id, tools, updateTools]);
+  }, [navigate, paths, space.id, tools, updateTools, t]);
 
   const handleCancel = React.useCallback(() => {
     navigate(paths.spacePath(space.id));
@@ -51,7 +53,7 @@ function ToolsForm({ space, loadedTools }: { space: Spaces.Space; loadedTools: S
 
   return (
     <SpaceToolsConfigurationPage
-      title={["Configure tools", space.name]}
+      title={[t("Configure tools"), space.name]}
       navigation={[{ label: space.name, to: paths.spacePath(space.id) }]}
       tools={tools}
       onToolsChange={setTools}

@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Page } from "../Page";
 import { OptionsMenuItem } from "../OptionsMenuItem";
 import { IconBell, IconPalette } from "../icons";
+import { translationText } from "../i18n";
 
 export namespace AccountSettingsPage {
   export interface Props {
@@ -13,28 +15,26 @@ export namespace AccountSettingsPage {
 }
 
 export function AccountSettingsPage(props: AccountSettingsPage.Props) {
-  const navigation = React.useMemo(
-    () => [{ to: props.homePath, label: "Home" }],
-    [props.homePath],
-  );
+  const { t } = useTranslation();
+  const navigation = React.useMemo(() => [{ to: props.homePath, label: t("Home") }], [props.homePath, t]);
 
   return (
-    <Page title="Settings" size="small" testId="account-settings-page" navigation={navigation}>
+    <Page title={translationText(t("Settings"))} size="small" testId="account-settings-page" navigation={navigation}>
       <div className="px-4 sm:px-10 py-8">
-        <div className="mb-2 text-content-accent text-3xl font-extrabold">Settings</div>
-        <p className="mb-8">Manage the account settings available to you.</p>
+        <div className="mb-2 text-content-accent text-3xl font-extrabold">{t("Settings")}</div>
+        <p className="mb-8">{t("Manage the account settings available to you.")}</p>
 
         <OptionsMenuItem
           linkTo={props.appearancePath}
           icon={IconPalette}
-          title="Appearance"
-          description="Adjust how Operately looks for you"
+          title={translationText(t("Appearance"))}
+          description={translationText(t("Adjust how Operately looks for you"))}
         />
         <OptionsMenuItem
           linkTo={props.notificationSettingsPath}
           icon={IconBell}
-          title="Notification settings"
-          description="Configure how activity and summary emails are delivered"
+          title={translationText(t("Notification settings"))}
+          description={translationText(t("Configure how activity and summary emails are delivered"))}
         />
       </div>
     </Page>

@@ -1,12 +1,13 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { ErrorMessage } from "./ErrorMessage";
 import { useFormContext } from "./context";
+import { translationText } from "../i18n";
 import type { FormErrorProps } from "./types";
 
-const DEFAULT_MESSAGE = "Please fix the errors above.";
-
-export function FormError({ message = DEFAULT_MESSAGE, when, className }: FormErrorProps) {
+export function FormError({ message, when, className }: FormErrorProps) {
+  const { t } = useTranslation();
   const form = useFormContext();
   const shouldShow = when ?? form.hasErrors;
 
@@ -16,7 +17,7 @@ export function FormError({ message = DEFAULT_MESSAGE, when, className }: FormEr
 
   return (
     <div className={className}>
-      <ErrorMessage error={message} />
+      <ErrorMessage error={message ?? translationText(t("Please fix the errors above."))} />
     </div>
   );
 }

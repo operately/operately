@@ -1,8 +1,10 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconCheck, IconChevronDown } from "../icons";
 import { Menu, MenuActionItem } from "../Menu";
 import { Tooltip } from "../Tooltip";
+import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 
 export type SortMode = "best_match" | "most_recent";
@@ -28,16 +30,13 @@ export interface RefineControlsProps {
   onFilterChange: (filterId: string, selectedOptionIds: string[]) => void;
 }
 
-const SORT_OPTIONS: Array<{ id: SortMode; label: string }> = [
-  { id: "best_match", label: "Best match" },
-  { id: "most_recent", label: "Most recent" },
-];
-
 export function RefineControls({ sort, onSortChange, filters, onFilterChange }: RefineControlsProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       role="group"
-      aria-label="Refine results"
+      aria-label={translationText(t("Refine results"))}
       className="mt-3 flex flex-wrap items-center justify-start gap-x-8 gap-y-2"
       data-test-id="search-refine-controls"
     >
@@ -50,14 +49,20 @@ export function RefineControls({ sort, onSortChange, filters, onFilterChange }: 
 }
 
 function SortToggle({ sort, onSortChange }: Pick<RefineControlsProps, "sort" | "onSortChange">) {
+  const { t } = useTranslation();
+  const sortOptions: Array<{ id: SortMode; label: string }> = [
+    { id: "best_match", label: t("Best match") },
+    { id: "most_recent", label: t("Most recent") },
+  ];
+
   return (
     <div
       role="group"
-      aria-label="Sort results"
+      aria-label={translationText(t("Sort results"))}
       className="inline-flex shrink-0 rounded-full bg-surface-dimmed p-0.5"
       data-test-id="search-sort-toggle"
     >
-      {SORT_OPTIONS.map((option) => {
+      {sortOptions.map((option) => {
         const selected = sort === option.id;
 
         return (

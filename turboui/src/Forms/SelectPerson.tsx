@@ -1,5 +1,7 @@
 import * as React from "react";
 import AsyncSelect from "react-select/async";
+import { useTranslation } from "react-i18next";
+import { translationText } from "../i18n";
 
 import { Avatar } from "../Avatar";
 import { createTestId } from "../TestableElement";
@@ -30,6 +32,7 @@ export function SelectPerson(props: SelectPersonProps) {
 }
 
 function SelectPersonInput(props: SelectPersonProps) {
+  const { t } = useTranslation();
   const { field, searchFn, exclude } = props;
   const { required } = { ...DEFAULT_VALIDATION_PROPS, ...props };
 
@@ -58,7 +61,7 @@ function SelectPersonInput(props: SelectPersonProps) {
         autoFocus={props.autoFocus}
         inputId={createTestId(field)}
         onChange={onChange}
-        placeholder="Search for person..."
+        placeholder={translationText(t("Search for person..."))}
         defaultValue={props.default || undefined}
         loader={searchFn}
         error={!!error}
