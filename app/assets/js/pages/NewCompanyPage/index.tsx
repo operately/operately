@@ -84,9 +84,9 @@ function Page() {
 
           <div className="mt-4 text-center text-sm text-content-dimmed">
             <Trans
-              i18nKey="Do you have an existing company? <link>Import it here</link>"
+              i18nKey="Do you have an existing company? <actionLink>Import it here</actionLink>"
               components={{
-                link: <Link to={Paths.companyImportPath()} underline="hover" />,
+                actionLink: <Link to={Paths.companyImportPath()} underline="hover" />,
               }}
             />
           </div>

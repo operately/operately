@@ -59,13 +59,10 @@ function AdminsLink({ adminPath }: { adminPath?: string | null }) {
 
   return (
     <div className="font-medium mt-8">
-      <Trans i18nKey="Or, visit the <link>Admin Panel</link>.">
-        Or, visit the{" "}
-        <Link to={adminPath} className="font-medium">
-          Admin Panel
-        </Link>
-        .
-      </Trans>
+      <Trans
+        i18nKey="Or, visit the <actionLink>Admin Panel</actionLink>."
+        components={{ actionLink: <Link to={adminPath} className="font-medium" /> }}
+      />
     </div>
   );
 }

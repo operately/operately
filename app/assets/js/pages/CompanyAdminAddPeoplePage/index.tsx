@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
@@ -15,6 +16,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { company, ownerIds } = useLoadedData();
   const navigate = useNavigate();
   const paths = usePaths();
@@ -34,10 +36,10 @@ function Page() {
 
   const navigationItems = React.useMemo(
     () => [
-      { to: paths.companyAdminPath(), label: i18n.t("Company Administration") },
-      { to: paths.companyManagePeoplePath(), label: i18n.t("Manage Team Members") },
+      { to: paths.companyAdminPath(), label: t("Company Administration") },
+      { to: paths.companyManagePeoplePath(), label: t("Manage Team Members") },
     ],
-    [paths],
+    [paths, t],
   );
 
   const handleFormChange = React.useCallback((field: InviteMemberForm.Field, value: string) => {
@@ -84,7 +86,7 @@ function Page() {
     onCancel: handleCancel,
     onInviteAnother: handleInviteAnother,
     onGoBack: handleGoBack,
-    goBackLabel: i18n.t("Back"),
+    goBackLabel: t("Back"),
     isSubmitting,
     memberType,
     spaces,
@@ -190,7 +192,9 @@ function useInviteSubmit(
           setErrors(nextErrors);
         } else {
           showErrorToast(
-            memberType === "outside_collaborator" ? i18n.t("Unable to invite collaborator") : i18n.t("Unable to add team member"),
+            memberType === "outside_collaborator"
+              ? i18n.t("Unable to invite collaborator")
+              : i18n.t("Unable to add team member"),
             message,
           );
         }

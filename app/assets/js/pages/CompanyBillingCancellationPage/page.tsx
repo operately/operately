@@ -72,9 +72,12 @@ export function Page() {
     }
 
     setActionError(t("We couldn't schedule the cancellation right now. Please try again."));
-    showErrorToast(t("Cancellation unavailable"), t("We couldn't schedule the cancellation right now. Please try again."));
+    showErrorToast(
+      t("Cancellation unavailable"),
+      t("We couldn't schedule the cancellation right now. Please try again."),
+    );
     setIsSubmitting(false);
-  }, [billingActions, navigate, paths]);
+  }, [billingActions, navigate, paths, t]);
 
   return (
     <TurboCompanyBillingCancellationPage

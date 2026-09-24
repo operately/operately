@@ -18,7 +18,7 @@ export function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const { t } = useTranslation();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { query, setIsOpen, testId, setQuery } = state;
-  const groups = React.useMemo(() => buildSearchGroups(state.results, testId), [state.results, testId]);
+  const groups = React.useMemo(() => buildSearchGroups(state.results, testId, t), [state.results, testId, t]);
   const visibleGroups = state.isSearching || state.searchError ? [] : groups;
   const fullTextSearchOption = buildFullTextSearchOption(
     state,

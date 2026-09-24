@@ -21,8 +21,8 @@ export function buildCompanyBillingPageViewModel(props: CompanyBillingPage.Props
   }
 
   return {
-    pageTitle: "Billing",
-    pageSubtitle: "Manage this company's plan, usage, and billing details.",
+    pageTitle: i18n.t("Billing"),
+    pageSubtitle: i18n.t("Manage this company's plan, usage, and billing details."),
     mode: "overview",
     overview: buildCompanyBillingOverviewMode({
       billing: props.billing,

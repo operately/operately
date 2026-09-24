@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Avatar } from "../Avatar";
-import i18n from "../i18n";
+import type { TFunction } from "i18next";
 import {
   IconFile,
   IconFileText,
@@ -34,16 +34,16 @@ export interface SearchGroup {
   options: SearchOption[];
 }
 
-export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: string): SearchGroup[] {
+export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: string, t: TFunction): SearchGroup[] {
   const groups: SearchGroup[] = [
     {
-      title: i18n.t("SPACES"),
+      title: t("SPACES"),
       options: (results.spaces ?? []).map((space) =>
         buildOption(testId, "space", space.id, space.name, space.link, <IconTent size={24} />),
       ),
     },
     {
-      title: i18n.t("GOALS"),
+      title: t("GOALS"),
       options: (results.goals ?? []).map((goal) =>
         buildOption(
           testId,
@@ -57,7 +57,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: i18n.t("PROJECTS"),
+      title: t("PROJECTS"),
       options: (results.projects ?? []).map((project) =>
         buildOption(
           testId,
@@ -71,7 +71,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: i18n.t("MILESTONES"),
+      title: t("MILESTONES"),
       options: (results.milestones ?? []).map((milestone) =>
         buildOption(
           testId,
@@ -85,7 +85,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: i18n.t("TASKS"),
+      title: t("TASKS"),
       options: (results.tasks ?? []).map((task) =>
         buildOption(
           testId,
@@ -99,7 +99,7 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
       ),
     },
     {
-      title: i18n.t("PEOPLE"),
+      title: t("PEOPLE"),
       options: (results.people ?? []).map((person) =>
         buildOption(
           testId,
@@ -112,11 +112,11 @@ export function buildSearchGroups(results: GlobalSearch.SearchResult, testId: st
         ),
       ),
     },
-    resourceGroup(testId, i18n.t("DISCUSSIONS"), "discussion", results.discussions, <IconMessage size={24} />),
-    resourceGroup(testId, i18n.t("FOLDERS"), "folder", results.folders, <IconFolderFilled size={24} />),
-    resourceGroup(testId, i18n.t("DOCUMENTS"), "document", results.documents, <IconFileText size={24} />),
-    resourceGroup(testId, i18n.t("FILES"), "file", results.files, <IconFile size={24} />),
-    resourceGroup(testId, i18n.t("LINKS"), "link", results.links, <IconLink size={24} />),
+    resourceGroup(testId, t("DISCUSSIONS"), "discussion", results.discussions, <IconMessage size={24} />),
+    resourceGroup(testId, t("FOLDERS"), "folder", results.folders, <IconFolderFilled size={24} />),
+    resourceGroup(testId, t("DOCUMENTS"), "document", results.documents, <IconFileText size={24} />),
+    resourceGroup(testId, t("FILES"), "file", results.files, <IconFile size={24} />),
+    resourceGroup(testId, t("LINKS"), "link", results.links, <IconLink size={24} />),
   ];
 
   return groups.filter((group) => group.options.length > 0);

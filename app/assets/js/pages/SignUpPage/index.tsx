@@ -56,7 +56,10 @@ function Header() {
 function SignInLink() {
   return (
     <div className="text-center font-medium mt-8 pt-8 border-t border-stroke-base text-sm">
-      <Trans i18nKey="Already have an account? <link>Sign in</link>" components={{ link: <Link to="/log_in" /> }} />
+      <Trans
+        i18nKey="Already have an account? <actionLink>Sign in</actionLink>"
+        components={{ actionLink: <Link to="/log_in" /> }}
+      />
     </div>
   );
 }

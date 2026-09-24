@@ -119,6 +119,32 @@ describe("GlobalSearch", () => {
     expect(screen.queryByText(/Search all content for/)).not.toBeInTheDocument();
   });
 
+  test("updates result group labels on language changes without another search", async () => {
+    const i18n = createInstance();
+    await i18n.init({
+      lng: "en",
+      fallbackLng: "en",
+      resources: { en: { translation: {} }, "pt-BR": { translation: { SPACES: "ESPAÇOS" } } },
+    });
+    const search = jest.fn().mockResolvedValue(results);
+    render(
+      <I18nextProvider i18n={i18n}>
+        <GlobalSearch search={search} onNavigate={jest.fn()} />
+      </I18nextProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /search/i }));
+    await enterQuery(screen.getByRole("combobox"));
+    expect(screen.getByRole("group", { name: "SPACES" })).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("pt-BR");
+    });
+
+    expect(screen.getByRole("group", { name: "ESPAÇOS" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Space result" })).toBeInTheDocument();
+    expect(search).toHaveBeenCalledTimes(1);
+  });
+
   test("renders the full-text action after a divider and navigates with the trimmed query", async () => {
     const fullTextSearchPath = (query: string) => `/search?${new URLSearchParams({ q: query })}`;
     const { input, onNavigate } = openSearch(jest.fn().mockResolvedValue(results), jest.fn(), fullTextSearchPath);

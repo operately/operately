@@ -41,7 +41,7 @@ export function Page() {
   }, [loadedBilling]);
 
   const search = React.useMemo(() => parseCompanyBillingSearch(location.search), [location.search]);
-  const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
+  const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search, t]);
   const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
   const canManagePaidSubscription = isCompanyBillingPaidStatus(billing.account.status);
   const companyName = companyRootData?.company?.name || translationText(t("Billing"));
@@ -109,7 +109,7 @@ export function Page() {
     setActionError(t("We couldn't start checkout right now. Please try again."));
     showErrorToast(t("Failed to start checkout"), t("We couldn't start checkout right now. Please try again."));
     setIsSubmitting(false);
-  }, [billingActions, selection.target]);
+  }, [billingActions, selection.target, t]);
 
   const submitPlanChange = React.useCallback(async () => {
     setActionError(null);
@@ -146,7 +146,7 @@ export function Page() {
     setActionError(t("We couldn't change the plan right now. Please try again."));
     showErrorToast(t("Failed to change plan"), t("We couldn't change the plan right now. Please try again."));
     setIsSubmitting(false);
-  }, [billingActions, navigate, paths, selection.target]);
+  }, [billingActions, navigate, paths, selection.target, t]);
 
   const handleSubmit = React.useCallback(() => {
     if (canManagePaidSubscription) {

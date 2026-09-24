@@ -168,7 +168,7 @@ msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:120
+#: ../turboui/src/LobbyPage/index.tsx:117
 msgid "+ Create organization"
 msgstr ""
 
@@ -223,28 +223,28 @@ msgid ", space members will have full access"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:134
+#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:137
 msgid "1 day"
 msgid_plural "%{count} days"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:130
+#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:133
 msgid "1 hour"
 msgid_plural "%{count} hours"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:100
+#: ../turboui/src/LobbyPage/index.tsx:97
 msgid "1 member"
 msgid_plural "%{count} members"
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:125
+#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:128
 msgid "1 minute"
 msgid_plural "%{count} minutes"
 msgstr[0] ""
@@ -613,23 +613,23 @@ msgid "All activity emails wait for the batch window, are grouped together, and 
 msgstr ""
 
 #.frontend
-#: assets/js/models/search/useCompanySearch.ts:178
+#: assets/js/models/search/useCompanySearch.ts:179
 msgid "All spaces"
 msgstr ""
 
 #.frontend
-#: assets/js/models/search/useCompanySearch.ts:194
+#: assets/js/models/search/useCompanySearch.ts:195
 msgid "All time"
 msgstr ""
 
 #.frontend
-#: assets/js/models/search/useCompanySearch.ts:186
+#: assets/js/models/search/useCompanySearch.ts:187
 msgid "All types"
 msgstr ""
 
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:59
-msgid "Already have an account? <link>Sign in</link>"
+msgid "Already have an account? <actionLink>Sign in</actionLink>"
 msgstr ""
 
 #.frontend
@@ -748,7 +748,7 @@ msgid "Automatic"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:87
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:89
 msgid "Back"
 msgstr ""
 
@@ -825,10 +825,11 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:16
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:24
 #: assets/js/pages/CompanyBillingCancellationPage/page.tsx:41
-#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:84
+#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:87
 #: assets/js/pages/CompanyBillingPage/page.tsx:90
-#: assets/js/pages/CompanyBillingPage/page.tsx:255
+#: assets/js/pages/CompanyBillingPage/page.tsx:261
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:47
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:167
 msgid "Billing"
@@ -860,7 +861,7 @@ msgid "Billing interval"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:214
+#: assets/js/pages/CompanyBillingPage/page.tsx:218
 msgid "Billing management unavailable"
 msgstr ""
 
@@ -964,7 +965,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:16
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:272
-#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:81
+#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:84
 msgid "Cancel plan"
 msgstr ""
 
@@ -981,7 +982,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/index.tsx:36
-#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:75
+#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:76
 msgid "Cancellation unavailable"
 msgstr ""
 
@@ -1103,13 +1104,13 @@ msgid "Checkout status"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:160
+#: assets/js/pages/CompanyBillingPage/page.tsx:161
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:96
 msgid "Checkout unavailable"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:79
+#: ../turboui/src/CompanyImportPage/index.tsx:84
 msgid "Choose ZIP"
 msgstr ""
 
@@ -1160,7 +1161,7 @@ msgid "Choose what spaces, goals and projects %{name} should have access to:"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:195
+#: ../turboui/src/CompanyImportPage/index.tsx:210
 msgid "Clear ZIP"
 msgstr ""
 
@@ -1239,13 +1240,13 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:63
 #: ../turboui/src/ProfileEditPage/index.tsx:94
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:37
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:39
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:29
-#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:87
+#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:90
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:41
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:21
-#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:83
-#: assets/js/pages/CompanyBillingPage/page.tsx:256
+#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:86
+#: assets/js/pages/CompanyBillingPage/page.tsx:262
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:166
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:18
 #: assets/js/pages/CompanyRenamePage/index.tsx:38
@@ -1265,7 +1266,7 @@ msgid "Company Full"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:61
+#: ../turboui/src/CompanyImportPage/index.tsx:66
 msgid "Company Import"
 msgstr ""
 
@@ -1306,7 +1307,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:178
-#: ../turboui/src/CompanyImportPage/index.tsx:315
+#: ../turboui/src/CompanyImportPage/index.tsx:340
 msgid "Completed:"
 msgstr ""
 
@@ -1642,14 +1643,14 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:46
-#: ../turboui/src/SearchPage/filterOptions.ts:12
+#: ../turboui/src/SearchPage/filterOptions.ts:15
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:53
 msgid "Discussions"
 msgstr ""
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:86
-msgid "Do you have an existing company? <link>Import it here</link>"
+msgid "Do you have an existing company? <actionLink>Import it here</actionLink>"
 msgstr ""
 
 #.frontend
@@ -1663,7 +1664,7 @@ msgid "Document"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:16
+#: ../turboui/src/SearchPage/filterOptions.ts:19
 msgid "Documents"
 msgstr ""
 
@@ -1673,8 +1674,8 @@ msgid "Documents & Files"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:83
-msgid "Don't have an account? <link>Create an account</link>"
+#: assets/js/pages/LoginPage/index.tsx:84
+msgid "Don't have an account? <actionLink>Create an account</actionLink>"
 msgstr ""
 
 #.frontend
@@ -1766,7 +1767,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:66
 #: assets/js/pages/ForgotPasswordPage/index.tsx:57
-#: assets/js/pages/LoginPage/index.tsx:107
+#: assets/js/pages/LoginPage/index.tsx:110
 #: assets/js/pages/ResetPasswordPage/index.tsx:66
 #: assets/js/pages/SetupPage/page.tsx:140
 msgid "Email"
@@ -1783,7 +1784,7 @@ msgid "Email delivery isn’t configured. Contact your organization administrato
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:232
 msgid "Email is required"
 msgstr ""
 
@@ -1803,7 +1804,7 @@ msgid "Enable invite link"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:230
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:234
 msgid "Enter a valid email address"
 msgstr ""
 
@@ -1977,7 +1978,7 @@ msgid "FOLDERS"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:351
+#: ../turboui/src/CompanyImportPage/index.tsx:379
 msgid "Failed"
 msgstr ""
 
@@ -2033,7 +2034,7 @@ msgid "Failed to reset invite link. Please try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:174
+#: assets/js/pages/CompanyBillingPage/page.tsx:175
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:110
 msgid "Failed to start checkout"
 msgstr ""
@@ -2082,12 +2083,12 @@ msgid "File"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:331
+#: ../turboui/src/CompanyImportPage/index.tsx:357
 msgid "File: %{name}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:18
+#: ../turboui/src/SearchPage/filterOptions.ts:21
 msgid "Files"
 msgstr ""
 
@@ -2107,7 +2108,7 @@ msgid "Folder"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:17
+#: ../turboui/src/SearchPage/filterOptions.ts:20
 msgid "Folders"
 msgstr ""
 
@@ -2127,7 +2128,7 @@ msgid "Forgot Password?"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:143
+#: assets/js/pages/LoginPage/index.tsx:149
 msgid "Forgot password?"
 msgstr ""
 
@@ -2239,12 +2240,12 @@ msgid "Goal check-in"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:14
+#: ../turboui/src/SearchPage/filterOptions.ts:17
 msgid "Goal check-ins"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:8
+#: ../turboui/src/SearchPage/filterOptions.ts:11
 msgid "Goals"
 msgstr ""
 
@@ -2323,12 +2324,12 @@ msgid "If you sign in with Google, you’ll need to use a Google account with th
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:57
+#: ../turboui/src/CompanyImportPage/index.tsx:58
 msgid "Import Company"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:62
+#: ../turboui/src/CompanyImportPage/index.tsx:67
 msgid "Import company"
 msgstr ""
 
@@ -2338,7 +2339,7 @@ msgid "Import started"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:100
+#: ../turboui/src/CompanyImportPage/index.tsx:110
 msgid "Imports"
 msgstr ""
 
@@ -2348,7 +2349,7 @@ msgid "Invalid Link"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:40
+#: assets/js/pages/LoginPage/index.tsx:41
 msgid "Invalid email or password"
 msgstr ""
 
@@ -2501,22 +2502,22 @@ msgid "Language"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:28
+#: ../turboui/src/SearchPage/filterOptions.ts:31
 msgid "Last 12 months"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:26
+#: ../turboui/src/SearchPage/filterOptions.ts:29
 msgid "Last 30 days"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:25
+#: ../turboui/src/SearchPage/filterOptions.ts:28
 msgid "Last 7 days"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:27
+#: ../turboui/src/SearchPage/filterOptions.ts:30
 msgid "Last 90 days"
 msgstr ""
 
@@ -2562,7 +2563,7 @@ msgid "Link: %{url}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:19
+#: ../turboui/src/SearchPage/filterOptions.ts:22
 msgid "Links"
 msgstr ""
 
@@ -2602,7 +2603,7 @@ msgstr ""
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:36
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:148
 #: ../turboui/src/ProfileEditPage/index.tsx:95
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:38
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:40
 #: assets/js/pages/InviteTeamPage/index.tsx:28
 #: assets/js/pages/MemberTypeSelectionPage/index.tsx:18
 msgid "Manage Team Members"
@@ -2656,6 +2657,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:17
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:25
 msgid "Manage this company's plan, usage, and billing details."
 msgstr ""
 
@@ -2709,7 +2711,7 @@ msgid "Milestone"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:9
+#: ../turboui/src/SearchPage/filterOptions.ts:12
 msgid "Milestones"
 msgstr ""
 
@@ -2721,7 +2723,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:107
-msgid "More details are in the docs: <link>Setup guides</link>"
+msgid "More details are in the docs: <actionLink>Setup guides</actionLink>"
 msgstr ""
 
 #.frontend
@@ -2768,7 +2770,7 @@ msgid "Name"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:224
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 msgid "Name is required"
 msgstr ""
 
@@ -2902,14 +2904,14 @@ msgid "No exports yet. Start one when you need to move this company to another O
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:184
-#: ../turboui/src/CompanyImportPage/index.tsx:187
-#: ../turboui/src/CompanyImportPage/index.tsx:331
+#: ../turboui/src/CompanyImportPage/index.tsx:199
+#: ../turboui/src/CompanyImportPage/index.tsx:202
+#: ../turboui/src/CompanyImportPage/index.tsx:357
 msgid "No file selected"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:288
+#: ../turboui/src/CompanyImportPage/index.tsx:312
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr ""
 
@@ -3008,7 +3010,7 @@ msgid "Open assignee picker for the selected task"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:264
+#: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "Open company"
 msgstr ""
 
@@ -3044,7 +3046,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:50
-#: assets/js/pages/LoginPage/index.tsx:74
+#: assets/js/pages/LoginPage/index.tsx:75
 msgid "Operately"
 msgstr ""
 
@@ -3054,7 +3056,7 @@ msgid "Operately %{version} is available. This instance is running an older vers
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:75
+#: ../turboui/src/CompanyImportPage/index.tsx:80
 msgid "Operately package"
 msgstr ""
 
@@ -3071,7 +3073,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:62
-msgid "Or, visit the <link>Admin Panel</link>."
+msgid "Or, visit the <actionLink>Admin Panel</actionLink>."
 msgstr ""
 
 #.frontend
@@ -3120,7 +3122,7 @@ msgid "PROJECTS"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:70
+#: ../turboui/src/CompanyImportPage/index.tsx:75
 msgid "Package"
 msgstr ""
 
@@ -3135,8 +3137,8 @@ msgid "Paid plan"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:128
-#: assets/js/pages/LoginPage/index.tsx:132
+#: assets/js/pages/LoginPage/index.tsx:134
+#: assets/js/pages/LoginPage/index.tsx:138
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:145
@@ -3215,7 +3217,7 @@ msgid "Payment method"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:194
+#: assets/js/pages/CompanyBillingPage/page.tsx:197
 msgid "Payment method unavailable"
 msgstr ""
 
@@ -3227,7 +3229,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
 #: ../turboui/src/CompanyNavigation/index.tsx:101
-#: ../turboui/src/SearchPage/filterOptions.ts:11
+#: ../turboui/src/SearchPage/filterOptions.ts:14
 msgid "People"
 msgstr ""
 
@@ -3292,7 +3294,7 @@ msgid "Please confirm the package finished uploading and try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:75
+#: assets/js/pages/LoginPage/index.tsx:76
 msgid "Please enter your details to sign in"
 msgstr ""
 
@@ -3352,7 +3354,7 @@ msgid "Profile"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:333
+#: ../turboui/src/CompanyImportPage/index.tsx:359
 msgid "Progress: %{progress}%"
 msgstr ""
 
@@ -3375,7 +3377,7 @@ msgid "Project check-in"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:13
+#: ../turboui/src/SearchPage/filterOptions.ts:16
 msgid "Project check-ins"
 msgstr ""
 
@@ -3391,13 +3393,13 @@ msgid "Project retrospective"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SearchPage/filterOptions.ts:15
+#: ../turboui/src/SearchPage/filterOptions.ts:18
 msgid "Project retrospectives"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
-#: ../turboui/src/SearchPage/filterOptions.ts:7
+#: ../turboui/src/SearchPage/filterOptions.ts:10
 msgid "Projects"
 msgstr ""
 
@@ -3424,7 +3426,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:232
-#: ../turboui/src/CompanyImportPage/index.tsx:413
+#: ../turboui/src/CompanyImportPage/index.tsx:441
 msgid "Queued"
 msgstr ""
 
@@ -3449,7 +3451,7 @@ msgid "Reactivate Account"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:234
+#: assets/js/pages/CompanyBillingPage/page.tsx:240
 msgid "Reactivation unavailable"
 msgstr ""
 
@@ -3576,7 +3578,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:173
-#: ../turboui/src/CompanyImportPage/index.tsx:310
+#: ../turboui/src/CompanyImportPage/index.tsx:334
 msgid "Requested:"
 msgstr ""
 
@@ -3688,7 +3690,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:182
-#: ../turboui/src/CompanyImportPage/index.tsx:319
+#: ../turboui/src/CompanyImportPage/index.tsx:345
 msgid "Rows: %{count}"
 msgstr ""
 
@@ -3940,7 +3942,7 @@ msgid "Share this URL with %{name} to invite them to the company:"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:69
+#: assets/js/pages/LoginPage/index.tsx:70
 msgid "Sign In"
 msgstr ""
 
@@ -3963,7 +3965,7 @@ msgid "Sign Up & Join %{companyName}"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:168
+#: assets/js/pages/LoginPage/index.tsx:174
 msgid "Sign in"
 msgstr ""
 
@@ -3995,7 +3997,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/InviteLinkJoinPage/index.tsx:54
-#: assets/js/pages/LoginPage/index.tsx:62
+#: assets/js/pages/LoginPage/index.tsx:63
 msgid "Something went wrong while joining. Please try again."
 msgstr ""
 
@@ -4052,12 +4054,12 @@ msgid "Start export"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:121
+#: ../turboui/src/LobbyPage/index.tsx:118
 msgid "Start fresh with a new company account"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:86
+#: ../turboui/src/CompanyImportPage/index.tsx:96
 msgid "Start import"
 msgstr ""
 
@@ -4073,7 +4075,7 @@ msgid "Status details"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:332
+#: ../turboui/src/CompanyImportPage/index.tsx:358
 msgid "Status: %{status}"
 msgstr ""
 
@@ -4094,7 +4096,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:184
-#: ../turboui/src/CompanyImportPage/index.tsx:321
+#: ../turboui/src/CompanyImportPage/index.tsx:347
 msgid "Step: %{step}"
 msgstr ""
 
@@ -4133,7 +4135,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:183
-#: ../turboui/src/CompanyImportPage/index.tsx:320
+#: ../turboui/src/CompanyImportPage/index.tsx:346
 msgid "Tables: %{count}"
 msgstr ""
 
@@ -4166,7 +4168,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
-#: ../turboui/src/SearchPage/filterOptions.ts:10
+#: ../turboui/src/SearchPage/filterOptions.ts:13
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
 msgid "Tasks"
 msgstr ""
@@ -4197,8 +4199,8 @@ msgid "That code doesn’t match. Check your latest email and try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:159
 #: assets/js/pages/CompanyBillingPage/page.tsx:160
+#: assets/js/pages/CompanyBillingPage/page.tsx:161
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:95
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:96
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:127
@@ -4253,7 +4255,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:76
-msgid "There are no deactivated team members in %{companyName}. To remove access for departing team members, visit the <link>Manage Team Members</link> page."
+msgid "There are no deactivated team members in %{companyName}. To remove access for departing team members, visit the <actionLink>Manage Team Members</actionLink> page."
 msgstr ""
 
 #.frontend
@@ -4449,7 +4451,7 @@ msgid "Title in the company"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:234
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:238
 msgid "Title is required"
 msgstr ""
 
@@ -4549,7 +4551,7 @@ msgid "Type"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:193
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:197
 msgid "Unable to add team member"
 msgstr ""
 
@@ -4559,7 +4561,7 @@ msgid "Unable to copy to clipboard"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:193
+#: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:196
 msgid "Unable to invite collaborator"
 msgstr ""
 
@@ -4642,29 +4644,29 @@ msgid "Upgrade confirmed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:343
+#: ../turboui/src/CompanyImportPage/index.tsx:372
 #: assets/js/pages/CompanyImportPage/index.tsx:56
 msgid "Upload failed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:64
+#: ../turboui/src/CompanyImportPage/index.tsx:69
 msgid "Upload the exported ZIP package, then start importing the company into this Operately instance."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:342
-#: ../turboui/src/CompanyImportPage/index.tsx:350
+#: ../turboui/src/CompanyImportPage/index.tsx:371
+#: ../turboui/src/CompanyImportPage/index.tsx:378
 msgid "Uploaded"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:349
+#: ../turboui/src/CompanyImportPage/index.tsx:377
 msgid "Uploading"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:340
+#: ../turboui/src/CompanyImportPage/index.tsx:369
 msgid "Uploading %{name}..."
 msgstr ""
 
@@ -4674,7 +4676,7 @@ msgid "Uploading %{progress}%"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:340
+#: ../turboui/src/CompanyImportPage/index.tsx:369
 msgid "Uploading file..."
 msgstr ""
 
@@ -4684,7 +4686,7 @@ msgid "Uploading..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:94
+#: ../turboui/src/CompanyImportPage/index.tsx:104
 msgid "Uploads are unavailable for this account right now."
 msgstr ""
 
@@ -4810,12 +4812,12 @@ msgid "View update"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:352
+#: ../turboui/src/CompanyImportPage/index.tsx:380
 msgid "Waiting"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CompanyImportPage/index.tsx:344
+#: ../turboui/src/CompanyImportPage/index.tsx:373
 msgid "Waiting for file selection"
 msgstr ""
 
@@ -4836,20 +4838,20 @@ msgid "We couldn't copy the invite link automatically."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:233
-#: assets/js/pages/CompanyBillingPage/page.tsx:234
+#: assets/js/pages/CompanyBillingPage/page.tsx:239
+#: assets/js/pages/CompanyBillingPage/page.tsx:240
 msgid "We couldn't keep the current plan right now. Please try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:213
-#: assets/js/pages/CompanyBillingPage/page.tsx:214
+#: assets/js/pages/CompanyBillingPage/page.tsx:216
+#: assets/js/pages/CompanyBillingPage/page.tsx:219
 msgid "We couldn't open billing history right now. Please try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:192
 #: assets/js/pages/CompanyBillingPage/page.tsx:195
+#: assets/js/pages/CompanyBillingPage/page.tsx:198
 msgid "We couldn't open payment method details right now. Please try again."
 msgstr ""
 
@@ -4860,13 +4862,13 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/CompanyBillingCancellationPage/page.tsx:74
-#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:75
+#: assets/js/pages/CompanyBillingCancellationPage/page.tsx:77
 msgid "We couldn't schedule the cancellation right now. Please try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyBillingPage/page.tsx:173
 #: assets/js/pages/CompanyBillingPage/page.tsx:174
+#: assets/js/pages/CompanyBillingPage/page.tsx:175
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:109
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:110
 msgid "We couldn't start checkout right now. Please try again."
@@ -5068,13 +5070,13 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:223
-#: ../turboui/src/CompanyImportPage/index.tsx:404
+#: ../turboui/src/CompanyImportPage/index.tsx:432
 msgid "cancelled"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:217
-#: ../turboui/src/CompanyImportPage/index.tsx:398
+#: ../turboui/src/CompanyImportPage/index.tsx:426
 msgid "completed"
 msgstr ""
 
@@ -5133,7 +5135,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:219
-#: ../turboui/src/CompanyImportPage/index.tsx:400
+#: ../turboui/src/CompanyImportPage/index.tsx:428
 msgid "failed"
 msgstr ""
 
@@ -5169,7 +5171,7 @@ msgid "just now"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:120
+#: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:123
 msgid "less than a minute"
 msgstr ""
 
@@ -5179,19 +5181,19 @@ msgid "name@company.com"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:179
+#: assets/js/pages/LoginPage/index.tsx:185
 msgid "or"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:225
-#: ../turboui/src/CompanyImportPage/index.tsx:406
+#: ../turboui/src/CompanyImportPage/index.tsx:434
 msgid "pending"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:221
-#: ../turboui/src/CompanyImportPage/index.tsx:402
+#: ../turboui/src/CompanyImportPage/index.tsx:430
 msgid "running"
 msgstr ""
 
@@ -5217,7 +5219,7 @@ msgid "token %{number}"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:107
+#: assets/js/pages/LoginPage/index.tsx:111
 msgid "your@email.com"
 msgstr ""
 

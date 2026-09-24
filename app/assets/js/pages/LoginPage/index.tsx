@@ -1,4 +1,4 @@
-import Api from "@/api";
+import * as Invitations from "@/models/invitations";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -19,6 +19,7 @@ export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageMod
 
 function Page() {
   const { t } = useTranslation();
+  const { mutateAsync: joinCompanyViaInviteLink } = Invitations.useJoinCompanyViaInviteLink();
   const [error, setError] = React.useState<string | null>(null);
   const inviteToken = React.useMemo(() => new URLSearchParams(window.location.search).get("invite_token"), []);
   const redirectTo = React.useMemo(() => getRedirectTo(), []);
@@ -43,7 +44,7 @@ function Page() {
 
       if (inviteToken) {
         try {
-          const joinResult = await Api.invitations.joinCompanyViaInviteLink({ token: inviteToken });
+          const joinResult = await joinCompanyViaInviteLink({ token: inviteToken });
           const companyId = joinResult.company?.id;
 
           if (companyId) {
@@ -81,8 +82,8 @@ function Page() {
               {isSignupEnabled() && (
                 <div className="mt-8 text-center text-sm font-medium">
                   <Trans
-                    i18nKey="Don't have an account? <link>Create an account</link>"
-                    components={{ link: <Link to="/sign_up" /> }}
+                    i18nKey="Don't have an account? <actionLink>Create an account</actionLink>"
+                    components={{ actionLink: <Link to="/sign_up" /> }}
                   />
                 </div>
               )}
@@ -104,7 +105,12 @@ function EmailLogin({ form, error }: { form: FormState<{ email: string; password
   return (
     <div>
       <Forms.FieldGroup>
-        <Forms.TextInput field={"email"} label={translationText(t("Email"))} placeholder={translationText(t("your@email.com"))} required />
+        <Forms.TextInput
+          field={"email"}
+          label={translationText(t("Email"))}
+          placeholder={translationText(t("your@email.com"))}
+          required
+        />
         <PasswordInput />
       </Forms.FieldGroup>
 

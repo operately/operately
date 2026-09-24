@@ -105,8 +105,8 @@ function ServerUrlSection({ mcpServerUrl }: { mcpServerUrl: string }) {
 
       <p className="text-sm text-content-dimmed mt-3">
         <Trans
-          i18nKey="More details are in the docs: <link>Setup guides</link>"
-          components={{ link: <SetupGuidesLink /> }}
+          i18nKey="More details are in the docs: <actionLink>Setup guides</actionLink>"
+          components={{ actionLink: <SetupGuidesLink /> }}
         />
       </p>
     </section>

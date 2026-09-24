@@ -74,9 +74,9 @@ function NoSuspenedPeopleMessage() {
         description={
           <p>
             <Trans
-              i18nKey="There are no deactivated team members in {{companyName}}. To remove access for departing team members, visit the <link>Manage Team Members</link> page."
+              i18nKey="There are no deactivated team members in {{companyName}}. To remove access for departing team members, visit the <actionLink>Manage Team Members</actionLink> page."
               values={{ companyName: company.name }}
-              components={{ link: <Link to={paths.companyManagePeoplePath()} /> }}
+              components={{ actionLink: <Link to={paths.companyManagePeoplePath()} /> }}
             />
           </p>
         }
