@@ -40,7 +40,7 @@ msgstr "%{author} adicionou a tarefa <task>%{taskName}</task> em <location>%{loc
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:248
 msgid "%{count} member limit"
-msgstr ""
+msgstr "Limite de %{count} membros"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:85
@@ -61,7 +61,7 @@ msgstr "%{hour}:00 PM"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:138
 msgid "%{interval} billing"
-msgstr ""
+msgstr "Faturamento %{interval}"
 
 #.elixir
 #: lib/operately_email/templates.ex:93
@@ -73,12 +73,12 @@ msgstr[1] "%{name} (%{count} atualizações)"
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:16
 msgid "%{name} has been added"
-msgstr ""
+msgstr "%{name} foi adicionado à empresa"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:20
 msgid "%{name} has been added to the company and an email has been sent to notify them."
-msgstr ""
+msgstr "%{name} foi adicionado à empresa e recebeu um aviso por e-mail."
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:18
@@ -104,12 +104,12 @@ msgstr "%{percentage}% das tarefas concluídas, %{completed}/%{total} tarefas co
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:212
 msgid "%{plan} member limit"
-msgstr ""
+msgstr "Limite de membros do plano %{plan}"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:217
 msgid "%{plan} storage limit"
-msgstr ""
+msgstr "Limite de armazenamento do plano %{plan}"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/changeConsequences.ts:72
@@ -171,7 +171,7 @@ msgstr "(%{where}) %{who} mencionou você na descrição de \"%{task_name}\""
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:117
 msgid "+ Create organization"
-msgstr ""
+msgstr "+ Criar empresa"
 
 #~ #.frontend
 #~ #: ../turboui/src/AccessLevelSummary/index.tsx:87
@@ -241,8 +241,8 @@ msgstr[1] "%{count} horas"
 #: ../turboui/src/LobbyPage/index.tsx:97
 msgid "1 member"
 msgid_plural "%{count} members"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 membro"
+msgstr[1] "%{count} membros"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:128
@@ -325,7 +325,7 @@ msgstr "<bold>O que acontece a seguir?</bold> Operately enviará um código para
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:70
 msgid "<company>%{companyName}</company> has reached its member limit, so this invite can't be used yet. When more member capacity is available, you can come back and try again."
-msgstr ""
+msgstr "<company>%{companyName}</company> atingiu o limite de membros, por isso este convite ainda não pode ser usado. Quando houver vagas para novos membros, você poderá voltar e tentar novamente."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/UpdateBadge.tsx:45
@@ -335,7 +335,7 @@ msgstr "<version>%{version}</version> disponível"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:35
 msgid "A new invitation URL will be generated for %{name}."
-msgstr ""
+msgstr "Uma nova URL de convite será gerada para %{name}."
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:70
@@ -350,17 +350,17 @@ msgstr "Um lugar para compartilhar documentos, imagens, vídeos e outros arquivo
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:190
 msgid "ADMIN ACCOUNT"
-msgstr ""
+msgstr "CONTA DE ADMINISTRADOR"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:60
 msgid "API Base URL"
-msgstr ""
+msgstr "URL base da API"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:57
 msgid "API Token Created"
-msgstr ""
+msgstr "Token de API criado"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:75
@@ -368,18 +368,18 @@ msgstr ""
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:24
 #: ../turboui/src/CompanyNavigation/User.tsx:49
 msgid "API Tokens"
-msgstr ""
+msgstr "Tokens de API"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:39
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:46
 msgid "API Usage Instructions"
-msgstr ""
+msgstr "Instruções de uso da API"
 
 #.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:44
 msgid "API tokens"
-msgstr ""
+msgstr "Tokens de API"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:132
@@ -401,7 +401,7 @@ msgstr "Nível de acesso"
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:36
 msgid "Access any resource"
-msgstr ""
+msgstr "Acessar qualquer recurso"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:48
@@ -411,7 +411,7 @@ msgstr "Acesso concedido com sucesso."
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:173
 msgid "Access mode for new token"
-msgstr ""
+msgstr "Modo de acesso do novo token"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:109
@@ -423,7 +423,7 @@ msgstr "Conta"
 #: ../turboui/src/CompanyAdminPage/index.tsx:85
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:50
 msgid "Account Owners"
-msgstr ""
+msgstr "Proprietários da conta"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
@@ -440,7 +440,7 @@ msgstr "Ativo"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:74
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:210
 msgid "Active members"
-msgstr ""
+msgstr "Membros ativos"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
@@ -455,7 +455,7 @@ msgstr "E-mails de atividade"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:81
 msgid "Activity emails are always batched. You can choose whether direct mentions should also be batched or arrive right away."
-msgstr ""
+msgstr "Os e-mails de atividade são sempre agrupados. Você pode escolher se as menções diretas também devem ser agrupadas ou enviadas imediatamente."
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
@@ -466,37 +466,37 @@ msgstr "Adicionar"
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddAdminsModal.tsx:19
 msgid "Add Admin"
-msgstr ""
+msgstr "Adicionar administrador"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddAdminsModal.tsx:41
 msgid "Add Admininstrators"
-msgstr ""
+msgstr "Adicionar administradores"
 
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:66
 msgid "Add Members"
-msgstr ""
+msgstr "Adicionar membros"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddOwnersModal.tsx:19
 msgid "Add Owner"
-msgstr ""
+msgstr "Adicionar proprietário"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddOwnersModal.tsx:36
 msgid "Add Owners"
-msgstr ""
+msgstr "Adicionar proprietários"
 
 #.frontend
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:89
 msgid "Add Trusted Email Domain"
-msgstr ""
+msgstr "Adicionar domínio de e-mail confiável"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddAdminsModal.tsx:23
 msgid "Add administrators"
-msgstr ""
+msgstr "Adicionar administradores"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:26
@@ -507,17 +507,17 @@ msgstr "Adicionar objetivos"
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:76
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:90
 msgid "Add members"
-msgstr ""
+msgstr "Adicionar membros"
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:79
 msgid "Add members to %{name}"
-msgstr ""
+msgstr "Adicionar membros a %{name}"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:149
 msgid "Add new team members, update profiles, or remove access as needed."
-msgstr ""
+msgstr "Adicione novos membros à equipe, atualize perfis ou remova acessos conforme necessário."
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:409
@@ -528,7 +528,7 @@ msgstr "Adicione notas sobre esta tarefa..."
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddOwnersModal.tsx:22
 msgid "Add owners"
-msgstr ""
+msgstr "Adicionar proprietários"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:27
@@ -550,12 +550,12 @@ msgstr "Adicionar tarefa"
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:33
 msgid "Add/Remove admins"
-msgstr ""
+msgstr "Adicionar/remover administradores"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:34
 msgid "Add/Remove owners"
-msgstr ""
+msgstr "Adicionar/remover proprietários"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:34
@@ -570,48 +570,48 @@ msgstr "Ajuste a aparência do Operately para você"
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:36
 msgid "Admin Access"
-msgstr ""
+msgstr "Acesso de administrador"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:57
 msgid "Administration"
-msgstr ""
+msgstr "Administração"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:79
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:38
 msgid "Administrators"
-msgstr ""
+msgstr "Administradores"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:49
 msgid "Admins"
-msgstr ""
+msgstr "Administradores"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/changeConsequences.ts:121
 msgid "After it takes effect, adding or restoring people and uploading files may be blocked because this company has %{memberCount} active members, is using %{storage}, and %{plan} includes %{memberLimit} members and %{storageLimit} of storage."
-msgstr ""
+msgstr "Após a alteração entrar em vigor, a adição ou reativação de pessoas e o envio de arquivos poderão ser bloqueados, pois esta empresa tem %{memberCount} membros ativos, usa %{storage}, e o plano %{plan} inclui %{memberLimit} membros e %{storageLimit} de armazenamento."
 
 #.frontend
 #: ../turboui/src/CompanyBilling/changeConsequences.ts:93
 msgid "After it takes effect, adding or restoring people may be blocked because this company has %{memberCount} active members and %{plan} includes %{memberLimit}."
-msgstr ""
+msgstr "Após a alteração entrar em vigor, a adição ou reativação de pessoas poderá ser bloqueada, pois esta empresa tem %{memberCount} membros ativos e o plano %{plan} inclui %{memberLimit}."
 
 #.frontend
 #: ../turboui/src/CompanyBilling/changeConsequences.ts:107
 msgid "After it takes effect, uploading files may be blocked because this company is using %{storage} and %{plan} includes %{limit}."
-msgstr ""
+msgstr "Após a alteração entrar em vigor, o envio de arquivos poderá ser bloqueado, pois esta empresa usa %{storage} e o plano %{plan} inclui %{limit}."
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:61
 msgid "After that, the company will move to the Free plan."
-msgstr ""
+msgstr "Depois disso, a empresa passará para o plano Gratuito."
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:97
 msgid "All activity emails wait for the batch window, are grouped together, and sent as a single email."
-msgstr ""
+msgstr "Todas as atividades são agrupadas em um único e-mail, enviado ao final do intervalo de agrupamento."
 
 #.frontend
 #: assets/js/models/search/useCompanySearch.ts:179
@@ -631,7 +631,7 @@ msgstr "Todos os tipos"
 #.frontend
 #: assets/js/pages/SignUpPage/index.tsx:59
 msgid "Already have an account? <actionLink>Sign in</actionLink>"
-msgstr ""
+msgstr "Já tem uma conta? <actionLink>Entrar</actionLink>"
 
 #~ #.frontend
 #~ #: assets/js/pages/SignUpPage/index.tsx:59
@@ -651,17 +651,17 @@ msgstr "Sempre claro"
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:25
 msgid "An admin or owner needs to choose a plan with more member capacity."
-msgstr ""
+msgstr "Um administrador ou proprietário precisa escolher um plano que permita mais membros."
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:30
 msgid "An admin or owner needs to help"
-msgstr ""
+msgstr "É necessária a ajuda de um administrador ou proprietário"
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:31
 msgid "An admin or owner needs to review billing or free up member space before anyone else can join."
-msgstr ""
+msgstr "Um administrador ou proprietário precisa revisar o faturamento ou liberar vagas para membros antes que outras pessoas possam entrar."
 
 #~ #.frontend
 #~ #: ../turboui/src/AccessLevelSummary/index.tsx:97
@@ -706,7 +706,7 @@ msgstr "Qualquer pessoa na internet poderá visualizar este espaço."
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:149
 msgid "Anyone with the link"
-msgstr ""
+msgstr "Qualquer pessoa com o link"
 
 #.frontend
 #: ../turboui/src/AccountSettingsPage/index.tsx:30
@@ -724,12 +724,12 @@ msgstr "Arquivado"
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:110
 msgid "As an admin or owner, you can:"
-msgstr ""
+msgstr "Como administrador ou proprietário, você pode:"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:143
 msgid "As an owner, you can:"
-msgstr ""
+msgstr "Como proprietário, você pode:"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:345
@@ -745,7 +745,7 @@ msgstr "Responsáveis"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:247
 msgid "Assignments email"
-msgstr ""
+msgstr "E-mail de atribuições"
 
 #.frontend
 #: assets/js/features/auth/PasswordStrength.tsx:22
@@ -776,7 +776,7 @@ msgstr "Pelo menos 12 caracteres"
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:55
 msgid "Authorization Header"
-msgstr ""
+msgstr "Cabeçalho de autorização"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:167
@@ -791,7 +791,7 @@ msgstr "Voltar"
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:39
 msgid "Back to Company Admin"
-msgstr ""
+msgstr "Voltar à administração da empresa"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:59
@@ -801,7 +801,7 @@ msgstr "Voltar ao início"
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:288
 msgid "Back to Manage Team Members"
-msgstr ""
+msgstr "Voltar ao gerenciamento de membros da equipe"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:28
@@ -816,7 +816,7 @@ msgstr "Voltar para entrar"
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:78
 msgid "Back to Team & Access"
-msgstr ""
+msgstr "Voltar para equipe e acesso"
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:48
@@ -827,22 +827,22 @@ msgstr "Voltar ao início"
 #: ../turboui/src/CompanyImportPage/index.tsx:54
 #: assets/js/pages/NewCompanyPage/index.tsx:51
 msgid "Back to the Lobby"
-msgstr ""
+msgstr "Voltar à recepção"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:53
 msgid "Base Path"
-msgstr ""
+msgstr "Caminho base"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:120
 msgid "Batch window"
-msgstr ""
+msgstr "Intervalo de agrupamento"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:96
 msgid "Batched notifications"
-msgstr ""
+msgstr "Notificações agrupadas"
 
 #.frontend
 #: ../turboui/src/SearchPage/RefineControls.tsx:54
@@ -852,12 +852,12 @@ msgstr "Mais relevante"
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:203
 msgid "Billed monthly"
-msgstr ""
+msgstr "Cobrado mensalmente"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:198
 msgid "Billed yearly at %{price}"
-msgstr ""
+msgstr "Cobrado anualmente por %{price}"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:16
@@ -869,47 +869,47 @@ msgstr ""
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:47
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:167
 msgid "Billing"
-msgstr ""
+msgstr "Faturamento"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:122
 msgid "Billing action unavailable"
-msgstr ""
+msgstr "Ação de faturamento indisponível"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:89
 msgid "Billing cycle"
-msgstr ""
+msgstr "Ciclo de faturamento"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:127
 msgid "Billing data may be out of date"
-msgstr ""
+msgstr "Os dados de faturamento podem estar desatualizados"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:261
 msgid "Billing history"
-msgstr ""
+msgstr "Histórico de faturamento"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:68
 msgid "Billing interval"
-msgstr ""
+msgstr "Periodicidade do faturamento"
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:218
 msgid "Billing management unavailable"
-msgstr ""
+msgstr "Gerenciamento de faturamento indisponível"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:305
 msgid "Billing needs attention by %{date} or this company will become read-only."
-msgstr ""
+msgstr "Regularize o pagamento até %{date} para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:302
 msgid "Billing needs attention soon or this company will become read-only."
-msgstr ""
+msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:113
@@ -929,12 +929,12 @@ msgstr "Ao continuar, você concorda com os <tos>Termos de Serviço</tos> e a <p
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:123
 msgid "Can comment all resources in the space, but cannot add or remove members or resources in the space."
-msgstr ""
+msgstr "Pode comentar em todos os recursos do espaço, mas não pode adicionar ou remover membros ou recursos do espaço."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:126
 msgid "Can comment on the goal updates and discussions. Cannot edit, close, or archive the goal."
-msgstr ""
+msgstr "Pode comentar nas atualizações e discussões do objetivo. Não pode editar, encerrar ou arquivar o objetivo."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:120
@@ -944,7 +944,7 @@ msgstr "Pode comentar no projeto, incluindo tarefas e check-ins. Não pode edita
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:111
 msgid "Can edit the goal, including its details and targets."
-msgstr ""
+msgstr "Pode editar o objetivo, incluindo seus detalhes e metas."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:105
@@ -954,12 +954,12 @@ msgstr "Pode editar o projeto, incluindo seus detalhes, tarefas e comentários, 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:108
 msgid "Can edit the space and its details, add new members, but cannot access invite-only projects or change space managers."
-msgstr ""
+msgstr "Pode editar o espaço e seus detalhes e adicionar novos membros, mas não pode acessar projetos disponíveis somente por convite nem alterar os gestores do espaço."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:138
 msgid "Can view all resources in the space, but cannot edit, comment, or add new resources."
-msgstr ""
+msgstr "Pode visualizar todos os recursos do espaço, mas não pode editar, comentar ou adicionar novos recursos."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:139
@@ -1087,12 +1087,12 @@ msgstr "Alterar plano"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:387
 msgid "Change to full access"
-msgstr ""
+msgstr "Alterar para acesso total"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:387
 msgid "Change to read-only"
-msgstr ""
+msgstr "Alterar para somente leitura"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerifyCurrentEmailStep.tsx:14
@@ -1117,38 +1117,38 @@ msgstr "Check-ins"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:123
 msgid "Checkout in progress"
-msgstr ""
+msgstr "Pagamento em andamento"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:32
 msgid "Checkout not completed"
-msgstr ""
+msgstr "Pagamento não concluído"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:23
 msgid "Checkout not completed yet"
-msgstr ""
+msgstr "Pagamento ainda não concluído"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:128
 msgid "Checkout started"
-msgstr ""
+msgstr "Pagamento iniciado"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:183
 msgid "Checkout status"
-msgstr ""
+msgstr "Status do pagamento"
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:161
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:96
 msgid "Checkout unavailable"
-msgstr ""
+msgstr "Pagamento indisponível"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:79
 msgid "Choose ZIP"
-msgstr ""
+msgstr "Selecionar ZIP"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:39
@@ -1163,7 +1163,7 @@ msgstr "Escolha um plano pago"
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:40
 msgid "Choose a paid plan for this company. Payment details are handled at checkout."
-msgstr ""
+msgstr "Escolha um plano pago para esta empresa. Os dados de pagamento serão informados ao finalizar o pagamento."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:36
@@ -1174,17 +1174,17 @@ msgstr "Escolha um plano"
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:24
 msgid "Choose a plan with more member capacity."
-msgstr ""
+msgstr "Escolha um plano que permita mais membros."
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:91
 msgid "Choose how direct mentions should be delivered."
-msgstr ""
+msgstr "Escolha como as menções diretas devem ser enviadas."
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:122
 msgid "Choose how long Operately should wait before sending batched activity emails. When direct mentions are instant, this still applies to all other activity emails."
-msgstr ""
+msgstr "Escolha quanto tempo Operately deve esperar antes de enviar e-mails de atividade agrupados. Quando as menções diretas são enviadas imediatamente, esse intervalo ainda se aplica aos demais e-mails de atividade."
 
 #.frontend
 #: assets/js/pages/AccountAppearancePage/index.tsx:65
@@ -1199,7 +1199,7 @@ msgstr "Escolha a quais espaços, objetivos e projetos %{name} deve ter acesso:"
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:195
 msgid "Clear ZIP"
-msgstr ""
+msgstr "Remover ZIP selecionado"
 
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:98
@@ -1209,7 +1209,7 @@ msgstr "Limpar seleção de tarefas"
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:150
 msgid "Client"
-msgstr ""
+msgstr "Cliente"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
@@ -1252,13 +1252,13 @@ msgstr "Modo de cor"
 #: assets/js/features/Permissions/index.tsx:48
 #: assets/js/features/Permissions/index.tsx:59
 msgid "Comment Access"
-msgstr ""
+msgstr "Acesso para comentar"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:65
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:249
 msgid "Comment access"
-msgstr ""
+msgstr "Acesso para comentar"
 
 #.frontend
 #: ../turboui/src/TaskPage/Overview.tsx:34
@@ -1288,7 +1288,7 @@ msgstr "Administração da empresa"
 #: assets/js/pages/InviteTeamPage/index.tsx:27
 #: assets/js/pages/MemberTypeSelectionPage/index.tsx:17
 msgid "Company Administration"
-msgstr ""
+msgstr "Administração da empresa"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:46
@@ -1298,7 +1298,7 @@ msgstr "Exportação da empresa"
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:21
 msgid "Company Full"
-msgstr ""
+msgstr "Empresa sem vagas"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:61
@@ -1313,57 +1313,57 @@ msgstr "Nome da empresa"
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:40
 msgid "Company administrators can add/remove people from the company, manage their profiles, update company settings, and more."
-msgstr ""
+msgstr "Os administradores podem adicionar ou remover pessoas da empresa, gerenciar perfis, atualizar configurações e muito mais."
 
 #.frontend
 #: ../turboui/src/Forms/AccessSelectors.tsx:32
 msgid "Company members"
-msgstr ""
+msgstr "Membros da empresa"
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:84
 msgid "Company members can view and comment."
-msgstr ""
+msgstr "Os membros da empresa podem visualizar e comentar."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:87
 msgid "Company members have edit access."
-msgstr ""
+msgstr "Os membros da empresa têm acesso de edição."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:90
 msgid "Company members have full access."
-msgstr ""
+msgstr "Os membros da empresa têm acesso total."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:83
 msgid "Company members will be able to view and comment."
-msgstr ""
+msgstr "Os membros da empresa poderão visualizar e comentar."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:87
 msgid "Company members will have edit access."
-msgstr ""
+msgstr "Os membros da empresa terão acesso de edição."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:90
 msgid "Company members will have full access."
-msgstr ""
+msgstr "Os membros da empresa terão acesso total."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:62
 msgid "Company-wide Access"
-msgstr ""
+msgstr "Acesso para toda a empresa"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:228
 msgid "Compare available plans and switch this company to a different subscription."
-msgstr ""
+msgstr "Compare os planos disponíveis e altere a assinatura desta empresa."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:214
 msgid "Complete upgrade"
-msgstr ""
+msgstr "Concluir mudança para um plano superior"
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:340
@@ -1416,12 +1416,12 @@ msgstr "Confirmar alteração de e-mail"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:105
 msgid "Confirming your upgrade"
-msgstr ""
+msgstr "Confirmando sua mudança para um plano superior"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:61
 msgid "Connect AI clients via MCP and manage their access here."
-msgstr ""
+msgstr "Conecte clientes de IA via MCP e gerencie seus acessos aqui."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:152
@@ -1431,17 +1431,17 @@ msgstr "Conectado"
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:68
 msgid "Connected Clients"
-msgstr ""
+msgstr "Clientes conectados"
 
 #.frontend
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:38
 msgid "Connection Revoked"
-msgstr ""
+msgstr "Conexão revogada"
 
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:57
 msgid "Contact an admin or owner to review billing and change the plan before trying again."
-msgstr ""
+msgstr "Entre em contato com um administrador ou proprietário para revisar o faturamento e alterar o plano antes de tentar novamente."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:37
@@ -1457,7 +1457,7 @@ msgstr "Continuar ->"
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:90
 msgid "Continue to checkout"
-msgstr ""
+msgstr "Continuar para o pagamento"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:34
@@ -1467,12 +1467,12 @@ msgstr "Converter"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:24
 msgid "Convert %{name} to outside collaborator?"
-msgstr ""
+msgstr "Converter %{name} em colaborador externo?"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:82
 msgid "Convert to Outside Collaborator"
-msgstr ""
+msgstr "Converter em colaborador externo"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:75
@@ -1493,17 +1493,17 @@ msgstr "Não foi possível copiar"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:211
 msgid "Copy the token"
-msgstr ""
+msgstr "Copiar o token"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:58
 msgid "Copy the token now. For security reasons, it will only be shown once."
-msgstr ""
+msgstr "Copie o token agora. Por segurança, ele será exibido apenas uma vez."
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:29
 msgid "Copy to clipboard"
-msgstr "Copiar para a área de transferência"
+msgstr "Copiar"
 
 #.frontend
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
@@ -1513,18 +1513,18 @@ msgstr "Não foi possível salvar as configurações das ferramentas"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:89
 msgid "Create A Token"
-msgstr ""
+msgstr "Criar um token"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:96
 #: ../turboui/src/AccountApiTokensPage/index.tsx:193
 msgid "Create API Token"
-msgstr ""
+msgstr "Criar token de API"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:166
 msgid "Create API token"
-msgstr ""
+msgstr "Criar token de API"
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:82
@@ -1551,12 +1551,12 @@ msgstr "Criar um novo espaço"
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:141
 msgid "Create a personal link to share with a single team member."
-msgstr ""
+msgstr "Crie um link pessoal para compartilhar com um único membro da equipe."
 
 #.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:45
 msgid "Create and manage tokens for programmatic access"
-msgstr ""
+msgstr "Crie e gerencie tokens para acesso por código"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:151
@@ -1596,7 +1596,7 @@ msgstr "Senha atual"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:183
 msgid "Current Team Members"
-msgstr ""
+msgstr "Membros atuais da equipe"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:34
@@ -1622,7 +1622,7 @@ msgstr "Plano atual mantido"
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:115
 msgid "DISCUSSIONS"
-msgstr ""
+msgstr "DISCUSSÕES"
 
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:117
@@ -1632,7 +1632,7 @@ msgstr "DOCUMENTOS"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:201
 msgid "Daily summary"
-msgstr ""
+msgstr "Resumo diário"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:189
@@ -1647,7 +1647,7 @@ msgstr "Desativar"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:123
 msgid "Deactivate Account"
-msgstr ""
+msgstr "Desativar conta"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
@@ -1658,7 +1658,7 @@ msgstr "Excluir"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:511
 msgid "Delete <tokenName>%{tokenName}</tokenName>? This cannot be undone."
-msgstr ""
+msgstr "Excluir <tokenName>%{tokenName}</tokenName>? Esta ação não pode ser desfeita."
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:221
@@ -1674,7 +1674,7 @@ msgstr "Excluir esta empresa"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:506
 msgid "Delete token"
-msgstr ""
+msgstr "Excluir token"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:232
@@ -1694,7 +1694,7 @@ msgstr "Descreva a tarefa..."
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:107
 msgid "Direct mentions are instant"
-msgstr ""
+msgstr "Menções diretas são enviadas imediatamente"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:38
@@ -1704,7 +1704,7 @@ msgstr "Chat no Discord"
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:325
 msgid "Discussion"
-msgstr ""
+msgstr "Discussão"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:46
@@ -1741,12 +1741,12 @@ msgstr "Documentos"
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:61
 msgid "Documents & Files"
-msgstr ""
+msgstr "Docs & Arquivos"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:84
 msgid "Don't have an account? <actionLink>Create an account</actionLink>"
-msgstr ""
+msgstr "Não tem uma conta? <actionLink>Criar uma conta</actionLink>"
 
 #~ #.frontend
 #~ #: assets/js/pages/LoginPage/index.tsx:83
@@ -1756,7 +1756,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/index.tsx:51
 msgid "Downgrade details"
-msgstr ""
+msgstr "Detalhes da mudança para um plano inferior"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:137
@@ -1788,19 +1788,19 @@ msgstr "Editar"
 #: assets/js/features/Permissions/index.tsx:47
 #: assets/js/features/Permissions/index.tsx:58
 msgid "Edit Access"
-msgstr ""
+msgstr "Acesso de edição"
 
 #.frontend
 #: assets/js/pages/SpaceEditGeneralAccessPage/index.tsx:41
 #: assets/js/pages/SpaceEditGeneralAccessPage/index.tsx:44
 msgid "Edit General Access"
-msgstr ""
+msgstr "Editar acesso geral"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:49
 #: ../turboui/src/ProfileEditPage/index.tsx:108
 msgid "Edit Profile"
-msgstr ""
+msgstr "Editar perfil"
 
 #.frontend
 #: assets/js/pages/SpaceEditPage/index.tsx:45
@@ -1811,7 +1811,7 @@ msgstr "Editar espaço"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:59
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:246
 msgid "Edit access"
-msgstr ""
+msgstr "Acesso de edição"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:324
@@ -1855,7 +1855,7 @@ msgstr "E-mail alterado"
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:92
 msgid "Email delivery isn’t configured. Contact your organization administrator for help."
-msgstr ""
+msgstr "O envio de e-mails não está configurado. Entre em contato com o administrador da sua empresa para obter ajuda."
 
 #.frontend
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:232
@@ -1870,12 +1870,12 @@ msgstr "Informe um endereço de e-mail válido"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:108
 msgid "Emails for direct mentions are sent right away. All other activity emails wait for the batch window and are sent as a single email."
-msgstr ""
+msgstr "Os e-mails de menções diretas são enviados imediatamente. Os demais e-mails de atividade são agrupados em um único e-mail, enviado ao final do intervalo de agrupamento."
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:73
 msgid "Enable invite link"
-msgstr ""
+msgstr "Ativar link de convite"
 
 #.frontend
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:234
@@ -1902,7 +1902,7 @@ msgstr "Digite o código de seis caracteres enviado para seu e-mail."
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:462
 msgid "Enter token name"
-msgstr ""
+msgstr "Digite o nome do token"
 
 #.frontend
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:67
@@ -2001,17 +2001,17 @@ msgstr "Todas as pessoas da empresa podem visualizar este espaço."
 #.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:77
 msgid "Everyone in the company has full access to this goal."
-msgstr ""
+msgstr "Todas as pessoas da empresa têm acesso total a este objetivo."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:74
 msgid "Everyone in the company has full access to this project."
-msgstr ""
+msgstr "Todas as pessoas da empresa têm acesso total a este projeto."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:80
 msgid "Everyone in the company has full access to this space."
-msgstr ""
+msgstr "Todas as pessoas da empresa têm acesso total a este espaço."
 
 #~ #.frontend
 #~ #: ../turboui/src/AccessLevelSummary/index.tsx:111
@@ -2081,17 +2081,17 @@ msgstr "Todas as pessoas da empresa poderão visualizar este espaço."
 #.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:76
 msgid "Everyone in the company will have full access to this goal."
-msgstr ""
+msgstr "Todas as pessoas da empresa terão acesso total a este objetivo."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:73
 msgid "Everyone in the company will have full access to this project."
-msgstr ""
+msgstr "Todas as pessoas da empresa terão acesso total a este projeto."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:79
 msgid "Everyone in the company will have full access to this space."
-msgstr ""
+msgstr "Todas as pessoas da empresa terão acesso total a este espaço."
 
 #~ #.frontend
 #~ #: ../turboui/src/AccessLevelSummary/index.tsx:151
@@ -2188,7 +2188,7 @@ msgstr "Todas as pessoas do espaço poderão visualizar este projeto."
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:108
 msgid "Existing Tokens"
-msgstr ""
+msgstr "Tokens existentes"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonRow.tsx:115
@@ -2203,7 +2203,7 @@ msgstr "Exportar empresa"
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:49
 msgid "Export all data from this company as a ZIP package with the company data and related files."
-msgstr ""
+msgstr "Exporte todos os dados desta empresa em um pacote ZIP com os dados da empresa e os arquivos relacionados."
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:156
@@ -2239,12 +2239,12 @@ msgstr "Falhou"
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
 msgid "Failed To Create Token"
-msgstr ""
+msgstr "Não foi possível criar o token"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:113
 msgid "Failed To Delete Token"
-msgstr ""
+msgstr "Não foi possível excluir o token"
 
 #.frontend
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:41
@@ -2255,7 +2255,7 @@ msgstr "Não foi possível revogar a conexão"
 #: assets/js/pages/AccountApiTokensPage/index.tsx:84
 #: assets/js/pages/AccountApiTokensPage/index.tsx:142
 msgid "Failed To Update Token"
-msgstr ""
+msgstr "Não foi possível atualizar o token"
 
 #.frontend
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:147
@@ -2275,23 +2275,23 @@ msgstr "Não foi possível excluir a empresa"
 #.frontend
 #: assets/js/pages/InviteTeamPage/index.tsx:88
 msgid "Failed to disable invite link."
-msgstr ""
+msgstr "Não foi possível desativar o link de convite."
 
 #.frontend
 #: assets/js/pages/InviteTeamPage/index.tsx:99
 msgid "Failed to reset invite link."
-msgstr ""
+msgstr "Não foi possível redefinir o link de convite."
 
 #.frontend
 #: assets/js/pages/InviteTeamPage/index.tsx:100
 msgid "Failed to reset invite link. Please try again."
-msgstr ""
+msgstr "Não foi possível redefinir o link de convite. Tente novamente."
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:175
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:110
 msgid "Failed to start checkout"
-msgstr ""
+msgstr "Não foi possível iniciar o pagamento"
 
 #.frontend
 #: assets/js/pages/CompanyExportPage/index.tsx:31
@@ -2324,7 +2324,7 @@ msgstr "Não foi possível atualizar o tema"
 #: assets/js/pages/InviteTeamPage/index.tsx:63
 #: assets/js/pages/InviteTeamPage/index.tsx:75
 msgid "Failed to update trusted domains"
-msgstr ""
+msgstr "Não foi possível atualizar os domínios confiáveis"
 
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:56
@@ -2349,7 +2349,7 @@ msgstr "Arquivos"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:215
 msgid "Finish your upgrade"
-msgstr ""
+msgstr "Conclua sua mudança para um plano superior"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:39
@@ -2390,22 +2390,22 @@ msgstr "Esqueceu sua senha?"
 #: ../turboui/src/CompanyBillingPage/index.tsx:234
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:56
 msgid "Free"
-msgstr ""
+msgstr "Gratuito"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:197
 msgid "Free plan"
-msgstr ""
+msgstr "Plano Gratuito"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:52
 msgid "Free plan member limit"
-msgstr ""
+msgstr "Limite de membros do plano Gratuito"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:55
 msgid "Free plan storage limit"
-msgstr ""
+msgstr "Limite de armazenamento do plano Gratuito"
 
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:34
@@ -2415,7 +2415,7 @@ msgstr ""
 #: assets/js/features/Permissions/index.tsx:46
 #: assets/js/features/Permissions/index.tsx:57
 msgid "Full Access"
-msgstr ""
+msgstr "Acesso total"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
@@ -2427,12 +2427,12 @@ msgstr "Nome completo"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:180
 #: ../turboui/src/AccountApiTokensPage/index.tsx:350
 msgid "Full access"
-msgstr ""
+msgstr "Acesso total"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:175
 msgid "Full access (queries + mutations)"
-msgstr ""
+msgstr "Acesso total (consultas + mutações)"
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:124
@@ -2452,17 +2452,17 @@ msgstr "Acesso geral"
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:161
 msgid "Generate a new link"
-msgstr ""
+msgstr "Gerar um novo link"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:167
 msgid "Generate new link"
-msgstr ""
+msgstr "Gerar novo link"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:87
 msgid "Generating invite link..."
-msgstr ""
+msgstr "Gerando link de convite..."
 
 #.frontend
 #: assets/js/pages/ForgotPasswordPage/index.tsx:41
@@ -2510,17 +2510,17 @@ msgstr "Conceder acesso"
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:93
 msgid "Has full access to all resources in the space, including team and access management."
-msgstr ""
+msgstr "Tem acesso total a todos os recursos do espaço, incluindo o gerenciamento da equipe e dos acessos."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:94
 msgid "Has full access to the goal and can perform any action, including editing, commenting, checking-in, closing, and archiving the goal."
-msgstr ""
+msgstr "Tem acesso total ao objetivo e pode realizar qualquer ação, incluindo editar, comentar, fazer check-ins, encerrar e arquivar o objetivo."
 
 #.frontend
 #: assets/js/components/Badges/AccessLevelBadges.tsx:90
 msgid "Has full access to the project and can perform any action, including editing, commenting, checking-in, closing, and archiving the project."
-msgstr ""
+msgstr "Tem acesso total ao projeto e pode realizar qualquer ação, incluindo editar, comentar, fazer check-ins, encerrar e arquivar o projeto."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:24
@@ -2535,7 +2535,7 @@ msgstr "Aqui estão todas as notificações que você recebeu do Operately."
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:129
 msgid "Hmm, something's not right with this link. Double-check it or ask whoever sent it to you for a fresh one."
-msgstr ""
+msgstr "Há algo de errado com este link. Confira o endereço ou peça um novo link à pessoa que o enviou."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:58
@@ -2564,12 +2564,12 @@ msgstr "Entendi, criar novo convite"
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:126
 msgid "If the new member already has an account, they will be added to your company. If they don't have an account, we'll send them an email with an invitation link, and you'll get the same link here to share if needed. The link will be valid for 24 hours."
-msgstr ""
+msgstr "Se o novo membro já tiver uma conta, ele será adicionado à sua empresa. Se não tiver, enviaremos um e-mail com um link de convite, que também ficará disponível aqui para você compartilhar, se necessário. O link será válido por 24 horas."
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:115
 msgid "If the outside collaborator already has an account, they will be added to your company as an outside collaborator. If they don't have an account, we'll send them an email with an invitation link, and you'll get the same link here to share if needed. The link will be valid for 24 hours."
-msgstr ""
+msgstr "Se o colaborador externo já tiver uma conta, ele será adicionado à sua empresa como colaborador externo. Se não tiver, enviaremos um e-mail com um link de convite, que também ficará disponível aqui para você compartilhar, se necessário. O link será válido por 24 horas."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:56
@@ -2614,12 +2614,12 @@ msgstr "Convite expirado"
 #.frontend
 #: ../turboui/src/InviteLinkPanel/index.tsx:25
 msgid "Invitation Link"
-msgstr ""
+msgstr "Link de convite"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:287
 msgid "Invitation URL"
-msgstr ""
+msgstr "URL de convite"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:165
@@ -2630,48 +2630,48 @@ msgstr "Convites aguardando resposta"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:129
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:283
 msgid "Invite Another Member"
-msgstr ""
+msgstr "Convidar outro membro"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:118
 msgid "Invite Another Outside Collaborator"
-msgstr ""
+msgstr "Convidar outro colaborador externo"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:117
 msgid "Invite Collaborator"
-msgstr ""
+msgstr "Convidar colaborador"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:128
 #: ../turboui/src/InviteMemberForm/index.tsx:102
 msgid "Invite Member"
-msgstr ""
+msgstr "Convidar membro"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:113
 msgid "Invite a new outside collaborator"
-msgstr ""
+msgstr "Convidar um novo colaborador externo"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:124
 msgid "Invite a new team member"
-msgstr ""
+msgstr "Convidar um novo membro da equipe"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:87
 msgid "Invite link disabled"
-msgstr ""
+msgstr "Link de convite desativado"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:112
 msgid "Invite new outside collaborator"
-msgstr ""
+msgstr "Convidar novo colaborador externo"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:123
 msgid "Invite new team member"
-msgstr ""
+msgstr "Convidar novo membro da equipe"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:139
@@ -2690,7 +2690,7 @@ msgstr "Convidar pessoas"
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:83
 msgid "Invite someone new to the organization"
-msgstr ""
+msgstr "Convidar uma nova pessoa para a empresa"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:65
@@ -2700,7 +2700,7 @@ msgstr "Convide toda a sua equipe de uma vez"
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:69
 msgid "Invite-only Access"
-msgstr ""
+msgstr "Acesso somente por convite"
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:73
@@ -2725,7 +2725,7 @@ msgstr "Participar da empresa"
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:85
 msgid "KPIs"
-msgstr ""
+msgstr "Indicadores (KPIs)"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:26
@@ -2747,7 +2747,7 @@ msgstr "Atalhos do teclado"
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:119
 msgid "LINKS"
-msgstr ""
+msgstr "LINKS"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:225
@@ -2783,7 +2783,7 @@ msgstr "Último uso"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:469
 msgid "Leave empty to clear the name and use the default token label."
-msgstr ""
+msgstr "Deixe em branco para usar o nome padrão do token."
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:42
@@ -2803,12 +2803,12 @@ msgstr "Vamos configurar sua empresa."
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:313
 msgid "Link"
-msgstr ""
+msgstr "Link"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:54
 msgid "Link copied"
-msgstr ""
+msgstr "Link copiado"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:34
@@ -2818,12 +2818,12 @@ msgstr "Link: %{url}"
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:22
 msgid "Links"
-msgstr ""
+msgstr "Links"
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:32
 msgid "Lobby"
-msgstr ""
+msgstr "Recepção"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:121
@@ -2833,19 +2833,19 @@ msgstr "Sair"
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:111
 msgid "Log in with your account"
-msgstr ""
+msgstr "Entre com sua conta"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:52
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:59
 #: ../turboui/src/CompanyNavigation/User.tsx:52
 msgid "MCP Connections"
-msgstr ""
+msgstr "Conexões MCP"
 
 #.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:50
 msgid "MCP connections"
-msgstr ""
+msgstr "Conexões MCP"
 
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:74
@@ -2860,23 +2860,23 @@ msgstr "MARCOS"
 #: assets/js/pages/InviteTeamPage/index.tsx:28
 #: assets/js/pages/MemberTypeSelectionPage/index.tsx:18
 msgid "Manage Team Members"
-msgstr ""
+msgstr "Gerenciar membros da equipe"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:148
 msgid "Manage administrators and owners"
-msgstr ""
+msgstr "Gerenciar administradores e proprietários"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:27
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:33
 msgid "Manage admins and owners"
-msgstr ""
+msgstr "Gerenciar administradores e proprietários"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:109
 msgid "Manage and revoke your active API tokens."
-msgstr ""
+msgstr "Gerencie e revogue seus tokens de API ativos."
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:59
@@ -2896,12 +2896,12 @@ msgstr "Gerenciar plano"
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:112
 msgid "Manage team members"
-msgstr ""
+msgstr "Gerenciar membros da equipe"
 
 #.frontend
 #: ../turboui/src/AccountSettingsPage/index.tsx:25
 msgid "Manage the account settings available to you."
-msgstr ""
+msgstr "Gerencie as configurações da conta disponíveis para você."
 
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:61
@@ -2912,18 +2912,18 @@ msgstr "Gerenciar a equipe e o acesso a este espaço"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:17
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:25
 msgid "Manage this company's plan, usage, and billing details."
-msgstr ""
+msgstr "Gerencie o plano, o uso e os dados de faturamento desta empresa."
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:154
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:35
 msgid "Manage trusted email domains"
-msgstr ""
+msgstr "Gerenciar domínios de e-mail confiáveis"
 
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:109
 msgid "Managers have full access to resources in this space, including team and access management."
-msgstr ""
+msgstr "Os gestores têm acesso total aos recursos deste espaço, incluindo o gerenciamento da equipe e dos acessos."
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:93
@@ -2943,18 +2943,18 @@ msgstr "Marcar tarefa como concluída"
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:127
 msgid "Member"
-msgstr ""
+msgstr "Membro"
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:65
 msgid "Member limit reached"
-msgstr ""
+msgstr "Limite de membros atingido"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:48
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:132
 msgid "Members"
-msgstr ""
+msgstr "Membros"
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:319
@@ -3007,13 +3007,13 @@ msgstr "Deve ter no máximo %{maxLength} caracteres"
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:68
 msgid "Mutation Example (POST)"
-msgstr ""
+msgstr "Exemplo de mutação (POST)"
 
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:83
 #: ../turboui/src/AccountPage/index.tsx:103
 msgid "My Account"
-msgstr ""
+msgstr "Minha conta"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:93
@@ -3091,7 +3091,7 @@ msgstr "Novo objetivo"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:308
 msgid "New invitation URL"
-msgstr ""
+msgstr "Nova URL de convite"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/index.tsx:497
@@ -3131,7 +3131,7 @@ msgstr "Não"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:113
 msgid "No API tokens created yet."
-msgstr ""
+msgstr "Nenhum token de API criado ainda."
 
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:45
@@ -3144,7 +3144,7 @@ msgstr "Sem acesso"
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:75
 msgid "No MCP connections yet."
-msgstr ""
+msgstr "Nenhuma conexão MCP ainda."
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:135
@@ -3154,7 +3154,7 @@ msgstr "Nenhum conteúdo encontrado para “%{query}”. Tente outras palavras-c
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:73
 msgid "No deactivated team members"
-msgstr ""
+msgstr "Nenhum membro da equipe desativado"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:88
@@ -3188,7 +3188,7 @@ msgstr "Nenhuma atualização nova."
 #: ../turboui/src/CompanyBillingPage/index.tsx:159
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:79
 msgid "No pending billing changes."
-msgstr ""
+msgstr "Nenhuma alteração de faturamento pendente."
 
 #.frontend
 #: ../turboui/src/GlobalSearch/SearchOverlay.tsx:224
@@ -3198,7 +3198,7 @@ msgstr "Nenhum título ou nome corresponde a “%{query}”."
 #.frontend
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:46
 msgid "No trusted email domains. Only manually added members can sign up."
-msgstr ""
+msgstr "Nenhum domínio de e-mail confiável. Somente membros adicionados manualmente podem se cadastrar."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:356
@@ -3240,17 +3240,17 @@ msgstr "Notificações"
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:38
 msgid "Once the upgrade is done, come back to this link and try again."
-msgstr ""
+msgstr "Após concluir a mudança para um plano superior, volte a este link e tente novamente."
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:106
 msgid "Only company admins can see and share this link. You can also <button>generate a new link</button>."
-msgstr ""
+msgstr "Somente administradores da empresa podem ver e compartilhar este link. Você também pode <button>gerar um novo link</button>."
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:81
 msgid "Only existing members can be added."
-msgstr ""
+msgstr "Somente membros existentes podem ser adicionados."
 
 #~ #.frontend
 #~ #: ../turboui/src/AccessLevelSummary/index.tsx:168
@@ -3295,7 +3295,7 @@ msgstr "Somente as pessoas que você adicionar ao espaço poderão visualizá-lo
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:95
 msgid "Open assignee picker for the selected task"
-msgstr ""
+msgstr "Abrir seletor de responsáveis da tarefa selecionada"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:264
@@ -3330,7 +3330,7 @@ msgstr "Abrir tarefa selecionada"
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:96
 msgid "Open status picker for the selected task where supported"
-msgstr ""
+msgstr "Abrir seletor de status da tarefa selecionada, quando disponível"
 
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:50
@@ -3362,7 +3362,7 @@ msgstr "Ou, se você já usou o Operately antes"
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:62
 msgid "Or, visit the <actionLink>Admin Panel</actionLink>."
-msgstr ""
+msgstr "Ou acesse o <actionLink>Painel de administração</actionLink>."
 
 #~ #.frontend
 #~ #: ../turboui/src/LobbyPage/index.tsx:62
@@ -3372,7 +3372,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:40
 msgid "Org Chart"
-msgstr ""
+msgstr "Organograma"
 
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:33
@@ -3382,12 +3382,12 @@ msgstr "Outras pessoas com acesso"
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:43
 msgid "Outside collaborator"
-msgstr ""
+msgstr "Colaborador externo"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:201
 msgid "Outside collaborators"
-msgstr ""
+msgstr "Colaboradores externos"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:31
@@ -3397,12 +3397,12 @@ msgstr "Visão geral"
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:50
 msgid "Owners"
-msgstr ""
+msgstr "Proprietários"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:52
 msgid "Owners have the highest level of access and can manage all aspects of the company, including billing, and have access to all resources."
-msgstr ""
+msgstr "Os proprietários têm o nível mais alto de acesso e podem gerenciar todos os aspectos da empresa, incluindo o faturamento, além de ter acesso a todos os recursos."
 
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:102
@@ -3492,7 +3492,7 @@ msgstr "Pausado"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:181
 msgid "Payment for this company is past due. Billing access may be affected until payment is resolved."
-msgstr ""
+msgstr "O pagamento desta empresa está em atraso. O acesso ao faturamento pode ser afetado até a regularização do pagamento."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:180
@@ -3517,7 +3517,7 @@ msgstr "Forma de pagamento indisponível"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:172
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated."
-msgstr ""
+msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo somente leitura, por isso o trabalho colaborativo está pausado até a regularização do faturamento."
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
@@ -3529,12 +3529,12 @@ msgstr "Pessoas"
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:34
 msgid "People who have access to the space via their company membeship."
-msgstr ""
+msgstr "Pessoas que têm acesso ao espaço por serem membros da empresa."
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:214
 msgid "Permanently delete the company and all its resources. This action cannot be undone."
-msgstr ""
+msgstr "Exclua permanentemente a empresa e todos os seus recursos. Esta ação não pode ser desfeita."
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:47
@@ -3606,7 +3606,7 @@ msgstr "Corrija os erros acima."
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:347
 msgid "Please select a resource"
-msgstr ""
+msgstr "Selecione um recurso"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
@@ -3644,7 +3644,7 @@ msgstr "Notificações anteriores"
 #: ../turboui/src/AccountPage/index.tsx:48
 #: ../turboui/src/CompanyNavigation/User.tsx:40
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:333
@@ -3683,12 +3683,12 @@ msgstr "O nome do projeto não pode ficar em branco"
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:331
 msgid "Project retrospective"
-msgstr ""
+msgstr "Retrospectiva de projeto"
 
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:18
 msgid "Project retrospectives"
-msgstr ""
+msgstr "Retrospectivas de projetos"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
@@ -3699,7 +3699,7 @@ msgstr "Projetos"
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:195
 msgid "Promote to manager"
-msgstr ""
+msgstr "Promover a gestor"
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:58
@@ -3715,7 +3715,7 @@ msgstr "Propósito"
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:67
 msgid "Query Example (GET)"
-msgstr ""
+msgstr "Exemplo de consulta (GET)"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:232
@@ -3741,7 +3741,7 @@ msgstr "Digite sua nova senha novamente"
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:191
 msgid "Reactivate Account"
-msgstr ""
+msgstr "Reativar conta"
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:240
@@ -3752,32 +3752,32 @@ msgstr "Reativação indisponível"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:180
 #: ../turboui/src/AccountApiTokensPage/index.tsx:350
 msgid "Read-only"
-msgstr ""
+msgstr "Somente leitura"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:175
 msgid "Read-only (queries only)"
-msgstr ""
+msgstr "Somente leitura (apenas consultas)"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:71
 msgid "Read-only tokens are limited to queries. Full-access tokens can execute both queries and mutations."
-msgstr ""
+msgstr "Tokens de somente leitura são limitados a consultas. Tokens de acesso total podem executar consultas e mutações."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:91
 msgid "Read-only tokens can call queries only. Full-access tokens can call both queries and mutations."
-msgstr ""
+msgstr "Tokens de somente leitura podem executar apenas consultas. Tokens de acesso total podem executar consultas e mutações."
 
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:213
 msgid "Reassign to member"
-msgstr ""
+msgstr "Tornar membro novamente"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:250
 msgid "Receive a daily email with your upcoming check-ins, reviews, and other work that needs your attention."
-msgstr ""
+msgstr "Receba um e-mail diário com seus próximos check-ins, revisões e outros trabalhos que precisam da sua atenção."
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
@@ -3792,7 +3792,7 @@ msgstr "Refinar resultados"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:31
 msgid "Regenerate the invitation URL"
-msgstr ""
+msgstr "Gerar novamente a URL de convite"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:112
@@ -3822,7 +3822,7 @@ msgstr "Remover do espaço"
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:161
 msgid "Remove member"
-msgstr ""
+msgstr "Remover membro"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:30
@@ -3895,18 +3895,18 @@ msgstr "Redefinir senha"
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:125
 msgid "Resource"
-msgstr ""
+msgstr "Recurso"
 
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:38
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:46
 msgid "Restore Deactivated Team Members"
-msgstr ""
+msgstr "Reativar membros desativados da equipe"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:116
 msgid "Restore access for deactivated team members"
-msgstr ""
+msgstr "Restaure o acesso de membros desativados da equipe"
 
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:94
@@ -3922,17 +3922,17 @@ msgstr "Revisão"
 #.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:51
 msgid "Review and revoke AI client connections"
-msgstr ""
+msgstr "Revise e revogue conexões de clientes de IA"
 
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:44
 msgid "Review billing"
-msgstr ""
+msgstr "Revisar faturamento"
 
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:40
 msgid "Review billing to change the plan and add or restore people."
-msgstr ""
+msgstr "Revise o faturamento para alterar o plano e adicionar ou reativar pessoas."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:271
@@ -3942,7 +3942,7 @@ msgstr "Revisar cancelamento"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:229
 msgid "Review paid plans and continue to checkout when you're ready."
-msgstr ""
+msgstr "Confira os planos pagos e continue para o pagamento quando quiser."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:238
@@ -3959,12 +3959,12 @@ msgstr "Revogar convite"
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:70
 msgid "Revoke a connection if you no longer trust the client or want to stop its access."
-msgstr ""
+msgstr "Revogue uma conexão se você não confiar mais no cliente ou quiser interromper seu acesso."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:281
 msgid "Revoke access for <clientName>%{clientName}</clientName>? The client will need to reconnect through OAuth."
-msgstr ""
+msgstr "Revogar o acesso de <clientName>%{clientName}</clientName>? O cliente precisará se reconectar via OAuth."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:276
@@ -3979,7 +3979,7 @@ msgstr "Revogar convite para %{name}?"
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:40
 msgid "Roadmap"
-msgstr ""
+msgstr "Próximos passos"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:182
@@ -4042,7 +4042,7 @@ msgstr "Buscar"
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:128
 msgid "Search across projects, goals, discussions, documents, and more."
-msgstr ""
+msgstr "Busque em projetos, objetivos, discussões, documentos e muito mais."
 
 #.frontend
 #: ../turboui/src/GlobalSearch/SearchOverlay.tsx:25
@@ -4052,12 +4052,12 @@ msgstr "Buscar “%{query}” em todo o conteúdo"
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddAdminsModal.tsx:31
 msgid "Search for people to promote to admin"
-msgstr ""
+msgstr "Buscar pessoas para promover a administrador"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/AddOwnersModal.tsx:26
 msgid "Search for people to promote to owner"
-msgstr ""
+msgstr "Buscar pessoas para promover a proprietário"
 
 #.frontend
 #: ../turboui/src/Forms/SelectPerson.tsx:64
@@ -4100,7 +4100,7 @@ msgstr "Buscando…"
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:17
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:273
 msgid "See what will change before this company moves to the Free plan."
-msgstr ""
+msgstr "Veja o que mudará antes de esta empresa passar para o plano Gratuito."
 
 #.frontend
 #: ../turboui/src/Forms/DateInput.tsx:28
@@ -4126,7 +4126,7 @@ msgstr "Selecione um objetivo..."
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:187
 msgid "Select manager"
-msgstr ""
+msgstr "Selecione um gestor"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:180
@@ -4166,12 +4166,12 @@ msgstr "Enviar instruções para redefinir senha"
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:257
 msgid "Send assignments email"
-msgstr ""
+msgstr "Enviar e-mail de atribuições"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:209
 msgid "Send daily summary"
-msgstr ""
+msgstr "Enviar resumo diário"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:204
@@ -4197,7 +4197,7 @@ msgstr "Separe os domínios por vírgulas."
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:96
 msgid "Server URL"
-msgstr ""
+msgstr "URL do servidor"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:130
@@ -4232,7 +4232,7 @@ msgstr "Compartilhe no chat do grupo, por e-mail ou onde sua equipe estiver."
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/InvitationUrl.tsx:11
 msgid "Share this URL with %{name} to invite them to the company:"
-msgstr ""
+msgstr "Compartilhe esta URL com %{name} para convidar essa pessoa para a empresa:"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:70
@@ -4309,7 +4309,7 @@ msgstr "Espaço"
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:115
 msgid "Space Managers"
-msgstr ""
+msgstr "Gestores do espaço"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:98
@@ -4319,47 +4319,47 @@ msgstr "Nome do espaço"
 #.frontend
 #: ../turboui/src/Forms/AccessSelectors.tsx:49
 msgid "Space members"
-msgstr ""
+msgstr "Membros do espaço"
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:110
 msgid "Space members can view and comment."
-msgstr ""
+msgstr "Os membros do espaço podem visualizar e comentar."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:113
 msgid "Space members have edit access."
-msgstr ""
+msgstr "Os membros do espaço têm acesso de edição."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:116
 msgid "Space members have full access."
-msgstr ""
+msgstr "Os membros do espaço têm acesso total."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:110
 msgid "Space members will be able to view and comment."
-msgstr ""
+msgstr "Os membros do espaço poderão visualizar e comentar."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:113
 msgid "Space members will have edit access."
-msgstr ""
+msgstr "Os membros do espaço terão acesso de edição."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:116
 msgid "Space members will have full access."
-msgstr ""
+msgstr "Os membros do espaço terão acesso total."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:66
 msgid "Space-wide Access"
-msgstr ""
+msgstr "Acesso para todo o espaço"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:87
 msgid "Spaces help organize projects, goals, and team members in one place."
-msgstr ""
+msgstr "Os espaços ajudam a organizar projetos, objetivos e membros da equipe em um só lugar."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:120
@@ -4369,7 +4369,7 @@ msgstr "Recomeçar"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:216
 msgid "Start checkout again for %{plan}."
-msgstr ""
+msgstr "Inicie novamente o pagamento do plano %{plan}."
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:54
@@ -4379,7 +4379,7 @@ msgstr "Iniciar exportação"
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:118
 msgid "Start fresh with a new company account"
-msgstr ""
+msgstr "Comece do zero com uma nova conta de empresa"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:86
@@ -4395,12 +4395,12 @@ msgstr "Status"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:155
 msgid "Status details"
-msgstr ""
+msgstr "Detalhes do status"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:332
 msgid "Status: %{status}"
-msgstr ""
+msgstr "Status: %{status}"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:83
@@ -4443,7 +4443,7 @@ msgstr "Enviando..."
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:189
 msgid "Subscription ended"
-msgstr ""
+msgstr "Assinatura encerrada"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:53
@@ -4499,12 +4499,12 @@ msgstr "Tarefas"
 #.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:60
 msgid "Team & Access"
-msgstr ""
+msgstr "Equipe e acesso"
 
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:35
 msgid "Team member"
-msgstr ""
+msgstr "Membro da equipe"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
@@ -4534,12 +4534,12 @@ msgstr "Esse plano não está mais disponível. Escolha outro."
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:106
 msgid "The API token was removed."
-msgstr ""
+msgstr "O token de API foi removido."
 
 #.frontend
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:38
 msgid "The MCP client can no longer access your account."
-msgstr ""
+msgstr "O cliente MCP não pode mais acessar sua conta."
 
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:69
@@ -4549,12 +4549,12 @@ msgstr "A empresa está sendo importada em segundo plano."
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:155
 msgid "The current subscription remains active until"
-msgstr ""
+msgstr "A assinatura atual permanece ativa até"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:156
 msgid "The current subscription will end at the close of the current billing period."
-msgstr ""
+msgstr "A assinatura atual será encerrada ao final do ciclo de faturamento vigente."
 
 #.frontend
 #: assets/js/pages/CompanyExportPage/index.tsx:54
@@ -4564,7 +4564,7 @@ msgstr "O pacote de exportação ainda não está pronto."
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:54
 msgid "The invite link has been copied to your clipboard."
-msgstr ""
+msgstr "O link de convite foi copiado."
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:36
@@ -4574,12 +4574,12 @@ msgstr "A URL anterior não será mais válida."
 #.frontend
 #: ../turboui/src/CompanyBilling/state.ts:99
 msgid "The requested billing option is not currently available. Showing the closest available plan instead."
-msgstr ""
+msgstr "A opção de faturamento solicitada não está disponível no momento. Estamos exibindo o plano disponível mais próximo."
 
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:76
 msgid "There are no deactivated team members in %{companyName}. To remove access for departing team members, visit the <actionLink>Manage Team Members</actionLink> page."
-msgstr ""
+msgstr "Não há membros da equipe desativados em %{companyName}. Para remover o acesso de membros que estão saindo, acesse a página <actionLink>Gerenciar membros da equipe</actionLink>."
 
 #~ #.frontend
 #~ #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:76
@@ -4611,7 +4611,7 @@ msgstr "Esta ação não pode ser desfeita."
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:194
 msgid "This billing interval is not available right now"
-msgstr ""
+msgstr "Esta periodicidade de faturamento não está disponível no momento"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:40
@@ -4622,43 +4622,43 @@ msgstr "Este código expirou. Solicite um novo código para continuar."
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:32
 msgid "This company has %{currentUsage} active members. The plan includes %{limit}."
-msgstr ""
+msgstr "Esta empresa tem %{currentUsage} membros ativos. O plano inclui %{limit}."
 
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:39
 #: assets/js/models/billing/memberLimitGuidance.ts:56
 msgid "This company has reached its member limit"
-msgstr ""
+msgstr "Esta empresa atingiu o limite de membros"
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:76
 msgid "This company has reached its member limit, so this invite can't be used yet. When more member capacity is available, you can come back and try again."
-msgstr ""
+msgstr "Esta empresa atingiu o limite de membros, por isso este convite ainda não pode ser usado. Quando houver vagas para novos membros, você poderá voltar e tentar novamente."
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:85
 msgid "This company is above the Free plan limits"
-msgstr ""
+msgstr "Esta empresa ultrapassou os limites do plano Gratuito"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:81
 msgid "This company is above the Free plan member limit"
-msgstr ""
+msgstr "Esta empresa ultrapassou o limite de membros do plano Gratuito"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:83
 msgid "This company is above the Free plan storage limit"
-msgstr ""
+msgstr "Esta empresa ultrapassou o limite de armazenamento do plano Gratuito"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:198
 msgid "This company is currently using the free plan."
-msgstr ""
+msgstr "Esta empresa está usando o plano Gratuito."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:190
 msgid "This company is no longer on an active paid subscription."
-msgstr ""
+msgstr "Esta empresa não tem mais uma assinatura paga ativa."
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:11
@@ -4669,7 +4669,7 @@ msgstr "Esta empresa agora está no plano %{plan}."
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:171
 msgid "This company is read-only"
-msgstr ""
+msgstr "Esta empresa está em modo somente leitura"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:86
@@ -4686,7 +4686,7 @@ msgstr "Esta empresa continuará no plano pago atual até %{date}."
 #: ../turboui/src/CompanyBilling/feedback.ts:76
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:60
 msgid "This company will stay on its current paid plan until the end of the current billing period."
-msgstr ""
+msgstr "Esta empresa continuará no plano pago atual até o final do ciclo de faturamento vigente."
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
@@ -4701,7 +4701,7 @@ msgstr "Este já é seu e-mail atual. Informe outro endereço."
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:68
 msgid "This is the company administration page where owners and admins can manage the company's settings. They have special permissions to add or remove team members, change who can access the application, and more. If you need something done, contact one of them."
-msgstr ""
+msgstr "Esta é a página de administração da empresa, onde proprietários e administradores podem gerenciar as configurações da empresa. Eles têm permissões especiais para adicionar ou remover membros da equipe, alterar quem pode acessar o aplicativo e muito mais. Se precisar de alguma alteração, entre em contato com um deles."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:212
@@ -4716,12 +4716,12 @@ msgstr "Este link (incluindo o enviado por e-mail) expira em 24 horas."
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:44
 msgid "This person is not a company member. They get access only to specific spaces, goals, or projects that are shared with them."
-msgstr ""
+msgstr "Esta pessoa não é membro da empresa. Ela só tem acesso aos espaços, objetivos ou projetos específicos compartilhados com ela."
 
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:36
 msgid "This person is part of the company. They are added to the general space and can see all non-secret projects, goals, and spaces."
-msgstr ""
+msgstr "Esta pessoa faz parte da empresa. Ela é adicionada ao espaço geral e pode ver todos os projetos, objetivos e espaços que não são secretos."
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:96
@@ -4731,17 +4731,17 @@ msgstr "Esta solicitação não está mais ativa. Confira seu e-mail atual ou so
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:32
 msgid "This will deactivate %{name}'s account, restricting access to company resources. You can restore access later if needed."
-msgstr ""
+msgstr "Isso desativará a conta de %{name}, restringindo o acesso aos recursos da empresa. Você poderá restaurar o acesso depois, se necessário."
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:225
 msgid "This will permanently delete <strong>%{companyName}</strong> and its spaces, goals, projects, and other resources."
-msgstr ""
+msgstr "Isso excluirá permanentemente <strong>%{companyName}</strong> e seus espaços, objetivos, projetos e outros recursos."
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:26
 msgid "This will remove %{name}'s team-member permissions. They will have access only to work where they are explicitly invited."
-msgstr ""
+msgstr "Isso removerá as permissões de membro da equipe de %{name}. Essa pessoa terá acesso apenas aos trabalhos para os quais receber um convite explícito."
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:31
@@ -4797,38 +4797,38 @@ msgstr "Hoje"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:250
 msgid "Token"
-msgstr ""
+msgstr "Token"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:106
 msgid "Token Deleted"
-msgstr ""
+msgstr "Token excluído"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:79
 #: assets/js/pages/AccountApiTokensPage/index.tsx:136
 msgid "Token Updated"
-msgstr ""
+msgstr "Token atualizado"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:79
 msgid "Token is now read-only."
-msgstr ""
+msgstr "O token agora é de somente leitura."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:457
 msgid "Token name"
-msgstr ""
+msgstr "Nome do token"
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:136
 msgid "Token name updated."
-msgstr ""
+msgstr "Nome do token atualizado."
 
 #.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:79
 msgid "Token now has full access."
-msgstr ""
+msgstr "O token agora tem acesso total."
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:20
@@ -4851,17 +4851,17 @@ msgstr "Acompanhe os números importantes para este espaço e registre atualiza�
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:24
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:33
 msgid "Trusted Email Domains"
-msgstr ""
+msgstr "Domínios de e-mail confiáveis"
 
 #.frontend
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:28
 msgid "Trusted email domains are email domains that are allowed to sign up for an account in this company. If a user signs up with an email address that is not from a trusted domain, and she wasn't manually added by an admin, they will be denied access."
-msgstr ""
+msgstr "Domínios de e-mail confiáveis permitem que pessoas se cadastrem nesta empresa usando um e-mail desses domínios. Se alguém se cadastrar com um e-mail de outro domínio e não tiver sido adicionado manualmente por um administrador, o acesso será negado."
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:170
 msgid "Trusted email domains only"
-msgstr ""
+msgstr "Somente domínios de e-mail confiáveis"
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:45
@@ -4881,22 +4881,22 @@ msgstr "Tipo"
 #.frontend
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:197
 msgid "Unable to add team member"
-msgstr ""
+msgstr "Não foi possível adicionar o membro da equipe"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:38
 msgid "Unable to copy to clipboard"
-msgstr "Não foi possível copiar para a área de transferência"
+msgstr "Não foi possível copiar"
 
 #.frontend
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:196
 msgid "Unable to invite collaborator"
-msgstr ""
+msgstr "Não foi possível convidar o colaborador"
 
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:185
 msgid "Unable to restore member"
-msgstr ""
+msgstr "Não foi possível reativar o membro"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:47
@@ -4907,7 +4907,7 @@ msgstr "Indisponível"
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:175
 msgid "Unavailable for this billing interval"
-msgstr ""
+msgstr "Indisponível para esta periodicidade de faturamento"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:95
@@ -4924,7 +4924,7 @@ msgstr "Plano desconhecido"
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:245
 msgid "Unlimited members"
-msgstr ""
+msgstr "Membros ilimitados"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:253
@@ -4944,7 +4944,7 @@ msgstr "Atualizar forma de pagamento"
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:31
 msgid "Update profiles"
-msgstr ""
+msgstr "Atualizar perfis"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:251
@@ -4959,7 +4959,7 @@ msgstr "Atualize a senha que você usa para entrar"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:452
 msgid "Update token name"
-msgstr ""
+msgstr "Atualizar nome do token"
 
 #.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:33
@@ -4969,7 +4969,7 @@ msgstr "Atualize seu e-mail em todas as suas empresas"
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:10
 msgid "Upgrade confirmed"
-msgstr ""
+msgstr "Mudança para um plano superior confirmada"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:343
@@ -4980,7 +4980,7 @@ msgstr "Falha no envio"
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:64
 msgid "Upload the exported ZIP package, then start importing the company into this Operately instance."
-msgstr ""
+msgstr "Envie o pacote ZIP exportado e inicie a importação da empresa para esta instância do Operately."
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:342
@@ -5016,12 +5016,12 @@ msgstr "Enviando..."
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:94
 msgid "Uploads are unavailable for this account right now."
-msgstr ""
+msgstr "O envio de arquivos está indisponível para esta conta no momento."
 
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:91
 msgid "Uploads are unavailable for this account."
-msgstr ""
+msgstr "O envio de arquivos está indisponível para esta conta."
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:47
@@ -5036,7 +5036,7 @@ msgstr "Uso e limites"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:84
 msgid "Use API tokens to access Operately programmatically from scripts, integrations, and automation tools."
-msgstr ""
+msgstr "Use tokens de API para acessar Operately por meio de scripts, integrações e ferramentas de automação."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:120
@@ -5046,12 +5046,12 @@ msgstr "Usar outro e-mail"
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:48
 msgid "Use these values when calling the external Operately API."
-msgstr ""
+msgstr "Use estes valores ao chamar a API externa do Operately."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:97
 msgid "Use this URL to create a connection in your AI client."
-msgstr ""
+msgstr "Use esta URL para criar uma conexão no seu cliente de IA."
 
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:117
@@ -5076,7 +5076,7 @@ msgstr "Verifique esta caixa de entrada primeiro. Depois, enviaremos outro códi
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:102
 msgid "View API usage instructions"
-msgstr ""
+msgstr "Ver instruções de uso da API"
 
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:42
@@ -5086,12 +5086,12 @@ msgstr ""
 #: assets/js/features/Permissions/index.tsx:49
 #: assets/js/features/Permissions/index.tsx:60
 msgid "View Access"
-msgstr ""
+msgstr "Somente leitura"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:102
 msgid "View Invitation Link"
-msgstr ""
+msgstr "Ver link de convite"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:44
@@ -5107,7 +5107,7 @@ msgstr "Ver tarefa"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:71
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:252
 msgid "View access"
-msgstr ""
+msgstr "Somente leitura"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:317
@@ -5117,7 +5117,7 @@ msgstr "Visualizar e editar"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:260
 msgid "View billing history"
-msgstr ""
+msgstr "Ver histórico de faturamento"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:323
@@ -5127,7 +5127,7 @@ msgstr "Visualizar dados"
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:319
 msgid "View only"
-msgstr ""
+msgstr "Somente leitura"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:74
@@ -5158,12 +5158,12 @@ msgstr "Não foi possível alterar o plano agora. Tente novamente."
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:33
 msgid "We couldn't confirm the checkout. You can go back to plan selection and try again."
-msgstr ""
+msgstr "Não foi possível confirmar o pagamento. Você pode voltar à seleção de planos e tentar novamente."
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 msgid "We couldn't copy the invite link automatically."
-msgstr ""
+msgstr "Não foi possível copiar o link de convite automaticamente."
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:239
@@ -5175,7 +5175,7 @@ msgstr "Não foi possível manter o plano atual agora. Tente novamente."
 #: assets/js/pages/CompanyBillingPage/page.tsx:216
 #: assets/js/pages/CompanyBillingPage/page.tsx:219
 msgid "We couldn't open billing history right now. Please try again."
-msgstr ""
+msgstr "Não foi possível abrir o histórico de faturamento agora. Tente novamente."
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:195
@@ -5186,7 +5186,7 @@ msgstr "Não foi possível abrir os detalhes da forma de pagamento agora. Tente 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:128
 msgid "We couldn't refresh billing details the last time we checked. Reload the page to try again."
-msgstr ""
+msgstr "Não foi possível atualizar os dados de faturamento na última tentativa. Recarregue a página para tentar novamente."
 
 #.frontend
 #: assets/js/pages/CompanyBillingCancellationPage/page.tsx:74
@@ -5200,7 +5200,7 @@ msgstr "Não foi possível agendar o cancelamento agora. Tente novamente."
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:109
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:110
 msgid "We couldn't start checkout right now. Please try again."
-msgstr ""
+msgstr "Não foi possível iniciar o pagamento agora. Tente novamente."
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:48
@@ -5220,7 +5220,7 @@ msgstr "Enviamos um código de seis caracteres para<codeRecipient>%{codeRecipien
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:125
 msgid "We're waiting for checkout completion for %{plan}."
-msgstr ""
+msgstr "Estamos aguardando a conclusão do pagamento do plano %{plan}."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:110
@@ -5230,7 +5230,7 @@ msgstr "Estamos aguardando a ativação do seu novo plano."
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:106
 msgid "We're waiting for your upgrade to finish. This page will update automatically when your new plan becomes active."
-msgstr ""
+msgstr "Estamos aguardando a conclusão da sua mudança para um plano superior. Esta página será atualizada automaticamente quando seu novo plano ficar ativo."
 
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:238
@@ -5251,7 +5251,7 @@ msgstr "Boas-vindas ao Operately, %{name}!"
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:163
 msgid "We’ll disable the current invite link and create a new one. Anyone holding the old link won’t be able to join anymore."
-msgstr ""
+msgstr "Vamos desativar o link de convite atual e criar um novo. Quem tiver o link antigo não poderá mais usá-lo para entrar."
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:105
@@ -5297,12 +5297,12 @@ msgstr "Quem pode participar?"
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:89
 msgid "Who is their manager?"
-msgstr ""
+msgstr "Quem é o gestor dessa pessoa?"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:89
 msgid "Who is your manager?"
-msgstr ""
+msgstr "Quem é seu gestor?"
 
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:129
@@ -5341,7 +5341,7 @@ msgstr[1] "Você pode solicitar outro código em %{count} segundos."
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:24
 msgid "You can start checkout again for %{plan}."
-msgstr ""
+msgstr "Você pode iniciar novamente o pagamento do plano %{plan}."
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:64
@@ -5373,7 +5373,7 @@ msgstr "Você está em dia."
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:16
 msgid "Your account email is now <email>%{email}</email>."
-msgstr ""
+msgstr "O e-mail da sua conta agora é <email>%{email}</email>."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerifyNewEmailStep.tsx:17
@@ -5544,7 +5544,7 @@ msgstr "o plano pendente"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:536
 msgid "token %{number}"
-msgstr ""
+msgstr "token %{number}"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:111

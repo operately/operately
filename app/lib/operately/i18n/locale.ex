@@ -3,10 +3,11 @@ defmodule Operately.I18n.Locale do
 
   # i18next uses CLDR categories, which do not map one-to-one to Gettext indexes.
   # Portuguese `many` (whole millions) and `other` both use msgstr[1].
+  # Explicit `zero` uses the plural text instead of CLDR's `one` category.
   # Russian `other` (fractional counts) uses msgstr[2] (`many`).
   @plural_forms %{
     "en" => [one: 0, other: 1],
-    "pt-BR" => [one: 0, many: 1, other: 1],
+    "pt-BR" => [zero: 1, one: 0, many: 1, other: 1],
     "ru" => [one: 0, few: 1, many: 2, other: 2],
     "ru-RU" => [one: 0, few: 1, many: 2, other: 2]
   }

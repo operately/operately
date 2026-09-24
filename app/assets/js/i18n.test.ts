@@ -62,11 +62,18 @@ describe("i18n", () => {
       expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
     });
 
-    it("renders Portuguese account and navigation copy", async () => {
+    it("renders Portuguese account, navigation, and administration copy", async () => {
       await applyLanguage("pt-BR");
 
+      expect(i18n.t("My Account")).toBe("Minha conta");
+      expect(i18n.t("Company Administration")).toBe("Administração da empresa");
+      expect(i18n.t("Documents & Files")).toBe("Docs & Arquivos");
       expect(i18n.t("Help")).toBe("Ajuda");
       expect(i18n.t("Sign In")).toBe("Entrar");
+      expect(tn("1 member", "{{count}} members", 0)).toBe("0 membros");
+      expect(tn("1 member", "{{count}} members", 1)).toBe("1 membro");
+      expect(tn("1 member", "{{count}} members", 3)).toBe("3 membros");
+      expect(tn("1 member", "{{count}} members", 1_000_000)).toBe("1000000 membros");
       expect(tn("1 result", "{{count}} results", 2)).toBe("2 resultados");
       expect(
         tn("You can request another code in 1 second.", "You can request another code in {{count}} seconds.", 1),
