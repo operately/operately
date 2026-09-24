@@ -1,13 +1,13 @@
 import type { Extensions } from "@tiptap/core";
 import { textblockTypeInputRule } from "@tiptap/core";
 import Heading from "@tiptap/extension-heading";
-import Link from "@tiptap/extension-link";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 
 import Blob from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import Highlight from "./extensions/Highlight";
+import Link from "./extensions/Link";
 import { mentionExtensions } from "./mentionExtensions";
 import type { RichEditorHandlers } from "./useEditor";
 
@@ -53,14 +53,6 @@ const starterKitExtension = StarterKit.configure({
   dropcursor: false,
 });
 
-// `markdownLinks` enables the Discord-style "[label](https://example.com)"
-// input rule. Its companion paste rule is suppressed via the editor's
-// `enablePasteRules` option (see useEditor) so pasted markdown stays literal.
-const linkExtension = Link.extend({ inclusive: false }).configure({
-  openOnClick: false,
-  markdownLinks: true,
-});
-
 /**
  * Pure TipTap extension list shared by editable editors, read-only content,
  * and version diffs. Does not create React state or an editor instance.
@@ -79,7 +71,7 @@ export function createRichEditorExtensions(
       editable,
       thumbnail: options.thumbnailBlobs,
     }),
-    linkExtension,
+    Link,
   ];
 
   if (options.placeholder != null) {
