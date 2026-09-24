@@ -866,7 +866,7 @@ msgid "Can comment all resources in the space, but cannot add or remove members 
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:124
+#: assets/js/components/Badges/AccessLevelBadges.tsx:126
 msgid "Can comment on the goal updates and discussions. Cannot edit, close, or archive the goal."
 msgstr ""
 
@@ -891,17 +891,17 @@ msgid "Can edit the space and its details, add new members, but cannot access in
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:136
+#: assets/js/components/Badges/AccessLevelBadges.tsx:138
 msgid "Can view all resources in the space, but cannot edit, comment, or add new resources."
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:137
+#: assets/js/components/Badges/AccessLevelBadges.tsx:139
 msgid "Can view the goal, including its details and updates. Cannot edit, comment, close, or archive the goal."
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:133
+#: assets/js/components/Badges/AccessLevelBadges.tsx:135
 msgid "Can view the project, including its details, tasks, and comments. Cannot edit, comment, close, or archive the project."
 msgstr ""
 
@@ -957,17 +957,17 @@ msgid "Cancellation unavailable"
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:150
+#: assets/js/components/Badges/AccessLevelBadges.tsx:152
 msgid "Cannot access the goal."
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:148
+#: assets/js/components/Badges/AccessLevelBadges.tsx:150
 msgid "Cannot access the project."
 msgstr ""
 
 #.frontend
-#: assets/js/components/Badges/AccessLevelBadges.tsx:149
+#: assets/js/components/Badges/AccessLevelBadges.tsx:151
 msgid "Cannot access the space."
 msgstr ""
 
@@ -1184,8 +1184,7 @@ msgstr ""
 #: assets/js/components/Badges/AccessLevelBadges.tsx:117
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
-#: assets/js/features/Permissions/index.tsx:56
-#: assets/js/features/Permissions/index.tsx:64
+#: assets/js/features/Permissions/index.tsx:59
 msgid "Comment Access"
 msgstr ""
 
@@ -1711,8 +1710,7 @@ msgstr ""
 #: assets/js/components/Badges/AccessLevelBadges.tsx:102
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
-#: assets/js/features/Permissions/index.tsx:55
-#: assets/js/features/Permissions/index.tsx:63
+#: assets/js/features/Permissions/index.tsx:58
 msgid "Edit Access"
 msgstr ""
 
@@ -2267,8 +2265,7 @@ msgstr ""
 #: assets/js/components/Badges/AccessLevelBadges.tsx:87
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
-#: assets/js/features/Permissions/index.tsx:54
-#: assets/js/features/Permissions/index.tsx:62
+#: assets/js/features/Permissions/index.tsx:57
 msgid "Full Access"
 msgstr ""
 
@@ -2985,9 +2982,9 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:45
-#: assets/js/components/Badges/AccessLevelBadges.tsx:145
+#: assets/js/components/Badges/AccessLevelBadges.tsx:147
 #: assets/js/features/Permissions/index.tsx:19
-#: assets/js/features/Permissions/index.tsx:66
+#: assets/js/features/Permissions/index.tsx:61
 msgid "No Access"
 msgstr ""
 
@@ -4911,10 +4908,10 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
-#: assets/js/components/Badges/AccessLevelBadges.tsx:130
+#: assets/js/components/Badges/AccessLevelBadges.tsx:132
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
-#: assets/js/features/Permissions/index.tsx:65
+#: assets/js/features/Permissions/index.tsx:60
 msgid "View Access"
 msgstr ""
 
