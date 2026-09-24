@@ -27,14 +27,23 @@ function translationBindings(sourceFile) {
     plural: new Set(),
     hooks: new Set(),
     components: new Set(),
+    translatorTypes: new Set(),
   };
 
   for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement) || !statement.importClause || statement.importClause.isTypeOnly) continue;
+    if (!ts.isImportDeclaration(statement) || !statement.importClause) continue;
     const moduleName = literal(statement.moduleSpecifier);
     if (!moduleName || (!["i18next", "react-i18next"].includes(moduleName) && !moduleName.endsWith("/i18n"))) continue;
 
     const clause = statement.importClause;
+    if (moduleName === "i18next" && clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+      for (const specifier of clause.namedBindings.elements) {
+        if ((specifier.propertyName?.text ?? specifier.name.text) === "TFunction") {
+          bindings.translatorTypes.add(specifier.name.text);
+        }
+      }
+    }
+    if (clause.isTypeOnly) continue;
     if (clause.name) bindings.runtimes.add(clause.name.text);
     if (clause.namedBindings && ts.isNamespaceImport(clause.namedBindings) && moduleName === "i18next") {
       bindings.runtimes.add(clause.namedBindings.name.text);
@@ -53,6 +62,16 @@ function translationBindings(sourceFile) {
   }
 
   visit(sourceFile, (node) => {
+    if (
+      ts.isParameter(node) &&
+      ts.isIdentifier(node.name) &&
+      node.type &&
+      ts.isTypeReferenceNode(node.type) &&
+      ts.isIdentifier(node.type.typeName) &&
+      bindings.translatorTypes.has(node.type.typeName.text)
+    ) {
+      bindings.singular.add(node.name.text);
+    }
     if (!ts.isVariableDeclaration(node) || !ts.isObjectBindingPattern(node.name)) return;
     const initializer = node.initializer;
     if (!initializer || !ts.isCallExpression(initializer) || !ts.isIdentifier(initializer.expression)) return;

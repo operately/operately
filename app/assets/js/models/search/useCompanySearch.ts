@@ -11,7 +11,7 @@ import {
   searchTimeFilterOptions,
   searchTypeFilterOptions,
 } from "turboui";
-import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 interface SearchSpaceOption {
   id: string;
@@ -59,6 +59,7 @@ const EMPTY_SELECTIONS: FilterSelections = {
 };
 
 export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchState {
+  const { t } = useTranslation();
   const search = useQuerySearch(Api.companies.searchQueryOptions, { query: "" });
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
@@ -175,7 +176,7 @@ export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchStat
       filters: [
         {
           id: "spaces",
-          label: i18n.t("All spaces"),
+          label: t("All spaces"),
           icon: IconWorld,
           selectionMode: "multiple",
           selectedOptionIds: selections.spaces,
@@ -183,24 +184,24 @@ export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchStat
         },
         {
           id: "types",
-          label: i18n.t("All types"),
+          label: t("All types"),
           icon: IconLayoutGrid,
           selectionMode: "multiple",
           selectedOptionIds: selections.types,
-          options: searchTypeFilterOptions(),
+          options: searchTypeFilterOptions(t),
         },
         {
           id: "time",
-          label: i18n.t("All time"),
+          label: t("All time"),
           icon: IconCalendar,
           selectionMode: "single",
           selectedOptionIds: selections.time,
-          options: searchTimeFilterOptions(),
+          options: searchTimeFilterOptions(t),
         },
       ],
       onFilterChange,
     }),
-    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces, i18n.language],
+    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces, t],
   );
 
   return { query, status, results, onQueryChange, refine };
