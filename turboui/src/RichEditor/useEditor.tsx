@@ -114,9 +114,8 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const editor = TipTap.useEditor({
     shouldRerenderOnTransaction: true,
-    // Markdown shortcuts convert while typing (input rules) but pasted raw
-    // markdown must stay literal, so paste rules are disabled for everything
-    // except Highlight, whose existing "==text==" paste behavior is preserved.
+    // Markdown shortcuts apply only while typing, except Highlight's
+    // "==text==" paste behavior. Link handles URLs during clipboard parsing.
     enablePasteRules: ["highlight"],
     editable: props.editable,
     content: initialContent,

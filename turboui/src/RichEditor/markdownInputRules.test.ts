@@ -11,8 +11,7 @@ function makeEditor(): Editor {
   return new Editor({
     element: document.createElement("div"),
     extensions: createRichEditorExtensions(handlers, { editable: true }),
-    // Mirror the editor option set in useEditor: keep input rules, disable
-    // markdown paste conversion (except Highlight).
+    // Mirror useEditor: preserve Highlight on paste; Link handles clipboard parsing.
     enablePasteRules: ["highlight"],
   });
 }
