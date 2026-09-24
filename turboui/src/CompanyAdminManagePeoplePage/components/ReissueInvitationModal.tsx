@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { PrimaryButton } from "../../Button";
+import { translationText } from "../../i18n";
 import type { CompanyAdminManagePerson } from "../types";
 import { InvitationUrl } from "./InvitationUrl";
 import { LegacyModal } from "./LegacyModal";
@@ -22,15 +24,16 @@ export function ReissueInvitationModal({
   isGenerated: boolean;
   loading: boolean;
 }) {
+  const { t } = useTranslation();
   if (!person) return null;
 
   return (
-    <LegacyModal title="Regenerate the invitation URL" isOpen={isOpen} onClose={onClose} size="lg">
+    <LegacyModal title={translationText(t("Regenerate the invitation URL"))} isOpen={isOpen} onClose={onClose} size="lg">
       <div>
-        By clicking the button below:
+        {t("By clicking the button below:")}
         <ul className="list-disc list-inside mt-2 block">
-          <li>A new invitation URL will be generated for {person.fullName}.</li>
-          <li>The previous URL will no longer be valid.</li>
+          <li>{t("A new invitation URL will be generated for {{name}}.", { name: person.fullName })}</li>
+          <li>{t("The previous URL will no longer be valid.")}</li>
         </ul>
       </div>
 
@@ -41,10 +44,12 @@ export function ReissueInvitationModal({
 }
 
 function NewInvitationButton({ onClick, loading }: { onClick: () => void; loading: boolean }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center mt-4">
       <PrimaryButton onClick={onClick} loading={loading} testId="confirm-reissue">
-        I understand, create new invitation
+        {t("I understand, create new invitation")}
       </PrimaryButton>
     </div>
   );

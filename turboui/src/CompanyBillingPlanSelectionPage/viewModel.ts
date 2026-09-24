@@ -17,6 +17,7 @@ import {
 } from "../CompanyBilling";
 import { formatStorageBytes, listCompanyBillingSellablePlanDefinitions } from "../CompanyBilling";
 import { CompanyBillingPlanSelectionPage } from "./types";
+import i18n from "../i18n";
 
 export function buildCompanyBillingPlanSelectionPageViewModel(
   props: CompanyBillingPlanSelectionPage.Props,
@@ -32,11 +33,11 @@ export function buildCompanyBillingPlanSelectionPageViewModel(
   });
 
   return {
-    pageTitle: "Choose a plan",
+    pageTitle: i18n.t("Choose a plan"),
     pageSubtitle:
       selection.mode === "change_plan"
-        ? "Choose a new plan for this company."
-        : "Choose a paid plan for this company. Payment details are handled at checkout.",
+        ? i18n.t("Choose a new plan for this company.")
+        : i18n.t("Choose a paid plan for this company. Payment details are handled at checkout."),
     selection,
   };
 }
@@ -86,7 +87,7 @@ export function buildCompanyBillingPlanSelectionMode(
     }),
     consequenceNotice: buildSelectionConsequenceNotice(args.billing, mode, selectedTarget),
     continueAction: {
-      label: mode === "change_plan" ? "Change plan" : "Continue to checkout",
+      label: mode === "change_plan" ? i18n.t("Change plan") : i18n.t("Continue to checkout"),
       tone: "primary",
       onClick: args.onSubmit,
       disabled:
@@ -171,14 +172,18 @@ function formatPlanPriceLabel(
   interval: CompanyBillingPlanSelectionPage.Interval,
 ): string {
   if (!product) {
-    return "Unavailable for this billing interval";
+    return i18n.t("Unavailable for this billing interval");
   }
 
   if (interval === "yearly") {
-    return `${formatCompanyBillingPriceFromMinorUnits(product.priceAmount ? Math.round(product.priceAmount / 12) : null, product.priceCurrency)} / month`;
+    return i18n.t("{{price}} / month", {
+      price: formatCompanyBillingPriceFromMinorUnits(product.priceAmount ? Math.round(product.priceAmount / 12) : null, product.priceCurrency),
+    });
   }
 
-  return `${formatCompanyBillingPriceFromMinorUnits(product.priceAmount, product.priceCurrency)} / month`;
+  return i18n.t("{{price}} / month", {
+    price: formatCompanyBillingPriceFromMinorUnits(product.priceAmount, product.priceCurrency),
+  });
 }
 
 function formatBillingHint(
@@ -186,28 +191,30 @@ function formatBillingHint(
   interval: CompanyBillingPlanSelectionPage.Interval,
 ): string {
   if (!product) {
-    return "This billing interval is not available right now";
+    return i18n.t("This billing interval is not available right now");
   }
 
   if (interval === "yearly") {
-    return `Billed yearly at ${formatCompanyBillingPriceFromMinorUnits(product.priceAmount, product.priceCurrency)}`;
+    return i18n.t("Billed yearly at {{price}}", {
+      price: formatCompanyBillingPriceFromMinorUnits(product.priceAmount, product.priceCurrency),
+    });
   }
 
-  return "Billed monthly";
+  return i18n.t("Billed monthly");
 }
 
 function buildConsequenceRows(
   consequence: ReturnType<typeof buildCompanyBillingChangeConsequence>,
 ): CompanyBillingPlanSelectionPage.ConsequenceNotice["rows"] {
   const rows = [
-    { label: "Active members", value: `${consequence.memberCount}` },
+    { label: i18n.t("Active members"), value: `${consequence.memberCount}` },
     consequence.memberLimit != null
-      ? { label: `${consequence.targetPlanLabel} member limit`, value: `${consequence.memberLimit}` }
+      ? { label: i18n.t("{{plan}} member limit", { plan: consequence.targetPlanLabel }), value: `${consequence.memberLimit}` }
       : null,
-    { label: "Storage used", value: formatStorageBytes(consequence.storageUsageBytes) },
+    { label: i18n.t("Storage used"), value: formatStorageBytes(consequence.storageUsageBytes) },
     consequence.storageLimitBytes != null
       ? {
-          label: `${consequence.targetPlanLabel} storage limit`,
+          label: i18n.t("{{plan}} storage limit", { plan: consequence.targetPlanLabel }),
           value: formatStorageBytes(consequence.storageLimitBytes),
         }
       : null,
@@ -235,16 +242,16 @@ function resolveSelectionTarget(
 
 function formatMemberLimitLine(memberLimit?: number | null): string {
   if (memberLimit == null) {
-    return "Unlimited members";
+    return i18n.t("Unlimited members");
   }
 
-  return `${memberLimit} member limit`;
+  return i18n.t("{{count}} member limit", { count: memberLimit });
 }
 
 function formatStorageLimitLine(storageLimitBytes?: number | null): string {
   if (storageLimitBytes == null) {
-    return "Unlimited storage";
+    return i18n.t("Unlimited storage");
   }
 
-  return `${formatStorageBytes(storageLimitBytes)} storage`;
+  return i18n.t("{{storage}} storage", { storage: formatStorageBytes(storageLimitBytes) });
 }

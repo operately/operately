@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "../Avatar";
 import { IconCode, IconDoorExit, IconLockPassword, IconRobotFace, IconSettings, IconUserCircle } from "../icons";
@@ -14,6 +15,8 @@ export function User({
   links: CompanyNavigationLinks;
   onLogOut: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <Menu
       customTrigger={
@@ -34,22 +37,22 @@ export function User({
       }
     >
       <MenuLinkItem icon={IconUserCircle} to={links.profileEdit} testId="profile-link">
-        Profile
+        {t("Profile")}
       </MenuLinkItem>
       <MenuLinkItem icon={IconSettings} to={links.accountSettings} testId="settings-link">
-        Settings
+        {t("Settings")}
       </MenuLinkItem>
       <MenuLinkItem icon={IconLockPassword} to={links.accountSecurity} testId="password-link">
-        Password &amp; Security
+        {t("Password & Security")}
       </MenuLinkItem>
       <MenuLinkItem icon={IconCode} to={links.accountApiTokens} testId="api-tokens-link">
-        API Tokens
+        {t("API Tokens")}
       </MenuLinkItem>
       <MenuLinkItem icon={IconRobotFace} to={links.accountMcpConnections} testId="mcp-connections-link">
-        MCP Connections
+        {t("MCP Connections")}
       </MenuLinkItem>
       <MenuActionItem icon={IconDoorExit} onClick={onLogOut} testId="log-out-button">
-        Sign Out
+        {t("Sign Out")}
       </MenuActionItem>
     </Menu>
   );

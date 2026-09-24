@@ -1,14 +1,17 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { CompanyAdminAddPeoplePage } from "..";
 import { IconPlus, IconX } from "../../icons";
 import { Dropdown } from "../../FormElements/Dropdown";
 import { SecondaryButton } from "../../Button";
 
-const RESOURCE_TYPE_OPTIONS: { value: CompanyAdminAddPeoplePage.ResourceType; label: string }[] = [
-  { value: "space", label: "Space" },
-  { value: "goal", label: "Goal" },
-  { value: "project", label: "Project" },
-];
+function resourceTypeOptions(t: (key: string) => string): { value: CompanyAdminAddPeoplePage.ResourceType; label: string }[] {
+  return [
+    { value: "space", label: t("Space") },
+    { value: "goal", label: t("Goal") },
+    { value: "project", label: t("Project") },
+  ];
+}
 
 export interface ResourceAccessContentProps {
   fullName: string;
@@ -37,10 +40,12 @@ export function ResourceAccessContent({
   permissionOptions,
   accessGranted,
 }: ResourceAccessContentProps) {
+  const { t } = useTranslation();
+
   if (accessGranted) {
     return (
       <div className="mt-6 p-4 bg-surface-dimmed rounded-lg text-sm text-content-accent text-center">
-        Access granted successfully.
+        {t("Access granted successfully.")}
       </div>
     );
   }
@@ -49,7 +54,7 @@ export function ResourceAccessContent({
     <div className="mt-12">
       <div className="border-t border-surface-outline mb-12" />
       <div className="text-sm font-bold mb-3">
-        Choose what spaces, goals and projects {fullName} should have access to:
+        {t("Choose what spaces, goals and projects {{name}} should have access to:", { name: fullName })}
       </div>
 
       <div className="flex flex-col gap-3">
@@ -101,13 +106,14 @@ function ResourceAccessRow({
   onRemove,
   error,
 }: ResourceAccessRowProps) {
+  const { t } = useTranslation();
   const resourceList = entry.resourceType === "space" ? spaces : entry.resourceType === "goal" ? goals : projects;
 
   return (
     <div className="relative border border-surface-outline rounded-lg p-4" data-test-id={`resource-access-${index}`}>
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
         <div className="sm:w-1/4">
-          <label className="font-bold text-xs mb-1 block">Type</label>
+          <label className="font-bold text-xs mb-1 block">{t("Type")}</label>
           <TypeSelector
             value={entry.resourceType}
             onChange={(resourceType) => onUpdate(entry.key, { resourceType, resourceId: "", resourceName: "" })}
@@ -116,7 +122,7 @@ function ResourceAccessRow({
         </div>
 
         <div className="sm:flex-1">
-          <label className="font-bold text-xs mb-1 block">Resource</label>
+          <label className="font-bold text-xs mb-1 block">{t("Resource")}</label>
           <ResourceSelector
             entry={entry}
             resources={resourceList}
@@ -127,7 +133,7 @@ function ResourceAccessRow({
         </div>
 
         <div className="sm:w-1/4">
-          <label className="font-bold text-xs mb-1 block">Access Level</label>
+          <label className="font-bold text-xs mb-1 block">{t("Access Level")}</label>
           <AccessLevelSelector
             value={entry.accessLevel}
             options={permissionOptions}
@@ -160,7 +166,8 @@ function TypeSelector({
   onChange: (type: CompanyAdminAddPeoplePage.ResourceType) => void;
   testId?: string;
 }) {
-  const typeItems = RESOURCE_TYPE_OPTIONS.map((opt) => ({
+  const { t } = useTranslation();
+  const typeItems = resourceTypeOptions(t).map((opt) => ({
     id: opt.value,
     name: opt.label,
     testId: `resource-type-option-${opt.value}`,
@@ -212,14 +219,21 @@ function ResourceSelector({
   error?: string;
   testId?: string;
 }) {
+  const { t } = useTranslation();
   const resourceItems = (resources || []).map((r) => ({ id: r.id, name: r.name }));
+  const placeholder =
+    entry.resourceType === "space"
+      ? t("Select space...")
+      : entry.resourceType === "goal"
+        ? t("Select goal...")
+        : t("Select project...");
 
   return (
     <Dropdown
       items={resourceItems}
       value={entry.resourceId}
       onSelect={onSelect}
-      placeholder={`Select ${entry.resourceType}...`}
+      placeholder={placeholder}
       error={error}
       testId={testId}
     />

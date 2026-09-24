@@ -1,4 +1,5 @@
 import i18n from "i18next";
+import type { TOptions } from "i18next";
 import { initReactI18next } from "react-i18next";
 import { i18nOptions } from "./i18nOptions";
 
@@ -16,6 +17,15 @@ if (!i18n.isInitialized) {
         },
       },
     },
+  });
+}
+
+export function tn(singular: string, plural: string, count: number, options: TOptions = {}) {
+  return i18n.t(singular, {
+    count,
+    defaultValue: singular,
+    defaultValue_other: plural,
+    ...options,
   });
 }
 

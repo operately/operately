@@ -1,7 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as Forms from "../Forms";
 import { SecondaryButton } from "../Button";
-import { formatNumber } from "../utils/formatting";
+import { tn } from "../i18n";
 
 export function useFocusFields(busy: boolean, focusKey?: string | null) {
   const fieldsRef = React.useRef<HTMLFieldSetElement>(null);
@@ -32,6 +33,8 @@ export function FormActions({
   saveText: string;
   onCancel: () => void | Promise<void>;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-wrap gap-2 mt-6">
       <Forms.Submit disabled={disabled} saveText={saveText} containerClassName="mt-0" testId="submit-email-change" />
@@ -42,7 +45,7 @@ export function FormActions({
         onClick={() => void onCancel()}
         testId="cancel-email-change"
       >
-        Cancel
+        {t("Cancel")}
       </SecondaryButton>
     </div>
   );
@@ -52,7 +55,7 @@ export function ResendCountdown({ seconds }: { seconds: number }) {
   if (seconds <= 0) return null;
   return (
     <p className="text-sm text-content-dimmed mt-3" data-test-id="resend-countdown">
-      You can request another code in {formatNumber(seconds)} {seconds === 1 ? "second" : "seconds"}.
+      {tn("You can request another code in 1 second.", "You can request another code in {{count}} seconds.", seconds)}
     </p>
   );
 }

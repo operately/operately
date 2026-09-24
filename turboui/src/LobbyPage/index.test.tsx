@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
+import { createInstance } from "i18next";
+import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router";
 
 import { LobbyPage } from "./index";
@@ -57,4 +59,23 @@ describe("LobbyPage", () => {
 
     expect(document.querySelector('[data-test-id="current-version"]')).not.toBeInTheDocument();
   });
+});
+
+it.each([
+  ["Or, visit the <actionLink>Admin Panel</actionLink>.", "Admin Panel"],
+  ["Ou visite o <actionLink>Painel administrativo</actionLink>.", "Painel administrativo"],
+])("preserves the admin link in catalog copy: %s", async (message, label) => {
+  const i18n = createInstance();
+  await i18n.init({
+    lng: "en",
+    resources: { en: { translation: { "Or, visit the <actionLink>Admin Panel</actionLink>.": message } } },
+  });
+  render(
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <LobbyPage firstName="Ada" companies={[]} newCompanyPath="/new" adminPath="/admin" />
+      </MemoryRouter>
+    </I18nextProvider>,
+  );
+  expect(screen.getByRole("link", { name: label })).toHaveAttribute("href", "/admin");
 });

@@ -1,10 +1,11 @@
 import * as React from "react";
 import * as People from "@/models/people";
+import { useTranslation } from "react-i18next";
+import { tn, translationText } from "@/i18n";
 
 import { PermissionLevels } from "@/features/Permissions";
 import { ActionLink, Avatar, PageSection } from "turboui";
 
-import { match } from "ts-pattern";
 import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { useBindedPeopleList } from "./loader";
 
@@ -24,12 +25,13 @@ export function OtherPeople() {
 }
 
 function Expanded({ people }: { people: People.Person[] }) {
+  const { t } = useTranslation();
   const groups = groupPeopleByAccessLevel(people);
 
   return (
     <PageSection
-      title="Other People with Access"
-      subtitle="People who have access to the space via their company membeship."
+      title={t("Other People with Access")}
+      subtitle={translationText(t("People who have access to the space via their company membeship."))}
       testId="other-people-list"
     >
       {groups.map((group) => (
@@ -40,14 +42,13 @@ function Expanded({ people }: { people: People.Person[] }) {
 }
 
 function Condensed({ people, onShowAllClick }: { people: People.Person[]; onShowAllClick: () => void }) {
-  const message = match(people.length)
-    .with(1, () => "1 other person has access to this space")
-    .otherwise(() => `${people.length} other people have access to this space`);
+  const { t } = useTranslation();
+  const message = tn("1 other person has access to this space", "{{count}} other people have access to this space", people.length);
 
   const testId = "show-all-other-people";
   const showAll = (
     <ActionLink onClick={onShowAllClick} testId={testId}>
-      show all
+        {t("show all")}
     </ActionLink>
   );
 
