@@ -40,7 +40,7 @@ function chooseFile(file: File) {
   fireEvent.change(document.querySelector('input[type="file"]') as HTMLInputElement, { target: { files: [file] } });
 }
 
-const catalogEnglish = {
+const catalogEnglish: Record<string, string> = {
   "What's your role?": "What's your role?",
   "Your role": "Your role",
   Back: "Back",
@@ -51,9 +51,18 @@ const catalogEnglish = {
   Finish: "Finish",
 };
 
-const catalogPortuguese = {
+const catalogPortuguese: Record<string, string> = {
   Back: "Voltar",
-  Next: "Next",
+  Next: "Próximo",
+  "Thanks for signing up!": "Obrigado por se cadastrar!",
+  "Let's get started": "Vamos começar",
+  "What's your role?": "Qual é seu cargo?",
+  "Your role": "Seu cargo",
+  "Add your profile picture": "Adicione sua foto de perfil",
+  "Upload photo": "Enviar foto",
+  "Step {{stepNumber}} of {{totalSteps}}": "Etapa {{stepNumber}} de {{totalSteps}}",
+  "Please choose an image file.": "Escolha um arquivo de imagem.",
+  Finish: "Concluir",
 };
 
 it.each([
@@ -122,22 +131,42 @@ it.each([
   expect(screen.getByText(sizeError)).toBeInTheDocument();
 });
 
-it("falls back to English for missing Portuguese role copy", async () => {
-  await renderWizard(catalogEnglish, { __initialStep: "role" }, { lng: "pt-BR", portuguese: catalogPortuguese });
+it("uses Portuguese catalog copy for member onboarding welcome", async () => {
+  await renderWizard(catalogEnglish, {}, { lng: "pt-BR", portuguese: catalogPortuguese });
 
-  expect(screen.getByRole("heading", { name: "What's your role?" })).toBeInTheDocument();
-  expect(screen.getByText("Your role")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Voltar" })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Obrigado por se cadastrar!" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Vamos começar" })).toBeInTheDocument();
 });
 
-it("falls back to English for missing Portuguese avatar copy", async () => {
+it("uses Portuguese catalog copy for the role step", async () => {
+  await renderWizard(catalogEnglish, { __initialStep: "role" }, { lng: "pt-BR", portuguese: catalogPortuguese });
+
+  expect(screen.getByRole("heading", { name: "Qual é seu cargo?" })).toBeInTheDocument();
+  expect(screen.getByText("Seu cargo")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Voltar" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Próximo" })).toBeInTheDocument();
+});
+
+it("uses Portuguese catalog copy for the avatar step", async () => {
   await renderWizard(catalogEnglish, { __initialStep: "avatar" }, { lng: "pt-BR", portuguese: catalogPortuguese });
 
-  expect(screen.getByRole("heading", { name: "Add your profile picture" })).toBeInTheDocument();
-  expect(screen.getByText("Step 2 of 2")).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Finish" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Adicione sua foto de perfil" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Enviar foto" })).toBeInTheDocument();
+  expect(screen.getByText("Etapa 2 de 2")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Concluir" })).toBeInTheDocument();
 
   chooseFile(new File(["notes"], "notes.txt", { type: "text/plain" }));
-  expect(screen.getByText("Please choose an image file.")).toBeInTheDocument();
+  expect(screen.getByText("Escolha um arquivo de imagem.")).toBeInTheDocument();
+});
+
+it("falls back to English for a missing Portuguese translation", async () => {
+  const portuguese = { ...catalogPortuguese };
+  delete portuguese["What's your role?"];
+
+  await renderWizard(catalogEnglish, { __initialStep: "role" }, { lng: "pt-BR", portuguese });
+
+  expect(screen.getByRole("heading", { name: "What's your role?" })).toBeInTheDocument();
+  expect(screen.getByText("Seu cargo")).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Voltar" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Próximo" })).toBeInTheDocument();
 });

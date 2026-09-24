@@ -90,6 +90,17 @@ describe("i18n", () => {
       );
     });
 
+    it("renders Portuguese leftover account and onboarding copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("What's your role?")).toBe("Qual é seu cargo?");
+      expect(i18n.t("Add your profile picture")).toBe("Adicione sua foto de perfil");
+      expect(i18n.t("Thanks for signing up!")).toBe("Obrigado por se cadastrar!");
+      expect(
+        i18n.t("* If you sign in with Google, you must use <email>{{email}}</email>.", { email: "ana@example.com" }),
+      ).toBe("* Se você entrar com o Google, use o e-mail <email>ana@example.com</email>.");
+    });
+
     it("ignores unsupported languages and keeps English", async () => {
       await applyLanguage("fr");
 
