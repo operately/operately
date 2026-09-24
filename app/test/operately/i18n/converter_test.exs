@@ -26,7 +26,32 @@ defmodule Operately.I18n.ConverterTest do
     """
 
     assert render_task_counts(po, "pt-BR", [0, 0.5, 1, 2, 1_000_000]) ==
-             ["0 tasks", "0.5 tasks", "1 task", "2 tarefas", "1000000 tarefas"]
+             ["0 tarefas", "0.5 tasks", "1 task", "2 tarefas", "1000000 tarefas"]
+  end
+
+  test "Portuguese zero uses the plural translation instead of the hardcoded singular count" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 tarefa"
+    msgstr[1] "%{count} tarefas"
+    """
+
+    assert render_task_counts(po, "pt-BR", [0, 1, 2, 1_000_000]) ==
+             ["0 tarefas", "1 tarefa", "2 tarefas", "1000000 tarefas"]
+  end
+
+  test "Portuguese zero falls back to English when only the singular is translated" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 tarefa"
+    msgstr[1] ""
+    """
+
+    assert render_task_counts(po, "pt-BR", [0, 1, 2]) == ["0 tasks", "1 tarefa", "2 tasks"]
   end
 
   test "missing Russian plural translations use English rules for counts ending in one" do
@@ -89,7 +114,8 @@ defmodule Operately.I18n.ConverterTest do
              "Only in English" => "Only in English",
              "1 task_one" => "1 tarefa",
              "1 task_many" => "{{count}} tarefas",
-             "1 task_other" => "{{count}} tarefas"
+             "1 task_other" => "{{count}} tarefas",
+             "1 task_zero" => "{{count}} tarefas"
            }
   end
 

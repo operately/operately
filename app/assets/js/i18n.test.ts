@@ -70,6 +70,7 @@ describe("i18n", () => {
       expect(i18n.t("Documents & Files")).toBe("Docs & Arquivos");
       expect(i18n.t("Help")).toBe("Ajuda");
       expect(i18n.t("Sign In")).toBe("Entrar");
+      expect(tn("1 member", "{{count}} members", 0)).toBe("0 membros");
       expect(tn("1 member", "{{count}} members", 1)).toBe("1 membro");
       expect(tn("1 member", "{{count}} members", 3)).toBe("3 membros");
       expect(tn("1 member", "{{count}} members", 1_000_000)).toBe("1000000 membros");
