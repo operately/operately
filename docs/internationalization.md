@@ -42,6 +42,7 @@ Use these Brazilian Portuguese terms for product nouns in the pilot and later tr
 | English | Português (Brasil) |
 | --- | --- |
 | company | empresa |
+| member | membro |
 | space | espaço |
 | project | projeto |
 | goal | objetivo |
