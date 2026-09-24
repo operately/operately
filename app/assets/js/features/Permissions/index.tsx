@@ -50,12 +50,7 @@ export function permissionsList() {
   ];
 }
 
-export const PERMISSIONS_LIST = [
-  { value: PermissionLevels.FULL_ACCESS, get label() { return i18n.t("Full Access"); } },
-  { value: PermissionLevels.EDIT_ACCESS, get label() { return i18n.t("Edit Access"); } },
-  { value: PermissionLevels.COMMENT_ACCESS, get label() { return i18n.t("Comment Access"); } },
-  VIEW_ACCESS,
-];
+export const PERMISSIONS_LIST = [FULL_ACCESS, EDIT_ACCESS, COMMENT_ACCESS, VIEW_ACCESS];
 
 export function accessLevelAsString(permission: PermissionLevels) {
   return match(permission)

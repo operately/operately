@@ -82,73 +82,75 @@ interface PermissionData {
 
 function permissionData(): PermissionData {
   return {
-  [PermissionLevels.FULL_ACCESS]: {
-    testId: "full-access-badge",
-    title: i18n.t("Full Access"),
-    colors: "bg-callout-warning-bg text-callout-warning-content",
-    description: {
-      project: i18n.t(
-        "Has full access to the project and can perform any action, including editing, commenting, checking-in, closing, and archiving the project.",
-      ),
-      space: i18n.t("Has full access to all resources in the space, including team and access management."),
-      goal: i18n.t(
-        "Has full access to the goal and can perform any action, including editing, commenting, checking-in, closing, and archiving the goal.",
-      ),
+    [PermissionLevels.FULL_ACCESS]: {
+      testId: "full-access-badge",
+      title: i18n.t("Full Access"),
+      colors: "bg-callout-warning-bg text-callout-warning-content",
+      description: {
+        project: i18n.t(
+          "Has full access to the project and can perform any action, including editing, commenting, checking-in, closing, and archiving the project.",
+        ),
+        space: i18n.t("Has full access to all resources in the space, including team and access management."),
+        goal: i18n.t(
+          "Has full access to the goal and can perform any action, including editing, commenting, checking-in, closing, and archiving the goal.",
+        ),
+      },
     },
-  },
 
-  [PermissionLevels.EDIT_ACCESS]: {
-    testId: "edit-access-badge",
-    title: i18n.t("Edit Access"),
-    colors: "bg-callout-info-bg text-callout-info-content",
-    description: {
-      project: i18n.t(
-        "Can edit the project, including its details, tasks, and comments, and can check-in. Cannot close or archive the project.",
-      ),
-      space: i18n.t(
-        "Can edit the space and its details, add new members, but cannot access invite-only projects or change space managers.",
-      ),
-      goal: i18n.t("Can edit the goal, including its details and targets."),
+    [PermissionLevels.EDIT_ACCESS]: {
+      testId: "edit-access-badge",
+      title: i18n.t("Edit Access"),
+      colors: "bg-callout-info-bg text-callout-info-content",
+      description: {
+        project: i18n.t(
+          "Can edit the project, including its details, tasks, and comments, and can check-in. Cannot close or archive the project.",
+        ),
+        space: i18n.t(
+          "Can edit the space and its details, add new members, but cannot access invite-only projects or change space managers.",
+        ),
+        goal: i18n.t("Can edit the goal, including its details and targets."),
+      },
     },
-  },
 
-  [PermissionLevels.COMMENT_ACCESS]: {
-    testId: "comment-access-badge",
-    title: i18n.t("Comment Access"),
-    colors: "bg-callout-error-bg text-callout-error-content",
-    description: {
-      project: i18n.t(
-        "Can comment on the project, including tasks, and check-ins. Cannot edit, close, or archive the project.",
-      ),
-      space: i18n.t("Can comment all resources in the space, but cannot add or remove members or resources in the space."),
-      goal: i18n.t("Can comment on the goal updates and discussions. Cannot edit, close, or archive the goal."),
+    [PermissionLevels.COMMENT_ACCESS]: {
+      testId: "comment-access-badge",
+      title: i18n.t("Comment Access"),
+      colors: "bg-callout-error-bg text-callout-error-content",
+      description: {
+        project: i18n.t(
+          "Can comment on the project, including tasks, and check-ins. Cannot edit, close, or archive the project.",
+        ),
+        space: i18n.t(
+          "Can comment all resources in the space, but cannot add or remove members or resources in the space.",
+        ),
+        goal: i18n.t("Can comment on the goal updates and discussions. Cannot edit, close, or archive the goal."),
+      },
     },
-  },
 
-  [PermissionLevels.VIEW_ACCESS]: {
-    testId: "view-access-badge",
-    title: i18n.t("View Access"),
-    colors: "bg-callout-success-bg text-callout-success-content",
-    description: {
-      project: i18n.t(
-        "Can view the project, including its details, tasks, and comments. Cannot edit, comment, close, or archive the project.",
-      ),
-      space: i18n.t("Can view all resources in the space, but cannot edit, comment, or add new resources."),
-      goal: i18n.t(
-        "Can view the goal, including its details and updates. Cannot edit, comment, close, or archive the goal.",
-      ),
+    [PermissionLevels.VIEW_ACCESS]: {
+      testId: "view-access-badge",
+      title: i18n.t("View Access"),
+      colors: "bg-callout-success-bg text-callout-success-content",
+      description: {
+        project: i18n.t(
+          "Can view the project, including its details, tasks, and comments. Cannot edit, comment, close, or archive the project.",
+        ),
+        space: i18n.t("Can view all resources in the space, but cannot edit, comment, or add new resources."),
+        goal: i18n.t(
+          "Can view the goal, including its details and updates. Cannot edit, comment, close, or archive the goal.",
+        ),
+      },
     },
-  },
 
-  [PermissionLevels.NO_ACCESS]: {
-    testId: "no-access-badge",
-    title: i18n.t("No Access"),
-    colors: "bg-callout-error-bg text-callout-error-content",
-    description: {
-      project: i18n.t("Cannot access the project."),
-      space: i18n.t("Cannot access the space."),
-      goal: i18n.t("Cannot access the goal."),
+    [PermissionLevels.NO_ACCESS]: {
+      testId: "no-access-badge",
+      title: i18n.t("No Access"),
+      colors: "bg-callout-error-bg text-callout-error-content",
+      description: {
+        project: i18n.t("Cannot access the project."),
+        space: i18n.t("Cannot access the space."),
+        goal: i18n.t("Cannot access the goal."),
+      },
     },
-  },
   };
 }
