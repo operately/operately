@@ -62,6 +62,27 @@ describe("i18n", () => {
       expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
     });
 
+    it("renders Portuguese account and navigation copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("Help")).toBe("Ajuda");
+      expect(i18n.t("Sign In")).toBe("Entrar");
+      expect(tn("1 result", "{{count}} results", 2)).toBe("2 resultados");
+      expect(
+        tn("You can request another code in 1 second.", "You can request another code in {{count}} seconds.", 1),
+      ).toBe("Você pode solicitar outro código em 1 segundo.");
+      expect(
+        tn("You can request another code in 1 second.", "You can request another code in {{count}} seconds.", 5),
+      ).toBe("Você pode solicitar outro código em 5 segundos.");
+      expect(
+        i18n.t("Verify this inbox first. Then we’ll send a separate code to <email>{{email}}</email>.", {
+          email: "ana@example.com",
+        }),
+      ).toBe(
+        "Verifique esta caixa de entrada primeiro. Depois, enviaremos outro código para <email>ana@example.com</email>.",
+      );
+    });
+
     it("ignores unsupported languages and keeps English", async () => {
       await applyLanguage("fr");
 

@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { InfoCallout, WarningCallout } from "../Callouts";
+import { translationText } from "../i18n";
 import type { CompanyBillingPlanSelectionPage as CompanyBillingPlanSelectionPageTypes } from "./types";
 import { buildCompanyBillingPlanSelectionPageViewModel } from "./viewModel";
 
@@ -55,9 +57,11 @@ function Header({
 }
 
 function SelectionModeView({ selection }: { selection: CompanyBillingPlanSelectionPage.SelectionModeView }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-10">
-      {selection.errorMessage && <WarningCallout message="Plan action unavailable" description={selection.errorMessage} />}
+      {selection.errorMessage && <WarningCallout message={translationText(t("Plan action unavailable"))} description={selection.errorMessage} />}
 
       <BillingCycleSelector selection={selection} />
 
@@ -77,21 +81,23 @@ function SelectionModeView({ selection }: { selection: CompanyBillingPlanSelecti
 }
 
 function BillingCycleSelector({ selection }: { selection: CompanyBillingPlanSelectionPage.SelectionModeView }) {
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto w-fit">
       <div className="mb-2 text-center text-[11px] font-medium uppercase tracking-[0.12em] text-content-dimmed">
-        Billing cycle
+        {t("Billing cycle")}
       </div>
 
       <div className="inline-flex items-center gap-1 rounded-xl border border-stroke-base bg-surface-base p-1 shadow-xs">
         <BillingCycleOption
           active={selection.selectedInterval === "monthly"}
-          title="Monthly"
+          title={t("Monthly")}
           onClick={() => selection.onSelectInterval("monthly")}
         />
         <BillingCycleOption
           active={selection.selectedInterval === "yearly"}
-          title="Yearly"
+          title={t("Yearly")}
           onClick={() => selection.onSelectInterval("yearly")}
         />
       </div>
@@ -126,6 +132,8 @@ function BillingCycleOption({
 }
 
 function PlanCard({ card }: { card: CompanyBillingPlanSelectionPage.PlanCard }) {
+  const { t } = useTranslation();
+
   return (
     <button
       type="button"
@@ -147,7 +155,7 @@ function PlanCard({ card }: { card: CompanyBillingPlanSelectionPage.PlanCard }) 
         </div>
 
         <div className="flex flex-col items-end gap-2">
-          {card.selected && <span className="rounded-full bg-brand-1 px-2 py-1 text-xs font-semibold text-white-1">Selected</span>}
+          {card.selected && <span className="rounded-full bg-brand-1 px-2 py-1 text-xs font-semibold text-white-1">{t("Selected")}</span>}
         </div>
       </div>
 

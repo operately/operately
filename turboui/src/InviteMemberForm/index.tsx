@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { Textfield } from "../FormElements/Textfield";
+import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 
 export namespace InviteMemberForm {
@@ -33,6 +35,7 @@ export namespace InviteMemberForm {
 }
 
 export function InviteMemberForm(props: InviteMemberForm.Props) {
+  const { t } = useTranslation();
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     void props.onSubmit();
@@ -46,12 +49,12 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
 
       <form onSubmit={handleSubmit} data-test-id={props.testId}>
         <div className="flex flex-col gap-4">
-          <FormRow label="Full Name" htmlFor="invite-full-name">
+          <FormRow label={t("Full Name")} htmlFor="invite-full-name">
             <Textfield
               id="invite-full-name"
               value={props.values.fullName}
               onChange={(event) => props.onChange("fullName", event.target.value)}
-              placeholder="e.g. John Doe"
+              placeholder={translationText(t("e.g. John Doe"))}
               minLength={3}
               testId="fullname"
               error={props.errors?.fullName}
@@ -60,12 +63,12 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
             />
           </FormRow>
 
-          <FormRow label="Email" htmlFor="invite-email">
+          <FormRow label={t("Email")} htmlFor="invite-email">
             <Textfield
               id="invite-email"
               value={props.values.email}
               onChange={(event) => props.onChange("email", event.target.value)}
-              placeholder="e.g. john@yourcompany.com"
+              placeholder={translationText(t("e.g. john@yourcompany.com"))}
               minLength={3}
               testId="email"
               error={props.errors?.email}
@@ -73,12 +76,12 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
             />
           </FormRow>
 
-          <FormRow label="Title" htmlFor="invite-title">
+          <FormRow label={t("Title")} htmlFor="invite-title">
             <Textfield
               id="invite-title"
               value={props.values.title}
               onChange={(event) => props.onChange("title", event.target.value)}
-              placeholder="e.g. Software Engineer"
+              placeholder={translationText(t("e.g. Software Engineer"))}
               testId="title"
               error={props.errors?.title}
               className="w-full"
@@ -96,7 +99,7 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
             disabled={props.isSubmitting}
             testId="submit"
           >
-            {props.submitLabel ?? "Invite Member"}
+            {props.submitLabel ?? t("Invite Member")}
           </PrimaryButton>
 
           {props.onCancel && (
@@ -107,7 +110,7 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
               disabled={props.isSubmitting}
               testId="cancel"
             >
-              {props.cancelLabel ?? "Cancel"}
+              {props.cancelLabel ?? t("Cancel")}
             </SecondaryButton>
           )}
         </div>

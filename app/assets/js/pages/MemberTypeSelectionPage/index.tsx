@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { loader, useLoadedData } from "./loader";
 import { MemberTypeSelectionPage } from "turboui";
@@ -8,14 +9,15 @@ import { usePaths } from "@/routes/paths";
 export default { name: "MemberTypeSelectionPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { company } = useLoadedData();
   const navigationItems = React.useMemo(
     () => [
-      { to: paths.companyAdminPath(), label: "Company Administration" },
-      { to: paths.companyManagePeoplePath(), label: "Manage Team Members" },
+      { to: paths.companyAdminPath(), label: t("Company Administration") },
+      { to: paths.companyManagePeoplePath(), label: t("Manage Team Members") },
     ],
-    [paths],
+    [paths, t],
   );
 
   return (

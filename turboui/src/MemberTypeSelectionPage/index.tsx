@@ -1,5 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
+import { translationText } from "../i18n";
 import { DivLink } from "../Link";
 import type { Navigation } from "../Page/Navigation";
 import { Navigation as PageNavigation } from "../Page/Navigation";
@@ -16,7 +18,9 @@ export namespace MemberTypeSelectionPage {
 }
 
 export function MemberTypeSelectionPage(props: MemberTypeSelectionPage.Props) {
-  const pageTitle = props.companyName ? ["Invite people", props.companyName] : "Invite people";
+  const { t } = useTranslation();
+  const invitePeopleTitle = translationText(t("Invite people"));
+  const pageTitle = props.companyName ? [invitePeopleTitle, props.companyName] : invitePeopleTitle;
   useHtmlTitle(pageTitle);
 
   return (
@@ -24,18 +28,22 @@ export function MemberTypeSelectionPage(props: MemberTypeSelectionPage.Props) {
       {props.navigationItems && <PageNavigation items={props.navigationItems} />}
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
         <div className="px-4 sm:px-10 py-8">
-          <div className="text-content-accent text-2xl font-extrabold mb-6">Who are you inviting?</div>
+          <div className="text-content-accent text-2xl font-extrabold mb-6">{t("Who are you inviting?")}</div>
 
           <div className="flex flex-col gap-4">
             <MemberTypeCard
-              title="Team member"
-              description="This person is part of the company. They are added to the general space and can see all non-secret projects, goals, and spaces."
+              title={t("Team member")}
+              description={t(
+                "This person is part of the company. They are added to the general space and can see all non-secret projects, goals, and spaces.",
+              )}
               to={props.teamMemberPath}
               testId="select-team-member"
             />
             <MemberTypeCard
-              title="Outside collaborator"
-              description="This person is not a company member. They get access only to specific spaces, goals, or projects that are shared with them."
+              title={t("Outside collaborator")}
+              description={t(
+                "This person is not a company member. They get access only to specific spaces, goals, or projects that are shared with them.",
+              )}
               to={props.outsideCollaboratorPath}
               testId="select-outside-collaborator"
             />

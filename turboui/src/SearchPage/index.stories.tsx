@@ -4,7 +4,7 @@ import * as React from "react";
 import type { SearchResult } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { IconCalendar, IconLayoutGrid, IconWorld } from "../icons";
-import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS, SearchPage } from "./index";
+import { searchTimeFilterOptions, searchTypeFilterOptions, SearchPage } from "./index";
 
 const meta = {
   title: "Pages/SearchPage",
@@ -87,7 +87,7 @@ function buildRefineFilters(selections: Record<string, string[]>): SearchPage.Re
       icon: IconLayoutGrid,
       selectionMode: "multiple",
       selectedOptionIds: selections.types ?? [],
-      options: SEARCH_TYPE_FILTER_OPTIONS,
+      options: searchTypeFilterOptions(),
     },
     {
       id: "time",
@@ -95,7 +95,7 @@ function buildRefineFilters(selections: Record<string, string[]>): SearchPage.Re
       icon: IconCalendar,
       selectionMode: "single",
       selectedOptionIds: selections.time ?? [],
-      options: SEARCH_TIME_FILTER_OPTIONS,
+      options: searchTimeFilterOptions(),
     },
   ];
 }

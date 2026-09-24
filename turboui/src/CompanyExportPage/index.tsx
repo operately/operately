@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import { IconDownload } from "../icons";
@@ -7,6 +8,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import { ProgressBar } from "../ProgressBar";
 import { Tooltip } from "../Tooltip";
 import classNames from "../utils/classnames";
+import { translationText } from "../i18n";
 
 export namespace CompanyExportPage {
   export interface Run {
@@ -33,27 +35,28 @@ export namespace CompanyExportPage {
 }
 
 export function CompanyExportPage(props: CompanyExportPage.Props) {
-  const navigation = React.useMemo(() => [{ to: props.backPath, label: "Back to Company Admin" }], [props.backPath]);
+  const { t } = useTranslation();
+  const navigation = React.useMemo(() => [{ to: props.backPath, label: t("Back to Company Admin") }], [props.backPath, t]);
 
   return (
-    <Page title="Export Company" size="small" testId="company-export-page" navigation={navigation}>
+    <Page title={translationText(t("Export Company"))} size="small" testId="company-export-page" navigation={navigation}>
       <div className="px-4 sm:px-10 py-8">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <div className="uppercase text-sm tracking-wide">Company Export</div>
-            <h1 className="text-content-accent text-3xl font-extrabold">Export company data</h1>
+            <div className="uppercase text-sm tracking-wide">{t("Company Export")}</div>
+            <h1 className="text-content-accent text-3xl font-extrabold">{t("Export company data")}</h1>
             <p className="mt-2 text-content-dimmed">
-              Export all data from this company as a ZIP package with the company data and related files.
+              {t("Export all data from this company as a ZIP package with the company data and related files.")}
             </p>
           </div>
 
           <PrimaryButton size="sm" onClick={props.onStartExport} loading={props.starting} testId="start-export-button">
-            Start export
+            {t("Start export")}
           </PrimaryButton>
         </header>
 
         <section className="mt-10">
-          <h2 className="font-bold">Exports</h2>
+          <h2 className="font-bold">{t("Exports")}</h2>
 
           {props.runs.length === 0 ? (
             <EmptyState />
@@ -78,9 +81,11 @@ export function CompanyExportPage(props: CompanyExportPage.Props) {
 }
 
 function EmptyState() {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-lg border border-dashed border-surface-outline p-6 text-sm text-content-dimmed mt-3">
-      No exports yet. Start one when you need to move this company to another Operately instance.
+      {t("No exports yet. Start one when you need to move this company to another Operately instance.")}
     </div>
   );
 }
@@ -98,6 +103,7 @@ function ExportRunCard({
   onDownload: (runId: string) => void | Promise<void>;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   const latestStatusTestId = latest ? "latest-export-run-status" : undefined;
   const latestProgressTestId = latest ? "latest-export-run-progress" : undefined;
   const latestPackageTestId = latest ? "latest-export-download-package" : undefined;
@@ -128,7 +134,7 @@ function ExportRunCard({
             testId={latestPackageTestId}
             icon={IconDownload}
           >
-            Download
+            {t("Download")}
           </SecondaryButton>
         </div>
       </div>
@@ -137,7 +143,7 @@ function ExportRunCard({
         <div className="mt-3">
           <div className="mb-1 flex items-center justify-between text-xs text-content-dimmed">
             <span data-test-id={latestProgressTestId}>{Math.round(run.percentage ?? 0)}%</span>
-            <span>{humanizeStep(run.currentStep)}</span>
+            <span>{humanizeStep(run.currentStep, t)}</span>
           </div>
 
           <ProgressBar progress={run.percentage ?? 0} status={progressStatus(run.status)} />
@@ -148,7 +154,8 @@ function ExportRunCard({
 }
 
 function RunStatus({ status }: { status: string }) {
-  return <span className={statusClassName(status)}>{status}</span>;
+  const { t } = useTranslation();
+  return <span className={statusClassName(status)}>{runStatusLabel(status, t)}</span>;
 }
 
 function RunStatusTooltip({
@@ -158,21 +165,23 @@ function RunStatusTooltip({
   run: CompanyExportPage.Run;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-1 text-left">
       <div>
-        Requested: <FormattedTime {...formattedTimePreferences} time={run.insertedAt} format="relative-time-or-date" />
+        {t("Requested:")} <FormattedTime {...formattedTimePreferences} time={run.insertedAt} format="relative-time-or-date" />
       </div>
 
       {run.completedAt && (
         <div>
-          Completed: <FormattedTime {...formattedTimePreferences} time={run.completedAt} format="relative-time-or-date" />
+          {t("Completed:")} <FormattedTime {...formattedTimePreferences} time={run.completedAt} format="relative-time-or-date" />
         </div>
       )}
 
-      <div>Rows: {run.rowsCount ?? 0}</div>
-      <div>Tables: {run.tablesCount ?? 0}</div>
-      <div>Step: {humanizeStep(run.currentStep)}</div>
+      <div>{t("Rows: {{count}}", { count: run.rowsCount ?? 0 })}</div>
+      <div>{t("Tables: {{count}}", { count: run.tablesCount ?? 0 })}</div>
+      <div>{t("Step: {{step}}", { step: humanizeStep(run.currentStep, t) })}</div>
     </div>
   );
 }
@@ -202,8 +211,25 @@ function statusClassName(status: string) {
   });
 }
 
-function humanizeStep(step?: string | null) {
-  if (!step) return "Queued";
+function runStatusLabel(status: string, t: (key: string) => string) {
+  switch (status) {
+    case "completed":
+      return t("completed");
+    case "failed":
+      return t("failed");
+    case "running":
+      return t("running");
+    case "cancelled":
+      return t("cancelled");
+    case "pending":
+      return t("pending");
+    default:
+      return status;
+  }
+}
+
+function humanizeStep(step: string | null | undefined, t: (key: string) => string) {
+  if (!step) return t("Queued");
 
   return step
     .split("_")

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import * as Billing from "@/models/billing";
 import * as Companies from "@/models/companies";
@@ -8,12 +9,14 @@ import { PageModule } from "@/routes/types";
 import { includesId, usePaths } from "@/routes/paths";
 import { useNavigate, useSearchParams } from "react-router";
 import { CompanyAdminAddPeoplePage, InviteMemberForm, showErrorToast } from "turboui";
+import i18n, { translationText } from "@/i18n";
 
 import { loader, useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { company, ownerIds } = useLoadedData();
   const navigate = useNavigate();
   const paths = usePaths();
@@ -33,10 +36,10 @@ function Page() {
 
   const navigationItems = React.useMemo(
     () => [
-      { to: paths.companyAdminPath(), label: "Company Administration" },
-      { to: paths.companyManagePeoplePath(), label: "Manage Team Members" },
+      { to: paths.companyAdminPath(), label: t("Company Administration") },
+      { to: paths.companyManagePeoplePath(), label: t("Manage Team Members") },
     ],
-    [paths],
+    [paths, t],
   );
 
   const handleFormChange = React.useCallback((field: InviteMemberForm.Field, value: string) => {
@@ -83,7 +86,7 @@ function Page() {
     onCancel: handleCancel,
     onInviteAnother: handleInviteAnother,
     onGoBack: handleGoBack,
-    goBackLabel: "Back" as const,
+    goBackLabel: t("Back"),
     isSubmitting,
     memberType,
     spaces,
@@ -189,7 +192,9 @@ function useInviteSubmit(
           setErrors(nextErrors);
         } else {
           showErrorToast(
-            memberType === "outside_collaborator" ? "Unable to invite collaborator" : "Unable to add team member",
+            memberType === "outside_collaborator"
+              ? i18n.t("Unable to invite collaborator")
+              : i18n.t("Unable to add team member"),
             message,
           );
         }
@@ -220,17 +225,17 @@ function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Error
   const errors: InviteMemberForm.Errors = {};
 
   if (values.fullName.length < 1) {
-    errors.fullName = "Name is required";
+    errors.fullName = translationText(i18n.t("Name is required"));
   }
 
   if (values.email.length < 1) {
-    errors.email = "Email is required";
+    errors.email = translationText(i18n.t("Email is required"));
   } else if (!values.email.includes("@")) {
-    errors.email = "Enter a valid email address";
+    errors.email = translationText(i18n.t("Enter a valid email address"));
   }
 
   if (values.title.length < 1) {
-    errors.title = "Title is required";
+    errors.title = translationText(i18n.t("Title is required"));
   }
 
   return errors;

@@ -1,5 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { EmailChangeState } from "../ApiTypes";
+import { translationText } from "../i18n";
 import { Page } from "../Page";
 import { showSuccessToast } from "../Toasts";
 import { EnterEmailStep } from "./EnterEmailStep";
@@ -27,6 +29,7 @@ export namespace AccountChangeEmailPage {
 }
 
 export function AccountChangeEmailPage(props: AccountChangeEmailPage.Props) {
+  const { t } = useTranslation();
   const { state } = props;
   const [resending, setResending] = React.useState(false);
   const [resentEmail, setResentEmail] = React.useState<string | null>(null);
@@ -52,7 +55,7 @@ export function AccountChangeEmailPage(props: AccountChangeEmailPage.Props) {
     try {
       if (await props.onResend(state.pending.id)) {
         setResentEmail(email);
-        showSuccessToast("Code sent", `New code sent to ${email}.`);
+        showSuccessToast(t("Code sent"), t("New code sent to {{email}}.", { email }));
       }
     } finally {
       setResending(false);
@@ -61,12 +64,12 @@ export function AccountChangeEmailPage(props: AccountChangeEmailPage.Props) {
 
   return (
     <Page
-      title="Change email"
+      title={translationText(t("Change email"))}
       size="small"
       testId="change-email-page"
       navigation={[
-        { to: props.homePath, label: "Home" },
-        { to: props.securityPath, label: "Password & Security" },
+        { to: props.homePath, label: t("Home") },
+        { to: props.securityPath, label: t("Password & Security") },
       ]}
     >
       <div className="px-4 sm:px-10 py-8">
@@ -74,13 +77,13 @@ export function AccountChangeEmailPage(props: AccountChangeEmailPage.Props) {
           <SuccessStep email={props.completedEmail} securityPath={props.securityPath} />
         ) : (
           <>
-            <h1 className="mb-2 text-content-accent text-3xl font-extrabold">Change email</h1>
+            <h1 className="mb-2 text-content-accent text-3xl font-extrabold">{t("Change email")}</h1>
             <p className="text-content-dimmed text-sm mb-6" data-test-id="email-change-step">
               {!state.pending
-                ? "Step 1 of 3 · Enter your new email"
+                ? t("Step 1 of 3 · Enter your new email")
                 : state.pending.stage === "current_email"
-                  ? "Step 2 of 3 · Verify your current email"
-                  : "Step 3 of 3 · Verify your new email"}
+                  ? t("Step 2 of 3 · Verify your current email")
+                  : t("Step 3 of 3 · Verify your new email")}
             </p>
             <EmailChangeStep
               key={state.pending?.id ?? "new-email"}

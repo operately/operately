@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { SearchActivator } from "./SearchActivator";
+import { translationText } from "../i18n";
 import { SearchOverlay } from "./SearchOverlay";
 
 export namespace GlobalSearch {
@@ -171,7 +173,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 
   return {
     ...props,
-    placeholder: props.placeholder ?? "Search...",
+    placeholder: props.placeholder ?? "",
     testId: props.testId ?? "global-search",
     isOpen,
     setIsOpen,
@@ -189,7 +191,8 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 }
 
 export function GlobalSearch(props: GlobalSearch.Props) {
-  const state = useGlobalSearchState(props);
+  const { t } = useTranslation();
+  const state = useGlobalSearchState({ ...props, placeholder: props.placeholder ?? translationText(t("Search...")) });
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   const { setIsOpen, setSelectedIndex } = state;
 
