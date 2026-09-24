@@ -168,7 +168,12 @@ msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:117
+#: assets/js/pages/JoinPage/index.tsx:146
+msgid "* If you sign in with Google, you must use <email>%{email}</email>."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/LobbyPage/index.tsx:123
 msgid "+ Create organization"
 msgstr ""
 
@@ -187,7 +192,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:97
+#: ../turboui/src/LobbyPage/index.tsx:99
+#: ../turboui/src/LobbyPage/index.tsx:101
 msgid "1 member"
 msgid_plural "%{count} members"
 msgstr[0] ""
@@ -269,6 +275,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:186
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/JoinPage/index.tsx:73
+msgid "<bold>What happens next?</bold> You will join the %{company} company."
 msgstr ""
 
 #.frontend
@@ -497,6 +508,11 @@ msgid "Add task"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:181
+msgid "Add your profile picture"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:33
 msgid "Add/Remove admins"
 msgstr ""
@@ -718,6 +734,7 @@ msgid "Automatic"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:95
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:89
 msgid "Back"
 msgstr ""
@@ -1100,6 +1117,11 @@ msgid "Choose a paid plan for this company. Payment details are handled at check
 msgstr ""
 
 #.frontend
+#: assets/js/pages/JoinPage/index.tsx:113
+msgid "Choose a password (minimum 12 characters)"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:36
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:164
 msgid "Choose a plan"
@@ -1161,6 +1183,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:338
 msgid "Closed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:51
+msgid "Co-founder & CEO of Operately"
 msgstr ""
 
 #.frontend
@@ -2156,6 +2183,11 @@ msgid "Failed to start import"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/ProfileEditPage/index.tsx:241
+msgid "Failed to update avatar. Please try again."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:71
 msgid "Failed to update notification settings"
 msgstr ""
@@ -2184,6 +2216,11 @@ msgid "Failed to upload %{name}. Please try again."
 msgstr ""
 
 #.frontend
+#: assets/js/pages/ProfileEditPage/index.tsx:214
+msgid "Failed to upload avatar. Please try again."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SearchPage/index.tsx:311
 msgid "File"
 msgstr ""
@@ -2196,6 +2233,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:21
 msgid "Files"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:176
+msgid "Finish"
 msgstr ""
 
 #.frontend
@@ -2380,6 +2422,11 @@ msgid "Help"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:182
+msgid "Help your teammates put a face to your name."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:42
 msgid "Here's every notification you've received from Operately."
 msgstr ""
@@ -2421,6 +2468,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:115
 msgid "If the outside collaborator already has an account, they will be added to your company as an outside collaborator. If they don't have an account, we'll send them an email with an invitation link, and you'll get the same link here to share if needed. The link will be valid for 24 hours."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:45
+msgid "If you ever need a hand or want to talk shop, email me at marko@operately.com and I'll reply."
 msgstr ""
 
 #.frontend
@@ -2638,6 +2690,16 @@ msgid "Leave empty to clear the name and use the default token label."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:107
+msgid "Let teammates know what you focus on. You can change this later."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:26
+msgid "Let's get started"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/LobbyPage/index.tsx:42
 msgid "Let's get you started"
 msgstr ""
@@ -2790,6 +2852,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskPage/TaskCheckbox.tsx:29
 msgid "Mark task as done"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:33
+msgid "Marko Anastasov, CEO & Founder, Operately"
 msgstr ""
 
 #.frontend
@@ -2966,6 +3033,11 @@ msgid "New task \"%{taskName}\" was created"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:97
+msgid "Next"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
 msgid "Next step"
 msgstr ""
@@ -3130,6 +3202,11 @@ msgid "Only people you add to the space will be able to view it."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:47
+msgid "Onward,"
+msgstr ""
+
+#.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:95
 msgid "Open assignee picker for the selected task"
 msgstr ""
@@ -3178,6 +3255,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyNavigation/UpdateBadge.tsx:36
 msgid "Operately %{version} is available. This instance is running an older version. View release notes."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:41
+msgid "Operately is what I wished I had when I started my first company. We had plenty of tools, but no single place where plans and daily work came together."
 msgstr ""
 
 #.frontend
@@ -3239,6 +3321,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:102
 msgid "PEOPLE"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:209
+msgid "PNG, JPG, or GIF up to 5MB. You can adjust or replace it later from your profile settings."
 msgstr ""
 
 #.frontend
@@ -3305,6 +3392,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:27
+#: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:54
@@ -3411,6 +3499,21 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:59
 msgid "Plan updated"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:134
+msgid "Please choose an image file."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/index.tsx:191
+msgid "Please choose an image smaller than 12 MB."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:140
+msgid "Please choose an image smaller than 5MB."
 msgstr ""
 
 #.frontend
@@ -3662,6 +3765,7 @@ msgid "Remove people"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
 #: ../turboui/src/ProfileEditPage/index.tsx:342
 msgid "Remove photo"
 msgstr ""
@@ -3692,8 +3796,14 @@ msgid "Renews"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/JoinPage/index.tsx:119
 #: assets/js/pages/SetupPage/page.tsx:161
 msgid "Repeat password"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:201
+msgid "Replace photo"
 msgstr ""
 
 #.frontend
@@ -4037,6 +4147,11 @@ msgid "Set due date"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/JoinPage/index.tsx:126
+msgid "Set password & Log in"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:304
 msgid "Set relative date"
 msgstr ""
@@ -4209,7 +4324,7 @@ msgid "Start export"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:118
+#: ../turboui/src/LobbyPage/index.tsx:124
 msgid "Start fresh with a new company account"
 msgstr ""
 
@@ -4232,6 +4347,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:332
 msgid "Status: %{status}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WizardLayout.tsx:81
+msgid "Step %{stepNumber} of %{totalSteps}"
 msgstr ""
 
 #.frontend
@@ -4346,6 +4466,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:77
 msgid "Templates"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:38
+msgid "Thanks for signing up!"
 msgstr ""
 
 #.frontend
@@ -4799,9 +4924,19 @@ msgid "Upgrade confirmed"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:193
+msgid "Upload a square image for best results."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:343
 #: assets/js/pages/CompanyImportPage/index.tsx:56
 msgid "Upload failed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:201
+msgid "Upload photo"
 msgstr ""
 
 #.frontend
@@ -5065,6 +5200,8 @@ msgid "We've sent you a 6-character code to <email>%{email}</email>. The code ex
 msgstr ""
 
 #.frontend
+#: assets/js/pages/JoinPage/index.tsx:28
+#: assets/js/pages/JoinPage/index.tsx:48
 #: assets/js/pages/SetupPage/page.tsx:22
 #: assets/js/pages/SetupPage/page.tsx:29
 msgid "Welcome to Operately!"
@@ -5104,6 +5241,11 @@ msgstr ""
 #: ../turboui/src/CompanyAdminPage/index.tsx:66
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:26
 msgid "What's this?"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:106
+msgid "What's your role?"
 msgstr ""
 
 #.frontend
@@ -5159,6 +5301,16 @@ msgid "Yesterday"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:170
+msgid "You"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/JoinPage/index.tsx:56
+msgid "You are joining as <name>%{name}</name>"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountChangeEmailPage/FormElements.tsx:58
 msgid "You can request another code in 1 second."
 msgid_plural "You can request another code in %{count} seconds."
@@ -5176,6 +5328,11 @@ msgid "You have 1 new update"
 msgid_plural "You have %{count} new updates"
 msgstr[0] ""
 msgstr[1] ""
+
+#.frontend
+#: assets/js/pages/JoinPage/index.tsx:50
+msgid "You were invited by %{author} to join %{company}."
+msgstr ""
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:62
@@ -5213,6 +5370,11 @@ msgid "Your password has been updated successfully."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:112
+msgid "Your role"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:36
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:98
 msgid "Your verification has expired. Start again to verify your current email."
@@ -5238,6 +5400,11 @@ msgstr ""
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:48
 msgid "created the task \"%{task_name}\""
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:113
+msgid "e.g Product Manager, Designer, CEO"
 msgstr ""
 
 #.frontend
@@ -5336,6 +5503,7 @@ msgid "name@company.com"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/JoinPage/index.tsx:163
 #: assets/js/pages/LoginPage/index.tsx:185
 msgid "or"
 msgstr ""
