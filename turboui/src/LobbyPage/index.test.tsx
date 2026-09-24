@@ -5,6 +5,7 @@ import { createInstance } from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router";
 
+import i18n from "../i18n";
 import { LobbyPage } from "./index";
 import { defaultProps } from "./mockData";
 
@@ -109,35 +110,40 @@ it.each([
   expect(getByTestId("add-company-card")).toHaveTextContent(create);
 });
 
-it("falls back to English for missing Portuguese copy, including plurals", async () => {
-  const i18n = createInstance();
-  await i18n.init({
-    lng: "pt-BR",
-    fallbackLng: "en",
-    resources: {
-      en: {
-        translation: {
-          "Welcome to Operately, {{name}}!": "Welcome to Operately, {{name}}!",
-          "1 member_one": "1 member",
-          "1 member_other": "{{count}} members",
-        },
-      },
-      "pt-BR": { translation: {} },
+it("uses Portuguese catalog copy when present, including plurals", async () => {
+  i18n.addResourceBundle(
+    "pt-BR",
+    "translation",
+    {
+      "Welcome to Operately, {{name}}!": "Boas-vindas ao Operately, {{name}}!",
+      "1 member_one": "1 membro",
+      "1 member_other": "{{count}} membros",
+      "1 member_many": "{{count}} membros",
+      "1 member_zero": "{{count}} membros",
+      "+ Create organization": "+ Criar empresa",
     },
-  });
+    true,
+    true,
+  );
+  await i18n.changeLanguage("pt-BR");
 
-  render(
-    <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <LobbyPage
-          firstName="Ada"
-          companies={[{ id: "1", name: "Acme", memberCount: 3, link: "/acme" }]}
-          newCompanyPath="/new"
-        />
-      </MemoryRouter>
-    </I18nextProvider>,
+  const view = render(
+    <MemoryRouter>
+      <LobbyPage
+        firstName="Ada"
+        companies={[{ id: "1", name: "Acme", memberCount: 3, link: "/acme" }]}
+        newCompanyPath="/new"
+      />
+    </MemoryRouter>,
   );
 
-  expect(screen.getByText("Welcome to Operately, Ada!")).toBeInTheDocument();
-  expect(screen.getByText("3 members")).toBeInTheDocument();
+  try {
+    expect(screen.getByText("Boas-vindas ao Operately, Ada!")).toBeInTheDocument();
+    expect(screen.getByText("3 membros")).toBeInTheDocument();
+    expect(getByTestId("add-company-card")).toHaveTextContent("+ Criar empresa");
+  } finally {
+    view.unmount();
+    await i18n.changeLanguage("en");
+    i18n.removeResourceBundle("pt-BR", "translation");
+  }
 });
