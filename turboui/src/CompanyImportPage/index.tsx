@@ -160,7 +160,7 @@ function ArtifactUploadCard({
 
         <Tooltip content={<UploadStatusTooltip state={state} />} size="sm">
           <span className={uploadStatusClassName(state)} data-test-id={`${testIdPrefix}-status`}>
-            {shortUploadStatus(state)}
+            {shortUploadStatus(state, t)}
           </span>
         </Tooltip>
       </div>
@@ -344,8 +344,7 @@ function renderUploadStatus(state: CompanyImportPage.UploadedFileState, t: (key:
   return t("Waiting for file selection");
 }
 
-function shortUploadStatus(state: CompanyImportPage.UploadedFileState) {
-  const { t } = useTranslation();
+function shortUploadStatus(state: CompanyImportPage.UploadedFileState, t: (key: string) => string) {
   if (state.uploading) return t("Uploading");
   if (state.blobId) return t("Uploaded");
   if (state.fileName) return t("Failed");
