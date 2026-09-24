@@ -5,6 +5,7 @@ import { createInstance } from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router";
 
+import i18n from "../i18n";
 import { LobbyPage } from "./index";
 import { defaultProps } from "./mockData";
 
@@ -78,4 +79,78 @@ it.each([
     </I18nextProvider>,
   );
   expect(screen.getByRole("link", { name: label })).toHaveAttribute("href", "/admin");
+});
+
+it.each([
+  ["Welcome to Operately, {{name}}!", "+ Create organization"],
+  ["Translated welcome, {{name}}!", "Translated create organization"],
+])("uses catalog copy for lobby chrome: %s", async (welcome, create) => {
+  const i18n = createInstance();
+  await i18n.init({
+    lng: "en",
+    resources: {
+      en: {
+        translation: {
+          "Welcome to Operately, {{name}}!": welcome,
+          "+ Create organization": create,
+        },
+      },
+    },
+  });
+
+  render(
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter>
+        <LobbyPage firstName="Ada" companies={[]} newCompanyPath="/new" />
+      </MemoryRouter>
+    </I18nextProvider>,
+  );
+
+  expect(screen.getByText(welcome.replace("{{name}}", "Ada"))).toBeInTheDocument();
+  expect(getByTestId("add-company-card")).toHaveTextContent(create);
+});
+
+it("uses Portuguese catalog copy when present, including plurals", async () => {
+  i18n.addResourceBundle(
+    "pt-BR",
+    "translation",
+    {
+      "Welcome to Operately, {{name}}!": "Boas-vindas ao Operately, {{name}}!",
+      "Let's get you started": "Vamos começar",
+      "1 member_one": "1 membro",
+      "1 member_other": "{{count}} membros",
+      "1 member_many": "{{count}} membros",
+      "1 member_zero": "{{count}} membros",
+      "+ Create organization": "+ Criar empresa",
+      "Start fresh with a new company account": "Comece do zero com uma nova conta de empresa",
+      "Or, visit the <actionLink>Admin Panel</actionLink>.": "Ou acesse o <actionLink>Painel de administração</actionLink>.",
+    },
+    true,
+    true,
+  );
+  await i18n.changeLanguage("pt-BR");
+
+  const view = render(
+    <MemoryRouter>
+      <LobbyPage
+        firstName="Ada"
+        companies={[{ id: "1", name: "Acme", memberCount: 3, link: "/acme" }]}
+        newCompanyPath="/new"
+        adminPath="/admin"
+      />
+    </MemoryRouter>,
+  );
+
+  try {
+    expect(screen.getByText("Boas-vindas ao Operately, Ada!")).toBeInTheDocument();
+    expect(screen.getByText("Vamos começar")).toBeInTheDocument();
+    expect(screen.getByText("3 membros")).toBeInTheDocument();
+    expect(getByTestId("add-company-card")).toHaveTextContent("+ Criar empresa");
+    expect(getByTestId("add-company-card")).toHaveTextContent("Comece do zero com uma nova conta de empresa");
+    expect(screen.getByRole("link", { name: "Painel de administração" })).toHaveAttribute("href", "/admin");
+  } finally {
+    view.unmount();
+    await i18n.changeLanguage("en");
+    i18n.removeResourceBundle("pt-BR", "translation");
+  }
 });
