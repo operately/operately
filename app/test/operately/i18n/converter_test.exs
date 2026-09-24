@@ -12,6 +12,8 @@ defmodule Operately.I18n.ConverterTest do
   """
 
   test "untranslated Portuguese plurals fall back using English plural rules" do
+    assert Converter.from_po(@untranslated_tasks, "pt-BR") == %{}
+
     assert render_task_counts(@untranslated_tasks, "pt-BR", [0, 0.5, 1, 1.5, 2, 1_000_000]) ==
              ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "1000000 tasks"]
   end
