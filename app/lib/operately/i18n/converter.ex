@@ -41,6 +41,9 @@ defmodule Operately.I18n.Converter do
     |> Enum.flat_map(fn {category, index} ->
       value = translated_plural(message, index, locale)
 
+      # Omitting zero would let i18next use a translated singular such as "1 membro".
+      value = if category == :zero, do: present_or(value, message.msgid_plural), else: value
+
       if blank?(value) do
         []
       else

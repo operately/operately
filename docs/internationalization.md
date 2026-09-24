@@ -42,6 +42,7 @@ Use these Brazilian Portuguese terms for product nouns in the pilot and later tr
 | English | Português (Brasil) |
 | --- | --- |
 | company | empresa |
+| member | membro |
 | space | espaço |
 | project | projeto |
 | goal | objetivo |
@@ -146,4 +147,4 @@ The app and TurboUI share catalog lookup settings, including the `|` context sep
 
 Named placeholders, context, plurals, and rich-text tags are preserved when converting Gettext catalogs to i18next JSON. Locale directories use Gettext names (`pt_BR`); generated JSON uses BCP 47 (`pt-BR`). Missing translations fall back to English.
 
-Plural conversion maps i18next categories to Gettext translation indexes explicitly. For Brazilian Portuguese, both `_many` (whole millions) and `_other` use `msgstr[1]`.
+Plural conversion maps i18next categories to Gettext translation indexes explicitly. For Brazilian Portuguese, `_zero`, `_many` (whole millions), and `_other` use `msgstr[1]`. The explicit `_zero` override prevents zero counts from selecting a hardcoded singular such as `1 membro`. If the plural translation is missing, `_zero` uses the English plural source so it cannot fall through to the translated singular.
