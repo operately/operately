@@ -3,6 +3,27 @@ defmodule Operately.MD.RichTextTest do
 
   alias Operately.MD.RichText
 
+  @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+  for fixture <- @table_fixtures do
+    @fixture fixture
+    test "exports tables: #{fixture["name"]}" do
+      assert RichText.render(@fixture["document"]) == @fixture["markdown"]
+    end
+  end
+
+  test "keeps tables inside blockquotes and list items" do
+    fixture = hd(@table_fixtures)
+    table = Enum.at(fixture["document"]["content"], 1)
+    expected = fixture["markdown"] |> String.replace_prefix("Before\n\n", "") |> String.replace_suffix("\n\nAfter", "")
+    quoted = %{"type" => "doc", "content" => [%{"type" => "blockquote", "content" => [table]}]}
+    assert RichText.render(quoted) == "> " <> String.replace(expected, "\n", "\n> ")
+    listed = %{"type" => "doc", "content" => [%{"type" => "bulletList", "content" => [
+      %{"type" => "listItem", "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Plan"}]}, table]}
+    ]}]}
+    assert RichText.render(listed) =~ "\n  | Name | Notes |"
+  end
+
   describe "render/1" do
     test "renders an empty document" do
       doc = %{"type" => "doc", "content" => []}
