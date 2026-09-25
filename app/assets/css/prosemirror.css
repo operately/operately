@@ -312,3 +312,55 @@
 .rich-text-summary .ProseMirror-separator {
   display: none !important;
 }
+
+/* Shared editor, read-only, and history table layout. */
+.ProseMirror .tableWrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.ProseMirror .tableWrapper:focus-visible {
+  outline: 2px solid var(--color-brand-1);
+  outline-offset: 2px;
+}
+
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  border: 1px solid var(--color-surface-outline);
+  padding: 0.5rem 0.75rem;
+  position: relative;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.ProseMirror th {
+  background: var(--color-surface-dimmed);
+  font-weight: 600;
+}
+
+.ProseMirror td > p,
+.ProseMirror th > p {
+  margin: 0;
+  min-height: 1.5em;
+}
+
+.ProseMirror td > p + p,
+.ProseMirror th > p + p {
+  margin-top: 0.5em;
+}
+
+.ProseMirror .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-brand-1) 15%, transparent);
+  pointer-events: none;
+}

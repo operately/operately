@@ -1,4 +1,3 @@
-import * as RichContentModule from "../RichContent";
 import React from "react";
 import { render, waitFor, fireEvent, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -224,14 +223,6 @@ it("keeps long task descriptions structurally complete in view mode", async () =
 });
 
 it("clips collapsed table descriptions and preserves the full source on expand", () => {
-  // Table registration ships separately; isolate the surrounding collapse behavior from the editor schema.
-  const renderer = jest
-    .spyOn(RichContentModule, "default")
-    .mockImplementation(({ content, transformContent, className }) => (
-      <div data-testid="table-preview" className={className}>
-        {JSON.stringify(transformContent ? transformContent(content) : content)}
-      </div>
-    ));
   const table = {
     type: "table",
     content: [
@@ -250,24 +241,22 @@ it("clips collapsed table descriptions and preserves the full source on expand",
     type: "doc",
     content: [table, { type: "paragraph", content: [{ type: "text", text: "After table" }] }],
   };
-  try {
-    render(
-      <PageDescription
-        description={description}
-        richTextHandlers={richTextHandlers}
-        label="Notes"
-        onDescriptionChange={jest.fn()}
-      />,
-    );
-    const preview = screen.getByTestId("table-preview");
-    expect(preview).toHaveClass("max-h-96", "overflow-hidden");
-    expect(JSON.parse(preview.textContent ?? "")).toEqual(description);
-    fireEvent.click(screen.getByRole("button", { expanded: false }));
-    expect(preview).not.toHaveClass("max-h-96");
-    expect(JSON.parse(preview.textContent ?? "")).toEqual(description);
-    fireEvent.click(screen.getByRole("button", { expanded: true }));
-    expect(preview).toHaveClass("max-h-96");
-  } finally {
-    renderer.mockRestore();
-  }
+  const { container } = render(
+    <PageDescription
+      description={description}
+      richTextHandlers={richTextHandlers}
+      label="Notes"
+      onDescriptionChange={jest.fn()}
+    />,
+  );
+  const preview = container.querySelector(".ProseMirror");
+  expect(preview).toHaveClass("max-h-96", "overflow-hidden");
+  expect(preview?.querySelector("td")?.textContent).toBe("Cell ".repeat(150));
+  expect(preview).toHaveTextContent("After table");
+  fireEvent.click(screen.getByRole("button", { expanded: false }));
+  expect(preview).not.toHaveClass("max-h-96");
+  expect(preview?.querySelector("td")?.textContent).toBe("Cell ".repeat(150));
+  expect(preview).toHaveTextContent("After table");
+  fireEvent.click(screen.getByRole("button", { expanded: true }));
+  expect(preview).toHaveClass("max-h-96");
 });
