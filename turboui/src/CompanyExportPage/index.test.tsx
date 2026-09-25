@@ -5,6 +5,7 @@ import { createInstance } from "i18next";
 import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router";
 import { i18nOptions } from "../i18nOptions";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { CompanyExportPage } from ".";
 
 it.each([
@@ -40,7 +41,7 @@ it.each([
           backPath="/admin"
           onStartExport={onStartExport}
           onDownload={() => {}}
-          formattedTimePreferences={{}}
+          formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>
     </I18nextProvider>,
