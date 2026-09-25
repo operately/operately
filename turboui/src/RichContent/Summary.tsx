@@ -3,6 +3,7 @@ import * as React from "react";
 
 import RichContent, { parseContent, richContentToString, shortenContent } from ".";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import { tableContentToInline } from "./tableContent";
 
 interface SummaryProps {
   content: any;
@@ -52,6 +53,8 @@ export function summarize(node: any): any {
   if (!node) return { type: "doc", content: [] };
 
   switch (node.type) {
+    case "table":
+      return { type: "paragraph", content: tableContentToInline(node) };
     case "doc":
       return summarizeDoc(node);
     case "paragraph":

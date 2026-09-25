@@ -3,6 +3,54 @@ defmodule Prosemirror2HtmlTest do
 
   @opts struct!(Prosemirror2Html.Options, domain: "https://example.com")
 
+  @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+  for fixture <- @table_fixtures do
+    @fixture fixture
+    test "renders semantic email tables: #{fixture["name"]}" do
+      html = Prosemirror2Html.convert(@fixture["document"], @opts)
+      dom = Floki.parse_document!(html)
+      table = Enum.at(@fixture["document"]["content"], 1)
+      header? = hd(hd(table["content"])["content"])["type"] == "tableHeader"
+
+      assert length(Floki.find(dom, "table tr")) == length(table["content"])
+      expected_headers = if header?, do: 2, else: 0
+      assert length(Floki.find(dom, "table tr:first-child th")) == expected_headers
+      assert length(Floki.find(dom, "table th, table td")) == length(table["content"]) * 2
+      assert html =~ "border-collapse: collapse"
+      assert html =~ "padding: 8px"
+      assert html =~ "Before"
+      assert html =~ "After"
+      if @fixture["name"] == "pipes backslashes and breaks" do
+        assert html =~ "one<br>two"
+        assert html =~ "a<br>b"
+      end
+    end
+  end
+
+  test "escapes table text and link attributes without turning them into HTML" do
+    paragraph = %{"type" => "paragraph", "content" => [
+      %{"type" => "text", "text" => "<img src=x onerror=alert(1)> &", "marks" => [%{"type" => "bold"}]},
+      %{"type" => "text", "text" => "Link", "marks" => [%{"type" => "link", "attrs" => %{"href" => "https://example.com/?q=\" onclick=\"evil&ok=1"}}]},
+      %{"type" => "mention", "attrs" => %{"id" => "alice", "label" => "<Alice> Smith"}}
+    ]}
+    cell = %{"type" => "tableCell", "content" => [paragraph]}
+    row = %{"type" => "tableRow", "content" => [cell]}
+    content = %{"type" => "doc", "content" => [%{"type" => "table", "content" => [row]}]}
+
+    dom = content |> Prosemirror2Html.convert(@opts) |> Floki.parse_document!()
+    assert Floki.find(dom, "img, [onclick], [onerror]") == []
+    assert Floki.text(Floki.find(dom, "td")) =~ "<img src=x onerror=alert(1)> &"
+    assert Floki.attribute(dom, "a", "href") == ["https://example.com/?q=\" onclick=\"evil&ok=1"]
+    assert Floki.text(Floki.find(dom, "td")) =~ "<Alice> Smith"
+  end
+
+  test "does not render executable link schemes" do
+    for href <- ["javascript:alert(1)", "java\nscript:alert(1)", "data:text/html,<script>alert(1)</script>"] do
+      assert Prosemirror2Html.convert_mark("Link", %{"type" => "link", "attrs" => %{"href" => href}}, @opts) == "Link"
+    end
+  end
+
   @fullExample %{
     "type" => "doc",
     "content" => [

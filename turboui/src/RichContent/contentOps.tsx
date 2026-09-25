@@ -1,4 +1,5 @@
 import { firstName } from "../utils/people";
+import { tableContentToInline } from "./tableContent";
 
 // ShortenContent truncates the text content of a rich text object to a given character limit.
 // It does not remove non-text content.
@@ -7,6 +8,9 @@ export function shortenContent(jsonContent: string, limit: number, opts?: { skip
   const content = opts?.skipParse ? deepCopy(jsonContent) : JSON.parse(jsonContent);
 
   const dfs = (content: any, count: number) => {
+    // Keep the grid intact even when the preview limit falls inside a cell.
+    if (content.type === "table") return count + countCharacters(content, { skipParse: true });
+
     if (content.text) {
       const total = content.text.length + count;
 
@@ -118,6 +122,12 @@ export function emptyContent() {
 }
 
 export function richContentToString(node: any): string {
+  if (node.type === "table") {
+    return tableContentToInline(node, "\n")
+      .map((child) => (child.type === "mention" ? child.attrs?.label ?? "" : child.text ?? ""))
+      .join("");
+  }
+
   let result: string[] = [];
 
   if (node.type === "text") {
