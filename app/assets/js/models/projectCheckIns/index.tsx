@@ -1,5 +1,5 @@
 import * as api from "@/api";
-import { Paths } from "@/routes/paths";
+import { compareIds, Paths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { parsePersonForTurboUi } from "../people";
 import * as Time from "@/utils/time";
@@ -31,4 +31,8 @@ export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.ProjectCheck
       scheduledAt: checkIn.scheduledAt,
     };
   });
+}
+
+export function canEditProjectCheckIn(checkIn: ProjectCheckIn, personId?: string): boolean {
+  return Boolean(personId && compareIds(checkIn.author?.id, personId) && checkIn.project?.permissions?.canEdit);
 }

@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
 import { createTestId } from "../TestableElement";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
 import {
@@ -52,7 +52,7 @@ function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPag
     onAddAnnotation: async () => ({ success: true }),
     onEditAnnotation: async () => ({ success: true }),
     onDeleteAnnotation: async () => ({ success: true }),
-    richTextHandlers: createMockRichEditorHandlers(),
+    richTextHandlers: createMockRichTextHandlers(),
     ...overrides,
   };
 }

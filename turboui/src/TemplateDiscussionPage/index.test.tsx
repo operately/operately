@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
 
 import { defaultFormattedTimePreferences } from "../FormattedTime";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { TemplateDiscussionPage } from ".";
 import type { TemplateDiscussionPage as Types } from ".";
@@ -24,7 +24,7 @@ function renderPage(overrides: Partial<Types.Props> = {}) {
       author: null,
       insertedAt: new Date("2026-08-11T12:00:00Z"),
     },
-    richTextHandlers: createMockRichEditorHandlers(),
+    richTextHandlers: createMockRichTextHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,
     ...overrides,
   };
@@ -66,7 +66,10 @@ describe("TemplateDiscussionPage", () => {
           type: "comment",
           value: {
             id: "comment-1",
-            content: JSON.stringify({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Note" }] }] }),
+            content: JSON.stringify({
+              type: "doc",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "Note" }] }],
+            }),
             author: { id: "author-1", fullName: "Ada Lovelace", avatarUrl: null, profileLink: "" },
             insertedAt: "2026-08-11T12:00:00Z",
             reactions: [],
@@ -77,7 +80,7 @@ describe("TemplateDiscussionPage", () => {
       canComment: true,
       onAddComment: jest.fn(),
       onEditComment: jest.fn(),
-      richTextHandlers: createMockRichEditorHandlers(),
+      richTextHandlers: createMockRichTextHandlers(),
       formattedTimePreferences: defaultFormattedTimePreferences,
     };
 

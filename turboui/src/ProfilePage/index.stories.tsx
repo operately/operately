@@ -51,6 +51,7 @@ const defaultWorkMap: WorkMap.Item[] = [...mockItems, ...mockTasksTabItems];
 const defaultReviewerWorkMap: WorkMap.Item[] = mockItems.slice(0, 2);
 
 const defaultArgs: ProfilePage.Props = {
+  taskList: { canEdit: false },
   title: "Profile",
 
   person: person!,

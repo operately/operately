@@ -5,7 +5,7 @@ import Api, { type Comment, type Person } from "@/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useLoadedQuery } from "@/api/queryClient";
 import { act, renderHook, waitFor } from "@/__tests__/renderHook";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useReloadCommentsSignal } from "@/signals";
 import { CommentSection, type CommentSectionProps, showErrorToast } from "turboui";
 import { KpiEntryComments } from "./KpiEntryComments";
@@ -21,7 +21,7 @@ jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => ({ id: "me",
 jest.mock("@/models/people", () => ({ parsePersonForTurboUi: (_paths, person) => person }));
 jest.mock("@/signals", () => ({ useReloadCommentsSignal: jest.fn(), publish: jest.fn(), LocalSignal: {} }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
-jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn(() => ({})) }));
+jest.mock("@/hooks/useRichTextHandlers", () => ({ useRichTextHandlers: jest.fn(() => ({})) }));
 jest.mock("turboui", () => ({ CommentSection: jest.fn(() => null), showErrorToast: jest.fn() }));
 
 let client: QueryClient;
@@ -111,7 +111,8 @@ it.each([true, false])("preserves the entry type, space mentions, drafts, and ca
   expect(props().commentParentType).toBe("kpi_entry");
   expect(props().commentDraftKey).toBe("kpi_entry:entry1:new-comment");
   expect(props().editCommentDraftKey?.("comment1")).toBe("kpi_entry:entry1:edit-comment:comment1");
-  expect(useRichEditorHandlers).toHaveBeenCalledWith({
+  expect(useRichTextHandlers).toHaveBeenCalledWith({
+    taskList: null,
     scope: { type: "space", id: "space1" },
   });
 });

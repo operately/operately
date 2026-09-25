@@ -8,7 +8,7 @@ import { FilePage } from "./index";
 import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import type { CurrentSubscriptions } from "../Subscriptions";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
@@ -34,7 +34,7 @@ jest.mock("../icons", () => {
 });
 
 const author = genPeople(1)[0]!;
-const richTextHandlers = createMockRichEditorHandlers();
+const richTextHandlers = createMockRichTextHandlers();
 
 const subscriptions: CurrentSubscriptions.Props = {
   subscribers: [asSubscriber(author, { isSubscribed: true })],
@@ -110,6 +110,7 @@ describe("FilePage", () => {
     render(
       <MemoryRouter>
         <FilePage
+          taskList={{ canEdit: false }}
           {...baseProps}
           testId="resource-hub-file-page"
           reactions={reactions}
@@ -143,6 +144,7 @@ describe("FilePage", () => {
     render(
       <MemoryRouter>
         <FilePage
+          taskList={{ canEdit: false }}
           {...baseProps}
           onDownload={onDownload}
           testId="project-template-file-page"
@@ -172,6 +174,7 @@ describe("FilePage", () => {
     render(
       <MemoryRouter>
         <FilePage
+          taskList={{ canEdit: false }}
           {...baseProps}
           hideReactions
           hideComments

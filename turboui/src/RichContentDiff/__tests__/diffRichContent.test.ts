@@ -196,3 +196,26 @@ describe("operatelyTokenEncoder", () => {
     );
   });
 });
+
+it("detects a checkbox-only change", () => {
+  const before = {
+    type: "doc",
+    content: [
+      {
+        type: "taskList",
+        content: [
+          {
+            type: "taskItem",
+            attrs: { checked: false },
+            content: [{ type: "paragraph", content: [{ type: "text", text: "Review" }] }],
+          },
+        ],
+      },
+    ],
+  };
+  const after = JSON.parse(JSON.stringify(before));
+  after.content[0].content[0].attrs.checked = true;
+  const result = diffRichContent(createRichContentSchema(), before, after);
+  expect(result.ok).toBe(true);
+  if (result.ok) expect(result.changes).not.toHaveLength(0);
+});

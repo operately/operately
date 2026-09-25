@@ -1,3 +1,5 @@
+import type { CommentThread } from "@/api";
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -63,7 +65,7 @@ function Options() {
 
   return (
     <PageOptions.Root testId="options">
-      {discussion.author && me && compareIds(discussion.author.id, me.id) && (
+      {canEditDiscussion(discussion, me?.id) && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
@@ -80,10 +82,17 @@ function Content() {
   const { discussion } = useLoadedData();
   const message = JSON.parse(discussion.message || "{}");
   const { mentionedPersonLookup } = useRichEditorHandlers();
+  const me = useMe();
+  const taskList = useTaskList({
+    resourceType: "project_discussion",
+    resourceId: discussion.id,
+    field: "message",
+    canEdit: canEditDiscussion(discussion, me?.id),
+  });
 
   return (
     <div className="my-8">
-      <RichContent content={message} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent taskList={taskList} content={message} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
@@ -152,4 +161,8 @@ function Subscriptions() {
       />
     </div>
   );
+}
+
+function canEditDiscussion(discussion: CommentThread, personId?: string): boolean {
+  return Boolean(personId && compareIds(discussion.author?.id, personId) && discussion.projectPermissions?.canEdit);
 }

@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 import { TaskSlideIn } from "./TaskSlideIn";
-import { createMockRichEditorHandlers } from "../../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 import { sampleTemplateMilestones, templateStatuses } from "../../MilestonePage/templateMockData";
 import type { TaskPage } from "../../TaskPage";
@@ -52,7 +52,7 @@ const baseProps: TaskPage.ContentProps = {
   },
   onDelete: async () => undefined,
   assigneePersonSearch: { people: [], onSearch: async () => undefined },
-  richTextHandlers: createMockRichEditorHandlers(),
+  richTextHandlers: createMockRichTextHandlers(),
   canEdit: true,
   onAddComment: () => undefined,
   onEditComment: () => undefined,

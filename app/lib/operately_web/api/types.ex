@@ -2,6 +2,9 @@ defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
   alias Operately.Access.Binding
 
+  enum :rich_text_resource_type, values: OperatelyWeb.Api.RichContent.Resources.types()
+  enum :rich_text_field, values: OperatelyWeb.Api.RichContent.Resources.fields()
+
   enum :email_change_outcome, values: Operately.People.EmailChange.outcomes()
 
   enum :email_change_stage, values: Ecto.Enum.values(Operately.People.EmailChangeRequest, :stage)

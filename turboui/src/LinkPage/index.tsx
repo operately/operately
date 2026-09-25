@@ -51,7 +51,12 @@ export function LinkPage(props: LinkPageNS.Props) {
           <>
             <Spacer size={2} />
             <div className="font-bold text-content-accent">Notes:</div>
-            <RichContent content={props.description} mentionedPersonLookup={props.mentionedPersonLookup} parseContent />
+            <RichContent
+              content={props.description}
+              mentionedPersonLookup={props.mentionedPersonLookup}
+              taskList={props.taskList}
+              parseContent
+            />
           </>
         )}
 

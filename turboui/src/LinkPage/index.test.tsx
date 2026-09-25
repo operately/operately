@@ -8,7 +8,7 @@ import { LinkPage } from "./index";
 import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import type { CurrentSubscriptions } from "../Subscriptions";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
@@ -47,7 +47,7 @@ jest.mock("../BrandIcons", () => {
 });
 
 const author = genPeople(1)[0]!;
-const richTextHandlers = createMockRichEditorHandlers();
+const richTextHandlers = createMockRichTextHandlers();
 
 const subscriptions: CurrentSubscriptions.Props = {
   subscribers: [asSubscriber(author, { isSubscribed: true })],
@@ -113,6 +113,7 @@ describe("LinkPage", () => {
     render(
       <MemoryRouter>
         <LinkPage
+          taskList={{ canEdit: false }}
           {...baseProps}
           testId="resource-hub-link-page"
           reactions={reactions}
@@ -144,6 +145,7 @@ describe("LinkPage", () => {
     render(
       <MemoryRouter>
         <LinkPage
+          taskList={{ canEdit: false }}
           {...baseProps}
           testId="project-template-link-page"
           hideReactions
@@ -168,6 +170,7 @@ describe("LinkPage", () => {
     render(
       <MemoryRouter>
         <LinkPage
+          taskList={{ canEdit: false }}
           {...baseProps}
           hideReactions
           hideComments

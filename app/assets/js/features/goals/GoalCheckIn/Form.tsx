@@ -1,3 +1,4 @@
+import type { TaskListInteraction } from "turboui";
 import * as Goals from "@/models/goals";
 import { parseCheckInsForTurboUi } from "@/models/goalCheckIns";
 import * as People from "@/models/people";
@@ -32,6 +33,8 @@ import type { GoalCheckInFormState } from "./useForm";
 
 interface Props {
   form: GoalCheckInFormState;
+  taskList: TaskListInteraction;
+  taskListContent?: unknown;
   mode: "new" | "view" | "edit";
   goal: Goals.Goal;
   children?: React.ReactNode;
@@ -286,20 +289,20 @@ function GoalStatusSelector({ goal }: { goal: Goals.Goal }) {
 
 function Description(props: Props & CheckInReferenceProps) {
   if (props.mode === "view") {
-    return <DescriptionView />;
+    return <DescriptionView taskList={props.taskList} content={props.taskListContent} />;
   } else {
     return <DescriptionEdit {...props} />;
   }
 }
 
-function DescriptionView() {
+function DescriptionView({ taskList, content }: { taskList: TaskListInteraction; content?: unknown }) {
   const [value] = Forms.useFieldValue("description");
   const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <div>
       <Label text="Key wins, obstacles and needs" />
-      <RichContent content={value} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent taskList={taskList} content={content ?? value} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
@@ -368,7 +371,11 @@ function PreviousCheckIn({
         </div>
       </div>
 
-      <RichContent content={checkIn.content} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent
+        taskList={{ canEdit: false }}
+        content={checkIn.content}
+        mentionedPersonLookup={mentionedPersonLookup}
+      />
     </div>
   );
 }

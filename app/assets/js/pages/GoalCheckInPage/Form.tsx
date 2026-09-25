@@ -1,3 +1,6 @@
+import { canEditGoalCheckIn } from "@/models/goalCheckIns";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
@@ -11,6 +14,13 @@ import { isWithinTimeframe } from "@/utils/time";
 
 export function Form() {
   const { update, goal } = useLoadedData();
+  const me = useMe();
+  const taskList = useTaskList({
+    resourceType: "goal_check_in",
+    resourceId: update.id,
+    field: "message",
+    canEdit: canEditGoalCheckIn(update, me?.id),
+  });
 
   assertPresent(update.insertedAt, "insertedAt must be present in update");
 
@@ -24,6 +34,14 @@ export function Form() {
   const form = useForm({ mode: "edit", goal, update });
 
   return (
-    <CheckInForm form={form} goal={goal} mode={mode} allowFullEdit={allowFullEdit} isUnpublished={isUnpublished} />
+    <CheckInForm
+      taskList={taskList}
+      taskListContent={update.message ? JSON.parse(update.message) : undefined}
+      form={form}
+      goal={goal}
+      mode={mode}
+      allowFullEdit={allowFullEdit}
+      isUnpublished={isUnpublished}
+    />
   );
 }

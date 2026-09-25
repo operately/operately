@@ -7,7 +7,7 @@ import * as Projects from "@/models/projects";
 
 import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { SpaceKanbanPage } from "turboui";
@@ -50,7 +50,7 @@ function Page() {
     space,
   });
 
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id } });
+  const richTextHandlers = useRichTextHandlers({ taskList: null, scope: { type: "space", id: space.id } });
 
   const { kanbanState, handleTaskKanbanChange, handleTaskStatusChange } = Tasks.useKanbanState({
     initialRawState: space.tasksKanbanState,
@@ -122,7 +122,7 @@ function Page() {
     onTaskStatusChange: slideInModel.onTaskStatusChange,
     onTaskDelete: deleteTask,
     onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
 
     getTaskPageProps: slideInModel.getTaskPageProps,
 

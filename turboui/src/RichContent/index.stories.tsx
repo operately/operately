@@ -8,6 +8,7 @@ import RichContent from "./index";
 const meta: Meta<typeof RichContent> = {
   title: "Components/RichContent",
   component: RichContent,
+  args: { taskList: { canEdit: false } },
   parameters: {
     layout: "fullscreen",
   },
@@ -212,6 +213,68 @@ export const WithMentions: Story = {
           ],
         },
       ],
+    },
+  },
+};
+
+const tasksContent = {
+  type: "doc",
+  content: [
+    {
+      type: "taskList",
+      content: [
+        {
+          type: "taskItem",
+          attrs: { checked: true },
+          content: [{ type: "paragraph", content: [{ type: "text", text: "Draft the announcement" }] }],
+        },
+        {
+          type: "taskItem",
+          attrs: { checked: false },
+          content: [
+            { type: "paragraph", content: [{ type: "text", text: "Review before publishing" }] },
+            {
+              type: "taskList",
+              content: [
+                {
+                  type: "taskItem",
+                  attrs: { checked: false },
+                  content: [{ type: "paragraph", content: [{ type: "text", text: "Check the links" }] }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const TaskLists: Story = {
+  args: {
+    content: tasksContent,
+    mentionedPersonLookup: async () => null,
+    taskList: {
+      canEdit: true,
+      onChange: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+      },
+    },
+  },
+};
+
+export const TaskListsWithoutEditPermission: Story = {
+  args: { content: tasksContent, mentionedPersonLookup: async () => null },
+};
+
+export const TaskListSaveFailure: Story = {
+  args: {
+    ...TaskLists.args,
+    taskList: {
+      canEdit: true,
+      onChange: async () => {
+        throw new Error("Save failed");
+      },
     },
   },
 };

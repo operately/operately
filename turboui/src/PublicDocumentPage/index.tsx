@@ -36,6 +36,7 @@ export function PublicDocumentPage({ document, loading, formattedTimePreferences
   return (
     <>
       <DocumentPage
+        taskList={{ canEdit: false }}
         pageTitle={document.name}
         title={document.name}
         author={null}
