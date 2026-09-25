@@ -14,6 +14,99 @@ beforeEach(() => {
 });
 afterEach(() => editor.destroy());
 
+const paragraph = (text: string): JSONContent => ({ type: "paragraph", content: [{ type: "text", text }] });
+const cell = (text: string, attrs = {}): JSONContent => ({ type: "tableCell", attrs, content: [paragraph(text)] });
+const row = (...content: JSONContent[]): JSONContent => ({ type: "tableRow", content });
+const attachmentTable: JSONContent = {
+  type: "table",
+  content: [
+    row({
+      type: "tableCell",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Original" },
+            { type: "blob", attrs: { src: "/file.pdf", title: "File", status: "uploaded" } },
+          ],
+        },
+      ],
+    }),
+  ],
+};
+const legacyTables: [string, JSONContent][] = [
+  ["column widths", { type: "table", content: [row(cell("Original", { colwidth: [120] }))] }],
+  ["column spans", { type: "table", content: [row(cell("Original", { colspan: 2 })), row(cell("B"), cell("C"))] }],
+  ["row spans", { type: "table", content: [row(cell("Original", { rowspan: 2 }), cell("B")), row(cell("C"))] }],
+  ["attachments", attachmentTable],
+];
+
+function mountLegacyTable(table: JSONContent) {
+  editor.destroy();
+  editor = new Editor({
+    element: document.createElement("div"),
+    extensions: createRichEditorExtensions({}, { editable: false }),
+    content: { type: "doc", content: [table, { type: "paragraph" }] },
+  });
+}
+
+it.each(legacyTables)("allows text edits in stored tables with %s", (_name, table) => {
+  mountLegacyTable(table);
+  const original = editor.getJSON();
+  editor.commands.setTextSelection(4);
+  editor.commands.insertContent("Updated ");
+  expect(editor.getText()).toContain("Updated Original");
+  expect(editor.getJSON()).toEqual(JSON.parse(JSON.stringify(original).replace('"Original"', '"Updated Original"')));
+  editor.commands.undo();
+  expect(editor.getJSON()).toEqual(original);
+  editor.commands.redo();
+  expect(editor.getText()).toContain("Updated Original");
+});
+
+it.each(legacyTables)("loads and refreshes stored tables with %s in read-only mode", (_name, table) => {
+  editor.setEditable(false);
+  const content = { type: "doc", content: [table] };
+  editor.commands.setContent(content, { emitUpdate: false });
+  expect(editor.getText()).toContain("Original");
+  editor.commands.setContent(JSON.parse(JSON.stringify(content).replace('"Original"', '"Refreshed"')), {
+    emitUpdate: false,
+  });
+  expect(editor.getText()).toContain("Refreshed");
+  expect(editor.getText()).not.toContain("Original");
+});
+
+it.each(legacyTables)("restores a deleted table with %s on undo", (_name, table) => {
+  mountLegacyTable(table);
+  const saved = editor.getJSON();
+  editor.commands.setTextSelection(4);
+  editor.commands.deleteTable();
+  expect(editor.view.dom.querySelector("table")).toBeNull();
+  editor.commands.undo();
+  expect(editor.getJSON()).toEqual(saved);
+});
+
+it("rejects new attachments inside a table that already contains one", () => {
+  mountLegacyTable(attachmentTable);
+  const saved = editor.getJSON();
+  editor.commands.setTextSelection(4);
+  editor.commands.insertContent({ type: "blob", attrs: { src: "/new.pdf", title: "New" } });
+  expect(editor.getJSON()).toEqual(saved);
+  editor.commands.insertContent({ type: "blob", attrs: { src: "/file.pdf", title: "File", status: "uploaded" } });
+  expect(editor.getJSON()).toEqual(saved);
+});
+
+it.each([{ colspan: 2 }, { rowspan: 2 }, { colwidth: [120] }])(
+  "rejects new unsupported cell attributes: %p",
+  (attrs) => {
+    editor.commands.insertTable({ rows: 2, cols: 2, withHeaderRow: false });
+    const saved = editor.getJSON();
+    editor.view.dispatch(
+      editor.state.tr.setNodeMarkup(2, undefined, { colspan: 1, rowspan: 1, colwidth: null, ...attrs }),
+    );
+    expect(editor.getJSON()).toEqual(saved);
+  },
+);
+
 it("pastes a table, preserves it across JSON reload, and supports undo/redo", () => {
   paste(
     "<p>Before</p><table><tr><th>Name</th><th>Notes</th></tr><tr><td>Alice</td><td><strong>Ready</strong></td></tr></table><p>After</p>",

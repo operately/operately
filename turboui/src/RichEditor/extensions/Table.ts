@@ -1,9 +1,12 @@
 import { Table, TableCell, TableHeader, TableRow, TableView } from "@tiptap/extension-table";
-import { Extension } from "@tiptap/core";
+import { commands, Extension } from "@tiptap/core";
+import { isHistoryTransaction } from "@tiptap/pm/history";
 import type { Node, ResolvedPos } from "@tiptap/pm/model";
-import { Plugin } from "@tiptap/pm/state";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
 import { normalizeTableHtml } from "../tablePaste";
+
+const contentLoad = new PluginKey("tableContentLoad");
 
 export function isInsideTable(position: ResolvedPos): boolean {
   for (let depth = position.depth; depth > 0; depth--) {
@@ -49,6 +52,11 @@ const TableExtension = Table.extend({
     const parent = this.parent?.();
     return {
       ...parent,
+      setContent: (content, options) => (props) => {
+        // Whole-document loads preserve stored content, including legacy table features.
+        props.tr.setMeta(contentLoad, true);
+        return commands.setContent(content, options)(props);
+      },
       insertTable: (options) => (props) => {
         if (isInsideTable(props.state.selection.$from)) return false;
         return parent?.insertTable?.(options)(props) ?? false;
@@ -59,15 +67,15 @@ const TableExtension = Table.extend({
     return [
       new Plugin({
         filterTransaction: (transaction, state) => {
-          if (!transaction.docChanged) return true;
-          let valid = true;
-          transaction.doc.descendants((node) => {
-            if (node.type.name !== "table") return;
-            // Reject unsupported inserts/drops without blocking edits outside an untouched legacy table.
-            if (!supportedTable(node) && !containsIdenticalTable(state.doc, node)) valid = false;
-            return false;
-          });
-          return valid;
+          if (!transaction.docChanged || transaction.getMeta(contentLoad) || isHistoryTransaction(transaction))
+            return true;
+
+          // Text edits may retain legacy features; only new occurrences are rejected.
+          const previous = unsupportedTableFeatures(state.doc);
+          for (const [feature, count] of unsupportedTableFeatures(transaction.doc)) {
+            if (count > (previous.get(feature) ?? 0)) return false;
+          }
+          return true;
         },
       }),
       ...(this.parent?.() ?? []),
@@ -75,25 +83,19 @@ const TableExtension = Table.extend({
   },
 }).configure({ resizable: false, renderWrapper: true, View: ScrollableTableView, cellMinWidth: 120 });
 
-function supportedTable(table: Node): boolean {
-  let valid = true;
-  table.descendants((node) => {
-    if (["table", "blob"].includes(node.type.name)) valid = false;
+function unsupportedTableFeatures(doc: Node): Map<string, number> {
+  const features = new Map<string, number>();
+  const add = (feature: string) => features.set(feature, (features.get(feature) ?? 0) + 1);
+
+  doc.descendants((node, position) => {
     if (["tableCell", "tableHeader"].includes(node.type.name)) {
-      if (node.attrs.colspan !== 1 || node.attrs.rowspan !== 1 || node.attrs.colwidth != null) valid = false;
+      const { colspan, rowspan, colwidth } = node.attrs;
+      if (colspan !== 1 || rowspan !== 1 || colwidth != null) add(JSON.stringify({ colspan, rowspan, colwidth }));
+    } else if (["table", "blob"].includes(node.type.name) && isInsideTable(doc.resolve(position))) {
+      add(node.type.name === "blob" ? JSON.stringify(node.toJSON()) : "nestedTable");
     }
   });
-  return valid;
-}
-
-function containsIdenticalTable(doc: Node, table: Node): boolean {
-  let found = false;
-  doc.descendants((node) => {
-    if (node.type.name !== "table") return;
-    if (node.eq(table)) found = true;
-    return false;
-  });
-  return found;
+  return features;
 }
 
 // Keep standard node names and attributes; cell blocks are restricted to paragraphs.

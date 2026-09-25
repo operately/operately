@@ -40,6 +40,7 @@ function rectangularTable(source: Element): Element {
   const doc = source.ownerDocument;
   const rows = ownRows(source);
   const grid: (Element | undefined)[][] = rows.map(() => []);
+  // Only a complete first header row is supported; header columns and later headers become data cells.
   const header = ownCells(rows[0] ?? doc.createElement("tr")).every((cell) => cell.tagName === "TH");
   let width = 0;
 

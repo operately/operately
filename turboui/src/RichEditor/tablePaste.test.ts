@@ -1,5 +1,17 @@
 import { normalizeTableHtml } from "./tablePaste";
 
+it("normalizes mixed and later headers to data cells, preserving their text", () => {
+  const html = "<table><tr><th>Mixed</th><td>Value</td></tr><tr><th>Later</th><td>Other</td></tr></table>";
+  const doc = new DOMParser().parseFromString(normalizeTableHtml(html), "text/html");
+  expect(doc.querySelectorAll("th")).toHaveLength(0);
+  expect(Array.from(doc.querySelectorAll("td")).map((cell) => cell.textContent)).toEqual([
+    "Mixed",
+    "Value",
+    "Later",
+    "Other",
+  ]);
+});
+
 function parse(html: string) {
   return new DOMParser().parseFromString(normalizeTableHtml(html), "text/html");
 }
