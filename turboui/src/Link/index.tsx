@@ -28,6 +28,7 @@ interface ButtonLinkProps extends Props {
 }
 
 interface ActionLinkProps extends Props {
+  "aria-expanded"?: boolean;
   onClick: () => void;
   disabled?: boolean;
   underline?: "always" | "hover" | "never";
@@ -85,26 +86,34 @@ export function ActionLink(props: ActionLinkProps) {
   });
 
   return (
-    <button type="button" data-test-id={props.testId} className={className} onClick={props.onClick} disabled={props.disabled}>
+    <button
+      type="button"
+      data-test-id={props.testId}
+      className={className}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      aria-expanded={props["aria-expanded"]}
+    >
       {props.children}
     </button>
   );
 }
 
 export function DimmedActionLink(props: ActionLinkProps) {
-  const className = classNames(
-    baseLinkClass,
-    underlineClass(props.underline),
-    "text-content-dimmed",
-    props.className,
-    {
-      "hover:text-content-base": !props.disableColorHoverEffect && !props.disabled,
-      "disabled:opacity-50 disabled:cursor-not-allowed": props.disabled,
-    },
-  );
+  const className = classNames(baseLinkClass, underlineClass(props.underline), "text-content-dimmed", props.className, {
+    "hover:text-content-base": !props.disableColorHoverEffect && !props.disabled,
+    "disabled:opacity-50 disabled:cursor-not-allowed": props.disabled,
+  });
 
   return (
-    <button type="button" data-test-id={props.testId} className={className} onClick={props.onClick} disabled={props.disabled}>
+    <button
+      type="button"
+      data-test-id={props.testId}
+      className={className}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      aria-expanded={props["aria-expanded"]}
+    >
       {props.children}
     </button>
   );

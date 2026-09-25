@@ -70,19 +70,16 @@ defmodule Operately.RichContent do
         false
 
       %{"type" => "doc", "content" => content} when is_list(content) ->
-        # Convert TipTap content to string and check if it's meaningful
-        content
-        |> rich_content_to_string()
-        |> String.trim()
-        |> case do
-          "" -> false
-          _non_empty -> true
-        end
+        # Inspect source leaves so generated table separators do not count as content.
+        Enum.any?(content, &meaningful_text?/1)
 
       _ ->
         false
     end
   end
+
+  defp meaningful_text?(%{"content" => content}) when is_list(content), do: Enum.any?(content, &meaningful_text?/1)
+  defp meaningful_text?(node), do: node |> rich_content_to_string() |> String.trim() != ""
 
   @doc """
   Converts TipTap rich content to a plain string, similar to the JavaScript richContentToString function.
@@ -113,8 +110,8 @@ defmodule Operately.RichContent do
   Extracts user-visible text from TipTap content for search indexing.
 
   Unlike `rich_content_to_string/1`, this function keeps complete mention labels
-  and accepts encoded JSON documents. Editor metadata and attachment attributes
-  are intentionally excluded.
+  and accepts encoded JSON documents. Table attachment filenames are retained;
+  other editor metadata and attachment attributes are excluded.
   """
   def to_plain_text(content) when is_binary(content) do
     case Jason.decode(content) do

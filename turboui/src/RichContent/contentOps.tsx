@@ -1,5 +1,10 @@
 import { firstName } from "../utils/people";
+import type { JSONContent } from "@tiptap/core";
 import { tableContentToInline } from "./tableContent";
+
+export function hasTable(content: JSONContent | null | undefined): boolean {
+  return content?.type === "table" || (content?.content ?? []).some(hasTable);
+}
 
 // ShortenContent truncates the text content of a rich text object to a given character limit.
 // It does not remove non-text content.
@@ -124,7 +129,11 @@ export function emptyContent() {
 export function richContentToString(node: any): string {
   if (node.type === "table") {
     return tableContentToInline(node, "\n")
-      .map((child) => (child.type === "mention" ? child.attrs?.label ?? "" : child.text ?? ""))
+      .map((child) => {
+        if (child.type === "mention") return child.attrs?.label ?? "";
+        if (child.type === "blob") return child.attrs?.title || child.attrs?.alt || "File";
+        return child.text ?? "";
+      })
       .join("");
   }
 

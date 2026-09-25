@@ -855,5 +855,82 @@
     },
     "markdown": "Before\n\n| Link | Code |\n| --- | --- |\n| [read **this**](https://example.com/%28a%29%7Cb) | `` `edge` `` |\n| \\*literal\\* \\\\ \\_value\\_ | `   code   ` |\n\nAfter",
     "tableText": "Link | Code\nread this | `edge`\n*literal* \\ _value_ |   code  "
+  },
+  {
+    "name": "attachments in cells",
+    "document": {
+      "type": "doc",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Before"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "content": [
+            {
+              "type": "tableRow",
+              "content": [
+                {
+                  "type": "tableCell",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "blob",
+                          "attrs": {
+                            "title": "Report | final.pdf",
+                            "src": {
+                              "id": "report-file",
+                              "url": "/files/report (final).pdf"
+                            },
+                            "filetype": "application/pdf"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "blob",
+                          "attrs": {
+                            "title": "Diagram.png",
+                            "src": "/files/diagram.png",
+                            "filetype": "image/png"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "After"
+            }
+          ]
+        }
+      ]
+    },
+    "markdown": "Before\n\n|  |  |\n| --- | --- |\n| [Report \\| final.pdf](/files/report%20%28final%29.pdf \"Report \\| final.pdf\") | ![Diagram.png](/files/diagram.png \"Diagram.png\") |\n\nAfter",
+    "tableText": "Report | final.pdf | Diagram.png"
   }
 ]

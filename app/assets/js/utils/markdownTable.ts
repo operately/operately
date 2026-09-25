@@ -32,8 +32,9 @@ function renderInline(nodes: Node[], kinds: string[]): string {
 
   // Keep shared marks open across adjacent nodes, including partially overlapping marks.
   const groups: { mark?: Mark; nodes: Node[] }[] = [];
+
   for (const node of nodes) {
-    const mark = node.marks.find((candidate) => candidate.type.name === kind);
+    const mark = node.type.name === "blob" ? undefined : node.marks.find((candidate) => candidate.type.name === kind);
     const last = groups.at(-1);
     if (last && (last.mark === mark || (mark && last.mark?.eq(mark)))) {
       last.nodes.push(node);
@@ -41,6 +42,7 @@ function renderInline(nodes: Node[], kinds: string[]): string {
       groups.push({ mark, nodes: [node] });
     }
   }
+
   return groups
     .map(({ mark, nodes: group }) => {
       if (mark?.type.name === "code") return codeSpan(group.map((node) => node.textContent).join(""));
@@ -53,6 +55,14 @@ function renderInline(nodes: Node[], kinds: string[]): string {
 function renderLeaf(node: Node): string {
   if (node.type.name === "hardBreak") return "<br>";
   if (node.type.name === "mention") return `@${escapeText(node.attrs.label ?? "")}`;
+  if (node.type.name === "blob") {
+    const { src, title, alt, filetype } = node.attrs;
+    const href = typeof src === "string" ? src : src?.url;
+    const label = escapeText(alt || title || "File");
+    if (!href) return label;
+    const prefix = filetype?.startsWith("image/") ? "!" : "";
+    return prefix + renderLink(label, href, title);
+  }
   return escapeText(node.text ?? "");
 }
 
@@ -67,12 +77,7 @@ function escapeText(text: string): string {
 
 function wrapMark(text: string, mark: Mark): string {
   if (mark.type.name === "link") {
-    const href = (mark.attrs.href ?? "").replace(/[\s<>"\\()|]/g, (char: string) => {
-      const encoded = encodeURIComponent(char);
-      return encoded === char ? `%${char.charCodeAt(0).toString(16).toUpperCase()}` : encoded;
-    });
-    const title = mark.attrs.title ? ` "${mark.attrs.title.replace(/[\\"]/g, "\\$&").replace(/\r\n?|\n/g, " ")}"` : "";
-    return `[${text}](${href}${title})`;
+    return renderLink(text, mark.attrs.href ?? "", mark.attrs.title);
   }
   const delimiter = delimiters[mark.type.name];
   if (delimiter)
@@ -83,6 +88,15 @@ function wrapMark(text: string, mark: Mark): string {
     return `<!-- highlight: ${escapeText(mark.attrs.highlight)} -->${text}<!-- /highlight -->`;
   }
   return text;
+}
+
+function renderLink(text: string, source: string, title?: string | null): string {
+  const href = source.replace(/[\s<>"\\()|]/g, (char) => {
+    const encoded = encodeURIComponent(char);
+    return encoded === char ? `%${char.charCodeAt(0).toString(16).toUpperCase()}` : encoded;
+  });
+  const suffix = title ? ` "${title.replace(/[\\"]/g, "\\$&").replace(/\r\n?|\n/g, " ")}"` : "";
+  return `[${text}](${href}${suffix})`;
 }
 
 function codeSpan(text: string): string {

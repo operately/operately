@@ -339,16 +339,19 @@ it("keeps nested task states, mentions, and attachments in summaries", () => {
   expect(json).toContain('"type":"blob"');
 });
 
-it.each(tableFixtures)("summarizes tables as inline text: $name", ({ document, tableText }) => {
-  const result: JSONContent = summarize(document);
-  const inline = (result.content ?? []).flatMap((node) => node.content ?? []);
-  expect(inline.every((node) => node.type === "text" || node.type === "mention")).toBe(true);
-  const text = inline.map((node) => (node.type === "mention" ? node.attrs?.label : node.text)).join("");
-  expect(text).toBe(`Before ${tableText.replace(/\n/g, " / ")} After`);
-  if (tableText.includes("Alice Smith")) {
-    expect(inline).toContainEqual({ type: "mention", attrs: { id: "alice", label: "Alice Smith" } });
-  }
-});
+it.each(tableFixtures.filter((fixture) => fixture.name !== "attachments in cells"))(
+  "summarizes tables as inline text: $name",
+  ({ document, tableText }) => {
+    const result: JSONContent = summarize(document);
+    const inline = (result.content ?? []).flatMap((node) => node.content ?? []);
+    expect(inline.every((node) => node.type === "text" || node.type === "mention")).toBe(true);
+    const text = inline.map((node) => (node.type === "mention" ? node.attrs?.label : node.text)).join("");
+    expect(text).toBe(`Before ${tableText.replace(/\n/g, " / ")} After`);
+    if (tableText.includes("Alice Smith")) {
+      expect(inline).toContainEqual({ type: "mention", attrs: { id: "alice", label: "Alice Smith" } });
+    }
+  },
+);
 
 it("renders a truncated table summary through the current editor schema", async () => {
   const fixture = tableFixtures[0];
@@ -360,4 +363,17 @@ it("renders a truncated table summary through the current editor schema", async 
   expect(container.textContent).toContain("...");
   expect(container.querySelector("table")).toBeNull();
   expect(container.querySelector('[contenteditable="true"]')).toBeNull();
+});
+
+it("retains table attachments after summary truncation", async () => {
+  const fixture = tableFixtures.find((fixture) => fixture.name === "attachments in cells");
+  if (!fixture) throw new Error("Attachment fixture is required");
+  const result: JSONContent = summarize(fixture.document);
+  const blobs = (result.content ?? []).flatMap((node) => node.content ?? []).filter((node) => node.type === "blob");
+  expect(blobs.map((node) => node.attrs?.title)).toEqual(["Report | final.pdf", "Diagram.png"]);
+  const { container } = render(
+    <Summary content={fixture.document} characterCount={3} mentionedPersonLookup={async () => null} />,
+  );
+  await waitFor(() => expect(container.querySelector('a[href*="report"]')).not.toBeNull());
+  expect(container.querySelector('img[src="/files/diagram.png"]')).not.toBeNull();
 });

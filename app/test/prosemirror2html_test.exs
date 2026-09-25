@@ -21,6 +21,10 @@ defmodule Prosemirror2HtmlTest do
       assert html =~ "padding: 8px"
       assert html =~ "Before"
       assert html =~ "After"
+      if @fixture["name"] == "attachments in cells" do
+        assert Floki.attribute(dom, "td a", "href") == ["https://example.com/files/report (final).pdf", "https://example.com/files/diagram.png"]
+        assert Floki.find(dom, "td p div") == []
+      end
       if @fixture["name"] == "pipes backslashes and breaks" do
         assert html =~ "one<br>two"
         assert html =~ "a<br>b"
@@ -48,6 +52,22 @@ defmodule Prosemirror2HtmlTest do
   test "does not render executable link schemes" do
     for href <- ["javascript:alert(1)", "java\nscript:alert(1)", "data:text/html,<script>alert(1)</script>"] do
       assert Prosemirror2Html.convert_mark("Link", %{"type" => "link", "attrs" => %{"href" => href}}, @opts) == "Link"
+    end
+  end
+
+  test "preserves valid merged cell spans and ignores invalid span attributes" do
+    for type <- ["tableCell", "tableHeader"] do
+      cell = %{"type" => type, "attrs" => %{"colspan" => 2, "rowspan" => 3}, "content" => [%{"type" => "paragraph"}]}
+      dom = cell |> Prosemirror2Html.convert_node(@opts) |> Floki.parse_fragment!()
+      assert Floki.attribute(dom, "td, th", "colspan") == ["2"]
+      assert Floki.attribute(dom, "td, th", "rowspan") == ["3"]
+
+      for invalid <- [nil, 0, -1, "2", "2 onclick=alert(1)"] do
+        cell = Map.put(cell, "attrs", %{"colspan" => invalid, "rowspan" => invalid})
+        dom = cell |> Prosemirror2Html.convert_node(@opts) |> Floki.parse_fragment!()
+        assert Floki.attribute(dom, "td, th", "colspan") == []
+        assert Floki.attribute(dom, "td, th", "rowspan") == []
+      end
     end
   end
 

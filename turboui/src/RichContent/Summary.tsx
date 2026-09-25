@@ -54,7 +54,7 @@ export function summarize(node: any): any {
 
   switch (node.type) {
     case "table":
-      return { type: "paragraph", content: tableContentToInline(node) };
+      return summarizeParagraph({ content: tableContentToInline(node) });
     case "doc":
       return summarizeDoc(node);
     case "paragraph":

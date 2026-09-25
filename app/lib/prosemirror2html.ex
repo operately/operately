@@ -38,14 +38,22 @@ defmodule Prosemirror2Html do
     wrap(Enum.map_join(cells, &convert_node(&1, opts)), "tr")
   end
 
-  def convert_node(%{"type" => type, "content" => paragraphs}, opts) when type in ["tableCell", "tableHeader"] do
+  def convert_node(%{"type" => type, "content" => paragraphs} = cell, opts) when type in ["tableCell", "tableHeader"] do
     html = Enum.map_join(paragraphs, fn paragraph ->
       (paragraph["content"] || [])
       |> Enum.map_join(&convert_table_inline(&1, opts))
       |> wrap("p", style: "margin: 0;")
     end)
 
-    attrs = [style: "border: 1px solid #d1d5db; padding: 8px; text-align: left; vertical-align: top;"]
+    spans =
+      Enum.flat_map([:colspan, :rowspan], fn name ->
+        case get_in(cell, ["attrs", Atom.to_string(name)]) do
+          value when is_integer(value) and value > 1 -> [{name, value}]
+          _ -> []
+        end
+      end)
+
+    attrs = [style: "border: 1px solid #d1d5db; padding: 8px; text-align: left; vertical-align: top;"] ++ spans
     if type == "tableHeader", do: wrap(html, "th", attrs ++ [scope: "col"]), else: wrap(html, "td", attrs)
   end
 
@@ -142,6 +150,23 @@ defmodule Prosemirror2Html do
   def convert_node(_node, _opts), do: ""
 
   defp convert_table_inline(%{"type" => "mention", "attrs" => %{"label" => label}}, _opts), do: wrap(escape(label), "strong")
+
+  defp convert_table_inline(%{"type" => "blob", "attrs" => attrs}, opts) do
+    title = escape(attrs["title"] || attrs["alt"] || "File")
+    source =
+      case attrs["src"] do
+        %{"url" => url} -> url
+        url when is_binary(url) -> url
+        _ -> nil
+      end
+
+    if source in [nil, ""] do
+      title
+    else
+      href = if String.starts_with?(source, "/"), do: opts.domain <> source, else: source
+      convert_mark(title, %{"type" => "link", "attrs" => %{"href" => href}}, opts)
+    end
+  end
 
   defp convert_table_inline(%{"type" => "text", "text" => text} = node, opts) do
     text |> String.split(~r/\r\n?|\n/) |> Enum.map_join("<br>", &convert_node(%{node | "text" => &1}, opts))

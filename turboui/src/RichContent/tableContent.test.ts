@@ -6,6 +6,12 @@ it.each(tableFixtures)("flattens $name without changing the source", ({ document
   if (!table) throw new Error("Fixture must contain a table");
   const original = JSON.stringify(table);
   const inline = tableContentToInline(table, "\n");
-  expect(inline.map((node) => (node.type === "mention" ? node.attrs?.label : node.text)).join("")).toBe(tableText);
+  expect(
+    inline
+      .map((node) =>
+        node.type === "mention" ? node.attrs?.label : node.type === "blob" ? node.attrs?.title : node.text,
+      )
+      .join(""),
+  ).toBe(tableText);
   expect(JSON.stringify(table)).toBe(original);
 });

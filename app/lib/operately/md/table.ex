@@ -38,6 +38,8 @@ defmodule Operately.MD.Table do
     end)
   end
 
+  defp find_mark(%{"type" => "blob"}, _kind), do: nil
+
   defp find_mark(node, kind) do
     case Enum.find(node["marks"] || [], &(&1["type"] == kind)) do
       %{"type" => "link", "attrs" => attrs} -> %{"type" => "link", "attrs" => Map.merge(%{"href" => nil, "title" => nil}, Map.take(attrs, ["href", "title"]))}
@@ -47,6 +49,25 @@ defmodule Operately.MD.Table do
 
   defp render_leaf(%{"type" => "hardBreak"}), do: "<br>"
   defp render_leaf(%{"type" => "mention", "attrs" => %{"label" => label}}), do: "@" <> escape_text(label)
+
+  defp render_leaf(%{"type" => "blob", "attrs" => attrs}) do
+    source =
+      case attrs["src"] do
+        %{"url" => url} -> url
+        url when is_binary(url) -> url
+        _ -> nil
+      end
+
+    label = Enum.find([attrs["alt"], attrs["title"], "File"], &(&1 not in [nil, ""])) |> escape_text()
+
+    if source in [nil, ""] do
+      label
+    else
+      prefix = if String.starts_with?(attrs["filetype"] || "", "image/"), do: "!", else: ""
+      prefix <> wrap_mark(label, %{"type" => "link", "attrs" => %{"href" => source, "title" => attrs["title"]}})
+    end
+  end
+
   defp render_leaf(%{"text" => text}), do: escape_text(text)
   defp render_leaf(_), do: ""
 

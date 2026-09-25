@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
+import { DimmedActionLink } from "../Link";
+import RichContent, { countCharacters, hasTable, isContentEmpty, shortenContent } from "../RichContent";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import type { RichTextHandlers } from "../RichContent/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
@@ -107,6 +108,7 @@ interface ViewModeProps {
 
 function ViewMode({ rawDescription, mentionedPersonLookup, taskList }: ViewModeProps) {
   const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
+  const canCollapse = length > PREVIEW_CHARACTER_LIMIT && !hasTaskList(rawDescription);
 
   return (
     <div className="mt-2">
@@ -115,12 +117,19 @@ function ViewMode({ rawDescription, mentionedPersonLookup, taskList }: ViewModeP
         transformContent={transformContent}
         mentionedPersonLookup={mentionedPersonLookup}
         taskList={taskList}
+        className={canCollapse && !isExpanded && hasTable(rawDescription) ? "max-h-96 overflow-hidden" : undefined}
       />
 
-      {length > PREVIEW_CHARACTER_LIMIT && !hasTaskList(rawDescription) && (
-        <button onClick={toggleExpand} className="text-content-dimmed hover:underline text-sm mt-1 font-medium">
+      {canCollapse && (
+        <DimmedActionLink
+          aria-expanded={isExpanded}
+          onClick={toggleExpand}
+          className="text-sm mt-1 font-medium"
+          underline="hover"
+          disableColorHoverEffect
+        >
           {isExpanded ? "Collapse" : "Expand"}
-        </button>
+        </DimmedActionLink>
       )}
     </div>
   );
@@ -219,7 +228,7 @@ function useExpandDescription(rawDescription: any) {
 
   const transformContent = useCallback(
     (content: any) => {
-      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded || hasTaskList(content)) return content;
+      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded || hasTaskList(content) || hasTable(content)) return content;
       return shortenContent(content, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
     },
     [length, isExpanded],

@@ -11,6 +11,7 @@ defmodule Operately.RichContent.Table do
 
   defp inline_text(%{"type" => "text", "text" => text}), do: String.replace(text, ~r/\r\n?|\n/, " / ")
   defp inline_text(%{"type" => "mention", "attrs" => %{"label" => label}}), do: label
+  defp inline_text(%{"type" => "blob", "attrs" => attrs}), do: attrs["title"] || attrs["alt"] || "File"
   defp inline_text(%{"type" => "hardBreak"}), do: " / "
   defp inline_text(%{"content" => content}), do: Enum.map_join(content, &inline_text/1)
   defp inline_text(_), do: ""

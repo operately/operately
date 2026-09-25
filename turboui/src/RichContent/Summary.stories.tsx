@@ -18,3 +18,9 @@ type Story = StoryObj<typeof Summary>;
 export const TableAsText: Story = {};
 export const TruncatedTable: Story = { args: { characterCount: 40 } };
 export const HeaderlessTable: Story = { args: { content: tableFixtures[1]?.document } };
+export const TableAttachments: Story = {
+  args: {
+    content: tableFixtures.find((fixture) => fixture.name === "attachments in cells")?.document,
+    characterCount: 3,
+  },
+};

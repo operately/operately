@@ -7,6 +7,21 @@ defmodule Operately.RichContentTest do
 
   alias OperatelyWeb.Paths
 
+  test "description presence ignores table separators but retains actual punctuation" do
+    for inline <- [[], [%{"type" => "text", "text" => "  "}], [%{"type" => "hardBreak"}]] do
+      cell = %{"type" => "tableCell", "content" => [%{"type" => "paragraph", "content" => inline}]}
+      table = %{"type" => "table", "content" => [%{"type" => "tableRow", "content" => [cell, cell]}]}
+      # Despite its name, empty?/1 is the existing has_description predicate.
+      refute Operately.RichContent.empty?(%{"type" => "doc", "content" => [table]})
+    end
+
+    for inline <- [%{"type" => "text", "text" => "| /"}, %{"type" => "mention", "attrs" => %{"label" => "Alice Smith"}}] do
+      cell = %{"type" => "tableCell", "content" => [%{"type" => "paragraph", "content" => [inline]}]}
+      table = %{"type" => "table", "content" => [%{"type" => "tableRow", "content" => [cell]}]}
+      assert Operately.RichContent.empty?(%{"type" => "doc", "content" => [table]})
+    end
+  end
+
   @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
 
   for fixture <- @table_fixtures do
