@@ -1,5 +1,5 @@
 import * as api from "@/api";
-import { compareIds, Paths } from "@/routes/paths";
+import { Paths } from "@/routes/paths";
 import { isPresent } from "@/utils/isPresent";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
@@ -45,8 +45,4 @@ export function targetChangeSentiment(target: Target): "positive" | "negative" |
   } else {
     return diff > 0 ? "negative" : "positive";
   }
-}
-
-export function canEditGoalCheckIn(checkIn: Update, personId?: string): boolean {
-  return Boolean(personId && compareIds(checkIn.author?.id, personId) && checkIn.permissions?.canEdit);
 }

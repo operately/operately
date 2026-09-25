@@ -3,7 +3,7 @@ defmodule Operately.RichContent.MarkdownTaskLists do
 
   @item ~r/^(\s*)([-*+]|\d+\.)\s+(?:\[([ xX])\]\s*)?(.*)$/
 
-  def contains_tasks?(block), do: Regex.match?(~r/^\s*[-*+]\s+\[[ xX]\]/m, block)
+  def contains_tasks?(block), do: Regex.match?(~r/^\s*(?:[-*+]|\d+\.)\s+\[[ xX]\]/m, block)
 
   def parse(block, inline) do
     block |> String.split("\n", trim: true) |> parse_lines(inline)

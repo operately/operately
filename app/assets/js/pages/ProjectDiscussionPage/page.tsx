@@ -13,9 +13,8 @@ import { invalidateProjectInteractionQueries } from "@/models/projects/projectIn
 import { Avatar, IconEdit, CurrentSubscriptions, RichContent, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
-import { useMe } from "../../contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { compareIds, usePaths } from "../../routes/paths";
+import { usePaths } from "../../routes/paths";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -61,11 +60,10 @@ export function Page() {
 function Options() {
   const { discussion } = useLoadedData();
   const paths = usePaths();
-  const me = useMe();
 
   return (
     <PageOptions.Root testId="options">
-      {canEditDiscussion(discussion, me?.id) && (
+      {canEditDiscussion(discussion) && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
@@ -82,12 +80,11 @@ function Content() {
   const { discussion } = useLoadedData();
   const message = JSON.parse(discussion.message || "{}");
   const { mentionedPersonLookup } = useRichEditorHandlers();
-  const me = useMe();
   const taskList = useTaskList({
     resourceType: "project_discussion",
     resourceId: discussion.id,
     field: "message",
-    canEdit: canEditDiscussion(discussion, me?.id),
+    canEdit: canEditDiscussion(discussion),
   });
 
   return (
@@ -163,6 +160,6 @@ function Subscriptions() {
   );
 }
 
-function canEditDiscussion(discussion: CommentThread, personId?: string): boolean {
-  return Boolean(personId && compareIds(discussion.author?.id, personId) && discussion.projectPermissions?.canEdit);
+function canEditDiscussion(discussion: CommentThread): boolean {
+  return discussion.projectPermissions?.canEdit ?? false;
 }

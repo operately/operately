@@ -3,11 +3,10 @@ import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { useLoadedData } from "./loader";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useNavigate } from "react-router";
 import { Forms, IconEdit, IconTrash, Modal, showSuccessToast } from "turboui";
 import { useBoolState } from "@/hooks/useBoolState";
-import { useDeleteGoalProgressUpdate, canEditGoalCheckIn } from "@/models/goalCheckIns";
+import { useDeleteGoalProgressUpdate } from "@/models/goalCheckIns";
 import { usePaths } from "@/routes/paths";
 
 export function Options() {
@@ -16,10 +15,9 @@ export function Options() {
 
   const mode = Pages.usePageMode();
   const setPageMode = Pages.useSetPageMode();
-  const me = useMe();
 
   const isUnpublished = update.state === "draft" || update.state === "scheduled";
-  const isEditVisible = canEditGoalCheckIn(update, me?.id) && mode === "view";
+  const isEditVisible = (update.permissions?.canEdit ?? false) && mode === "view";
   const isDiscardVisible = isUnpublished && mode === "view";
 
   if (!isEditVisible && !isDiscardVisible) return null;

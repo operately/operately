@@ -1,8 +1,7 @@
 import { useTaskList } from "@/models/richContent/taskListLifecycle";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import React from "react";
 
-import { ProjectCheckIn, canEditProjectCheckIn } from "@/models/projectCheckIns";
+import { ProjectCheckIn } from "@/models/projectCheckIns";
 import { RichContent, shortenContent } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -10,12 +9,11 @@ export function DescriptionSection({ checkIn, limit }: { checkIn: ProjectCheckIn
   const source = JSON.parse(checkIn.description ?? "{}");
   const message = limit ? shortenContent(source, limit, { suffix: "...", skipParse: true }) : source;
   const { mentionedPersonLookup } = useRichEditorHandlers();
-  const me = useMe();
   const taskList = useTaskList({
     resourceType: "project_check_in",
     resourceId: checkIn.id,
     field: "description",
-    canEdit: !limit && canEditProjectCheckIn(checkIn, me?.id),
+    canEdit: checkIn.project?.permissions?.canEdit ?? false,
   });
 
   return (

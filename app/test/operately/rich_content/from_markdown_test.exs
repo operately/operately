@@ -3,6 +3,19 @@ defmodule Operately.RichContent.FromMarkdownTest do
 
   alias Operately.RichContent.FromMarkdown
 
+  test "numbered checkboxes preserve checked state and nested tasks" do
+    assert {:ok, doc} = FromMarkdown.to_rich_text("1. [ ] **Review**\n   1. [X] Nested\n2. [x] Ship")
+    assert [list | _] = doc["content"]
+    assert list["type"] == "taskList"
+    assert [review, ship] = list["content"]
+    assert review["attrs"] == %{"checked" => false}
+    assert ship["attrs"] == %{"checked" => true}
+    assert [paragraph, nested] = review["content"]
+    assert hd(paragraph["content"])["marks"] == [%{"type" => "bold"}]
+    assert nested["type"] == "taskList"
+    assert hd(nested["content"])["attrs"] == %{"checked" => true}
+  end
+
   test "task lists preserve checked state, nested tasks, and surrounding paragraphs" do
     assert {:ok, doc} = FromMarkdown.to_rich_text("Before\n\n- [ ] **Parent**\n  - [x] Child\n- [ ] Next\n\nAfter")
     list = Enum.find(doc["content"], &(&1["type"] == "taskList"))

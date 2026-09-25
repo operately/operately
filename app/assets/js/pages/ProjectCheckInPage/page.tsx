@@ -1,4 +1,3 @@
-import { canEditProjectCheckIn } from "@/models/projectCheckIns";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -27,7 +26,6 @@ import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 
 import { Comments } from "./Comments";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
@@ -156,10 +154,9 @@ function Navigation() {
 function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const paths = usePaths();
   const { checkIn } = useLoadedData();
-  const me = useMe()!;
 
   const isUnpublished = checkIn.state === "draft" || checkIn.state === "scheduled";
-  const canEdit = canEditProjectCheckIn(checkIn, me?.id);
+  const canEdit = checkIn.project?.permissions?.canEdit ?? false;
   const canDelete = isUnpublished || checkIn.project?.permissions?.hasFullAccess || false;
 
   if (!canEdit && !canDelete) return null;
