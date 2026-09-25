@@ -1,5 +1,4 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
-import type { CompanyImportRun } from "@/api";
 import i18n, { applyLanguage } from "@/i18n";
 import { toImportPageRun } from ".";
 
@@ -12,8 +11,8 @@ const portuguese = { ...i18n.getResourceBundle("pt-BR", "translation") };
 const originalConfig = window.appConfig;
 const message =
   "This package was exported from Operately {{manifestVersion}}, but this instance is running {{currentVersion}}. The import failure may be related to version differences.";
-const run: CompanyImportRun = {
-  __typename: "company_import_run",
+const run = {
+  __typename: "company_import_run" as const,
   id: "import-1",
   status: "failed",
   manifestSummary: { operatelyVersion: "1.0" },

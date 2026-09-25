@@ -27,8 +27,18 @@ export function mergeRun<T extends MergeableRun>(runs: T[], nextRun: T) {
   return sortRuns([nextRun, ...filtered]);
 }
 
-export function toImportPageRun(run: CompanyImportRun) {
-  const manifestSummary = (run.manifestSummary as Record<string, string> | undefined) ?? null;
+type ImportPageRun = Omit<CompanyImportRun, "manifestSummary"> & {
+  manifestSummary?: Record<string, string> | CompanyImportRun["manifestSummary"] | null;
+};
+
+function importManifestSummary(value: ImportPageRun["manifestSummary"]): Record<string, string> | null {
+  if (!value || typeof value !== "object") return null;
+
+  return value;
+}
+
+export function toImportPageRun(run: ImportPageRun) {
+  const manifestSummary = importManifestSummary(run.manifestSummary);
   const manifestVersion = manifestSummary?.operatelyVersion;
   const currentVersion = window.appConfig?.version;
 
