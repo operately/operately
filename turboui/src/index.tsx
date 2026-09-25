@@ -225,6 +225,8 @@ export { Summary } from "./RichContent";
 export { displayDate, nodeDisplayInsertedAt, withNodeDisplayInsertedAt, type DraftableResource } from "./utils/drafts";
 export { Editor, hasLocalDraft, useEditor } from "./RichEditor";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
+export type { RichTextHandlers, CommentTaskItemChangeHandler } from "./RichContent/types";
+export type { TaskListInteraction, TaskItemChange } from "./RichEditor/taskLists";
 export { createRichEditorExtensions } from "./RichEditor/createRichEditorExtensions";
 export { RichContent };
 export { RichContentDiff, DiffLegend, diffRichContent, createRichContentSchema } from "./RichContentDiff";

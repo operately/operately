@@ -3,8 +3,6 @@ import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { useLoadedData } from "./loader";
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router";
 import { Forms, IconEdit, IconTrash, Modal, showSuccessToast } from "turboui";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -17,11 +15,9 @@ export function Options() {
 
   const mode = Pages.usePageMode();
   const setPageMode = Pages.useSetPageMode();
-  const me = useMe();
 
   const isUnpublished = update.state === "draft" || update.state === "scheduled";
-  const isAuthor = compareIds(me?.id, update.author?.id);
-  const isEditVisible = isAuthor && mode === "view";
+  const isEditVisible = (update.permissions?.canEdit ?? false) && mode === "view";
   const isDiscardVisible = isUnpublished && mode === "view";
 
   if (!isEditVisible && !isDiscardVisible) return null;

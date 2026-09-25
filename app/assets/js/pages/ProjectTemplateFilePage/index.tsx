@@ -3,7 +3,7 @@ import { loader, useLoadedData } from "./loader";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
 import { usePaths } from "@/routes/paths";
@@ -20,12 +20,16 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
   const file = node.file;
   const blob = file.blob;
   const [downloadFile] = useDownloadFile(blob.url, file.name);
-  const canEdit = Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const canEdit = !template.archivedAt && Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const richTextHandlers = useRichTextHandlers({
+    scope: { type: "space", id: template.space.id },
+    templateComments: true,
+    taskList: { resourceType: "template_file", resourceId: file.id, field: "description", canEdit },
+  });
   const docsAndFilesLink = paths.projectTemplatePath(template.id, { tab: "docs-and-files" });
   const commentsProps = useTemplateComments({
     templateId: template.id,
@@ -92,6 +96,7 @@ function Page() {
       }}
       description={file.description ?? null}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+      taskList={richTextHandlers.taskList}
       hideReactions
       comments={commentsProps}
       hideSubscriptions

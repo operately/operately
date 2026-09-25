@@ -33,6 +33,15 @@ defmodule Prosemirror2Html do
     |> wrap("li")
   end
 
+  def convert_node(%{"type" => "taskList", "content" => content}, opts) do
+    content |> Enum.map_join(&convert_node(&1, opts)) |> wrap("ul", style: "list-style: none; padding-left: 20px;")
+  end
+
+  def convert_node(%{"type" => "taskItem", "content" => content} = node, opts) do
+    checkbox = if get_in(node, ["attrs", "checked"]) == true, do: "☑", else: "☐"
+    wrap(checkbox <> " " <> Enum.map_join(content, &convert_node(&1, opts)), "li")
+  end
+
   def convert_node(%{"type" => "bulletList", "content" => content}, opts) do
     content
     |> Enum.map(fn node -> convert_node(node, opts) end)

@@ -16,7 +16,7 @@ import { assertPresent } from "../../utils/assertions";
 
 import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import {
   useCreateFolder,
@@ -153,7 +153,13 @@ function Page() {
   const parentGoalSearch = useParentGoalSearch({ type: "goal", id: goal.id });
   const spaceSearch = useSpaceSearch();
 
-  const richEditorHandlers = useRichEditorHandlers({
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "goal",
+      resourceId: goal.id,
+      field: "description",
+      canEdit: goal.permissions?.canEdit ?? false,
+    },
     scope: { type: "goal", id: goal.id },
   });
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -268,7 +274,7 @@ function Page() {
     relatedWorkItems: prepareWorkMapData(workMap),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
 
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     localDraftKeyBase: `goal:${goal.id}`,
 
     addTarget,

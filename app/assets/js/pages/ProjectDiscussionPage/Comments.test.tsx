@@ -30,7 +30,11 @@ it.each([false, true])("preserves configuration and edit-mode visibility with ca
     currentUser: { id: "me", fullName: "Me", avatarUrl: null, profileLink: "/me" },
     onAddComment: async () => true,
     onEditComment: async () => true,
-    richTextHandlers: { mentionedPersonLookup: async () => null },
+    richTextHandlers: {
+      mentionedPersonLookup: async () => null,
+      taskList: { canEdit: false },
+      onCommentTaskItemChange: null,
+    },
     formattedTimePreferences: { locale: "en", timezone: "UTC", timeFormat: "automatic" },
   };
   jest.mocked(useCommentSection).mockReturnValue(props);

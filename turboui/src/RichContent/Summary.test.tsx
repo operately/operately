@@ -293,3 +293,44 @@ describe("summarize", () => {
     });
   });
 });
+
+it("keeps nested task states, mentions, and attachments in summaries", () => {
+  const result = summarize({
+    type: "doc",
+    content: [
+      {
+        type: "taskList",
+        content: [
+          {
+            type: "taskItem",
+            attrs: { checked: true },
+            content: [
+              {
+                type: "paragraph",
+                content: [
+                  { type: "mention", attrs: { id: "alice", label: "Alice" } },
+                  { type: "blob", attrs: { id: "file", src: "/file.pdf", filetype: "application/pdf" } },
+                ],
+              },
+              {
+                type: "taskList",
+                content: [
+                  {
+                    type: "taskItem",
+                    attrs: { checked: false },
+                    content: [{ type: "paragraph", content: [{ type: "text", text: "Review" }] }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+  const json = JSON.stringify(result);
+  expect(json).toContain("☑");
+  expect(json).toContain("☐");
+  expect(json).toContain('"type":"mention"');
+  expect(json).toContain('"type":"blob"');
+});

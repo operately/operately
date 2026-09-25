@@ -3,7 +3,7 @@ import { PersonField } from "../PersonField";
 import { StatusSelector } from "../StatusSelector";
 import type { ProjectField } from "../ProjectField";
 import type { RichTextJSON } from "../RichContent";
-import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import type { SpaceField } from "../SpaceField";
 import type { TaskPage } from "../TaskPage";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -177,7 +177,7 @@ export interface TaskListSlideInContext {
   milestones?: Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: PersonField.SearchData;
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
 }
 
 export interface TaskBoardProps {
@@ -201,7 +201,7 @@ export interface TaskBoardProps {
   assigneePersonSearch?: PersonField.SearchData;
   projectSearch?: ProjectField.SearchProjectFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
   getTaskPageProps?: (taskId: string, ctx: TaskListSlideInContext) => TaskPage.ContentProps | null;
 
   // Filter functionality

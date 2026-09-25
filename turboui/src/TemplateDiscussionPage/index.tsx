@@ -8,7 +8,7 @@ import type { Navigation } from "../Page/Navigation";
 import RichContent from "../RichContent";
 import FormattedTime, { type FormattedTimePreferences } from "../FormattedTime";
 import type { PersonField } from "../PersonField";
-import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import { IconEdit } from "../icons";
 
 export namespace TemplateDiscussionPage {
@@ -23,7 +23,7 @@ export namespace TemplateDiscussionPage {
     };
     editLink?: string;
     comments?: CommentSectionProps;
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     formattedTimePreferences: FormattedTimePreferences;
   }
 }
@@ -69,6 +69,7 @@ export function TemplateDiscussionPage(props: TemplateDiscussionPage.Props) {
         <div className="my-8">
           <RichContent
             content={props.discussion.body}
+            taskList={props.richTextHandlers.taskList}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
           />
         </div>

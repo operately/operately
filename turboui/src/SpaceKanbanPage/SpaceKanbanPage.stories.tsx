@@ -14,7 +14,7 @@ import {
   CANCELED_STATUS,
 } from "../TaskBoard/tests/mockData";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
@@ -305,7 +305,7 @@ export const Default: Story = {
             })
           }
           assigneePersonSearch={assigneeSearch}
-          richTextHandlers={createMockRichEditorHandlers()}
+          richTextHandlers={createMockRichTextHandlers()}
           onTaskCreate={taskActions.onTaskCreate}
           onTaskNameChange={taskActions.onTaskNameChange}
           onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
@@ -501,7 +501,7 @@ export const WithStatusManagement: Story = {
           }
           assigneePersonSearch={assigneeSearch}
           canEdit
-          richTextHandlers={createMockRichEditorHandlers()}
+          richTextHandlers={createMockRichTextHandlers()}
           onTaskNameChange={taskActions.onTaskNameChange}
           onStatusesChange={(data) => {
             const nextStatuses = data.nextStatuses;

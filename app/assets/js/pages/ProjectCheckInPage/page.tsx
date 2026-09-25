@@ -20,14 +20,12 @@ import {
   showSuccessToast,
   displayDate,
 } from "turboui";
-import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 
 import { Comments } from "./Comments";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
@@ -156,11 +154,9 @@ function Navigation() {
 function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const paths = usePaths();
   const { checkIn } = useLoadedData();
-  const me = useMe()!;
 
-  const isAuthor = compareIds(me.id, checkIn.author?.id);
   const isUnpublished = checkIn.state === "draft" || checkIn.state === "scheduled";
-  const canEdit = isAuthor;
+  const canEdit = checkIn.project?.permissions?.canEdit ?? false;
   const canDelete = isUnpublished || checkIn.project?.permissions?.hasFullAccess || false;
 
   if (!canEdit && !canDelete) return null;

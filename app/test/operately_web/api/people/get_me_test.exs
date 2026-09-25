@@ -12,10 +12,27 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
   describe "get_me functionality" do
     setup :register_and_log_in_account
 
+    test "includes self-edit permissions for guests", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:guest, type: :guest)
+        |> Factory.log_in_person(:guest)
+
+      assert {200, %{me: %{permissions: %{can_edit_profile: true}}}} = query(ctx.conn, [:people, :get_me], %{})
+    end
+
+    test "self-edit permissions respect company read-only restrictions", ctx do
+      %{company_id: ctx.company.id, access_state: :read_only}
+      |> Operately.Billing.CompanyBillingAccount.changeset()
+      |> Repo.insert!()
+
+      assert {200, %{me: %{permissions: %{can_edit_profile: false}}}} = query(ctx.conn, [:people, :get_me], %{})
+    end
+
     test "it returns the current account's information", ctx do
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
 
-      assert data == Serializer.serialize(ctx.person, level: :full)
+      assert data == expected_profile(ctx.person)
     end
 
     test "includes manager information when requested", ctx do
@@ -25,14 +42,14 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
 
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{include_manager: true})
 
-      assert data == Serializer.serialize(me, level: :full)
+      assert data == expected_profile(me)
       assert data.manager == Serializer.serialize(manager, level: :essential)
     end
 
     test "when the account has no manager, it returns null even when requested", ctx do
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{include_manager: true})
 
-      assert data == Serializer.serialize(ctx.person, level: :full)
+      assert data == expected_profile(ctx.person)
       assert data.manager == nil
     end
 
@@ -107,5 +124,11 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
 
       assert data.dismissed_product_release_id == nil
     end
+  end
+
+  defp expected_profile(person) do
+    person
+    |> Serializer.serialize(level: :full)
+    |> Map.put(:permissions, %{can_edit_profile: true, __typename: "person_permissions"})
   end
 end

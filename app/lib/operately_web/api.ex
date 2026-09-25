@@ -356,6 +356,10 @@ defmodule OperatelyWeb.Api do
 
   defmacro internal_endpoints do
     quote do
+      namespace :rich_content do
+        mutation :set_task_item_checked, OperatelyWeb.Api.RichContent.SetTaskItemChecked
+      end
+
       namespace :documents do
         query :get_public, OperatelyWeb.Api.Documents.GetPublic
         mutation :update_public_sharing, OperatelyWeb.Api.Documents.UpdatePublicSharing

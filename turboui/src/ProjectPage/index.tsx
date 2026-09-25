@@ -16,7 +16,7 @@ import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { RichTextHandlers } from "../RichContent/types";
 import { SidebarNotificationSection } from "../SidebarSection";
 import { TasksSection } from "./TasksSection";
 import { getTaskCompletionStats } from "./taskCompletion";
@@ -209,7 +209,7 @@ export namespace ProjectPage {
 
     currentUser?: Person | null;
 
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     localDraftKeyBase?: string;
 
     onTaskDescriptionChange: (taskId: string, description: any) => Promise<boolean>;

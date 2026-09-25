@@ -132,7 +132,13 @@ defmodule Operately.People.Person do
   end
 
   def load_permissions(person = %__MODULE__{}, company_read_only \\ false) do
-    perms = Operately.People.Permissions.calculate(person.request_info.access_level, company_read_only: company_read_only)
+    access_level =
+      case person.request_info.requester do
+        %{id: id} when id == person.id -> Operately.Access.Binding.full_access()
+        _ -> person.request_info.access_level
+      end
+
+    perms = Operately.People.Permissions.calculate(access_level, company_read_only: company_read_only)
     Map.put(person, :permissions, perms)
   end
 end

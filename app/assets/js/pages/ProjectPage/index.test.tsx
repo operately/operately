@@ -58,7 +58,7 @@ jest.mock("@/models/resourceHubs", () => ({
   useResourceHubNodesListProps: () => ({}),
 }));
 jest.mock("@/models/search/resourceHub", () => ({ useResourceHubSearchProps: () => ({}) }));
-jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: () => ({}) }));
+jest.mock("@/hooks/useRichTextHandlers", () => ({ useRichTextHandlers: () => ({}) }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
 jest.mock("./contentQueries", () => ({
   useProjectContentQueries: () => ({

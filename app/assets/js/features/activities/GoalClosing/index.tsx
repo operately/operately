@@ -34,6 +34,7 @@ const GoalClosing: ActivityHandler = {
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
             <RichContent
+              taskList={{ canEdit: false }}
               content={activity.commentThread.message}
               mentionedPersonLookup={mentionedPersonLookup}
               parseContent

@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React from "react";
 import { MemoryRouter } from "react-router";
@@ -45,6 +45,57 @@ function getByTestId(testId: string) {
   return el;
 }
 
+it.each([true, false])("uses the rich-text bundle with comment toggles enabled=%s", async (enabled) => {
+  const user = userEvent.setup();
+  const onCommentTaskItemChange = jest.fn().mockResolvedValue(undefined);
+  const taskContent = {
+    type: "doc",
+    content: [
+      {
+        type: "taskList",
+        content: [
+          {
+            type: "taskItem",
+            attrs: { checked: false },
+            content: [{ type: "paragraph", content: [{ type: "text", text: "Review" }] }],
+          },
+        ],
+      },
+    ],
+  };
+  render(
+    <MemoryRouter>
+      <CommentItem
+        comment={{ ...comment, content: JSON.stringify(taskContent) }}
+        form={form}
+        commentParentType="task"
+        canComment
+        currentUserId={comment.author.id}
+        richTextHandlers={{
+          mentionedPersonLookup: async () => null,
+          taskList: { canEdit: false },
+          onCommentTaskItemChange: enabled ? onCommentTaskItemChange : null,
+        }}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+      />
+    </MemoryRouter>,
+  );
+
+  const checkbox = await screen.findByRole("checkbox", { name: "Review" });
+  await user.click(checkbox);
+  if (enabled) {
+    await waitFor(() => expect(checkbox).toBeChecked());
+    expect(onCommentTaskItemChange).toHaveBeenCalledWith(comment.id, {
+      itemPath: [0, 0],
+      checked: true,
+      expectedContent: taskContent,
+    });
+  } else {
+    expect(checkbox).toBeDisabled();
+    expect(onCommentTaskItemChange).not.toHaveBeenCalled();
+  }
+});
+
 describe("CommentItem", () => {
   it("renders backend-resolved comment links", async () => {
     const href = `${window.location.origin}/acme-0abc/projects/project-xyz`;
@@ -62,7 +113,11 @@ describe("CommentItem", () => {
           form={form}
           commentParentType="task"
           canComment={false}
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{
+            mentionedPersonLookup: async () => null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -78,7 +133,11 @@ describe("CommentItem", () => {
           form={form}
           commentParentType="task"
           canComment={false}
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{
+            mentionedPersonLookup: async () => null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -104,7 +163,11 @@ describe("CommentItem", () => {
           canComment
           currentUserId="author-1"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{
+            mentionedPersonLookup: async () => null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -130,7 +193,11 @@ describe("CommentItem", () => {
           canManageComments
           currentUserId="someone-else"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{
+            mentionedPersonLookup: async () => null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,
@@ -155,7 +222,11 @@ describe("CommentItem", () => {
           canManageComments
           currentUserId="author-1"
           appearance="flat"
-          richTextHandlers={{ mentionedPersonLookup: async () => null }}
+          richTextHandlers={{
+            mentionedPersonLookup: async () => null,
+            taskList: { canEdit: false },
+            onCommentTaskItemChange: null,
+          }}
           formattedTimePreferences={defaultFormattedTimePreferences}
         />
       </MemoryRouter>,

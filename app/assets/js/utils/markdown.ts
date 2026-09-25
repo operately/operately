@@ -35,6 +35,8 @@ const schema = new Schema({
       attrs: { start: { default: 1 } },
     },
     listItem: { content: "paragraph block*", group: "block" },
+    taskList: { content: "taskItem+", group: "block" },
+    taskItem: { content: "paragraph block*", attrs: { checked: { default: false } } },
     horizontalRule: { group: "block" },
     codeBlock: {
       content: "text*",
@@ -79,6 +81,11 @@ const schema = new Schema({
 
 const serializer = new MarkdownSerializer(
   {
+    taskList: (state, node) => state.renderList(node, "  ", () => "- "),
+    taskItem: (state, node) => {
+      state.write(node.attrs.checked ? "[x] " : "[ ] ");
+      state.renderContent(node);
+    },
     text: ((state: MarkdownSerializerState, node: Node) => {
       state.text(node.text || "");
     }) as NodeSerializerFn,

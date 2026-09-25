@@ -145,3 +145,18 @@ npm install
     });
   });
 });
+
+it("preserves nested and mixed task lists, loose paragraphs, and inline formatting", () => {
+  const result = convertMarkdownToTiptap(
+    "Before\n\n- [x] **Done**\n  - [ ] [Review](https://example.com)\n- Ordinary\n- [ ] Pending\n\n  More details\n\nAfter",
+  );
+  const json = JSON.stringify(result);
+  assert.ok(json.includes('"type":"taskList"'));
+  assert.ok(json.includes('"checked":true'));
+  assert.ok(json.includes('"checked":false'));
+  for (const text of ["Before", "After", "Ordinary", "Pending", "More details", "Review"])
+    assert.ok(json.includes(text));
+  assert.ok(json.includes('"type":"bold"'));
+  assert.ok(json.includes('"href":"https://example.com"'));
+  assert.ok(json.includes('"type":"bulletList"'));
+});

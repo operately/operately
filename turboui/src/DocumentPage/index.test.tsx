@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { DocumentPage } from "./index";
 import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/NodesListContext";
@@ -36,7 +36,7 @@ jest.mock("../icons", () => {
 });
 
 const author = genPeople(1)[0]!;
-const richTextHandlers = createMockRichEditorHandlers();
+const richTextHandlers = createMockRichTextHandlers();
 
 const subscriptions: CurrentSubscriptions.Props = {
   subscribers: [asSubscriber(author, { isSubscribed: true })],
@@ -133,6 +133,7 @@ describe("DocumentPage", () => {
   test("shows reactions, comments, subscriptions, and draft actions when provided", () => {
     renderPage(
       <DocumentPage
+        taskList={{ canEdit: false }}
         {...baseProps}
         state="draft"
         publishedAt={undefined}
@@ -171,6 +172,7 @@ describe("DocumentPage", () => {
   test("hides optional sections when hide flags are set", () => {
     renderPage(
       <DocumentPage
+        taskList={{ canEdit: false }}
         {...baseProps}
         testId="project-template-document-page"
         hideDraftActions
@@ -195,6 +197,7 @@ describe("DocumentPage", () => {
 
     renderPage(
       <DocumentPage
+        taskList={{ canEdit: false }}
         {...baseProps}
         hideDraftActions
         hideReactions
