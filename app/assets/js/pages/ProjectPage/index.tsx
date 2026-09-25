@@ -23,7 +23,7 @@ import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
 import * as Spaces from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import i18n, { translationText } from "@/i18n";
@@ -171,7 +171,13 @@ function LoadedPage() {
   });
 
   const parentGoalSearch = useParentGoalSearch({ type: "project", id: project.id });
-  const richEditorHandlers = useRichEditorHandlers({
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "project",
+      resourceId: project.id,
+      field: "description",
+      canEdit: project.permissions?.canEdit ?? false,
+    },
     scope: { type: "project", id: project.id },
   });
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -471,7 +477,7 @@ function LoadedPage() {
     tasksView: project.tasksView === "board" ? "board" : "list",
     onTasksViewChange: handleTasksViewChange,
 
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     localDraftKeyBase: `project:${project.id}`,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,

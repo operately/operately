@@ -339,7 +339,7 @@ function PreviousCheckInPreview({
         </div>
       </div>
 
-      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent taskList={{ canEdit: false }} content={content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

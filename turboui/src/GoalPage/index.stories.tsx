@@ -17,7 +17,7 @@ import { getNodeName } from "../ResourceHub/selectors";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { asRichText } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
@@ -193,7 +193,7 @@ function Component(props: GoalPageStoryArgs) {
       updateTargetIndex={async (_id, _index) => true}
       {...checklistHandlers}
       deleteGoal={deleteGoal}
-      richTextHandlers={createMockRichEditorHandlers()}
+      richTextHandlers={createMockRichTextHandlers()}
       formattedTimePreferences={defaultFormattedTimePreferences}
       currentUser={currentUser}
     />

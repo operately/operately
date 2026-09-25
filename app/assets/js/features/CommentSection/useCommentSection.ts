@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths, compareIds } from "@/routes/paths";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import * as Comments from "@/models/comments";
 import { parsePersonForTurboUi, type SearchScope } from "@/models/people";
 import { useReadNotifications } from "@/models/notifications/notificationLifecycle";
@@ -43,7 +43,8 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
     initialComments: query.data?.comments ?? EMPTY_COMMENTS,
     invalidateQueries,
   });
-  const richTextHandlers = useRichEditorHandlers({
+  const richTextHandlers = useRichTextHandlers({
+    taskList: null,
     scope: mentionSearchScope,
   });
 

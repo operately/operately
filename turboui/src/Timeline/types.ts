@@ -1,7 +1,7 @@
 import { DateField } from "../DateField";
 import { Person, Comment, CommentNotificationInfo } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { RichTextHandlers } from "../RichContent/types";
 import type { FormattedTimePreferences } from "../FormattedTime";
 
 export type { Comment } from "../CommentSection/types";
@@ -180,7 +180,7 @@ export interface TimelineProps {
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
   filters?: TimelineFilters;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   commentNotificationInfo?: CommentNotificationInfo;
   commentDraftKey?: string;
   formattedTimePreferences: FormattedTimePreferences;
@@ -203,7 +203,7 @@ export interface TimelineItemProps {
   commentParentType: string;
   onEditComment: (id: string, content: any) => Promise<boolean | void> | boolean | void;
   onDeleteComment: (id: string) => Promise<void> | void;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   commentDraftKey?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;

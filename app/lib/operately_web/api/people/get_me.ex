@@ -17,8 +17,11 @@ defmodule OperatelyWeb.Api.People.GetMe do
   end
 
   def call(conn, inputs) do
+    permissions = Operately.People.Permissions.calculate(Operately.Access.Binding.full_access(), company_read_only: company_read_only(conn))
+
     conn
     |> me()
+    |> Map.put(:permissions, permissions)
     |> preload_manager(inputs[:include_manager])
     |> then(fn me -> %{me: Serializer.serialize(me, level: :full)} end)
     |> ok_tuple()

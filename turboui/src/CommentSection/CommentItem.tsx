@@ -15,6 +15,7 @@ import { createTestId } from "../TestableElement";
 import { Reactions } from "../Reactions";
 import { useScrollIntoViewOnLoad } from "../utils/useScrollIntoViewOnLoad";
 import { showErrorToast, showSuccessToast } from "../Toasts";
+import type { TaskListInteraction } from "../RichEditor/taskLists";
 import { useCommentVisibility } from "./useCommentVisibility";
 
 function shortName(name: string | undefined): string {
@@ -54,6 +55,7 @@ export function CommentItem({
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = parseContent(comment.content);
+  const onTaskItemChange = richTextHandlers.onCommentTaskItemChange;
   const isOwnComment = compareIds(currentUserId, comment.author.id);
   const visibilityRef = useCommentVisibility(onVisible, comment.id);
 
@@ -141,6 +143,14 @@ export function CommentItem({
         ) : (
           <CommentViewMode
             content={parsedContent}
+            taskList={
+              onTaskItemChange
+                ? {
+                    canEdit: canComment && (canManageComments || isOwnComment),
+                    onChange: (change) => onTaskItemChange(comment.id, change),
+                  }
+                : { canEdit: false }
+            }
             mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
             reactions={comment.reactions}
             currentUserId={currentUserId}
@@ -212,6 +222,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
 
 interface CommentViewModeProps {
   content: any;
+  taskList: TaskListInteraction;
   mentionedPersonLookup: MentionedPersonLookupFn;
   reactions: Reactions.Reaction[];
   currentUserId?: string;
@@ -222,6 +233,7 @@ interface CommentViewModeProps {
 
 function CommentViewMode({
   content,
+  taskList,
   mentionedPersonLookup,
   reactions,
   currentUserId,
@@ -234,7 +246,7 @@ function CommentViewMode({
   return (
     <div>
       <div className="mb-2">
-        <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+        <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} taskList={taskList} />
       </div>
       {shouldShowReactions && (
         <Reactions

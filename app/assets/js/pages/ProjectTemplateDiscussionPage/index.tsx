@@ -1,7 +1,7 @@
 import { type ProjectTemplate } from "@/api";
 import { loader, useLoadedData } from "./loader";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
 import * as People from "@/models/people";
 import { Paths, usePaths } from "@/routes/paths";
@@ -14,9 +14,13 @@ export default { name: "ProjectTemplateDiscussionPage", loader, Page } as PageMo
 function Page() {
   const { template, discussion, comments } = useLoadedData();
   const paths = usePaths();
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const formattedTimePreferences = useFormattedTimePreferences();
-  const canEdit = Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const canEdit = !template.archivedAt && Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const richTextHandlers = useRichTextHandlers({
+    scope: { type: "space", id: template.space.id },
+    templateComments: true,
+    taskList: { resourceType: "template_discussion", resourceId: discussion.id, field: "body", canEdit },
+  });
   const commentsProps = useTemplateComments({
     templateId: template.id,
     parentType: "discussion",

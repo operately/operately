@@ -1,9 +1,10 @@
+import { useLoadedData } from "@/pages/GoalActivityPage/loader";
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
 import { Link, IconEdit, isContentEmpty, RichContent, Summary } from "turboui";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
@@ -25,11 +26,19 @@ const GoalDiscussionCreation: ActivityHandler = {
 
   PageContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
+    const canEdit = useCanEditDiscussion();
+    const taskList = useTaskList({
+      resourceType: "goal_discussion",
+      resourceId: activity.commentThread?.id ?? "",
+      field: "message",
+      canEdit,
+    });
 
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <RichContent
+            taskList={taskList}
             content={activity.commentThread!.message!}
             mentionedPersonLookup={mentionedPersonLookup}
             parseContent
@@ -40,12 +49,12 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   PageOptions({ activity }: { activity: Activity }) {
-    const me = useMe()!;
+    const canEdit = useCanEditDiscussion();
     const paths = usePaths();
 
     return (
       <PageOptions.Root testId="options">
-        {activity.author!.id! === me?.id && (
+        {canEdit && (
           <PageOptions.Link
             icon={IconEdit}
             title="Edit"
@@ -111,3 +120,8 @@ function content(activity: Activity): ActivityContentGoalDiscussionCreation {
 }
 
 export default GoalDiscussionCreation;
+
+function useCanEditDiscussion(): boolean {
+  const { goal } = useLoadedData();
+  return goal.permissions?.canEdit ?? false;
+}

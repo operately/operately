@@ -1,3 +1,4 @@
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -27,6 +28,12 @@ export function Page() {
   const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
+  const taskList = useTaskList({
+    resourceType: "link",
+    resourceId: link.id,
+    field: "description",
+    canEdit: link.permissions?.canEditLink ?? false,
+  });
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   const mutationScope = {
@@ -87,6 +94,7 @@ export function Page() {
 
   return (
     <LinkPage
+      taskList={taskList}
       pageTitle={link.name}
       navigation={buildLinkPageNavigation(link, paths)}
       options={options}

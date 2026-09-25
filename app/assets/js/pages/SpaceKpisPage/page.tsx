@@ -12,7 +12,7 @@ import * as Kpis from "@/models/kpis";
 import { invalidateKpiQueries } from "@/models/kpis/kpiLifecycle";
 import { useSubscription } from "@/models/subscriptions";
 
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { usePaths } from "@/routes/paths";
 import { useLoadedData, useRefresh } from "./loader";
 import { KpiEntryComments } from "./KpiEntryComments";
@@ -25,7 +25,12 @@ export function Page() {
   const { space, kpis, kpi } = useLoadedData();
 
   const peopleSearch = People.usePeopleSearch({ type: "space", id: space.id! });
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id! } });
+  const richTextHandlers = useRichTextHandlers({
+    scope: { type: "space", id: space.id! },
+    taskList: kpi
+      ? { resourceType: "kpi", resourceId: kpi.id, field: "description", canEdit: space.permissions?.canEdit ?? false }
+      : null,
+  });
 
   const createKpi = Kpis.useCreateKpi();
   const editKpi = Kpis.useEditKpi();

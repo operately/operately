@@ -5,7 +5,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { TaskPage } from "./index";
 import { asRichText, createActiveTaskTimeline, mockMilestones, mockTaskPeople, timelinePeople } from "./mockData";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
 import { generatePermissions } from "../utils/storybook/permissions";
@@ -125,7 +125,7 @@ export function InProjectContextStory() {
       assigneePersonSearch={assigneePersonSearch}
       milestones={milestones}
       onMilestoneSearch={handleMilestoneSearch}
-      richTextHandlers={createMockRichEditorHandlers()}
+      richTextHandlers={createMockRichTextHandlers()}
       statusOptions={DEFAULT_STATUS_OPTIONS}
       // Permissions
       permissions={generatePermissions(true)}

@@ -3,6 +3,8 @@ import { textblockTypeInputRule } from "@tiptap/core";
 import Heading from "@tiptap/extension-heading";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
+import { TaskList } from "@tiptap/extension-list";
+import { TaskItemExtension } from "./extensions/TaskItem";
 
 import Blob from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
@@ -65,6 +67,8 @@ export function createRichEditorExtensions(
 
   const extensions: Extensions = [
     starterKitExtension,
+    TaskList.configure({ HTMLAttributes: { class: "!list-none !pl-0" } }),
+    TaskItemExtension,
     headingExtension,
     Blob.configure({
       uploadFile: handlers.uploadFile,

@@ -17,7 +17,7 @@ import { StatusSelector } from "../../StatusSelector";
 import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
-import type { RichEditorHandlers } from "../../RichEditor/useEditor";
+import type { RichTextHandlers } from "../../RichContent/types";
 import type { FormattedTimePreferences } from "../../FormattedTime";
 
 export interface MilestoneCardProps {
@@ -38,7 +38,7 @@ export interface MilestoneCardProps {
   selectedTaskId?: string | null;
   onTaskClick?: (taskId: string) => void;
   onInlineCreateOpen?: () => void;
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
   formattedTimePreferences: FormattedTimePreferences;
 
   /**

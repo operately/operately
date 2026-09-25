@@ -1,3 +1,4 @@
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -68,11 +69,18 @@ export function Page() {
 function DiscussionBody() {
   const { discussion } = useLoadedData();
   const { mentionedPersonLookup } = useRichEditorHandlers();
+  const taskList = useTaskList({
+    resourceType: "space_discussion",
+    resourceId: discussion.id,
+    field: "body",
+    canEdit: discussion.permissions.canEdit,
+  });
 
   return (
     <>
       <Spacer size={4} />
       <RichContent
+        taskList={taskList}
         content={discussion.body}
         className="text-md sm:text-lg"
         mentionedPersonLookup={mentionedPersonLookup}

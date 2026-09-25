@@ -1,5 +1,5 @@
 import * as Templates from "@/models/projectTemplates/projectTemplateEditorLifecycle";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import * as People from "@/models/people";
 import { content, serializeContent, serializeJson } from "@/models/projectTemplates";
@@ -21,7 +21,6 @@ function Page() {
   const updateTemplate = Templates.useUpdateTemplate(scope);
   const refresh = useRefresh();
   const paths = usePaths();
-  const richTextHandlers = useRichEditorHandlers();
   const formattedTimePreferences = useFormattedTimePreferences();
   const profilePath = React.useCallback((personId: string) => paths.profilePath(personId), [paths]);
   const milestoneLink = React.useCallback(
@@ -44,6 +43,9 @@ function Page() {
   });
 
   const canEdit = !template.archivedAt && Boolean(permissions.canEdit || permissions.hasFullAccess);
+  const richTextHandlers = useRichTextHandlers({
+    taskList: { resourceType: "project_template", resourceId: template.id, field: "description", canEdit },
+  });
   const slideInModel = useTemplateTaskSlideInProps({ canEdit, formattedTimePreferences });
   const [overview, setOverview] = React.useState(() => templateOverview(template));
   React.useEffect(() => {

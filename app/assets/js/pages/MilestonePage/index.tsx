@@ -19,7 +19,7 @@ import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { useComments } from "./useComments";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useSubscription } from "@/models/subscriptions";
 import { useMilestones as useProjectMilestones } from "@/models/milestones/useMilestones";
@@ -129,7 +129,13 @@ function Page() {
     }
   }, [deleteMilestone, milestone.id, milestone.project, navigate, paths]);
 
-  const richEditorHandlers = useRichEditorHandlers({
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "milestone",
+      resourceId: milestone.id,
+      field: "description",
+      canEdit: milestone.permissions?.canEdit ?? false,
+    },
     scope: { type: "project", id: milestone.project.id },
   });
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -284,7 +290,7 @@ function Page() {
     subscriptions,
 
     // Rich text editor support
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     formattedTimePreferences,
   };
 

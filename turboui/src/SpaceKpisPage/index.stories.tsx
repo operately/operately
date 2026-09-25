@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { CommentSection } from "../CommentSection";
 import type { CommentSectionItem } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
@@ -315,7 +315,7 @@ function Harness(args: HarnessArgs) {
       selectedKpi={kpis.find((kpi) => kpi.id === kpiId) ?? null}
       currentUser={mockCurrentUser}
       championSearch={mockChampionSearch}
-      richTextHandlers={createMockRichEditorHandlers()}
+      richTextHandlers={createMockRichTextHandlers()}
       onCreateKpi={onCreateKpi}
       onEditKpi={onEditKpi}
       onDescriptionChange={onDescriptionChange}
@@ -347,7 +347,7 @@ function EntryComments() {
       currentUser={{ ...mockCurrentUser, profileLink: mockCurrentUser.profileLink ?? "#" }}
       canComment
       commentParentType="kpi_entry"
-      richTextHandlers={createMockRichEditorHandlers()}
+      richTextHandlers={createMockRichTextHandlers()}
       formattedTimePreferences={defaultFormattedTimePreferences}
       onAddComment={(content) => {
         setItems((prev) => [

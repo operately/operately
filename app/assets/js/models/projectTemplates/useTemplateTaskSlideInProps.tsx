@@ -1,4 +1,6 @@
 import React from "react";
+import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
+import type { TaskItemChange } from "turboui";
 import {
   type FormattedTimePreferences,
   type GetTemplateTaskPageProps,
@@ -25,9 +27,16 @@ export function useTemplateTaskSlideInProps(opts: {
   formattedTimePreferences: FormattedTimePreferences;
 }) {
   const { canEdit, formattedTimePreferences } = opts;
+  const setTaskItemChecked = useSetTaskItemChecked();
   const getTemplateTaskPageProps = React.useCallback<GetTemplateTaskPageProps>(
-    (taskId, ctx) => buildTemplateTaskPageProps(taskId, ctx, { canEdit, formattedTimePreferences }),
-    [canEdit, formattedTimePreferences],
+    (taskId, ctx) =>
+      buildTemplateTaskPageProps(taskId, ctx, {
+        canEdit,
+        formattedTimePreferences,
+        onTaskItemChange: (change) =>
+          setTaskItemChecked({ resourceType: "template_task", resourceId: taskId, field: "description" }, change),
+      }),
+    [canEdit, formattedTimePreferences, setTaskItemChecked],
   );
 
   return React.useMemo(() => ({ getTemplateTaskPageProps }), [getTemplateTaskPageProps]);
@@ -36,7 +45,11 @@ export function useTemplateTaskSlideInProps(opts: {
 export function buildTemplateTaskPageProps(
   taskId: string,
   ctx: Parameters<GetTemplateTaskPageProps>[1],
-  opts: { canEdit: boolean; formattedTimePreferences: FormattedTimePreferences },
+  opts: {
+    canEdit: boolean;
+    formattedTimePreferences: FormattedTimePreferences;
+    onTaskItemChange: ((change: TaskItemChange) => Promise<void>) | null;
+  },
 ): TaskPage.ContentProps | null {
   const task = ctx.tasks.find((item) => compareIds(item.id, taskId));
   if (!task || !ctx.richTextHandlers) return null;
@@ -79,7 +92,10 @@ export function buildTemplateTaskPageProps(
       await ctx.onTaskDelete?.(taskId);
     },
     assigneePersonSearch: ctx.personSearch ?? EMPTY_PERSON_SEARCH,
-    richTextHandlers: ctx.richTextHandlers,
+    richTextHandlers: {
+      ...ctx.richTextHandlers,
+      taskList: opts.onTaskItemChange ? { canEdit: opts.canEdit, onChange: opts.onTaskItemChange } : { canEdit: false },
+    },
     canEdit: opts.canEdit,
     onAddComment: () => undefined,
     onEditComment: () => undefined,

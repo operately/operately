@@ -3188,6 +3188,34 @@ export type ReviewAssignmentTypes =
   | "project_retrospective"
   | "goal_retrospective";
 
+export type RichTextField = "description" | "content" | "message" | "body";
+
+export type RichTextResourceType =
+  | "link"
+  | "file"
+  | "task"
+  | "project"
+  | "goal"
+  | "milestone"
+  | "document"
+  | "kpi"
+  | "project_check_in"
+  | "project_retrospective"
+  | "goal_discussion"
+  | "project_discussion"
+  | "goal_check_in"
+  | "space_discussion"
+  | "comment"
+  | "person"
+  | "project_template"
+  | "template_task"
+  | "template_milestone"
+  | "template_discussion"
+  | "template_comment"
+  | "template_document"
+  | "template_file"
+  | "template_link";
+
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 
 export type SearchResultState = "closed" | "completed" | "archived" | "paused";
@@ -6360,6 +6388,19 @@ export interface ResourceHubsUpdateParentFolderResult {
   success: boolean;
 }
 
+export interface RichContentSetTaskItemCheckedInput {
+  resourceType: RichTextResourceType;
+  resourceId: Id;
+  field: RichTextField;
+  itemPath: number[];
+  expectedContent: Json;
+  checked: boolean;
+}
+
+export interface RichContentSetTaskItemCheckedResult {
+  success: boolean;
+}
+
 export interface SpacesAddMembersInput {
   spaceId: Id;
   members: AddMemberInput[];
@@ -7718,6 +7759,14 @@ class ApiNamespaceReactions {
   }
 }
 
+class ApiNamespaceRichContent {
+  constructor(private client: ApiClient) {}
+
+  async setTaskItemChecked(input: RichContentSetTaskItemCheckedInput): Promise<RichContentSetTaskItemCheckedResult> {
+    return this.client.post("/rich_content/set_task_item_checked", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -7745,6 +7794,7 @@ export class ApiClient {
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceReactions: ApiNamespaceReactions;
+  public apiNamespaceRichContent: ApiNamespaceRichContent;
 
   constructor() {
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
@@ -7771,6 +7821,7 @@ export class ApiClient {
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
+    this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
   }
 
   setBasePath(basePath: string) {
@@ -12165,6 +12216,20 @@ export default {
     createMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: ReactionsCreateInput) => defaultApiClient.apiNamespaceReactions.create(input),
+      }),
+  },
+
+  rich_content: {
+    setTaskItemChecked: (input: RichContentSetTaskItemCheckedInput) =>
+      defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+    useSetTaskItemChecked: () =>
+      useMutation<RichContentSetTaskItemCheckedInput, RichContentSetTaskItemCheckedResult>((input) =>
+        defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+      ),
+    setTaskItemCheckedMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: RichContentSetTaskItemCheckedInput) =>
+          defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
       }),
   },
 };
