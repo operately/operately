@@ -53,6 +53,16 @@ defmodule OperatelyEmail.RichTextExcerpt do
 
   defp parse_content(_), do: nil
 
+  defp shorten_node(%{"type" => "table"} = table, count, limit, suffix) do
+    text = table |> Operately.RichContent.Table.to_plain_text() |> String.replace("\n", " / ")
+    paragraph = %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => text}]}
+    shorten_node(paragraph, count, limit, suffix)
+  end
+
+  defp shorten_node(%{type: "table"} = table, count, limit, suffix) do
+    table |> Jason.encode!() |> Jason.decode!() |> shorten_node(count, limit, suffix)
+  end
+
   defp shorten_node(node, count, limit, suffix) when is_map(node) do
     {node, count} = maybe_shorten_text(node, count, limit, suffix)
     {node, count} = maybe_shorten_mention_label(node, count, limit, suffix)

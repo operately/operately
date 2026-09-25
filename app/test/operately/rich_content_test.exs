@@ -7,6 +7,22 @@ defmodule Operately.RichContentTest do
 
   alias OperatelyWeb.Paths
 
+  @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+  for fixture <- @table_fixtures do
+    @fixture fixture
+    test "extracts readable table text and indexes every cell: #{fixture["name"]}" do
+      table = Enum.at(@fixture["document"]["content"], 1)
+      assert Operately.RichContent.rich_content_to_string(table) == @fixture["tableText"]
+      searchable = Operately.RichContent.to_plain_text(@fixture["document"])
+      assert searchable =~ "Before"
+      assert searchable =~ "After"
+      if @fixture["tableText"] =~ "Alice Smith" do
+        assert searchable =~ "Alice Smith"
+      end
+    end
+  end
+
   setup do
     company = company_fixture(%{name: "Operately"})
 

@@ -1,3 +1,4 @@
+import tableFixtures from "../../../test/fixtures/rich_text/tables.json";
 import { exportToMarkdown } from "./markdown";
 
 it("exports task states, nesting, links, mentions and attachments", () => {
@@ -49,4 +50,8 @@ it("exports task states, nesting, links, mentions and attachments", () => {
   expect(result).toContain("@Alice");
   expect(result).toContain("https://example.com");
   expect(result).toContain("[Notes](https://example.com/file.pdf)");
+});
+
+it.each(tableFixtures)("exports tables: $name", ({ document, markdown }) => {
+  expect(exportToMarkdown(document)).toBe(markdown);
 });

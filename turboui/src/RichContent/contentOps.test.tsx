@@ -1,3 +1,4 @@
+import tableFixtures from "../../../app/test/fixtures/rich_text/tables.json";
 import { areRichTextObjectsEqual, countCharacters, richContentToString, shortenContent } from "./contentOps";
 
 describe("shortenContent", () => {
@@ -244,5 +245,20 @@ describe("areRichTextObjectsEqual", () => {
     };
 
     expect(areRichTextObjectsEqual(obj1, obj2)).toBeFalsy();
+  });
+});
+
+describe("table previews", () => {
+  it.each(tableFixtures)("keeps complete tables when truncating: $name", ({ document }) => {
+    const source = JSON.stringify(document);
+    const shortened = shortenContent(source, 10, { suffix: "..." });
+    expect(shortened.content[1]).toEqual(document.content[1]);
+    if (countCharacters(JSON.stringify(document.content[1])) > 4) expect(shortened.content).toHaveLength(2);
+    expect(JSON.stringify(document)).toBe(source);
+    expect(shortenContent(source, 3).content).toHaveLength(1);
+  });
+
+  it.each(tableFixtures)("separates table cells and rows in plain text: $name", ({ document, tableText }) => {
+    expect(richContentToString(document.content[1])).toBe(tableText);
   });
 });

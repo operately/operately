@@ -101,6 +101,8 @@ defmodule Operately.RichContent do
     first_name(label)
   end
 
+  def rich_content_to_string(%{"type" => "table"} = table), do: Operately.RichContent.Table.to_plain_text(table)
+
   def rich_content_to_string(%{"content" => content}) when is_list(content) do
     rich_content_to_string(content)
   end
@@ -135,6 +137,8 @@ defmodule Operately.RichContent do
   defp extract_visible_text(%{"type" => "text", "text" => text}) when is_binary(text), do: [text]
 
   defp extract_visible_text(%{"type" => "mention", "attrs" => %{"label" => label}}) when is_binary(label), do: [label]
+
+  defp extract_visible_text(%{"type" => "table"} = table), do: [Operately.RichContent.Table.to_plain_text(table)]
 
   defp extract_visible_text(%{"content" => content}) when is_list(content), do: extract_visible_text(content)
 

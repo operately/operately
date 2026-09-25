@@ -12,6 +12,8 @@ defmodule Operately.MD.RichText do
   def render(_), do: ""
 
   # Block nodes
+  defp render_block(%{"type" => "table"} = table), do: Operately.MD.Table.render(table)
+
   defp render_block(%{"type" => "taskList", "content" => items}) do
     Enum.map_join(items, "\n", fn item ->
       checked = if get_in(item, ["attrs", "checked"]) == true, do: "x", else: " "
@@ -106,6 +108,7 @@ defmodule Operately.MD.RichText do
         %{"type" => "text"} -> render_inline_node(node)
         %{"type" => "mention"} -> render_inline_node(node)
         %{"type" => "blob"} -> render_inline_node(node)
+        %{"type" => "table"} -> "\n\n  " <> String.replace(render_block(node), "\n", "\n  ")
         %{"type" => type} when type in ["taskList", "bulletList", "orderedList"] -> "\n  " <> String.replace(render_block(node), "\n", "\n  ")
         _ -> render_inline_node(node)
       end
