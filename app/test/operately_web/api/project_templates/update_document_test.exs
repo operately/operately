@@ -35,6 +35,14 @@ defmodule OperatelyWeb.Api.ProjectTemplates.UpdateDocumentTest do
     assert {404, _} = request(ctx, %{document_id: Paths.project_template_resource_document_id(ctx.other_document)})
   end
 
+  test "preserves table content in template documents", ctx do
+    content = "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!() |> Enum.at(1) |> Map.fetch!("document")
+
+    assert {200, %{document: document}} = request(ctx, %{content: Jason.encode!(content)})
+    assert Jason.decode!(document.content) == content
+    assert Repo.reload!(ctx.document).content == content
+  end
+
   test "requires authentication", ctx do
     assert {401, _} = request(%{ctx | conn: Phoenix.ConnTest.build_conn()})
   end

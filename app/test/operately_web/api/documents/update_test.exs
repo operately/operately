@@ -108,6 +108,44 @@ defmodule OperatelyWeb.Api.Documents.UpdateTest do
       assert document.content == RichText.rich_text("Edited content")
     end
 
+    test "table edits create a version and preserve previous content", ctx do
+      content = "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!() |> Enum.at(1) |> Map.fetch!("document")
+
+      assert {200, _} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: ctx.document.name,
+                 content: Jason.encode!(content)
+               })
+
+      document = Repo.reload!(ctx.document)
+      assert document.content == content
+      assert document.current_version == 2
+      [version, previous] = Operately.ResourceHubs.DocumentVersion.list_for_document(document.id)
+      assert version.editor_id == ctx.creator.id
+      assert version.content == content
+      assert previous.content == ctx.document.content
+    end
+
+    test "draft table edits update in place without creating a version", ctx do
+      ctx = Factory.add_document(ctx, :draft, :hub, state: :draft)
+      content = "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!() |> Enum.at(1) |> Map.fetch!("document")
+      versions = Operately.ResourceHubs.DocumentVersion.list_for_document(ctx.draft.id)
+
+      assert {200, _} =
+               mutation(ctx.conn, [:documents, :update], %{
+                 document_id: Paths.document_id(ctx.draft),
+                 name: ctx.draft.name,
+                 content: Jason.encode!(content)
+               })
+
+      draft = Repo.reload!(ctx.draft)
+      assert draft.content == content
+      assert draft.state == :draft
+      assert draft.current_version == ctx.draft.current_version
+      assert Operately.ResourceHubs.DocumentVersion.list_for_document(draft.id) == versions
+    end
+
     test "stale expected_version conflicts without writes", ctx do
       assert {200, _} =
                mutation(ctx.conn, [:documents, :update], %{
