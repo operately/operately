@@ -6,10 +6,20 @@ defmodule Operately.Operations.GoalCheckInEdit do
   alias Operately.Notifications.SubscriptionList
   alias Operately.Search.IndexUpdates
 
+  @doc """
+  Edits only the message, preserving progress and publishing settings while retaining normal edit side effects.
+  """
+  def run_content_edit(author, goal, check_in, content) do
+    run(author, goal, check_in, %{content: content, content_only: true, new_target_values: [], checklist: []})
+  end
+
+  @doc """
+  Applies a check-in edit, including publishing settings and progress changes when full editing is allowed.
+  """
   def run(author, goal, check_in, attrs) do
     with :ok <- Operately.Scheduling.validate_scheduled_at(attrs[:scheduled_at]) do
       Multi.new()
-      |> set_if_full_edit_allowed(goal, check_in)
+      |> set_if_full_edit_allowed(goal, check_in, attrs)
       |> update_check_in(check_in, attrs)
       |> maybe_update_targets(goal.targets, attrs.new_target_values)
       |> maybe_update_checks(goal.checks, attrs.checklist || [])
@@ -29,7 +39,11 @@ defmodule Operately.Operations.GoalCheckInEdit do
   # check-in being created and only if it is the latest check-in.
   # Otherwise, only the message can be edited.
   #
-  defp set_if_full_edit_allowed(multi, goal, check_in) do
+  defp set_if_full_edit_allowed(multi, _goal, _check_in, %{content_only: true}) do
+    Multi.put(multi, :full_edit_allowed, false)
+  end
+
+  defp set_if_full_edit_allowed(multi, goal, check_in, _attrs) do
     edit_start = Drafts.display_date(check_in)
     edit_deadline = DateTime.add(edit_start, 3, :day)
 
@@ -197,6 +211,8 @@ defmodule Operately.Operations.GoalCheckInEdit do
       true -> check_in.scheduled_at
     end
   end
+
+  defp handle_oban_jobs(multi, _check_in, %{content_only: true}), do: multi
 
   defp handle_oban_jobs(multi, check_in, attrs) do
     new_state = state(check_in, attrs)
