@@ -97,7 +97,7 @@ function NameInput({ field }: { field: string }) {
     <Forms.TextInput
       label={translationText(t("Space Name"))}
       field={field}
-      placeholder="e.g. Marketing"
+      placeholder={translationText(t("e.g. Marketing"))}
       required
       autoFocus
       onEnter={(event) => {
@@ -115,7 +115,7 @@ function PurposeInput({ field }: { field: string }) {
     <Forms.TextInput
       label={translationText(t("Purpose"))}
       field={field}
-      placeholder="e.g. Create product awareness and bring new leads"
+      placeholder={translationText(t("e.g. Create product awareness and bring new leads"))}
       required
     />
   );

@@ -119,7 +119,7 @@ function ToolRow(props: {
       </div>
 
       <div className="flex items-center">
-        <SwitchToggle label="" labelHidden value={props.value} setValue={props.onChange} testId={props.testId} />
+        <SwitchToggle label={props.title} labelHidden value={props.value} setValue={props.onChange} testId={props.testId} />
       </div>
     </div>
   );
