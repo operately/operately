@@ -66,10 +66,12 @@ afterEach(async () => {
 
 it.each([
   ["en", "Add another member"],
-  ["pt-BR", "Add another member"],
+  ["pt-BR", "Adicionar outro membro"],
   ["substituted", "Translated add another member"],
 ])("names the add-member button from the catalog: %s", async (language, expected) => {
-  i18n.removeResourceBundle("pt-BR", "translation");
+  if (language !== "pt-BR") {
+    i18n.removeResourceBundle("pt-BR", "translation");
+  }
   if (language === "substituted") {
     i18n.addResourceBundle("en", "translation", { [addAnotherMember]: expected }, true, true);
   }

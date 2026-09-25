@@ -86,7 +86,7 @@ Space creation, editing, general access, access management (including Other Peop
 
 Most of these surfaces were already cataloged. This follow-up replaces concatenated access-summary messages with a complete description for each resource, tense, and permission combination, and gives the add-member button a cataloged accessible name. Tool switches reuse their cataloged tool title as their accessible name. Shared permission option labels are looked up at the shared list; goal and project access pages are outside this extraction.
 
-English wording and behavior are preserved. This extraction adds no Portuguese translations: new messages remain untranslated and fall back to English. Previously reviewed translations remain intact, including obsolete entries for superseded access-summary sentences. Focused tests exercise English, substituted catalog lookup, missing-Portuguese fallback (including the existing Other People count's singular and plural forms), and tool configuration interactions. Catalogs and generated resources are regenerated with `make gen.i18n`.
+English wording and behavior are preserved. The complete access-summary messages and add-member accessible name have Brazilian Portuguese translations drafted from the glossary and previously reviewed fragment translations. Previously reviewed translations remain intact, including obsolete entries for superseded access-summary sentences. Focused tests exercise English, Portuguese catalog lookup, substituted catalog lookup, missing-Portuguese fallback (including the existing Other People count's singular and plural forms), and tool configuration interactions. Catalogs and generated resources are regenerated with `make gen.i18n`.
 
 Remaining coverage gaps:
 
