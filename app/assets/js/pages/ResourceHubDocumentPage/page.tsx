@@ -1,3 +1,4 @@
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -35,6 +36,12 @@ export function Page() {
   const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
+  const taskList = useTaskList({
+    resourceType: "document",
+    resourceId: document.id,
+    field: "content",
+    canEdit: document.permissions?.canEditDocument ?? false,
+  });
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
   const [sharingOpen, setSharingOpen] = React.useState(false);
@@ -124,6 +131,7 @@ export function Page() {
     formattedTimePreferences,
     content: document.content!,
     mentionedPersonLookup,
+    taskList,
     reactions: {
       ...reactionsForm,
       size: 24,

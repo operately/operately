@@ -1,3 +1,6 @@
+import { useLoadedData } from "@/pages/GoalActivityPage/loader";
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
+import { compareIds } from "@/routes/paths";
 import React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -25,11 +28,19 @@ const GoalDiscussionCreation: ActivityHandler = {
 
   PageContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
+    const canEdit = useCanEditDiscussion(activity);
+    const taskList = useTaskList({
+      resourceType: "goal_discussion",
+      resourceId: activity.commentThread?.id ?? "",
+      field: "message",
+      canEdit,
+    });
 
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <RichContent
+            taskList={taskList}
             content={activity.commentThread!.message!}
             mentionedPersonLookup={mentionedPersonLookup}
             parseContent
@@ -40,12 +51,12 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   PageOptions({ activity }: { activity: Activity }) {
-    const me = useMe()!;
+    const canEdit = useCanEditDiscussion(activity);
     const paths = usePaths();
 
     return (
       <PageOptions.Root testId="options">
-        {activity.author!.id! === me?.id && (
+        {canEdit && (
           <PageOptions.Link
             icon={IconEdit}
             title="Edit"
@@ -111,3 +122,9 @@ function content(activity: Activity): ActivityContentGoalDiscussionCreation {
 }
 
 export default GoalDiscussionCreation;
+
+function useCanEditDiscussion(activity: Activity): boolean {
+  const me = useMe();
+  const { goal } = useLoadedData();
+  return Boolean(me && compareIds(activity.author?.id, me.id) && goal.permissions?.canEdit);
+}

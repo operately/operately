@@ -1,3 +1,4 @@
+import { canEditProjectCheckIn } from "@/models/projectCheckIns";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -20,7 +21,6 @@ import {
   showSuccessToast,
   displayDate,
 } from "turboui";
-import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
@@ -158,9 +158,8 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const { checkIn } = useLoadedData();
   const me = useMe()!;
 
-  const isAuthor = compareIds(me.id, checkIn.author?.id);
   const isUnpublished = checkIn.state === "draft" || checkIn.state === "scheduled";
-  const canEdit = isAuthor;
+  const canEdit = canEditProjectCheckIn(checkIn, me?.id);
   const canDelete = isUnpublished || checkIn.project?.permissions?.hasFullAccess || false;
 
   if (!canEdit && !canDelete) return null;

@@ -18,7 +18,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import i18n, { translationText } from "@/i18n";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useSubscription } from "@/models/subscriptions";
@@ -180,7 +180,13 @@ function Page() {
     transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
-  const richEditorHandlers = useRichEditorHandlers({
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "task",
+      resourceId: task.id,
+      field: "description",
+      canEdit: task.permissions?.canEdit ?? false,
+    },
     scope: { type: "project", id: task.project.id },
   });
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -263,7 +269,7 @@ function Page() {
     // Subscription
     subscriptions,
 
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     localDraftKeyBase: `task:${task.id}`,
     formattedTimePreferences,
   };

@@ -3,6 +3,37 @@ defmodule Operately.RichContent.FromMarkdownTest do
 
   alias Operately.RichContent.FromMarkdown
 
+  test "task lists preserve checked state, nested tasks, and surrounding paragraphs" do
+    assert {:ok, doc} = FromMarkdown.to_rich_text("Before\n\n- [ ] **Parent**\n  - [x] Child\n- [ ] Next\n\nAfter")
+    list = Enum.find(doc["content"], &(&1["type"] == "taskList"))
+    assert [parent, next] = list["content"]
+    assert parent["attrs"] == %{"checked" => false}
+    assert next["attrs"] == %{"checked" => false}
+    assert [%{"type" => "paragraph"}, nested] = parent["content"]
+    assert nested["type"] == "taskList"
+    assert hd(nested["content"])["attrs"]["checked"]
+    markdown = Operately.MD.RichText.render(doc)
+    assert markdown =~ "Before"
+    assert markdown =~ "- [ ] **Parent**\n  - [x] Child"
+    assert markdown =~ "After"
+    html = Prosemirror2Html.convert(doc, %Prosemirror2Html.Options{})
+    assert html =~ "☑"
+    assert html =~ "☐"
+    assert html =~ "<strong>Parent</strong>"
+  end
+
+  test "task items retain links, mentions, formatting, and an adjacent heading" do
+    resolver = fn "alice" -> %{id: "person-1", label: "Alice"} end
+    assert {:ok, doc} = FromMarkdown.to_rich_text("# Plan\n- [ ] **Call** @alice [spec](https://example.com)", mention_resolver: resolver)
+    assert [heading, list] = doc["content"]
+    assert heading["type"] == "heading"
+    assert list["type"] == "taskList"
+    inline = hd(hd(list["content"])["content"])["content"]
+    assert Enum.any?(inline, &(&1["type"] == "mention"))
+    assert Enum.any?(inline, &(&1["marks"] == [%{"type" => "bold"}]))
+    assert Enum.any?(inline, &(&1["marks"] == [%{"type" => "link", "attrs" => %{"href" => "https://example.com"}}]))
+  end
+
   describe "to_rich_text/2" do
     test "returns error for blank content" do
       assert FromMarkdown.to_rich_text("") == {:error, :invalid_arguments}

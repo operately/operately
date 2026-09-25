@@ -43,12 +43,16 @@ function context(overrides: Partial<SlideInContext> = {}): SlideInContext {
     statuses: [status],
     onTaskUpdate: jest.fn(),
     onTaskDelete: jest.fn(),
-    richTextHandlers: {} as never,
+    richTextHandlers: {
+      mentionedPersonLookup: async () => null,
+      taskList: { canEdit: false },
+      onCommentTaskItemChange: null,
+    },
     ...overrides,
   };
 }
 
-const opts = { canEdit: false, formattedTimePreferences: defaultFormattedTimePreferences };
+const opts = { onTaskItemChange: null, canEdit: false, formattedTimePreferences: defaultFormattedTimePreferences };
 
 test("returns null when the task is missing", () => {
   expect(buildTemplateTaskPageProps("missing", context(), opts)).toBeNull();
