@@ -212,17 +212,16 @@ describe("calcDescription (goals)", () => {
 describe("translated access descriptions", () => {
   beforeAll(() => {
     i18n.addResourceBundle("pt-BR", "translation", {
-      "Anyone on the internet can view this project.": "Qualquer pessoa na internet pode visualizar este projeto.",
+      "Anyone on the internet can view this project. Company members have edit access.":
+        "Translated public project with company editing",
       "Everyone in the company can view and comment on this goal.":
         "Todas as pessoas da empresa podem visualizar e comentar neste objetivo.",
       "Everyone in the space will be able to view and edit this goal.":
         "Todas as pessoas do espaço poderão visualizar e editar este objetivo.",
       "Only people you add to the space will be able to view it.":
         "Somente as pessoas adicionadas ao espaço poderão visualizá-lo.",
-      "Company members have edit access.": "Os membros da empresa têm acesso de edição.",
-      "Everyone in the company will be able to view this goal.":
-        "Todas as pessoas da empresa poderão visualizar este objetivo.",
-      "Space members will have full access.": "Os membros do espaço terão acesso total.",
+      "Everyone in the company will be able to view this goal. Space members will have full access.":
+        "Translated company goal with full space access",
     });
   });
 
@@ -239,7 +238,7 @@ describe("translated access descriptions", () => {
   test.each([
     [
       { resourceType: "project", tense: "present", anonymous: VIEW_ACCESS, company: EDIT_ACCESS },
-      "Qualquer pessoa na internet pode visualizar este projeto. Os membros da empresa têm acesso de edição.",
+      "Translated public project with company editing",
     ],
     [
       { resourceType: "goal", tense: "present", anonymous: NO_ACCESS, company: COMMENT_ACCESS },
@@ -251,7 +250,7 @@ describe("translated access descriptions", () => {
     ],
     [
       { resourceType: "goal", tense: "future", anonymous: NO_ACCESS, company: VIEW_ACCESS, space: FULL_ACCESS },
-      "Todas as pessoas da empresa poderão visualizar este objetivo. Os membros do espaço terão acesso total.",
+      "Translated company goal with full space access",
     ],
     [
       { resourceType: "space", tense: "future", anonymous: NO_ACCESS, company: NO_ACCESS },
@@ -260,6 +259,28 @@ describe("translated access descriptions", () => {
   ] as const)("translates the complete description for %o", (props, expected) => {
     expect(calcDescription(props)).toBe(expected);
   });
+});
+
+test.each(["en", "pt-BR"])("looks up a complete space description with English fallback (%s)", async (language) => {
+  const instance = createInstance();
+  const description = "Anyone on the internet can view this space. Company members have full access.";
+  await instance.init({
+    lng: language,
+    fallbackLng: "en",
+    keySeparator: false,
+    resources: { en: { translation: { [description]: description } }, "pt-BR": { translation: {} } },
+  });
+  const props = { resourceType: "space", tense: "present", anonymous: VIEW_ACCESS, company: FULL_ACCESS } as const;
+
+  expect(calcDescription(props, instance.t.bind(instance))).toBe(description);
+  instance.addResourceBundle(
+    language,
+    "translation",
+    { [description]: "Translated complete space description" },
+    true,
+    true,
+  );
+  expect(calcDescription(props, instance.t.bind(instance))).toBe("Translated complete space description");
 });
 
 test.each([
