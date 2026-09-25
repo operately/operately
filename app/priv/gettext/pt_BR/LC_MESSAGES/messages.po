@@ -1254,7 +1254,7 @@ msgstr "Fechado"
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:51
 msgid "Co-founder & CEO of Operately"
-msgstr "Cofundador e CEO da Operately"
+msgstr "Cofundador e CEO do Operately"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:58
@@ -2840,7 +2840,7 @@ msgstr "Deixe em branco para usar o nome padrão do token."
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:107
 msgid "Let teammates know what you focus on. You can change this later."
-msgstr "Mostre aos colegas no que você foca. Você pode alterar isso depois."
+msgstr "Mostre aos colegas qual o seu foco. Você pode alterar isso depois."
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:26
