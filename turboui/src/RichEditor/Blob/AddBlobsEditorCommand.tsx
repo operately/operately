@@ -1,4 +1,5 @@
 import { UploadFileFn } from "../useEditor";
+import { isInsideTable } from "../extensions/Table";
 
 export function AddBlobsEditorCommand({
   files,
@@ -12,6 +13,7 @@ export function AddBlobsEditorCommand({
   uploadFile: UploadFileFn;
 }) {
   if (!view.editable) return false;
+  if (isInsideTable(view.state.doc.resolve(pos))) return false;
 
   Array.from(files).forEach(async (file) => {
     handleUpload(file, view, pos, uploadFile);

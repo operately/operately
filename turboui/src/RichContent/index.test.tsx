@@ -55,6 +55,55 @@ function expectMentionContent(container: HTMLElement) {
 }
 
 describe("RichContent", () => {
+  it("refreshes read-only tables without discarding stored widths or attachments", async () => {
+    const tableContent = (text: string) => ({
+      type: "doc",
+      content: [
+        {
+          type: "table",
+          content: [
+            {
+              type: "tableRow",
+              content: [
+                {
+                  type: "tableCell",
+                  attrs: { colwidth: [160] },
+                  content: [
+                    {
+                      type: "paragraph",
+                      content: [
+                        { type: "text", text },
+                        {
+                          type: "blob",
+                          attrs: { src: "/diagram.png", alt: "Diagram", filetype: "image/png", status: "uploaded" },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const { rerender, container } = renderRichContent(plainContent);
+    for (const text of ["First version", "Refreshed version"]) {
+      rerender(
+        <RichContent
+          content={tableContent(text)}
+          taskList={{ canEdit: false }}
+          mentionedPersonLookup={mentionedPersonLookup}
+        />,
+      );
+      await waitFor(() => expect(screen.getByRole("cell")).toHaveTextContent(text));
+      expect(screen.getByRole("img", { name: "Diagram" })).toHaveAttribute("src", "/diagram.png");
+      expect(container.querySelector("col")).toHaveStyle({ width: "160px" });
+      expect(container.querySelector('[contenteditable="true"]')).toBeNull();
+    }
+    expect(container).not.toHaveTextContent("First version");
+  });
+
   it("keeps unresolved URLs and synchronizes content", async () => {
     const href = `${window.location.origin}/acme-0abc/projects/website-xyz`;
     const content = {

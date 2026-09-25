@@ -4,6 +4,7 @@ import Heading from "@tiptap/extension-heading";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import { TaskList } from "@tiptap/extension-list";
+import { tableExtensions } from "./extensions/Table";
 import { TaskItemExtension } from "./extensions/TaskItem";
 
 import Blob from "./Blob";
@@ -67,6 +68,7 @@ export function createRichEditorExtensions(
 
   const extensions: Extensions = [
     starterKitExtension,
+    ...tableExtensions,
     TaskList.configure({ HTMLAttributes: { class: "!list-none !pl-0" } }),
     TaskItemExtension,
     headingExtension,
