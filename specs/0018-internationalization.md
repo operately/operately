@@ -65,7 +65,7 @@ Audited company admin home, add/manage/restore people, admins and owners, permis
 
 Closed the remaining create-space example placeholders, import-version warning, and generated import/export progress labels. Billing date messages now use complete catalog entries with named placeholders; plan/interval labels support reordering. Space-tool switches expose their cataloged titles to assistive technology. Existing administration toasts, including delete-company failure, remain cataloged.
 
-No Portuguese copy was added. `make gen.i18n` regenerates the source catalog, merges empty new PO entries, and generates English fallback resources. Reviewed translations are preserved, including obsolete entries for replaced billing fragments. Tests verify English and substituted catalog lookup, missing-Portuguese fallback (including invitation-expiry plurals), and representative company/space administration interactions. The language flag, preference, and selector behavior are unchanged.
+New company and space administration messages include Brazilian Portuguese translations. `make gen.i18n` regenerates the source catalog, merges PO entries, and generates locale resources. Missing translations still fall back to English. Reviewed translations are preserved, including obsolete entries for replaced billing fragments. Tests verify English and substituted catalog lookup, missing-Portuguese fallback (including invitation-expiry plurals), shipped Portuguese admin copy, and representative company/space administration interactions. The language flag, preference, and selector behavior are unchanged.
 
 Remaining gaps before general availability:
 

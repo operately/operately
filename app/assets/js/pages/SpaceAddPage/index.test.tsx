@@ -30,30 +30,23 @@ jest.mock("turboui", () => ({
 }));
 
 const english = { ...i18n.getResourceBundle("en", "translation") };
+const portuguese = { ...i18n.getResourceBundle("pt-BR", "translation") };
 afterEach(async () => {
-  i18n.removeResourceBundle("en", "translation");
-  i18n.addResourceBundle("en", "translation", english);
+  for (const [language, resources] of [
+    ["en", english],
+    ["pt-BR", portuguese],
+  ] as const) {
+    i18n.removeResourceBundle(language, "translation");
+    i18n.addResourceBundle(language, "translation", resources);
+  }
   await applyLanguage("en");
   jest.clearAllMocks();
 });
 
-it.each([
-  ["en", "e.g. Marketing", "e.g. Create product awareness and bring new leads"],
-  ["en", "Translated space example", "Translated purpose example"],
-  ["pt-BR", "e.g. Marketing", "e.g. Create product awareness and bring new leads"],
-])("looks up create-space examples with English fallback: %s / %s", async (language, name, purpose) => {
-  i18n.addResourceBundle(
-    "en",
-    "translation",
-    {
-      "e.g. Marketing": name,
-      "e.g. Create product awareness and bring new leads": purpose,
-    },
-    true,
-    true,
-  );
-  await applyLanguage(language);
-  renderHook(() => null, { initialProps: undefined, wrapper: page.Page });
+const nameKey = "e.g. Marketing";
+const purposeKey = "e.g. Create product awareness and bring new leads";
+
+function expectCreateSpacePlaceholders(name: string, purpose: string) {
   const fields = jest.mocked(Forms.TextInput).mock.calls.map(([props]) => props);
   expect(fields).toEqual(
     expect.arrayContaining([
@@ -61,4 +54,27 @@ it.each([
       expect.objectContaining({ field: "mission", placeholder: purpose, required: true }),
     ]),
   );
+}
+
+it.each([
+  ["e.g. Marketing", "e.g. Create product awareness and bring new leads"],
+  ["Translated space example", "Translated purpose example"],
+])("looks up create-space examples: %s", async (name, purpose) => {
+  i18n.addResourceBundle("en", "translation", { [nameKey]: name, [purposeKey]: purpose }, true, true);
+  await applyLanguage("en");
+  renderHook(() => null, { initialProps: undefined, wrapper: page.Page });
+  expectCreateSpacePlaceholders(name, purpose);
+});
+
+it("uses Portuguese catalog copy for create-space examples", async () => {
+  await applyLanguage("pt-BR");
+  renderHook(() => null, { initialProps: undefined, wrapper: page.Page });
+  expectCreateSpacePlaceholders("Ex.: Marketing", "Ex.: Criar reconhecimento do produto e gerar novos leads");
+});
+
+it("falls back to English when Portuguese create-space examples are missing", async () => {
+  i18n.removeResourceBundle("pt-BR", "translation");
+  await applyLanguage("pt-BR");
+  renderHook(() => null, { initialProps: undefined, wrapper: page.Page });
+  expectCreateSpacePlaceholders(nameKey, purposeKey);
 });

@@ -104,7 +104,7 @@ msgstr "%{percentage}% das tarefas concluídas, %{completed}/%{total} tarefas co
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:26
 msgid "%{plan} %{interval}"
-msgstr ""
+msgstr "%{plan} %{interval}"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:212
@@ -1158,7 +1158,7 @@ msgstr "Pagamento ainda não concluído"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:129
 msgid "Checkout started: %{date}."
-msgstr ""
+msgstr "Pagamento iniciado em: %{date}."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:183
@@ -1278,7 +1278,7 @@ msgstr "Os códigos são válidos por até 5 minutos."
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:238
 msgid "Collecting Rows"
-msgstr ""
+msgstr "Coletando linhas"
 
 #.frontend
 #: assets/js/pages/AccountAppearancePage/index.tsx:63
@@ -1884,7 +1884,7 @@ msgstr "Editando o nome da empresa"
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:147
 msgid "Effective on: %{date}."
-msgstr ""
+msgstr "Vigente a partir de: %{date}."
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:66
@@ -2407,7 +2407,7 @@ msgstr "Arquivos"
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:422
 msgid "Finalizing Import"
-msgstr ""
+msgstr "Finalizando importação"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:176
@@ -2672,7 +2672,7 @@ msgstr "Importação iniciada"
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:420
 msgid "Importing Rows"
-msgstr ""
+msgstr "Importando linhas"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:100
@@ -2916,7 +2916,7 @@ msgstr "Links"
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:416
 msgid "Loading Package"
-msgstr ""
+msgstr "Carregando pacote"
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:32
@@ -3777,7 +3777,7 @@ msgstr "Publique comunicados, proponha ideias e discuta com sua equipe."
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:236
 msgid "Preparing Workspace"
-msgstr ""
+msgstr "Preparando o ambiente"
 
 #.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:104
@@ -3853,7 +3853,7 @@ msgstr "Acesso público"
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:242
 msgid "Publishing Artifacts"
-msgstr ""
+msgstr "Publicando artefatos"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:116
@@ -4725,7 +4725,7 @@ msgstr "A empresa está sendo importada em segundo plano."
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:162
 msgid "The current subscription remains active until: %{date}."
-msgstr ""
+msgstr "A assinatura atual permanece ativa até: %{date}."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:165
@@ -4899,7 +4899,7 @@ msgstr "Este link (incluindo o enviado por e-mail) expira em 24 horas."
 #.frontend
 #: assets/js/models/companyExports/index.tsx:44
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
-msgstr ""
+msgstr "Este pacote foi exportado do Operately %{manifestVersion}, mas esta instância está na versão %{currentVersion}. A falha na importação pode estar relacionada às diferenças de versão."
 
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:44
@@ -5259,7 +5259,7 @@ msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:418
 msgid "Validating Package"
-msgstr ""
+msgstr "Validando pacote"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:76
@@ -5527,7 +5527,7 @@ msgstr "Trabalhe em equipe em tarefas que não pertencem a um projeto específic
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:240
 msgid "Writing Package"
-msgstr ""
+msgstr "Gravando pacote"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:15
@@ -5662,7 +5662,7 @@ msgstr "Ex.: Acme Co."
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:118
 msgid "e.g. Create product awareness and bring new leads"
-msgstr ""
+msgstr "Ex.: Criar reconhecimento do produto e gerar novos leads"
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:67
@@ -5683,7 +5683,7 @@ msgstr "Ex.: João Santos"
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:100
 msgid "e.g. Marketing"
-msgstr ""
+msgstr "Ex.: Marketing"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:84

@@ -86,7 +86,7 @@ Company administration (home, add/manage people, restore access, admins/owners, 
 
 The follow-up audit closed the remaining create-space examples, import-version warning, and import/export progress-step labels. Billing date messages now include their named date placeholder in the complete message, and plan/interval labels can be reordered by translations. Tool switches reuse the cataloged tool title as their accessible name. Administration wrapper toasts, including delete-company errors, were already cataloged and were included in the audit.
 
-English wording and behavior are preserved. This extraction adds no Portuguese translations: new PO entries are empty and generated resources provide English fallback. Reviewed translations remain intact; translations for superseded billing sentence fragments are retained as obsolete PO entries. Focused tests exercise English, substituted catalog messages, missing-Portuguese fallback, invitation-expiry plurals, and company/space administration interactions.
+English wording and behavior are preserved. New company and space administration messages have Brazilian Portuguese translations; missing translations still fall back to English. Reviewed translations remain intact; translations for superseded billing sentence fragments are retained as obsolete PO entries. Focused tests exercise English, substituted catalog messages, missing-Portuguese fallback, invitation-expiry plurals, and company/space administration interactions.
 
 Remaining coverage gaps:
 
