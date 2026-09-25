@@ -71,15 +71,16 @@ defmodule Operately.RichContent do
 
       %{"type" => "doc", "content" => content} when is_list(content) ->
         # Inspect source leaves so generated table separators do not count as content.
-        Enum.any?(content, &meaningful_text?/1)
+        Enum.any?(content, &meaningful_content?/1)
 
       _ ->
         false
     end
   end
 
-  defp meaningful_text?(%{"content" => content}) when is_list(content), do: Enum.any?(content, &meaningful_text?/1)
-  defp meaningful_text?(node), do: node |> rich_content_to_string() |> String.trim() != ""
+  defp meaningful_content?(%{"type" => "blob"}), do: true
+  defp meaningful_content?(%{"content" => content}) when is_list(content), do: Enum.any?(content, &meaningful_content?/1)
+  defp meaningful_content?(node), do: node |> rich_content_to_string() |> String.trim() != ""
 
   @doc """
   Converts TipTap rich content to a plain string, similar to the JavaScript richContentToString function.

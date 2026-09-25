@@ -24,6 +24,22 @@ defmodule Operately.RichContentTest do
 
   @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
 
+  test "attachment-only descriptions count as content inside and outside tables" do
+    for attrs <- [
+          %{"src" => "/files/report.pdf", "title" => "Report.pdf"},
+          %{"src" => "/files/image.png", "filetype" => "image/png"},
+          %{"src" => %{"id" => "file", "url" => "/files/report.pdf"}},
+          %{"title" => "Report.pdf"}
+        ] do
+      paragraph = %{"type" => "paragraph", "content" => [%{"type" => "blob", "attrs" => attrs}]}
+      cell = %{"type" => "tableCell", "content" => [paragraph]}
+      table = %{"type" => "table", "content" => [%{"type" => "tableRow", "content" => [cell]}]}
+
+      assert Operately.RichContent.empty?(%{"type" => "doc", "content" => [table]})
+      assert Operately.RichContent.empty?(%{"type" => "doc", "content" => [paragraph]})
+    end
+  end
+
   for fixture <- @table_fixtures do
     @fixture fixture
     test "extracts readable table text and indexes every cell: #{fixture["name"]}" do
