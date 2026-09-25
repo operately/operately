@@ -1,5 +1,6 @@
 import { CompanyImportRun } from "@/api";
 import { Paths } from "@/routes/paths";
+import i18n from "@/i18n";
 
 type SortableRun = {
   insertedAt: string;
@@ -40,7 +41,10 @@ export function toImportPageRun(run: CompanyImportRun) {
     companyPath: run.company ? Paths.companyHomePath(run.company.id) : null,
     manifestSummary: manifestSummary,
     showVersionWarning,
-    versionWarning: `This package was exported from Operately ${manifestVersion}, but this instance is running ${currentVersion}. The import failure may be related to version differences.`,
+    versionWarning: i18n.t(
+      "This package was exported from Operately {{manifestVersion}}, but this instance is running {{currentVersion}}. The import failure may be related to version differences.",
+      { manifestVersion, currentVersion },
+    ),
   };
 }
 

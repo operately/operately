@@ -102,6 +102,11 @@ msgid "%{percentage}% tasks completed, %{completed}/%{total} tasks completed"
 msgstr "%{percentage}% das tarefas concluídas, %{completed}/%{total} tarefas concluídas"
 
 #.frontend
+#: ../turboui/src/CompanyBilling/formatting.ts:26
+msgid "%{plan} %{interval}"
+msgstr "%{plan} %{interval}"
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:212
 msgid "%{plan} member limit"
 msgstr "Limite de membros do plano %{plan}"
@@ -133,7 +138,7 @@ msgstr "%{plan} entrará em vigor na próxima renovação, em %{date}."
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:53
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:140
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:143
 msgid "%{plan} will take effect at the next renewal."
 msgstr "%{plan} entrará em vigor na próxima renovação."
 
@@ -174,7 +179,7 @@ msgid "* If you sign in with Google, you must use <email>%{email}</email>."
 msgstr "* Se você entrar com o Google, use o e-mail <email>%{email}</email>."
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:123
+#: ../turboui/src/LobbyPage/index.tsx:117
 msgid "+ Create organization"
 msgstr "+ Criar empresa"
 
@@ -243,8 +248,7 @@ msgstr[0] "1 hora"
 msgstr[1] "%{count} horas"
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:99
-#: ../turboui/src/LobbyPage/index.tsx:101
+#: ../turboui/src/LobbyPage/index.tsx:97
 msgid "1 member"
 msgid_plural "%{count} members"
 msgstr[0] "1 membro"
@@ -904,7 +908,7 @@ msgid "Billing data may be out of date"
 msgstr "Os dados de faturamento podem estar desatualizados"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:261
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:270
 msgid "Billing history"
 msgstr "Histórico de faturamento"
 
@@ -919,12 +923,12 @@ msgid "Billing management unavailable"
 msgstr "Gerenciamento de faturamento indisponível"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:305
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:314
 msgid "Billing needs attention by %{date} or this company will become read-only."
 msgstr "Regularize o pagamento até %{date} para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:302
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:311
 msgid "Billing needs attention soon or this company will become read-only."
 msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura."
 
@@ -1017,7 +1021,7 @@ msgstr "Cancelar"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:16
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:272
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:281
 #: assets/js/pages/CompanyBillingCancellationPage/page.tsx:84
 msgid "Cancel plan"
 msgstr "Cancelar plano"
@@ -1029,7 +1033,7 @@ msgstr "Cancelado"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:73
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:153
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:159
 msgid "Cancellation scheduled"
 msgstr "Cancelamento agendado"
 
@@ -1095,8 +1099,8 @@ msgid "Change photo"
 msgstr "Alterar foto"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:225
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:226
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:234
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:235
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:90
 msgid "Change plan"
 msgstr "Alterar plano"
@@ -1146,10 +1150,15 @@ msgstr "Pagamento não concluído"
 msgid "Checkout not completed yet"
 msgstr "Pagamento ainda não concluído"
 
+#~ #.frontend
+#~ #: ../turboui/src/CompanyBillingPage/viewModel.ts:128
+#~ msgid "Checkout started"
+#~ msgstr "Pagamento iniciado"
+
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:128
-msgid "Checkout started"
-msgstr "Pagamento iniciado"
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:129
+msgid "Checkout started: %{date}."
+msgstr "Pagamento iniciado em: %{date}."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:183
@@ -1173,7 +1182,7 @@ msgid "Choose a new plan for this company."
 msgstr "Escolha um novo plano para esta empresa."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:226
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:235
 msgid "Choose a paid plan"
 msgstr "Escolha um plano pago"
 
@@ -1265,6 +1274,11 @@ msgstr "Código enviado"
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:71
 msgid "Codes are valid for up to 5 minutes."
 msgstr "Os códigos são válidos por até 5 minutos."
+
+#.frontend
+#: ../turboui/src/CompanyExportPage/index.tsx:238
+msgid "Collecting Rows"
+msgstr "Coletando linhas"
 
 #.frontend
 #: assets/js/pages/AccountAppearancePage/index.tsx:63
@@ -1383,16 +1397,18 @@ msgid "Company-wide Access"
 msgstr "Acesso para toda a empresa"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:228
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:237
 msgid "Compare available plans and switch this company to a different subscription."
 msgstr "Compare os planos disponíveis e altere a assinatura desta empresa."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:214
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:223
 msgid "Complete upgrade"
 msgstr "Concluir mudança para um plano superior"
 
 #.frontend
+#: ../turboui/src/CompanyExportPage/index.tsx:244
+#: ../turboui/src/CompanyImportPage/index.tsx:424
 #: ../turboui/src/SearchPage/index.tsx:340
 msgid "Completed"
 msgstr "Concluído"
@@ -1631,7 +1647,7 @@ msgid "Current email"
 msgstr "E-mail atual"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:292
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:301
 msgid "Current period ends"
 msgstr "O período atual termina em"
 
@@ -1860,10 +1876,15 @@ msgstr "Editando %{name}"
 msgid "Editing Company Name"
 msgstr "Editando o nome da empresa"
 
+#~ #.frontend
+#~ #: ../turboui/src/CompanyBillingPage/viewModel.ts:143
+#~ msgid "Effective on"
+#~ msgstr "Vigente a partir de"
+
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:143
-msgid "Effective on"
-msgstr "Vigente a partir de"
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:147
+msgid "Effective on: %{date}."
+msgstr "Vigente a partir de: %{date}."
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:66
@@ -2384,12 +2405,17 @@ msgid "Files"
 msgstr "Arquivos"
 
 #.frontend
+#: ../turboui/src/CompanyImportPage/index.tsx:422
+msgid "Finalizing Import"
+msgstr "Finalizando importação"
+
+#.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:176
 msgid "Finish"
 msgstr "Concluir"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:215
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:224
 msgid "Finish your upgrade"
 msgstr "Conclua sua mudança para um plano superior"
 
@@ -2435,7 +2461,7 @@ msgid "Free"
 msgstr "Gratuito"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:197
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:206
 msgid "Free plan"
 msgstr "Plano Gratuito"
 
@@ -2644,6 +2670,11 @@ msgid "Import started"
 msgstr "Importação iniciada"
 
 #.frontend
+#: ../turboui/src/CompanyImportPage/index.tsx:420
+msgid "Importing Rows"
+msgstr "Importando linhas"
+
+#.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:100
 msgid "Imports"
 msgstr "Importações"
@@ -2781,8 +2812,8 @@ msgstr "Indicadores (KPIs)"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:26
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:238
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:239
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:247
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:248
 msgid "Keep current plan"
 msgstr "Manter plano atual"
 
@@ -2881,6 +2912,11 @@ msgstr "Link: %{url}"
 #: ../turboui/src/SearchPage/filterOptions.ts:22
 msgid "Links"
 msgstr "Links"
+
+#.frontend
+#: ../turboui/src/CompanyImportPage/index.tsx:416
+msgid "Loading Package"
+msgstr "Carregando pacote"
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:32
@@ -3390,7 +3426,7 @@ msgid "Open global search"
 msgstr "Abrir busca global"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:262
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:271
 msgid "Open invoices, receipts, and payment history for this company."
 msgstr "Abra as faturas, os recibos e o histórico de pagamentos desta empresa."
 
@@ -3578,22 +3614,22 @@ msgid "Paused"
 msgstr "Pausado"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:181
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:190
 msgid "Payment for this company is past due. Billing access may be affected until payment is resolved."
 msgstr "O pagamento desta empresa está em atraso. O acesso ao faturamento pode ser afetado até a regularização do pagamento."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:180
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:189
 msgid "Payment issue detected"
 msgstr "Problema no pagamento detectado"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:163
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:172
 msgid "Payment issue requires attention"
 msgstr "Problema no pagamento requer atenção"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:250
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:259
 msgid "Payment method"
 msgstr "Forma de pagamento"
 
@@ -3603,7 +3639,7 @@ msgid "Payment method unavailable"
 msgstr "Forma de pagamento indisponível"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:172
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:181
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated."
 msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo somente leitura, por isso o trabalho colaborativo está pausado até a regularização do faturamento."
 
@@ -3739,6 +3775,11 @@ msgid "Post announcements, pitch ideas, and discuss ideas with your team."
 msgstr "Publique comunicados, proponha ideias e discuta com sua equipe."
 
 #.frontend
+#: ../turboui/src/CompanyExportPage/index.tsx:236
+msgid "Preparing Workspace"
+msgstr "Preparando o ambiente"
+
+#.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:104
 msgid "Previous Notifications"
 msgstr "Notificações anteriores"
@@ -3808,6 +3849,11 @@ msgstr "Promover a gestor"
 #: ../turboui/src/AccessLevelSummary/index.tsx:58
 msgid "Public Access"
 msgstr "Acesso público"
+
+#.frontend
+#: ../turboui/src/CompanyExportPage/index.tsx:242
+msgid "Publishing Artifacts"
+msgstr "Publicando artefatos"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:116
@@ -3939,7 +3985,7 @@ msgid "Remove photo"
 msgstr "Remover foto"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:240
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:249
 msgid "Remove the scheduled cancellation and keep this paid plan active."
 msgstr "Remova o cancelamento agendado e mantenha este plano pago ativo."
 
@@ -3959,7 +4005,7 @@ msgid "Renew Invitation"
 msgstr "Renovar convite"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:295
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:304
 msgid "Renews"
 msgstr "Renova em"
 
@@ -4045,12 +4091,12 @@ msgid "Review billing to change the plan and add or restore people."
 msgstr "Revise o faturamento para alterar o plano e adicionar ou reativar pessoas."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:271
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:280
 msgid "Review cancellation"
 msgstr "Revisar cancelamento"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:229
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:238
 msgid "Review paid plans and continue to checkout when you're ready."
 msgstr "Confira os planos pagos e continue para o pagamento quando quiser."
 
@@ -4139,7 +4185,7 @@ msgid "Schedule cancellation"
 msgstr "Agendar cancelamento"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:138
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:141
 msgid "Scheduled plan change"
 msgstr "Alteração de plano agendada"
 
@@ -4208,7 +4254,7 @@ msgstr "Buscando…"
 
 #.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:17
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:273
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:282
 msgid "See what will change before this company moves to the Free plan."
 msgstr "Veja o que mudará antes de esta empresa passar para o plano Gratuito."
 
@@ -4482,7 +4528,7 @@ msgid "Start again"
 msgstr "Recomeçar"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:216
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:225
 msgid "Start checkout again for %{plan}."
 msgstr "Inicie novamente o pagamento do plano %{plan}."
 
@@ -4492,7 +4538,7 @@ msgid "Start export"
 msgstr "Iniciar exportação"
 
 #.frontend
-#: ../turboui/src/LobbyPage/index.tsx:124
+#: ../turboui/src/LobbyPage/index.tsx:118
 msgid "Start fresh with a new company account"
 msgstr "Comece do zero com uma nova conta de empresa"
 
@@ -4561,7 +4607,7 @@ msgid "Submitting..."
 msgstr "Enviando..."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:189
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:198
 msgid "Subscription ended"
 msgstr "Assinatura encerrada"
 
@@ -4671,13 +4717,18 @@ msgstr "O cliente MCP não pode mais acessar sua conta."
 msgid "The company is being imported in the background."
 msgstr "A empresa está sendo importada em segundo plano."
 
-#.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:155
-msgid "The current subscription remains active until"
-msgstr "A assinatura atual permanece ativa até"
+#~ #.frontend
+#~ #: ../turboui/src/CompanyBillingPage/viewModel.ts:155
+#~ msgid "The current subscription remains active until"
+#~ msgstr "A assinatura atual permanece ativa até"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:156
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:162
+msgid "The current subscription remains active until: %{date}."
+msgstr "A assinatura atual permanece ativa até: %{date}."
+
+#.frontend
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:165
 msgid "The current subscription will end at the close of the current billing period."
 msgstr "A assinatura atual será encerrada ao final do ciclo de faturamento vigente."
 
@@ -4749,6 +4800,13 @@ msgstr "Este código expirou. Solicite um novo código para continuar."
 msgid "This company has %{currentUsage} active members. The plan includes %{limit}."
 msgstr "Esta empresa tem %{currentUsage} membros ativos. O plano inclui %{limit}."
 
+#~ #.frontend
+#~ #: assets/js/models/billing/memberLimitGuidance.ts:32
+#~ msgid "This company has 1 active member. The plan includes %{limit}."
+#~ msgid_plural "This company has %{currentUsage} active members. The plan includes %{limit}."
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:39
 #: assets/js/models/billing/memberLimitGuidance.ts:56
@@ -4776,12 +4834,12 @@ msgid "This company is above the Free plan storage limit"
 msgstr "Esta empresa ultrapassou o limite de armazenamento do plano Gratuito"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:198
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:207
 msgid "This company is currently using the free plan."
 msgstr "Esta empresa está usando o plano Gratuito."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:190
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:199
 msgid "This company is no longer on an active paid subscription."
 msgstr "Esta empresa não tem mais uma assinatura paga ativa."
 
@@ -4792,7 +4850,7 @@ msgid "This company is now on %{plan}."
 msgstr "Esta empresa agora está no plano %{plan}."
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:171
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:180
 msgid "This company is read-only"
 msgstr "Esta empresa está em modo somente leitura"
 
@@ -4837,6 +4895,11 @@ msgstr "Este valor será exibido apenas uma vez. Copie-o e guarde-o em um local 
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:26
 msgid "This link (including the one in their email) expires in 24 hours."
 msgstr "Este link (incluindo o enviado por e-mail) expira em 24 horas."
+
+#.frontend
+#: assets/js/models/companyExports/index.tsx:44
+msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
+msgstr "Este pacote foi exportado do Operately %{manifestVersion}, mas esta instância está na versão %{currentVersion}. A falha na importação pode estar relacionada às diferenças de versão."
 
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:44
@@ -5024,7 +5087,7 @@ msgid "Unable to restore member"
 msgstr "Não foi possível reativar o membro"
 
 #.frontend
-#: ../turboui/src/CompanyBilling/formatting.ts:47
+#: ../turboui/src/CompanyBilling/formatting.ts:50
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:68
 msgid "Unavailable"
 msgstr "Indisponível"
@@ -5062,7 +5125,7 @@ msgid "Update name"
 msgstr "Atualizar nome"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:249
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:258
 msgid "Update payment method"
 msgstr "Atualizar forma de pagamento"
 
@@ -5072,7 +5135,7 @@ msgid "Update profiles"
 msgstr "Atualizar perfis"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:251
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:260
 msgid "Update the card used for renewals and payment recovery."
 msgstr "Atualize o cartão usado para renovações e novas tentativas de pagamento."
 
@@ -5194,6 +5257,11 @@ msgid "Use your work email — keep work and life separate."
 msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
 
 #.frontend
+#: ../turboui/src/CompanyImportPage/index.tsx:418
+msgid "Validating Package"
+msgstr "Validando pacote"
+
+#.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:76
 msgid "Verification code"
 msgstr "Código de verificação"
@@ -5250,7 +5318,7 @@ msgid "View and edit"
 msgstr "Visualizar e editar"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:260
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:269
 msgid "View billing history"
 msgstr "Ver histórico de faturamento"
 
@@ -5457,6 +5525,11 @@ msgid "Work together on tasks that don’t belong to a specific project."
 msgstr "Trabalhe em equipe em tarefas que não pertencem a um projeto específico."
 
 #.frontend
+#: ../turboui/src/CompanyExportPage/index.tsx:240
+msgid "Writing Package"
+msgstr "Gravando pacote"
+
+#.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:15
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:100
 msgid "Yearly"
@@ -5587,6 +5660,11 @@ msgid "e.g. Acme Co."
 msgstr "Ex.: Acme Co."
 
 #.frontend
+#: assets/js/pages/SpaceAddPage/index.tsx:118
+msgid "e.g. Create product awareness and bring new leads"
+msgstr "Ex.: Criar reconhecimento do produto e gerar novos leads"
+
+#.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:67
 #: assets/js/pages/SetupPage/page.tsx:133
 msgid "e.g. Founder"
@@ -5601,6 +5679,11 @@ msgstr "Ex.: João Silva"
 #: assets/js/pages/SetupPage/page.tsx:125
 msgid "e.g. John Johnson"
 msgstr "Ex.: João Santos"
+
+#.frontend
+#: assets/js/pages/SpaceAddPage/index.tsx:100
+msgid "e.g. Marketing"
+msgstr "Ex.: Marketing"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:84
@@ -5704,8 +5787,8 @@ msgid "the new plan"
 msgstr "o novo plano"
 
 #.frontend
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:209
-#: ../turboui/src/CompanyBillingPage/viewModel.ts:210
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:218
+#: ../turboui/src/CompanyBillingPage/viewModel.ts:219
 msgid "the pending plan"
 msgstr "o plano pendente"
 
