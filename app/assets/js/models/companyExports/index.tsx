@@ -1,5 +1,6 @@
 import { CompanyImportRun } from "@/api";
 import { Paths } from "@/routes/paths";
+import i18n from "@/i18n";
 
 type SortableRun = {
   insertedAt: string;
@@ -26,8 +27,18 @@ export function mergeRun<T extends MergeableRun>(runs: T[], nextRun: T) {
   return sortRuns([nextRun, ...filtered]);
 }
 
-export function toImportPageRun(run: CompanyImportRun) {
-  const manifestSummary = (run.manifestSummary as Record<string, string> | undefined) ?? null;
+type ImportPageRun = Omit<CompanyImportRun, "manifestSummary"> & {
+  manifestSummary?: Record<string, string> | CompanyImportRun["manifestSummary"] | null;
+};
+
+function importManifestSummary(value: ImportPageRun["manifestSummary"]): Record<string, string> | null {
+  if (!value || typeof value !== "object") return null;
+
+  return value;
+}
+
+export function toImportPageRun(run: ImportPageRun) {
+  const manifestSummary = importManifestSummary(run.manifestSummary);
   const manifestVersion = manifestSummary?.operatelyVersion;
   const currentVersion = window.appConfig?.version;
 
@@ -40,7 +51,10 @@ export function toImportPageRun(run: CompanyImportRun) {
     companyPath: run.company ? Paths.companyHomePath(run.company.id) : null,
     manifestSummary: manifestSummary,
     showVersionWarning,
-    versionWarning: `This package was exported from Operately ${manifestVersion}, but this instance is running ${currentVersion}. The import failure may be related to version differences.`,
+    versionWarning: i18n.t(
+      "This package was exported from Operately {{manifestVersion}}, but this instance is running {{currentVersion}}. The import failure may be related to version differences.",
+      { manifestVersion, currentVersion },
+    ),
   };
 }
 

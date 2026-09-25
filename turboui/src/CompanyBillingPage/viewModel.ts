@@ -125,7 +125,10 @@ export function buildCompanyBillingStatusNotices(
           i18n.t("We're waiting for checkout completion for {{plan}}.", {
             plan: formatCompanyBillingPlanLabel(billing.account.pendingPlanKey, billing.account.pendingBillingInterval),
           }),
-          formatCompanyBillingRelativeDateLine(i18n.t("Checkout started"), billing.account.pendingCheckoutStartedAt),
+          formatCompanyBillingRelativeDateLine(
+            (date) => i18n.t("Checkout started: {{date}}.", { date }),
+            billing.account.pendingCheckoutStartedAt,
+          ),
         ]
         .filter(Boolean)
         .join(" "),
@@ -140,7 +143,10 @@ export function buildCompanyBillingStatusNotices(
           i18n.t("{{plan}} will take effect at the next renewal.", {
             plan: formatCompanyBillingPlanLabel(billing.account.scheduledPlanKey, billing.account.scheduledBillingInterval),
           }),
-          formatCompanyBillingRelativeDateLine(i18n.t("Effective on"), billing.account.scheduledChangeEffectiveAt),
+          formatCompanyBillingRelativeDateLine(
+            (date) => i18n.t("Effective on: {{date}}.", { date }),
+            billing.account.scheduledChangeEffectiveAt,
+          ),
         ]
         .filter(Boolean)
         .join(" "),
@@ -152,7 +158,10 @@ export function buildCompanyBillingStatusNotices(
       tone: "warning",
         message: i18n.t("Cancellation scheduled"),
         description:
-          formatCompanyBillingRelativeDateLine(i18n.t("The current subscription remains active until"), billing.account.currentPeriodEnd) ||
+          formatCompanyBillingRelativeDateLine(
+            (date) => i18n.t("The current subscription remains active until: {{date}}.", { date }),
+            billing.account.currentPeriodEnd,
+          ) ||
           i18n.t("The current subscription will end at the close of the current billing period."),
     });
   }
