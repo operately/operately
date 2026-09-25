@@ -14,6 +14,8 @@ When the flag is on, Account → Profile shows a Language picker with English an
 
 ## Pilot setup
 
+The Portuguese pilot and gated language selector are complete and in production. The setup below remains available for enabling additional pilot companies.
+
 Enable the flag for an internal company only. The flag remains off by default.
 
 1. Enable the `i18n` experimental feature for that company.
@@ -77,6 +79,23 @@ Desktop company-dropdown, account-menu, New, Help, search, and update-badge copy
 Activity presentation is translated at render time. Stored activity payloads and user-authored names stay in the original language.
 
 Web requests and recipient-specific email rendering share the same effective-language rules. Background workers scope Gettext to the recipient for the duration of rendering and restore the previous locale afterward, including when rendering fails.
+
+## Administration extraction — complete
+
+Company administration (home, add/manage people, restore access, admins/owners, permissions, rename, trusted email domains, billing/plan selection/cancellation, export, and import) and space administration (create/edit, general access, access management, add members, and tool configuration) use the shared catalog.
+
+The follow-up audit closed the remaining create-space examples, import-version warning, and import/export progress-step labels. Billing date messages now include their named date placeholder in the complete message, and plan/interval labels can be reordered by translations. Tool switches reuse the cataloged tool title as their accessible name. Administration wrapper toasts, including delete-company errors, were already cataloged and were included in the audit.
+
+English wording and behavior are preserved. This extraction adds no Portuguese translations: new PO entries are empty and generated resources provide English fallback. Reviewed translations remain intact; translations for superseded billing sentence fragments are retained as obsolete PO entries. Focused tests exercise English, substituted catalog messages, missing-Portuguese fallback, invitation-expiry plurals, and company/space administration interactions.
+
+Remaining coverage gaps:
+
+- Work-management copy: goals, projects, tasks, discussions, Docs & Files, activity feeds, space home/work map/kanban/KPI/discussion pages, and their operation toasts.
+- Remaining backend messages, emails, digests, and server-rendered pages, including transfer errors delivered by the backend.
+- People directory and org-chart page copy.
+- Complete Brazilian Portuguese coverage, native-speaker review of new messages, and automated coverage checks.
+
+Navigation/shared-default and account/onboarding extraction are separate rollout slices. User-authored names, emails, domains, file names, version values, and API identifiers stay outside translation lookup. Known transfer step identifiers are mapped to cataloged display labels without changing the identifiers sent by the API.
 
 ## Catalog files
 
