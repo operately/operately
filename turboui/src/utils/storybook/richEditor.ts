@@ -1,4 +1,5 @@
 import { RichEditorHandlers, MentionedPersonLookupFn, UploadFileFn } from "../../RichEditor/useEditor";
+import type { RichTextHandlers } from "../../RichContent/types";
 import { SearchFn } from "../../RichEditor/extensions/MentionPeople";
 import { genPeople, searchPeopleFn } from "./genPeople";
 
@@ -38,5 +39,13 @@ export function createMockRichEditorHandlers(): RichEditorHandlers {
     mentionedPersonLookup: mockMentionedPersonLookup,
     peopleSearch: mockPeopleSearch,
     uploadFile: mockUploadFile,
+  };
+}
+
+export function createMockRichTextHandlers(): RichTextHandlers {
+  return {
+    ...createMockRichEditorHandlers(),
+    taskList: { canEdit: false },
+    onCommentTaskItemChange: null,
   };
 }

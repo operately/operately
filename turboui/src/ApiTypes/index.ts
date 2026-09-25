@@ -3092,6 +3092,34 @@ export type ReviewAssignmentTypes =
   | "project_retrospective"
   | "goal_retrospective";
 
+export type RichTextField = "description" | "content" | "message" | "body";
+
+export type RichTextResourceType =
+  | "link"
+  | "file"
+  | "task"
+  | "project"
+  | "goal"
+  | "milestone"
+  | "document"
+  | "kpi"
+  | "space_discussion"
+  | "project_discussion"
+  | "goal_discussion"
+  | "project_check_in"
+  | "goal_check_in"
+  | "project_retrospective"
+  | "comment"
+  | "person"
+  | "project_template"
+  | "template_discussion"
+  | "template_document"
+  | "template_file"
+  | "template_link"
+  | "template_comment"
+  | "template_milestone"
+  | "template_task";
+
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 
 export type SearchResultState = "closed" | "completed" | "archived" | "paused";

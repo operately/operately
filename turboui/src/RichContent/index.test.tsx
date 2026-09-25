@@ -40,7 +40,12 @@ const plainContent = {
 
 function renderRichContent(content: unknown, parseContent = false) {
   return render(
-    <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} parseContent={parseContent} />,
+    <RichContent
+      taskList={{ canEdit: false }}
+      content={content}
+      mentionedPersonLookup={mentionedPersonLookup}
+      parseContent={parseContent}
+    />,
   );
 }
 
@@ -59,12 +64,18 @@ describe("RichContent", () => {
       ],
     };
     const { rerender, container } = render(
-      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />,
+      <RichContent taskList={{ canEdit: false }} content={content} mentionedPersonLookup={mentionedPersonLookup} />,
     );
 
     expect(await screen.findByRole("link", { name: href })).toHaveAttribute("href", href);
 
-    rerender(<RichContent content={plainContent} mentionedPersonLookup={mentionedPersonLookup} />);
+    rerender(
+      <RichContent
+        taskList={{ canEdit: false }}
+        content={plainContent}
+        mentionedPersonLookup={mentionedPersonLookup}
+      />,
+    );
     await waitFor(() => expect(container).toHaveTextContent("Plain discussion body."));
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });

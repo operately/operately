@@ -1,3 +1,4 @@
+import type { JSONContent } from "@tiptap/core";
 import * as React from "react";
 
 import RichContent, { parseContent, richContentToString, shortenContent } from ".";
@@ -14,6 +15,7 @@ export function Summary({ content, characterCount, mentionedPersonLookup }: Summ
 
   return (
     <RichContent
+      taskList={{ canEdit: false }}
       content={parseContent(content)}
       transformContent={transformContent}
       mentionedPersonLookup={mentionedPersonLookup}
@@ -62,6 +64,8 @@ export function summarize(node: any): any {
       return summarizeBulletList(node);
     case "orderedList":
       return summarizeOrderedList(node);
+    case "taskList":
+      return summarizeTaskList(node);
     case "blockquote":
       return summarizeBlockquote(node);
     case "mention":
@@ -93,6 +97,16 @@ function summarizeDoc(node: any): any {
   }
 
   return { type: "doc", content };
+}
+
+function summarizeTaskList(node: JSONContent): JSONContent {
+  return {
+    type: "paragraph",
+    content: (node.content ?? []).flatMap((item) => [
+      { type: "text", text: `${item.attrs?.checked ? "☑" : "☐"} ` },
+      ...(item.content ?? []).map(summarize).filter(Boolean),
+    ]),
+  };
 }
 
 function summarizeBulletList(node: any): any {

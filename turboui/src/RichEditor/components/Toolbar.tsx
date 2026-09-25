@@ -11,6 +11,7 @@ import { H2Button } from "./H2Button";
 import { ItalicButton } from "./ItalicButton";
 import { LinkButton } from "./LinkButton";
 import { NumberListButton } from "./NumberListButton";
+import { TaskListButton } from "./TaskListButton";
 import { RedoButton } from "./RedoButton";
 import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
@@ -57,6 +58,7 @@ function DesktopToolbar() {
 
             <BulletListButton editor={editor} iconSize={20} />
             <NumberListButton editor={editor} iconSize={20} />
+            <TaskListButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />
             <DividerButton editor={editor} iconSize={20} />
@@ -104,6 +106,7 @@ function MobileToolbar() {
           </div>
 
           <MobilePopupTools>
+            <TaskListButton editor={editor} iconSize={20} />
             <NumberListButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />

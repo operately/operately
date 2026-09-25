@@ -16,7 +16,7 @@ import {
   currentUser,
 } from "./mockData";
 import { createContextualDate } from "../DateField/mockData";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
@@ -188,7 +188,7 @@ function Component(props: Partial<TaskPage.Props>) {
 
     // Assignee search data
     assigneePersonSearch: searchData,
-    richTextHandlers: createMockRichEditorHandlers(),
+    richTextHandlers: createMockRichTextHandlers(),
 
     // Permissions
     permissions: generatePermissions(true),
@@ -401,7 +401,7 @@ function TemplateTaskContentStory({ canEdit = true, description = null }: { canE
     },
     onDelete: async () => undefined,
     assigneePersonSearch: personSearch,
-    richTextHandlers: createMockRichEditorHandlers(),
+    richTextHandlers: createMockRichTextHandlers(),
     canEdit,
     onAddComment: () => undefined,
     onEditComment: () => undefined,

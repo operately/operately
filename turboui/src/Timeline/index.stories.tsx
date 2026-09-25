@@ -5,7 +5,7 @@ import { Timeline } from "./Timeline";
 import { TimelineProps, TimelineItem, TaskActivity } from "./types";
 import { Person } from "../CommentSection/types";
 import { Page } from "../Page";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 
@@ -171,7 +171,7 @@ const mockDueDateChange: TimelineItem = {
     toDueDate: {
       date: new Date("2024-01-30"),
       dateType: "day",
-      value: "Jan 30, 2024"
+      value: "Jan 30, 2024",
     },
   } as TaskActivity,
 };
@@ -206,7 +206,7 @@ const createMockProps = (items: TimelineItem[]): TimelineProps => ({
   onRemoveReaction: (commentId: string, reactionId: string) => {
     console.log("Remove reaction:", commentId, reactionId);
   },
-  richTextHandlers: createMockRichEditorHandlers(),
+  richTextHandlers: createMockRichTextHandlers(),
   formattedTimePreferences: defaultFormattedTimePreferences,
 });
 

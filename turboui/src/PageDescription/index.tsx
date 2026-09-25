@@ -2,14 +2,16 @@ import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { hasTaskList, type TaskListInteraction } from "../RichEditor/taskLists";
 
 const PREVIEW_CHARACTER_LIMIT = 450;
 
 interface Props {
   description: any;
   onDescriptionChange: (newDescription: any) => Promise<boolean>;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   label: string;
   canEdit?: boolean;
   placeholder?: string;
@@ -58,7 +60,11 @@ export function PageDescription({
       <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
 
       {mode === "view" && (
-        <ViewMode rawDescription={description} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
+        <ViewMode
+          rawDescription={description}
+          mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+          taskList={richTextHandlers.taskList}
+        />
       )}
       {mode === "edit" && (
         <EditMode
@@ -96,9 +102,10 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
 interface ViewModeProps {
   rawDescription: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  taskList: TaskListInteraction;
 }
 
-function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
+function ViewMode({ rawDescription, mentionedPersonLookup, taskList }: ViewModeProps) {
   const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
 
   return (
@@ -107,9 +114,10 @@ function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
         content={rawDescription}
         transformContent={transformContent}
         mentionedPersonLookup={mentionedPersonLookup}
+        taskList={taskList}
       />
 
-      {length > PREVIEW_CHARACTER_LIMIT && (
+      {length > PREVIEW_CHARACTER_LIMIT && !hasTaskList(rawDescription) && (
         <button onClick={toggleExpand} className="text-content-dimmed hover:underline text-sm mt-1 font-medium">
           {isExpanded ? "Collapse" : "Expand"}
         </button>
@@ -211,7 +219,7 @@ function useExpandDescription(rawDescription: any) {
 
   const transformContent = useCallback(
     (content: any) => {
-      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) return content;
+      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded || hasTaskList(content)) return content;
       return shortenContent(content, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
     },
     [length, isExpanded],

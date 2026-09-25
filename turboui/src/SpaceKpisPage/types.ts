@@ -11,7 +11,7 @@
 //
 import type { ReactNode } from "react";
 import type { Navigation } from "../Page/Navigation";
-import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import { SidebarNotificationSection } from "../SidebarSection";
 
 export namespace SpaceKpisPage {
@@ -173,7 +173,7 @@ export namespace SpaceKpisPage {
     onAddAnnotation: (input: AnnotationInput) => Promise<MutationResult>;
     onEditAnnotation: (input: EditAnnotationInput) => Promise<MutationResult>;
     onDeleteAnnotation: (annotationId: string) => Promise<MutationResult>;
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
 
     // Comments on a recorded update. The app supplies the comment thread so
     // TurboUI stays free of API calls; opening a row shows it in a slide-in.

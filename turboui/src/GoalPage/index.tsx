@@ -19,7 +19,7 @@ import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { RichTextHandlers } from "../RichContent/types";
 import { StatusBanner } from "../ProjectPageLayout/StatusBanner";
 import { GoalPermissions } from "./types";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -188,7 +188,7 @@ export namespace GoalPage {
     moveModealOpen?: boolean;
 
     // Rich text support
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     localDraftKeyBase?: string;
     formattedTimePreferences: FormattedTimePreferences;
   }

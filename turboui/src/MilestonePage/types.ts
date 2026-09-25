@@ -2,7 +2,7 @@ import { DateField } from "../DateField";
 import * as Types from "../TaskBoard/types";
 import { PersonField } from "../PersonField";
 import { TimelineItem } from "../Timeline/types";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { RichTextHandlers } from "../RichContent/types";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { SidebarNotificationSection } from "../SidebarSection";
 import { ProjectPermissions } from "../ProjectPage/types";
@@ -100,7 +100,7 @@ export namespace MilestonePage {
 
     subscriptions: SidebarNotificationSection.Props;
 
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     localDraftKeyBase?: string;
     formattedTimePreferences: FormattedTimePreferences;
   };
@@ -146,7 +146,7 @@ export namespace MilestonePage {
     ) => void | boolean | Promise<void | boolean>;
     personSearch: PersonField.SearchData;
 
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     localDraftKeyBase?: string;
     formattedTimePreferences: FormattedTimePreferences;
   };

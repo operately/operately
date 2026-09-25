@@ -66,7 +66,11 @@ function ResourceContent({
 
       {resource.type === "document" && resource.content && (
         <div className="my-8">
-          <RichContent content={resource.content} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
+          <RichContent
+            taskList={{ canEdit: false }}
+            content={resource.content}
+            mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+          />
         </div>
       )}
 
