@@ -74,28 +74,28 @@ The first cataloged English workflow is company navigation → project → task 
 | Activity and notifications | Task-adding feed titles, in-app notification title, Notifications page chrome, Mark as read |
 | Emails | Immediate task-adding subjects and bodies (including mentions and the plain-text link label), buffered digest subject/empty state/CTAs and resource labels (Project, Space, Goal), and the task-adding digest headline |
 
-Desktop company-dropdown, account-menu, New, Help, search, and update-badge copy are cataloged. Account and onboarding screens are cataloged, including login, signup, forgot/reset password, first-company setup, new company, lobby, personal join, invite-link join/full, invite-team, member-type selection, invite-people/member form chrome, account home/settings/security/email/password/API tokens/MCP/notifications, remaining profile editor copy, and the member onboarding wizard. People directory and org-chart page copy stay English. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles remain English until PR 6. Other emails stay English until PR 7.
+Navigation chrome/shared defaults, company administration/billing, and account/onboarding are separate extraction slices. Their completion is not established by the space administration audit. People directory and org-chart page copy remain coverage gaps. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles belong to PR 6. Other emails belong to PR 7.
 
 Activity presentation is translated at render time. Stored activity payloads and user-authored names stay in the original language.
 
 Web requests and recipient-specific email rendering share the same effective-language rules. Background workers scope Gettext to the recipient for the duration of rendering and restore the previous locale afterward, including when rendering fails.
 
-## Administration extraction — complete
+## Space administration extraction — complete
 
-Company administration (home, add/manage people, restore access, admins/owners, permissions, rename, trusted email domains, billing/plan selection/cancellation, export, and import) and space administration (create/edit, general access, access management, add members, and tool configuration) use the shared catalog.
+Space creation, editing, general access, access management (including Other People), member addition, and tool configuration use the shared catalog. The audit includes labels, examples, validation, empty states, errors, tooltips, and accessibility text, plus the shared permission option list and access-level summaries.
 
-The follow-up audit closed the remaining create-space examples, import-version warning, and import/export progress-step labels. Billing date messages now include their named date placeholder in the complete message, and plan/interval labels can be reordered by translations. Tool switches reuse the cataloged tool title as their accessible name. Administration wrapper toasts, including delete-company errors, were already cataloged and were included in the audit.
+Most of these surfaces were already cataloged. This follow-up replaces concatenated access-summary messages with a complete description for each resource, tense, and permission combination, and gives the add-member button a cataloged accessible name. Tool switches reuse their cataloged tool title as their accessible name. Shared permission option labels are looked up at the shared list; goal and project access pages are outside this extraction.
 
-English wording and behavior are preserved. New company and space administration messages have Brazilian Portuguese translations; missing translations still fall back to English. Reviewed translations remain intact; translations for superseded billing sentence fragments are retained as obsolete PO entries. Focused tests exercise English, substituted catalog messages, missing-Portuguese fallback, invitation-expiry plurals, and company/space administration interactions.
+English wording and behavior are preserved. This extraction adds no Portuguese translations: new messages remain untranslated and fall back to English. Previously reviewed translations remain intact, including obsolete entries for superseded access-summary sentences. Focused tests exercise English, substituted catalog lookup, missing-Portuguese fallback (including the existing Other People count's singular and plural forms), and tool configuration interactions. Catalogs and generated resources are regenerated with `make gen.i18n`.
 
 Remaining coverage gaps:
 
 - Work-management copy: goals, projects, tasks, discussions, Docs & Files, activity feeds, space home/work map/kanban/KPI/discussion pages, and their operation toasts.
-- Remaining backend messages, emails, digests, and server-rendered pages, including transfer errors delivered by the backend.
+- Remaining backend messages, emails, digests, and server-rendered pages. Pass-through API error messages remain as returned, including `data.message` assigned to forms.
 - People directory and org-chart page copy.
 - Complete Brazilian Portuguese coverage, native-speaker review of new messages, and automated coverage checks.
 
-Navigation/shared-default and account/onboarding extraction are separate rollout slices. User-authored names, emails, domains, file names, version values, and API identifiers stay outside translation lookup. Known transfer step identifiers are mapped to cataloged display labels without changing the identifiers sent by the API.
+Company administration (including billing, export, and import), navigation chrome/shared confirm/cancel/toast-close defaults, and account/profile/authentication/onboarding remain separately tracked work. Operator SaaS administration is outside this slice. User-authored names, emails, company names, space names, and API identifiers stay outside translation lookup. The language flag, preference, and selector behavior are unchanged.
 
 ## Catalog files
 

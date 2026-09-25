@@ -126,16 +126,89 @@ describe("calcDescription (projects)", () => {
     ).toEqual(expected);
   });
 
-  test("when company has access but space has more", () => {
+  test.each([
+    [
+      "present",
+      VIEW_ACCESS,
+      COMMENT_ACCESS,
+      "Everyone in the company can view this project. Space members can view and comment.",
+    ],
+    [
+      "future",
+      VIEW_ACCESS,
+      COMMENT_ACCESS,
+      "Everyone in the company will be able to view this project. Space members will be able to view and comment.",
+    ],
+    [
+      "present",
+      VIEW_ACCESS,
+      EDIT_ACCESS,
+      "Everyone in the company can view this project. Space members have edit access.",
+    ],
+    [
+      "future",
+      VIEW_ACCESS,
+      EDIT_ACCESS,
+      "Everyone in the company will be able to view this project. Space members will have edit access.",
+    ],
+    [
+      "present",
+      VIEW_ACCESS,
+      FULL_ACCESS,
+      "Everyone in the company can view this project. Space members have full access.",
+    ],
+    [
+      "future",
+      VIEW_ACCESS,
+      FULL_ACCESS,
+      "Everyone in the company will be able to view this project. Space members will have full access.",
+    ],
+    [
+      "present",
+      COMMENT_ACCESS,
+      EDIT_ACCESS,
+      "Everyone in the company can view and comment on this project. Space members have edit access.",
+    ],
+    [
+      "future",
+      COMMENT_ACCESS,
+      EDIT_ACCESS,
+      "Everyone in the company will be able to view and comment on this project. Space members will have edit access.",
+    ],
+    [
+      "present",
+      COMMENT_ACCESS,
+      FULL_ACCESS,
+      "Everyone in the company can view and comment on this project. Space members have full access.",
+    ],
+    [
+      "future",
+      COMMENT_ACCESS,
+      FULL_ACCESS,
+      "Everyone in the company will be able to view and comment on this project. Space members will have full access.",
+    ],
+    [
+      "present",
+      EDIT_ACCESS,
+      FULL_ACCESS,
+      "Everyone in the company can view and edit this project. Space members have full access.",
+    ],
+    [
+      "future",
+      EDIT_ACCESS,
+      FULL_ACCESS,
+      "Everyone in the company will be able to view and edit this project. Space members will have full access.",
+    ],
+  ] as const)("when company has access but space has more (%s, %s, %s)", (tense, company, space, expected) => {
     expect(
       calcDescription({
         resourceType: "project",
-        tense: "present",
+        tense,
         anonymous: NO_ACCESS,
-        company: VIEW_ACCESS,
-        space: COMMENT_ACCESS,
+        company,
+        space,
       }),
-    ).toEqual("Everyone in the company can view this project. Space members can view and comment.");
+    ).toEqual(expected);
   });
 
   test.each([
@@ -212,17 +285,16 @@ describe("calcDescription (goals)", () => {
 describe("translated access descriptions", () => {
   beforeAll(() => {
     i18n.addResourceBundle("pt-BR", "translation", {
-      "Anyone on the internet can view this project.": "Qualquer pessoa na internet pode visualizar este projeto.",
+      "Anyone on the internet can view this project. Company members have edit access.":
+        "Translated public project with company editing",
       "Everyone in the company can view and comment on this goal.":
         "Todas as pessoas da empresa podem visualizar e comentar neste objetivo.",
       "Everyone in the space will be able to view and edit this goal.":
         "Todas as pessoas do espaço poderão visualizar e editar este objetivo.",
       "Only people you add to the space will be able to view it.":
         "Somente as pessoas adicionadas ao espaço poderão visualizá-lo.",
-      "Company members have edit access.": "Os membros da empresa têm acesso de edição.",
-      "Everyone in the company will be able to view this goal.":
-        "Todas as pessoas da empresa poderão visualizar este objetivo.",
-      "Space members will have full access.": "Os membros do espaço terão acesso total.",
+      "Everyone in the company will be able to view this goal. Space members will have full access.":
+        "Translated company goal with full space access",
     });
   });
 
@@ -239,7 +311,7 @@ describe("translated access descriptions", () => {
   test.each([
     [
       { resourceType: "project", tense: "present", anonymous: VIEW_ACCESS, company: EDIT_ACCESS },
-      "Qualquer pessoa na internet pode visualizar este projeto. Os membros da empresa têm acesso de edição.",
+      "Translated public project with company editing",
     ],
     [
       { resourceType: "goal", tense: "present", anonymous: NO_ACCESS, company: COMMENT_ACCESS },
@@ -251,7 +323,7 @@ describe("translated access descriptions", () => {
     ],
     [
       { resourceType: "goal", tense: "future", anonymous: NO_ACCESS, company: VIEW_ACCESS, space: FULL_ACCESS },
-      "Todas as pessoas da empresa poderão visualizar este objetivo. Os membros do espaço terão acesso total.",
+      "Translated company goal with full space access",
     ],
     [
       { resourceType: "space", tense: "future", anonymous: NO_ACCESS, company: NO_ACCESS },
@@ -262,18 +334,66 @@ describe("translated access descriptions", () => {
   });
 });
 
+test.each(["en", "pt-BR"])("looks up a complete space description with English fallback (%s)", async (language) => {
+  const instance = createInstance();
+  const description = "Anyone on the internet can view this space. Company members have full access.";
+  await instance.init({
+    lng: language,
+    fallbackLng: "en",
+    keySeparator: false,
+    resources: { en: { translation: { [description]: description } }, "pt-BR": { translation: {} } },
+  });
+  const props = { resourceType: "space", tense: "present", anonymous: VIEW_ACCESS, company: FULL_ACCESS } as const;
+
+  expect(calcDescription(props, instance.t.bind(instance))).toBe(description);
+  instance.addResourceBundle(
+    language,
+    "translation",
+    { [description]: "Translated complete space description" },
+    true,
+    true,
+  );
+  expect(calcDescription(props, instance.t.bind(instance))).toBe("Translated complete space description");
+});
+
 test.each([
+  [VIEW_ACCESS, COMMENT_ACCESS, "Everyone in the company can view this project. Space members can view and comment."],
+  [VIEW_ACCESS, EDIT_ACCESS, "Everyone in the company can view this project. Space members have edit access."],
+  [VIEW_ACCESS, FULL_ACCESS, "Everyone in the company can view this project. Space members have full access."],
   [
     COMMENT_ACCESS,
-    "Everyone in the company will be able to view this project. Space members will be able to view and comment.",
+    EDIT_ACCESS,
+    "Everyone in the company can view and comment on this project. Space members have edit access.",
   ],
-  [EDIT_ACCESS, "Everyone in the company will be able to view this project. Space members will have edit access."],
-  [FULL_ACCESS, "Everyone in the company will be able to view this project. Space members will have full access."],
-])("uses future tense for additional space access (%s)", (space, expected) => {
-  expect(
-    calcDescription({ resourceType: "project", tense: "future", anonymous: NO_ACCESS, company: VIEW_ACCESS, space }),
-  ).toBe(expected);
-});
+  [
+    COMMENT_ACCESS,
+    FULL_ACCESS,
+    "Everyone in the company can view and comment on this project. Space members have full access.",
+  ],
+  [EDIT_ACCESS, FULL_ACCESS, "Everyone in the company can view and edit this project. Space members have full access."],
+] as const)(
+  "looks up a complete company/space description with English fallback (%s, %s)",
+  async (company, space, description) => {
+    const instance = createInstance();
+    await instance.init({
+      lng: "pt-BR",
+      fallbackLng: "en",
+      keySeparator: false,
+      resources: { en: { translation: { [description]: description } }, "pt-BR": { translation: {} } },
+    });
+    const props = { resourceType: "project", tense: "present", anonymous: NO_ACCESS, company, space } as const;
+
+    expect(calcDescription(props, instance.t.bind(instance))).toBe(description);
+    instance.addResourceBundle(
+      "pt-BR",
+      "translation",
+      { [description]: "Translated complete company space description" },
+      true,
+      true,
+    );
+    expect(calcDescription(props, instance.t.bind(instance))).toBe("Translated complete company space description");
+  },
+);
 
 test("updates the title and description using the provider's language", async () => {
   const instance = createInstance();

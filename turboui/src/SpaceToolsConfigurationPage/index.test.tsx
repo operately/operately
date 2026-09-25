@@ -88,43 +88,76 @@ describe("SpaceToolsConfigurationPage Templates", () => {
 });
 
 it.each([
-  ["en", "Templates", "Save"],
-  ["en", "Translated templates", "Translated save"],
-  ["pt-BR", "Templates", "Save"],
-])("uses catalog copy and accessible tool names with English fallback: %s / %s", async (language, templates, save) => {
-  const i18n = createInstance();
-  await i18n.init({
-    ...i18nOptions,
-    lng: language,
-    resources: { en: { translation: { Templates: templates, Save: save } }, "pt-BR": { translation: {} } },
-  });
-  const onToolsChange = jest.fn();
-  const onSave = jest.fn(async () => {});
+  [
+    "en",
+    "Templates",
+    "Save",
+    "Configure tools for this space",
+    "Save reusable project structures and use them for recurring work.",
+  ],
+  [
+    "en",
+    "Translated templates",
+    "Translated save",
+    "Translated configuration heading",
+    "Translated template description",
+  ],
+  [
+    "pt-BR",
+    "Templates",
+    "Save",
+    "Configure tools for this space",
+    "Save reusable project structures and use them for recurring work.",
+  ],
+])(
+  "uses catalog copy and accessible tool names with English fallback: %s / %s",
+  async (language, templates, save, heading, description) => {
+    const i18n = createInstance();
+    await i18n.init({
+      ...i18nOptions,
+      lng: language,
+      resources: {
+        en: {
+          translation: {
+            Templates: templates,
+            Save: save,
+            "Configure tools for this space": heading,
+            "Save reusable project structures and use them for recurring work.": description,
+          },
+        },
+        "pt-BR": { translation: {} },
+      },
+    });
+    const onToolsChange = jest.fn();
+    const onSave = jest.fn(async () => {});
 
-  render(
-    <I18nextProvider i18n={i18n}>
-      <MemoryRouter>
-        <SpaceToolsConfigurationPage
-          title="Growth"
-          tools={{
-            discussionsEnabled: true,
-            resourceHubEnabled: true,
-            tasksEnabled: false,
-            kpisEnabled: false,
-            templatesEnabled: true,
-          }}
-          onToolsChange={onToolsChange}
-          onSave={onSave}
-          onCancel={() => {}}
-        />
-      </MemoryRouter>
-    </I18nextProvider>,
-  );
+    render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <SpaceToolsConfigurationPage
+            title="Growth"
+            tools={{
+              discussionsEnabled: true,
+              resourceHubEnabled: true,
+              tasksEnabled: false,
+              kpisEnabled: false,
+              templatesEnabled: true,
+            }}
+            onToolsChange={onToolsChange}
+            onSave={onSave}
+            onCancel={() => {}}
+          />
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
 
-  const toggle = screen.getByRole("switch", { name: templates });
-  expect(toggle).toBeChecked();
-  fireEvent.click(toggle);
-  expect(onToolsChange).toHaveBeenCalledWith(expect.objectContaining({ templatesEnabled: false }));
-  fireEvent.click(screen.getByRole("button", { name: save }));
-  expect(onSave).toHaveBeenCalledTimes(1);
-});
+    expect(screen.getByRole("heading", { name: heading })).toBeInTheDocument();
+    expect(screen.getByText(description)).toBeInTheDocument();
+    const toggle = screen.getByRole("switch", { name: templates });
+    expect(toggle).toBeChecked();
+    fireEvent.click(toggle);
+    expect(onToolsChange).toHaveBeenCalledWith(expect.objectContaining({ templatesEnabled: false }));
+    fireEvent.click(screen.getByRole("button", { name: save }));
+    expect(onSave).toHaveBeenCalledTimes(1);
+  },
+);
