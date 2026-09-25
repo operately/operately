@@ -23,7 +23,7 @@ export function formatCompanyBillingPlanLabel(
   const name = formatCompanyBillingPlanName(planKey, fallback);
   const intervalLabel = formatCompanyBillingIntervalLabel(interval);
 
-  return intervalLabel ? `${name} ${intervalLabel}` : name;
+  return intervalLabel ? i18n.t("{{plan}} {{interval}}", { plan: name, interval: intervalLabel }) : name;
 }
 
 export function formatCompanyBillingDate(value?: string | null): string | null {
@@ -35,11 +35,14 @@ export function formatCompanyBillingDate(value?: string | null): string | null {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 }
 
-export function formatCompanyBillingRelativeDateLine(prefix: string, value?: string | null): string | null {
+export function formatCompanyBillingRelativeDateLine(
+  formatMessage: (date: string) => string,
+  value?: string | null,
+): string | null {
   const formattedDate = formatCompanyBillingDate(value);
   if (!formattedDate) return null;
 
-  return `${prefix}: ${formattedDate}.`;
+  return formatMessage(formattedDate);
 }
 
 export function formatCompanyBillingPriceFromMinorUnits(amount?: number | null, currency?: string | null): string {

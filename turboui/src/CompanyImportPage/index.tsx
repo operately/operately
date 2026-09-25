@@ -411,6 +411,19 @@ function runStatusLabel(status: string, t: (key: string) => string) {
 function humanizeStep(step: string | null | undefined, t: (key: string) => string) {
   if (!step) return t("Queued");
 
+  switch (step) {
+    case "loading_package":
+      return t("Loading Package");
+    case "validating_package":
+      return t("Validating Package");
+    case "importing_rows":
+      return t("Importing Rows");
+    case "finalizing_import":
+      return t("Finalizing Import");
+    case "completed":
+      return t("Completed");
+  }
+
   return step
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
