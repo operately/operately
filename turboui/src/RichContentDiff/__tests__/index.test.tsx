@@ -128,3 +128,35 @@ describe("RichContentDiff", () => {
     expect(document.querySelector('[data-test-id="title-added"]')).toHaveTextContent("New title");
   });
 });
+
+it.each(["text", "row", "column", "header", "empty row", "empty column"])(
+  "shows table %s changes while preserving both grids",
+  async (change) => {
+    const cell = (text: string) => ({
+      type: "tableCell",
+      content: [{ type: "paragraph", content: text ? [{ type: "text", text }] : [] }],
+    });
+    const row = { type: "tableRow", content: [cell("First"), cell("Second")] };
+    const before = { type: "doc", content: [{ type: "table", content: [row] }] };
+    const after = JSON.parse(JSON.stringify(before));
+    if (change === "text") after.content[0].content[0].content[1] = cell("Changed");
+    if (change === "row") after.content[0].content.push({ type: "tableRow", content: [cell("Third"), cell("Fourth")] });
+    if (change === "column") after.content[0].content[0].content.push(cell("Third"));
+    if (change === "empty row") after.content[0].content.push({ type: "tableRow", content: [cell(""), cell("")] });
+    if (change === "empty column") after.content[0].content[0].content.push(cell(""));
+    if (change === "header")
+      after.content[0].content[0].content.forEach((cell: { type: string }) => (cell.type = "tableHeader"));
+    const { rerender } = renderDiff(before, after);
+    await waitFor(() => expect(pane("After").querySelector("[data-diff]")).not.toBeNull());
+    expect(pane("Before").querySelectorAll("table")).toHaveLength(1);
+    expect(pane("After").querySelectorAll("table")).toHaveLength(1);
+    expect(pane("Before").querySelectorAll("td, th")).toHaveLength(2);
+    expect(pane("After").querySelectorAll("td, th")).toHaveLength(
+      change.endsWith("row") ? 4 : change.endsWith("column") ? 3 : 2,
+    );
+    expect(document.querySelector('[contenteditable="true"]')).toBeNull();
+    rerender(<RichContentDiff before={after} after={before} mentionedPersonLookup={mentionedPersonLookup} />);
+    await waitFor(() => expect(pane("Before").querySelector('[data-diff="removed"]')).not.toBeNull());
+    expect(pane("After").querySelectorAll("td, th")).toHaveLength(2);
+  },
+);
