@@ -314,6 +314,25 @@
 }
 
 /* Shared editor, read-only, and history table layout. */
+.rich-text-table-insertion-line {
+  animation: table-insertion-line-appear 160ms ease-out;
+}
+
+@keyframes table-insertion-line-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rich-text-table-insertion-line {
+    animation: none;
+  }
+}
+
 .ProseMirror .tableWrapper {
   max-width: 100%;
   overflow-x: auto;

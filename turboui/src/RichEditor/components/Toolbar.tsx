@@ -12,6 +12,7 @@ import { ItalicButton } from "./ItalicButton";
 import { LinkButton } from "./LinkButton";
 import { NumberListButton } from "./NumberListButton";
 import { TaskListButton } from "./TaskListButton";
+import { TableButton } from "./TableButton";
 import { RedoButton } from "./RedoButton";
 import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
@@ -59,6 +60,7 @@ function DesktopToolbar() {
             <BulletListButton editor={editor} iconSize={20} />
             <NumberListButton editor={editor} iconSize={20} />
             <TaskListButton editor={editor} iconSize={20} />
+            <TableButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
             <CodeBlockButton editor={editor} iconSize={20} />
             <DividerButton editor={editor} iconSize={20} />
@@ -106,6 +108,7 @@ function MobileToolbar() {
           </div>
 
           <MobilePopupTools>
+            <TableButton editor={editor} iconSize={20} />
             <TaskListButton editor={editor} iconSize={20} />
             <NumberListButton editor={editor} iconSize={20} />
             <BlockquoteButton editor={editor} iconSize={20} />
@@ -126,10 +129,14 @@ function MobileToolbar() {
 function MobilePopupTools({ children }: { children: React.ReactNode }): JSX.Element {
   return (
     <Popover.Root>
-      <Popover.Trigger className="mr-2">
+      <Popover.Trigger className="mr-2" aria-label="More formatting options">
         <IconChevronDown size={20} />
       </Popover.Trigger>
-      <Popover.Content className="z-10 p-2 bg-surface-base rounded-lg shadow-lg border border-stroke-base">
+      <Popover.Content
+        align="end"
+        collisionPadding={8}
+        className="z-10 p-2 max-w-[calc(100vw-1rem)] bg-surface-base rounded-lg shadow-lg border border-stroke-base"
+      >
         <div className="flex flex-wrap gap-1">{children}</div>
       </Popover.Content>
     </Popover.Root>
