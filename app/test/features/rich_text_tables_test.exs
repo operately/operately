@@ -7,6 +7,20 @@ defmodule Operately.Features.RichTextTablesTest do
 
   setup ctx, do: Steps.setup(ctx)
 
+  feature "create and manage a table through the toolbar, then save or cancel", ctx do
+    ctx
+    |> Steps.edit_document()
+    |> Steps.insert_table()
+    |> Steps.manage_table()
+    |> Steps.save_document()
+    |> Steps.reload_created_table()
+    |> Steps.assert_document_version()
+    |> Steps.edit_document()
+    |> Steps.delete_table()
+    |> Steps.cancel_document()
+    |> Steps.reload_created_table()
+  end
+
   feature "paste, save, reload and cancel document table edits", ctx do
     ctx
     |> Steps.edit_document()
