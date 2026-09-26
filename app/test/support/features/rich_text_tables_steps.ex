@@ -48,6 +48,55 @@ defmodule Operately.Support.Features.RichTextTablesSteps do
     ctx |> UI.assert_has(css: "[contenteditable=true] table")
   end
 
+  step :insert_table, ctx do
+    ctx
+    |> UI.fill_rich_text("")
+    |> UI.click(testid: "toolbar-button-table")
+    |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] tr", count: 3))
+    |> UI.send_keys(["Created from toolbar"])
+  end
+
+  step :manage_table, ctx do
+    ctx
+    |> hover_first_cell_edge()
+    |> UI.click(testid: "toolbar-button-row-actions")
+    |> UI.click(testid: "table-addRowBefore")
+    |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] tr", count: 4))
+    |> hover_first_cell_edge()
+    |> UI.click(testid: "toolbar-button-column-actions")
+    |> UI.click(testid: "table-addColumnAfter")
+    |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] th", count: 4))
+  end
+
+  defp hover_first_cell_edge(ctx) do
+    selector = "[contenteditable=true] th:first-child"
+    ctx = UI.hover(ctx, css: selector)
+
+    Wallaby.Browser.execute_script(ctx.session, "return document.querySelector(arguments[0]).getBoundingClientRect().toJSON()", [selector], fn rect ->
+      Wallaby.Browser.move_mouse_by(ctx.session, round(12 - rect["width"] / 2), round(12 - rect["height"] / 2))
+    end)
+
+    ctx
+  end
+
+  step :reload_created_table, ctx do
+    path = Wallaby.Browser.current_url(ctx.session)
+
+    ctx
+    |> UI.visit(path)
+    |> UI.assert_has(Wallaby.Query.css("table tr", count: 4))
+    |> UI.assert_has(Wallaby.Query.css("table th", count: 4))
+    |> UI.assert_has(Wallaby.Query.css("table td", text: "Created from toolbar"))
+  end
+
+  step :delete_table, ctx do
+    ctx
+    |> UI.click(Wallaby.Query.css("table td", text: "Created from toolbar"))
+    |> UI.click(testid: "toolbar-button-table-settings")
+    |> UI.click(testid: "table-deleteTable")
+    |> UI.refute_has(css: "[contenteditable=true] table")
+  end
+
   step :save_document, ctx do
     ctx |> UI.click(testid: "submit") |> UI.refute_has(testid: "submit")
   end

@@ -1,9 +1,10 @@
 import { Table, TableCell, TableHeader, TableRow, TableView } from "@tiptap/extension-table";
-import { commands, Extension } from "@tiptap/core";
+import { commands, Extension, type Command } from "@tiptap/core";
 import { isHistoryTransaction } from "@tiptap/pm/history";
 import type { Node, ResolvedPos } from "@tiptap/pm/model";
-import { Plugin, PluginKey } from "@tiptap/pm/state";
-import type { EditorView } from "@tiptap/pm/view";
+import { Plugin, PluginKey, type Transaction } from "@tiptap/pm/state";
+import { isInTable, selectedRect } from "@tiptap/pm/tables";
+import type { EditorView, ViewMutationRecord } from "@tiptap/pm/view";
 import { normalizeTableHtml } from "../tablePaste";
 
 const contentLoad = new PluginKey("tableContentLoad");
@@ -31,11 +32,28 @@ const TablePaste = Extension.create({
 });
 
 class ScrollableTableView extends TableView {
+  private settings: HTMLDivElement;
   constructor(node: Node, cellMinWidth: number, view: EditorView, attributes: Record<string, unknown>) {
     super(node, cellMinWidth, view, attributes);
+    // React renders edit-only controls here, outside the document's table content.
+    this.settings = document.createElement("div");
+    this.settings.className = "rich-text-table-settings";
+    this.settings.contentEditable = "false";
+    this.settings.style.position = "sticky";
+    this.settings.style.left = "0";
+    this.dom.prepend(this.settings);
     this.dom.tabIndex = 0;
     this.dom.setAttribute("role", "region");
     this.dom.setAttribute("aria-label", "Table");
+  }
+
+  stopEvent(event: Event) {
+    return event.target instanceof globalThis.Node && this.settings.contains(event.target);
+  }
+
+  ignoreMutation(mutation: ViewMutationRecord) {
+    if (this.settings.contains(mutation.target)) return true;
+    return super.ignoreMutation(mutation);
   }
 }
 
@@ -61,6 +79,23 @@ const TableExtension = Table.extend({
         if (isInsideTable(props.state.selection.$from)) return false;
         return parent?.insertTable?.(options)(props) ?? false;
       },
+      addRowBefore: () => withHeaderRow(parent?.addRowBefore?.()),
+      addRowAfter: () => withHeaderRow(parent?.addRowAfter?.()),
+      addColumnBefore: () => withHeaderRow(parent?.addColumnBefore?.()),
+      addColumnAfter: () => withHeaderRow(parent?.addColumnAfter?.()),
+      toggleHeaderRow: () => withHeaderRow(parent?.toggleHeaderRow?.(), "toggle"),
+      deleteRow: () => (props) => {
+        if (!isInTable(props.state)) return false;
+        const rect = selectedRect(props.state);
+        if (rect.bottom - rect.top === rect.map.height) return props.commands.deleteTable();
+        return withHeaderRow(parent?.deleteRow?.())(props);
+      },
+      deleteColumn: () => (props) => {
+        if (!isInTable(props.state)) return false;
+        const rect = selectedRect(props.state);
+        if (rect.right - rect.left === rect.map.width) return props.commands.deleteTable();
+        return withHeaderRow(parent?.deleteColumn?.())(props);
+      },
     };
   },
   addProseMirrorPlugins() {
@@ -82,6 +117,40 @@ const TableExtension = Table.extend({
     ];
   },
 }).configure({ resizable: false, renderWrapper: true, View: ScrollableTableView, cellMinWidth: 120 });
+
+export function hasTableHeader(table: Node): boolean {
+  const row = table.firstChild;
+  return !!row && row.childCount > 0 && row.content.content.every((cell) => cell.type.name === "tableHeader");
+}
+
+// Let Tiptap change the grid, then preserve our first-row-only header policy in the same undo step.
+function withHeaderRow(command: Command | undefined, mode: "preserve" | "toggle" = "preserve"): Command {
+  return (props) => {
+    if (!command || !isInTable(props.state)) return false;
+
+    const { table, tableStart } = selectedRect(props.state);
+    const header = hasTableHeader(table);
+    const changed = command(props);
+
+    if (changed && props.dispatch) setHeaderRow(props.tr, tableStart - 1, mode === "toggle" ? !header : header);
+
+    return changed;
+  };
+}
+
+function setHeaderRow(transaction: Transaction, position: number, enabled: boolean) {
+  const table = transaction.doc.nodeAt(position);
+
+  if (table?.type.name !== "table") return;
+
+  table.forEach((row, rowOffset, rowIndex) => {
+    row.forEach((cell, cellOffset) => {
+      const type = table.type.schema.nodes[enabled && rowIndex === 0 ? "tableHeader" : "tableCell"];
+      if (type && cell.type !== type)
+        transaction.setNodeMarkup(position + rowOffset + cellOffset + 2, type, cell.attrs);
+    });
+  });
+}
 
 function unsupportedTableFeatures(doc: Node): Map<string, number> {
   const features = new Map<string, number>();

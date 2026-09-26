@@ -2,6 +2,9 @@ import { Editor, type JSONContent } from "@tiptap/core";
 import { createRichEditorExtensions } from "../createRichEditorExtensions";
 import { AddBlobsEditorCommand } from "../Blob/AddBlobsEditorCommand";
 import { createDropFilePlugin } from "../Blob/DropFilePlugin";
+import { closeHistory } from "@tiptap/pm/history";
+import { CellSelection } from "@tiptap/pm/tables";
+import { assertPresent } from "../../utils/assertions";
 
 let editor: Editor;
 const paste = (html: string) => editor.view.pasteHTML(html, Object.assign(new Event("paste"), { clipboardData: null }));
@@ -13,6 +16,96 @@ beforeEach(() => {
   editor.setEditable(true);
 });
 afterEach(() => editor.destroy());
+
+it("keeps only the first row as headers when inserting above or deleting the header", () => {
+  editor.commands.insertTable({ rows: 3, cols: 3, withHeaderRow: true });
+  const saved = editor.getJSON();
+  editor.view.dispatch(closeHistory(editor.state.tr));
+  editor.commands.addRowBefore();
+  expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(4);
+  expect(editor.view.dom.querySelectorAll("th")).toHaveLength(3);
+  expect(editor.view.dom.querySelector("tr")?.querySelectorAll("th")).toHaveLength(3);
+  editor.commands.undo();
+  expect(editor.getJSON()).toEqual(saved);
+  editor.commands.setTextSelection(4);
+  editor.commands.deleteRow();
+  expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(2);
+  expect(editor.view.dom.querySelector("tr")?.querySelectorAll("th")).toHaveLength(3);
+});
+
+it("toggles the first header row from any cell, including a one-cell table", () => {
+  editor.commands.insertTable({ rows: 1, cols: 1, withHeaderRow: true });
+  editor.commands.toggleHeaderRow();
+  expect(editor.view.dom.querySelectorAll("th")).toHaveLength(0);
+  editor.commands.toggleHeaderRow();
+  expect(editor.view.dom.querySelectorAll("th")).toHaveLength(1);
+});
+
+it.each(["deleteRow", "deleteColumn"] as const)(
+  "%s removes the final row/column and leaves a usable cursor",
+  (command) => {
+    editor.commands.insertTable({ rows: 1, cols: 1 });
+    expect(editor.can()[command]()).toBe(true);
+    editor.commands[command]();
+    expect(editor.view.dom.querySelector("table")).toBeNull();
+    editor.commands.insertContent("After");
+    expect(editor.getText()).toContain("After");
+  },
+);
+
+it.each(["deleteRow", "deleteColumn"] as const)("%s removes a selection covering every row/column", (command) => {
+  editor.commands.insertTable({ rows: 2, cols: 2 });
+  const cells: number[] = [];
+  editor.state.doc.descendants((node, pos) => {
+    if (["tableCell", "tableHeader"].includes(node.type.name)) cells.push(pos);
+  });
+  const first = cells[0];
+  const last = cells[3];
+  assertPresent(first);
+  assertPresent(last);
+  editor.view.dispatch(editor.state.tr.setSelection(CellSelection.create(editor.state.doc, first, last)));
+  expect(editor.can()[command]()).toBe(true);
+  editor.commands[command]();
+  expect(editor.view.dom.querySelector("table")).toBeNull();
+});
+
+it("keeps headerless tables headerless during row and column changes", () => {
+  editor.commands.insertTable({ rows: 2, cols: 2, withHeaderRow: false });
+  editor.commands.addRowBefore();
+  editor.commands.addRowAfter();
+  editor.commands.addColumnBefore();
+  editor.commands.addColumnAfter();
+  expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(4);
+  expect(editor.view.dom.querySelectorAll("td")).toHaveLength(16);
+  expect(editor.view.dom.querySelectorAll("th")).toHaveLength(0);
+  editor.commands.goToNextCell();
+  editor.commands.goToNextCell();
+  editor.commands.goToNextCell();
+  editor.commands.goToNextCell();
+  editor.commands.toggleHeaderRow();
+  expect(editor.view.dom.querySelector("tr")?.querySelectorAll("th")).toHaveLength(4);
+  expect(editor.view.dom.querySelectorAll("th")).toHaveLength(4);
+});
+
+it("navigates cells in both directions and adds a body row after the last header cell", () => {
+  // Dispatch real key events; Tiptap's keyboardShortcut helper copies document steps only, not selection changes.
+  const tab = (shiftKey = false) =>
+    editor.view.dom.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Tab", shiftKey, bubbles: true, cancelable: true }),
+    );
+  editor.commands.insertTable({ rows: 1, cols: 2, withHeaderRow: true });
+  const first = editor.state.selection.from;
+  tab();
+  const second = editor.state.selection.from;
+  expect(second).toBeGreaterThan(first);
+  tab(true);
+  expect(editor.state.selection.from).toBe(first);
+  tab();
+  tab();
+  expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(2);
+  expect(editor.view.dom.querySelectorAll("th")).toHaveLength(2);
+  expect(editor.state.selection.$from.node(-1).type.name).toBe("tableCell");
+});
 
 const paragraph = (text: string): JSONContent => ({ type: "paragraph", content: [{ type: "text", text }] });
 const cell = (text: string, attrs = {}): JSONContent => ({ type: "tableCell", attrs, content: [paragraph(text)] });
