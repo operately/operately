@@ -1,5 +1,5 @@
 import React from "react";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import type { Editor as TiptapEditor, JSONContent } from "@tiptap/core";
@@ -204,8 +204,9 @@ it("dismisses toast Undo after later edits so it cannot undo unrelated typing", 
   move();
   advance(500);
   deleteAxis("row");
+  expect(within(screen.getByRole("status")).getByRole("button")).toBeInTheDocument();
   act(() => editor.commands.insertContent("New text"));
-  expect(screen.queryByText("Row deleted")).not.toBeInTheDocument();
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
   act(() => editor.commands.undo());
   expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(1);
   expect(editor.getText()).not.toContain("New text");
@@ -239,10 +240,10 @@ it("dismisses Undo on unmount", () => {
   move();
   advance(500);
   deleteAxis("row");
-  expect(screen.getByText("Row deleted")).toBeInTheDocument();
+  expect(within(screen.getByRole("status")).getByRole("button")).toBeInTheDocument();
   unmount();
   render(<ToasterBar />);
-  expect(screen.queryByText("Row deleted")).not.toBeInTheDocument();
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
 });
 
 it.each(["row", "column"] as const)("deletes the final %s and restores the table with Undo", (axis) => {
