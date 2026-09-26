@@ -358,7 +358,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:136
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:128
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:137
 msgid "Access Level"
 msgstr ""
 
@@ -463,18 +463,23 @@ msgid "Add administrators"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:153
+msgid "Add another member"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:26
 msgid "Add goals"
 msgstr ""
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:76
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:90
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:93
 msgid "Add members"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:79
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:80
 msgid "Add members to %{name}"
 msgstr ""
 
@@ -2613,7 +2618,7 @@ msgid "Invite people"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:85
 msgid "Invite someone new to the organization"
 msgstr ""
 
@@ -2886,7 +2891,7 @@ msgid "Marko Anastasov, CEO & Founder, Operately"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:127
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:134
 msgid "Member"
 msgstr ""
 
@@ -3193,7 +3198,7 @@ msgid "Only company admins can see and share this link. You can also <button>gen
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:81
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
 msgid "Only existing members can be added."
 msgstr ""
 
@@ -3791,7 +3796,7 @@ msgid "Remove from space"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:161
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:174
 msgid "Remove member"
 msgstr ""
 
@@ -4702,7 +4707,7 @@ msgid "This link (including the one in their email) expires in 24 hours."
 msgstr ""
 
 #.frontend
-#: assets/js/models/companyExports/index.tsx:44
+#: assets/js/models/companyExports/index.tsx:54
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
 msgstr ""
 

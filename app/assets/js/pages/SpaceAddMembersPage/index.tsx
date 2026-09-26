@@ -76,7 +76,9 @@ function Page() {
     <Pages.Page title={[translationText(t("Add members")), space.name]}>
       <Paper.Root size="small">
         <Paper.NavigateBack to={backPath} title={t("Back to Team & Access")} />
-        <div className="text-2xl font-extrabold mb-4 text-center">{t("Add members to {{name}}", { name: space.name })}</div>
+        <div className="text-2xl font-extrabold mb-4 text-center">
+          {t("Add members to {{name}}", { name: space.name })}
+        </div>
         <p className="text-sm text-center text-content-dimmed mb-4">
           {t("Only existing members can be added.")}{" "}
           <Link to={paths.invitePeoplePath()} className="text-sm" underline="hover">
@@ -87,7 +89,12 @@ function Page() {
         <Forms.Form form={form}>
           <Members />
 
-          <Forms.Submit saveText={translationText(t("Add members"))} layout="centered" buttonSize="base" submitOnEnter={false} />
+          <Forms.Submit
+            saveText={translationText(t("Add members"))}
+            layout="centered"
+            buttonSize="base"
+            submitOnEnter={false}
+          />
         </Forms.Form>
       </Paper.Root>
     </Pages.Page>
@@ -125,7 +132,11 @@ function Member({ field, search, index }) {
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
           <Forms.SelectPerson field={field + ".personId"} label={translationText(t("Member"))} searchFn={search} />
-          <Forms.SelectBox field={field + ".accessLevel"} label={translationText(t("Access Level"))} options={permissionsList()} />
+          <Forms.SelectBox
+            field={field + ".accessLevel"}
+            label={translationText(t("Access Level"))}
+            options={permissionsList()}
+          />
         </Forms.FieldGroup>
 
         <RemoveMemberButton index={index} />
@@ -135,9 +146,11 @@ function Member({ field, search, index }) {
 }
 
 function AddMoreMembersButton({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex justify-center" style={{ marginTop: "-18px" }} data-test-id={createTestId("add-more")}>
-      <SecondaryButton onClick={onClick}>
+      <SecondaryButton onClick={onClick} ariaLabel={translationText(t("Add another member"))}>
         <IconPlus size={16} />
       </SecondaryButton>
     </div>
