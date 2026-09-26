@@ -74,7 +74,7 @@ The first cataloged English workflow is company navigation → project → task 
 | Activity and notifications | Task-adding feed titles, in-app notification title, Notifications page chrome, Mark as read |
 | Emails | Immediate task-adding subjects and bodies (including mentions and the plain-text link label), buffered digest subject/empty state/CTAs and resource labels (Project, Space, Goal), and the task-adding digest headline |
 
-Navigation chrome/shared defaults, company administration/billing, and account/onboarding are separate extraction slices. Their completion is not established by the space administration audit. People directory and org-chart page copy remain coverage gaps. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles belong to PR 6. Other emails belong to PR 7.
+PR 5 extraction is complete across navigation chrome/shared controls, account/onboarding, and company/space administration, including billing, export, and import. These surfaces were covered by #5357, #5362, #5366, and the space administration follow-up below. People directory and org-chart page copy remain coverage gaps. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles belong to PR 6. Other emails belong to PR 7. Remaining Portuguese coverage and native-speaker review belong to PR 8.
 
 Activity presentation is translated at render time. Stored activity payloads and user-authored names stay in the original language.
 
@@ -95,7 +95,7 @@ Remaining coverage gaps:
 - People directory and org-chart page copy.
 - Complete Brazilian Portuguese coverage, native-speaker review of new messages, and automated coverage checks.
 
-Company administration (including billing, export, and import), navigation chrome/shared confirm/cancel/toast-close defaults, and account/profile/authentication/onboarding remain separately tracked work. Operator SaaS administration is outside this slice. User-authored names, emails, company names, space names, and API identifiers stay outside translation lookup. The language flag, preference, and selector behavior are unchanged.
+Operator SaaS administration is outside PR 5's scope. User-authored names, emails, company names, space names, and API identifiers stay outside translation lookup. The language flag, preference, and selector behavior are unchanged.
 
 ## Catalog files
 
