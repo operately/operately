@@ -71,46 +71,54 @@ function calcTitle(props: AccessLevelSummaryProps, t: (key: string) => string = 
 
 export function calcDescription(props: AccessLevelSummaryProps, t: TFunction = i18n.t.bind(i18n)) {
   const spaceLevel = props.space ?? 0;
+  const future = props.tense === "future";
 
   if (props.anonymous >= PERMISSION_LEVELS.VIEW_ACCESS) {
-    if (props.company <= props.anonymous) return describeAccess({ ...props, access: "public" }, t);
+    const base = describeAccess({ ...props, access: "public" }, t);
+    const extra =
+      props.company > props.anonymous
+        ? match(props.company)
+            .with(PERMISSION_LEVELS.COMMENT_ACCESS, () =>
+              future
+                ? t("Company members will be able to view and comment.")
+                : t("Company members can view and comment."),
+            )
+            .with(PERMISSION_LEVELS.EDIT_ACCESS, () =>
+              future ? t("Company members will have edit access.") : t("Company members have edit access."),
+            )
+            .with(PERMISSION_LEVELS.FULL_ACCESS, () =>
+              future ? t("Company members will have full access.") : t("Company members have full access."),
+            )
+            .otherwise(() => "")
+        : "";
 
-    return match(props.company)
-      .with(PERMISSION_LEVELS.COMMENT_ACCESS, () => describeAccess({ ...props, access: "public_company_comment" }, t))
-      .with(PERMISSION_LEVELS.EDIT_ACCESS, () => describeAccess({ ...props, access: "public_company_edit" }, t))
-      .with(PERMISSION_LEVELS.FULL_ACCESS, () => describeAccess({ ...props, access: "public_company_full" }, t))
-      .otherwise(() => describeAccess({ ...props, access: "public" }, t));
+    return [base, extra].filter(Boolean).join(" ");
   }
 
   if (props.company >= PERMISSION_LEVELS.VIEW_ACCESS) {
-    if (props.resourceType !== "space" && spaceLevel > props.company) {
-      const access = match([props.company, spaceLevel])
-        .with(
-          [PERMISSION_LEVELS.VIEW_ACCESS, PERMISSION_LEVELS.COMMENT_ACCESS],
-          () => "company_view_space_comment" as const,
-        )
-        .with([PERMISSION_LEVELS.VIEW_ACCESS, PERMISSION_LEVELS.EDIT_ACCESS], () => "company_view_space_edit" as const)
-        .with([PERMISSION_LEVELS.VIEW_ACCESS, PERMISSION_LEVELS.FULL_ACCESS], () => "company_view_space_full" as const)
-        .with(
-          [PERMISSION_LEVELS.COMMENT_ACCESS, PERMISSION_LEVELS.EDIT_ACCESS],
-          () => "company_comment_space_edit" as const,
-        )
-        .with(
-          [PERMISSION_LEVELS.COMMENT_ACCESS, PERMISSION_LEVELS.FULL_ACCESS],
-          () => "company_comment_space_full" as const,
-        )
-        .with([PERMISSION_LEVELS.EDIT_ACCESS, PERMISSION_LEVELS.FULL_ACCESS], () => "company_edit_space_full" as const)
-        .otherwise(() => null);
-
-      if (access) return describeAccess({ ...props, access }, t);
-    }
-
-    return match(props.company)
+    const base = match(props.company)
       .with(PERMISSION_LEVELS.VIEW_ACCESS, () => describeAccess({ ...props, access: "company_view" }, t))
       .with(PERMISSION_LEVELS.COMMENT_ACCESS, () => describeAccess({ ...props, access: "company_comment" }, t))
       .with(PERMISSION_LEVELS.EDIT_ACCESS, () => describeAccess({ ...props, access: "company_edit" }, t))
       .with(PERMISSION_LEVELS.FULL_ACCESS, () => describeAccess({ ...props, access: "company_full" }, t))
       .otherwise(() => "");
+
+    const extra =
+      props.resourceType !== "space" && spaceLevel > props.company
+        ? match(spaceLevel)
+            .with(PERMISSION_LEVELS.COMMENT_ACCESS, () =>
+              future ? t("Space members will be able to view and comment.") : t("Space members can view and comment."),
+            )
+            .with(PERMISSION_LEVELS.EDIT_ACCESS, () =>
+              future ? t("Space members will have edit access.") : t("Space members have edit access."),
+            )
+            .with(PERMISSION_LEVELS.FULL_ACCESS, () =>
+              future ? t("Space members will have full access.") : t("Space members have full access."),
+            )
+            .otherwise(() => "")
+        : "";
+
+    return [base, extra].filter(Boolean).join(" ");
   }
 
   if (props.resourceType !== "space" && spaceLevel >= PERMISSION_LEVELS.VIEW_ACCESS) {

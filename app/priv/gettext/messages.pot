@@ -633,123 +633,33 @@ msgid "An admin or owner needs to review billing or free up member space before 
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:38
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:29
 msgid "Anyone on the internet can view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:54
-msgid "Anyone on the internet can view this goal. Company members can view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:68
-msgid "Anyone on the internet can view this goal. Company members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:80
-msgid "Anyone on the internet can view this goal. Company members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:35
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:26
 msgid "Anyone on the internet can view this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:49
-msgid "Anyone on the internet can view this project. Company members can view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:65
-msgid "Anyone on the internet can view this project. Company members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:77
-msgid "Anyone on the internet can view this project. Company members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:41
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:32
 msgid "Anyone on the internet can view this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:59
-msgid "Anyone on the internet can view this space. Company members can view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:71
-msgid "Anyone on the internet can view this space. Company members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:83
-msgid "Anyone on the internet can view this space. Company members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:37
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:28
 msgid "Anyone on the internet will be able to view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:51
-msgid "Anyone on the internet will be able to view this goal. Company members will be able to view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:67
-msgid "Anyone on the internet will be able to view this goal. Company members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:79
-msgid "Anyone on the internet will be able to view this goal. Company members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:34
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:25
 msgid "Anyone on the internet will be able to view this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:46
-msgid "Anyone on the internet will be able to view this project. Company members will be able to view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:64
-msgid "Anyone on the internet will be able to view this project. Company members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:76
-msgid "Anyone on the internet will be able to view this project. Company members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:40
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:31
 msgid "Anyone on the internet will be able to view this space."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:56
-msgid "Anyone on the internet will be able to view this space. Company members will be able to view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:70
-msgid "Anyone on the internet will be able to view this space. Company members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:82
-msgid "Anyone on the internet will be able to view this space. Company members will have full access."
 msgstr ""
 
 #.frontend
@@ -1386,6 +1296,36 @@ msgid "Company members"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:84
+msgid "Company members can view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:87
+msgid "Company members have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:90
+msgid "Company members have full access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:83
+msgid "Company members will be able to view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:87
+msgid "Company members will have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:90
+msgid "Company members will have full access."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:62
 msgid "Company-wide Access"
 msgstr ""
@@ -1961,302 +1901,182 @@ msgid "Esc"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:176
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:53
 msgid "Everyone in the company can view and comment on this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:129
-msgid "Everyone in the company can view and comment on this goal. Space members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:143
-msgid "Everyone in the company can view and comment on this goal. Space members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:173
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:50
 msgid "Everyone in the company can view and comment on this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:124
-msgid "Everyone in the company can view and comment on this project. Space members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:138
-msgid "Everyone in the company can view and comment on this project. Space members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:179
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:56
 msgid "Everyone in the company can view and comment on this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:188
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:65
 msgid "Everyone in the company can view and edit this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:155
-msgid "Everyone in the company can view and edit this goal. Space members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:185
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:62
 msgid "Everyone in the company can view and edit this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:152
-msgid "Everyone in the company can view and edit this project. Space members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:191
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:68
 msgid "Everyone in the company can view and edit this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:164
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:41
 msgid "Everyone in the company can view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:95
-msgid "Everyone in the company can view this goal. Space members can view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:105
-msgid "Everyone in the company can view this goal. Space members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:115
-msgid "Everyone in the company can view this goal. Space members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:161
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:38
 msgid "Everyone in the company can view this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:92
-msgid "Everyone in the company can view this project. Space members can view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:102
-msgid "Everyone in the company can view this project. Space members have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:112
-msgid "Everyone in the company can view this project. Space members have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:167
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:44
 msgid "Everyone in the company can view this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:200
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:77
 msgid "Everyone in the company has full access to this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:197
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:74
 msgid "Everyone in the company has full access to this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:203
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:80
 msgid "Everyone in the company has full access to this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:175
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:52
 msgid "Everyone in the company will be able to view and comment on this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:126
-msgid "Everyone in the company will be able to view and comment on this goal. Space members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:140
-msgid "Everyone in the company will be able to view and comment on this goal. Space members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:172
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:49
 msgid "Everyone in the company will be able to view and comment on this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:121
-msgid "Everyone in the company will be able to view and comment on this project. Space members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:135
-msgid "Everyone in the company will be able to view and comment on this project. Space members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:178
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:55
 msgid "Everyone in the company will be able to view and comment on this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:187
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:64
 msgid "Everyone in the company will be able to view and edit this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:154
-msgid "Everyone in the company will be able to view and edit this goal. Space members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:184
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:61
 msgid "Everyone in the company will be able to view and edit this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:149
-msgid "Everyone in the company will be able to view and edit this project. Space members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:190
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:67
 msgid "Everyone in the company will be able to view and edit this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:163
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:40
 msgid "Everyone in the company will be able to view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:94
-msgid "Everyone in the company will be able to view this goal. Space members will be able to view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:104
-msgid "Everyone in the company will be able to view this goal. Space members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:114
-msgid "Everyone in the company will be able to view this goal. Space members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:160
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:37
 msgid "Everyone in the company will be able to view this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:89
-msgid "Everyone in the company will be able to view this project. Space members will be able to view and comment."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:101
-msgid "Everyone in the company will be able to view this project. Space members will have edit access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:111
-msgid "Everyone in the company will be able to view this project. Space members will have full access."
-msgstr ""
-
-#.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:166
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:43
 msgid "Everyone in the company will be able to view this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:199
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:76
 msgid "Everyone in the company will have full access to this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:196
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:73
 msgid "Everyone in the company will have full access to this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:202
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:79
 msgid "Everyone in the company will have full access to this space."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:223
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:100
 msgid "Everyone in the space can view and comment on this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:220
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:97
 msgid "Everyone in the space can view and comment on this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:233
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:110
 msgid "Everyone in the space can view and edit this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:230
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:107
 msgid "Everyone in the space can view and edit this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:213
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:90
 msgid "Everyone in the space can view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:210
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:87
 msgid "Everyone in the space can view this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:222
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:99
 msgid "Everyone in the space will be able to view and comment on this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:219
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:96
 msgid "Everyone in the space will be able to view and comment on this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:232
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:109
 msgid "Everyone in the space will be able to view and edit this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:229
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:106
 msgid "Everyone in the space will be able to view and edit this project."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:212
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:89
 msgid "Everyone in the space will be able to view this goal."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:209
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:86
 msgid "Everyone in the space will be able to view this project."
 msgstr ""
 
@@ -3383,32 +3203,32 @@ msgid "Only existing members can be added."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:242
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:119
 msgid "Only people you add to the goal can view it."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:241
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:118
 msgid "Only people you add to the goal will be able to view it."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:239
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:116
 msgid "Only people you add to the project can view it."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:238
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:115
 msgid "Only people you add to the project will be able to view it."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:245
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:122
 msgid "Only people you add to the space can view it."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/AccessLevelSummary/descriptions.ts:244
+#: ../turboui/src/AccessLevelSummary/descriptions.ts:121
 msgid "Only people you add to the space will be able to view it."
 msgstr ""
 
@@ -4487,6 +4307,36 @@ msgstr ""
 #.frontend
 #: ../turboui/src/Forms/AccessSelectors.tsx:49
 msgid "Space members"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:110
+msgid "Space members can view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:113
+msgid "Space members have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:116
+msgid "Space members have full access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:110
+msgid "Space members will be able to view and comment."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:113
+msgid "Space members will have edit access."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/AccessLevelSummary/index.tsx:116
+msgid "Space members will have full access."
 msgstr ""
 
 #.frontend
