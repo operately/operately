@@ -1,5 +1,5 @@
 import React from "react";
-import { render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
@@ -19,6 +19,26 @@ function renderMenu(readonly?: boolean) {
 }
 
 describe("Menu", () => {
+  it("skips disabled actions during keyboard navigation", async () => {
+    const user = userEvent.setup();
+    const disabled = jest.fn();
+    const enabled = jest.fn();
+    render(
+      <Menu customTrigger={<button>Actions</button>}>
+        <MenuActionItem disabled onClick={disabled}>
+          Unavailable
+        </MenuActionItem>
+        <MenuActionItem onClick={enabled}>Available</MenuActionItem>
+      </Menu>,
+    );
+    screen.getByRole("button", { name: "Actions" }).focus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Unavailable" })).toHaveAttribute("aria-disabled", "true");
+    await user.keyboard("{Enter}");
+    expect(enabled).toHaveBeenCalledTimes(1);
+    expect(disabled).not.toHaveBeenCalled();
+  });
+
   it("opens items when not read-only", async () => {
     const user = userEvent.setup();
     renderMenu();

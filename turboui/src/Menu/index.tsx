@@ -15,6 +15,7 @@ interface MenuProps extends TestableElement {
   headerContent?: React.ReactNode;
   size?: Size;
   onOpenChange?: (open: boolean) => void;
+  onCloseAutoFocus?: DropdownMenu.DropdownMenuContentProps["onCloseAutoFocus"];
   showArrow?: boolean;
   align?: "start" | "center" | "end";
   readonly?: boolean;
@@ -34,6 +35,8 @@ interface MenuLinkItemProps extends MenuItemProps {
 interface MenuActionItemProps extends MenuItemProps {
   onClick: () => void;
   keepOpen?: boolean;
+  disabled?: boolean;
+  className?: string;
 }
 
 interface SubMenuProps {
@@ -56,7 +59,12 @@ export function Menu(props: MenuProps) {
 
       {!props.readonly && (
         <DropdownMenu.Portal>
-          <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)} align={props.align}>
+          <DropdownMenu.Content
+            className={menuContentClass}
+            style={menuContentStyle(props.size)}
+            align={props.align}
+            onCloseAutoFocus={props.onCloseAutoFocus}
+          >
             {props.showArrow && <DropdownMenu.Arrow className="fill-surface-base" />}
             {props.headerContent && (
               <div className="px-3 py-2 border-b border-surface-outline">{props.headerContent}</div>
@@ -151,7 +159,8 @@ export function MenuActionItem(props: MenuActionItemProps) {
 
   return (
     <DropdownMenu.Item
-      className={menuItemClassNames(props)}
+      className={classNames(menuItemClassNames(props), props.className)}
+      disabled={props.disabled}
       data-test-id={props.testId}
       onSelect={(event) => {
         if (props.keepOpen) event.preventDefault();
@@ -203,6 +212,7 @@ const menuContentClass = classNames(
   "focus:outline-none",
   "bg-surface-base",
   "animateMenuSlideDown",
+  "max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto",
 );
 
 const menuTriggerClass = classNames(
@@ -216,6 +226,7 @@ const menuItemClass = classNames(
   "text-content-dimmed hover:bg-surface-highlight",
   "min-w-[150px]",
   "font-medium",
+  "outline-none data-[highlighted]:bg-surface-highlight data-[disabled]:opacity-50 data-[disabled]:pointer-events-none",
 );
 
 function MenuItemIconAndTitle({ icon, children }: any) {
