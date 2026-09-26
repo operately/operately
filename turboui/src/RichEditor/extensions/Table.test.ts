@@ -143,6 +143,79 @@ function mountLegacyTable(table: JSONContent) {
   });
 }
 
+const headerCell = (text: string): JSONContent => ({ ...cell(text), type: "tableHeader" });
+const customHeaderTables: [string, JSONContent][] = [
+  [
+    "mixed first row",
+    {
+      type: "table",
+      content: [
+        row(headerCell("Original"), cell("B"), cell("C")),
+        row(cell("D"), cell("E"), cell("F")),
+        row(cell("G"), cell("H"), cell("I")),
+      ],
+    },
+  ],
+  [
+    "header column",
+    {
+      type: "table",
+      content: [
+        row(headerCell("Original"), headerCell("B"), headerCell("C")),
+        row(headerCell("D"), cell("E"), cell("F")),
+        row(headerCell("G"), cell("H"), cell("I")),
+      ],
+    },
+  ],
+];
+
+function nonemptyCells() {
+  const cells = new Map<string, JSONContent>();
+  editor.state.doc.descendants((node) => {
+    if (["tableCell", "tableHeader"].includes(node.type.name) && node.textContent)
+      cells.set(node.textContent, node.toJSON());
+  });
+  return cells;
+}
+
+describe.each(customHeaderTables)("stored tables with a %s", (_name, table) => {
+  it.each(["addRowBefore", "addRowAfter", "addColumnBefore", "addColumnAfter", "deleteRow", "deleteColumn"] as const)(
+    "%s preserves surviving cells and their header types",
+    (command) => {
+      mountLegacyTable(table);
+      editor.state.doc.descendants((node, position) => {
+        if (node.type.name === "paragraph" && node.textContent === "I") editor.commands.setTextSelection(position + 1);
+      });
+      const original = editor.getJSON();
+      const originalCells = nonemptyCells();
+      expect(editor.commands[command]()).toBe(true);
+      const changed = editor.getJSON();
+      expect(changed).not.toEqual(original);
+      const cells = nonemptyCells();
+      expect(cells.size).toBe(command.startsWith("delete") ? 6 : 9);
+      expect(cells.get("Original")).toEqual(originalCells.get("Original"));
+      cells.forEach((value, text) => expect(value).toEqual(originalCells.get(text)));
+      editor.commands.undo();
+      expect(editor.getJSON()).toEqual(original);
+      editor.commands.redo();
+      expect(editor.getJSON()).toEqual(changed);
+    },
+  );
+
+  it("still lets users explicitly toggle the header row", () => {
+    mountLegacyTable(table);
+    editor.commands.setTextSelection(4);
+    const original = editor.getJSON();
+    editor.commands.toggleHeaderRow();
+    const rows = editor.view.dom.querySelectorAll("tr");
+    expect(rows[0]?.querySelectorAll("th")).toHaveLength(_name === "mixed first row" ? 3 : 0);
+    expect(rows[1]?.querySelectorAll("th")).toHaveLength(0);
+    expect(rows[2]?.querySelectorAll("th")).toHaveLength(0);
+    editor.commands.undo();
+    expect(editor.getJSON()).toEqual(original);
+  });
+});
+
 it.each(legacyTables)("allows text edits in stored tables with %s", (_name, table) => {
   mountLegacyTable(table);
   const original = editor.getJSON();

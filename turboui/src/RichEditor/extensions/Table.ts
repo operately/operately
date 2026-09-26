@@ -129,6 +129,10 @@ function withHeaderRow(command: Command | undefined, mode: "preserve" | "toggle"
     if (!command || !isInTable(props.state)) return false;
 
     const { table, tableStart } = selectedRect(props.state);
+
+    // Ordinary grid edits must not normalize mixed headers or saved header columns.
+    if (mode === "preserve" && !hasStandardHeaderLayout(table)) return command(props);
+
     const header = hasTableHeader(table);
     const changed = command(props);
 
@@ -136,6 +140,13 @@ function withHeaderRow(command: Command | undefined, mode: "preserve" | "toggle"
 
     return changed;
   };
+}
+
+function hasStandardHeaderLayout(table: Node): boolean {
+  const header = hasTableHeader(table);
+  return table.content.content.every((row, index) =>
+    row.content.content.every((cell) => cell.type.name === (header && index === 0 ? "tableHeader" : "tableCell")),
+  );
 }
 
 function setHeaderRow(transaction: Transaction, position: number, enabled: boolean) {

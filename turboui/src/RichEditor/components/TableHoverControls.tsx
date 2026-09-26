@@ -151,7 +151,7 @@ function findBoundary(editor: Editor, event: PointerEvent): Boundary | null {
   const { clientX: x, clientY: y } = event;
   const hoveredCell = event.target instanceof Element ? event.target.closest<HTMLTableCellElement>("td, th") : null;
 
-  for (const table of editor.view.dom.querySelectorAll("table")) {
+  for (const table of Array.from(editor.view.dom.querySelectorAll("table"))) {
     const bounds = table.getBoundingClientRect();
     const clip = table.parentElement?.getBoundingClientRect() ?? bounds;
     const left = Math.max(bounds.left, clip.left);
