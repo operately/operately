@@ -409,7 +409,7 @@ msgstr "Acesso"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:136
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:128
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:137
 msgid "Access Level"
 msgstr "Nível de acesso"
 
@@ -514,18 +514,23 @@ msgid "Add administrators"
 msgstr "Adicionar administradores"
 
 #.frontend
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:153
+msgid "Add another member"
+msgstr "Adicionar outro membro"
+
+#.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:26
 msgid "Add goals"
 msgstr "Adicionar objetivos"
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:76
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:90
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:93
 msgid "Add members"
 msgstr "Adicionar membros"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:79
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:80
 msgid "Add members to %{name}"
 msgstr "Adicionar membros a %{name}"
 
@@ -2771,7 +2776,7 @@ msgid "Invite people"
 msgstr "Convidar pessoas"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:85
 msgid "Invite someone new to the organization"
 msgstr "Convidar uma nova pessoa para a empresa"
 
@@ -3044,7 +3049,7 @@ msgid "Marko Anastasov, CEO & Founder, Operately"
 msgstr "Marko Anastasov, CEO e fundador, Operately"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:127
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:134
 msgid "Member"
 msgstr "Membro"
 
@@ -3356,7 +3361,7 @@ msgid "Only company admins can see and share this link. You can also <button>gen
 msgstr "Somente administradores da empresa podem ver e compartilhar este link. Você também pode <button>gerar um novo link</button>."
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:81
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:83
 msgid "Only existing members can be added."
 msgstr "Somente membros existentes podem ser adicionados."
 
@@ -3969,7 +3974,7 @@ msgid "Remove from space"
 msgstr "Remover do espaço"
 
 #.frontend
-#: assets/js/pages/SpaceAddMembersPage/index.tsx:161
+#: assets/js/pages/SpaceAddMembersPage/index.tsx:174
 msgid "Remove member"
 msgstr "Remover membro"
 
@@ -4897,7 +4902,7 @@ msgid "This link (including the one in their email) expires in 24 hours."
 msgstr "Este link (incluindo o enviado por e-mail) expira em 24 horas."
 
 #.frontend
-#: assets/js/models/companyExports/index.tsx:44
+#: assets/js/models/companyExports/index.tsx:54
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
 msgstr "Este pacote foi exportado do Operately %{manifestVersion}, mas esta instância está na versão %{currentVersion}. A falha na importação pode estar relacionada às diferenças de versão."
 
