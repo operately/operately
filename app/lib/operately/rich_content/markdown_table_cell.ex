@@ -6,8 +6,17 @@ defmodule Operately.RichContent.MarkdownTableCell do
     text = protect_escaped_angle_brackets(text)
     opts = Keyword.put(opts, :table_code_spans, codes)
     # A plain prefix keeps cell text such as '# Title' from becoming a block.
-    {_, [{"p", _, [first | rest], _}], _} = EarmarkParser.as_ast("cell " <> text, pure_links: false)
+    [{"p", _, [first | rest], _}] = parse_ast("cell " <> text)
     inline([String.replace_prefix(first, "cell ", "") | rest], [], opts)
+  end
+
+  # Earmark 1.4.46 incorrectly types Context.value as strings only, excluding AST tuples.
+  # Capture the parser dynamically to isolate that inference bug without suppressing our checks.
+  @spec parse_ast(String.t()) :: EarmarkParser.ast()
+  defp parse_ast(text) do
+    parser = Function.capture(EarmarkParser, :as_ast, 2)
+    {_, ast, _} = parser.(text, pure_links: false)
+    ast
   end
 
   # Preserve escaped '<' as an entity until after break detection; paired backslashes leave it unescaped.
