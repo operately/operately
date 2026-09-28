@@ -144,6 +144,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     |> translate_primary_key(table, plan)
     |> handle_blob_storage_type(table)
     |> handle_company_short_id(table)
+    |> reset_public_sharing(table)
     |> PolymorphicReferenceTranslator.translate_row(table, plan)
     |> case do
       {:ok, row} -> {:ok, translate_plain_references(row, table, plan)}
@@ -169,6 +170,9 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   end
 
   defp handle_blob_storage_type(row, _table), do: row
+
+  defp reset_public_sharing(row, "resource_documents"), do: Map.put(row, "public_token", nil)
+  defp reset_public_sharing(row, _table), do: row
 
   defp handle_company_short_id(row, "companies") do
     case row["short_id"] do

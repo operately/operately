@@ -7,6 +7,53 @@ defmodule Operately.RichContentTest do
 
   alias OperatelyWeb.Paths
 
+  test "description presence ignores table separators but retains actual punctuation" do
+    for inline <- [[], [%{"type" => "text", "text" => "  "}], [%{"type" => "hardBreak"}]] do
+      cell = %{"type" => "tableCell", "content" => [%{"type" => "paragraph", "content" => inline}]}
+      table = %{"type" => "table", "content" => [%{"type" => "tableRow", "content" => [cell, cell]}]}
+      # Despite its name, empty?/1 is the existing has_description predicate.
+      refute Operately.RichContent.empty?(%{"type" => "doc", "content" => [table]})
+    end
+
+    for inline <- [%{"type" => "text", "text" => "| /"}, %{"type" => "mention", "attrs" => %{"label" => "Alice Smith"}}] do
+      cell = %{"type" => "tableCell", "content" => [%{"type" => "paragraph", "content" => [inline]}]}
+      table = %{"type" => "table", "content" => [%{"type" => "tableRow", "content" => [cell]}]}
+      assert Operately.RichContent.empty?(%{"type" => "doc", "content" => [table]})
+    end
+  end
+
+  @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+  test "attachment-only descriptions count as content inside and outside tables" do
+    for attrs <- [
+          %{"src" => "/files/report.pdf", "title" => "Report.pdf"},
+          %{"src" => "/files/image.png", "filetype" => "image/png"},
+          %{"src" => %{"id" => "file", "url" => "/files/report.pdf"}},
+          %{"title" => "Report.pdf"}
+        ] do
+      paragraph = %{"type" => "paragraph", "content" => [%{"type" => "blob", "attrs" => attrs}]}
+      cell = %{"type" => "tableCell", "content" => [paragraph]}
+      table = %{"type" => "table", "content" => [%{"type" => "tableRow", "content" => [cell]}]}
+
+      assert Operately.RichContent.empty?(%{"type" => "doc", "content" => [table]})
+      assert Operately.RichContent.empty?(%{"type" => "doc", "content" => [paragraph]})
+    end
+  end
+
+  for fixture <- @table_fixtures do
+    @fixture fixture
+    test "extracts readable table text and indexes every cell: #{fixture["name"]}" do
+      table = Enum.at(@fixture["document"]["content"], 1)
+      assert Operately.RichContent.rich_content_to_string(table) == @fixture["tableText"]
+      searchable = Operately.RichContent.to_plain_text(@fixture["document"])
+      assert searchable =~ "Before"
+      assert searchable =~ "After"
+      if @fixture["tableText"] =~ "Alice Smith" do
+        assert searchable =~ "Alice Smith"
+      end
+    end
+  end
+
   setup do
     company = company_fixture(%{name: "Operately"})
 

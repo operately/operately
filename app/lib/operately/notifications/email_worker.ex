@@ -26,13 +26,15 @@ defmodule Operately.Notifications.EmailWorker do
     if person.account_id != nil do
       module = email_module(activity)
 
-      with {:ok, _result} <- deliver_email(module, person, activity),
-           {:ok, _notification} <- EmailDelivery.mark_sent(notification) do
-        {:ok, :sent}
-      else
-        :skip -> {:ok, :skipped}
-        {:error, reason} -> {:error, reason}
-      end
+      Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+        with {:ok, _result} <- deliver_email(module, person, activity),
+             {:ok, _notification} <- EmailDelivery.mark_sent(notification) do
+          {:ok, :sent}
+        else
+          :skip -> {:ok, :skipped}
+          {:error, reason} -> {:error, reason}
+        end
+      end)
     else
       {:ok, :skipped}
     end

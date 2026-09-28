@@ -2,6 +2,7 @@
 import React from "react";
 import axios from "axios";
 import Api from "@/api";
+import i18n, { applyLanguage } from "@/i18n";
 import { queryClient } from "@/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@/__tests__/renderHook";
@@ -58,7 +59,12 @@ beforeEach(() => {
   Api.default.setHeaders({ "x-company-id": "company1" });
   jest.mocked(axios.post).mockResolvedValue({ data: { person_id: "person1", new_account: false } });
 });
-afterEach(() => queryClient.clear());
+afterEach(async () => {
+  queryClient.clear();
+  await act(async () => {
+    await applyLanguage("en");
+  });
+});
 
 it("fetches current resource options for each collaborator even when the lists are cached", async () => {
   queryClient.setQueryData(Api.spaces.listQueryKey({}), { spaces: [{ id: "space1", name: "Old space" }] });
@@ -99,4 +105,26 @@ it("does not fetch resource options when adding a team member", async () => {
   await act(() => props().onSubmit());
   expect(props().state.state).toBe("added");
   expect(axios.get).not.toHaveBeenCalled();
+});
+
+it("updates navigation when the language changes while mounted", async () => {
+  i18n.addResourceBundle(
+    "pt-BR",
+    "translation",
+    {
+      "Company Administration": "Administração da empresa",
+      "Manage Team Members": "Gerenciar membros",
+    },
+    true,
+    true,
+  );
+  renderHook(() => null, { initialProps: undefined, wrapper });
+  expect(props().navigationItems[0]?.label).toBe("Company Administration");
+
+  await act(async () => {
+    await applyLanguage("pt-BR");
+  });
+
+  expect(props().navigationItems[0]?.label).toBe("Administração da empresa");
+  expect(props().navigationItems[1]?.label).toBe("Gerenciar membros");
 });

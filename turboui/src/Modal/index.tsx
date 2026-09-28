@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import { translationText } from "../i18n";
 
 import { IconX } from "../icons";
 
@@ -61,6 +63,7 @@ export function Modal({
   contentPadding = "p-6",
   testId,
 }: ModalProps) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   // Handle mounting the modal in the DOM
@@ -127,7 +130,7 @@ export function Modal({
             <button
               onClick={onClose}
               className="text-content-subtle hover:text-content-base transition-colors p-1 rounded-full hover:bg-surface-highlight"
-              aria-label="Close"
+              aria-label={translationText(t("Close"))}
             >
               <IconX size={20} />
             </button>

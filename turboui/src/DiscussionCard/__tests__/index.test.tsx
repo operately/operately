@@ -26,7 +26,7 @@ describe("DiscussionCard", () => {
             state: "scheduled",
           }}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Scheduled")).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe("DiscussionCard", () => {
             commentCount: 4,
           }}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Imported discussion")).toBeInTheDocument();

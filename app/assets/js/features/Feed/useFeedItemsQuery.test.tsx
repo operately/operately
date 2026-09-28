@@ -45,7 +45,7 @@ describe("shared activity feed", () => {
     root = createRoot(document.createElement("div"));
     scope = "company";
     list = jest.fn(async () => ({ activities: [activity("one"), activity("two")] }));
-    jest.spyOn(Api.companies, "listActivities").mockImplementation((input) => list(input));
+    jest.spyOn(Api.default, "queryRequest").mockImplementation((_path, input) => list(input));
   });
   afterEach(async () => {
     await act(async () => root.unmount());

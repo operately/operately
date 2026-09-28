@@ -8,9 +8,10 @@ defmodule Operately.Repo.Getter.Args do
             after_load: [],
             required_access_level: nil,
             getter_profile: :default,
-            order_by: []
+            order_by: [],
+            ids: nil
 
-  @allowed_options [:preload, :auth_preload, :with_deleted, :after_load, :required_access_level, :getter_profile, :order_by]
+  @allowed_options [:preload, :auth_preload, :with_deleted, :after_load, :required_access_level, :getter_profile, :order_by, :ids]
 
   def parse(args) do
     field_matchers = Keyword.delete(args, :opts)
@@ -26,7 +27,8 @@ defmodule Operately.Repo.Getter.Args do
       after_load: Keyword.get(opts, :after_load, []),
       required_access_level: Keyword.get(opts, :required_access_level, Binding.view_access()),
       getter_profile: Keyword.get(opts, :getter_profile, :default),
-      order_by: Keyword.get(opts, :order_by, [])
+      order_by: Keyword.get(opts, :order_by, []),
+      ids: Keyword.get(opts, :ids)
     }
   end
 

@@ -1,10 +1,12 @@
 import React, { useCallback } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { PrimaryButton } from "../Button";
 import { IconCopy } from "../icons";
 import { SwitchToggle } from "../SwitchToggle";
 import { TextField } from "../TextField";
 import { showErrorToast, showSuccessToast } from "../Toasts";
+import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 
 interface DomainRestrictionControls {
@@ -39,6 +41,7 @@ export function InviteLinkSection({
   onDomainToggle,
   onDomainChange,
 }: InviteLinkSectionProps) {
+  const { t } = useTranslation();
   const canCopy = Boolean(invitationLink) && linkEnabled;
   const domainTestId = domainRestriction?.testId ?? "invite-people-domain-toggle";
   const domainRadioName = `${domainTestId}-options`;
@@ -48,26 +51,26 @@ export function InviteLinkSection({
 
     try {
       await copyToClipboard(invitationLink);
-      showSuccessToast("Link copied", "The invite link has been copied to your clipboard.");
+      showSuccessToast(t("Link copied"), t("The invite link has been copied to your clipboard."));
     } catch {
-      showErrorToast("Copy failed", "We couldn't copy the invite link automatically.");
+      showErrorToast(t("Copy failed"), t("We couldn't copy the invite link automatically."));
       return;
     }
-  }, [invitationLink, linkEnabled]);
+  }, [invitationLink, linkEnabled, t]);
 
   return (
     <section className="rounded-lg border border-surface-outline bg-surface-base p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Invite your whole team at once</h2>
+          <h2 className="text-lg font-semibold">{t("Invite your whole team at once")}</h2>
           <p className="mt-1 text-sm text-content-dimmed">
-            Share it in group chat, via email, or wherever your team is.
+            {t("Share it in group chat, via email, or wherever your team is.")}
           </p>
         </div>
         <SwitchToggle
           value={linkEnabled}
           setValue={onToggleLink}
-          label="Enable invite link"
+          label={t("Enable invite link")}
           labelHidden
           testId="invite-people-link-toggle"
         />
@@ -81,33 +84,42 @@ export function InviteLinkSection({
               !linkEnabled && "opacity-60",
             )}
             value={linkEnabled ? (invitationLink ?? "") : ""}
-            placeholder={linkEnabled ? "Generating invite link..." : "Invite link disabled"}
+            placeholder={linkEnabled ? translationText(t("Generating invite link...")) : translationText(t("Invite link disabled"))}
             readOnly
             disabled={!linkEnabled}
             data-test-id="invite-people-invite-link"
             onFocus={(event) => event.currentTarget.select()}
           />
-          <PrimaryButton onClick={handleCopyLink} disabled={!canCopy} size="sm" icon={IconCopy} testId="invite-people-copy-link">
-            Copy
+          <PrimaryButton
+            onClick={handleCopyLink}
+            disabled={!canCopy}
+            size="sm"
+            icon={IconCopy}
+            testId="invite-people-copy-link"
+          >
+            {t("Copy")}
           </PrimaryButton>
         </div>
 
         {linkEnabled ? (
           <p className="text-xs text-content-dimmed">
-            Only company admins can see and share this link. You can also{" "}
-            <button
-              type="button"
-              onClick={onOpenResetConfirm}
-              disabled={isResettingLink}
-              data-test-id="invite-people-reset-link"
-              className={classNames(
-                "font-medium text-content-link underline focus:outline-none",
-                isResettingLink && "cursor-not-allowed opacity-60",
-              )}
-            >
-              generate a new link
-            </button>
-            .
+            <Trans
+              i18nKey="Only company admins can see and share this link. You can also <button>generate a new link</button>."
+              components={{
+                button: (
+                  <button
+                    type="button"
+                    onClick={onOpenResetConfirm}
+                    disabled={isResettingLink}
+                    data-test-id="invite-people-reset-link"
+                    className={classNames(
+                      "font-medium text-content-link underline focus:outline-none",
+                      isResettingLink && "cursor-not-allowed opacity-60",
+                    )}
+                  />
+                ),
+              }}
+            />
           </p>
         ) : null}
 
@@ -115,7 +127,7 @@ export function InviteLinkSection({
 
       {linkEnabled && domainRestriction ? (
         <div className="mt-6 space-y-3">
-          <p className="text-sm font-medium text-content-strong">Who can join?</p>
+          <p className="text-sm font-medium text-content-strong">{t("Who can join?")}</p>
 
           <div className="space-y-1" data-test-id={domainTestId}>
             <label
@@ -134,7 +146,7 @@ export function InviteLinkSection({
                 className="h-4 w-4 border-surface-outline text-brand-1 focus:ring-brand-1"
                 data-test-id={`${domainTestId}-anyone`}
               />
-              <span>Anyone with the link</span>
+              <span>{t("Anyone with the link")}</span>
             </label>
 
             <div className="space-y-2 text-sm text-content-strong">
@@ -155,7 +167,7 @@ export function InviteLinkSection({
                   data-test-id={`${domainTestId}-restricted`}
                 />
                 <span data-test-id={`${domainTestId}-label`}>
-                  {domainRestriction.label ?? "Trusted email domains only"}
+                  {domainRestriction.label ?? t("Trusted email domains only")}
                 </span>
               </label>
 
@@ -165,13 +177,13 @@ export function InviteLinkSection({
                     variant="form-field"
                     text={domainRestriction.value}
                     onChange={onDomainChange}
-                    placeholder="e.g. acme.com, example.org"
+                    placeholder={translationText(t("e.g. acme.com, example.org"))}
                     error={domainRestriction.error}
                     className={classNames("sm:max-w-md", !domainRestriction.onChange && "opacity-60")}
                     testId="invite-people-domain-input"
                     readonly={!domainRestriction.onChange}
                   />
-                  <p className="text-xs text-content-dimmed">Separate multiple domains with commas.</p>
+                  <p className="text-xs text-content-dimmed">{t("Separate multiple domains with commas.")}</p>
                 </div>
               )}
             </div>

@@ -60,6 +60,7 @@ defmodule Operately.Operations.AccountDeletingTest do
       assert persisted_person.avatar_url == nil
       assert persisted_person.avatar_blob_id == nil
       assert persisted_person.timezone == nil
+      assert persisted_person.language == nil
       assert persisted_person.description == nil
 
       assert Repo.aggregate(from(t in AccountToken, where: t.account_id == ^ctx.account.id), :count) == 0

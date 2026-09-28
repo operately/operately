@@ -1,5 +1,6 @@
 import { MilestoneActivity } from "../Timeline/types";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import { RichTextHandlers } from "../RichContent/types";
 import { Reactions } from "../Reactions";
 import type { AvatarPerson } from "../Avatar";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -57,7 +58,7 @@ export interface CommentItemProps {
   commentParentType: string;
   canComment: boolean;
   onEdit?: () => void;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   currentUserId?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
@@ -94,7 +95,7 @@ export interface CommentSectionProps {
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
 
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   formattedTimePreferences: FormattedTimePreferences;
 
   commentParentType?: string;

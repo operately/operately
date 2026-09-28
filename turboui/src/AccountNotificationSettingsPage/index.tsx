@@ -1,10 +1,13 @@
 import React from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { Dropdown } from "../FormElements/Dropdown";
 import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { SwitchToggle } from "../SwitchToggle";
 import { IconChecklist, IconClockPlay, IconMail, IconMailFast } from "../icons";
+import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 
 export namespace AccountNotificationSettingsPage {
@@ -38,34 +41,23 @@ interface DailySummaryTimeOption extends Dropdown.Item {
   value: AccountNotificationSettingsPage.DailySummaryDeliveryTime;
 }
 
-const WINDOW_OPTIONS: WindowOption[] = [
-  { id: "5", name: "5 minutes", minutes: 5, testId: "email-window-minutes-option-5" },
-  { id: "10", name: "10 minutes", minutes: 10, testId: "email-window-minutes-option-10" },
-  { id: "15", name: "15 minutes", minutes: 15, testId: "email-window-minutes-option-15" },
-  { id: "30", name: "30 minutes", minutes: 30, testId: "email-window-minutes-option-30" },
-  { id: "60", name: "60 minutes", minutes: 60, testId: "email-window-minutes-option-60" },
-];
-
-const DAILY_SUMMARY_TIME_OPTIONS: DailySummaryTimeOption[] = Array.from({ length: 24 }, (_, hour) => {
-  const value = `${String(hour).padStart(2, "0")}:00`;
-  const label = formatDailySummaryHourLabel(hour);
-
-  return {
-    id: value,
-    value,
-    name: label,
-    testId: `daily-summary-delivery-time-option-${value}`,
-  };
-});
-
 export function AccountNotificationSettingsPage(props: AccountNotificationSettingsPage.Props) {
+  const { t } = useTranslation();
   const navigation = React.useMemo(
     () => [
-      { to: props.homePath, label: "Home" },
-      { to: props.settingsPath, label: "Settings" },
+      { to: props.homePath, label: t("Home") },
+      { to: props.settingsPath, label: t("Settings") },
     ],
-    [props.homePath, props.settingsPath],
+    [props.homePath, props.settingsPath, t],
   );
+
+  const windowOptions: WindowOption[] = [
+    { id: "5", name: t("5 minutes"), minutes: 5, testId: "email-window-minutes-option-5" },
+    { id: "10", name: t("10 minutes"), minutes: 10, testId: "email-window-minutes-option-10" },
+    { id: "15", name: t("15 minutes"), minutes: 15, testId: "email-window-minutes-option-15" },
+    { id: "30", name: t("30 minutes"), minutes: 30, testId: "email-window-minutes-option-30" },
+    { id: "60", name: t("60 minutes"), minutes: 60, testId: "email-window-minutes-option-60" },
+  ];
 
   const handleSubmit = React.useCallback(
     async (e: React.FormEvent) => {
@@ -76,27 +68,35 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
   );
 
   return (
-    <Page title="Notification Settings" size="small" navigation={navigation} testId="account-notification-settings-page">
+    <Page
+      title={translationText(t("Notification Settings"))}
+      size="small"
+      navigation={navigation}
+      testId="account-notification-settings-page"
+    >
       <div className="px-4 sm:px-10 py-8">
         <header>
-          <h1 className="text-2xl font-bold">Notification settings</h1>
+          <h1 className="text-2xl font-bold">{t("Notification settings")}</h1>
           <p className="text-sm text-content-dimmed mt-2">
-            Activity emails are always batched. You can choose whether direct mentions should also be batched or arrive
-            right away.
+            {t(
+              "Activity emails are always batched. You can choose whether direct mentions should also be batched or arrive right away.",
+            )}
           </p>
         </header>
 
         <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
           <section>
-            <div className="font-bold text-sm">Activity emails</div>
+            <div className="font-bold text-sm">{t("Activity emails")}</div>
             <div className="text-sm text-content-dimmed mt-1">
-              Choose how direct mentions should be delivered.
+              {t("Choose how direct mentions should be delivered.")}
             </div>
 
             <div className="mt-4 grid gap-3">
               <PreferenceCard
-                title="Batched notifications"
-                description="All activity emails wait for the batch window, are grouped together, and sent as a single email."
+                title={t("Batched notifications")}
+                description={t(
+                  "All activity emails wait for the batch window, are grouped together, and sent as a single email.",
+                )}
                 selected={!props.notifyOnMention}
                 onClick={() => props.onNotifyOnMentionChange(false)}
                 testId="email-preference-buffered"
@@ -104,8 +104,10 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
               />
 
               <PreferenceCard
-                title="Direct mentions are instant"
-                description="Emails for direct mentions are sent right away. All other activity emails wait for the batch window and are sent as a single email."
+                title={t("Direct mentions are instant")}
+                description={t(
+                  "Emails for direct mentions are sent right away. All other activity emails wait for the batch window and are sent as a single email.",
+                )}
                 selected={props.notifyOnMention}
                 onClick={() => props.onNotifyOnMentionChange(true)}
                 testId="email-preference-mentions-only"
@@ -115,15 +117,16 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
           </section>
 
           <section>
-            <div className="font-bold text-sm">Batch window</div>
+            <div className="font-bold text-sm">{t("Batch window")}</div>
             <div className="text-sm text-content-dimmed mt-1">
-              Choose how long Operately should wait before sending batched activity emails. When direct mentions are
-              instant, this still applies to all other activity emails.
+              {t(
+                "Choose how long Operately should wait before sending batched activity emails. When direct mentions are instant, this still applies to all other activity emails.",
+              )}
             </div>
 
             <div className="mt-4 max-w-xs">
               <Dropdown
-                items={WINDOW_OPTIONS}
+                items={windowOptions}
                 value={String(props.emailWindowMinutes)}
                 onSelect={(item) => props.onEmailWindowMinutesChange(item.minutes)}
                 testId="email-window-minutes-dropdown"
@@ -145,11 +148,11 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
 
           <div className="flex justify-end gap-2">
             <SecondaryButton type="button" onClick={props.onCancel} disabled={props.isSubmitting}>
-              Cancel
+              {t("Cancel")}
             </SecondaryButton>
 
             <PrimaryButton type="submit" loading={props.isSubmitting} testId="save-notification-settings">
-              Save Changes
+              {t("Save Changes")}
             </PrimaryButton>
           </div>
         </form>
@@ -158,12 +161,12 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
   );
 }
 
-function formatDailySummaryHourLabel(hour: number) {
-  if (hour === 0) return "12:00 AM";
-  if (hour < 12) return `${hour}:00 AM`;
-  if (hour === 12) return "12:00 PM";
+function formatDailySummaryHourLabel(hour: number, t: TFunction) {
+  if (hour === 0) return t("12:00 AM");
+  if (hour < 12) return t("{{hour}}:00 AM", { hour });
+  if (hour === 12) return t("12:00 PM");
 
-  return `${hour - 12}:00 PM`;
+  return t("{{hour}}:00 PM", { hour: hour - 12 });
 }
 
 function DailySummarySection({
@@ -177,21 +180,33 @@ function DailySummarySection({
   onSendDailySummaryChange: (value: boolean) => void;
   onDailySummaryDeliveryTimeChange: (value: AccountNotificationSettingsPage.DailySummaryDeliveryTime) => void;
 }) {
+  const { t } = useTranslation();
+  const dailySummaryTimeOptions: DailySummaryTimeOption[] = Array.from({ length: 24 }, (_, hour) => {
+    const value = `${String(hour).padStart(2, "0")}:00`;
+
+    return {
+      id: value,
+      value,
+      name: formatDailySummaryHourLabel(hour, t),
+      testId: `daily-summary-delivery-time-option-${value}`,
+    };
+  });
+
   return (
     <section className="rounded-lg border border-surface-outline bg-surface-dimmed p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="pr-6">
           <div className="font-bold text-sm flex items-center gap-2">
             <IconClockPlay size={18} />
-            Daily summary
+            {t("Daily summary")}
           </div>
           <div className="text-sm text-content-dimmed mt-1">
-            Send one summary email at the end of your workday.
+            {t("Send one summary email at the end of your workday.")}
           </div>
         </div>
 
         <SwitchToggle
-          label="Send daily summary"
+          label={translationText(t("Send daily summary"))}
           value={sendDailySummary}
           setValue={onSendDailySummaryChange}
           testId={sendDailySummary ? "disable-daily-summary-toggle" : "enable-daily-summary-toggle"}
@@ -201,9 +216,9 @@ function DailySummarySection({
 
       {sendDailySummary && (
         <div className="mt-4 max-w-xs">
-          <div className="text-xs text-content-dimmed mb-1">Delivery time</div>
+          <div className="text-xs text-content-dimmed mb-1">{t("Delivery time")}</div>
           <Dropdown
-            items={DAILY_SUMMARY_TIME_OPTIONS}
+            items={dailySummaryTimeOptions}
             value={dailySummaryDeliveryTime}
             onSelect={(item) => onDailySummaryDeliveryTimeChange(item.value)}
             testId="daily-summary-delivery-time-dropdown"
@@ -221,21 +236,25 @@ function AssignmentsEmailSection({
   notifyAboutAssignments: boolean;
   onNotifyAboutAssignmentsChange: (value: boolean) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <section className="rounded-lg border border-surface-outline bg-surface-dimmed p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="pr-6">
           <div className="font-bold text-sm flex items-center gap-2">
             <IconChecklist size={18} />
-            Assignments email
+            {t("Assignments email")}
           </div>
           <div className="text-sm text-content-dimmed mt-1">
-            Receive a daily email with your upcoming check-ins, reviews, and other work that needs your attention.
+            {t(
+              "Receive a daily email with your upcoming check-ins, reviews, and other work that needs your attention.",
+            )}
           </div>
         </div>
 
         <SwitchToggle
-          label="Send assignments email"
+          label={translationText(t("Send assignments email"))}
           value={notifyAboutAssignments}
           setValue={onNotifyAboutAssignmentsChange}
           testId={notifyAboutAssignments ? "disable-assignments-email-toggle" : "enable-assignments-email-toggle"}

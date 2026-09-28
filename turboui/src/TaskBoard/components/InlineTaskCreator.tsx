@@ -1,5 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PrimaryButton } from "../../Button";
+import { translationText } from "../../i18n";
 
 export interface InlineTaskCreatorProps {
   onCreate: (name: string) => void;
@@ -15,9 +17,11 @@ export interface InlineTaskCreatorHandle {
 }
 
 export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskCreatorProps>(
-  ({ onCreate, onRequestAdvanced, onCancel, placeholder = "Task name", testId, autoFocus }, ref) => {
+  ({ onCreate, onRequestAdvanced, onCancel, placeholder, testId, autoFocus }, ref) => {
+    const { t } = useTranslation();
     const [name, setName] = useState("");
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const inputPlaceholder = placeholder ?? translationText(t("Task name"));
 
     useImperativeHandle(ref, () => ({
       focus: () => {
@@ -75,15 +79,15 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={placeholder}
-            aria-label="Add task"
+            placeholder={inputPlaceholder}
+            aria-label={translationText(t("Add task"))}
             data-test-id={testId || "inline-task-title"}
             className="w-full rounded-md border border-surface-outline bg-transparent px-2 py-2 text-base outline-none focus:border-indigo-500 sm:flex-1 sm:py-1 sm:text-sm"
           />
 
           <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
             <PrimaryButton size="xs" disabled={!name.trim()} onClick={submit} className="w-full sm:w-auto">
-              Add
+              {t("Add")}
             </PrimaryButton>
             <button
               type="button"
@@ -93,7 +97,7 @@ export const InlineTaskCreator = forwardRef<InlineTaskCreatorHandle, InlineTaskC
                 onCancel?.();
               }}
             >
-              Cancel
+              {t("Cancel")}
             </button>
           </div>
         </div>

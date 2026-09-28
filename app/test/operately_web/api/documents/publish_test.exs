@@ -44,6 +44,20 @@ defmodule OperatelyWeb.Api.Documents.PublishTest do
       assert res == %{ error: "Forbidden", message: "You don't have permission to perform this action" }
     end
 
+    test "space member who is not the author cannot publish", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:editor, :space)
+        |> Factory.log_in_person(:editor)
+
+      assert {403, res} = mutation(ctx.conn, [:documents, :publish], %{
+        document_id: Paths.document_id(ctx.document),
+        name: "some name",
+        content: RichText.rich_text("content", :as_string)
+      })
+      assert res == %{ error: "Forbidden", message: "You don't have permission to perform this action" }
+    end
+
     test "User has permissions", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 

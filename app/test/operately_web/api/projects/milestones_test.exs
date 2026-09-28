@@ -210,6 +210,25 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       assert task.milestone.id == Paths.milestone_id(ctx.milestone)
       assert task.milestone.title == ctx.milestone.title
     end
+
+    test "it includes comments_count for tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.preload(:task1, :project)
+        |> Factory.add_comment(:comment1, :task1)
+        |> Factory.add_comment(:comment2, :task1)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestone_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      task_with_comments = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task1)))
+      task_without_comments = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task2)))
+
+      assert task_with_comments.comments_count == 2
+      assert task_without_comments.comments_count == 0
+    end
   end
 
   describe "update kanban" do

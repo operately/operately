@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useLayoutEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
@@ -69,6 +70,7 @@ export function TaskBoard({
   onDisplayModeChange,
   formattedTimePreferences,
 }: Types.TaskBoardProps) {
+  const { t } = useTranslation();
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -380,7 +382,7 @@ export function TaskBoard({
                   <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
                     <div className="flex items-center gap-2">
                       {/* No progress pie chart for tasks without milestone */}
-                      <span className="text-sm font-semibold text-content-base">No milestone</span>
+                      <span className="text-sm font-semibold text-content-base">{t("No milestone")}</span>
                       {/* No indicators for 'No milestone' header */}
                     </div>
                     <SecondaryButton
@@ -390,7 +392,7 @@ export function TaskBoard({
                       onClick={openNoMilestoneCreator}
                       testId="no-milestone-add-task"
                     >
-                      <span className="sr-only">Add task</span>
+                      <span className="sr-only">{t("Add task")}</span>
                     </SecondaryButton>
                   </div>
 
@@ -473,6 +475,8 @@ function StickyActionBar({
   displayMode,
   onDisplayModeChange,
 }: ActionBarProps) {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-10 flex items-start justify-between gap-3 py-4 bg-surface-base px-4 sm:items-center sm:py-6 lg:px-0">
       <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-4">
@@ -484,13 +488,13 @@ function StickyActionBar({
             }}
             testId="add-task"
           >
-            New task
+            {t("New task")}
           </PrimaryButton>
         )}
 
         {canCreateMilestone && (
           <SecondaryButton size="xs" onClick={openMilestoneModal} testId="add-milestone">
-            New milestone
+            {t("New milestone")}
           </SecondaryButton>
         )}
 

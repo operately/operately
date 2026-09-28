@@ -81,7 +81,7 @@ jest.mock("../ProjectPageLayout/StatusBanner", () => ({
 
 import { GoalPage } from "./index";
 import { asRichText } from "../utils/storybook/richContent";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { generateGoalPermissions } from "../utils/storybook/permissions";
 import {
   createMockDocumentNode,
@@ -278,7 +278,7 @@ function GoalPageHarness({
         updateTargetIndex={async () => true}
         deleteGoal={async () => undefined}
         activityFeed={<div>Activity feed</div>}
-        richTextHandlers={createMockRichEditorHandlers()}
+        richTextHandlers={createMockRichTextHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
         {...contentState}
       />

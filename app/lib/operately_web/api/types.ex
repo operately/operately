@@ -2,6 +2,9 @@ defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
   alias Operately.Access.Binding
 
+  enum :rich_text_resource_type, values: OperatelyWeb.Api.RichContent.Resources.types()
+  enum :rich_text_field, values: OperatelyWeb.Api.RichContent.Resources.fields()
+
   enum :email_change_outcome, values: Operately.People.EmailChange.outcomes()
 
   enum :email_change_stage, values: Ecto.Enum.values(Operately.People.EmailChangeRequest, :stage)
@@ -1281,6 +1284,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_resource_hub_document_created,
       :activity_content_resource_hub_document_deleted,
       :activity_content_resource_hub_document_edited,
+      :activity_content_resource_hub_document_public_sharing_changed,
       :activity_content_resource_hub_document_version_restored,
       :activity_content_resource_hub_file_commented,
       :activity_content_resource_hub_file_created,
@@ -1387,6 +1391,15 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :document, :resource_hub_document, null: true
     field? :copied_document, :resource_hub_document, null: true
+  end
+
+  object :activity_content_resource_hub_document_public_sharing_changed, for: Operately.Activities.Content.ResourceHubDocumentPublicSharingChanged do
+    field? :goal, :goal, null: true
+    field? :project, :project, null: true
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
+    field :enabled, :boolean, null: false
   end
 
   object :activity_content_resource_hub_document_edited, for: Operately.Activities.Content.ResourceHubDocumentEdited do
@@ -1781,7 +1794,15 @@ defmodule OperatelyWeb.Api.Types do
     field? :parent_folder_id, :string, null: true
   end
 
+  object :public_document, for: Operately.ResourceHubs.PublicDocument do
+    field :name, :string, null: false
+    field :content, :string, null: false
+    field :published_at, :datetime, null: false
+    field :updated_at, :datetime, null: false
+  end
+
   object :resource_hub_document, for: Operately.ResourceHubs.Document do
+    field? :public_url, :string, null: true
     field :id, :string, null: false
     field? :url, :string
     field? :author, :person, null: true
@@ -2293,6 +2314,8 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:time_format, values: Operately.People.Preferences.time_format_values())
 
+  enum :language, values: Operately.I18n.Languages.api_values()
+
   object :person, for: Operately.People.Person do
     field :id, :string
     field? :url, :string
@@ -2305,6 +2328,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
 
     field? :timezone, :string, null: true
+    field? :language, :language, null: true
     field? :time_format, :time_format, null: false
     field? :email_preference, :email_preference_values, null: false
     field? :email_window_minutes, :email_window_minutes, null: false

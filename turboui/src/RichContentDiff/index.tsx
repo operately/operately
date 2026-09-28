@@ -1,3 +1,4 @@
+import { restoreRichTextSource } from "../RichContent/restoreSource";
 import React from "react";
 import * as TipTap from "@tiptap/react";
 import { getSchema } from "@tiptap/core";
@@ -198,6 +199,8 @@ export function RichContentDiff(props: RichContentDiffProps) {
 }
 
 function prepareComparison(schema: Schema, before: unknown, after: unknown) {
+  before = restoreRichTextSource(before);
+  after = restoreRichTextSource(after);
   const diffResult = diffRichContent(schema, before, after);
   if (!diffResult.ok) return { ok: false } as const;
 

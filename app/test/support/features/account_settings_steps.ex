@@ -36,9 +36,15 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :open_account_settings, ctx do
-    ctx
-    |> UI.click(testid: "account-menu")
-    |> UI.click(testid: "profile-link")
+    if Wallaby.Browser.has?(ctx.session, UI.query(testid: "my-account-page")) do
+      UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
+        UI.click(el, testid: "profile-link")
+      end)
+    else
+      ctx
+      |> UI.click(testid: "account-menu")
+      |> UI.click(testid: "profile-link")
+    end
   end
 
   step :change_name, ctx, name do
@@ -93,6 +99,56 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     assert Operately.People.Person.time_format(Operately.People.get_person!(ctx.person.id)) == time_format
 
     ctx
+  end
+
+  step :enable_i18n, ctx do
+    ctx
+    |> Factory.enable_feature("i18n")
+    |> UI.visit(Paths.home_path(ctx.company))
+  end
+
+  step :disable_i18n, ctx do
+    ctx
+    |> Factory.disable_feature("i18n")
+    |> UI.visit(Paths.home_path(ctx.company))
+  end
+
+  step :reload_home, ctx do
+    UI.visit(ctx, Paths.home_path(ctx.company))
+  end
+
+  step :assert_language_selector_hidden, ctx do
+    ctx
+    |> UI.refute_has(testid: "language")
+  end
+
+  step :change_language, ctx, option do
+    ctx
+    |> UI.select(testid: "language", option: option)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "my-account-page")
+  end
+
+  step :assert_saved_language, ctx, language do
+    assert Operately.People.get_person!(ctx.person.id).language == language
+    ctx
+  end
+
+  step :assert_interface_in_portuguese, ctx do
+    assert Operately.People.get_person!(ctx.person.id).language == "pt-BR"
+
+    ctx
+    |> UI.assert_text("Início")
+    |> UI.assert_text("Meu trabalho")
+    |> UI.refute_text("My work")
+  end
+
+  step :assert_interface_in_english, ctx do
+    ctx
+    |> UI.assert_text("Home")
+    |> UI.assert_text("My work")
+    |> UI.refute_text("Início")
+    |> UI.refute_text("Meu trabalho")
   end
 
   step :given_a_person_exists_in_company, ctx, manager_name do

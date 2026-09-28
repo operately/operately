@@ -1,10 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { DivLink } from "../Link";
 import { IconCoffee } from "../icons";
 import { CountBadge } from "./CountBadge";
 
 export function Review({ path, count }: { path: string; count: number }) {
+  const { t } = useTranslation();
+
   return (
     <DivLink
       to={path}
@@ -12,7 +15,7 @@ export function Review({ path, count }: { path: string; count: number }) {
       testId="review-link"
     >
       <IconCoffee size={20} stroke={2} className="mb-[3px]" />
-      Review
+      {t("Review")}
       <CountBadge count={count} rightOffset={3} testId="review-link-count" />
     </DivLink>
   );

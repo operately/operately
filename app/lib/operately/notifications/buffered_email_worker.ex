@@ -61,26 +61,29 @@ defmodule Operately.Notifications.BufferedEmailWorker do
   end
 
   defp deliver_digest(notifications, batch) do
-    batch = Repo.preload(batch, :person)
-    {digest_items, sent_notifications} = DigestItems.build(notifications, batch.person)
+    batch = Repo.preload(batch, person: :company)
 
-    case digest_items do
-      [] ->
-        mark_batch(batch, %{status: :skipped, sent_at: nil})
-        :ok
+    Operately.I18n.EffectiveLanguage.with_locale(batch.person, fn ->
+      {digest_items, sent_notifications} = DigestItems.build(notifications, batch.person)
 
-      _ ->
-        case DigestMailer.send(batch.person, batch, digest_items) do
-          {:ok, _result} ->
-            mark_notifications_sent(sent_notifications)
-            mark_batch(batch, %{status: :sent, sent_at: current_time()})
-            :ok
+      case digest_items do
+        [] ->
+          mark_batch(batch, %{status: :skipped, sent_at: nil})
+          :ok
 
-          {:error, reason} ->
-            mark_batch(batch, %{status: :failed, error: inspect(reason)})
-            {:error, reason}
-        end
-    end
+        _ ->
+          case DigestMailer.send(batch.person, batch, digest_items) do
+            {:ok, _result} ->
+              mark_notifications_sent(sent_notifications)
+              mark_batch(batch, %{status: :sent, sent_at: current_time()})
+              :ok
+
+            {:error, reason} ->
+              mark_batch(batch, %{status: :failed, error: inspect(reason)})
+              {:error, reason}
+          end
+      end
+    end)
   end
 
   defp mark_notifications_sent(notifications) do

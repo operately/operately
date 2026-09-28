@@ -1,4 +1,3 @@
-import Api from "@/api";
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
@@ -8,7 +7,6 @@ import { Paths } from "@/routes/paths";
 type Comment = api.Comment;
 
 export type { CommentParentType } from "@/api";
-export type { CommentableResource } from "./CommentableResource";
 
 export type { Comment };
 export { useReloadCommentsSignal } from "@/signals";
@@ -16,11 +14,7 @@ export { useEditComment as useEditCommentHandler } from "./useEditComment";
 export { useDeleteComment as useDeleteCommentHandler } from "./useDeleteComment";
 export { useOptimisticComments } from "./useOptimisticComments";
 
-export const useCreateComment = Api.comments.useCreate;
-export const useEditComment = Api.comments.useUpdate;
-export const useGetComments = Api.comments.useList;
-
-export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
+type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 
 export interface CommentItem {
   type: ItemType;

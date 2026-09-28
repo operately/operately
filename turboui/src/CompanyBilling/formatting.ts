@@ -1,6 +1,7 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
+import i18n from "../i18n";
 
-export function formatCompanyBillingPlanName(planKey?: string | null, fallback = "Unknown plan"): string {
+export function formatCompanyBillingPlanName(planKey?: string | null, fallback = i18n.t("Unknown plan")): string {
   if (!planKey) return fallback;
 
   return formatPlanKey(planKey) || fallback;
@@ -11,18 +12,18 @@ export function formatCompanyBillingIntervalLabel(
 ): string | null {
   if (!interval) return null;
 
-  return interval === "monthly" ? "Monthly" : interval === "yearly" ? "Yearly" : null;
+  return interval === "monthly" ? i18n.t("Monthly") : interval === "yearly" ? i18n.t("Yearly") : null;
 }
 
 export function formatCompanyBillingPlanLabel(
   planKey?: string | null,
   interval?: CompanyBillingPageTypes.Interval | string | null,
-  fallback = "Unknown plan",
+  fallback = i18n.t("Unknown plan"),
 ): string {
   const name = formatCompanyBillingPlanName(planKey, fallback);
   const intervalLabel = formatCompanyBillingIntervalLabel(interval);
 
-  return intervalLabel ? `${name} ${intervalLabel}` : name;
+  return intervalLabel ? i18n.t("{{plan}} {{interval}}", { plan: name, interval: intervalLabel }) : name;
 }
 
 export function formatCompanyBillingDate(value?: string | null): string | null {
@@ -34,16 +35,19 @@ export function formatCompanyBillingDate(value?: string | null): string | null {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 }
 
-export function formatCompanyBillingRelativeDateLine(prefix: string, value?: string | null): string | null {
+export function formatCompanyBillingRelativeDateLine(
+  formatMessage: (date: string) => string,
+  value?: string | null,
+): string | null {
   const formattedDate = formatCompanyBillingDate(value);
   if (!formattedDate) return null;
 
-  return `${prefix}: ${formattedDate}.`;
+  return formatMessage(formattedDate);
 }
 
 export function formatCompanyBillingPriceFromMinorUnits(amount?: number | null, currency?: string | null): string {
   if (amount == null || !currency) {
-    return "Unavailable";
+    return i18n.t("Unavailable");
   }
 
   return new Intl.NumberFormat(undefined, {

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { CopyToClipboard } from "../CopyToClipboard";
 import classNames from "../utils/classnames";
@@ -15,11 +16,13 @@ export namespace InviteLinkPanel {
 }
 
 export function InviteLinkPanel(props: InviteLinkPanel.Props) {
+  const { t } = useTranslation();
+
   return (
     <div className={classNames("mt-4", props.className)}>
       {props.description && <div>{props.description}</div>}
 
-      <div className="mt-4 font-bold text-content-accent mb-1">{props.label ?? "Invitation Link"}</div>
+      <div className="mt-4 font-bold text-content-accent mb-1">{props.label ?? t("Invitation Link")}</div>
       <div
         className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between"
         data-test-id={props.testId}

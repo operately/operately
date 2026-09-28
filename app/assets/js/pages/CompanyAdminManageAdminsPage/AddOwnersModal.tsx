@@ -1,26 +1,29 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, IconX, Modal, PrimaryButton } from "turboui";
 
+import { translationText } from "@/i18n";
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import { FormState } from "./useForm";
 import * as People from "@/models/people";
 
 export function AddOwnersModal({ form }: { form: FormState }) {
+  const { t } = useTranslation();
   const state = useState(form);
 
   return (
     <>
       <PrimaryButton onClick={state.openModal} testId="add-owners" size="xs">
-        Add Owner
+        {t("Add Owner")}
       </PrimaryButton>
 
-      <Modal title="Add owners" isOpen={state.isModalOpen} onClose={state.hideModal} contentClassName="min-h-[600px]">
+      <Modal title={translationText(t("Add owners"))} isOpen={state.isModalOpen} onClose={state.hideModal} contentClassName="min-h-[600px]">
         <SearchField
           onSelect={state.add}
           loader={state.search}
-          placeholder={"Search for people to promote to owner"}
+          placeholder={t("Search for people to promote to owner")}
           alreadySelected={state.excludeIds}
         />
 
@@ -30,7 +33,7 @@ export function AddOwnersModal({ form }: { form: FormState }) {
 
         <div className="mt-4 flex items-center justify-center">
           <PrimaryButton onClick={state.submit} testId="save-owners">
-            Add Owners
+            {t("Add Owners")}
           </PrimaryButton>
         </div>
       </Modal>

@@ -24,7 +24,7 @@ jest.mock("turboui", () => ({
   ...jest.requireActual("turboui"),
   MilestonePage: jest.fn(() => null),
 }));
-jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: () => ({}) }));
+jest.mock("@/hooks/useRichTextHandlers", () => ({ useRichTextHandlers: () => ({}) }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
 jest.mock("@/models/milestones/useMilestones", () => ({ useMilestones: () => ({ milestones: [] }) }));
 jest.mock("@/models/projects", () => ({

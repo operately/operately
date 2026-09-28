@@ -1,4 +1,6 @@
-import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
+import { useSpaceSearch } from "@/models/spaces";
+import { useParentGoalSearch } from "@/models/goals/useParentGoalSearch";
+import { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -14,7 +16,7 @@ import { assertPresent } from "../../utils/assertions";
 
 import { Feed, useFeedItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import {
   useCreateFolder,
@@ -148,10 +150,18 @@ function Page() {
     transformResult: transformPerson,
   });
 
-  const parentGoalSearch = useParentGoalSearch(goal);
+  const parentGoalSearch = useParentGoalSearch({ type: "goal", id: goal.id });
   const spaceSearch = useSpaceSearch();
 
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "goal",
+      resourceId: goal.id,
+      field: "description",
+      canEdit: goal.permissions?.canEdit ?? false,
+    },
+    scope: { type: "goal", id: goal.id },
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const initialChecklist = React.useMemo(() => goal.checklist ?? [], [goal.checklist]);
@@ -264,7 +274,7 @@ function Page() {
     relatedWorkItems: prepareWorkMapData(workMap),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
 
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     localDraftKeyBase: `goal:${goal.id}`,
 
     addTarget,
@@ -493,30 +503,5 @@ function prepareRetrospective(
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
     author: People.parsePersonForTurboUi(paths, retrospective.author)!,
-  };
-}
-
-function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
-    const data = await Api.goals.searchParentGoal({ query: query.trim(), goalId: goal.id });
-    const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
-
-    return goals.map((g) => g!);
-  };
-}
-
-function useSpaceSearch(): (params: { query: string }) => Promise<GoalPage.Space[]> {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
-    const data = await Api.spaces.search({ query: query });
-
-    return data.spaces.map((space) => ({
-      id: space.id,
-      name: space.name,
-      link: paths.spacePath(space.id),
-    }));
   };
 }

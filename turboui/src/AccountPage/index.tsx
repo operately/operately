@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Page } from "../Page";
 import { Avatar } from "../Avatar";
 import { IconUserCircle, IconSettings, IconLockPassword, IconDoorExit } from "../icons";
+import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 import { BlackLink } from "../Link";
 
@@ -38,22 +40,24 @@ export namespace AccountPage {
 }
 
 export function AccountPage(props: AccountPage.Props) {
+  const { t } = useTranslation();
+
   const actionLinks: AccountPage.ActionLink[] = [
     {
       icon: IconUserCircle,
-      label: "Profile",
+      label: t("Profile"),
       to: props.profilePath,
       testId: "profile-link",
     },
     {
       icon: IconSettings,
-      label: "Settings",
+      label: t("Settings"),
       to: props.settingsPath,
       testId: "settings-link",
     },
     {
       icon: IconLockPassword,
-      label: "Password & Security",
+      label: t("Password & Security"),
       to: props.securityPath,
       testId: "password-link",
     },
@@ -62,7 +66,7 @@ export function AccountPage(props: AccountPage.Props) {
   const actionButtons: AccountPage.ActionButton[] = [
     {
       icon: IconDoorExit,
-      label: "Sign Out",
+      label: t("Sign Out"),
       onClick: props.onLogOut,
       testId: "log-out-button",
     },
@@ -71,12 +75,12 @@ export function AccountPage(props: AccountPage.Props) {
   const navigation = [
     {
       to: props.homePath,
-      label: "Home",
+      label: t("Home"),
     },
   ];
 
   return (
-    <Page title="My Account" size="small" testId="my-account-page" navigation={navigation}>
+    <Page title={translationText(t("My Account"))} size="small" testId="my-account-page" navigation={navigation}>
       <div className="p-8">
         <PageTitle />
         <UserInfo person={props.person} />
@@ -91,10 +95,12 @@ export function AccountPage(props: AccountPage.Props) {
 }
 
 function PageTitle() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-4 mb-8">
       <FancyLineSeparator />
-      <h1 className="text-4xl font-extrabold text-center">My Account</h1>
+      <h1 className="text-4xl font-extrabold text-center">{t("My Account")}</h1>
       <FancyLineSeparator />
     </div>
   );

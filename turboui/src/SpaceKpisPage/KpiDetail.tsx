@@ -7,7 +7,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
 import { PageDescription } from "../PageDescription";
 import { PersonField } from "../PersonField";
-import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { SlideIn } from "../SlideIn";
@@ -32,7 +32,7 @@ interface KpiDetailProps {
   onEditEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   onDeleteEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   onDelete: () => void;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
   subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }

@@ -82,20 +82,6 @@ defmodule Operately.Projects do
     |> Repo.extract_result(:project)
   end
 
-  def archive_project(author, %Project{} = project) do
-    Multi.new()
-    |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
-    |> Activities.insert_sync(author.id, :project_archived, fn changes -> %{
-      company_id: project.company_id,
-      space_id: project.group_id,
-      project_id: changes.project.id
-    } end)
-    |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
-    |> CoreWorkIndexUpdates.enqueue_project(fn changes -> changes.project.id end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:project)
-  end
-
   def change_project(%Project{} = project, attrs \\ %{}) do
     Project.changeset(project, attrs)
   end

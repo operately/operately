@@ -12,6 +12,10 @@ defmodule OperatelyEmail.Mailers.ActivityMailer do
     NotificationMailer.from(email, person.full_name <> " (Operately)")
   end
 
+  def subject(email, subject) when is_binary(subject) do
+    NotificationMailer.subject(email, subject)
+  end
+
   def subject(email, where: where, who: who, action: action) do
     NotificationMailer.subject(email, "(#{where}) #{Person.short_name(who)} #{action}")
   end

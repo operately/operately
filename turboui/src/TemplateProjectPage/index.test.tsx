@@ -97,7 +97,7 @@ jest.mock("../utils/PragmaticDragAndDrop", () => ({
   useSortableList: () => undefined,
 }));
 
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { TemplateProjectPage } from ".";
 import type { TemplateProjectPage as Types } from ".";
@@ -170,7 +170,7 @@ function createProps(overrides: Partial<Types.Props> = {}): Types.Props {
     newDiscussionLink: "/templates/template-1/discussions/new",
     newDocumentLink: "/templates/template-1/documents/new",
     newLinkLink: "/templates/template-1/links/new",
-    richTextHandlers: createMockRichEditorHandlers(),
+    richTextHandlers: createMockRichTextHandlers(),
     formattedTimePreferences: defaultFormattedTimePreferences,
     onTemplateUpdate: jest.fn(),
     onMilestoneCreate: jest.fn(),

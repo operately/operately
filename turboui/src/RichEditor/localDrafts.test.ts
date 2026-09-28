@@ -14,6 +14,30 @@ describe("local rich text drafts", () => {
     jest.restoreAllMocks();
   });
 
+  it("keeps drafts valid across automatic title changes and stores only source", () => {
+    const href = "/acme/projects/example";
+    const doc = (title: string) => ({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: title,
+              marks: [
+                { type: "link", attrs: { href, operatelyResourceLink: { originalText: href, resolvedText: title } } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    writeLocalDraft({ key: "link-draft" }, draftDoc, doc("Before"));
+    expect(readLocalDraft({ key: "link-draft" }, doc("After"))).toEqual(draftDoc);
+    expect(localStorage.getItem("operately:rich-text-draft:link-draft")).not.toContain("operatelyResourceLink");
+  });
+
   it("restores a draft when it was based on the current content", () => {
     writeLocalDraft({ key: "task:1:description" }, draftDoc, baseDoc);
 

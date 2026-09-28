@@ -71,7 +71,7 @@ const defaultProjectAccessLevels: PrivacyField.AccessLevels = {
   space: "view",
 };
 import { asRichText } from "../utils/storybook/richContent";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import {
@@ -281,7 +281,7 @@ function ProjectPageHarness({
         checkIns={[]}
         discussions={[]}
         currentUser={null}
-        richTextHandlers={createMockRichEditorHandlers()}
+        richTextHandlers={createMockRichTextHandlers()}
         onTaskDescriptionChange={async () => true}
         getTaskPageProps={() => ({}) as any}
         subscriptions={subscriptions}

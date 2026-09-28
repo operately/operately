@@ -22,7 +22,8 @@ jest.mock("@/routes/useCompanyLoaderData", () => ({
 jest.mock("turboui", () => ({
   IconInfoCircleFilled: () => <span>info-icon</span>,
   IconX: () => <span>dismiss-icon</span>,
-  RichContent: ({ content, parseContent }: { content: string; parseContent?: boolean }) => {
+  RichContent: (props: { content: string; parseContent?: boolean }) => {
+    const { content, parseContent } = props;
     const parsed = parseContent ? JSON.parse(content) : content;
     const text = parsed?.content?.[0]?.content?.[0]?.text ?? "";
     return <div>{text}</div>;

@@ -1,17 +1,13 @@
-<%= title("#{short_name(@author)} #{@action}") %>
+<%= title(@title) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= if @mentioned do %>
-    You were mentioned in the description for <%= @task_name %>.
-  <% else %>
-    A new task named <%= @task_name %> was created in this project.
-  <% end %>
+  <%= @body %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Task") %>
+  <%= cta_button(@cta_url, @cta) %>
 <% end %>

@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { translationText } from "../i18n";
 import { Avatar, type AvatarPerson } from "../Avatar";
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
 import { IconCheck } from "../icons";
@@ -27,6 +29,8 @@ export function NotificationRow({
   onOpen,
   onMarkAsRead,
 }: NotificationRowProps) {
+  const { t } = useTranslation();
+  const markAsReadLabel = translationText(t("Mark as read"));
   const handleMarkAsRead = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onMarkAsRead();
@@ -57,8 +61,8 @@ export function NotificationRow({
       {!read && (
         <button
           type="button"
-          aria-label="Mark as read"
-          title="Mark as read"
+          aria-label={markAsReadLabel}
+          title={markAsReadLabel}
           className="absolute -right-8 -top-1 rounded group-hover:opacity-100 focus:opacity-100 opacity-0 cursor-pointer p-2"
           data-test-id={`${testId}-mark-as-read`}
           onClick={handleMarkAsRead}

@@ -811,6 +811,16 @@ export interface ActivityContentResourceHubDocumentEdited {
   document?: ResourceHubDocument | null;
 }
 
+export interface ActivityContentResourceHubDocumentPublicSharingChanged {
+  __typename: "activity_content_resource_hub_document_public_sharing_changed";
+  goal?: Goal | null;
+  project?: Project | null;
+  space?: Space | null;
+  resourceHub?: ResourceHub | null;
+  document?: ResourceHubDocument | null;
+  enabled: boolean;
+}
+
 export interface ActivityContentResourceHubDocumentVersionRestored {
   __typename: "activity_content_resource_hub_document_version_restored";
   goal?: Goal | null;
@@ -1829,6 +1839,7 @@ export interface Person {
   type: string;
   description?: string | null;
   timezone?: string | null;
+  language?: Language | null;
   timeFormat?: TimeFormat;
   emailPreference?: EmailPreferenceValues;
   emailWindowMinutes?: EmailWindowMinutes;
@@ -2204,6 +2215,14 @@ export interface ProjectTemplateUploadedFile {
   description?: Json | null;
 }
 
+export interface PublicDocument {
+  __typename: "public_document";
+  name: string;
+  content: string;
+  publishedAt: string;
+  updatedAt: string;
+}
+
 export interface QuickSearchDiscussion {
   id: string;
   title: string;
@@ -2248,6 +2267,7 @@ export interface ResourceHub {
 
 export interface ResourceHubDocument {
   __typename: "resource_hub_document";
+  publicUrl?: string | null;
   id: string;
   url?: string;
   author?: Person | null;
@@ -2827,6 +2847,7 @@ export type ActivityContent =
   | ActivityContentResourceHubDocumentCreated
   | ActivityContentResourceHubDocumentDeleted
   | ActivityContentResourceHubDocumentEdited
+  | ActivityContentResourceHubDocumentPublicSharingChanged
   | ActivityContentResourceHubDocumentVersionRestored
   | ActivityContentResourceHubFileCommented
   | ActivityContentResourceHubFileCreated
@@ -2974,6 +2995,8 @@ export type GoalStatus =
   | "pending"
   | "outdated";
 
+export type Language = "en" | "pt-BR";
+
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
 export type MilestoneOpenTasksResolutionAction = "move_to_no_milestone" | "set_status";
@@ -3068,6 +3091,34 @@ export type ReviewAssignmentTypes =
   | "kpi_update"
   | "project_retrospective"
   | "goal_retrospective";
+
+export type RichTextField = "description" | "content" | "message" | "body";
+
+export type RichTextResourceType =
+  | "link"
+  | "file"
+  | "task"
+  | "project"
+  | "goal"
+  | "milestone"
+  | "document"
+  | "kpi"
+  | "project_check_in"
+  | "project_retrospective"
+  | "goal_discussion"
+  | "project_discussion"
+  | "goal_check_in"
+  | "space_discussion"
+  | "comment"
+  | "person"
+  | "project_template"
+  | "template_task"
+  | "template_milestone"
+  | "template_discussion"
+  | "template_comment"
+  | "template_document"
+  | "template_file"
+  | "template_link";
 
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 

@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { SearchActivator } from "./SearchActivator";
+import { translationText } from "../i18n";
 import { SearchOverlay } from "./SearchOverlay";
 
 export namespace GlobalSearch {
@@ -116,12 +118,14 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [searchError, setSearchError] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
+  const requestSequence = React.useRef(0);
   const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
 
   const performSearch = React.useCallback(
-    async (searchQuery: string) => {
+    async (searchQuery: string, requestId: number) => {
       if (searchQuery.trim().length < 2) {
         setResults({});
+        setIsSearching(false);
         setSearchError(false);
         setSelectedIndex(-1);
         setIsOpen(false);
@@ -133,30 +137,34 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 
       try {
         const searchResults = await props.search({ query: searchQuery.trim() });
+        if (requestSequence.current !== requestId) return;
         setResults(searchResults);
         setSelectedIndex(-1);
         setIsOpen(true);
       } catch {
+        if (requestSequence.current !== requestId) return;
         setResults({});
         setSearchError(true);
         setSelectedIndex(-1);
       } finally {
-        setIsSearching(false);
+        if (requestSequence.current === requestId) setIsSearching(false);
       }
     },
     [props.search],
   );
 
   React.useEffect(() => {
+    const requestId = ++requestSequence.current;
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
 
     searchTimeoutRef.current = setTimeout(() => {
-      performSearch(query);
+      performSearch(query, requestId);
     }, 300);
 
     return () => {
+      requestSequence.current += 1;
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
       }
@@ -165,7 +173,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 
   return {
     ...props,
-    placeholder: props.placeholder ?? "Search...",
+    placeholder: props.placeholder ?? "",
     testId: props.testId ?? "global-search",
     isOpen,
     setIsOpen,
@@ -183,7 +191,8 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 }
 
 export function GlobalSearch(props: GlobalSearch.Props) {
-  const state = useGlobalSearchState(props);
+  const { t } = useTranslation();
+  const state = useGlobalSearchState({ ...props, placeholder: props.placeholder ?? translationText(t("Search...")) });
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   const { setIsOpen, setSelectedIndex } = state;
 

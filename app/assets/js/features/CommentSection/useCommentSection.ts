@@ -4,12 +4,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths, compareIds } from "@/routes/paths";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import * as Comments from "@/models/comments";
 import { parsePersonForTurboUi, type SearchScope } from "@/models/people";
 import { useReadNotifications } from "@/models/notifications/notificationLifecycle";
 import { type CommentQueryInvalidator } from "@/models/comments/commentLifecycle";
-import { mapFormItemsToCommentSectionItems } from "./useCommentSectionProps";
+import { mapCommentSectionItems } from "./mapCommentSectionItems";
 import { type CommentSectionProps } from "turboui";
 
 const EMPTY_COMMENTS: Comment[] = [];
@@ -34,7 +34,6 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
   const paths = usePaths();
   const me = useMe();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const richTextHandlers = useRichEditorHandlers({ scope: mentionSearchScope });
   const readNotifications = useReadNotifications((queryClient) => invalidateQueries(queryClient, "none"));
   const query = useQuery(Api.comments.listQueryOptions({ entityId: entity.id, entityType: entity.type }));
 
@@ -43,6 +42,10 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
     parentType: entity.type,
     initialComments: query.data?.comments ?? EMPTY_COMMENTS,
     invalidateQueries,
+  });
+  const richTextHandlers = useRichTextHandlers({
+    taskList: null,
+    scope: mentionSearchScope,
   });
 
   Comments.useReloadCommentsSignal(
@@ -62,7 +65,7 @@ export function useCommentSection(options: UseCommentSectionOptions): CommentSec
     if (options.acknowledgedAt && options.acknowledgedBy) {
       items = Comments.insertAcknowledgement(items, options.acknowledgedAt, options.acknowledgedBy);
     }
-    return mapFormItemsToCommentSectionItems(paths, items);
+    return mapCommentSectionItems(paths, items);
   }, [comments.comments, options.acknowledgedAt, options.acknowledgedBy, paths]);
 
   const currentUser = parsePersonForTurboUi(paths, me);

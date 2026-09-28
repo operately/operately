@@ -6,7 +6,7 @@ import { mockPeople, createMockTimelineItems, mockDescription } from "./mockData
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
@@ -80,7 +80,7 @@ const createSampleTasks = (): Types.Task[] => [
     commentCount: 2,
     description: null,
     dueDate: null,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-2",
@@ -92,7 +92,7 @@ const createSampleTasks = (): Types.Task[] => [
     hasDescription: true,
     description: null,
     dueDate: null,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-3",
@@ -102,7 +102,7 @@ const createSampleTasks = (): Types.Task[] => [
     milestone: sampleMilestone,
     description: null,
     dueDate: null,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-4",
@@ -113,7 +113,7 @@ const createSampleTasks = (): Types.Task[] => [
     assignees: [mockPeople[2]!],
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 5)), "day"),
     description: null,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-5",
@@ -124,7 +124,7 @@ const createSampleTasks = (): Types.Task[] => [
     hasDescription: true,
     description: null,
     dueDate: null,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-6",
@@ -136,7 +136,7 @@ const createSampleTasks = (): Types.Task[] => [
     hasComments: true,
     commentCount: 1,
     description: null,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-7",
@@ -148,7 +148,7 @@ const createSampleTasks = (): Types.Task[] => [
     description: null,
     dueDate: null,
     hasComments: false,
-    type: "project"
+    type: "project",
   },
   {
     id: "task-8",
@@ -162,7 +162,7 @@ const createSampleTasks = (): Types.Task[] => [
     hasDescription: true,
     hasComments: true,
     commentCount: 4,
-    type: "project"
+    type: "project",
   },
 ];
 
@@ -175,8 +175,6 @@ function reorderTasks(tasks: Types.Task[], taskId: string, destinationIndex: num
   remainingTasks.splice(boundedIndex, 0, task);
   return remainingTasks;
 }
-
-
 
 /**
  * Basic example with interactive task creation and reordering
@@ -207,7 +205,7 @@ export const Default: Story = {
     };
 
     const handleMilestoneNameChange = async (newName: string) => {
-      setMilestone(prev => ({ ...prev, name: newName }));
+      setMilestone((prev) => ({ ...prev, name: newName }));
       return true;
     };
 
@@ -269,7 +267,7 @@ export const Default: Story = {
           setDescription(newDescription);
           return true;
         }}
-        richTextHandlers={createMockRichEditorHandlers()}
+        richTextHandlers={createMockRichTextHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
       />
@@ -364,7 +362,7 @@ export const EmptyMilestone: Story = {
         getTaskPageProps={taskActions.getTaskPageProps}
         title={milestone.name}
         onMilestoneTitleChange={async (newName) => {
-          setMilestone(prev => ({ ...prev, name: newName }));
+          setMilestone((prev) => ({ ...prev, name: newName }));
           return true;
         }}
         assigneePersonSearch={assigneePersonSearch}
@@ -384,7 +382,7 @@ export const EmptyMilestone: Story = {
         onDelete={() => setIsDeleted(true)}
         description={null}
         onDescriptionChange={async () => true}
-        richTextHandlers={createMockRichEditorHandlers()}
+        richTextHandlers={createMockRichTextHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
       />
@@ -424,7 +422,7 @@ export const CompletedMilestone: Story = {
         commentCount: 5,
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), "day"), // 8 days ago
-        type: "project"
+        type: "project",
       },
       {
         id: "task-completed-2",
@@ -436,7 +434,7 @@ export const CompletedMilestone: Story = {
         hasDescription: true,
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), "day"), // 7 days ago
-        type: "project"
+        type: "project",
       },
       {
         id: "task-completed-3",
@@ -447,7 +445,7 @@ export const CompletedMilestone: Story = {
         assignees: [mockPeople[0]!],
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), "day"), // 6 days ago
-        type: "project"
+        type: "project",
       },
       {
         id: "task-completed-4",
@@ -461,7 +459,7 @@ export const CompletedMilestone: Story = {
         commentCount: 2,
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), "day"), // 6 days ago
-        type: "project"
+        type: "project",
       },
       {
         id: "task-completed-5",
@@ -472,7 +470,7 @@ export const CompletedMilestone: Story = {
         assignees: [mockPeople[1]!],
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), "day"), // 5 days ago
-        type: "project"
+        type: "project",
       },
     ]);
     const taskActions = useMockTaskBoardActions({
@@ -491,7 +489,7 @@ export const CompletedMilestone: Story = {
         type: "milestone-activity" as const,
         value: {
           id: "activity-creation",
-          author: mockPeople[0]!, 
+          author: mockPeople[0]!,
           insertedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days ago
           content: "created the milestone",
           type: "project_milestone_creation" as const,
@@ -612,7 +610,7 @@ export const CompletedMilestone: Story = {
           setDescription(newDescription);
           return true;
         }}
-        richTextHandlers={createMockRichEditorHandlers()}
+        richTextHandlers={createMockRichTextHandlers()}
         formattedTimePreferences={defaultFormattedTimePreferences}
         statusOptions={DEFAULT_STATUS_OPTIONS}
       />
@@ -635,7 +633,7 @@ function TemplateMilestoneStory({
 }) {
   const milestone = sampleTemplateMilestones.find((item) => item.id === milestoneId)!;
   const personSearch = usePersonFieldSearch(mockPeople);
-  const richTextHandlers = createMockRichEditorHandlers();
+  const richTextHandlers = createMockRichTextHandlers();
   const [title, setTitle] = useState(milestone.title);
   const [milestoneDescription, setMilestoneDescription] = useState(description ?? milestone.description);
   const [offsetDays, setOffsetDays] = useState<number | null>(
@@ -696,9 +694,7 @@ export const TemplateMilestone: Story = {
 };
 
 export const TemplateEmptyMilestone: Story = {
-  render: () => (
-    <TemplateMilestoneStory milestoneId="launch" dueOffsetDays={21} description={null} emptyTasks />
-  ),
+  render: () => <TemplateMilestoneStory milestoneId="launch" dueOffsetDays={21} description={null} emptyTasks />,
 };
 
 export const TemplateArchivedMilestone: Story = {

@@ -14,6 +14,7 @@ function MessageDescription({ description }: { description: string }) {
 
   return (
     <RichContent
+      taskList={{ canEdit: false }}
       content={description}
       mentionedPersonLookup={mentionedPersonLookup}
       parseContent

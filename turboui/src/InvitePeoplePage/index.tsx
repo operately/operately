@@ -1,7 +1,9 @@
 import React, { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { SecondaryButton } from "../Button";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { translationText } from "../i18n";
 import { IconRotate } from "../icons";
 import type { Navigation } from "../Page/Navigation";
 import { Navigation as PageNavigation } from "../Page/Navigation";
@@ -41,6 +43,7 @@ export namespace InvitePeoplePage {
 }
 
 export function InvitePeoplePage(props: InvitePeoplePage.Props) {
+  const { t } = useTranslation();
   const [resettingLink, setResettingLink] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [internalLinkEnabled, setInternalLinkEnabled] = useState(props.linkEnabled ?? true);
@@ -98,7 +101,8 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     await handleResetLink();
   }, [handleResetLink]);
 
-  const pageTitle = props.companyName ? ["Invite people", props.companyName] : "Invite people";
+  const invitePeopleTitle = translationText(t("Invite people"));
+  const pageTitle = props.companyName ? [invitePeopleTitle, props.companyName] : invitePeopleTitle;
   useHtmlTitle(pageTitle);
 
   return (
@@ -106,7 +110,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
       {props.navigationItems && <PageNavigation items={props.navigationItems} />}
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
         <div className="px-4 sm:px-10 py-8">
-          <div className="text-content-accent text-2xl font-extrabold mb-8">Bring your team on board</div>
+          <div className="text-content-accent text-2xl font-extrabold mb-8">{t("Bring your team on board")}</div>
 
           {props.errorMessage ? (
             <div
@@ -132,9 +136,9 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             <section className="rounded-lg border border-surface-outline bg-surface-base p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">Invite one person</h2>
+                  <h2 className="text-lg font-semibold">{t("Invite one person")}</h2>
                   <p className="mt-1 text-sm text-content-dimmed">
-                    Create a personal link to share with a single team member.
+                    {t("Create a personal link to share with a single team member.")}
                   </p>
                 </div>
                 <SecondaryButton
@@ -144,7 +148,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                   disabled={!canInviteIndividually}
                   size="sm"
                 >
-                  Create invite
+                  {t("Create invite")}
                 </SecondaryButton>
               </div>
             </section>
@@ -154,10 +158,14 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             isOpen={showResetConfirm}
             onConfirm={handleConfirmResetLink}
             onCancel={handleCancelResetConfirm}
-            title="Generate a new link"
-            message="We’ll disable the current invite link and create a new one. Anyone holding the old link won’t be able to join anymore."
-            confirmText="Generate new link"
-            cancelText="Cancel"
+            title={translationText(t("Generate a new link"))}
+            message={translationText(
+              t(
+                "We’ll disable the current invite link and create a new one. Anyone holding the old link won’t be able to join anymore.",
+              ),
+            )}
+            confirmText={translationText(t("Generate new link"))}
+            cancelText={translationText(t("Cancel"))}
             variant="danger"
             icon={IconRotate}
             testId="invite-people-reset-confirm"

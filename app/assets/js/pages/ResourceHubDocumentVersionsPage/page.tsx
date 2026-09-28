@@ -15,7 +15,11 @@ import { buildDocumentVersionsPageNavigation } from "./navigation";
 export function Page() {
   const { document, resourceHub, versions } = useLoadedData();
   const refresh = useRefresh();
-  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+  const mutationScope = {
+    spaceId: document.space?.id,
+    resourceHubId: document.resourceHubId,
+    parentFolderId: document.parentFolderId,
+  };
   const { mutateAsync: restoreVersion } = Hub.useRestoreDocumentVersion(mutationScope);
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();

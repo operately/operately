@@ -1,9 +1,11 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { loader, useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
+import { translationText } from "@/i18n";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { PrimaryButton, SecondaryButton } from "turboui";
@@ -11,11 +13,12 @@ import { PrimaryButton, SecondaryButton } from "turboui";
 export default { name: "InviteLinkFullPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { invite, token } = useLoadedData();
   const companyName = invite?.company?.name;
 
   return (
-    <Pages.Page title={["Company Full"]} testId="invite-link-full-page">
+    <Pages.Page title={translationText(t("Company Full"))} testId="invite-link-full-page">
       <Paper.Root size="small">
         <Paper.Body noPadding className="h-dvh overflow-hidden sm:h-auto">
           <Hero companyName={companyName} />
@@ -23,24 +26,26 @@ function Page() {
           <div className="px-8 py-8 sm:px-10 sm:py-8">
             <div className="grid gap-3 sm:grid-cols-2">
               <NextStepCard
-                eyebrow="What happens now"
-                title="An admin or owner needs to help"
-                description="An admin or owner needs to review billing or free up member space before anyone else can join."
+                eyebrow={t("What happens now")}
+                title={t("An admin or owner needs to help")}
+                description={t(
+                  "An admin or owner needs to review billing or free up member space before anyone else can join.",
+                )}
               />
               <NextStepCard
-                eyebrow="What you can do"
-                title="Try again later"
-                description="Once the upgrade is done, come back to this link and try again."
+                eyebrow={t("What you can do")}
+                title={t("Try again later")}
+                description={t("Once the upgrade is done, come back to this link and try again.")}
               />
             </div>
 
             <div className="mt-8 border-t border-stroke-base pt-6">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <PrimaryButton linkTo={Paths.inviteJoinPath(token)} testId="retry-join">
-                  Try again
+                  {t("Try again")}
                 </PrimaryButton>
                 <SecondaryButton linkTo="/" testId="back-to-home">
-                  Back to home
+                  {t("Back to home")}
                 </SecondaryButton>
               </div>
             </div>
@@ -52,22 +57,26 @@ function Page() {
 }
 
 function Hero({ companyName }: { companyName?: string | null }) {
+  const { t } = useTranslation();
+
   return (
     <div className="border-b border-stroke-base px-8 py-8 sm:px-10 sm:py-10">
       <h1 className="max-w-xl text-3xl font-extrabold leading-tight text-content-accent sm:text-4xl">
-        Member limit reached
+        {t("Member limit reached")}
       </h1>
 
       <p className="mt-4 max-w-2xl text-base leading-7 text-content-accent">
         {companyName ? (
-          <>
-            <span className="font-semibold">{companyName}</span> has reached its member limit, so this invite can't be
-            used yet.
-          </>
+          <Trans
+            i18nKey="<company>{{companyName}}</company> has reached its member limit, so this invite can't be used yet. When more member capacity is available, you can come back and try again."
+            values={{ companyName }}
+            components={{ company: <span className="font-semibold" /> }}
+          />
         ) : (
-          <>This company has reached its member limit, so this invite can't be used yet.</>
-        )}{" "}
-        When more member capacity is available, you can come back and try again.
+          t(
+            "This company has reached its member limit, so this invite can't be used yet. When more member capacity is available, you can come back and try again.",
+          )
+        )}
       </p>
     </div>
   );

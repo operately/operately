@@ -126,11 +126,6 @@ defmodule Operately.ProjectsTest do
       assert ctx.project == Projects.get_project!(ctx.project.id)
     end
 
-    test "archive_project/1 archives the project", ctx do
-      assert {:ok, project} = Projects.archive_project(ctx.champion, ctx.project)
-      assert project.deleted_at != nil
-    end
-
     test "change_project/1 returns a project changeset", ctx do
       assert %Ecto.Changeset{} = Projects.change_project(ctx.project)
     end

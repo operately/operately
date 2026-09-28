@@ -4,7 +4,8 @@ import { useNavigate } from "react-router";
 import { useUpdateDocument, usePublishDocument } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
-import { usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { compareIds, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { DocumentEditPage, showErrorToast, SubscribersSelector } from "turboui";
 import type { DocumentEditPage as DocumentEditPageTypes } from "turboui/DocumentEditPage/types";
@@ -14,6 +15,7 @@ import { buildEditDocumentPageNavigation } from "./navigation";
 
 export function Page() {
   const { document } = useLoadedData();
+  const me = useMe();
   const paths = usePaths();
   const navigate = useNavigate();
 
@@ -23,6 +25,7 @@ export function Page() {
   const { mutateAsync: publish } = usePublishDocument(mutationScope);
 
   const isDraft = document.state === "draft";
+  const canPublish = Boolean(document.author && me && compareIds(me.id, document.author.id));
 
   assertPresent(document.potentialSubscribers, "potentialSubscribers must be present in document");
   assertPresent(document.subscriptionList, "subscriptionList must be present in document");
@@ -106,24 +109,25 @@ export function Page() {
     onSubmit: handleSubmit,
   };
 
-  if (isDraft) {
-    return (
-      <DocumentEditPage
-        {...shared}
-        subscriptions={{
-          subscribers: subscriptionsState.subscribers,
-          selectedSubscribers: subscriptionsState.selectedSubscribers,
-          onSelectedSubscribersChange: subscriptionsState.onSelectedSubscribersChange,
-          subscriptionType: subscriptionsState.subscriptionType,
-          onSubscriptionTypeChange: subscriptionsState.onSubscriptionTypeChange,
-          alwaysNotify: subscriptionsState.alwaysNotify,
-          allSubscribersLabel: subscriptionsState.allSubscribersLabel,
-        }}
-      />
-    );
+  if (!isDraft) {
+    return <DocumentEditPage {...shared} hideSubscriptions hidePublishAction />;
   }
 
-  return <DocumentEditPage {...shared} hideSubscriptions hidePublishAction />;
+  const subscriptions = {
+    subscribers: subscriptionsState.subscribers,
+    selectedSubscribers: subscriptionsState.selectedSubscribers,
+    onSelectedSubscribersChange: subscriptionsState.onSelectedSubscribersChange,
+    subscriptionType: subscriptionsState.subscriptionType,
+    onSubscriptionTypeChange: subscriptionsState.onSubscriptionTypeChange,
+    alwaysNotify: subscriptionsState.alwaysNotify,
+    allSubscribersLabel: subscriptionsState.allSubscribersLabel,
+  };
+
+  if (!canPublish) {
+    return <DocumentEditPage {...shared} subscriptions={subscriptions} hidePublishAction />;
+  }
+
+  return <DocumentEditPage {...shared} subscriptions={subscriptions} />;
 }
 
 function hasSubscriptionsChanged(

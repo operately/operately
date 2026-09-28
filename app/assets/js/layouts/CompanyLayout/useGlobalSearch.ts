@@ -1,29 +1,24 @@
-import Api, { CompaniesQuickSearchInput, CompaniesQuickSearchResult, QuickSearchResource } from "@/api";
+import { useQuerySearch } from "@/models/search/useQuerySearch";
+import Api, { CompaniesQuickSearchResult, QuickSearchResource } from "@/api";
 import * as React from "react";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { GlobalSearch } from "turboui";
 
 type SearchParams = { query: string };
-type QuickSearchApi = (input: CompaniesQuickSearchInput) => Promise<CompaniesQuickSearchResult>;
 
 export function useGlobalSearchHandler(): (params: SearchParams) => Promise<GlobalSearch.SearchResult> {
   const paths = usePaths();
 
-  return React.useCallback(({ query }: SearchParams) => loadQuickSearchResults(paths, query), [paths]);
+  const search = useQuerySearch(Api.companies.quickSearchQueryOptions, { query: "" });
+  return React.useCallback(
+    async (params: SearchParams) => mapQuickSearchResult(paths, await search(params)),
+    [paths, search],
+  );
 }
 
 export function companySearchPathBuilder(paths: Paths): GlobalSearch.Props["fullTextSearchPath"] {
   return (query) => paths.searchPath(query);
-}
-
-export async function loadQuickSearchResults(
-  paths: Paths,
-  query: string,
-  search: QuickSearchApi = Api.companies.quickSearch,
-): Promise<GlobalSearch.SearchResult> {
-  const result = await search({ query });
-  return mapQuickSearchResult(paths, result);
 }
 
 export function mapQuickSearchResult(paths: Paths, result: CompaniesQuickSearchResult): GlobalSearch.SearchResult {

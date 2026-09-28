@@ -1,3 +1,5 @@
+import type { CommentThread } from "@/api";
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -11,8 +13,8 @@ import { invalidateProjectInteractionQueries } from "@/models/projects/projectIn
 import { Avatar, IconEdit, CurrentSubscriptions, RichContent, FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
-import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
-import { compareIds, usePaths } from "../../routes/paths";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { usePaths } from "../../routes/paths";
 import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useCurrentSubscriptionsQueryAdapter";
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -58,11 +60,10 @@ export function Page() {
 function Options() {
   const { discussion } = useLoadedData();
   const paths = usePaths();
-  const me = useMe();
 
   return (
     <PageOptions.Root testId="options">
-      {discussion.author && me && compareIds(discussion.author.id, me.id) && (
+      {canEditDiscussion(discussion) && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
@@ -77,11 +78,18 @@ function Options() {
 
 function Content() {
   const { discussion } = useLoadedData();
-  const peopleLookup = useMentionedPersonLookupFn();
+  const message = JSON.parse(discussion.message || "{}");
+  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const taskList = useTaskList({
+    resourceType: "project_discussion",
+    resourceId: discussion.id,
+    field: "message",
+    canEdit: canEditDiscussion(discussion),
+  });
 
   return (
     <div className="my-8">
-      <RichContent content={JSON.parse(discussion.message || "{}")} mentionedPersonLookup={peopleLookup} />
+      <RichContent taskList={taskList} content={message} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
@@ -150,4 +158,8 @@ function Subscriptions() {
       />
     </div>
   );
+}
+
+function canEditDiscussion(discussion: CommentThread): boolean {
+  return discussion.projectPermissions?.canEdit ?? false;
 }

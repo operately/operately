@@ -20,6 +20,28 @@ defmodule OperatelyWeb.Api.Documents.CreateTest do
     end
   end
 
+  test "copies of publicly shared documents start private", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:original, :hub)
+      |> Factory.log_in_person(:creator)
+
+    ctx.original |> Ecto.Changeset.change(public_token: "original-link") |> Repo.update!()
+
+    assert {200, result} = mutation(ctx.conn, [:documents, :create], %{
+      resource_hub_id: Paths.resource_hub_id(ctx.hub),
+      copied_document_id: Paths.document_id(ctx.original),
+      name: "Private copy",
+      content: Jason.encode!(ctx.original.content)
+    })
+
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(result.document.id)
+    {:ok, copy} = ResourceHubs.Document.get(:system, id: id)
+    assert copy.public_token == nil
+  end
+
   describe "permissions" do
     @table [
       %{company: :no_access,      space: :no_access,      expected: 404},

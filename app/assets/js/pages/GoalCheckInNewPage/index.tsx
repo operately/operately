@@ -55,5 +55,14 @@ function Form({ goal }: { goal: Goals.Goal }) {
 
   const form = useForm({ mode: "new", goal, subscriptionsState });
 
-  return <CheckInForm form={form} goal={goal} mode="new" allowFullEdit subscriptionsState={subscriptionsState} />;
+  return (
+    <CheckInForm
+      taskList={{ canEdit: false }}
+      form={form}
+      goal={goal}
+      mode="new"
+      allowFullEdit
+      subscriptionsState={subscriptionsState}
+    />
+  );
 }

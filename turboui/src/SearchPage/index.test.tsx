@@ -7,7 +7,7 @@ import { MemoryRouter } from "react-router";
 import type { SearchResult } from "../ApiTypes";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { IconCalendar, IconLayoutGrid, IconWorld } from "../icons";
-import { SEARCH_TIME_FILTER_OPTIONS, SEARCH_TYPE_FILTER_OPTIONS, SearchPage } from "./index";
+import { searchTimeFilterOptions, searchTypeFilterOptions, SearchPage } from "./index";
 
 function result(overrides: Partial<SearchResult & { link: string }> = {}): SearchResult & { link: string } {
   return {
@@ -184,7 +184,7 @@ describe("SearchPage", () => {
             icon: IconLayoutGrid,
             selectionMode: "multiple",
             selectedOptionIds: [],
-            options: SEARCH_TYPE_FILTER_OPTIONS,
+            options: searchTypeFilterOptions(),
           },
           {
             id: "time",
@@ -192,7 +192,7 @@ describe("SearchPage", () => {
             icon: IconCalendar,
             selectionMode: "single",
             selectedOptionIds: ["last_7_days"],
-            options: SEARCH_TIME_FILTER_OPTIONS,
+            options: searchTimeFilterOptions(),
           },
         ],
         onFilterChange,
@@ -208,13 +208,13 @@ describe("SearchPage", () => {
     expect(document.querySelector('[data-test-id="search-filter-types"]')).toHaveTextContent("All types");
     expect(document.querySelector('[data-test-id="search-filter-time"]')).toHaveTextContent("Last 7 days");
     expect(document.querySelector('[data-test-id="search-filter-people"]')).not.toBeInTheDocument();
-    expect(SEARCH_TYPE_FILTER_OPTIONS).toHaveLength(13);
+    expect(searchTypeFilterOptions()).toHaveLength(13);
 
     await user.click(screen.getByRole("button", { name: "Most recent" }));
     expect(onSortChange).toHaveBeenCalledWith("most_recent");
 
     await user.click(document.querySelector('[data-test-id="search-filter-types"]')!);
-    for (const option of SEARCH_TYPE_FILTER_OPTIONS) {
+    for (const option of searchTypeFilterOptions()) {
       expect(await screen.findByRole("menuitem", { name: option.label })).toBeInTheDocument();
     }
 

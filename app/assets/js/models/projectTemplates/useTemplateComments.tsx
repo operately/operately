@@ -9,7 +9,7 @@ import {
   type CommentSectionItem,
   type CommentSectionProps,
   type FormattedTimePreferences,
-  type RichEditorHandlers,
+  type RichTextHandlers,
 } from "turboui";
 
 type TurboUiPerson = CommentSectionProps["currentUser"];
@@ -29,7 +29,7 @@ interface UseTemplateCommentsOptions {
   parentId: string;
   comments: ProjectTemplateComment[];
   canEdit: boolean;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   formattedTimePreferences: FormattedTimePreferences;
 }
 

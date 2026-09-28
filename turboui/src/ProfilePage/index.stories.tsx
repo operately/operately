@@ -26,7 +26,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function toProfilePerson(person: { id: string; fullName: string; title: string; avatarUrl: string | null; profileLink: string }): PersonCard.Person {
+function toProfilePerson(person: {
+  id: string;
+  fullName: string;
+  title: string;
+  avatarUrl: string | null;
+  profileLink: string;
+}): PersonCard.Person {
   const email = `${person.id}@example.com`;
 
   return {
@@ -45,6 +51,7 @@ const defaultWorkMap: WorkMap.Item[] = [...mockItems, ...mockTasksTabItems];
 const defaultReviewerWorkMap: WorkMap.Item[] = mockItems.slice(0, 2);
 
 const defaultArgs: ProfilePage.Props = {
+  taskList: { canEdit: false },
   title: "Profile",
 
   person: person!,
@@ -56,9 +63,7 @@ const defaultArgs: ProfilePage.Props = {
   reviewerWorkMap: defaultReviewerWorkMap,
 
   activityFeed: (
-    <div className="bg-surface-base border border-surface-outline rounded-lg p-4">
-      Activity feed placeholder
-    </div>
+    <div className="bg-surface-base border border-surface-outline rounded-lg p-4">Activity feed placeholder</div>
   ),
 
   editProfilePath: "#",

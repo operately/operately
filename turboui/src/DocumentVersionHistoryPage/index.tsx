@@ -109,6 +109,7 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
             </div>
             <div className="mt-4 text-content-base">
               <RichContent
+                taskList={{ canEdit: false }}
                 content={versionPreviewContent(selectedVersion)}
                 mentionedPersonLookup={props.mentionedPersonLookup}
               />

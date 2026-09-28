@@ -1,4 +1,4 @@
-import Api, { Milestone, MilestoneComment } from "@/api";
+import { Milestone, MilestoneComment } from "@/api";
 import * as People from "@/models/people";
 import * as ReactionsModel from "@/models/reactions";
 import * as Time from "@/utils/time";
@@ -24,8 +24,6 @@ export {
 } from "./milestoneLifecycle";
 
 export type ParsedMilestoneForTurboUi = ReturnType<typeof parseMilestoneForTurboUi>;
-
-export const usePostMilestoneComment = Api.projects.useCreateMilestoneComment;
 
 export function parseMilestonesForTurboUi(
   paths: Paths,

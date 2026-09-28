@@ -20,7 +20,7 @@ jest.mock("@/models/resourceHubs", () => ({}));
 jest.mock("@/models/search/resourceHub", () => ({}));
 jest.mock("@/features/Feed", () => ({}));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({}));
-jest.mock("@/hooks/useRichEditorHandlers", () => ({}));
+jest.mock("@/hooks/useRichTextHandlers", () => ({}));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({}));
 jest.mock("./useChecklists", () => ({}));
 

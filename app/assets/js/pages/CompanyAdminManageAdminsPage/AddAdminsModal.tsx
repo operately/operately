@@ -1,23 +1,26 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, IconX, Modal, PrimaryButton } from "turboui";
 
+import { translationText } from "@/i18n";
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
 import { FormState } from "./useForm";
 import * as People from "@/models/people";
 
 export function AddAdminsModal({ form }: { form: FormState }) {
+  const { t } = useTranslation();
   const state = useState(form);
 
   return (
     <>
       <PrimaryButton onClick={state.openModal} testId="add-admins" size="xs">
-        Add Admin
+        {t("Add Admin")}
       </PrimaryButton>
 
       <Modal
-        title="Add administrators"
+        title={translationText(t("Add administrators"))}
         isOpen={state.isModalOpen}
         onClose={state.hideModal}
         contentClassName="min-h-[600px]"
@@ -25,7 +28,7 @@ export function AddAdminsModal({ form }: { form: FormState }) {
         <SearchField
           onSelect={state.add}
           loader={state.search}
-          placeholder={"Search for people to promote to admin"}
+          placeholder={t("Search for people to promote to admin")}
           alreadySelected={state.excludeIds}
         />
 
@@ -35,7 +38,7 @@ export function AddAdminsModal({ form }: { form: FormState }) {
 
         <div className="mt-4 flex items-center justify-center">
           <PrimaryButton onClick={state.submit} testId="save-admins">
-            Add Admininstrators
+            {t("Add Admininstrators")}
           </PrimaryButton>
         </div>
       </Modal>

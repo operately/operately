@@ -1,11 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Page } from "../Page";
 import { Avatar } from "../Avatar";
 import { SecondaryButton, PrimaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
+import { Dropdown } from "../FormElements/Dropdown";
 import { Textfield } from "../FormElements/Textfield";
 import { PersonField } from "../PersonField";
 import { IconPencil } from "../icons";
+import { translationText } from "../i18n";
 import { Editor, useEditor } from "../RichEditor";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
@@ -24,6 +27,7 @@ export namespace ProfileEditPage {
   }
 
   export type TimeFormat = "automatic" | "hour_12" | "hour_24";
+  export type Language = "en" | "pt-BR";
 
   export interface Props {
     // Person data
@@ -35,6 +39,7 @@ export namespace ProfileEditPage {
     aboutMe: any;
     timezone: string;
     timeFormat: TimeFormat;
+    language?: Language;
     manager: Person | null;
 
     // Form handlers
@@ -43,6 +48,7 @@ export namespace ProfileEditPage {
     onAboutMeChange: (value: any) => void;
     onTimezoneChange: (value: string) => void;
     onTimeFormatChange: (value: TimeFormat) => void;
+    onLanguageChange?: (value: Language) => void;
     onManagerChange: (person: Person | null) => void;
     onSubmit: () => Promise<void>;
     onCancel?: () => void;
@@ -65,6 +71,7 @@ export namespace ProfileEditPage {
     // Options
     timezones: Timezone[];
     isCurrentUser: boolean;
+    showLanguageSelector?: boolean;
 
     // Navigation paths
     fromLocation: string | null;
@@ -78,19 +85,19 @@ export namespace ProfileEditPage {
 }
 
 export function ProfileEditPage(props: ProfileEditPage.Props) {
-  const managerLabel = props.isCurrentUser ? "Who is your manager?" : "Who is their manager?";
+  const { t } = useTranslation();
+  const managerLabel = props.isCurrentUser ? t("Who is your manager?") : t("Who is their manager?");
 
-  // Build navigation based on fromLocation
   const navigation = React.useMemo(() => {
     if (props.fromLocation === "admin-manage-people") {
       return [
-        { label: "Company Administration", to: props.companyAdminPath },
-        { label: "Manage Team Members", to: props.managePeoplePath },
+        { label: t("Company Administration"), to: props.companyAdminPath },
+        { label: t("Manage Team Members"), to: props.managePeoplePath },
       ];
     } else {
-      return [{ label: "Home", to: props.homePath }];
+      return [{ label: t("Home"), to: props.homePath }];
     }
-  }, [props.fromLocation, props.companyAdminPath, props.managePeoplePath, props.homePath]);
+  }, [props.fromLocation, props.companyAdminPath, props.managePeoplePath, props.homePath, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +105,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
   };
 
   return (
-    <Page title="Edit Profile" size="small" navigation={navigation} testId="profile-edit-page">
+    <Page title={translationText(t("Edit Profile"))} size="small" navigation={navigation} testId="profile-edit-page">
       <div className="p-8">
         <form onSubmit={handleSubmit}>
           <AvatarSection {...props} />
@@ -106,7 +113,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
           {/* Form Fields */}
           <div className="space-y-4">
             <Textfield
-              label="Name"
+              label={translationText(t("Name"))}
               value={props.fullName}
               onChange={(e) => props.onFullNameChange(e.target.value)}
               testId="name"
@@ -114,7 +121,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
             />
 
             <Textfield
-              label="Title in Company"
+              label={translationText(t("Title in Company"))}
               value={props.title}
               onChange={(e) => props.onTitleChange(e.target.value)}
               testId="title"
@@ -122,7 +129,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
 
             {props.isCurrentUser && (
               <div data-test-id="about-me">
-                <label className="font-bold text-sm mb-1 block">About me</label>
+                <label className="font-bold text-sm mb-1 block">{t("About me")}</label>
                 <AboutMeEditor
                   value={props.aboutMe}
                   onChange={props.onAboutMeChange}
@@ -133,7 +140,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
             )}
 
             <div>
-              <label className="font-bold text-sm mb-1 block">Timezone</label>
+              <label className="font-bold text-sm mb-1 block">{t("Timezone")}</label>
               <select
                 value={props.timezone}
                 onChange={(e) => props.onTimezoneChange(e.target.value)}
@@ -150,18 +157,22 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
 
             {props.isCurrentUser && (
               <div>
-                <label className="font-bold text-sm mb-1 block">Time format</label>
+                <label className="font-bold text-sm mb-1 block">{t("Time format")}</label>
                 <select
                   value={props.timeFormat}
                   onChange={(e) => props.onTimeFormatChange(e.target.value as ProfileEditPage.TimeFormat)}
                   className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
                   data-test-id="time-format"
                 >
-                  <option value="automatic">Automatic</option>
-                  <option value="hour_12">12-hour clock</option>
-                  <option value="hour_24">24-hour clock</option>
+                  <option value="automatic">{t("Automatic")}</option>
+                  <option value="hour_12">{t("12-hour clock")}</option>
+                  <option value="hour_24">{t("24-hour clock")}</option>
                 </select>
               </div>
+            )}
+
+            {props.isCurrentUser && props.showLanguageSelector && (
+              <LanguageField language={props.language ?? "en"} onLanguageChange={props.onLanguageChange} />
             )}
 
             {/* Manager Section */}
@@ -173,7 +184,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
                 searchData={props.managerSearch}
                 testId="manager"
                 variant="form-field"
-                emptyStateMessage="Select manager"
+                emptyStateMessage={translationText(t("Select manager"))}
               />
             </div>
           </div>
@@ -181,18 +192,52 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
           {/* Submit Button */}
           <div className="mt-6 flex gap-2">
             <PrimaryButton type="submit" loading={props.isSubmitting} testId="submit">
-              Save Changes
+              {t("Save Changes")}
             </PrimaryButton>
 
             {props.onCancel && (
               <SecondaryButton type="button" onClick={props.onCancel} disabled={props.isSubmitting}>
-                Cancel
+                {t("Cancel")}
               </SecondaryButton>
             )}
           </div>
         </form>
       </div>
     </Page>
+  );
+}
+
+const LANGUAGE_OPTIONS: (Dropdown.Item & { id: ProfileEditPage.Language })[] = [
+  { id: "en", name: "English", testId: "language-option-en" },
+  { id: "pt-BR", name: "Português (Brasil)", testId: "language-option-pt-BR" },
+];
+
+function LanguageField({
+  language,
+  onLanguageChange,
+}: {
+  language: ProfileEditPage.Language;
+  onLanguageChange?: (value: ProfileEditPage.Language) => void;
+}) {
+  const { t } = useTranslation();
+  const languageFieldId = "profile-language";
+  const languageLabelId = "profile-language-label";
+  const languageLabel = translationText(t("Language"));
+
+  return (
+    <div>
+      <label id={languageLabelId} htmlFor={languageFieldId} className="font-bold text-sm mb-1 block">
+        {languageLabel}
+      </label>
+      <Dropdown
+        items={LANGUAGE_OPTIONS}
+        value={language}
+        onSelect={(item) => onLanguageChange?.(item.id)}
+        testId="language"
+        id={languageFieldId}
+        ariaLabelledBy={languageLabelId}
+      />
+    </div>
   );
 }
 
@@ -207,9 +252,10 @@ function AboutMeEditor({
   handlers: RichEditorHandlers;
   localDraftKey?: string;
 }) {
+  const { t } = useTranslation();
   const editor = useEditor({
     handlers,
-    placeholder: "Share a short bio, what you work on, or anything you'd like others to know.",
+    placeholder: translationText(t("Share a short bio, what you work on, or anything you'd like others to know.")),
     onUpdate: ({ json }) => onChange(json),
     content: value,
     localDraft: { key: localDraftKey },
@@ -231,6 +277,7 @@ function AboutMeEditor({
 }
 
 function AvatarSection(props: ProfileEditPage.Props) {
+  const { t } = useTranslation();
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const handleFileSelect = React.useCallback(() => {
@@ -278,13 +325,13 @@ function AvatarSection(props: ProfileEditPage.Props) {
               <div className="absolute bottom-2 -right-7 opacity-85 hover:opacity-100 transition-all duration-200 focus:outline-none">
                 <div className="flex items-center gap-0.5 text-xs text-content-dimmed cursor-pointer">
                   <IconPencil size={16} />
-                  Edit
+                  {t("Edit")}
                 </div>
               </div>
             }
           >
             <MenuActionItem onClick={handleChangePhotoClick} testId="profile-avatar-menu-change">
-              Change photo
+              {t("Change photo")}
             </MenuActionItem>
             <MenuActionItem
               onClick={handleRemovePhotoClick}
@@ -292,7 +339,7 @@ function AvatarSection(props: ProfileEditPage.Props) {
               hidden={!props.person.avatarUrl}
               testId="profile-avatar-menu-remove"
             >
-              Remove photo
+              {t("Remove photo")}
             </MenuActionItem>
           </Menu>
         )}
@@ -302,7 +349,9 @@ function AvatarSection(props: ProfileEditPage.Props) {
         <div className="mt-4 space-y-2">
           {props.avatarUploading && (
             <p className="text-sm text-content-dimmed">
-              {props.avatarUploadProgress !== null ? `Uploading ${props.avatarUploadProgress}%` : "Saving..."}
+              {props.avatarUploadProgress !== null
+                ? t("Uploading {{progress}}%", { progress: props.avatarUploadProgress })
+                : t("Saving...")}
             </p>
           )}
 

@@ -1,6 +1,7 @@
 import { loader, useLoadedData } from "./loader";
 import * as Accounts from "@/models/accounts";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
@@ -12,6 +13,7 @@ export default { name: "AccountApiTokensPage", loader, Page } as PageModule;
 type PendingAction = "toggling" | "deleting" | "renaming";
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { apiTokens } = useLoadedData();
@@ -51,13 +53,16 @@ function Page() {
     try {
       const result = await createToken({ readOnly: newTokenReadOnly });
       setNewlyCreatedToken(result.token);
-      showSuccessToast("API Token Created", "Copy the token now. For security reasons, it will only be shown once.");
+      showSuccessToast(
+        t("API Token Created"),
+        t("Copy the token now. For security reasons, it will only be shown once."),
+      );
     } catch {
-      showErrorToast("Failed To Create Token", "Please try again.");
+      showErrorToast(t("Failed To Create Token"), t("Please try again."));
     } finally {
       setCreatingToken(false);
     }
-  }, [creatingToken, newTokenReadOnly, createToken]);
+  }, [creatingToken, newTokenReadOnly, createToken, t]);
 
   const handleToggleReadOnly = React.useCallback(
     async (tokenId: string, readOnly: boolean) => {
@@ -71,17 +76,17 @@ function Page() {
 
       try {
         await setReadOnly({ id: tokenId, readOnly });
-        showSuccessToast("Token Updated", readOnly ? "Token is now read-only." : "Token now has full access.");
+        showSuccessToast(t("Token Updated"), readOnly ? t("Token is now read-only.") : t("Token now has full access."));
       } catch {
         setTokens((prev) =>
           prev.map((token) => (token.id === tokenId ? { ...token, readOnly: previousToken.readOnly } : token)),
         );
-        showErrorToast("Failed To Update Token", "Please try again.");
+        showErrorToast(t("Failed To Update Token"), t("Please try again."));
       } finally {
         setPendingTokenAction(tokenId, null);
       }
     },
-    [pendingTokenActions, setPendingTokenAction, tokens, setReadOnly],
+    [pendingTokenActions, setPendingTokenAction, tokens, setReadOnly, t],
   );
 
   const handleDeleteToken = React.useCallback(
@@ -98,19 +103,19 @@ function Page() {
 
       try {
         await deleteToken({ id: tokenId });
-        showSuccessToast("Token Deleted", "The API token was removed.");
+        showSuccessToast(t("Token Deleted"), t("The API token was removed."));
       } catch {
         setTokens((prev) => {
           const next = [...prev];
           next.splice(previousIndex, 0, deletedToken);
           return next;
         });
-        showErrorToast("Failed To Delete Token", "Please try again.");
+        showErrorToast(t("Failed To Delete Token"), t("Please try again."));
       } finally {
         setPendingTokenAction(tokenId, null);
       }
     },
-    [pendingTokenActions, setPendingTokenAction, tokens, deleteToken],
+    [pendingTokenActions, setPendingTokenAction, tokens, deleteToken, t],
   );
 
   const handleUpdateName = React.useCallback(
@@ -128,19 +133,19 @@ function Page() {
 
       try {
         await updateName({ id: tokenId, name });
-        showSuccessToast("Token Updated", "Token name updated.");
+        showSuccessToast(t("Token Updated"), t("Token name updated."));
         return true;
       } catch {
         setTokens((prev) =>
           prev.map((token) => (token.id === tokenId ? { ...token, name: previousToken.name } : token)),
         );
-        showErrorToast("Failed To Update Token", "Please try again.");
+        showErrorToast(t("Failed To Update Token"), t("Please try again."));
         return false;
       } finally {
         setPendingTokenAction(tokenId, null);
       }
     },
-    [pendingTokenActions, setPendingTokenAction, tokens, updateName],
+    [pendingTokenActions, setPendingTokenAction, tokens, updateName, t],
   );
 
   return (

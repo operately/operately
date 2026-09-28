@@ -55,6 +55,7 @@ const GoalTimeframeEditing: ActivityHandler = {
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
             <RichContent
+              taskList={{ canEdit: false }}
               content={activity.commentThread.message}
               mentionedPersonLookup={mentionedPersonLookup}
               parseContent
@@ -94,6 +95,7 @@ const GoalTimeframeEditing: ActivityHandler = {
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="my-2">
             <RichContent
+              taskList={{ canEdit: false }}
               content={activity.commentThread.message}
               mentionedPersonLookup={mentionedPersonLookup}
               parseContent

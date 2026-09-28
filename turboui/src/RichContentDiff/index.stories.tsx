@@ -1,3 +1,4 @@
+import tables from "../../../app/test/fixtures/rich_text/tables.json";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 
@@ -72,4 +73,15 @@ export const LargeDocument: Story = (() => {
       },
     },
   };
+})();
+
+export const TableChanges: Story = story(tables[0]?.document, tables[1]?.document);
+
+export const EmptyTableRowAdded: Story = (() => {
+  const cell = { type: "tableCell", content: [{ type: "paragraph" }] };
+  const row = { type: "tableRow", content: [cell, cell] };
+  return story(
+    { type: "doc", content: [{ type: "table", content: [row] }] },
+    { type: "doc", content: [{ type: "table", content: [row, row] }] },
+  );
 })();

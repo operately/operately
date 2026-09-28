@@ -30,7 +30,12 @@ namespace CheckInCard {
   }
 }
 
-export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTimePreferences }: CheckInCard.Props) {
+export function CheckInCard({
+  checkIn,
+  mentionedPersonLookup,
+  type,
+  formattedTimePreferences,
+}: CheckInCard.Props) {
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",

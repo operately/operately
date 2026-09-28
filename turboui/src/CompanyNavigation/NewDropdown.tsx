@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconPlus, IconTable, IconTargetArrow, IconTent, IconUser } from "../icons";
 import { CompanyNavigationLinks } from "./types";
@@ -17,12 +18,14 @@ export function NewDropdown({
   canAddSpace: boolean;
   canInvitePeople: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
-    <DropdownMenu testId="new-dropdown" name="New" icon={IconPlus} align="end" triggerClassName="hidden lg:flex">
+    <DropdownMenu testId="new-dropdown" name={t("New")} icon={IconPlus} align="end" triggerClassName="hidden lg:flex">
       <DropdownLinkItem
         path={links.newGoal}
         icon={IconTargetArrow}
-        title="New goal"
+        title={t("New goal")}
         testId="new-dropdown-new-goal"
         hidden={!canAddGoal}
       />
@@ -30,7 +33,7 @@ export function NewDropdown({
       <DropdownLinkItem
         path={links.newProject}
         icon={IconTable}
-        title="New project"
+        title={t("New project")}
         testId="new-dropdown-new-project"
         hidden={!canAddProject}
       />
@@ -40,7 +43,7 @@ export function NewDropdown({
       <DropdownLinkItem
         path={links.newSpace}
         icon={IconTent}
-        title="New space"
+        title={t("New space")}
         testId="new-dropdown-new-space"
         hidden={!canAddSpace}
       />
@@ -50,7 +53,7 @@ export function NewDropdown({
       <DropdownLinkItem
         path={links.invitePeople}
         icon={IconUser}
-        title="Invite people"
+        title={t("Invite people")}
         testId="new-dropdown-new-team-member"
         hidden={!canInvitePeople}
       />

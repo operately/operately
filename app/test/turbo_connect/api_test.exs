@@ -115,6 +115,22 @@ defmodule TurboConnect.ApiTest do
     mutation(:test_defaults, ExampleDefaultedMutation)
   end
 
+  defmodule PreparedApi do
+    use TurboConnect.Api
+    use_types(ExampleTypes)
+    query :get_user, ExampleQuery
+
+    def prepare_inputs(_conn, inputs), do: Map.put(inputs, :id, 42)
+    def prepare_response(conn, response), do: Map.put(response, :request_path, conn.request_path)
+  end
+
+  test "preparation callbacks wrap successful handler execution" do
+    conn = PreparedApi.call(conn(:get, "/get_user"), PreparedApi.init([]))
+    assert conn.status == 200
+    assert Jason.decode!(conn.resp_body)["echod_id"] == 42
+    assert Jason.decode!(conn.resp_body)["request_path"] == "/get_user"
+  end
+
   test "__types__ returns the types defined in the module" do
     assert ExampleApi.__types__() == %{
              primitives: %{

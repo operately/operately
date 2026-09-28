@@ -119,4 +119,16 @@ defmodule Operately.I18n.FrontendExtractorTest do
 
     assert [%Message{msgid: "Save"}] = FrontendExtractor.extract_contents(source, "sample.ts")
   end
+
+  test "extracts translations passed to helpers through imported TFunction types" do
+    source = ~S"""
+    import type { TFunction as Translate } from "i18next";
+    import { type TFunction } from "i18next";
+    function label(t: TFunction) { return t("Projects"); }
+    const group = (translate: Translate) => translate("SPACES");
+    function unrelated(callback: (value: string) => string) { return callback("Not a translation"); }
+    """
+
+    assert Enum.map(FrontendExtractor.extract_contents(source, "sample.ts"), & &1.msgid) == ["Projects", "SPACES"]
+  end
 end

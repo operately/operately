@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { match } from "ts-pattern";
 import { Avatar } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconUpload } from "../icons";
+import { translationText } from "../i18n";
 import { TextField } from "../TextField";
 import { WelcomeStep } from "./WelcomeStep";
 import { useWizardState, WizardState } from "./WizadState";
@@ -74,6 +76,7 @@ export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWiza
 }
 
 function RoleStep({ state }: { state: State }) {
+  const { t } = useTranslation();
   const [validRole, setValidRole] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -89,9 +92,9 @@ function RoleStep({ state }: { state: State }) {
     <WizardStep
       footer={
         <>
-          <SecondaryButton onClick={state.back}>Back</SecondaryButton>
+          <SecondaryButton onClick={state.back}>{t("Back")}</SecondaryButton>
           <PrimaryButton onClick={state.next} disabled={!validRole}>
-            Next
+            {t("Next")}
           </PrimaryButton>
         </>
       }
@@ -100,14 +103,14 @@ function RoleStep({ state }: { state: State }) {
         <WizardHeading
           stepNumber={1}
           totalSteps={2}
-          title="What's your role?"
-          subtitle="Let teammates know what you focus on. You can change this later."
+          title={translationText(t("What's your role?"))}
+          subtitle={translationText(t("Let teammates know what you focus on. You can change this later."))}
           id="company-member-onboarding-heading"
         />
         <TextField
           variant="form-field"
-          label="Your role"
-          placeholder="e.g Product Manager, Designer, CEO"
+          label={translationText(t("Your role"))}
+          placeholder={translationText(t("e.g Product Manager, Designer, CEO"))}
           text={state.role}
           onChange={state.setRole}
           trimBeforeSave={false}
@@ -119,6 +122,7 @@ function RoleStep({ state }: { state: State }) {
 }
 
 function AvatarStep({ state }: { state: State }) {
+  const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -127,13 +131,13 @@ function AvatarStep({ state }: { state: State }) {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+      setError(t("Please choose an image file."));
       return;
     }
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      setError("Please choose an image smaller than 5MB.");
+      setError(t("Please choose an image smaller than 5MB."));
       return;
     }
 
@@ -163,19 +167,19 @@ function AvatarStep({ state }: { state: State }) {
     if (!state.avatar) return null;
     return {
       id: state.avatar.id,
-      fullName: state.role || "You",
+      fullName: state.role || t("You"),
       avatarUrl: state.avatar.url,
     };
-  }, [state.avatar, state.role]);
+  }, [state.avatar, state.role, t]);
 
   return (
-    <WizardStep footer={<PrimaryButton onClick={state.next}>Finish</PrimaryButton>}>
+    <WizardStep footer={<PrimaryButton onClick={state.next}>{t("Finish")}</PrimaryButton>}>
       <div className="space-y-6">
         <WizardHeading
           stepNumber={2}
           totalSteps={2}
-          title="Add your profile picture"
-          subtitle="Help your teammates put a face to your name."
+          title={translationText(t("Add your profile picture"))}
+          subtitle={translationText(t("Help your teammates put a face to your name."))}
           id="company-member-onboarding-heading"
         />
 
@@ -186,7 +190,7 @@ function AvatarStep({ state }: { state: State }) {
             ) : (
               <div className="flex flex-col items-center justify-center text-content-dimmed px-6 py-4">
                 <IconUpload size={36} aria-hidden="true" />
-                <span className="mt-2 text-sm">Upload a square image for best results.</span>
+                <span className="mt-2 text-sm">{t("Upload a square image for best results.")}</span>
               </div>
             )}
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -194,15 +198,15 @@ function AvatarStep({ state }: { state: State }) {
 
           <div className="flex flex-col items-center sm:items-start gap-3">
             <PrimaryButton size="sm" onClick={() => fileInputRef.current?.click()}>
-              {state.avatar ? "Replace photo" : "Upload photo"}
+              {state.avatar ? t("Replace photo") : t("Upload photo")}
             </PrimaryButton>
             {state.avatar && (
               <SecondaryButton size="sm" onClick={handleRemove}>
-                Remove photo
+                {t("Remove photo")}
               </SecondaryButton>
             )}
             <p className="text-xs text-content-dimmed max-w-sm text-center sm:text-left">
-              PNG, JPG, or GIF up to 5MB. You can adjust or replace it later from your profile settings.
+              {t("PNG, JPG, or GIF up to 5MB. You can adjust or replace it later from your profile settings.")}
             </p>
             {error && <p className="text-xs text-red-500">{error}</p>}
           </div>

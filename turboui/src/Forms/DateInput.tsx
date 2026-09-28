@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { DateField } from "../DateField";
+import { translationText } from "../i18n";
 import { createTestId } from "../TestableElement";
 import { toDateWithoutTime } from "../utils/time";
 import { InputField } from "./FieldGroup";
@@ -9,6 +11,7 @@ import type { DateInputProps } from "./types";
 import { useValidation, validatePresence } from "./validation";
 
 export function DateInput({ field, label, testId, hidden, required, requiredMessage }: DateInputProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useFieldValue<string>(field);
   const error = useFieldError(field);
 
@@ -22,7 +25,7 @@ export function DateInput({ field, label, testId, hidden, required, requiredMess
         onDateSelect={(date) => setValue(date ? toDateWithoutTime(date.date) : "")}
         variant="form-input"
         calendarOnly
-        placeholder="Select a date"
+        placeholder={translationText(t("Select a date"))}
         testId={testId ?? createTestId(field)}
         error={!!error}
         ariaLabel={label}

@@ -1,24 +1,17 @@
+import { useQuerySearch } from "./useQuerySearch";
 import * as React from "react";
 import { useSearchParams } from "react-router";
 
-import Api, {
-  CompaniesSearchInput,
-  CompaniesSearchResult,
-  SearchResult,
-  SearchResultType,
-  SearchSort,
-  SearchTimeRange,
-} from "@/api";
+import Api, { CompaniesSearchInput, SearchResult, SearchResultType, SearchSort, SearchTimeRange } from "@/api";
 import {
   IconCalendar,
   IconLayoutGrid,
   IconWorld,
   SearchPage,
-  SEARCH_TIME_FILTER_OPTIONS,
-  SEARCH_TYPE_FILTER_OPTIONS,
+  searchTimeFilterOptions,
+  searchTypeFilterOptions,
 } from "turboui";
-
-type Search = (input: CompaniesSearchInput) => Promise<CompaniesSearchResult>;
+import { useTranslation } from "react-i18next";
 
 interface SearchSpaceOption {
   id: string;
@@ -65,10 +58,9 @@ const EMPTY_SELECTIONS: FilterSelections = {
   time: [],
 };
 
-export function useCompanySearch(
-  spaces: SearchSpaceOption[],
-  search: Search = Api.companies.search,
-): CompanySearchState {
+export function useCompanySearch(spaces: SearchSpaceOption[]): CompanySearchState {
+  const { t } = useTranslation();
+  const search = useQuerySearch(Api.companies.searchQueryOptions, { query: "" });
   const [searchParams, setSearchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
   const [query, setQuery] = React.useState(urlQuery);
@@ -124,11 +116,14 @@ export function useCompanySearch(
 
     if (!wasEdited && !refineChanged) {
       runSearch();
-      return;
+      return () => requests.current.invalidate();
     }
 
     const timer = window.setTimeout(runSearch, SEARCH_DELAY);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      requests.current.invalidate();
+    };
   }, [query, refineKey, search, selections.spaces, selections.time, selections.types, sort]);
 
   // Sync browser-driven URL changes without replaying local edits.
@@ -181,7 +176,7 @@ export function useCompanySearch(
       filters: [
         {
           id: "spaces",
-          label: "All spaces",
+          label: t("All spaces"),
           icon: IconWorld,
           selectionMode: "multiple",
           selectedOptionIds: selections.spaces,
@@ -189,24 +184,24 @@ export function useCompanySearch(
         },
         {
           id: "types",
-          label: "All types",
+          label: t("All types"),
           icon: IconLayoutGrid,
           selectionMode: "multiple",
           selectedOptionIds: selections.types,
-          options: SEARCH_TYPE_FILTER_OPTIONS,
+          options: searchTypeFilterOptions(t),
         },
         {
           id: "time",
-          label: "All time",
+          label: t("All time"),
           icon: IconCalendar,
           selectionMode: "single",
           selectedOptionIds: selections.time,
-          options: SEARCH_TIME_FILTER_OPTIONS,
+          options: searchTimeFilterOptions(t),
         },
       ],
       onFilterChange,
     }),
-    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces],
+    [onFilterChange, selections.spaces, selections.time, selections.types, sort, spaces, t],
   );
 
   return { query, status, results, onQueryChange, refine };

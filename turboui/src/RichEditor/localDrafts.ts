@@ -1,3 +1,5 @@
+import { restoreRichTextSource } from "../RichContent/restoreSource";
+
 const STORAGE_PREFIX = "operately:rich-text-draft:";
 const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -40,7 +42,7 @@ export function readLocalDraft(options: LocalDraftOptions | undefined, baseConte
     return null;
   }
 
-  return payload.content;
+  return restoreRichTextSource(payload.content);
 }
 
 export function writeLocalDraft(options: LocalDraftOptions | undefined, content: any, baseContent: any): void {
@@ -59,7 +61,7 @@ export function writeLocalDraft(options: LocalDraftOptions | undefined, content:
     storage,
     key,
     JSON.stringify({
-      content,
+      content: restoreRichTextSource(content),
       baseContent: normalizeEmptyContent(baseContent),
       updatedAt: Date.now(),
     } satisfies DraftPayload),
@@ -146,7 +148,7 @@ function contentEquals(left: any, right: any): boolean {
 }
 
 function normalizeEmptyContent(content: any): any {
-  return isRichTextEmpty(content) ? null : content;
+  return isRichTextEmpty(content) ? null : restoreRichTextSource(content);
 }
 
 function safeRead(storage: Storage, key: string): string | null {

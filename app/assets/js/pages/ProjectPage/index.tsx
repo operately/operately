@@ -1,4 +1,4 @@
-import Api from "@/api";
+import { useParentGoalSearch } from "@/models/goals/useParentGoalSearch";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router";
@@ -23,9 +23,10 @@ import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
 import * as Spaces from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import i18n, { translationText } from "@/i18n";
 import {
   useAddFileWidgetProps,
   useNewFileModalsContextValue,
@@ -85,7 +86,7 @@ function LoadedPage() {
     value: (data) => data.project.name!,
     update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }).then(() => true),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
-    validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Project name cannot be empty")) : null)],
   });
 
   const [description, setDescription] = usePageField({
@@ -169,8 +170,16 @@ function LoadedPage() {
     onRefresh: refresh,
   });
 
-  const parentGoalSearch = useParentGoalSearch(project);
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+  const parentGoalSearch = useParentGoalSearch({ type: "project", id: project.id });
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "project",
+      resourceId: project.id,
+      field: "description",
+      canEdit: project.permissions?.canEdit ?? false,
+    },
+    scope: { type: "project", id: project.id },
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
@@ -468,7 +477,7 @@ function LoadedPage() {
     tasksView: project.tasksView === "board" ? "board" : "list",
     onTasksViewChange: handleTasksViewChange,
 
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     localDraftKeyBase: `project:${project.id}`,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
@@ -667,7 +676,7 @@ function useSpaceProps({
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
-  const spaceSearch = useSpaceSearch();
+  const spaceSearch = Spaces.useSpaceSearch();
 
   const ignoredIds = React.useMemo(
     () => [champion?.id, reviewer?.id].filter((id): id is string => Boolean(id)),
@@ -717,31 +726,6 @@ function useSpaceProps({
     reviewer,
     updateChampion,
     updateReviewer,
-  };
-}
-
-function useSpaceSearch(): (params: { query: string }) => Promise<ProjectPage.Space[]> {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<ProjectPage.Space[]> => {
-    const data = await Api.spaces.search({ query: query });
-
-    return data.spaces.map((space) => ({
-      id: space.id!,
-      name: space.name!,
-      link: paths.spacePath(space.id!),
-    }));
-  };
-}
-
-function useParentGoalSearch(project: Projects.Project): ProjectPage.Props["parentGoalSearch"] {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<ProjectPage.ParentGoal[]> => {
-    const data = await Api.projects.searchParentGoal({ query: query.trim(), projectId: project.id });
-    const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
-
-    return goals.map((g) => g!);
   };
 }
 

@@ -3,12 +3,14 @@ import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { validatePassword } from "@/features/auth/validatePassword";
 
+import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -32,6 +34,7 @@ type PageState = "form" | "code-verification";
 //
 
 function Page() {
+  const { t } = useTranslation();
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
   const redirectToParam = new URLSearchParams(window.location.search).get("redirect_to");
   const [pageState, setPageState] = React.useState<PageState>("form");
@@ -48,7 +51,7 @@ function Page() {
     },
     validate: (addError) => {
       if (form.values.password !== form.values.confirmPassword) {
-        addError("confirmPassword", "Passwords do not match");
+        addError("confirmPassword", t("Passwords do not match"));
       }
     },
     submit: async () => {
@@ -89,7 +92,7 @@ function Page() {
       if (message) {
         setSubmitError(message);
       } else {
-        setSubmitError("There was an unexpected error. Please try again later.");
+        setSubmitError(t("There was an unexpected error. Please try again later."));
       }
     },
   });
@@ -101,16 +104,17 @@ function Page() {
 }
 
 function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; submitError: string | null }) {
+  const { t } = useTranslation();
   const validation = validateForm(form);
 
   return (
-    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
+    <Pages.Page title={translationText(t("Sign Up"))} testId="sign-up-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
           <div className="py-8 sm:px-4 sm:py-4">
             <OperatelyLogo width="40px" height="40px" />
-            <h1 className="text-2xl font-bold mt-4">Sign up for Operately</h1>
-            <p className="text-content-dimmed mb-8">Use your work email — keep work and life separate.</p>
+            <h1 className="text-2xl font-bold mt-4">{t("Sign up for Operately")}</h1>
+            <p className="text-content-dimmed mb-8">{t("Use your work email — keep work and life separate.")}</p>
 
             <Forms.Form form={form}>
               {submitError && (
@@ -122,25 +126,25 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
               <Forms.FieldGroup>
                 <Forms.TextInput
                   field={"email"}
-                  label="Work Email"
-                  placeholder="name@company.com"
+                  label={translationText(t("Work Email"))}
+                  placeholder={translationText(t("name@company.com"))}
                   required
                   okSign={validation.email}
                 />
 
                 <Forms.TextInput
                   field={"name"}
-                  label="Full Name"
-                  placeholder="Enter your full name"
+                  label={translationText(t("Full Name"))}
+                  placeholder={translationText(t("Enter your full name"))}
                   required
                   okSign={validation.name}
                 />
 
                 <Forms.PasswordInput
                   field={"password"}
-                  label="Password"
+                  label={t("Password")}
                   minLength={12}
-                  placeholder="At least 12 characters"
+                  placeholder={translationText(t("At least 12 characters"))}
                   required
                   noAutofill
                   okSign={validation.password}
@@ -150,9 +154,9 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
 
                 <Forms.PasswordInput
                   field={"confirmPassword"}
-                  label="Confirm Password"
+                  label={t("Confirm Password")}
                   minLength={12}
-                  placeholder="At least 12 characters"
+                  placeholder={translationText(t("At least 12 characters"))}
                   required
                   noAutofill
                   okSign={validation.confirmPassword}
@@ -161,7 +165,7 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
 
               <div className="my-6">
                 <Forms.Submit
-                  saveText={!validation.isValid ? "Please fill in all fields" : "Continue ->"}
+                  saveText={!validation.isValid ? translationText(t("Please fill in all fields")) : translationText(t("Continue ->"))}
                   className="w-full py-2 px-4"
                 />
               </div>
@@ -179,7 +183,10 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
 function WhatHappensNext() {
   return (
     <div className="my-8 text-center px-20">
-      <span className="font-bold">What happens next?</span> Operately will send you a code to verify your email address.
+      <Trans
+        i18nKey="<bold>What happens next?</bold> Operately will send you a code to verify your email address."
+        components={{ bold: <span className="font-bold" /> }}
+      />
     </div>
   );
 }
@@ -191,14 +198,16 @@ function CodeVerification({
   form: ReturnType<typeof Forms.useForm>;
   submitError: string | null;
 }) {
+  const { t } = useTranslation();
+
   return (
-    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
+    <Pages.Page title={translationText(t("Sign Up"))} testId="sign-up-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
           <Forms.Form form={form}>
             <div className="py-8 sm:px-4 sm:py-4 flex flex-col items-center text-center">
               <OperatelyLogo width="32px" height="32px" />
-              <h1 className="text-3xl font-bold mt-4 mb-4">Check your email for a code</h1>
+              <h1 className="text-3xl font-bold mt-4 mb-4">{t("Check your email for a code")}</h1>
               <CodeMessage />
 
               {submitError && (
@@ -209,10 +218,10 @@ function CodeVerification({
 
               <div className="flex flex-col items-center">
                 <CodeInput field={"code"} />
-                <Forms.Submit saveText="Continue ->" className="w-60" />
+                <Forms.Submit saveText={translationText(t("Continue ->"))} className="w-60" />
               </div>
 
-              <div className="mt-8 text-center text-sm">Can’t find your code? Check your spam folder.</div>
+              <div className="mt-8 text-center text-sm">{t("Can’t find your code? Check your spam folder.")}</div>
             </div>
           </Forms.Form>
         </Paper.Body>
@@ -226,8 +235,11 @@ function CodeMessage() {
 
   return (
     <p className="text-content-dimmed mb-8">
-      We've sent you a 6-character code to <span className="font-bold">{email}</span>. The code expires in 5 minutes, so
-      please enter it soon.
+      <Trans
+        i18nKey="We've sent you a 6-character code to <email>{{email}}</email>. The code expires in 5 minutes, so please enter it soon."
+        values={{ email }}
+        components={{ email: <span className="font-bold" /> }}
+      />
     </p>
   );
 }

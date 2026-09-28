@@ -18,7 +18,9 @@ defmodule OperatelyEmail.Cron.Assignments do
 
     Enum.each(people, fn person ->
       catch_and_log_errors(fn ->
-        OperatelyEmail.Emails.AssignmentsEmail.send(person, mode: mode)
+        Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+          OperatelyEmail.Emails.AssignmentsEmail.send(person, mode: mode)
+        end)
       end)
     end)
 

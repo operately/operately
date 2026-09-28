@@ -1,5 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
+import { translationText } from "../i18n";
 import { IconAlertTriangle, IconTrash } from "../icons";
 
 export type ConfirmDialogSize = "xx-small" | "x-small" | "small" | "medium" | "large";
@@ -33,14 +35,18 @@ export function ConfirmDialog({
   onCancel,
   title,
   message,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText,
+  cancelText,
   variant = "default",
   size = "small",
   icon,
   testId,
   confirming = false,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
+  const resolvedConfirmText = confirmText ?? translationText(t("Confirm"));
+  const resolvedCancelText = cancelText ?? translationText(t("Cancel"));
+
   if (!isOpen) return null;
 
   const Icon = icon || (variant === "danger" ? IconTrash : IconAlertTriangle);
@@ -63,10 +69,10 @@ export function ConfirmDialog({
 
           <div className="flex gap-3 justify-end">
             <SecondaryButton onClick={onCancel} disabled={confirming}>
-              {cancelText}
+              {resolvedCancelText}
             </SecondaryButton>
             <ConfirmButton onClick={onConfirm} loading={confirming} disabled={confirming}>
-              {confirmText}
+              {resolvedConfirmText}
             </ConfirmButton>
           </div>
         </div>

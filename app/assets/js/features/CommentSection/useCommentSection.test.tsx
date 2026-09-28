@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Api, { type Comment, type Person, type CommentsUpdateInput } from "@/api";
 import { useCommentSection } from "./useCommentSection";
 import { renderHook, waitFor } from "@/__tests__/renderHook";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useReloadCommentsSignal } from "@/signals";
 import { type CommentQueryInvalidator } from "@/models/comments/commentLifecycle";
 
@@ -18,7 +18,7 @@ jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: () => ({ id: "me",
 jest.mock("@/models/people", () => ({ parsePersonForTurboUi: (_paths, person) => person }));
 jest.mock("@/signals", () => ({ useReloadCommentsSignal: jest.fn(), publish: jest.fn(), LocalSignal: {} }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
-jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn(() => ({})) }));
+jest.mock("@/hooks/useRichTextHandlers", () => ({ useRichTextHandlers: jest.fn(() => ({})) }));
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
 
 const commentTypes = [
@@ -28,6 +28,7 @@ const commentTypes = [
   "project_discussion",
   "project_retrospective",
   "message",
+  "kpi_entry",
 ] as const;
 
 it.each(commentTypes)(
@@ -116,7 +117,10 @@ it.each(commentTypes)(
         "later",
       ]);
 
-      expect(useRichEditorHandlers).toHaveBeenCalledWith({ scope: mentionSearchScope });
+      expect(useRichTextHandlers).toHaveBeenCalledWith({
+        taskList: null,
+        scope: mentionSearchScope,
+      });
       expect(result.props?.editCommentDraftKey?.("earlier")).toBe(`${resourceType}:resource1:edit-comment:earlier`);
 
       await act(async () => {

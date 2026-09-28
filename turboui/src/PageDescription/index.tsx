@@ -1,15 +1,18 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../RichContent";
+import { DimmedActionLink } from "../Link";
+import RichContent, { countCharacters, hasTable, isContentEmpty, shortenContent } from "../RichContent";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { hasTaskList, type TaskListInteraction } from "../RichEditor/taskLists";
 
 const PREVIEW_CHARACTER_LIMIT = 450;
 
 interface Props {
   description: any;
   onDescriptionChange: (newDescription: any) => Promise<boolean>;
-  richTextHandlers: RichEditorHandlers;
+  richTextHandlers: RichTextHandlers;
   label: string;
   canEdit?: boolean;
   placeholder?: string;
@@ -58,7 +61,11 @@ export function PageDescription({
       <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
 
       {mode === "view" && (
-        <ViewMode rawDescription={description} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
+        <ViewMode
+          rawDescription={description}
+          mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+          taskList={richTextHandlers.taskList}
+        />
       )}
       {mode === "edit" && (
         <EditMode
@@ -96,19 +103,33 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
 interface ViewModeProps {
   rawDescription: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
+  taskList: TaskListInteraction;
 }
 
-function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
-  const { description, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
+function ViewMode({ rawDescription, mentionedPersonLookup, taskList }: ViewModeProps) {
+  const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
+  const canCollapse = length > PREVIEW_CHARACTER_LIMIT && !hasTaskList(rawDescription);
 
   return (
     <div className="mt-2">
-      <RichContent content={description} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent
+        content={rawDescription}
+        transformContent={transformContent}
+        mentionedPersonLookup={mentionedPersonLookup}
+        taskList={taskList}
+        className={canCollapse && !isExpanded && hasTable(rawDescription) ? "max-h-96 overflow-hidden" : undefined}
+      />
 
-      {length > PREVIEW_CHARACTER_LIMIT && (
-        <button onClick={toggleExpand} className="text-content-dimmed hover:underline text-sm mt-1 font-medium">
+      {canCollapse && (
+        <DimmedActionLink
+          aria-expanded={isExpanded}
+          onClick={toggleExpand}
+          className="text-sm mt-1 font-medium"
+          underline="hover"
+          disableColorHoverEffect
+        >
           {isExpanded ? "Collapse" : "Expand"}
-        </button>
+        </DimmedActionLink>
       )}
     </div>
   );
@@ -123,7 +144,14 @@ interface EditModeProps {
   localDraftKey?: string;
 }
 
-function EditMode({ description, richTextHandlers, onDescriptionChange, setMode, placeholder, localDraftKey }: EditModeProps) {
+function EditMode({
+  description,
+  richTextHandlers,
+  onDescriptionChange,
+  setMode,
+  placeholder,
+  localDraftKey,
+}: EditModeProps) {
   const editor = useEditor({
     content: description,
     editable: true,
@@ -198,18 +226,18 @@ function useExpandDescription(rawDescription: any) {
     return rawDescription ? countCharacters(rawDescription, { skipParse: true }) : 0;
   }, [rawDescription]);
 
-  const description = useMemo(() => {
-    if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) {
-      return rawDescription;
-    } else {
-      return shortenContent(rawDescription, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
-    }
-  }, [rawDescription, length, isExpanded]);
+  const transformContent = useCallback(
+    (content: any) => {
+      if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded || hasTaskList(content) || hasTable(content)) return content;
+      return shortenContent(content, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
+    },
+    [length, isExpanded],
+  );
 
   const toggleExpand = useCallback(() => setIsExpanded((prev) => !prev), [setIsExpanded]);
 
   return {
-    description,
+    transformContent,
     length,
     isExpanded,
     toggleExpand,

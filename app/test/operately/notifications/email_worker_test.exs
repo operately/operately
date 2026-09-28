@@ -71,6 +71,33 @@ defmodule Operately.Notifications.EmailWorkerTest do
     assert is_nil(notification.email_sent_at)
   end
 
+  test "scopes Gettext to the recipient and restores the previous locale after failure", ctx do
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+    Gettext.put_locale(OperatelyWeb.Gettext, "en")
+    on_exit(fn -> Gettext.put_locale(OperatelyWeb.Gettext, previous) end)
+
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
+    person = %{person | company: company}
+
+    with_mocks([
+      {Operately.People, [:passthrough], [get_person!: fn _id -> person end]},
+      {Operately.Activities, [:passthrough], [get_activity!: fn _id -> %Operately.Activities.Activity{action: "project_created"} end]},
+      {OperatelyEmail.Emails.ProjectCreatedEmail, [:passthrough],
+       [
+         send: fn _person, _activity ->
+           assert Gettext.get_locale(OperatelyWeb.Gettext) == "pt_BR"
+           {:error, :smtp_failure}
+         end
+       ]}
+    ]) do
+      assert {:error, :smtp_failure} = EmailWorker.perform(%{args: %{"notification_id" => ctx.notification.id}})
+    end
+
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == "en"
+    assert Operately.People.get_person!(person.id).language == "pt-BR"
+  end
+
   test "does not mark notification as sent when recipient has no account", ctx do
     person_without_account = person_fixture(company_id: ctx.company.id, email: unique_account_email())
 

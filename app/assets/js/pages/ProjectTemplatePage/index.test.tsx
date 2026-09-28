@@ -9,7 +9,7 @@ import type { AddFileUploadItem } from "turboui";
 
 jest.mock("react-router", () => ({}));
 jest.mock("./loader", () => ({ useRefresh: jest.fn() }));
-jest.mock("@/hooks/useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
+jest.mock("@/hooks/useRichTextHandlers", () => ({ useRichTextHandlers: jest.fn() }));
 jest.mock("@/models/people", () => ({}));
 jest.mock("@/models/tasks", () => ({}));
 jest.mock("@/models/blobs", () => ({

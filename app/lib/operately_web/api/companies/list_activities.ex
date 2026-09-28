@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
     "resource_hub_document_commented",
     "resource_hub_document_created",
     "resource_hub_document_edited",
+    "resource_hub_document_public_sharing_changed",
     "resource_hub_file_commented",
     "resource_hub_file_edited",
     "resource_hub_link_commented",

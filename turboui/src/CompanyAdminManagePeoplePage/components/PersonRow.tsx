@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "../../Avatar";
 import { BlackLink } from "../../Link";
@@ -99,17 +100,19 @@ function PersonInfo({
 }
 
 function InvitationStatus({ person }: { person: CompanyAdminManagePerson }) {
+  const { t } = useTranslation();
+
   if (person.invitationExpired) {
     return (
       <div className="text-content-error font-semibold flex items-center gap-2">
         <IconAlertTriangle size={20} />
-        Invitation Expired
+        {t("Invitation Expired")}
       </div>
     );
   }
 
   if (person.hasValidInvite && person.expiresIn) {
-    return <div>Expires in {person.expiresIn}</div>;
+    return <div>{t("Expires in {{duration}}", { duration: person.expiresIn })}</div>;
   }
 
   return null;

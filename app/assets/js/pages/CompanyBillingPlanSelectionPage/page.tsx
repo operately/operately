@@ -11,8 +11,10 @@ import {
 } from "turboui/CompanyBilling";
 import { CompanyBillingPlanSelectionPage as TurboCompanyBillingPlanSelectionPage } from "turboui/CompanyBillingPlanSelectionPage";
 import { showErrorToast } from "turboui";
+import { useTranslation } from "react-i18next";
 import { useLoadedData } from "../CompanyBillingPage/loader";
 import { useLocation, useNavigate, useRouteLoaderData } from "react-router";
+import { translationText } from "@/i18n";
 import { usePaths } from "@/routes/paths";
 
 interface CompanyRootData {
@@ -22,6 +24,7 @@ interface CompanyRootData {
 }
 
 export function Page() {
+  const { t } = useTranslation();
   const billingActions = Billing.useBillingActions();
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,10 +41,10 @@ export function Page() {
   }, [loadedBilling]);
 
   const search = React.useMemo(() => parseCompanyBillingSearch(location.search), [location.search]);
-  const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search]);
+  const selection = React.useMemo(() => selectCompanyBillingTarget(billing, search), [billing, search, t]);
   const canUseCheckout = canCreateCompanyBillingCheckout(billing.account.status);
   const canManagePaidSubscription = isCompanyBillingPaidStatus(billing.account.status);
-  const companyName = companyRootData?.company?.name || "Billing";
+  const companyName = companyRootData?.company?.name || translationText(t("Billing"));
 
   const navigateToSelection = React.useCallback(
     (target: TurboCompanyBillingPlanSelectionPage.BillingTarget | null, replace = false) => {
@@ -89,8 +92,8 @@ export function Page() {
 
     if (result.outcome === "target_unavailable") {
       setIsSubmitting(false);
-      setActionError("That plan is no longer available. Choose another plan.");
-      showErrorToast("Checkout unavailable", "That plan is no longer available. Choose another plan.");
+      setActionError(t("That plan is no longer available. Choose another plan."));
+      showErrorToast(t("Checkout unavailable"), t("That plan is no longer available. Choose another plan."));
       return;
     }
 
@@ -103,10 +106,10 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't start checkout right now. Please try again.");
-    showErrorToast("Failed to start checkout", "We couldn't start checkout right now. Please try again.");
+    setActionError(t("We couldn't start checkout right now. Please try again."));
+    showErrorToast(t("Failed to start checkout"), t("We couldn't start checkout right now. Please try again."));
     setIsSubmitting(false);
-  }, [billingActions, selection.target]);
+  }, [billingActions, selection.target, t]);
 
   const submitPlanChange = React.useCallback(async () => {
     setActionError(null);
@@ -121,8 +124,8 @@ export function Page() {
 
     if (result.outcome === "target_unavailable") {
       setIsSubmitting(false);
-      setActionError("That plan is no longer available. Choose another plan.");
-      showErrorToast("Plan unavailable", "That plan is no longer available. Choose another plan.");
+      setActionError(t("That plan is no longer available. Choose another plan."));
+      showErrorToast(t("Plan unavailable"), t("That plan is no longer available. Choose another plan."));
       return;
     }
 
@@ -140,10 +143,10 @@ export function Page() {
       setBilling(result.billing);
     }
 
-    setActionError("We couldn't change the plan right now. Please try again.");
-    showErrorToast("Failed to change plan", "We couldn't change the plan right now. Please try again.");
+    setActionError(t("We couldn't change the plan right now. Please try again."));
+    showErrorToast(t("Failed to change plan"), t("We couldn't change the plan right now. Please try again."));
     setIsSubmitting(false);
-  }, [billingActions, navigate, paths, selection.target]);
+  }, [billingActions, navigate, paths, selection.target, t]);
 
   const handleSubmit = React.useCallback(() => {
     if (canManagePaidSubscription) {
@@ -158,10 +161,10 @@ export function Page() {
 
   return (
     <TurboCompanyBillingPlanSelectionPage
-      title={[companyName, "Choose a plan"]}
+      title={[companyName, translationText(t("Choose a plan"))]}
       navigation={[
-        { label: "Company Administration", to: paths.companyAdminPath() },
-        { label: "Billing", to: paths.companyBillingPath() },
+        { label: t("Company Administration"), to: paths.companyAdminPath() },
+        { label: t("Billing"), to: paths.companyBillingPath() },
       ]}
       billing={billing}
       selection={selection}

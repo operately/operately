@@ -12,6 +12,7 @@ export interface LastCheckInProps {
   checkIns: CheckIn[];
   state?: "active" | "closed";
   mentionedPersonLookup?: MentionedPersonLookupFn;
+
   formattedTimePreferences: FormattedTimePreferences;
 }
 
@@ -25,7 +26,12 @@ export interface CheckIn {
   status: BadgeStatus;
 }
 
-export function LastCheckIn({ checkIns, state, mentionedPersonLookup, formattedTimePreferences }: LastCheckInProps) {
+export function LastCheckIn({
+  checkIns,
+  state,
+  mentionedPersonLookup,
+  formattedTimePreferences,
+}: LastCheckInProps) {
   if (checkIns.length === 0) return null;
   if (state === "closed") return null;
 

@@ -1,4 +1,4 @@
-import i18n, { tn } from "./i18n";
+import i18n, { applyLanguage, tn } from "./i18n";
 
 describe("i18n", () => {
   it("falls back to the English message identifier", () => {
@@ -36,6 +36,87 @@ describe("i18n", () => {
     i18n.addResourceBundle("en", "translation", { [key]: key }, true, true);
 
     expect(i18n.t(key)).toEqual(key);
+  });
+
+  describe("Brazilian Portuguese", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("renders reviewed Portuguese copy for the pilot workflow", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.language).toBe("pt-BR");
+      expect(i18n.t("Home")).toBe("Início");
+      expect(i18n.t("New task")).toBe("Nova tarefa");
+      expect(i18n.t('New task "{{taskName}}" was created', { taskName: "Call leads" })).toBe(
+        'Nova tarefa "Call leads" foi criada',
+      );
+      expect(i18n.t("Close")).toBe("Fechar");
+    });
+
+    it("falls back to English for missing translations including plurals", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
+    });
+
+    it("renders Portuguese account, navigation, and administration copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("My Account")).toBe("Minha conta");
+      expect(i18n.t("Company Administration")).toBe("Administração da empresa");
+      expect(i18n.t("Documents & Files")).toBe("Docs & Arquivos");
+      expect(i18n.t("Help")).toBe("Ajuda");
+      expect(i18n.t("Sign In")).toBe("Entrar");
+      expect(tn("1 member", "{{count}} members", 0)).toBe("0 membros");
+      expect(tn("1 member", "{{count}} members", 1)).toBe("1 membro");
+      expect(tn("1 member", "{{count}} members", 3)).toBe("3 membros");
+      expect(tn("1 member", "{{count}} members", 1_000_000)).toBe("1000000 membros");
+      expect(tn("1 result", "{{count}} results", 2)).toBe("2 resultados");
+      expect(
+        tn("You can request another code in 1 second.", "You can request another code in {{count}} seconds.", 1),
+      ).toBe("Você pode solicitar outro código em 1 segundo.");
+      expect(
+        tn("You can request another code in 1 second.", "You can request another code in {{count}} seconds.", 5),
+      ).toBe("Você pode solicitar outro código em 5 segundos.");
+      expect(
+        i18n.t("Verify this inbox first. Then we’ll send a separate code to <email>{{email}}</email>.", {
+          email: "ana@example.com",
+        }),
+      ).toBe(
+        "Verifique esta caixa de entrada primeiro. Depois, enviaremos outro código para <email>ana@example.com</email>.",
+      );
+    });
+
+    it("renders Portuguese leftover account and onboarding copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("What's your role?")).toBe("Qual é seu cargo?");
+      expect(i18n.t("Add your profile picture")).toBe("Adicione sua foto de perfil");
+      expect(i18n.t("Thanks for signing up!")).toBe("Obrigado por se cadastrar!");
+      expect(i18n.t("Co-founder & CEO of Operately")).toBe("Cofundador e CEO do Operately");
+      expect(i18n.t("Let teammates know what you focus on. You can change this later.")).toBe(
+        "Mostre aos colegas qual o seu foco. Você pode alterar isso depois.",
+      );
+      expect(
+        i18n.t("* If you sign in with Google, you must use <email>{{email}}</email>.", { email: "ana@example.com" }),
+      ).toBe("* Se você entrar com o Google, use o e-mail <email>ana@example.com</email>.");
+    });
+
+    it("ignores unsupported languages and keeps English", async () => {
+      await applyLanguage("fr");
+
+      expect(i18n.language).toBe("en");
+      expect(i18n.t("Home")).toBe("Home");
+    });
+
+    it("does not select a language from the browser", () => {
+      expect(i18n.options.lng).toBe("en");
+      expect(i18n.services.languageDetector).toBeUndefined();
+      expect(i18n.language).toBe("en");
+    });
   });
 });
 

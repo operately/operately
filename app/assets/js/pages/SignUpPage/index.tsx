@@ -1,22 +1,25 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Link } from "turboui";
 
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { SignUpWithEmail, SignUpWithGoogleButton } from "@/features/auth/Buttons";
+import { translationText } from "@/i18n";
 import { PageModule } from "@/routes/types";
 
 export default { name: "SignUpPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
   const redirectTo = new URLSearchParams(window.location.search).get("redirect_to");
 
   return (
-    <Pages.Page title={["Sign Up"]} testId="sign-up-page">
+    <Pages.Page title={translationText(t("Sign Up"))} testId="sign-up-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
           <div className="py-8 sm:px-4 sm:py-4">
@@ -39,11 +42,13 @@ function Page() {
 }
 
 function Header() {
+  const { t } = useTranslation();
+
   return (
     <div className="mb-8">
       <OperatelyLogo width="40px" height="40px" />
-      <h1 className="text-2xl font-bold mt-4">Sign up for Operately</h1>
-      <div className="mt-2">Get started in a minute. No credit card required.</div>
+      <h1 className="text-2xl font-bold mt-4">{t("Sign up for Operately")}</h1>
+      <div className="mt-2">{t("Get started in a minute. No credit card required.")}</div>
     </div>
   );
 }
@@ -51,7 +56,10 @@ function Header() {
 function SignInLink() {
   return (
     <div className="text-center font-medium mt-8 pt-8 border-t border-stroke-base text-sm">
-      Already have an account? <Link to="/log_in">Sign in</Link>
+      <Trans
+        i18nKey="Already have an account? <actionLink>Sign in</actionLink>"
+        components={{ actionLink: <Link to="/log_in" /> }}
+      />
     </div>
   );
 }

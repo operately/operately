@@ -25,7 +25,7 @@ jest.mock("../icons", () => {
 import { OverviewSidebar } from "./OverviewSidebar";
 import type { ProjectPage } from "./index";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
 function SidebarHarness({
@@ -91,7 +91,7 @@ function SidebarHarness({
     contributors: [],
     checkIns: [],
     discussions: [],
-    richTextHandlers: createMockRichEditorHandlers(),
+    richTextHandlers: createMockRichTextHandlers(),
     onTaskDescriptionChange: async () => true,
     getTaskPageProps: () => ({}) as any,
     subscriptions,

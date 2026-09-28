@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Menu, MenuActionItem, MenuLinkItem, SubMenu } from "../../Menu";
 import { IconId, IconLink, IconLock, IconPencil, IconRefresh, IconRotateDot, IconSwitch, IconUserX } from "../../icons";
@@ -32,6 +33,7 @@ export function PersonOptions({
   showConvertToGuest,
   showAccessLevelOptions = false,
 }: Props) {
+  const { t } = useTranslation();
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";
   const isInvited = person.hasOpenInvitation;
@@ -39,34 +41,34 @@ export function PersonOptions({
   return (
     <Menu testId={testId} size={size}>
       <MenuLinkItem icon={IconId} testId="view-profile" to={person.profilePath}>
-        View Profile
+        {t("View Profile")}
       </MenuLinkItem>
 
       {permissions?.canEditMembers && (
         <MenuLinkItem icon={IconPencil} testId={createTestId("edit", person.id)} to={person.profileEditPath}>
-          Edit Profile
+          {t("Edit Profile")}
         </MenuLinkItem>
       )}
 
       {!isInvited && permissions?.canEditMembersAccessLevels && showAccessLevelOptions && (
-        <SubMenu icon={IconLock} label="Change access level" hidden={false}>
+        <SubMenu icon={IconLock} label={t("Change access level")} hidden={false}>
           <MenuActionItem
             testId={createTestId("edit-access", person.id)}
             onClick={() => onChangeAccessLevel(person.id, "edit_access")}
           >
-            Edit access
+            {t("Edit access")}
           </MenuActionItem>
           <MenuActionItem
             testId={createTestId("comment-access", person.id)}
             onClick={() => onChangeAccessLevel(person.id, "comment_access")}
           >
-            Comment access
+            {t("Comment access")}
           </MenuActionItem>
           <MenuActionItem
             testId={createTestId("view-access", person.id)}
             onClick={() => onChangeAccessLevel(person.id, "view_access")}
           >
-            View access
+            {t("View access")}
           </MenuActionItem>
         </SubMenu>
       )}
@@ -77,7 +79,7 @@ export function PersonOptions({
           onClick={() => onOpenConvert(person)}
           testId={createTestId("convert-to-guest", person.id)}
         >
-          Convert to Outside Collaborator
+          {t("Convert to Outside Collaborator")}
         </MenuActionItem>
       )}
 
@@ -87,7 +89,7 @@ export function PersonOptions({
           onClick={() => onOpenRenew(person)}
           testId={createTestId("renew-invitation", person.id)}
         >
-          Renew Invitation
+          {t("Renew Invitation")}
         </MenuActionItem>
       )}
 
@@ -97,7 +99,7 @@ export function PersonOptions({
           onClick={() => onOpenView(person)}
           testId={createTestId("view-invite-link", person.id)}
         >
-          View Invitation Link
+          {t("View Invitation Link")}
         </MenuActionItem>
       )}
 
@@ -107,7 +109,7 @@ export function PersonOptions({
           onClick={() => onOpenReissue(person)}
           testId={createTestId("reissue-token", person.id)}
         >
-          Reissue Invitation
+          {t("Reissue Invitation")}
         </MenuActionItem>
       )}
 
@@ -118,7 +120,7 @@ export function PersonOptions({
           danger
           testId={createTestId("remove-person", person.id)}
         >
-          {person.hasOpenInvitation ? "Revoke Invitation" : "Deactivate Account"}
+          {person.hasOpenInvitation ? t("Revoke Invitation") : t("Deactivate Account")}
         </MenuActionItem>
       )}
     </Menu>

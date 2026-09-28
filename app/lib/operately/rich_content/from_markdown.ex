@@ -2,7 +2,7 @@ defmodule Operately.RichContent.FromMarkdown do
   @moduledoc """
   Converts plain text or simple markdown into Operately rich content (ProseMirror JSON).
 
-  Supports headings, paragraphs, bullet and numbered lists, bold text, and optional
+  Supports headings, paragraphs, bullet, numbered and task lists, bold text, links, and optional
   `@mentions` when a `:mention_resolver` option is provided.
 
   ## Options
@@ -42,12 +42,6 @@ defmodule Operately.RichContent.FromMarkdown do
 
   defp parse_block(block, acc, opts) do
     cond do
-      String.starts_with?(block, "- ") ->
-        acc ++ parse_bullet_list(block, opts)
-
-      String.starts_with?(block, "1. ") ->
-        acc ++ parse_numbered_list(block, opts)
-
       String.match?(block, ~r/^#+\s/) ->
         if String.contains?(block, "\n") do
           [heading, rest] = String.split(block, "\n", parts: 2)
@@ -55,6 +49,15 @@ defmodule Operately.RichContent.FromMarkdown do
         else
           acc ++ parse_heading(block)
         end
+
+      Operately.RichContent.MarkdownTaskLists.contains_tasks?(block) ->
+        acc ++ Operately.RichContent.MarkdownTaskLists.parse(block, &parse_inline(&1, opts))
+
+      String.starts_with?(block, "- ") ->
+        acc ++ parse_bullet_list(block, opts)
+
+      String.starts_with?(block, "1. ") ->
+        acc ++ parse_numbered_list(block, opts)
 
       true ->
         acc ++ parse_paragraph(block, opts)
@@ -135,7 +138,7 @@ defmodule Operately.RichContent.FromMarkdown do
 
   defp parse_inline(text, opts) do
     text
-    |> String.split(~r/(\*\*.*?\*\*|@\w+)/, include_captures: true, trim: true)
+    |> String.split(~r/(\*\*.*?\*\*|\[[^\]]+\]\([^)]+\)|@\w+)/, include_captures: true, trim: true)
     |> Enum.map(&build_inline_node(&1, opts))
   end
 
@@ -147,6 +150,10 @@ defmodule Operately.RichContent.FromMarkdown do
           "text" => String.trim(text, "**"),
           "marks" => [%{"type" => "bold"}]
         }
+
+      Regex.match?(~r/^\[([^\]]+)\]\(([^)]+)\)$/, text) ->
+        [_, label, href] = Regex.run(~r/^\[([^\]]+)\]\(([^)]+)\)$/, text)
+        %{"type" => "text", "text" => label, "marks" => [%{"type" => "link", "attrs" => %{"href" => href}}]}
 
       String.starts_with?(text, "@") ->
         build_mention_node(text, opts)

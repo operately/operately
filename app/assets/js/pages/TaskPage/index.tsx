@@ -17,7 +17,8 @@ import { useInvalidateProjectPage } from "@/models/projects/projectPageQueries";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import i18n, { translationText } from "@/i18n";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useSubscription } from "@/models/subscriptions";
@@ -61,7 +62,7 @@ function Page() {
     value: () => project.name,
     update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
-    validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Project name cannot be empty")) : null)],
     refreshPageData,
     projectIdToInvalidate: project.id,
   });
@@ -70,8 +71,8 @@ function Page() {
     queryData: task,
     value: () => task.name,
     update: (v) => updateTaskName.mutateAsync({ taskId: task.id, name: v, type: "project" }),
-    onError: (e: string) => showErrorToast(e, "Failed to update task name."),
-    validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    onError: (e: string) => showErrorToast(e, translationText(i18n.t("Failed to update task name."))),
+    validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Task name cannot be empty")) : null)],
     refreshPageData,
   });
 
@@ -179,7 +180,15 @@ function Page() {
     transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
-  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
+  const richTextHandlers = useRichTextHandlers({
+    taskList: {
+      resourceType: "task",
+      resourceId: task.id,
+      field: "description",
+      canEdit: task.permissions?.canEdit ?? false,
+    },
+    scope: { type: "project", id: task.project.id },
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const projectSearch = Projects.useProjectSearch({
@@ -260,7 +269,7 @@ function Page() {
     // Subscription
     subscriptions,
 
-    richTextHandlers: richEditorHandlers,
+    richTextHandlers,
     localDraftKeyBase: `task:${task.id}`,
     formattedTimePreferences,
   };

@@ -1,5 +1,6 @@
 import { MarkdownSerializer, MarkdownSerializerState } from "prosemirror-markdown";
 import { Node, Schema, Fragment, Mark } from "prosemirror-model";
+import { renderMarkdownTable } from "./markdownTable";
 
 interface MarkdownExportOptions {
   removeEmbeds?: boolean;
@@ -19,6 +20,10 @@ type MarkSerializerSpec = {
 const schema = new Schema({
   nodes: {
     doc: { content: "block+" },
+    table: { content: "tableRow+", group: "block" },
+    tableRow: { content: "(tableCell | tableHeader)+" },
+    tableCell: { content: "paragraph+" },
+    tableHeader: { content: "paragraph+" },
     paragraph: { group: "block", content: "inline*" },
     text: { group: "inline" },
     hardBreak: { group: "inline", inline: true },
@@ -35,6 +40,8 @@ const schema = new Schema({
       attrs: { start: { default: 1 } },
     },
     listItem: { content: "paragraph block*", group: "block" },
+    taskList: { content: "taskItem+", group: "block" },
+    taskItem: { content: "paragraph block*", attrs: { checked: { default: false } } },
     horizontalRule: { group: "block" },
     codeBlock: {
       content: "text*",
@@ -79,6 +86,15 @@ const schema = new Schema({
 
 const serializer = new MarkdownSerializer(
   {
+    table: (state, node) => {
+      state.text(renderMarkdownTable(node), false);
+      state.closeBlock(node);
+    },
+    taskList: (state, node) => state.renderList(node, "  ", () => "- "),
+    taskItem: (state, node) => {
+      state.write(node.attrs.checked ? "[x] " : "[ ] ");
+      state.renderContent(node);
+    },
     text: ((state: MarkdownSerializerState, node: Node) => {
       state.text(node.text || "");
     }) as NodeSerializerFn,

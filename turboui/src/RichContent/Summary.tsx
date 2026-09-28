@@ -1,7 +1,9 @@
+import type { JSONContent } from "@tiptap/core";
 import * as React from "react";
 
 import RichContent, { parseContent, richContentToString, shortenContent } from ".";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import { tableContentToInline } from "./tableContent";
 
 interface SummaryProps {
   content: any;
@@ -10,11 +12,13 @@ interface SummaryProps {
 }
 
 export function Summary({ content, characterCount, mentionedPersonLookup }: SummaryProps): JSX.Element {
-  const summary = useSummarized(content, characterCount);
+  const transformContent = React.useCallback((value: any) => summarizeContent(value, characterCount), [characterCount]);
 
   return (
     <RichContent
-      content={summary}
+      taskList={{ canEdit: false }}
+      content={parseContent(content)}
+      transformContent={transformContent}
       mentionedPersonLookup={mentionedPersonLookup}
       className="rich-text-summary"
       thumbnailBlobs
@@ -26,21 +30,19 @@ export function Summary({ content, characterCount, mentionedPersonLookup }: Summ
 // Summarize extracts the text content and mentions from a rich text object, preserving attached blob nodes in the summarized output.
 //
 
-function useSummarized(content: any, characterCount: number): any {
-  return React.useMemo(() => {
-    const summary = summarize(parseContent(content));
-    const textContent = (summary.content || []).filter((node: any) => !paragraphHasBlob(node));
-    const blobContent = (summary.content || []).filter((node: any) => paragraphHasBlob(node));
-    const shortened = shortenContent({ ...summary, content: textContent }, characterCount, {
-      suffix: "...",
-      skipParse: true,
-    });
+function summarizeContent(content: any, characterCount: number): any {
+  const summary = summarize(parseContent(content));
+  const textContent = (summary.content || []).filter((node: any) => !paragraphHasBlob(node));
+  const blobContent = (summary.content || []).filter((node: any) => paragraphHasBlob(node));
+  const shortened = shortenContent({ ...summary, content: textContent }, characterCount, {
+    suffix: "...",
+    skipParse: true,
+  });
 
-    return {
-      ...shortened,
-      content: [...(shortened.content || []), ...blobContent],
-    };
-  }, [content, characterCount]);
+  return {
+    ...shortened,
+    content: [...(shortened.content || []), ...blobContent],
+  };
 }
 
 function paragraphHasBlob(node: any): boolean {
@@ -51,6 +53,8 @@ export function summarize(node: any): any {
   if (!node) return { type: "doc", content: [] };
 
   switch (node.type) {
+    case "table":
+      return summarizeParagraph({ content: tableContentToInline(node) });
     case "doc":
       return summarizeDoc(node);
     case "paragraph":
@@ -63,6 +67,8 @@ export function summarize(node: any): any {
       return summarizeBulletList(node);
     case "orderedList":
       return summarizeOrderedList(node);
+    case "taskList":
+      return summarizeTaskList(node);
     case "blockquote":
       return summarizeBlockquote(node);
     case "mention":
@@ -94,6 +100,16 @@ function summarizeDoc(node: any): any {
   }
 
   return { type: "doc", content };
+}
+
+function summarizeTaskList(node: JSONContent): JSONContent {
+  return {
+    type: "paragraph",
+    content: (node.content ?? []).flatMap((item) => [
+      { type: "text", text: `${item.attrs?.checked ? "☑" : "☐"} ` },
+      ...(item.content ?? []).map(summarize).filter(Boolean),
+    ]),
+  };
 }
 
 function summarizeBulletList(node: any): any {

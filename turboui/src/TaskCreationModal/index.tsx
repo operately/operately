@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { translationText } from "../i18n";
 import { AssigneesField } from "../AssigneesField";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -43,6 +45,7 @@ function ProjectTaskCreationForm({
   richTextHandlers,
   formattedTimePreferences,
 }: TaskCreationModal.ProjectProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [assignees, setAssignees] = useState<Types.Person[]>([]);
@@ -105,39 +108,39 @@ function ProjectTaskCreationForm({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create Task" size="medium">
+    <Modal isOpen={isOpen} onClose={onClose} title={translationText(t("Create Task"))} size="medium">
       <form onSubmit={handleSubmit} className="space-y-6" data-test-id="add-task-form">
         <TextField
           variant="form-field"
-          label="Task title"
+          label={translationText(t("Task title"))}
           text={title}
           onChange={setTitle}
-          placeholder="Enter task title"
+          placeholder={translationText(t("Enter task title"))}
           autofocus
           testId="task-title"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-content-base mb-1">Due date</label>
+            <label className="block text-sm font-medium text-content-base mb-1">{t("Due date")}</label>
             <DateField
               variant="form-field"
               date={dueDate}
               onDateSelect={setDueDate}
-              placeholder="Set due date"
+              placeholder={translationText(t("Set due date"))}
               testId="task-due-date"
               calendarOnly
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-content-base mb-1">Assignees</label>
+            <label className="block text-sm font-medium text-content-base mb-1">{t("Assignees")}</label>
             {assigneePersonSearch ? (
               <AssigneesField
                 people={assignees}
                 setPeople={setAssignees}
                 searchData={assigneePersonSearch}
-                emptyStateMessage="Select assignees"
+                emptyStateMessage={translationText(t("Select assignees"))}
                 testId="assignee"
                 variant="form-field"
               />
@@ -146,7 +149,7 @@ function ProjectTaskCreationForm({
                 people={assignees}
                 setPeople={setAssignees}
                 readonly={true}
-                emptyStateMessage="Select assignees"
+                emptyStateMessage={translationText(t("Select assignees"))}
                 testId="assignee"
                 variant="form-field"
               />
@@ -155,7 +158,7 @@ function ProjectTaskCreationForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-content-base mb-1">Milestone</label>
+          <label className="block text-sm font-medium text-content-base mb-1">{t("Milestone")}</label>
           <div className="min-w-0 overflow-hidden w-full">
             <div className="w-full">
               <MilestoneField
@@ -174,7 +177,7 @@ function ProjectTaskCreationForm({
                 }}
                 milestones={milestones.map((item) => ({ ...item, title: item.name }))}
                 onSearch={onMilestoneSearch}
-                emptyStateMessage="Select milestone"
+                emptyStateMessage={translationText(t("Select milestone"))}
                 readonly={milestoneReadOnly}
                 formattedTimePreferences={formattedTimePreferences}
               />
@@ -184,7 +187,7 @@ function ProjectTaskCreationForm({
 
         {richTextHandlers && (
           <div className="min-w-0">
-            <label className="block text-sm font-medium text-content-base mb-1">Notes</label>
+            <label className="block text-sm font-medium text-content-base mb-1">{t("Notes")}</label>
             <TaskNotesField key={descriptionEditorKey} richTextHandlers={richTextHandlers} onChange={setDescription} />
           </div>
         )}
@@ -212,6 +215,7 @@ function TemplateTaskCreationForm({
   personSearch,
   richTextHandlers,
 }: TaskCreationModal.TemplateProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [dueOffsetDays, setDueOffsetDays] = useState<number | null>(null);
   const [milestoneId, setMilestoneId] = useState<string | null>(null);
@@ -278,14 +282,14 @@ function TemplateTaskCreationForm({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create Task" size="medium">
+    <Modal isOpen={isOpen} onClose={onClose} title={translationText(t("Create Task"))} size="medium">
       <form onSubmit={submit} className="min-w-0 space-y-6 overflow-x-hidden" data-test-id="template-task-form">
         <TextField
           variant="form-field"
-          label="Task title"
+          label={translationText(t("Task title"))}
           text={name}
           onChange={setName}
-          placeholder="Enter task title"
+          placeholder={translationText(t("Enter task title"))}
           autofocus
           onChangeOnType
           testId="template-task-title"
@@ -294,13 +298,13 @@ function TemplateTaskCreationForm({
         <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
           <RelativeDayField
             variant="form-field"
-            label="Relative due date"
+            label={translationText(t("Relative due date"))}
             value={dueOffsetDays}
             onChange={setDueOffsetDays}
-            placeholder="Set relative date"
+            placeholder={translationText(t("Set relative date"))}
           />
           <div className="min-w-0">
-            <FieldLabel>Status</FieldLabel>
+            <FieldLabel>{t("Status")}</FieldLabel>
             <StatusSelector
               variant="form-field"
               statusOptions={statuses}
@@ -312,33 +316,33 @@ function TemplateTaskCreationForm({
         </div>
 
         <div className="min-w-0">
-          <FieldLabel>Milestone</FieldLabel>
+          <FieldLabel>{t("Milestone")}</FieldLabel>
           <MilestoneField
             variant="form-field"
             milestone={selectedMilestone}
             setMilestone={(milestone) => setMilestoneId(milestone?.id ?? null)}
             milestones={milestoneOptions}
             onSearch={async () => undefined}
-            emptyStateMessage="No milestone"
+            emptyStateMessage={translationText(t("No milestone"))}
             readonly={milestoneReadOnly}
             testId="template-task-milestone"
           />
         </div>
 
         <div className="min-w-0">
-          <FieldLabel>Notes</FieldLabel>
+          <FieldLabel>{t("Notes")}</FieldLabel>
           <TaskNotesField key={descriptionEditorKey} richTextHandlers={richTextHandlers} onChange={setDescription} />
         </div>
 
         {personSearch && (
           <div className="min-w-0">
-            <FieldLabel>Assignees</FieldLabel>
+            <FieldLabel>{t("Assignees")}</FieldLabel>
             <AssigneesField
               variant="form-field"
               people={assignees}
               setPeople={setAssignees}
               searchData={personSearch}
-              emptyStateMessage="Assign people"
+              emptyStateMessage={translationText(t("Assign people"))}
             />
           </div>
         )}
@@ -368,16 +372,23 @@ function CreateMoreFooter({
   disabled: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="mt-8 flex items-center">
-      <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" testId={createMoreTestId} />
+      <SwitchToggle
+        value={createMore}
+        setValue={setCreateMore}
+        label={translationText(t("Create more"))}
+        testId={createMoreTestId}
+      />
       <div className="flex-1" />
       <div className="flex space-x-3">
         <SecondaryButton onClick={onClose} type="button">
-          Cancel
+          {t("Cancel")}
         </SecondaryButton>
         <PrimaryButton type="submit" disabled={disabled}>
-          Create task
+          {t("Create task")}
         </PrimaryButton>
       </div>
     </div>
@@ -391,10 +402,11 @@ function TaskNotesField({
   richTextHandlers: RichEditorHandlers;
   onChange: (description: RichTextJSON) => void;
 }) {
+  const { t } = useTranslation();
   const editor = useEditor({
     content: null,
     editable: true,
-    placeholder: "Add notes about this task...",
+    placeholder: translationText(t("Add notes about this task...")),
     handlers: richTextHandlers,
     onUpdate: ({ json }) => onChange(json as RichTextJSON),
   });

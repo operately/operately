@@ -50,7 +50,10 @@ export function useResourceHubSearch(search: ResourceHubSearchProps | undefined)
       }
     }, 300);
 
-    return () => window.clearTimeout(timeout);
+    return () => {
+      requestSequence.current += 1;
+      window.clearTimeout(timeout);
+    };
   }, [isActive, normalizedQuery, searchFn]);
 
   return {

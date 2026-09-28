@@ -7,7 +7,7 @@ import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { IconEdit } from "../icons";
 import { CurrentSubscriptions, SubscribersSelector } from "../Subscriptions";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 
@@ -29,7 +29,7 @@ type Story = StoryObj<typeof meta>;
 const people = genPeople(4);
 const author = people[0]!;
 const commentAuthor = people[1]!;
-const richTextHandlers = createMockRichEditorHandlers();
+const richTextHandlers = createMockRichTextHandlers();
 
 const mockSubscribers: SubscribersSelector.Subscriber[] = people.map((person) =>
   asSubscriber(person, { isSubscribed: true }),
@@ -120,6 +120,7 @@ export const Default: Story = {
   args: {} as LinkPageTypes.Props,
   render: () => (
     <LinkPage
+      taskList={{ canEdit: false }}
       {...baseProps}
       options={[
         {
@@ -154,6 +155,7 @@ export const Template: Story = {
   },
   render: () => (
     <LinkPage
+      taskList={{ canEdit: false }}
       pageTitle={["Design Spec", "Launch Playbook"]}
       navigation={[
         { to: "/spaces/space-1", label: "Product" },

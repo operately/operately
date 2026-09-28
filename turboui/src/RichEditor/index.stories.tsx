@@ -88,3 +88,44 @@ export const WithLocalDraft: Story = {
     );
   },
 };
+
+export const TaskLists: Story = {
+  render: () => {
+    const editor = useEditor({
+      handlers: createMockRichEditorHandlers(),
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "taskList",
+            content: [
+              {
+                type: "taskItem",
+                attrs: { checked: true },
+                content: [{ type: "paragraph", content: [{ type: "text", text: "Draft the announcement" }] }],
+              },
+              {
+                type: "taskItem",
+                attrs: { checked: false },
+                content: [
+                  { type: "paragraph", content: [{ type: "text", text: "Review before publishing" }] },
+                  {
+                    type: "taskList",
+                    content: [
+                      {
+                        type: "taskItem",
+                        attrs: { checked: false },
+                        content: [{ type: "paragraph", content: [{ type: "text", text: "Check the links" }] }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+    return <Editor editor={editor} />;
+  },
+};

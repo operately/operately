@@ -1,9 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { DangerButton, SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import * as Forms from "../Forms";
 import { Modal } from "../Modal";
+import { translationText } from "../i18n";
 
 export namespace ConfirmByTypingModal {
   export interface Props {
@@ -30,12 +32,14 @@ export function ConfirmByTypingModal({
   confirmationValue,
   warningMessage,
   warningDescription,
-  confirmLabel = "Confirm",
+  confirmLabel,
   loadingLabel,
   inputTestId,
   confirmTestId,
   testId,
 }: ConfirmByTypingModal.Props) {
+  const { t } = useTranslation();
+  const resolvedConfirmLabel = confirmLabel ?? translationText(t("Confirm"));
   const [typedValue, setTypedValue] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -73,7 +77,10 @@ export function ConfirmByTypingModal({
         <WarningCallout message={warningMessage} description={warningDescription} />
 
         <div className="flex flex-col gap-1">
-          <Forms.Label field="confirm-by-typing" label={`To confirm, type "${confirmationValue}" in the box below`} />
+          <Forms.Label
+            field="confirm-by-typing"
+            label={translationText(t('To confirm, type "{{confirmationValue}}" in the box below', { confirmationValue }))}
+          />
           <Forms.Input
             id="confirm-by-typing"
             field="confirm-by-typing"
@@ -87,10 +94,10 @@ export function ConfirmByTypingModal({
 
         <div className="pt-4 flex justify-start gap-2">
           <DangerButton onClick={handleConfirm} disabled={confirmDisabled} loading={loading} testId={confirmTestId}>
-            {loading ? loadingLabel ?? confirmLabel : confirmLabel}
+            {loading ? loadingLabel ?? resolvedConfirmLabel : resolvedConfirmLabel}
           </DangerButton>
           <SecondaryButton onClick={onClose} disabled={loading}>
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
         </div>
       </div>

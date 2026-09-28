@@ -2,7 +2,7 @@ import { useDeleteTemplateResource } from "@/models/projectTemplates/projectTemp
 import { loader, useLoadedData } from "./loader";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { useTemplateComments } from "@/models/projectTemplates/useTemplateComments";
 import { usePaths } from "@/routes/paths";
@@ -19,10 +19,14 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const formattedTimePreferences = useFormattedTimePreferences();
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
   const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
   const document = node.document;
-  const canEdit = Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const canEdit = !template.archivedAt && Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess);
+  const richTextHandlers = useRichTextHandlers({
+    scope: { type: "space", id: template.space.id },
+    templateComments: true,
+    taskList: { resourceType: "template_document", resourceId: document.id, field: "content", canEdit },
+  });
   const docsAndFilesLink = paths.projectTemplatePath(template.id, { tab: "docs-and-files" });
   const commentsProps = useTemplateComments({
     templateId: template.id,
@@ -74,6 +78,7 @@ function Page() {
       formattedTimePreferences={formattedTimePreferences}
       content={document.content}
       mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
+      taskList={richTextHandlers.taskList}
       hideDraftActions
       hideReactions
       comments={commentsProps}

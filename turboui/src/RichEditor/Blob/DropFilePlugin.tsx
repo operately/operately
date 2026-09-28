@@ -40,7 +40,7 @@ export const createDropFilePlugin = (uploadFile: UploadFileFn) =>
           if (!coordinates) return false;
 
           const files = event.dataTransfer?.files;
-          if (!files) return false;
+          if (!files?.length) return false;
 
           event.preventDefault();
 

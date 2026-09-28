@@ -50,6 +50,20 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert person.timezone == "America/New_Jersey"
     end
 
+    test "when I'm an admin, it ignores language changes for someone else", ctx do
+      promote_me_to_admin(ctx)
+
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.company_member),
+                 language: "pt-BR"
+               })
+
+      person = Operately.People.get_person!(ctx.company_member.id)
+
+      assert person.language == nil
+    end
+
     test "when I'm an admin, it ignores description changes", ctx do
       promote_me_to_admin(ctx)
 
@@ -170,6 +184,43 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       person = Operately.People.get_person!(ctx.person.id)
 
       assert Operately.People.Person.time_format(person) == :hour_24
+    end
+
+    test "it persists language independently of timezone and time format", ctx do
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 language: "pt-BR",
+                 timezone: "America/Sao_Paulo",
+                 time_format: "hour_24"
+               })
+
+      person = Operately.People.get_person!(ctx.person.id)
+
+      assert person.language == "pt-BR"
+      assert person.timezone == "America/Sao_Paulo"
+      assert Operately.People.Person.time_format(person) == :hour_24
+    end
+
+    test "it keeps a saved language when the i18n flag is off", ctx do
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 language: "pt-BR"
+               })
+
+      person = Operately.People.get_person!(ctx.person.id)
+
+      assert person.language == "pt-BR"
+      refute Operately.Companies.has_experimental_feature?(ctx.company, "i18n")
+    end
+
+    test "it rejects unsupported languages", ctx do
+      assert {400, %{}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 language: "fr"
+               })
     end
 
     test "it rejects invalid display preferences", ctx do

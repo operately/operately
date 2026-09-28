@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Router do
     plug(:fetch_current_account)
     plug(:fetch_current_company)
     plug(:fetch_current_person)
+    plug OperatelyWeb.Plugs.SetLocale
   end
 
   pipeline :api do
@@ -20,6 +21,7 @@ defmodule OperatelyWeb.Router do
     plug(:fetch_current_account)
     plug(:fetch_current_company)
     plug(:fetch_current_person)
+    plug OperatelyWeb.Plugs.SetLocale
   end
 
   pipeline :api_external do
@@ -35,6 +37,7 @@ defmodule OperatelyWeb.Router do
     plug OperatelyWeb.Mcp.Plugs.ValidateOrigin
     plug OperatelyWeb.Mcp.Plugs.RequireMcpAuth
     plug OperatelyWeb.Mcp.Plugs.ResolveCompany
+    plug OperatelyWeb.Plugs.SetLocale
   end
 
   #
@@ -138,6 +141,12 @@ defmodule OperatelyWeb.Router do
   end
 
   forward("/media", OperatelyLocalMediaStorage.Plug)
+
+  scope "/public/documents", OperatelyWeb do
+    pipe_through [:browser]
+    get "/:token", PublicDocumentController, :show
+    get "/:token/blobs/:id", PublicDocumentController, :blob
+  end
 
   scope "/admin/api" do
     pipe_through([:api])

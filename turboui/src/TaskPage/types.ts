@@ -1,5 +1,5 @@
 import { Status } from "../TaskBoard/types";
-import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { RichTextHandlers } from "../RichContent/types";
 import { PersonField } from "../PersonField";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
@@ -103,7 +103,7 @@ export namespace TaskPage {
 
     // Assignee selection
     assigneePersonSearch: PersonField.SearchData;
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     localDraftKeyBase?: string;
 
     // Permissions

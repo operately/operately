@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { ErrorCallout, InfoCallout, SuccessCallout, WarningCallout } from "../Callouts";
 import { Page } from "../Page";
+import { translationText } from "../i18n";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "./types";
 import { buildCompanyBillingPageViewModel } from "./viewModel";
@@ -110,28 +112,30 @@ function Header({ title, subtitle }: { title: string; subtitle: string }) {
 }
 
 function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewModeView }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-10">
       {overview.feedback && <FeedbackBlock feedback={overview.feedback} />}
 
       {overview.errorMessage && (
-        <WarningCallout message="Billing action unavailable" description={overview.errorMessage} />
+        <WarningCallout message={translationText(t("Billing action unavailable"))} description={overview.errorMessage} />
       )}
 
       {overview.stale && (
         <WarningCallout
-          message="Billing data may be out of date"
-          description="We couldn't refresh billing details the last time we checked. Reload the page to try again."
+          message={translationText(t("Billing data may be out of date"))}
+          description={translationText(t("We couldn't refresh billing details the last time we checked. Reload the page to try again."))}
         />
       )}
 
-      <Section title="Current plan">
+      <Section title={t("Current plan")}>
         <SectionCard>
           <div className="flex flex-col gap-3 border-b border-stroke-base pb-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div className="text-content-accent text-2xl font-extrabold">{overview.currentPlan.name}</div>
               {overview.currentPlan.intervalLabel && (
-                <div className="mt-1 text-content-dimmed">{overview.currentPlan.intervalLabel} billing</div>
+                <div className="mt-1 text-content-dimmed">{t("{{interval}} billing", { interval: overview.currentPlan.intervalLabel })}</div>
               )}
             </div>
 
@@ -142,17 +146,17 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
         </SectionCard>
       </Section>
 
-      <Section title="Usage and limits">
+      <Section title={t("Usage and limits")}>
         <SectionCard>
           <DetailRows rows={overview.usageRows} />
         </SectionCard>
       </Section>
 
-      <Section title="Status details">
+      <Section title={t("Status details")}>
         <div className="space-y-3">
           {overview.statusNotices.length === 0 ? (
             <div className="rounded-lg border border-stroke-base bg-surface-dimmed px-4 py-3 text-content-dimmed">
-              {overview.emptyStatusMessage || "No pending billing changes."}
+              {overview.emptyStatusMessage || t("No pending billing changes.")}
             </div>
           ) : (
             overview.statusNotices.map((notice) => <StatusDetailNotice key={notice.message} notice={notice} />)
@@ -161,7 +165,7 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
       </Section>
 
       {overview.actions.length > 0 && (
-        <Section title="Actions">
+        <Section title={t("Actions")}>
           <BillingActionsPanel actions={overview.actions} />
         </Section>
       )}
@@ -170,11 +174,13 @@ function OverviewModeView({ overview }: { overview: CompanyBillingPage.OverviewM
 }
 
 function ConfirmingModeView({ confirming }: { confirming: CompanyBillingPage.ConfirmingModeView }) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <NoticeCallout notice={confirming.notice} />
 
-      <Section title="Checkout status">
+      <Section title={t("Checkout status")}>
         <SectionCard>
           <DetailRows rows={confirming.rows} />
         </SectionCard>
@@ -216,6 +222,7 @@ function DetailRows({ rows }: { rows: CompanyBillingPage.DetailRow[] }) {
 }
 
 function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
+  const { t } = useTranslation();
   const className = {
     free: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
     active: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
@@ -224,10 +231,10 @@ function BillingStatusBadge({ status }: { status: CompanyBillingPage.Status }) {
   }[status];
 
   const label = {
-    free: "Free",
-    active: "Active",
-    past_due: "Past due",
-    canceled: "Canceled",
+    free: t("Free"),
+    active: t("Active"),
+    past_due: t("Past due"),
+    canceled: t("Canceled"),
   }[status];
 
   return (

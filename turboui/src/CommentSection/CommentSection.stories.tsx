@@ -4,7 +4,7 @@ import { fn } from "storybook/test";
 
 import { Page } from "../Page";
 import { asRichText } from "../utils/storybook/richContent";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
 import { CommentSection } from "./CommentSection";
 import type { CommentSectionItem, CommentSectionProps, Person } from "./types";
@@ -121,7 +121,7 @@ function InteractiveCommentSection({ items: initialItems, ...props }: Partial<Co
       }}
       onAddReaction={fn()}
       onRemoveReaction={fn()}
-      richTextHandlers={createMockRichEditorHandlers()}
+      richTextHandlers={createMockRichTextHandlers()}
       formattedTimePreferences={defaultFormattedTimePreferences}
       {...props}
       items={items}

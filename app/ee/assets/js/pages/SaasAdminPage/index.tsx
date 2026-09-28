@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as AdminApi from "@/ee/admin_api";
+import * as SaasAdmin from "@/ee/models/saasAdminLifecycle";
 import { useDebouncedValue } from "@/ee/hooks/useDebouncedValue";
 import * as React from "react";
 
@@ -117,7 +118,7 @@ function CompanyListContainer({ activeTab, searchQuery }: { activeTab: string; s
 }
 
 function AllCompanyList({ searchQuery }: { searchQuery: string }) {
-  const { data: companiesData, loading, error } = AdminApi.useGetCompanies({});
+  const { data: companiesData, isPending: loading, error } = SaasAdmin.useGetCompanies();
   const debouncedSearchQuery = useDebouncedValue(searchQuery, SEARCH_DEBOUNCE_MS);
 
   if (loading) {
@@ -130,7 +131,7 @@ function AllCompanyList({ searchQuery }: { searchQuery: string }) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-test-id="saas-admin-all-error">
         <p className="text-red-500">Error loading companies: {error.message}</p>
       </div>
     );
@@ -155,7 +156,7 @@ function AllCompanyList({ searchQuery }: { searchQuery: string }) {
 }
 
 function AllAccountList({ searchQuery }: { searchQuery: string }) {
-  const { data: accountsData, loading, error, refetch } = AdminApi.useGetAccounts({});
+  const { data: accountsData, isPending: loading, error } = SaasAdmin.useGetAccounts();
   const debouncedSearchQuery = useDebouncedValue(searchQuery, SEARCH_DEBOUNCE_MS);
 
   if (loading) {
@@ -168,7 +169,7 @@ function AllAccountList({ searchQuery }: { searchQuery: string }) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-test-id="saas-admin-accounts-error">
         <p className="text-red-500">Error loading accounts: {error.message}</p>
       </div>
     );
@@ -189,11 +190,11 @@ function AllAccountList({ searchQuery }: { searchQuery: string }) {
     return <EmptySearchState itemType="accounts" searchQuery={debouncedSearchQuery} />;
   }
 
-  return <AccountTable accounts={filteredAccounts} refetch={refetch} />;
+  return <AccountTable accounts={filteredAccounts} />;
 }
 
 function ActiveCompanyList({ searchQuery }: { searchQuery: string }) {
-  const { data: companiesData, loading, error } = AdminApi.useGetActiveCompanies({});
+  const { data: companiesData, isPending: loading, error } = SaasAdmin.useGetActiveCompanies();
   const debouncedSearchQuery = useDebouncedValue(searchQuery, SEARCH_DEBOUNCE_MS);
 
   if (loading) {
@@ -206,7 +207,7 @@ function ActiveCompanyList({ searchQuery }: { searchQuery: string }) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" data-test-id="saas-admin-active-error">
         <p className="text-red-500">Error loading active companies: {error.message}</p>
       </div>
     );
@@ -283,12 +284,12 @@ function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
   );
 }
 
-function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; refetch: () => void }) {
+function AccountTable({ accounts }: { accounts: AdminApi.Account[] }) {
   const formattedTimePreferences = useFormattedTimePreferences();
   const [pendingAction, setPendingAction] = React.useState<PendingAccountAction | null>(null);
 
   const closeDialog = () => setPendingAction(null);
-  const { handleConfirmAction, dialogContent } = useAccountActions({ pendingAction, closeDialog, refetch });
+  const { handleConfirmAction, dialogContent } = useAccountActions({ pendingAction, closeDialog });
 
   return (
     <div>

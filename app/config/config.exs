@@ -63,7 +63,7 @@ config :phoenix, :json_library, Jason
 
 config :operately, OperatelyWeb.Gettext,
   default_locale: "en",
-  allowed_locales: ~w(en)
+  allowed_locales: ~w(en pt_BR)
 
 config :ueberauth, Ueberauth,
   base_path: "/accounts/auth",

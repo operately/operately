@@ -66,7 +66,7 @@ const BlobExtension = Node.create<BlobOptions>({
       "div",
       { class: "blob-container" },
       ["img", HTMLAttributes],
-      ["div", { class: "footer" }, ["span", { class: "title" }, HTMLAttributes.alt]],
+      ["div", { class: "footer" }, ["span", { class: "title" }, HTMLAttributes.alt ?? HTMLAttributes.title ?? ""]],
     ];
   },
 

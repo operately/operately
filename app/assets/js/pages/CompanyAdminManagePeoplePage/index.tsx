@@ -6,15 +6,18 @@ import * as Permissions from "@/models/permissions";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import plurarize from "@/utils/plurarize";
+import { tn } from "@/i18n";
 import { usePaths } from "@/routes/paths";
 import { CompanyAdminManagePeoplePage } from "turboui";
 
 export default { name: "CompanyAdminManagePeoplePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { company, invitedPeople, currentMembers, guests } = useLoadedData();
   const paths = usePaths();
   const me = useMe()!;
@@ -38,7 +41,7 @@ function Page() {
         hasOpenInvitation: !!person.hasOpenInvitation,
         hasValidInvite,
         invitationExpired,
-        expiresIn: hasValidInvite ? buildExpiresIn(person.inviteLink || null) : null,
+        expiresIn: hasValidInvite ? buildExpiresIn(person.inviteLink || null, t) : null,
         profilePath: paths.profilePath(person.id!),
         profileEditPath: paths.profileEditPath(person.id!, { from: "admin-manage-people" }),
         inviteLinkUrl: inviteToken ? Companies.createInvitationUrl(inviteToken) : null,
@@ -46,7 +49,7 @@ function Page() {
         accessLevel: person.accessLevel || undefined,
       };
     },
-    [me.id, paths],
+    [me.id, paths, t],
   );
 
   const invited = React.useMemo(() => invitedPeople.map(buildPerson), [invitedPeople, buildPerson]);
@@ -84,8 +87,8 @@ function Page() {
   );
 
   const navigationItems = React.useMemo(
-    () => [{ to: paths.companyAdminPath(), label: "Company Administration" }],
-    [paths],
+    () => [{ to: paths.companyAdminPath(), label: t("Company Administration") }],
+    [paths, t],
   );
 
   return (
@@ -107,7 +110,7 @@ function Page() {
   );
 }
 
-function buildExpiresIn(inviteLink: People.InviteLink | null): string | null {
+function buildExpiresIn(inviteLink: People.InviteLink | null, t: TFunction): string | null {
   if (!inviteLink?.expiresAt) return null;
 
   const expiresAt = Time.parse(inviteLink.expiresAt);
@@ -117,19 +120,19 @@ function buildExpiresIn(inviteLink: People.InviteLink | null): string | null {
   if (diff < 0) return null;
 
   if (diff < 60 * 1000) {
-    return "less than a minute";
+    return t("less than a minute");
   }
 
   if (diff < 60 * 60 * 1000) {
     const value = Math.ceil(diff / (60 * 1000));
-    return plurarize(value, "minute", "minutes");
+    return tn("1 minute", "{{count}} minutes", value);
   }
 
   if (diff < 24 * 60 * 60 * 1000) {
     const value = Math.ceil(diff / (60 * 60 * 1000));
-    return plurarize(value, "hour", "hours");
+    return tn("1 hour", "{{count}} hours", value);
   }
 
   const value = Math.ceil(diff / (24 * 60 * 60 * 1000));
-  return plurarize(value, "day", "days");
+  return tn("1 day", "{{count}} days", value);
 }

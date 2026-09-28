@@ -1,5 +1,6 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 import { listCompanyBillingSellablePlanDefinitions, normalizeCompanyBillingPlanKey } from "./plans";
+import i18n from "../i18n";
 
 const INTERVAL_ORDER: Record<CompanyBillingPageTypes.Interval, number> = { monthly: 0, yearly: 1 };
 
@@ -95,7 +96,7 @@ export function selectCompanyBillingTarget(
     return {
       target: fallbackTarget?.target || null,
       source: fallbackTarget?.source || null,
-      warning: "The requested billing option is not currently available. Showing the closest available plan instead.",
+      warning: i18n.t("The requested billing option is not currently available. Showing the closest available plan instead."),
     };
   }
 

@@ -30,7 +30,11 @@ namespace DiscussionCard {
   }
 }
 
-export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTimePreferences }: DiscussionCard.Props) {
+export function DiscussionCard({
+  discussion,
+  mentionedPersonLookup,
+  formattedTimePreferences,
+}: DiscussionCard.Props) {
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",

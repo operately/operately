@@ -4,6 +4,28 @@ defmodule OperatelyEmail.RichTextExcerptTest do
   alias OperatelyEmail.RichTextExcerpt
   alias Operately.Support.RichText
 
+  @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+  for fixture <- @table_fixtures do
+    @fixture fixture
+    test "flattens tables before shortening excerpts: #{fixture["name"]}" do
+      table = Enum.at(@fixture["document"]["content"], 1)
+      source = %{"type" => "doc", "content" => [table]}
+      expected = @fixture["tableText"] |> String.replace("\n", " / ")
+      full = RichTextExcerpt.excerpt(source, limit: 10_000)
+      assert full.text == String.trim(expected)
+      refute full.html =~ "<table"
+      refute full.html =~ "<td"
+
+      shortened = RichTextExcerpt.excerpt(Jason.encode!(source), limit: 12)
+      if String.length(expected) > 12 do
+        assert shortened.text == String.slice(expected, 0, 12) <> "..."
+      end
+      refute shortened.html =~ "<table"
+      assert Enum.at(@fixture["document"]["content"], 1) == table
+    end
+  end
+
   test "excerpt/2 truncates plain text content" do
     content = RichText.rich_text("abcdefghijklmnopqrstuvwxyz")
 

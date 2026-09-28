@@ -1,13 +1,16 @@
 import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBillingPage/types";
 import { formatCompanyBillingDate, formatCompanyBillingPlanLabel } from "./formatting";
+import i18n, { translationText } from "../i18n";
 
 export function buildCompanyBillingSuccessFeedback(
   billing: CompanyBillingPageTypes.BillingOverview,
 ): CompanyBillingPageTypes.Feedback {
   return {
     kind: "success",
-    message: "Upgrade confirmed",
-    description: `This company is now on ${formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new paid plan")}.`,
+    message: i18n.t("Upgrade confirmed"),
+    description: i18n.t("This company is now on {{plan}}.", {
+      plan: formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, translationText(i18n.t("its new paid plan"))),
+    }),
   };
 }
 
@@ -17,15 +20,17 @@ export function buildCompanyBillingRecoveryFeedback(
   if (billing.account.pendingPlanKey) {
     return {
       kind: "pending",
-      message: "Checkout not completed yet",
-      description: `You can start checkout again for ${formatCompanyBillingPlanLabel(billing.account.pendingPlanKey, billing.account.pendingBillingInterval)}.`,
+        message: i18n.t("Checkout not completed yet"),
+        description: i18n.t("You can start checkout again for {{plan}}.", {
+          plan: formatCompanyBillingPlanLabel(billing.account.pendingPlanKey, billing.account.pendingBillingInterval),
+        }),
     };
   }
 
   return {
     kind: "incomplete",
-    message: "Checkout not completed",
-    description: "We couldn't confirm the checkout. You can go back to plan selection and try again.",
+      message: i18n.t("Checkout not completed"),
+      description: i18n.t("We couldn't confirm the checkout. You can go back to plan selection and try again."),
   };
 }
 
@@ -36,23 +41,25 @@ export function buildCompanyBillingPlanChangeFeedback(
     const planLabel = formatCompanyBillingPlanLabel(
       billing.account.scheduledPlanKey,
       billing.account.scheduledBillingInterval,
-      "the new plan",
+      translationText(i18n.t("the new plan")),
     );
     const effectiveDate = formatCompanyBillingDate(billing.account.scheduledChangeEffectiveAt);
 
     return {
       kind: "success",
-      message: "Plan change scheduled",
-      description: effectiveDate
-        ? `${planLabel} will take effect at the next renewal on ${effectiveDate}.`
-        : `${planLabel} will take effect at the next renewal.`,
+        message: i18n.t("Plan change scheduled"),
+        description: effectiveDate
+          ? i18n.t("{{plan}} will take effect at the next renewal on {{date}}.", { plan: planLabel, date: effectiveDate })
+          : i18n.t("{{plan}} will take effect at the next renewal.", { plan: planLabel }),
     };
   }
 
   return {
     kind: "success",
-    message: "Plan updated",
-    description: `This company is now on ${formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, "its new plan")}.`,
+      message: i18n.t("Plan updated"),
+      description: i18n.t("This company is now on {{plan}}.", {
+        plan: formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, translationText(i18n.t("its new plan"))),
+      }),
   };
 }
 
@@ -63,10 +70,10 @@ export function buildCompanyBillingCancellationFeedback(
 
   return {
     kind: "success",
-    message: "Cancellation scheduled",
-    description: endDate
-      ? `This company will stay on its current paid plan until ${endDate}.`
-      : "This company will stay on its current paid plan until the end of the current billing period.",
+      message: i18n.t("Cancellation scheduled"),
+      description: endDate
+        ? i18n.t("This company will stay on its current paid plan until {{date}}.", { date: endDate })
+        : i18n.t("This company will stay on its current paid plan until the end of the current billing period."),
   };
 }
 
@@ -75,7 +82,9 @@ export function buildCompanyBillingReactivationFeedback(
 ): CompanyBillingPageTypes.Feedback {
   return {
     kind: "success",
-    message: "Current plan kept",
-    description: `This company will remain on ${formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, "its current paid plan")}.`,
+      message: i18n.t("Current plan kept"),
+      description: i18n.t("This company will remain on {{plan}}.", {
+        plan: formatCompanyBillingPlanLabel(billing.account.planKey, billing.account.billingInterval, translationText(i18n.t("its current paid plan"))),
+      }),
   };
 }

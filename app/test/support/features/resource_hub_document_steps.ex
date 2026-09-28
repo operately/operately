@@ -324,6 +324,20 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.assert_has(testid: "share-link")
   end
 
+  step :login_as_other_user, ctx do
+    UI.login_as(ctx, ctx.other_user)
+  end
+
+  step :refute_publish_now, ctx do
+    ctx
+    |> UI.refute_has(testid: "publish-now")
+  end
+
+  step :refute_publish_draft, ctx do
+    ctx
+    |> UI.refute_has(testid: "publish-draft")
+  end
+
   step :assert_single_draft_document_link_is_visible, ctx do
     ctx
     |> UI.assert_has(Wallaby.Query.css(~s([data-test-id="continue-editing-draft"]), text: "Your drafts (1)"))

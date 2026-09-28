@@ -1,6 +1,9 @@
 import React from "react";
 
 import { Toolbar } from "./components/Toolbar";
+import { TableHoverControls } from "./components/TableHoverControls";
+import { TableSettingsMenus } from "./components/TableSettingsMenus";
+import { TableAxisMenus } from "./components/TableAxisMenus";
 import { EditorContext, TipTapEditorContent } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 import { EditorState } from "./useEditor";
@@ -9,6 +12,7 @@ import classNames from "../utils/classnames";
 export { useEditor } from "./useEditor";
 export type { MentionedPersonLookupFn } from "./useEditor";
 export { hasLocalDraft } from "./localDrafts";
+export type { TaskListInteraction, TaskItemChange } from "./taskLists";
 
 interface EditorProps {
   editor: EditorState;
@@ -64,6 +68,9 @@ function EditorContent(props: EditorProps): JSX.Element {
 
       <div onClick={handleFocus} className="ProseMirror cursor-text text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
+        <TableHoverControls />
+        <TableAxisMenus />
+        <TableSettingsMenus />
       </div>
     </div>
   );

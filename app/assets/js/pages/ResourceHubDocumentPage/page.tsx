@@ -1,3 +1,4 @@
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -10,7 +11,8 @@ import {
   useDeleteDocument,
   usePublishDocument,
 } from "@/models/resourceHubs";
-import { usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { useCommentSection } from "@/features/CommentSection/useCommentSection";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
@@ -19,7 +21,8 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { assertPresent } from "@/utils/assertions";
-import { DocumentPage, displayDate } from "turboui";
+import { DocumentPage, DocumentPublicSharingModal, displayDate } from "turboui";
+import { useUpdateDocumentPublicSharing } from "@/models/resourceHubs/documentPublicSharingLifecycle";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentPageNavigation, buildNavigationDocument } from "./navigation";
@@ -27,13 +30,22 @@ import { useDocumentPageOptions } from "./Options";
 
 export function Page() {
   const { document, folder, resourceHub, isCurrentUserSubscribed } = useLoadedData();
+  const me = useMe();
   const paths = usePaths();
   const navigate = useNavigate();
   const refresh = useRefresh();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mentionedPersonLookup } = useRichEditorHandlers();
+  const taskList = useTaskList({
+    resourceType: "document",
+    resourceId: document.id,
+    field: "content",
+    canEdit: document.permissions?.canEditDocument ?? false,
+  });
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
+  const [sharingOpen, setSharingOpen] = React.useState(false);
+  const { mutateAsync: updatePublicSharing } = useUpdateDocumentPublicSharing();
 
   const mutationScope = {
     spaceId: document.space?.id,
@@ -47,7 +59,11 @@ export function Page() {
   const navigationDocument = buildNavigationDocument(document, resourceHub);
   const pageResourceHub = navigationDocument.resourceHub;
   const copyListContext = useCopyDocumentListContext(folder ?? pageResourceHub, document);
-  const options = useDocumentPageOptions({ showCopyModal: openCopyForm, showDeleteModal: toggleDeleteConfirmModal });
+  const options = useDocumentPageOptions({
+    showCopyModal: openCopyForm,
+    showDeleteModal: toggleDeleteConfirmModal,
+    showPublicSharingModal: () => setSharingOpen(true),
+  });
 
   assertPresent(document.notifications, "notifications must be present in document");
   assertPresent(document.author, "author must be present in document");
@@ -83,6 +99,7 @@ export function Page() {
   });
 
   const isDraft = document.state === "draft";
+  const canPublish = Boolean(document.author && me && compareIds(me.id, document.author.id));
 
   async function handleDelete() {
     await remove({ documentId: document.id });
@@ -114,6 +131,7 @@ export function Page() {
     formattedTimePreferences,
     content: document.content!,
     mentionedPersonLookup,
+    taskList,
     reactions: {
       ...reactionsForm,
       size: 24,
@@ -147,12 +165,24 @@ export function Page() {
           state: "draft",
           updatedAt: document.updatedAt!,
           editPath: paths.resourceHubEditDocumentPath(document.id),
-          onPublish: handlePublish,
+          onPublish: canPublish ? handlePublish : undefined,
           formattedTimePreferences,
         }}
       />
     );
   }
 
-  return <DocumentPage {...shared} hideDraftActions />;
+  return (
+    <>
+      <DocumentPage {...shared} hideDraftActions />
+      <DocumentPublicSharingModal
+        isOpen={sharingOpen}
+        onClose={() => setSharingOpen(false)}
+        publicUrl={document.publicUrl ?? null}
+        onChange={async (enabled) => {
+          await updatePublicSharing({ documentId: document.id, enabled });
+        }}
+      />
+    </>
+  );
 }

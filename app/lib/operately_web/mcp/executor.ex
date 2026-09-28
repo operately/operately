@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Mcp.Executor do
   Resolves catalog entries, validates arguments, and executes MCP tool wrappers.
   """
 
+  alias OperatelyWeb.Api.RichContent.Preparation
   alias Jason.EncodeError
   alias Plug.Conn
   alias OperatelyWeb.Mcp.Catalog.Definition
@@ -33,8 +34,10 @@ defmodule OperatelyWeb.Mcp.Executor do
   end
 
   defp execute_definition(conn, definition, arguments) do
+    arguments = Preparation.prepare_inputs(conn, arguments)
+
     case definition.implementation.call(conn, arguments) do
-      {:ok, payload} when is_map(payload) -> {:ok, success_result(payload)}
+      {:ok, payload} when is_map(payload) -> {:ok, success_result(Preparation.prepare_response(conn, payload))}
       {:ok, _payload} -> {:ok, internal_error_result()}
       {:error, :invalid_arguments} = error -> error
       {:error, :not_implemented} -> {:ok, not_implemented_result(definition.name)}

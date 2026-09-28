@@ -26,7 +26,7 @@ describe("CheckInCard", () => {
             scheduledAt,
           }}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   }
 

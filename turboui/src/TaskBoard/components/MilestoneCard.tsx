@@ -1,5 +1,6 @@
 import { IconFileText, IconFlagFilled, IconMessageCircle, IconPlus } from "../../icons";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
@@ -16,7 +17,7 @@ import { StatusSelector } from "../../StatusSelector";
 import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
-import type { RichEditorHandlers } from "../../RichEditor/useEditor";
+import type { RichTextHandlers } from "../../RichContent/types";
 import type { FormattedTimePreferences } from "../../FormattedTime";
 
 export interface MilestoneCardProps {
@@ -37,7 +38,7 @@ export interface MilestoneCardProps {
   selectedTaskId?: string | null;
   onTaskClick?: (taskId: string) => void;
   onInlineCreateOpen?: () => void;
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
   formattedTimePreferences: FormattedTimePreferences;
 
   /**
@@ -72,6 +73,7 @@ export function MilestoneCard({
   richTextHandlers,
   formattedTimePreferences,
 }: MilestoneCardProps) {
+  const { t } = useTranslation();
   const cardRef = React.useRef<HTMLLIElement>(null);
   const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
   const isCompleted = milestone.status === "done";
@@ -212,7 +214,7 @@ export function MilestoneCard({
               testId="milestone-add-task"
             >
               {/* icon-only for reduced repetition; keep accessible label */}
-              <span className="sr-only">Add task</span>
+              <span className="sr-only">{t("Add task")}</span>
             </SecondaryButton>
           </div>
         </div>

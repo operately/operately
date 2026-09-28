@@ -8,6 +8,7 @@ import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { TimezoneProvider } from "@/contexts/TimezoneContext";
 
 import { saasAdminRoutes } from "@/ee/routes";
@@ -22,7 +23,9 @@ function CompanyRoutes() {
   return (
     <CurrentCompanyProvider>
       <TimezoneProvider>
-        <CompanyLayout />
+        <LanguageProvider>
+          <CompanyLayout />
+        </LanguageProvider>
       </TimezoneProvider>
     </CurrentCompanyProvider>
   );
@@ -35,6 +38,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
       element: <NonCompanyRoutes />,
       errorElement: <ErrorPage />,
       children: [
+        pageRoute("/public/documents/:token", pages.PublicDocumentPage, { auth: false, preload: false }),
         pageRoute("/log_in", pages.LoginPage, { auth: false }),
         pageRoute("/sign_up", pages.SignUpPage, { auth: false }),
         pageRoute("/sign_up/email", pages.SignUpWithEmailPage, { auth: false }),

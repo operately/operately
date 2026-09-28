@@ -6,7 +6,7 @@ import {
   ProjectTemplateLifecycleDialogs,
 } from "../ProjectTemplateLifecycle";
 import type { ProjectPermissions } from "../ProjectPage/types";
-import type { RichEditorHandlers } from "../RichEditor/useEditor";
+import type { RichTextHandlers } from "../RichContent/types";
 import type { FormattedTimePreferences } from "../FormattedTime";
 import type { StatusSelector } from "../StatusSelector";
 import type { PersonField } from "../PersonField";
@@ -179,7 +179,7 @@ export namespace TemplateProjectPage {
     people?: TemplatePerson[];
     personSearch: PersonField.SearchData;
     contributorPersonSearch: PersonField.SearchData;
-    richTextHandlers: RichEditorHandlers;
+    richTextHandlers: RichTextHandlers;
     formattedTimePreferences: FormattedTimePreferences;
     onTemplateUpdate: (updates: Partial<Props["template"]>) => void | boolean | Promise<void | boolean>;
     onStatusesChange?: (payload: {

@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { DangerButton, SecondaryButton } from "../Button";
 import { InfoCallout, WarningCallout } from "../Callouts";
 import { Page } from "../Page";
+import { translationText } from "../i18n";
 import type { CompanyBillingCancellationPage as CompanyBillingCancellationPageTypes } from "./types";
 import { buildCompanyBillingCancellationPageViewModel } from "./viewModel";
 
@@ -21,6 +23,7 @@ export namespace CompanyBillingCancellationPage {
 }
 
 export function CompanyBillingCancellationPage(props: CompanyBillingCancellationPage.Props) {
+  const { t } = useTranslation();
   const viewModel = buildCompanyBillingCancellationPageViewModel(props);
 
   return (
@@ -30,7 +33,7 @@ export function CompanyBillingCancellationPage(props: CompanyBillingCancellation
 
         <div className="space-y-8">
           {viewModel.errorMessage && (
-            <WarningCallout message="Cancellation unavailable" description={viewModel.errorMessage} />
+            <WarningCallout message={translationText(t("Cancellation unavailable"))} description={viewModel.errorMessage} />
           )}
 
           <InfoCallout
@@ -45,7 +48,7 @@ export function CompanyBillingCancellationPage(props: CompanyBillingCancellation
             />
           )}
 
-          <Section title="Downgrade details">
+          <Section title={t("Downgrade details")}>
             <SectionCard>
               <DetailRows rows={viewModel.summary.rows} />
             </SectionCard>

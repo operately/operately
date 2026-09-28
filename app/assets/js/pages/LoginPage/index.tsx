@@ -1,12 +1,14 @@
-import Api from "@/api";
+import * as Invitations from "@/models/invitations";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
+import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -16,6 +18,8 @@ import { Forms, DimmedLink, Link, type FormState } from "turboui";
 export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
+  const { mutateAsync: joinCompanyViaInviteLink } = Invitations.useJoinCompanyViaInviteLink();
   const [error, setError] = React.useState<string | null>(null);
   const inviteToken = React.useMemo(() => new URLSearchParams(window.location.search).get("invite_token"), []);
   const redirectTo = React.useMemo(() => getRedirectTo(), []);
@@ -34,13 +38,13 @@ function Page() {
       });
 
       if (res === "failure") {
-        setError("Invalid email or password");
+        setError(t("Invalid email or password"));
         return;
       }
 
       if (inviteToken) {
         try {
-          const joinResult = await Api.invitations.joinCompanyViaInviteLink({ token: inviteToken });
+          const joinResult = await joinCompanyViaInviteLink({ token: inviteToken });
           const companyId = joinResult.company?.id;
 
           if (companyId) {
@@ -56,20 +60,20 @@ function Page() {
             return;
           }
 
-          setError("Something went wrong while joining. Please try again.");
+          setError(t("Something went wrong while joining. Please try again."));
         }
       }
     },
   });
 
   return (
-    <Pages.Page title={["Sign In"]} testId="login-page">
+    <Pages.Page title={translationText(t("Sign In"))} testId="login-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
           <div className="py-8 sm:px-4 sm:py-4">
             <OperatelyLogo width="40px" height="40px" />
-            <h1 className="text-2xl font-bold mt-4">Operately</h1>
-            <p className="text-content-dimmed mb-8">Please enter your details to sign in</p>
+            <h1 className="text-2xl font-bold mt-4">{t("Operately")}</h1>
+            <p className="text-content-dimmed mb-8">{t("Please enter your details to sign in")}</p>
 
             <Forms.Form form={form}>
               {window.appConfig.allowLoginWithEmail && <EmailLogin form={form} error={error} />}
@@ -77,7 +81,10 @@ function Page() {
 
               {isSignupEnabled() && (
                 <div className="mt-8 text-center text-sm font-medium">
-                  Don't have an account? <Link to="/sign_up">Create an account</Link>
+                  <Trans
+                    i18nKey="Don't have an account? <actionLink>Create an account</actionLink>"
+                    components={{ actionLink: <Link to="/sign_up" /> }}
+                  />
                 </div>
               )}
             </Forms.Form>
@@ -93,10 +100,17 @@ function isSignupEnabled(): boolean {
 }
 
 function EmailLogin({ form, error }: { form: FormState<{ email: string; password: string }>; error: string | null }) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <Forms.FieldGroup>
-        <Forms.TextInput field={"email"} label="Email" placeholder="your@email.com" required />
+        <Forms.TextInput
+          field={"email"}
+          label={translationText(t("Email"))}
+          placeholder={translationText(t("your@email.com"))}
+          required
+        />
         <PasswordInput />
       </Forms.FieldGroup>
 
@@ -110,25 +124,29 @@ function EmailLogin({ form, error }: { form: FormState<{ email: string; password
 }
 
 function PasswordInput() {
+  const { t } = useTranslation();
+
   return (
     <Forms.PasswordInput
       field={"password"}
       label={
         <div className="flex justify-between w-full">
-          <span>Password</span>
+          <span>{t("Password")}</span>
           <ForgotPasswordLink />
         </div>
       }
-      placeholder="Password"
+      placeholder={translationText(t("Password"))}
       required
     />
   );
 }
 
 function ForgotPasswordLink() {
+  const { t } = useTranslation();
+
   return (
     <DimmedLink to={Paths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
-      Forgot password?
+      {t("Forgot password?")}
     </DimmedLink>
   );
 }
@@ -143,6 +161,7 @@ function GoogleLogin() {
 }
 
 function SubmitButton({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
   const className = classNames(
     "w-full flex justify-center py-2 px-4",
     "border border-transparent",
@@ -152,16 +171,18 @@ function SubmitButton({ onClick }: { onClick: () => void }) {
 
   return (
     <button type="submit" className={className} onClick={onClick} data-test-id="submit">
-      Sign in
+      {t("Sign in")}
     </button>
   );
 }
 
 function OrSeparator() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-4 my-6 text-content-dimmed uppercase text-xs font-medium tracking-wide">
       <div className="border-t border-stroke-base flex-1" />
-      or
+      {t("or")}
       <div className="border-t border-stroke-base flex-1" />
     </div>
   );

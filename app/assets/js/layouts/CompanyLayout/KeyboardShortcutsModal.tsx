@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { translationText } from "@/i18n";
 
 import { Modal } from "turboui";
 
@@ -17,29 +19,15 @@ interface Shortcut {
   keys: string[][];
 }
 
-const SHORTCUT_GROUPS: ShortcutGroup[] = [
-  {
-    title: "Task management",
-    shortcuts: [
-      { label: "Select next task", keys: [["j"]] },
-      { label: "Select previous task", keys: [["k"]] },
-      { label: "Open selected task", keys: [["Return"]] },
-      { label: "Open assignee picker for the selected task", keys: [["a"]] },
-      { label: "Open status picker for the selected task where supported", keys: [["s"]] },
-      { label: "Open due date picker for the selected task", keys: [["d"]] },
-      { label: "Clear task selection", keys: [["Esc"]] },
-    ],
-  },
-];
-
 export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsModalProps) {
-  const shortcutGroups = React.useMemo(() => buildShortcutGroups(), []);
+  const { t } = useTranslation();
+  const shortcutGroups = React.useMemo(() => buildShortcutGroups((key) => translationText(t(key))), [t]);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Keyboard Shortcuts Cheatsheet"
+      title={translationText(t("Keyboard Shortcuts Cheatsheet"))}
       size="small"
       contentPadding="px-[26px] py-6"
     >
@@ -89,16 +77,27 @@ function ShortcutKeySequence({ keys }: { keys: string[] }) {
   );
 }
 
-function buildShortcutGroups(): ShortcutGroup[] {
+function buildShortcutGroups(t: (key: string) => string): ShortcutGroup[] {
   return [
     {
-      title: "Global",
+      title: t("Global"),
       shortcuts: [
-        { label: "Open global search", keys: [isMacPlatform() ? ["⌘", "k"] : ["Ctrl", "k"]] },
-        { label: "Open keyboard shortcuts", keys: [["?"]] },
+        { label: t("Open global search"), keys: [isMacPlatform() ? ["⌘", "k"] : [t("Ctrl"), "k"]] },
+        { label: t("Open keyboard shortcuts"), keys: [["?"]] },
       ],
     },
-    ...SHORTCUT_GROUPS,
+    {
+      title: t("Task management"),
+      shortcuts: [
+        { label: t("Select next task"), keys: [["j"]] },
+        { label: t("Select previous task"), keys: [["k"]] },
+        { label: t("Open selected task"), keys: [[t("Return")]] },
+        { label: t("Open assignee picker for the selected task"), keys: [["a"]] },
+        { label: t("Open status picker for the selected task where supported"), keys: [["s"]] },
+        { label: t("Open due date picker for the selected task"), keys: [["d"]] },
+        { label: t("Clear task selection"), keys: [[t("Esc")]] },
+      ],
+    },
   ];
 }
 

@@ -77,6 +77,16 @@ defmodule OperatelyWeb.Api.Documents.GetTest do
       assert res.document.id == Paths.document_id(ctx.doc)
     end
 
+    test "public sharing URL is available only to editors requesting permissions", ctx do
+      ctx.doc |> Ecto.Changeset.change(public_token: "shared") |> Repo.update!()
+      input = %{id: Paths.document_id(ctx.doc), include_permissions: true}
+      assert {200, %{document: %{public_url: url}}} = query(ctx.conn, [:documents, :get], input)
+      assert is_binary(url)
+
+      ctx = ctx |> Factory.add_space_member(:viewer, :space, permissions: :view_access) |> Factory.log_in_person(:viewer)
+      assert {200, %{document: %{public_url: nil}}} = query(ctx.conn, [:documents, :get], input)
+    end
+
     test "includes current_version", ctx do
       assert {200, res} =
                query(ctx.conn, [:documents, :get], %{

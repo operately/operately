@@ -1,7 +1,7 @@
 import type { StatusSelector } from "../../StatusSelector";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
-import type { RichEditorHandlers } from "../../RichEditor/useEditor";
+import type { RichTextHandlers } from "../../RichContent/types";
 import type { TaskPage } from "../../TaskPage";
 import type { TemplateProjectPage } from "../../TemplateProjectPage";
 import type { PersonField } from "../../PersonField";
@@ -46,7 +46,7 @@ export interface TemplateTaskSlideInContext {
     destinationIndex: number,
   ) => void | boolean | Promise<void | boolean>;
   personSearch?: PersonField.SearchData;
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
   canEdit?: boolean;
   formattedTimePreferences?: FormattedTimePreferences;
 }
@@ -70,7 +70,7 @@ export interface TaskSlideInContext {
   milestones?: TaskBoard.Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
 }
 
 export interface KanbanBoardProps {
@@ -106,7 +106,7 @@ export interface KanbanBoardProps {
   milestones?: TaskBoard.Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
-  richTextHandlers?: RichEditorHandlers;
+  richTextHandlers?: RichTextHandlers;
   getTaskPageProps: GetTaskPageProps;
   unstyled?: boolean;
   toolbarLeading?: ReactNode;

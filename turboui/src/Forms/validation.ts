@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import i18n, { translationText } from "../i18n";
 import { isContentEmpty } from "../RichContent";
 import { useFormContext } from "./context";
 import type { AddErrorFn, FieldValidation } from "./types";
@@ -14,29 +15,31 @@ export function useValidation(field: string, validation: FieldValidation) {
   }, [field, form, validation]);
 }
 
-export function validatePresence(required?: boolean, message = "Can't be empty"): FieldValidation {
+export function validatePresence(required?: boolean, message?: string): FieldValidation {
   return (field: string, value: unknown, addError: AddErrorFn) => {
     if (!required) {
       return;
     }
 
+    const error = translationText(message ?? i18n.t("Can't be empty"));
+
     if (typeof value !== "string") {
       if (!value) {
-        addError(field, message);
+        addError(field, error);
       }
       return;
     }
 
     if (value.trim().length === 0) {
-      addError(field, message);
+      addError(field, error);
     }
   };
 }
 
-export function validateRichContentPresence(required?: boolean, message = "Can't be empty"): FieldValidation {
+export function validateRichContentPresence(required?: boolean, message?: string): FieldValidation {
   return (field: string, value: unknown, addError: AddErrorFn) => {
     if (required && isContentEmpty(value)) {
-      addError(field, message);
+      addError(field, translationText(message ?? i18n.t("Can't be empty")));
     }
   };
 }
@@ -52,16 +55,16 @@ export function validateTextLength(minLength?: number, maxLength?: number): Fiel
     }
 
     if (minLength && value.length < minLength) {
-      addError(field, `Must be at least ${minLength} characters long`);
+      addError(field, translationText(i18n.t("Must be at least {{minLength}} characters long", { minLength })));
     }
 
     if (maxLength && value.length > maxLength) {
-      addError(field, `Must be at most ${maxLength} characters long`);
+      addError(field, translationText(i18n.t("Must be at most {{maxLength}} characters long", { maxLength })));
     }
   };
 }
 
-export function validateIsNumber(message = "Must be a valid number"): FieldValidation {
+export function validateIsNumber(message?: string): FieldValidation {
   return (field: string, value: unknown, addError: AddErrorFn) => {
     if (value === null || value === undefined || value === "") {
       return;
@@ -70,7 +73,7 @@ export function validateIsNumber(message = "Must be a valid number"): FieldValid
     const num = Number(value);
 
     if (isNaN(num) || !isFinite(num)) {
-      addError(field, message);
+      addError(field, translationText(message ?? i18n.t("Must be a valid number")));
     }
   };
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 import type { EmailChangeRequest } from "../ApiTypes";
 import * as Forms from "../Forms";
 import { ActionLink } from "../Link";
@@ -27,22 +28,23 @@ interface Props extends VerificationStepProps {
 }
 
 export function VerificationStep(props: Props) {
+  const { t } = useTranslation();
   const { pending, busy, error, retrySeconds, expired, authorizationExpired } = props;
   const fieldsRef = useFocusFields(busy, props.resentEmail);
   const exhausted = pending.attemptsRemaining === 0;
   const unavailableMessage = authorizationExpired
-    ? "Your verification has expired. Start again to verify your current email."
+    ? t("Your verification has expired. Start again to verify your current email.")
     : exhausted
-      ? "Too many incorrect attempts. Request a new code to continue."
+      ? t("Too many incorrect attempts. Request a new code to continue.")
       : expired
-        ? "This code has expired. Request a new code to continue."
+        ? t("This code has expired. Request a new code to continue.")
         : null;
   const errorMessage = error ?? unavailableMessage;
   const form = Forms.useForm({
     fields: { code: "" },
     validate: (addError) => {
       if (!/^[A-Z0-9]{6}$/.test(form.values.code.trim().toUpperCase().replace(/[\s-]/g, ""))) {
-        addError("code", "Enter the six-character code from your email.");
+        addError("code", t("Enter the six-character code from your email."));
       }
     },
     submit: async () => {
@@ -59,15 +61,19 @@ export function VerificationStep(props: Props) {
       <div className="mb-6" id="verification-instructions" data-test-id={props.testId}>
         <h2 className="text-lg font-bold mb-2">{props.heading}</h2>
         <p>
-          We sent a six-character code to<strong className="block break-all mt-1">{pending.codeRecipient}</strong>
+          <Trans
+            i18nKey="We sent a six-character code to<codeRecipient>{{codeRecipient}}</codeRecipient>"
+            values={{ codeRecipient: pending.codeRecipient }}
+            components={{ codeRecipient: <strong className="block break-all mt-1" /> }}
+          />
         </p>
         <p className="mt-2 text-content-dimmed text-sm">{props.instructions}</p>
-        <p className="mt-2 text-content-dimmed text-sm">Codes are valid for up to 5 minutes.</p>
+        <p className="mt-2 text-content-dimmed text-sm">{t("Codes are valid for up to 5 minutes.")}</p>
       </div>
       <FormError error={error} unavailable={unavailableMessage} />
       <fieldset ref={fieldsRef} disabled={busy} aria-busy={busy} className="min-w-0">
         <Forms.FieldGroup>
-          <Forms.InputField field="code" label="Verification code" error={form.errors.code}>
+          <Forms.InputField field="code" label={t("Verification code")} error={form.errors.code}>
             <Forms.Input
               id="code"
               field="code"
@@ -96,7 +102,7 @@ export function VerificationStep(props: Props) {
         />
         <div className="mt-6 pt-5 border-t border-surface-outline">
           <p className="text-sm text-content-dimmed mb-3">
-            Can’t find your code? Check your spam folder or request another.
+            {t("Can’t find your code? Check your spam folder or request another.")}
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
             <ActionLink
@@ -104,18 +110,18 @@ export function VerificationStep(props: Props) {
               onClick={() => void props.resendCode()}
               testId="resend-email-code"
             >
-              {props.resending ? "Sending code…" : "Resend code"}
+              {props.resending ? t("Sending code…") : t("Resend code")}
             </ActionLink>
             <ActionLink
               onClick={() => void props.onCancelRequest(pending.id)}
               testId={authorizationExpired ? "restart-email-change" : "change-email-destination"}
               disabled={busy}
             >
-              {authorizationExpired ? "Start again" : "Use a different email"}
+              {authorizationExpired ? t("Start again") : t("Use a different email")}
             </ActionLink>
           </div>
           <p className="text-sm text-content-dimmed mt-3 break-words" role="status" aria-live="polite">
-            {props.resending ? "Sending code…" : busy ? "Please wait…" : ""}
+            {props.resending ? t("Sending code…") : busy ? t("Please wait…") : ""}
           </p>
         </div>
         <ResendCountdown seconds={retrySeconds} />

@@ -1,5 +1,6 @@
 import * as People from "@/models/people";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { emptyLoader } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -13,6 +14,7 @@ import { buildNotificationSettingsUpdateInput, getNotificationSettingsFormState 
 export default { name: "AccountNotificationSettingsPage", loader: emptyLoader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const me = useMe()!;
   const navigate = useNavigate();
   const paths = usePaths();
@@ -66,7 +68,7 @@ function Page() {
 
       navigate(paths.accountSettingsPath());
     } catch {
-      showErrorToast("Error", "Failed to update notification settings");
+      showErrorToast(t("Error"), t("Failed to update notification settings"));
     } finally {
       setIsSubmitting(false);
     }
@@ -79,6 +81,7 @@ function Page() {
     sendDailySummary,
     dailySummaryDeliveryTime,
     notifyAboutAssignments,
+    t,
   ]);
 
   return (

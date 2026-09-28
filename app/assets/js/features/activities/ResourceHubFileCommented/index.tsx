@@ -58,7 +58,9 @@ const ResourceHubFileCommented: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
+    const { mentionedPersonLookup } = useRichEditorHandlers({
+      scope: People.NoneSearchScope,
+    });
     const commentContent = parseCommentContent(comment?.content);
 
     if (!commentContent) {

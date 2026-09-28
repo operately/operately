@@ -25,7 +25,15 @@ const checkIconSize = {
   lg: 16,
 };
 
-export function Checkbox({ className, checked, onChange, disabled = false, size = "md", testId }: Checkbox.Props) {
+export function Checkbox({
+  className,
+  label,
+  checked,
+  onChange,
+  disabled = false,
+  size = "md",
+  testId,
+}: Checkbox.Props) {
   const handleChange = (e: React.MouseEvent) => {
     e.stopPropagation();
 
@@ -40,7 +48,7 @@ export function Checkbox({ className, checked, onChange, disabled = false, size 
     "border border-surface-outline rounded flex items-center justify-center flex-shrink-0",
     {
       "hover:bg-surface-base transition-colors cursor-pointer": !disabled,
-      "opacity-50": disabled,
+      "opacity-50 cursor-not-allowed": disabled,
     },
   );
 
@@ -48,7 +56,16 @@ export function Checkbox({ className, checked, onChange, disabled = false, size 
   const checkHeight = checkIconSize[size];
 
   return (
-    <button type="button" onClick={handleChange} className={checkClasses} disabled={disabled} data-test-id={testId}>
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={handleChange}
+      className={checkClasses}
+      disabled={disabled}
+      data-test-id={testId}
+    >
       {checked && (
         <svg width={checkWidth} height={checkHeight} viewBox="0 0 12 12" fill="none">
           <path

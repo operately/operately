@@ -103,16 +103,6 @@ describe("queryClient", () => {
 
     expect(axios.get).toHaveBeenCalledTimes(2);
   });
-
-  it("keeps existing endpoint functions uncached", async () => {
-    jest.mocked(axios.get).mockResolvedValue({ data: { project: { id: "project-1" } } });
-    const input = { id: "project-1" };
-
-    await Api.projects.get(input);
-    await Api.projects.get(input);
-
-    expect(axios.get).toHaveBeenCalledTimes(2);
-  });
 });
 
 function waitForRefetch(observer: QueryObserver, expectedRequestCount: number): Promise<void> {

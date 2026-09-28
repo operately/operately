@@ -39,11 +39,11 @@ The build generates English JSON from the source catalog and other languages fro
 | PR | Change | Production behavior and validation |
 | --- | --- | --- |
 | 1 — Complete | Add Gettext, shared extraction/conversion tooling, and unified frontend initialization. Document catalog commands. | English only. Verified deterministic generation, fallback, context, placeholders, rich text, and plural conversion. Fixed missing plural translations to fall back using English plural rules; all 36 focused i18n tests pass. |
-| 2 — Next | Add the language preference, effective-language resolver, and default-off flag. | English only. Use an additive migration; verify absent preferences, unsupported locales, and flag-off behavior. Audit preference API consumers and regenerate the CLI catalog if its contract changes. |
-| 3 | Extract one complete English workflow: navigation → project → task → activity notification/email. Include validation and accessible labels. | Existing English copy and behavior remain intact. Verify the workflow and immediate/buffered emails. |
-| 4 | Translate the pilot workflow into Brazilian Portuguese (`pt-BR`) and add the gated language selector. | Enable for an internal company only. Verify saved selection, recipient language, pluralization, layout, and switching the flag off. Unmigrated surfaces remain English. |
-| 5 | Extract remaining shared controls, account/onboarding screens, and company/space administration copy. | English remains unchanged; pilot users receive English fallback for newly extracted messages. Audit these surfaces for untranslated literals. |
-| 6 | Extract remaining work-management copy: goals, projects, tasks, discussions, Docs & Files, and activity feeds. | Verify representative workflows and expanded-text layouts. Include empty states, errors, tooltips, and accessibility text. |
+| 2 — Complete | Add the language preference, effective-language resolver, and default-off flag. | English only. Use an additive migration; verify absent preferences, unsupported locales, and flag-off behavior. Audit preference API consumers and regenerate the CLI catalog if its contract changes. |
+| 3 — Complete | Extract one complete English workflow: navigation → project → task → activity notification/email. Include validation, accessible labels, and in-workflow task create/rename error toasts. | Existing English copy and behavior remain intact. Verified the workflow, immediate/buffered emails, and cataloged create/rename failure toasts (including titles). Remaining gaps found in the audit are deferred below. |
+| 4 — Complete, in production | Translate the pilot workflow into Brazilian Portuguese (`pt-BR`) and add the gated language selector. | The Portuguese pilot and selector are shipped. Saved selection, recipient language, pluralization, layout, and switching the flag off are covered by the pilot. Unmigrated surfaces remain English. |
+| 5 — Complete | Extract remaining shared controls, account/onboarding screens, and company/space administration copy, including billing, export/import, and desktop company-dropdown, account-menu, New, Help, search, and update-badge chrome deferred from the pilot. | English remains unchanged. Extraction and follow-up audits cover these surfaces, including validation, errors, tooltips, and accessibility text. Existing translations are preserved; missing translations fall back to English, including plurals. Remaining Portuguese coverage and native-speaker review belong to PR 8. |
+| 6 | Extract remaining work-management copy: goals, projects, tasks, discussions, Docs & Files, and activity feeds. Include task-board filters/menus/milestone creation, remaining project and task operation toasts (due date, reminders, assignees, description, status, milestone, delete, move), space-task operations, and generic “Update failed” titles deferred from the pilot. | Verify representative workflows and expanded-text layouts. Include empty states, errors, tooltips, and accessibility text. |
 | 7 | Extract remaining backend messages, email subjects/bodies, digests, and server-rendered pages. | Verify recipient-scoped rendering, mixed-language recipients, and unchanged API machine identifiers. |
 | 8 | Complete the Brazilian Portuguese translation, terminology review, and coverage checks. | Test the full experience in English and Brazilian Portuguese with selected companies. CI checks catalog freshness and placeholder/plural integrity; establish checks against new uncataloged product copy. |
 | 9 | Enable language selection by default after acceptance. | Keep the flag as a rollback switch. Verify existing users retain English and disabling the flag restores English across UI and emails. |
@@ -54,3 +54,24 @@ The build generates English JSON from the source catalog and other languages fro
 - English behavior is preserved; no raw message keys or broken placeholders reach users.
 - Representative workflows, emails, formatting, and expanded-text layouts pass review.
 - Coverage gaps are tracked during migration and closed before general availability.
+
+Pilot audit notes (after PR 3): task create/rename failure toasts, the modal Close accessible label, task notes/activity headings and fallback, the task email's plain-text link label, and digest resource labels are cataloged. Toast and modal tests use substituted translations to verify catalog lookup as well as unchanged English. Shared navigation chrome beyond the listed labels is deferred to PR 5. Remaining project/task operation copy is deferred to PR 6. Non-pilot emails are deferred to PR 7.
+
+PR 5 extraction is complete across shared controls, navigation chrome, account/onboarding, and company/space administration. The work was delivered through #5357 (shared, account, and administration extraction), #5362 (remaining account/onboarding copy), #5366 (remaining company/space administration copy), and the space administration follow-up below. Company administration includes billing, export, and import. People directory and org-chart page copy remain explicitly tracked gaps. The Portuguese pilot and gated language selector are complete in production (PR 4). FormattedTime weekday/relative labels and selector behavior remain from earlier PRs.
+
+### Space administration extraction — complete
+
+Audited space creation/editing, general access, access management (including Other People), member addition, and tool configuration, including labels, validation, empty states, errors, tooltips, accessibility text, and app-wrapper errors. Shared permission option labels are cataloged at the shared list; shared access-summary titles and complete sentences are cataloged, with resource names included in each base sentence. Goal and project access pages remain outside this extraction.
+
+Most space administration copy was already cataloged. This follow-up closes the add-member button's missing accessible name. Access summaries retain independently translated complete sentences. Space-tool switches expose their cataloged titles to assistive technology. The existing Other People count uses language-aware plurals; no new UI count is introduced.
+
+`make gen.i18n` regenerates the source catalog, merges PO entries, and generates locale resources. The add-member accessible name has a Brazilian Portuguese translation drafted from the glossary. Existing reviewed access-summary translations are preserved. Tests verify English, Portuguese catalog lookup, substituted catalog lookup, missing-Portuguese fallback (including Other People's singular and plural forms), and tool configuration interactions. English wording, the language flag, preference, and selector behavior are unchanged. Backend `data.message` errors assigned to forms remain as returned.
+
+Remaining gaps before general availability:
+
+- PR 6: work-management copy and related toasts, including space home/work map/kanban/KPI/discussion surfaces.
+- PR 7: remaining backend messages and email copy, digests, and server-rendered pages.
+- People directory and org-chart page copy still need extraction.
+- PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted space-administration translations, and coverage checks.
+
+Operator SaaS administration is outside PR 5's scope. User-authored content (including names and emails) and machine identifiers are not translated.

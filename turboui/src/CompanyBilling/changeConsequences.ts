@@ -2,6 +2,7 @@ import type { CompanyBillingPage as CompanyBillingPageTypes } from "../CompanyBi
 import { formatCompanyBillingDate, formatCompanyBillingPlanLabel } from "./formatting";
 import { getCompanyBillingCurrentPlanDefinition, findCompanyBillingPlanDefinition } from "./plans";
 import { formatStorageBytes } from "./storageFormatting";
+import i18n from "../i18n";
 
 export function resolveCompanyBillingChangeTiming(
   currentTarget: CompanyBillingPageTypes.BillingTarget | null,
@@ -63,15 +64,18 @@ export function formatCompanyBillingChangeTimingDescription(
   consequence: CompanyBillingPageTypes.ChangeConsequence,
 ): string {
   if (consequence.timing === "immediate") {
-    return `${consequence.targetPlanLabel} takes effect immediately.`;
+    return i18n.t("{{plan}} takes effect immediately.", { plan: consequence.targetPlanLabel });
   }
 
   const effectiveDate = formatCompanyBillingDate(consequence.effectiveDate);
   if (effectiveDate) {
-    return `${consequence.targetPlanLabel} takes effect at the next renewal on ${effectiveDate}.`;
+    return i18n.t("{{plan}} takes effect at the next renewal on {{date}}.", {
+      plan: consequence.targetPlanLabel,
+      date: effectiveDate,
+    });
   }
 
-  return `${consequence.targetPlanLabel} takes effect at the next renewal.`;
+  return i18n.t("{{plan}} takes effect at the next renewal.", { plan: consequence.targetPlanLabel });
 }
 
 export function buildCompanyBillingOverageDescription(consequence: CompanyBillingPageTypes.ChangeConsequence) {
@@ -86,21 +90,44 @@ export function buildCompanyBillingOverageDescription(consequence: CompanyBillin
       description =
         memberLimit == null
           ? null
-          : `After it takes effect, adding or restoring people may be blocked because this company has ${consequence.memberCount} active members and ${limitLabel} includes ${memberLimit}.`;
+          : i18n.t(
+              "After it takes effect, adding or restoring people may be blocked because this company has {{memberCount}} active members and {{plan}} includes {{memberLimit}}.",
+              {
+                memberCount: consequence.memberCount,
+                plan: limitLabel,
+                memberLimit,
+              },
+            );
       break;
 
     case "storage":
       description =
         storageLimitBytes == null
           ? null
-          : `After it takes effect, uploading files may be blocked because this company is using ${formatStorageBytes(consequence.storageUsageBytes)} and ${limitLabel} includes ${formatStorageBytes(storageLimitBytes)}.`;
+          : i18n.t(
+              "After it takes effect, uploading files may be blocked because this company is using {{storage}} and {{plan}} includes {{limit}}.",
+              {
+                storage: formatStorageBytes(consequence.storageUsageBytes),
+                plan: limitLabel,
+                limit: formatStorageBytes(storageLimitBytes),
+              },
+            );
       break;
 
     case "member_and_storage":
       description =
         memberLimit == null || storageLimitBytes == null
           ? null
-          : `After it takes effect, adding or restoring people and uploading files may be blocked because this company has ${consequence.memberCount} active members, is using ${formatStorageBytes(consequence.storageUsageBytes)}, and ${limitLabel} includes ${memberLimit} members and ${formatStorageBytes(storageLimitBytes)} of storage.`;
+          : i18n.t(
+              "After it takes effect, adding or restoring people and uploading files may be blocked because this company has {{memberCount}} active members, is using {{storage}}, and {{plan}} includes {{memberLimit}} members and {{storageLimit}} of storage.",
+              {
+                memberCount: consequence.memberCount,
+                storage: formatStorageBytes(consequence.storageUsageBytes),
+                plan: limitLabel,
+                memberLimit,
+                storageLimit: formatStorageBytes(storageLimitBytes),
+              },
+            );
       break;
 
     default:

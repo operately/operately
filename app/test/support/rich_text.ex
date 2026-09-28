@@ -1,4 +1,22 @@
 defmodule Operately.Support.RichText do
+  def resource_link(href) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "paragraph",
+          "content" => [
+            %{
+              "type" => "text",
+              "text" => href,
+              "marks" => [%{"type" => "link", "attrs" => %{"href" => href}}]
+            }
+          ]
+        }
+      ]
+    }
+  end
+
   def rich_text(mentioned_people: people) do
     mentions = Enum.map(people, fn p ->
       %{

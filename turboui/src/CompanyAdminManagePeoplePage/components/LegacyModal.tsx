@@ -1,7 +1,9 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import { IconX } from "../../icons";
+import { translationText } from "../../i18n";
 
 export type LegacyModalSize = "xs" | "sm" | "base" | "lg" | "xl";
 
@@ -30,6 +32,7 @@ export function LegacyModal({
   padding?: string;
   testId?: string;
 }) {
+  const { t } = useTranslation();
   React.useEffect(() => {
     if (!isOpen) return;
 
@@ -60,7 +63,7 @@ export function LegacyModal({
               type="button"
               className="hover:cursor-pointer text-content-dimmed hover:text-content-accent transition-colors"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={translationText(t("Close"))}
             >
               <IconX size={20} />
             </button>

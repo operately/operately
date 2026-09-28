@@ -175,7 +175,7 @@ function Champion(props: GoalPage.State) {
 function Reviewer(props: GoalPage.State) {
   const readonly = !props.permissions.hasFullAccess;
   const testId = readonly ? "reviewer-field-readonly" : "reviewer-field";
-  
+
   return (
     <SidebarSection
       title={

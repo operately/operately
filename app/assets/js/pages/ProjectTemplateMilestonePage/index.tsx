@@ -1,6 +1,6 @@
 import { useUpdateTemplate } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import * as People from "@/models/people";
 import { useTemplateTaskSlideInProps } from "@/models/projectTemplates/useTemplateTaskSlideInProps";
 import { useTemplateTasksForTurboUi } from "@/models/projectTemplates/useTemplateTasksForTurboUi";
@@ -20,7 +20,15 @@ function Page() {
   const refresh = useRefresh();
   const paths = usePaths();
   const navigate = useNavigate();
-  const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: template.space.id } });
+  const richTextHandlers = useRichTextHandlers({
+    scope: { type: "space", id: template.space.id },
+    taskList: {
+      resourceType: "template_milestone",
+      resourceId: milestone.id,
+      field: "description",
+      canEdit: !template.archivedAt && Boolean(template.permissions?.canEdit || template.permissions?.hasFullAccess),
+    },
+  });
   const formattedTimePreferences = useFormattedTimePreferences();
   const profilePath = React.useCallback((personId: string) => paths.profilePath(personId), [paths]);
   const milestoneLink = React.useCallback(

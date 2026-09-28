@@ -5,11 +5,14 @@ import * as React from "react";
 import { Forms, Page as TurboUIPage } from "turboui";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
+import { translationText } from "@/i18n";
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyRenamePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const { company } = useLoadedData();
@@ -29,20 +32,20 @@ function Page() {
 
   return (
     <TurboUIPage
-      title={"Rename Company"}
+      title={translationText(t("Rename Company"))}
       size="small"
       testId="company-rename-page"
-      navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+      navigation={[{ to: paths.companyAdminPath(), label: t("Company Administration") }]}
     >
       <div className="px-10 py-8">
         <Forms.Form form={form}>
-          <div className="mb-6 text-content-accent text-2xl font-extrabold">Editing Company Name</div>
+          <div className="mb-6 text-content-accent text-2xl font-extrabold">{t("Editing Company Name")}</div>
 
           <Forms.FieldGroup>
-            <Forms.TextInput label="Company Name" field={"name"} minLength={2} maxLength={100} />
+            <Forms.TextInput label={translationText(t("Company Name"))} field={"name"} minLength={2} maxLength={100} />
           </Forms.FieldGroup>
 
-          <Forms.Submit saveText="Save" />
+          <Forms.Submit saveText={translationText(t("Save"))} />
         </Forms.Form>
       </div>
     </TurboUIPage>

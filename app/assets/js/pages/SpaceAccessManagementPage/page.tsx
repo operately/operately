@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -47,6 +48,7 @@ export function Page() {
 }
 
 function Title() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const paths = usePaths();
   const addMembersPath = paths.spaceAddMembersPath(space.id);
@@ -55,13 +57,13 @@ function Title() {
     <div className="rounded-t-[20px]">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-2xl font-extrabold ">Team &amp; Access</div>
-          <div className="text-medium">Manage the team and access to this space</div>
+          <div className="text-2xl font-extrabold ">{t("Team & Access")}</div>
+          <div className="text-medium">{t("Manage the team and access to this space")}</div>
         </div>
 
         {space.permissions.hasFullAccess && (
           <PrimaryButton size="sm" linkTo={addMembersPath} testId="add-members">
-            Add Members
+            {t("Add Members")}
           </PrimaryButton>
         )}
       </div>
@@ -75,12 +77,13 @@ function Navigation({ space }: { space: Space }) {
 }
 
 function GeneralAccess() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const paths = usePaths();
   const editPath = paths.spaceEditGeneralAccessPath(space.id);
 
   return (
-    <PageSection title="General Access">
+    <PageSection title={t("General Access")}>
       <BorderedRow>
         <AccessLevelSummary
           resourceType="space"
@@ -91,7 +94,7 @@ function GeneralAccess() {
 
         {space.permissions.hasFullAccess && (
           <SecondaryButton linkTo={editPath} size="xs">
-            Edit
+            {t("Edit")}
           </SecondaryButton>
         )}
       </BorderedRow>
@@ -100,15 +103,16 @@ function GeneralAccess() {
 }
 
 function SpaceManagers() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
 
-  const subtitle = "Managers have full access to resources in this space, including team and access management.";
+  const subtitle = t("Managers have full access to resources in this space, including team and access management.");
   const managers = space.members.filter((member) => member.accessLevel === PermissionLevels.FULL_ACCESS);
 
   if (managers.length === 0) return null;
 
   return (
-    <PageSection title="Space Managers" subtitle={subtitle}>
+    <PageSection title={t("Space Managers")} subtitle={subtitle}>
       {managers.map((contrib) => (
         <Member member={contrib} key={contrib.id} />
       ))}
@@ -117,6 +121,7 @@ function SpaceManagers() {
 }
 
 function SpaceMembers() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
 
   const members = space.members.filter((member) => member.accessLevel !== PermissionLevels.FULL_ACCESS);
@@ -124,7 +129,7 @@ function SpaceMembers() {
   if (members.length === 0) return null;
 
   return (
-    <PageSection title="Members">
+    <PageSection title={t("Members")}>
       {members.map((contrib) => (
         <Member member={contrib} key={contrib.id} />
       ))}
@@ -175,6 +180,7 @@ function MemberMenu({ member }: { member: People.Person }) {
 }
 
 function PromoteToManagerMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const { mutateAsync: edit } = useEditSpaceMembersPermissions();
 
@@ -186,12 +192,13 @@ function PromoteToManagerMenuItem({ member, hidden }: { member: People.Person; h
 
   return (
     <MenuActionItem onClick={handleClick} testId="promote-to-manager" hidden={hidden}>
-      Promote to manager
+      {t("Promote to manager")}
     </MenuActionItem>
   );
 }
 
 function DemoteToMemberMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const { mutateAsync: edit } = useEditSpaceMembersPermissions();
 
@@ -203,12 +210,13 @@ function DemoteToMemberMenuItem({ member, hidden }: { member: People.Person; hid
 
   return (
     <MenuActionItem onClick={handleClick} testId="demote-to-member" hidden={hidden}>
-      Reassign to member
+      {t("Reassign to member")}
     </MenuActionItem>
   );
 }
 
 function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const { mutateAsync: remove } = useRemoveGroupMember();
 
@@ -218,12 +226,13 @@ function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidde
 
   return (
     <MenuActionItem danger={true} onClick={handleClick} testId="remove-member" hidden={hidden}>
-      Remove from space
+      {t("Remove from space")}
     </MenuActionItem>
   );
 }
 
 function ChangeAccessLevelMenuItem({ member, hidden }: { member: People.Person; hidden: boolean }) {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const { mutateAsync: edit } = useEditSpaceMembersPermissions();
 
@@ -232,15 +241,15 @@ function ChangeAccessLevelMenuItem({ member, hidden }: { member: People.Person; 
   };
 
   return (
-    <SubMenu label="Change access level" hidden={hidden}>
+    <SubMenu label={t("Change access level")} hidden={hidden}>
       <MenuActionItem testId="edit-access" onClick={() => handleClick(PermissionLevels.EDIT_ACCESS)}>
-        Edit access
+        {t("Edit access")}
       </MenuActionItem>
       <MenuActionItem testId="comment-access" onClick={() => handleClick(PermissionLevels.COMMENT_ACCESS)}>
-        Comment access
+        {t("Comment access")}
       </MenuActionItem>
       <MenuActionItem testId="view-access" onClick={() => handleClick(PermissionLevels.VIEW_ACCESS)}>
-        View access
+        {t("View access")}
       </MenuActionItem>
     </SubMenu>
   );

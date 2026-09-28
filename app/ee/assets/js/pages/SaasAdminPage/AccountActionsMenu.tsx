@@ -1,4 +1,5 @@
 import * as AdminApi from "@/ee/admin_api";
+import * as SaasAdmin from "@/ee/models/saasAdminLifecycle";
 import * as React from "react";
 import { IconShieldLock, IconTrash, Menu, MenuActionItem, showErrorToast, showSuccessToast } from "turboui";
 
@@ -37,15 +38,15 @@ export type PendingAccountAction =
 export function useAccountActions({
   pendingAction,
   closeDialog,
-  refetch,
 }: {
   pendingAction: PendingAccountAction | null;
   closeDialog: () => void;
-  refetch: () => void;
 }) {
-  const [deleteAccount] = AdminApi.useDeleteAccount();
-  const [promoteAccountToSiteAdmin] = AdminApi.usePromoteAccountToSiteAdmin();
-  const [demoteAccountFromSiteAdmin] = AdminApi.useDemoteAccountFromSiteAdmin();
+  // Self-deletion and demotion redirect away after revoking admin access.
+  const currentAccountId = String(window.appConfig.account?.id);
+  const { mutateAsync: deleteAccount } = SaasAdmin.useDeleteAccount({ currentAccountId });
+  const { mutateAsync: promoteAccountToSiteAdmin } = SaasAdmin.usePromoteAccountToSiteAdmin();
+  const { mutateAsync: demoteAccountFromSiteAdmin } = SaasAdmin.useDemoteAccountFromSiteAdmin({ currentAccountId });
 
   const handleConfirmAction = React.useCallback(async () => {
     if (!pendingAction) return;
@@ -66,12 +67,12 @@ export function useAccountActions({
       showSuccessToast(successActionTitle(pendingAction.type), successActionMessage(pendingAction));
       closeDialog();
 
-      finishPendingAction(pendingAction, refetch);
+      finishPendingAction(pendingAction);
     } catch (error: any) {
       const message = error?.response?.data?.message || failedActionMessage(pendingAction.type);
       showErrorToast(failedActionTitle(pendingAction.type), message);
     }
-  }, [closeDialog, deleteAccount, demoteAccountFromSiteAdmin, pendingAction, promoteAccountToSiteAdmin, refetch]);
+  }, [closeDialog, deleteAccount, demoteAccountFromSiteAdmin, pendingAction, promoteAccountToSiteAdmin]);
 
   const dialogContent = pendingAction ? dialogDetails(pendingAction) : null;
 
@@ -80,9 +81,9 @@ export function useAccountActions({
 
 async function runPendingAction(
   action: PendingAccountAction,
-  deleteAccount: ReturnType<typeof AdminApi.useDeleteAccount>[0],
-  promoteAccountToSiteAdmin: ReturnType<typeof AdminApi.usePromoteAccountToSiteAdmin>[0],
-  demoteAccountFromSiteAdmin: ReturnType<typeof AdminApi.useDemoteAccountFromSiteAdmin>[0],
+  deleteAccount: ReturnType<typeof SaasAdmin.useDeleteAccount>["mutateAsync"],
+  promoteAccountToSiteAdmin: ReturnType<typeof SaasAdmin.usePromoteAccountToSiteAdmin>["mutateAsync"],
+  demoteAccountFromSiteAdmin: ReturnType<typeof SaasAdmin.useDemoteAccountFromSiteAdmin>["mutateAsync"],
 ) {
   switch (action.type) {
     case "promote":
@@ -94,7 +95,7 @@ async function runPendingAction(
   }
 }
 
-function finishPendingAction(action: PendingAccountAction, refetch: () => void) {
+function finishPendingAction(action: PendingAccountAction) {
   const currentAccountId = String(window.appConfig.account?.id);
 
   if (action.type === "delete" && action.account.id === currentAccountId) {
@@ -106,8 +107,6 @@ function finishPendingAction(action: PendingAccountAction, refetch: () => void) 
     window.location.assign("/");
     return;
   }
-
-  refetch();
 }
 
 function dialogDetails(action: PendingAccountAction) {

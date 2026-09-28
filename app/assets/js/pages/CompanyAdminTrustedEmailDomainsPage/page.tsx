@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Forms, GhostButton, IconTrash, Page as TurboUIPage } from "turboui";
 
@@ -8,27 +9,28 @@ import { FormState, useForm } from "./useForm";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { company } = useLoadedData();
   const form = useForm({ company });
 
   return (
     <TurboUIPage
-      title={["Trusted Email Domains", company.name!]}
+      title={[t("Trusted Email Domains"), company.name!]}
       size="small"
-      navigation={[{ to: paths.companyAdminPath(), label: "Company Administration" }]}
+      navigation={[{ to: paths.companyAdminPath(), label: t("Company Administration") }]}
     >
       <div className="px-10 py-8">
-        <div className="text-content-accent text-3xl font-extrabold">Trusted Email Domains</div>
+        <div className="text-content-accent text-3xl font-extrabold">{t("Trusted Email Domains")}</div>
 
-        <div className="text-content-accent font-bold mt-8 text-lg">What's this?</div>
+        <div className="text-content-accent font-bold mt-8 text-lg">{t("What's this?")}</div>
         <p>
-          Trusted email domains are email domains that are allowed to sign up for an account in this company. If a user
-          signs up with an email address that is not from a trusted domain, and she wasn't manually added by an admin,
-          they will be denied access.
+          {t(
+            "Trusted email domains are email domains that are allowed to sign up for an account in this company. If a user signs up with an email address that is not from a trusted domain, and she wasn't manually added by an admin, they will be denied access.",
+          )}
         </p>
 
-        <div className="text-content-accent font-bold mt-8 text-lg mb-2">Trusted Email Domains</div>
+        <div className="text-content-accent font-bold mt-8 text-lg mb-2">{t("Trusted Email Domains")}</div>
         <TrustedEmailDomainsList form={form} />
       </div>
     </TurboUIPage>
@@ -36,10 +38,12 @@ export function Page() {
 }
 
 function TrustedEmailDomainsList({ form }: { form: FormState }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-2">
       {form.domains.length === 0 && (
-        <div className="text-content-dimmed">No trusted email domains. Only manually added members can sign up.</div>
+        <div className="text-content-dimmed">{t("No trusted email domains. Only manually added members can sign up.")}</div>
       )}
 
       {form.domains.map((domain, index) => (
@@ -67,6 +71,7 @@ function TrustedEmailDomainItem({ domain, form }: { domain: string; form: FormSt
 }
 
 function AddTrustedEmailDomain({ form }: { form: FormState }) {
+  const { t } = useTranslation();
   const [domain, setDomain] = React.useState("");
 
   const submit = async () => {
@@ -81,7 +86,7 @@ function AddTrustedEmailDomain({ form }: { form: FormState }) {
 
   return (
     <div className="mt-8">
-      <div className="text-content-accent font-bold text-lg mb-2">Add Trusted Email Domain</div>
+      <div className="text-content-accent font-bold text-lg mb-2">{t("Add Trusted Email Domain")}</div>
 
       <div className="flex items-center gap-4">
         <Forms.Input
@@ -94,7 +99,7 @@ function AddTrustedEmailDomain({ form }: { form: FormState }) {
         />
 
         <GhostButton onClick={submit} size="sm" testId="add-trusted-email-domain-button">
-          Add
+          {t("Add")}
         </GhostButton>
       </div>
     </div>

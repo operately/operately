@@ -33,25 +33,30 @@ defmodule Operately.Search.CoreWorkIndexingTest do
     ctx
   end
 
-  test "project edits and archives refresh the indexed title and state", ctx do
+  test "project edits refresh the indexed title", ctx do
     sync("project", ctx.project.id)
-    sync("milestone", ctx.milestone.id)
-    sync("task", ctx.task.id)
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert {:ok, project} = Operately.Projects.rename_project(ctx.creator, ctx.project, "Renamed project")
       assert_entry(:project, project.id, title: ctx.project.name)
       run_refresh_jobs()
       assert_entry(:project, project.id, title: "Renamed project")
-
-      assert {:ok, archived} = Operately.Projects.archive_project(ctx.creator, project)
-      assert_entry(:project, project.id, state: nil)
-      run_refresh_jobs()
-      assert archived.deleted_at
-      assert_entry(:project, project.id, state: :archived)
-      refute_entry(:milestone, ctx.milestone.id)
-      refute_entry(:task, ctx.task.id)
     end)
+  end
+
+  test "reindexing historically archived projects preserves their state and excludes children", ctx do
+    sync("project", ctx.project.id)
+    sync("milestone", ctx.milestone.id)
+    sync("task", ctx.task.id)
+
+    Repo.soft_delete!(ctx.project)
+    sync("project", ctx.project.id)
+    sync("milestone", ctx.milestone.id)
+    sync("task", ctx.task.id)
+
+    assert_entry(:project, ctx.project.id, state: :archived)
+    refute_entry(:milestone, ctx.milestone.id)
+    refute_entry(:task, ctx.task.id)
   end
 
   test "goal close and reopen operations refresh indexed state", ctx do

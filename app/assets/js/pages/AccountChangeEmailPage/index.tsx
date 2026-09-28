@@ -1,4 +1,6 @@
 import React from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import Api, { EmailChangeOutcome, EmailChangeState } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import {
@@ -21,6 +23,7 @@ async function loader() {
 export default { name: "AccountChangeEmailPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const { data } = useLoadedQuery(Api.email_changes.getQueryOptions({}));
@@ -40,9 +43,9 @@ function Page() {
     try {
       const result = await action();
       if (result.outcome === "success") return true;
-      setError(messages[result.outcome]);
+      setError(emailChangeError(result.outcome, t));
     } catch {
-      setError("We couldn’t reach Operately. Check your connection and try again.");
+      setError(t("We couldn’t reach Operately. Check your connection and try again."));
     }
     return false;
   };
@@ -75,16 +78,29 @@ function Page() {
   );
 }
 
-const messages: Record<Exclude<EmailChangeOutcome, "success">, string> = {
-  invalid_email: "Enter a valid email address.",
-  email_unchanged: "This is already your current email. Enter a different address.",
-  email_taken: "This email is already registered. Use a different address.",
-  rate_limited: "Please wait before requesting another code.",
-  delivery_unavailable: "Email delivery isn’t configured. Contact your organization administrator for help.",
-  delivery_failed: "We couldn’t send the code. Please try again.",
-  request_invalid: "This request is no longer active. Review your current email or request a new code.",
-  authorization_expired: "Your verification has expired. Start again to verify your current email.",
-  code_expired: "This code has expired. Request a new code to continue.",
-  invalid_code: "That code doesn’t match. Check your latest email and try again.",
-  too_many_attempts: "Too many incorrect attempts. Request a new code to continue.",
-};
+function emailChangeError(outcome: Exclude<EmailChangeOutcome, "success">, t: TFunction) {
+  switch (outcome) {
+    case "invalid_email":
+      return t("Enter a valid email address.");
+    case "email_unchanged":
+      return t("This is already your current email. Enter a different address.");
+    case "email_taken":
+      return t("This email is already registered. Use a different address.");
+    case "rate_limited":
+      return t("Please wait before requesting another code.");
+    case "delivery_unavailable":
+      return t("Email delivery isn’t configured. Contact your organization administrator for help.");
+    case "delivery_failed":
+      return t("We couldn’t send the code. Please try again.");
+    case "request_invalid":
+      return t("This request is no longer active. Review your current email or request a new code.");
+    case "authorization_expired":
+      return t("Your verification has expired. Start again to verify your current email.");
+    case "code_expired":
+      return t("This code has expired. Request a new code to continue.");
+    case "invalid_code":
+      return t("That code doesn’t match. Check your latest email and try again.");
+    case "too_many_attempts":
+      return t("Too many incorrect attempts. Request a new code to continue.");
+  }
+}

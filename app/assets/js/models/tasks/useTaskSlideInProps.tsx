@@ -1,3 +1,4 @@
+import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
 import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 
@@ -38,6 +39,7 @@ export function useTaskSlideInProps(opts: {
 }) {
   const { backendTasks, paths, currentUser, canEdit, canComment, variant, commentEntityType } = opts;
   const queryClient = useQueryClient();
+  const setTaskItemChecked = useSetTaskItemChecked();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { mutateAsync: moveTask } = useMoveTask();
 
@@ -219,7 +221,14 @@ export function useTaskSlideInProps(opts: {
         spaceSearch: opts.spaceSearch,
 
         assigneePersonSearch: ctx.assigneePersonSearch,
-        richTextHandlers: ctx.richTextHandlers,
+        richTextHandlers: {
+          ...ctx.richTextHandlers,
+          taskList: {
+            canEdit,
+            onChange: (change) =>
+              setTaskItemChecked({ resourceType: "task", resourceId: taskId, field: "description" }, change),
+          },
+        },
         localDraftKeyBase: `task:${taskId}`,
 
         canEdit,
@@ -261,6 +270,7 @@ export function useTaskSlideInProps(opts: {
       addReaction,
       deleteComment,
       editComment,
+      setTaskItemChecked,
       variant,
       isTimelineLoading,
       removeReaction,

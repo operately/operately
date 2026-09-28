@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { asRichText } from "../utils/storybook/richContent";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { getTemplateTaskPageProps } from "../utils/storybook/templateTasks";
 import { TemplateProjectPage } from ".";
 import type { TemplateProjectPage as Types } from ".";
@@ -154,7 +154,7 @@ const populatedProps: Types.Props = {
   people: [champion, unavailableContributor],
   personSearch: { people: [], onSearch: async () => undefined },
   contributorPersonSearch: { people: [], onSearch: async () => undefined },
-  richTextHandlers: createMockRichEditorHandlers(),
+  richTextHandlers: createMockRichTextHandlers(),
   formattedTimePreferences: defaultFormattedTimePreferences,
   onFolderCreate: async () => true,
   onFolderRename: async () => true,

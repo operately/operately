@@ -1,3 +1,5 @@
+import { useTaskList } from "@/models/richContent/taskListLifecycle";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -19,7 +21,6 @@ import {
   Spacer,
 } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useReadNotificationsOnLoad } from "@/models/notifications/notificationLifecycle";
 import { invalidateProjectInteractionQueries } from "@/models/projects/projectInteractionQueries";
 import { assertPresent } from "@/utils/assertions";
@@ -141,11 +142,17 @@ function RetrospectiveContent() {
   const { retrospective } = useLoadedData();
 
   const content = React.useMemo(() => parseContent(retrospective.content), [retrospective.content]);
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
+  const taskList = useTaskList({
+    resourceType: "project_retrospective",
+    resourceId: retrospective.id,
+    field: "content",
+    canEdit: retrospective.permissions?.canEdit ?? false,
+  });
 
   return (
     <div className="my-8">
-      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent taskList={taskList} content={content} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

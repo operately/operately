@@ -89,6 +89,7 @@ defmodule Operately.Operations.AccountDeleting do
       avatar_url: nil,
       email: deleted_person_email(person.id),
       timezone: nil,
+      language: nil,
       description: nil,
       suspended: true,
       suspended_at: DateTime.utc_now() |> DateTime.truncate(:second),

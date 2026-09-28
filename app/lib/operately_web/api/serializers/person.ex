@@ -54,6 +54,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       type: Atom.to_string(data.type),
       suspended: data.suspended,
       timezone: data.timezone,
+      language: Operately.People.Person.language(data),
       time_format: data |> Operately.People.Person.time_format() |> Atom.to_string(),
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),

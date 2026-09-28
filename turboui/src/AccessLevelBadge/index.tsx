@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "../utils/classnames";
 
 const PERMISSION_LEVELS = {
@@ -17,58 +18,53 @@ const sizeClasses = {
   base: "px-2.5 py-1.5 text-xs",
 };
 
-const accessLevelData: Record<
-  number,
-  {
-    title: string;
-    colors: string;
-  }
-> = {
-  [PERMISSION_LEVELS.FULL_ACCESS]: {
-    title: "Full Access",
-    colors: "bg-callout-warning-bg text-callout-warning-content",
-  },
-  [PERMISSION_LEVELS.ADMIN_ACCESS]: {
-    title: "Admin Access",
-    colors: "bg-callout-warning-bg text-callout-warning-content",
-  },
-  [PERMISSION_LEVELS.EDIT_ACCESS]: {
-    title: "Edit Access",
-    colors: "bg-callout-info-bg text-callout-info-content",
-  },
-  [PERMISSION_LEVELS.COMMENT_ACCESS]: {
-    title: "Comment Access",
-    colors: "bg-callout-error-bg text-callout-error-content",
-  },
-  [PERMISSION_LEVELS.VIEW_ACCESS]: {
-    title: "View Access",
-    colors: "bg-callout-success-bg text-callout-success-content",
-  },
-  [PERMISSION_LEVELS.MINIMAL_ACCESS]: {
-    title: "No Access",
-    colors: "bg-callout-info-bg text-callout-info-content",
-  },
-  [PERMISSION_LEVELS.NO_ACCESS]: {
-    title: "No Access",
-    colors: "bg-callout-info-bg text-callout-info-content",
-  },
+const accessLevelColors: Record<number, string> = {
+  [PERMISSION_LEVELS.FULL_ACCESS]: "bg-callout-warning-bg text-callout-warning-content",
+  [PERMISSION_LEVELS.ADMIN_ACCESS]: "bg-callout-warning-bg text-callout-warning-content",
+  [PERMISSION_LEVELS.EDIT_ACCESS]: "bg-callout-info-bg text-callout-info-content",
+  [PERMISSION_LEVELS.COMMENT_ACCESS]: "bg-callout-error-bg text-callout-error-content",
+  [PERMISSION_LEVELS.VIEW_ACCESS]: "bg-callout-success-bg text-callout-success-content",
+  [PERMISSION_LEVELS.MINIMAL_ACCESS]: "bg-callout-info-bg text-callout-info-content",
+  [PERMISSION_LEVELS.NO_ACCESS]: "bg-callout-info-bg text-callout-info-content",
 };
 
-export function AccessLevelBadge({ accessLevel, size = "base", className = "" }: AccessLevelBadge.Props) {
-  const data = accessLevelData[accessLevel];
+function accessLevelTitle(accessLevel: number, t: (key: string) => string) {
+  switch (accessLevel) {
+    case PERMISSION_LEVELS.FULL_ACCESS:
+      return t("Full Access");
+    case PERMISSION_LEVELS.ADMIN_ACCESS:
+      return t("Admin Access");
+    case PERMISSION_LEVELS.EDIT_ACCESS:
+      return t("Edit Access");
+    case PERMISSION_LEVELS.COMMENT_ACCESS:
+      return t("Comment Access");
+    case PERMISSION_LEVELS.VIEW_ACCESS:
+      return t("View Access");
+    case PERMISSION_LEVELS.MINIMAL_ACCESS:
+    case PERMISSION_LEVELS.NO_ACCESS:
+      return t("No Access");
+    default:
+      return null;
+  }
+}
 
-  if (!data) {
+export function AccessLevelBadge({ accessLevel, size = "base", className = "" }: AccessLevelBadge.Props) {
+  const { t } = useTranslation();
+  const title = accessLevelTitle(accessLevel, t);
+  const colors = accessLevelColors[accessLevel];
+
+  if (!title || !colors) {
     return null;
   }
 
   const badgeClassName = classNames(
     "inline-flex items-center rounded-full font-semibold uppercase cursor-default",
     sizeClasses[size],
-    data.colors,
+    colors,
     className,
   );
 
-  return <div className={badgeClassName}>{data.title}</div>;
+  return <div className={badgeClassName}>{title}</div>;
 }
 
 export namespace AccessLevelBadge {

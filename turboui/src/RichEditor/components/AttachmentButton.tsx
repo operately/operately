@@ -4,6 +4,7 @@ import * as React from "react";
 import { AddBlobsEditorCommand } from "../Blob/AddBlobsEditorCommand";
 import { ToolbarButton } from "./ToolbarButton";
 import { useUploadFile } from "../EditorContext";
+import { isInsideTable } from "../extensions/Table";
 
 //
 // To activate the file chooser, we need to add a hiden input element to the DOM, with the type=file.
@@ -47,7 +48,7 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element | null {
 
   return (
     <>
-      <ToolbarButton onClick={handleClick} title="Add an Image or File">
+      <ToolbarButton onClick={handleClick} title="Add an Image or File" disabled={isInsideTable(editor.state.selection.$from)}>
         <IconPaperclip size={iconSize} />
       </ToolbarButton>
 

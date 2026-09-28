@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 import { IconCheck } from "../icons";
 import { Status } from "../TaskBoard/types";
@@ -10,6 +12,7 @@ interface TaskCheckboxProps {
 }
 
 export function TaskCheckbox({ status, canEdit, onComplete }: TaskCheckboxProps) {
+  const { t } = useTranslation();
   const isDone = status?.closed && status?.color === "green";
   const canToggleToDone = canEdit && !isDone;
 
@@ -23,7 +26,7 @@ export function TaskCheckbox({ status, canEdit, onComplete }: TaskCheckboxProps)
       type="button"
       role="checkbox"
       aria-checked={isDone}
-      aria-label="Mark task as done"
+      aria-label={translationText(t("Mark task as done"))}
       aria-disabled={!canToggleToDone}
       disabled={!canToggleToDone}
       onClick={handleClick}

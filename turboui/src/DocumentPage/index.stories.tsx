@@ -6,7 +6,7 @@ import { CurrentSubscriptions } from "../Subscriptions";
 import { SubscribersSelector } from "../Subscriptions";
 import type { CommentSectionProps } from "../CommentSection";
 import { defaultFormattedTimePreferences } from "../FormattedTime";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
 import type { ResourceHubNodesListContextValue } from "../ResourceHub/contexts/NodesListContext";
@@ -30,7 +30,7 @@ type Story = StoryObj<typeof meta>;
 const people = genPeople(4);
 const author = people[0]!;
 const commentAuthor = people[1]!;
-const richTextHandlers = createMockRichEditorHandlers();
+const richTextHandlers = createMockRichTextHandlers();
 
 const mockSubscribers: SubscribersSelector.Subscriber[] = people.map((person) =>
   asSubscriber(person, { isSubscribed: true }),
@@ -150,6 +150,7 @@ export const Default: Story = {
   args: {} as DocumentPage.Props,
   render: () => (
     <DocumentPage
+      taskList={{ canEdit: false }}
       {...basePublished}
       hideDraftActions
       reactions={reactionsProps}
@@ -175,6 +176,7 @@ export const Draft: Story = {
   args: {} as DocumentPage.Props,
   render: () => (
     <DocumentPage
+      taskList={{ canEdit: false }}
       {...basePublished}
       state="draft"
       publishedAt={undefined}
@@ -214,6 +216,7 @@ export const TemplateReadOnly: Story = {
   },
   render: () => (
     <DocumentPage
+      taskList={{ canEdit: false }}
       pageTitle={["Interview Guide", "Launch Playbook"]}
       navigation={[
         { to: "/spaces/space-1", label: "Product" },

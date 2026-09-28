@@ -19,6 +19,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
   def serialize(document, level: :full) do
     %{
       id: OperatelyWeb.Paths.document_id(document),
+      public_url: public_url(document),
       author: OperatelyWeb.Api.Serializer.serialize(document.author),
       resource_hub_id: OperatelyWeb.Paths.resource_hub_id(document.node.resource_hub_id),
       resource_hub: OperatelyWeb.Api.Serializer.serialize(document.resource_hub),
@@ -42,5 +43,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       notifications: OperatelyWeb.Api.Serializer.serialize(document.notifications),
       path_to_document: OperatelyWeb.Api.Serializer.serialize(document.path_to_document),
     }
+  end
+
+  defp public_url(document) do
+    if match?(%{can_edit_document: true}, document.permissions) do
+      Operately.ResourceHubs.PublicDocument.url(document)
+    end
   end
 end

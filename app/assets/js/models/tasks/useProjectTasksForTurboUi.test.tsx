@@ -2,7 +2,9 @@
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import type { Task } from "@/api";
-import type { TaskBoard } from "turboui";
+import { showErrorToast, type TaskBoard } from "turboui";
+import i18n from "@/i18n";
+import { renderHook } from "@/__tests__/renderHook";
 import { useProjectTasksForTurboUi, buildProjectTaskCreateInput } from "./useProjectTasksForTurboUi";
 
 jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
@@ -46,6 +48,29 @@ jest.mock("../milestones", () => ({
   parseMilestonesForTurboUi: () => ({ orderedMilestones: [] }),
 }));
 
+jest.mock("./taskLifecycle", () => {
+  const createTaskMutateAsync = jest.fn();
+  const updateTaskNameMutateAsync = jest.fn();
+  const unused = () => ({ mutateAsync: jest.fn() });
+
+  return {
+    createTaskMutateAsync,
+    updateTaskNameMutateAsync,
+    useCreateTask: () => ({ mutateAsync: createTaskMutateAsync }),
+    useDeleteTask: unused,
+    useUpdateTaskAssignee: unused,
+    useUpdateTaskDescription: unused,
+    useUpdateTaskDueDate: unused,
+    useUpdateTaskMilestoneAndOrdering: unused,
+    useUpdateTaskName: () => ({ mutateAsync: updateTaskNameMutateAsync }),
+    useUpdateTaskReminders: unused,
+    useUpdateTaskStatus: unused,
+  };
+});
+
+const { createTaskMutateAsync, updateTaskNameMutateAsync } = jest.requireMock("./taskLifecycle");
+const englishTranslations = { ...i18n.getResourceBundle("en", "translation") };
+
 const richTextWithMention = {
   type: "doc",
   content: [
@@ -65,7 +90,27 @@ const richTextWithMention = {
   ],
 };
 
+function setupHook() {
+  return renderHook(useProjectTasksForTurboUi, {
+    initialProps: {
+      backendTasks: [{ id: "task-1", name: "Existing task" } as Task],
+      projectId: "project-1",
+      milestones: [],
+    },
+  });
+}
+
 describe("useProjectTasksForTurboUi", () => {
+  beforeEach(() => {
+    jest.mocked(showErrorToast).mockReset();
+    createTaskMutateAsync.mockReset();
+    updateTaskNameMutateAsync.mockReset();
+  });
+
+  afterEach(() => {
+    i18n.addResourceBundle("en", "translation", englishTranslations, true, true);
+  });
+
   it("passes rich-text task notes through the create task API input", () => {
     const input = buildProjectTaskCreateInput(
       {
@@ -84,21 +129,74 @@ describe("useProjectTasksForTurboUi", () => {
       }),
     );
   });
-});
 
-jest.mock("./taskLifecycle", () => {
-  const mutation = () => ({ mutateAsync: jest.fn() });
-  return {
-    useCreateTask: mutation,
-    useDeleteTask: mutation,
-    useUpdateTaskAssignee: mutation,
-    useUpdateTaskDescription: mutation,
-    useUpdateTaskDueDate: mutation,
-    useUpdateTaskMilestoneAndOrdering: mutation,
-    useUpdateTaskName: mutation,
-    useUpdateTaskReminders: mutation,
-    useUpdateTaskStatus: mutation,
-  };
+  it.each([
+    ["Error", "Failed to create task"],
+    ["Translated error", "Translated creation failure"],
+  ])("shows catalog copy when task creation fails: %s / %s", async (title, message) => {
+    i18n.addResourceBundle("en", "translation", { Error: title, "Failed to create task": message }, true, true);
+    createTaskMutateAsync.mockRejectedValue(new Error("network"));
+    const { result } = setupHook();
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      await act(async () => {
+        expect(
+          await result.current.createTask({
+            title: "New task",
+            milestone: null,
+            dueDate: null,
+            assignees: [],
+          }),
+        ).toEqual({ success: false });
+      });
+    } finally {
+      log.mockRestore();
+    }
+
+    expect(showErrorToast).toHaveBeenCalledWith(title, message);
+  });
+
+  it.each([
+    ["Error", "Failed to update task name."],
+    ["Translated error", "Translated rename failure"],
+  ])("shows catalog copy when renaming a task fails: %s / %s", async (title, message) => {
+    i18n.addResourceBundle("en", "translation", { Error: title, "Failed to update task name.": message }, true, true);
+    updateTaskNameMutateAsync.mockRejectedValue(new Error("network"));
+    const { result } = setupHook();
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      await act(async () => {
+        expect(await result.current.updateTaskName("task-1", "Renamed task")).toBe(false);
+      });
+    } finally {
+      log.mockRestore();
+    }
+
+    expect(showErrorToast).toHaveBeenCalledWith(title, message);
+  });
+
+  it.each([
+    ["Task name cannot be empty", "Failed to update task name."],
+    ["Translated empty name", "Translated rename failure"],
+  ])("shows catalog copy when the renamed task name is empty: %s / %s", async (title, message) => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      { "Task name cannot be empty": title, "Failed to update task name.": message },
+      true,
+      true,
+    );
+    const { result } = setupHook();
+
+    await act(async () => {
+      expect(await result.current.updateTaskName("task-1", "   ")).toBe(false);
+    });
+
+    expect(updateTaskNameMutateAsync).not.toHaveBeenCalled();
+    expect(showErrorToast).toHaveBeenCalledWith(title, message);
+  });
 });
 
 it("preserves saved milestone order until background tasks have been parsed", async () => {

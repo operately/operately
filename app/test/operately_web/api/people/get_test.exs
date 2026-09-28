@@ -42,6 +42,23 @@ defmodule OperatelyWeb.Api.People.GetTest do
       assert {404, res} = query(ctx.conn, [:people, :get], %{id: ctx.company_member.id})
       assert res.message == "The requested resource was not found"
     end
+
+    test "guests can edit their own profile but not another person's", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:guest, type: :guest)
+        |> Factory.log_in_person(:guest)
+
+      inputs = %{id: Paths.person_id(ctx.guest), include_permissions: true}
+      assert {200, %{person: %{permissions: %{can_edit_profile: true}}}} = query(ctx.conn, [:people, :get], inputs)
+      assert {200, %{person: %{permissions: %{can_edit_profile: false}}}} = query(ctx.conn, [:people, :get], %{inputs | id: ctx.company_member.id})
+
+      %{company_id: ctx.company.id, access_state: :read_only}
+      |> Operately.Billing.CompanyBillingAccount.changeset()
+      |> Repo.insert!()
+
+      assert {200, %{person: %{permissions: %{can_edit_profile: false}}}} = query(ctx.conn, [:people, :get], inputs)
+    end
   end
 
   describe "get_person functionality" do

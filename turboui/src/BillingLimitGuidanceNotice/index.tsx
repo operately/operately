@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
 import type { CompanyAdminAddPeoplePage } from "../CompanyAdminAddPeoplePage";
@@ -16,11 +17,12 @@ export function BillingLimitGuidanceNotice({
   onClose,
   guidance,
 }: BillingLimitGuidanceNoticeProps) {
+  const { t } = useTranslation();
   const nextStepValue = guidance.recommendedPlanLabel
     ? guidance.recommendedPlanLabel
     : guidance.cta
-      ? "Choose a plan with more member capacity."
-      : "An admin or owner needs to choose a plan with more member capacity.";
+      ? t("Choose a plan with more member capacity.")
+      : t("An admin or owner needs to choose a plan with more member capacity.");
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="medium" contentPadding="p-0">
@@ -33,7 +35,7 @@ export function BillingLimitGuidanceNotice({
 
             <div className="min-w-0 flex-1">
               <div className="inline-flex rounded-full border border-stroke-base bg-surface-base px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-content-dimmed">
-                Plan limit reached
+                {t("Plan limit reached")}
               </div>
               <h3 className="mt-3 text-lg font-semibold leading-7 text-content-accent">{guidance.title}</h3>
               <p className="mt-2 text-sm leading-6 text-content-dimmed">{guidance.description}</p>
@@ -42,9 +44,9 @@ export function BillingLimitGuidanceNotice({
         </div>
 
         <div className="grid gap-3 px-5 py-5 sm:grid-cols-2 sm:px-6">
-          <InfoTile label="Usage" value={guidance.usageSummary} />
+          <InfoTile label={t("Usage")} value={guidance.usageSummary} />
           <InfoTile
-            label={guidance.recommendedPlanLabel ? "Recommended plan" : "Next step"}
+            label={guidance.recommendedPlanLabel ? t("Recommended plan") : t("Next step")}
             value={nextStepValue}
             emphasized={!!guidance.recommendedPlanLabel}
           />
@@ -58,7 +60,7 @@ export function BillingLimitGuidanceNotice({
               </PrimaryButton>
             )}
             <SecondaryButton onClick={onClose} testId="billing-limit-guidance-close">
-              Close
+              {t("Close")}
             </SecondaryButton>
           </div>
         </div>

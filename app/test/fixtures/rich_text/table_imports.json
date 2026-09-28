@@ -1,0 +1,139 @@
+[
+  {
+    "name": "compact table with formatting and no outer pipes",
+    "markdown": "Name | Notes\n:--- | ---:\nSão Paulo | **Ready** and _waiting_<br>Next\n@alice | [Spec](https://example.com \"Title\")",
+    "cells": [
+      [
+        "Name",
+        "Notes"
+      ],
+      [
+        "São Paulo",
+        "Ready and waiting\nNext"
+      ],
+      [
+        "@alice",
+        "Spec"
+      ]
+    ],
+    "marks": [
+      "bold",
+      "italic",
+      "link"
+    ]
+  },
+  {
+    "name": "short rows and empty header cells",
+    "markdown": "| | B | C |\n| --- | --- | --- |\n| only |\n| | | |",
+    "cells": [
+      [
+        "",
+        "B",
+        "C"
+      ],
+      [
+        "only",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        ""
+      ]
+    ],
+    "marks": []
+  },
+  {
+    "name": "escaped pipes and code whitespace",
+    "markdown": "| A\\|B | Code |\n| --- | --- |\n| a\\\\\\|b | `   two  spaces   ` |\n| &#x6771;&#20140; &amp; &lt;br&gt; | `<br>` |",
+    "cells": [
+      [
+        "A|B",
+        "Code"
+      ],
+      [
+        "a\\|b",
+        "  two  spaces  "
+      ],
+      [
+        "東京 & <br>",
+        "<br>"
+      ]
+    ],
+    "marks": [
+      "code"
+    ]
+  },
+  {
+    "name": "inline formatting stays nested",
+    "markdown": "| Notes |\n| --- |\n| [**bold** and _italic_](https://example.com) ~~old~~ |",
+    "cells": [
+      [
+        "Notes"
+      ],
+      [
+        "bold and italic old"
+      ]
+    ],
+    "marks": [
+      "link",
+      "bold",
+      "italic",
+      "strike"
+    ]
+  },
+  {
+    "name": "excess cells",
+    "markdown": "| A | B |\n| --- | --- |\n| one | two | three |",
+    "invalid": true
+  },
+  {
+    "name": "optional trailing pipe",
+    "markdown": "A | B\n--- | ---\n1 | 2 |",
+    "cells": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "marks": []
+  },
+  {
+    "name": "excess cells after escaped pipes",
+    "markdown": "| A |\n| --- |\n| one\\|two | lost |",
+    "invalid": true
+  },
+  {
+    "name": "short body row without pipes",
+    "markdown": "A | B\n--- | ---\nOnly",
+    "cells": [
+      [
+        "A",
+        "B"
+      ],
+      [
+        "Only",
+        ""
+      ]
+    ],
+    "marks": []
+  },
+  {
+    "name": "single column with alignment separator",
+    "markdown": "Name\n:---\nAlice",
+    "cells": [
+      [
+        "Name"
+      ],
+      [
+        "Alice"
+      ]
+    ],
+    "marks": []
+  }
+]

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconBinaryTree2, IconBuildingEstate, IconCircleKey, IconSwitch, IconUserCircle } from "../icons";
 import { CompanyNavigationLinks } from "./types";
@@ -14,6 +15,7 @@ export function CompanyDropdown({
   links: CompanyNavigationLinks;
   canViewCompanyDirectory: boolean;
 }) {
+  const { t } = useTranslation();
   const displayName = truncateCompanyName(companyName);
 
   return (
@@ -28,14 +30,14 @@ export function CompanyDropdown({
       <DropdownLinkItem
         path={links.people}
         icon={IconUserCircle}
-        title="People"
+        title={t("People")}
         testId="company-dropdown-people"
         hidden={!canViewCompanyDirectory}
       />
       <DropdownLinkItem
         path={links.orgChart}
         icon={IconBinaryTree2}
-        title="Org Chart"
+        title={t("Org Chart")}
         testId="company-dropdown-org-chart"
         hidden={!canViewCompanyDirectory}
       />
@@ -45,10 +47,10 @@ export function CompanyDropdown({
       <DropdownLinkItem
         path={links.companyAdmin}
         icon={IconCircleKey}
-        title="Company Admin"
+        title={t("Company Admin")}
         testId="company-dropdown-company-admin"
       />
-      <DropdownLinkItem path={links.lobby} icon={IconSwitch} title="Switch Company" testId="company-dropdown-switch" />
+      <DropdownLinkItem path={links.lobby} icon={IconSwitch} title={t("Switch Company")} testId="company-dropdown-switch" />
     </DropdownMenu>
   );
 }

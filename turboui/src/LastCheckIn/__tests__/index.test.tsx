@@ -25,7 +25,7 @@ describe("LastCheckIn", () => {
             },
           ]}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   }
 

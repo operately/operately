@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
+import { createInstance } from "i18next";
 import React from "react";
+import { I18nextProvider } from "react-i18next";
 import { MemoryRouter } from "react-router";
 
 import { CompanyNavigation } from "./index";
@@ -97,5 +99,48 @@ describe("CompanyNavigation", () => {
       "title",
       "Operately v1.8 is available. This instance is running an older version. View release notes.",
     );
+  });
+
+  it.each([
+    {
+      label: "English",
+      resources: {},
+      newLabel: "New",
+      help: "Help",
+      badgeTitle: "Operately v1.8 is available. This instance is running an older version. View release notes.",
+      badgeText: "v1.8 available",
+    },
+    {
+      label: "substituted",
+      resources: {
+        New: "Novo",
+        Help: "Ajuda",
+        "Operately {{version}} is available. This instance is running an older version. View release notes.":
+          "Operately {{version}} está disponível. Esta instância está em uma versão anterior. Ver notas de lançamento.",
+        "<version>{{version}}</version> available": "<version>{{version}}</version> disponível",
+      },
+      newLabel: "Novo",
+      help: "Ajuda",
+      badgeTitle: "Operately v1.8 está disponível. Esta instância está em uma versão anterior. Ver notas de lançamento.",
+      badgeText: "v1.8 disponível",
+    },
+  ])("uses catalog copy for navigation chrome: $label", async ({ resources, newLabel, help, badgeTitle, badgeText }) => {
+    const i18n = createInstance();
+    await i18n.init({ lng: "en", resources: { en: { translation: resources } } });
+
+    render(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter>
+          <CompanyNavigation {...defaultProps} showCurrentVersion availableUpdate={{ version: "v1.8" }} />
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
+
+    expect(getByTestId("new-dropdown")).toHaveTextContent(newLabel);
+    expect(getByTestId("help-dropdown")).toHaveTextContent(help);
+
+    const badge = getByTestId("update-available-badge");
+    expect(badge).toHaveTextContent(badgeText);
+    expect(badge).toHaveAttribute("title", badgeTitle);
   });
 });

@@ -4,14 +4,9 @@ import * as TipTap from "@tiptap/react";
 
 import { isUploadInProgress } from "./Blob";
 import { createRichEditorExtensions } from "./createRichEditorExtensions";
-import {
-  clearLocalDraft,
-  isRichTextEmpty,
-  LocalDraftOptions,
-  readLocalDraft,
-  writeLocalDraft,
-} from "./localDrafts";
+import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, writeLocalDraft } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
+import { restoreRichTextSource } from "../RichContent/restoreSource";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -54,6 +49,7 @@ interface UseEditorProps {
   tabindex?: string;
   localDraft?: LocalDraftOptions;
   thumbnailBlobs?: boolean;
+  transformContent?: (content: any) => any;
 
   handlers: RichEditorHandlers;
 }
@@ -88,9 +84,12 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
-  const baseContent = React.useRef(normalizeRichTextContent(props.content));
-  const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent.current));
-  const initialContent = normalizeRichTextContent(restoredDraft ?? baseContent.current);
+  const [baseContent] = React.useState(() =>
+    normalizeRichTextContent(props.editable ? restoreRichTextSource(props.content) : props.content),
+  );
+  const [restoredDraft] = React.useState(() => readLocalDraft(props.localDraft, baseContent));
+  const sourceContent = props.editable ? (restoredDraft ?? baseContent) : baseContent;
+  const initialContent = normalizeRichTextContent(props.transformContent?.(sourceContent) ?? sourceContent);
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
 
   const extensions = React.useMemo(
@@ -115,9 +114,8 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const editor = TipTap.useEditor({
     shouldRerenderOnTransaction: true,
-    // Markdown shortcuts convert while typing (input rules) but pasted raw
-    // markdown must stay literal, so paste rules are disabled for everything
-    // except Highlight, whose existing "==text==" paste behavior is preserved.
+    // Markdown shortcuts apply only while typing, except Highlight's
+    // "==text==" paste behavior. Link handles URLs during clipboard parsing.
     enablePasteRules: ["highlight"],
     editable: props.editable,
     content: initialContent,
@@ -155,7 +153,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
 
       if (props.editable && !isUploading) {
-        writeLocalDraft(props.localDraft, json, baseContent.current);
+        writeLocalDraft(props.localDraft, json, baseContent);
       }
 
       if (props.onUpdate) {
@@ -170,10 +168,20 @@ export function useEditor(props: UseEditorProps): EditorState {
   const setContent = React.useCallback(
     (content: any) => {
       if (!editor) return;
-      editor.commands.setContent(normalizeRichTextContent(content), { emitUpdate: false });
+      const source = props.editable ? restoreRichTextSource(content) : content;
+      editor.commands.setContent(normalizeRichTextContent(props.transformContent?.(source) ?? source), {
+        emitUpdate: false,
+      });
     },
-    [editor],
+    [editor, props.transformContent, props.editable],
   );
+
+  // Synchronize read-only readers when their backend response changes.
+  const contentKey = props.editable ? "" : JSON.stringify(props.content ?? null);
+  React.useEffect(() => {
+    if (!editor || props.editable) return;
+    setContent(JSON.parse(contentKey));
+  }, [editor, props.editable, contentKey, setContent]);
 
   const getJson = React.useCallback(() => {
     if (!editor) return null;
