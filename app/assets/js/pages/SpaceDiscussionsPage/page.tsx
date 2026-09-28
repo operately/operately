@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { tn } from "@/i18n";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -44,12 +46,19 @@ export function Page() {
 }
 
 function Header() {
+  const { t } = useTranslation();
   return (
-    <Paper.Header title="Discussions" layout="title-center-actions-left" actions={<NewDiscussionButton />} underline />
+    <Paper.Header
+      title={t("Discussions")}
+      layout="title-center-actions-left"
+      actions={<NewDiscussionButton />}
+      underline
+    />
   );
 }
 
 function NewDiscussionButton() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const paths = usePaths();
 
@@ -57,12 +66,13 @@ function NewDiscussionButton() {
 
   return (
     <PrimaryButton linkTo={paths.discussionNewPath(space.id)} size="sm" testId="new-discussion">
-      New discussion
+      {t("New discussion")}
     </PrimaryButton>
   );
 }
 
 function ContinueEditingDrafts() {
+  const { t } = useTranslation();
   const { space, myDrafts } = useLoadedData();
   const paths = usePaths();
 
@@ -74,7 +84,7 @@ function ContinueEditingDrafts() {
     return (
       <div className="flex justify-center">
         <Link className="font-medium" to={path} testId="continue-editing-draft">
-          Continue writing your draft&hellip;
+          {t("Continue writing your draft…")}
         </Link>
       </div>
     );
@@ -84,7 +94,7 @@ function ContinueEditingDrafts() {
     return (
       <div className="flex justify-center">
         <Link className="font-medium" to={path} testId="continue-editing-draft">
-          Continue writing your {myDrafts.length} drafts&hellip;
+          {tn("Continue writing your draft…", "Continue writing your {{count}} drafts…", myDrafts.length)}
         </Link>
       </div>
     );
@@ -92,9 +102,10 @@ function ContinueEditingDrafts() {
 }
 
 function ZeroDiscussions() {
+  const { t } = useTranslation();
   return (
     <div className="text-center text-base text-content-dimmed mt-28">
-      Post announcements, pitch ideas, and start discussions.
+      {t("Post announcements, pitch ideas, and start discussions.")}
     </div>
   );
 }

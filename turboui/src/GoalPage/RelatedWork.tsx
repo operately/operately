@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { GoalPage } from ".";
 import { ContentListState } from "../ContentListState";
@@ -6,6 +7,7 @@ import { MiniWorkMap } from "../MiniWorkMap";
 import { SectionHeader } from "./SectionHeader";
 
 export function RelatedWork(props: GoalPage.State) {
+  const { t } = useTranslation();
   const spaceProps = "space" in props ? props : null;
   const canAddRelatedWork = props.permissions.canEdit && Boolean(spaceProps);
 
@@ -16,17 +18,17 @@ export function RelatedWork(props: GoalPage.State) {
     canAddRelatedWork && spaceProps ? (
       <div className="flex items-center gap-2">
         <SecondaryButton size="xxs" linkTo={spaceProps.addSubgoalLink} testId="add-subgoal">
-          Add goal
+          {t("Add goal")}
         </SecondaryButton>
         <SecondaryButton size="xxs" linkTo={spaceProps.addSubprojectLink}>
-          Add project
+          {t("Add project")}
         </SecondaryButton>
       </div>
     ) : null;
 
   return (
     <div data-test-id="related-work-section">
-      <SectionHeader title="Subgoals & Projects" buttons={buttons} showButtons={canAddRelatedWork} />
+      <SectionHeader title={t("Subgoals & Projects")} buttons={buttons} showButtons={canAddRelatedWork} />
 
       <ContentListState
         name="related-work"
@@ -53,9 +55,12 @@ function RelatedWorkContent(props: GoalPage.State) {
 }
 
 function RelatedWorkZeroState() {
+  const { t } = useTranslation();
   return (
     <div className="mt-1">
-      <div className="text-content-dimmed text-sm">Break down the work on this goal into subgoals and projects.</div>
+      <div className="text-content-dimmed text-sm">
+        {t("Break down the work on this goal into subgoals and projects.")}
+      </div>
     </div>
   );
 }

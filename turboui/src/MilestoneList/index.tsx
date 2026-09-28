@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { SecondaryButton } from "../Button";
@@ -10,11 +11,7 @@ import classNames from "../utils/classnames";
 import { AddMilestoneForm } from "./AddMilestoneForm";
 import { EmptyState } from "./EmptyState";
 import { MilestoneItem } from "./MilestoneItem";
-import {
-  isProjectVariant,
-  toDisplayMilestones,
-  type MilestoneListProps,
-} from "./types";
+import { isProjectVariant, toDisplayMilestones, type MilestoneListProps } from "./types";
 
 export type { MilestoneListProps } from "./types";
 export type {
@@ -26,6 +23,7 @@ export type {
 } from "./types";
 
 export function MilestoneList(props: MilestoneListProps) {
+  const { t } = useTranslation();
   const [showAddForm, setShowAddForm] = useState(false);
   const milestones = useMemo(() => toDisplayMilestones(props), [props.milestones, props.variant]);
   const isDraggingEnabled = !!(props.onMilestoneReorder && props.canEdit);
@@ -118,7 +116,7 @@ export function MilestoneList(props: MilestoneListProps) {
   return (
     <div className="space-y-4" data-test-id={sectionTestId}>
       <div className="flex items-center gap-2">
-        <SectionHeader title="Milestones" />
+        <SectionHeader title={t("Milestones")} />
         {props.variant === "project" && totalMilestones > 0 && (
           <div className="flex items-center gap-1 text-sm text-content-accent">
             <PieChart size={16} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
@@ -129,7 +127,7 @@ export function MilestoneList(props: MilestoneListProps) {
         )}
         {props.canEdit && (
           <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId={addButtonTestId}>
-            Add milestone
+            {t("Add milestone")}
           </SecondaryButton>
         )}
       </div>

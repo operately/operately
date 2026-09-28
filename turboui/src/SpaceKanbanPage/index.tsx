@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { DateField } from "../DateField";
@@ -96,6 +97,7 @@ interface SpaceKanbanPageHeaderProps {
 }
 
 function SpaceKanbanPageHeader({ navigation }: SpaceKanbanPageHeaderProps) {
+  const { t } = useTranslation();
   return (
     <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex items-center gap-3">
       <IconLayoutKanban size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900 p-1" />
@@ -104,7 +106,7 @@ function SpaceKanbanPageHeader({ navigation }: SpaceKanbanPageHeaderProps) {
         <Breadcrumbs navigation={navigation} />
 
         <div className="flex items-center gap-2 mt-1">
-          <h1 className="text-sm sm:text-base font-semibold text-content-accent truncate">Tasks</h1>
+          <h1 className="text-sm sm:text-base font-semibold text-content-accent truncate">{t("Tasks")}</h1>
         </div>
       </div>
     </header>

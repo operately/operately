@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import classNames from "classnames";
@@ -13,30 +14,32 @@ export function ZeroState() {
 }
 
 function ExplanationAndButton() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center group">
-      <div className="text-base font-bold">Documents &amp; Files</div>
+      <div className="text-base font-bold">{t("Documents & Files")}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-        A place to share rich text documents, images, videos, and other files
+        {t("A place to share rich text documents, images, videos, and other files")}
       </div>
 
-      <GhostButton size="sm">Add a document or file</GhostButton>
+      <GhostButton size="sm">{t("Add a document or file")}</GhostButton>
     </div>
   );
 }
 
 function Examples() {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full h-[180px] mx-[115px] mt-8 opacity-75">
       <Example
         className="absolute top-2 left-8 rotate-12 group-hover:left-14 group-hover:rotate-[15deg]"
-        title="Product Roadmap"
+        title={t("Product Roadmap")}
       />
-      <Example className="absolute top-0 group-hover:-top-2" title="Monthly Reports" />
+      <Example className="absolute top-0 group-hover:-top-2" title={t("Monthly Reports")} />
       <Example
         className="absolute top-2 -left-8 -rotate-12 group-hover:-left-14 group-hover:rotate-[-15deg]"
-        title="Employee Handbook"
+        title={t("Employee Handbook")}
       />
     </div>
   );

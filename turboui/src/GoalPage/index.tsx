@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Checklist } from "../Checklist";
 import type { GoalTargetList } from "../GoalTargetList";
@@ -226,25 +227,31 @@ function useGoalPageState(props: GoalPage.Props): GoalPage.State {
 }
 
 export function GoalPage(props: GoalPage.Props) {
+  const { t } = useTranslation();
   const state = useGoalPageState(props);
 
   const tabs = useTabs("overview", [
-    { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.childrenCount.checkInsCount },
+    { id: "overview", label: t("Overview"), icon: <IconClipboardText size={14} /> },
+    {
+      id: "check-ins",
+      label: t("Check-Ins"),
+      icon: <IconMessage size={14} />,
+      count: props.childrenCount.checkInsCount,
+    },
     {
       id: "discussions",
-      label: "Discussions",
+      label: t("Discussions"),
       icon: <IconMessages size={14} />,
       count: props.childrenCount.discussionsCount,
     },
     {
       id: "docs-and-files",
-      label: "Docs & Files",
+      label: t("Docs & Files"),
       icon: <IconClipboardText size={14} />,
       count: props.childrenCount.docsAndFilesCount,
       hidden: !state.docsAndFiles && !state.docsAndFilesAvailable,
     },
-    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
+    { id: "activity", label: t("Activity"), icon: <IconLogs size={14} /> },
   ]);
   const activeTab =
     !state.docsAndFiles && !state.docsAndFilesAvailable && tabs.active === "docs-and-files" ? "overview" : tabs.active;

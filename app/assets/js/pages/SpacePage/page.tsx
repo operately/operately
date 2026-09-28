@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
@@ -101,24 +102,27 @@ function SpaceMembers({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceFooter({ space }: { space: Spaces.Space }) {
+  const { t } = useTranslation();
   return (
     <Paper.DimmedSection>
-      <div className="uppercase text-xs font-semibold mb-2">Activity</div>
+      <div className="uppercase text-xs font-semibold mb-2">{t("Activity")}</div>
       <SpaceActivity space={space} />
     </Paper.DimmedSection>
   );
 }
 
 function SpaceActivity({ space }: { space: Spaces.Space }) {
+  const { t } = useTranslation();
   const { data, loading, error, pagination } = useFeedItemsQuery("space", space.id);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
+  if (loading) return <div>{t("Loading...")}</div>;
+  if (error) return <div>{t("Error")}</div>;
 
   return <Feed pagination={pagination} items={data?.activities || []} testId="space-feed" page="space" />;
 }
 
 function JoinButton({ space }) {
+  const { t } = useTranslation();
   const { mutateAsync: join, isPending } = useJoinSpace();
 
   if (space.isMember) return null;
@@ -130,13 +134,14 @@ function JoinButton({ space }) {
   return (
     <div className="flex justify-center mb-8 mt-6">
       <PrimaryButton size="sm" onClick={handleClick} loading={isPending} testId="join-space-button">
-        Join this Space
+        {t("Join this Space")}
       </PrimaryButton>
     </div>
   );
 }
 
 function ManageAccessButton({ space }: { space: Spaces.Space }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const path = paths.spaceAccessManagementPath(space.id);
 
@@ -145,12 +150,13 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
 
   return (
     <SecondaryButton linkTo={path} size="xs" testId="access-management">
-      Manage access
+      {t("Manage access")}
     </SecondaryButton>
   );
 }
 
 function SpaceOptions() {
+  const { t } = useTranslation();
   const { space, tools } = useLoadedData();
   const navigate = useNavigate();
   const { mutateAsync: deleteSpace, isPending: isDeleting } = Spaces.useDeleteSpace();
@@ -173,11 +179,11 @@ function SpaceOptions() {
   const performDelete = React.useCallback(async () => {
     try {
       await deleteSpace({ spaceId: space.id });
-      showSuccessToast("Space deleted", "The space and its content were deleted.");
+      showSuccessToast(t("Space deleted"), t("The space and its content were deleted."));
       navigate(paths.homePath());
     } catch (error) {
       console.error("Failed to delete space", error);
-      showErrorToast("Failed to delete space", "Please try again.");
+      showErrorToast(t("Failed to delete space"), t("Please try again."));
       throw error;
     }
   }, [deleteSpace, navigate, paths, space.id]);
@@ -215,36 +221,49 @@ function SpaceOptions() {
     <>
       <PageOptions.Root testId="options-button">
         {space.permissions?.canEdit && (
-          <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
+          <PageOptions.Link
+            keepOutsideOnBigScreen
+            icon={IconPencil}
+            to={editLink}
+            title={t("Edit")}
+            testId="edit-space"
+          />
         )}
         {space.permissions?.canEdit && (
-          <PageOptions.Link icon={IconSettings} to={toolsConfigLink} title="Configure tools" testId="configure-tools" />
+          <PageOptions.Link
+            icon={IconSettings}
+            to={toolsConfigLink}
+            title={t("Configure tools")}
+            testId="configure-tools"
+          />
         )}
         {space.permissions?.hasFullAccess && !space.isCompanySpace && (
-          <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
+          <PageOptions.Action icon={IconTrash} title={t("Delete")} onClick={handleDelete} testId="delete-space" />
         )}
       </PageOptions.Root>
 
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title="Delete space"
+        title={t("Delete space")}
         size="large"
         contentPadding="p-6"
         closeOnBackdropClick={!isDeleting}
       >
         <div className="space-y-4">
           <WarningCallout
-            message="This action cannot be undone."
-            description="Deleting this space will permanently remove everything in it. This includes all projects, goals, and discussions."
+            message={t("This action cannot be undone.")}
+            description={t(
+              "Deleting this space will permanently remove everything in it. This includes all projects, goals, and discussions.",
+            )}
           />
 
           <div className="flex justify-end gap-3">
             <SecondaryButton size="sm" onClick={handleCloseModal} disabled={isDeleting}>
-              Cancel
+              {t("Cancel")}
             </SecondaryButton>
             <DangerButton size="sm" onClick={handleConfirmDelete} loading={isDeleting} testId="confirm-delete-space">
-              Delete everything
+              {t("Delete everything")}
             </DangerButton>
           </div>
         </div>

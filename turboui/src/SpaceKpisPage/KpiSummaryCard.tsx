@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { GhostButton } from "../Button";
@@ -27,7 +28,12 @@ interface KpiSummaryCardProps {
 // Inner content for the KPIs tool card on the space home page. The app wraps
 // this in the shared SpaceTools Container (same shell as Goals & Projects,
 // Tasks, and Files) so the card matches their layout and hover behaviour.
-export function KpiSummaryCard({ kpis, canManage = true, maxRows = 7, testId = "kpi-summary-card" }: KpiSummaryCardProps) {
+export function KpiSummaryCard({
+  kpis,
+  canManage = true,
+  maxRows = 7,
+  testId = "kpi-summary-card",
+}: KpiSummaryCardProps) {
   const isZeroState = kpis.length === 0;
 
   return (
@@ -54,10 +60,12 @@ function RegularState({ kpis, maxRows }: { kpis: SpaceKpisPage.Kpi[]; maxRows: n
 }
 
 function Title() {
-  return <div className="font-bold text-base text-center py-2">KPIs</div>;
+  const { t } = useTranslation();
+  return <div className="font-bold text-base text-center py-2">{t("KPIs")}</div>;
 }
 
 function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
+  const { t } = useTranslation();
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
@@ -75,7 +83,7 @@ function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
           </div>
         ) : (
           <div className="mt-0.5 text-[10px] text-content-subtle" data-test-id={`kpi-summary-no-data-${kpi.id}`}>
-            No data
+            {t("No data")}
           </div>
         )}
       </div>
@@ -95,15 +103,16 @@ function ZeroState({ canManage }: { canManage: boolean }) {
 }
 
 function ExplanationAndButton({ canManage }: { canManage: boolean }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center group">
-      <div className="text-base font-bold">KPIs</div>
+      <div className="text-base font-bold">{t("KPIs")}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-        Track the numbers this space cares about and log updates on a weekly or monthly cadence.
+        {t("Track the numbers this space cares about and log updates on a weekly or monthly cadence.")}
       </div>
 
-      {canManage && <GhostButton size="sm">Track a KPI</GhostButton>}
+      {canManage && <GhostButton size="sm">{t("Track a KPI")}</GhostButton>}
     </div>
   );
 }
@@ -129,7 +138,11 @@ function Example({ name, value, trend }: { name: string; value: string; trend: "
   );
 
   const strokeClass =
-    trend === "up" ? "stroke-callout-success-content" : trend === "down" ? "stroke-callout-error-content" : "stroke-blue-500";
+    trend === "up"
+      ? "stroke-callout-success-content"
+      : trend === "down"
+        ? "stroke-callout-error-content"
+        : "stroke-blue-500";
 
   return (
     <div className="flex items-center justify-between gap-2 group-hover:gap-3 transition-all shadow-sm pb-2">

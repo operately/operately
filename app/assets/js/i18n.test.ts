@@ -1,6 +1,15 @@
 import i18n, { applyLanguage, tn } from "./i18n";
+import { resolveEffectiveLanguage } from "./i18n/languages";
 
 describe("i18n", () => {
+  it("keeps work-management copy English with the flag off and a saved Portuguese preference", async () => {
+    await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+    expect(i18n.t("Create milestone")).toBe("Create milestone");
+    expect(i18n.t("Failed to update task due date")).toBe("Failed to update task due date");
+    expect(i18n.t("No discussions yet")).toBe("No discussions yet");
+    expect(i18n.t("Your drafts ({{count}})", { count: 3 })).toBe("Your drafts (3)");
+    expect(tn("1 completed milestone", "{{count}} completed milestones", 0)).toBe("0 completed milestones");
+  });
   it("falls back to the English message identifier", () => {
     expect(i18n.t("Not yet translated")).toEqual("Not yet translated");
   });
@@ -103,6 +112,20 @@ describe("i18n", () => {
       expect(
         i18n.t("* If you sign in with Google, you must use <email>{{email}}</email>.", { email: "ana@example.com" }),
       ).toBe("* Se você entrar com o Google, use o e-mail <email>ana@example.com</email>.");
+    });
+
+    it("renders Portuguese work-management copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("Create milestone")).toBe("Criar marco");
+      expect(i18n.t("Failed to update task due date")).toBe("Falha ao atualizar a data de conclusão da tarefa");
+      expect(i18n.t("No discussions yet")).toBe("Nenhuma discussão ainda");
+      expect(i18n.t("Your drafts ({{count}})", { count: 3 })).toBe("Seus rascunhos (3)");
+      expect(i18n.t("Save as draft")).toBe("Salvar como rascunho");
+      expect(i18n.t("Work map view")).toBe("Visualização do mapa de trabalho");
+      expect(tn("1 completed milestone", "{{count}} completed milestones", 0)).toBe("0 marcos concluídos");
+      expect(tn("1 completed milestone", "{{count}} completed milestones", 1)).toBe("1 marco concluído");
+      expect(tn("1 completed milestone", "{{count}} completed milestones", 3)).toBe("3 marcos concluídos");
     });
 
     it("ignores unsupported languages and keeps English", async () => {

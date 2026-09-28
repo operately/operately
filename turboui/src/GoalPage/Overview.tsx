@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { DocsAndFilesPreview } from "../DocsAndFiles";
@@ -22,15 +23,16 @@ export function Overview(props: GoalPage.State) {
 }
 
 function MainContent(props: GoalPage.State) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <Warnings {...props} />
       <PageDescription
         {...props}
         canEdit={props.permissions.canEdit}
-        label="Goal description"
-        placeholder="Describe the goal..."
-        zeroStatePlaceholder="Describe the goal to provide context and clarity."
+        label={t("Goal description")}
+        placeholder={t("Describe the goal...")}
+        zeroStatePlaceholder={t("Describe the goal to provide context and clarity.")}
         localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
       <Targets {...props} />
@@ -69,21 +71,23 @@ function Warnings(props: GoalPage.State) {
 }
 
 function NeglectedGoalWarning(props: GoalPage.State) {
+  const { t } = useTranslation();
   if (props.permissions.canEdit) {
     return (
       <WarningCallout
-        message="Outdated goal"
-        description={<div>The last check-in was more than a month ago. Please check-in or close the goal.</div>}
+        message={t("Outdated goal")}
+        description={<div>{t("The last check-in was more than a month ago. Please check-in or close the goal.")}</div>}
       />
     );
   } else {
     return (
       <WarningCallout
-        message="Outdated goal"
+        message={t("Outdated goal")}
         description={
           <div>
-            The last check-in was more than a month ago. The information may be outdated. Please ping the champion
-            check-in or close the goal.
+            {t(
+              "The last check-in was more than a month ago. The information may be outdated. Please ping the champion check-in or close the goal.",
+            )}
           </div>
         }
       />

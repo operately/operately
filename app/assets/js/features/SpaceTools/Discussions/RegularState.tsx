@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Space } from "@/models/spaces";
@@ -14,9 +15,10 @@ interface Props {
 }
 
 export function RegularState(props: Props) {
+  const { t } = useTranslation();
   return (
     <div>
-      <Title title="Discussions" />
+      <Title title={t("Discussions")} />
       <DiscussionList discussions={props.discussions} />
     </div>
   );

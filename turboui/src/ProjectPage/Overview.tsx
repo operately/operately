@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { DocsAndFilesPreview } from "../DocsAndFiles";
 import { MilestoneList } from "../MilestoneList";
@@ -42,14 +43,15 @@ function LeftColumn(props: ProjectPage.State) {
 }
 
 function OverviewSection(props: ProjectPage.State) {
+  const { t } = useTranslation();
   return (
     <div data-test-id="description-section">
       <PageDescription
         {...props}
         canEdit={props.permissions.canEdit}
-        label="Description"
-        placeholder="Add a project description..."
-        zeroStatePlaceholder="Add a project description..."
+        label={t("Description")}
+        placeholder={t("Add a project description...")}
+        zeroStatePlaceholder={t("Add a project description...")}
         localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
     </div>

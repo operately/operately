@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 
 import { type TaskStatus, type TasksCreateInput } from "@/api";
@@ -103,7 +104,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return { success: true };
     } catch (e) {
       console.error("Failed to create task", e);
-      showErrorToast("Error", "Failed to create task");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to create task"));
       restoreSnapshot(snapshot);
       return { success: false };
     }
@@ -127,7 +128,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return true;
     } catch (e) {
       console.error("Failed to update task name", e);
-      showErrorToast("Error", "Failed to update task name");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task name"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -155,7 +156,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return true;
     } catch (e) {
       console.error("Failed to update task due date", e);
-      showErrorToast("Error", "Failed to update task due date");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task due date"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -183,7 +184,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return true;
     } catch (e) {
       console.error("Failed to update task reminders", e);
-      showErrorToast("Error", "Failed to update task reminders");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task reminders"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -211,7 +212,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return true;
     } catch (e) {
       console.error("Failed to update task assignee", e);
-      showErrorToast("Error", "Failed to update task assignee");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task assignee"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -241,7 +242,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return true;
     } catch (e) {
       console.error("Failed to update task status", e);
-      showErrorToast("Error", "Failed to update task status");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task status"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -256,7 +257,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       await deleteTaskMutation.mutateAsync({ taskId, type: "space" });
     } catch (e) {
       console.error("Failed to delete task", e);
-      showErrorToast("Error", "Failed to delete task");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to delete task"));
       restoreSnapshot(snapshot);
     }
   };
@@ -281,7 +282,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, space }: Attrs) {
       return true;
     } catch (e) {
       console.error("Failed to update task description", e);
-      showErrorToast("Error", "Failed to update task description");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task description"));
       restoreSnapshot(snapshot);
       return false;
     }

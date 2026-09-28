@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
@@ -328,9 +329,10 @@ export function ProjectPage(props: ProjectPage.Props) {
 }
 
 function Activity(props: ProjectPage.State) {
+  const { t } = useTranslation();
   return (
     <div className="p-4 max-w-6xl mx-auto my-6">
-      <div className="font-bold text-lg mb-4">Activity</div>
+      <div className="font-bold text-lg mb-4">{t("Activity")}</div>
       {props.activityFeed}
     </div>
   );

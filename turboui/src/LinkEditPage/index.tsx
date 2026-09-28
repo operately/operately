@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -9,6 +10,7 @@ import { isValidURL } from "../utils/url";
 import type { LinkEditPage as LinkEditPageNS } from "./types";
 
 export function LinkEditPage(props: LinkEditPageNS.Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const form = Forms.useForm<LinkEditPageNS.Values>({
@@ -47,18 +49,22 @@ export function LinkEditPage(props: LinkEditPageNS.Props) {
           <Forms.FieldGroup>
             <Forms.TextInput
               autoFocus
-              label="What do you want to call this link?"
-              placeholder="Type the title of this link"
+              label={t("What do you want to call this link?")}
+              placeholder={t("Type the title of this link")}
               field="title"
             />
 
-            <Forms.TextInput label="Paste the link" placeholder="eg. https://www.example.com/file/8430762" field="url" />
+            <Forms.TextInput
+              label={t("Paste the link")}
+              placeholder={t("eg. https://www.example.com/file/8430762")}
+              field="url"
+            />
 
             <Forms.RichTextArea
-              label="Notes (optional)"
+              label={t("Notes (optional)")}
               field="description"
               richTextHandlers={props.richTextHandlers}
-              placeholder="Add any notes here..."
+              placeholder={t("Add any notes here...")}
             />
           </Forms.FieldGroup>
 

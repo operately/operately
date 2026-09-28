@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../../Button";
@@ -22,6 +23,7 @@ interface FormValues extends Forms.FormValues {
 }
 
 export function CompleteMilestoneModal(props: CompleteMilestoneModalProps) {
+  const { t } = useTranslation();
   const defaultStatus = preferredClosedStatus(props.closedStatuses);
   const form = Forms.useForm<FormValues>({
     fields: {
@@ -76,23 +78,23 @@ export function CompleteMilestoneModal(props: CompleteMilestoneModalProps) {
         <div className="space-y-2">
           <Forms.RadioButtons
             field="resolutionAction"
-            label="Open tasks"
+            label={t("Open tasks")}
             options={[
-              { value: "move_to_no_milestone", label: "Move tasks to No milestone" },
-              { value: "set_status", label: "Change tasks to a closed status" },
+              { value: "move_to_no_milestone", label: t("Move tasks to No milestone") },
+              { value: "set_status", label: t("Change tasks to a closed status") },
             ]}
           />
 
           <p className="text-xs text-content-dimmed">
             {changesStatus
-              ? "The tasks stay in this milestone and use the selected status."
-              : "The tasks stay open and remain visible on the project task board."}
+              ? t("The tasks stay in this milestone and use the selected status.")
+              : t("The tasks stay open and remain visible on the project task board.")}
           </p>
         </div>
 
         {changesStatus && selectedStatus && (
           <div className="space-y-1.5">
-            <div className="text-sm font-medium text-content-base">Task status</div>
+            <div className="text-sm font-medium text-content-base">{t("Task status")}</div>
             <StatusSelector
               statusOptions={props.closedStatuses}
               status={selectedStatus}
@@ -107,10 +109,10 @@ export function CompleteMilestoneModal(props: CompleteMilestoneModalProps) {
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <SecondaryButton type="button" onClick={() => void form.actions.cancel()} disabled={form.state !== "idle"}>
-            Keep milestone active
+            {t("Keep milestone active")}
           </SecondaryButton>
           <PrimaryButton type="submit" loading={form.state === "submitting"} disabled={form.state !== "idle"}>
-            Complete milestone
+            {t("Complete milestone")}
           </PrimaryButton>
         </div>
       </Forms.Form>

@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useMemo } from "react";
 import * as Goals from "@/models/goals";
 import { useOptimisticGoalState } from "@/models/goals/useOptimisticGoalState";
@@ -62,7 +63,7 @@ export function useChecklists({
       return { id, success: true };
     } catch (error) {
       console.error("Failed to add checklist item:", error);
-      showErrorToast("Something went wrong", "Failed to add checklist item");
+      showErrorToast(i18n.t("Something went wrong"), i18n.t("Failed to add checklist item"));
       return { id: "", success: false };
     }
   };
@@ -86,7 +87,7 @@ export function useChecklists({
       );
     } catch (error) {
       console.error(message, error);
-      showErrorToast("Something went wrong", message);
+      showErrorToast(i18n.t("Something went wrong"), message);
       return false;
     }
   };
@@ -99,21 +100,21 @@ export function useChecklists({
         id,
         (items) => normalize(items.filter((item) => item.id !== resolveId(id))),
         () => remove.mutateAsync({ goalId, checkId: resolveId(id) }),
-        "Failed to delete checklist item",
+        i18n.t("Failed to delete checklist item"),
       ),
     update: ({ itemId, name }) =>
       save(
         itemId,
         (items) => items.map((item) => (item.id === resolveId(itemId) ? { ...item, name } : item)),
         () => update.mutateAsync({ goalId, checkId: resolveId(itemId), name }),
-        "Failed to update checklist item",
+        i18n.t("Failed to update checklist item"),
       ),
     toggle: (id) =>
       save(
         id,
         (items) => items.map((item) => (item.id === resolveId(id) ? { ...item, completed: !item.completed } : item)),
         () => toggle.mutateAsync({ goalId, checkId: resolveId(id) }),
-        "Failed to toggle checklist item",
+        i18n.t("Failed to toggle checklist item"),
       ),
     updateIndex: (id, index) =>
       save(
@@ -126,7 +127,7 @@ export function useChecklists({
           return normalize(reordered);
         },
         () => reorder.mutateAsync({ goalId, checkId: resolveId(id), index }),
-        "Failed to update checklist item index",
+        i18n.t("Failed to update checklist item index"),
       ),
   };
 }

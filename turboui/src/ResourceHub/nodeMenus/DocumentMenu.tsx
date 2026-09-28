@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
@@ -56,6 +57,7 @@ export function DocumentMenu({ document }: DocumentMenuProps) {
 }
 
 function EditDocumentMenuItem({ document }: DocumentMenuProps) {
+  const { t } = useTranslation();
   const { paths } = useResourceHubNodesListContext();
 
   if (!paths) return null;
@@ -65,7 +67,7 @@ function EditDocumentMenuItem({ document }: DocumentMenuProps) {
 
   return (
     <MenuLinkItem to={editPath} testId={editId}>
-      Edit
+      {t("Edit")}
     </MenuLinkItem>
   );
 }
@@ -77,11 +79,12 @@ function DeleteDocumentMenuItem({
   document: ResourceHubDocument;
   showConfirmModal: () => void;
 }) {
+  const { t } = useTranslation();
   const deleteId = createTestId("delete", document.id);
 
   return (
     <MenuActionItem onClick={showConfirmModal} testId={deleteId} danger>
-      Delete
+      {t("Delete")}
     </MenuActionItem>
   );
 }
@@ -119,6 +122,7 @@ function DeleteDocumentModal({
 }
 
 function ExportMarkdownMenuItem({ document }: DocumentMenuProps) {
+  const { t } = useTranslation();
   const { actions } = useResourceHubNodesListContext();
 
   const handleExport = () => {
@@ -133,7 +137,7 @@ function ExportMarkdownMenuItem({ document }: DocumentMenuProps) {
 
   return (
     <MenuActionItem onClick={handleExport} testId={createTestId("export-markdown", document.id)}>
-      Export as Markdown
+      {t("Export as Markdown")}
     </MenuActionItem>
   );
 }

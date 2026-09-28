@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { GoalPage } from ".";
@@ -8,13 +9,14 @@ import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
 
 export function PageHeader(props: GoalPage.State) {
+  const { t } = useTranslation();
   const navigation =
     "space" in props
       ? [
           { to: props.space.link, label: props.space.name },
-          { to: props.workmapLink, label: "Goals" },
+          { to: props.workmapLink, label: t("Goals") },
         ]
-      : [{ to: props.companyWorkMapLink, label: "Work Map" }];
+      : [{ to: props.companyWorkMapLink, label: t("Work Map") }];
 
   const isInviteOnly = props.accessLevels.company === "no_access" && props.accessLevels.space === "no_access";
 

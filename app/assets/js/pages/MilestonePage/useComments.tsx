@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import React from "react";
 
 import * as Milestones from "@/models/milestones";
@@ -74,7 +75,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, refre
         return false;
       } catch (error) {
         setComments((prev) => prev.filter((c) => c.id !== tempId));
-        showErrorToast("Error", "Failed to add comment.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to add comment."));
         return false;
       }
     },

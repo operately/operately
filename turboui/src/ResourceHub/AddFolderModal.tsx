@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import * as Forms from "../Forms";
@@ -12,6 +13,7 @@ export interface AddFolderModalProps {
 }
 
 export function AddFolderModal({ resourceHubId, folderId, onCreated, onCreateFolder }: AddFolderModalProps) {
+  const { t } = useTranslation();
   const { showAddFolder, toggleShowAddFolder } = useNewFileModalsContext();
 
   const form = Forms.useForm({
@@ -20,7 +22,7 @@ export function AddFolderModal({ resourceHubId, folderId, onCreated, onCreateFol
     },
     validate: (addError: (field: string, message: string) => void) => {
       if (!form.values.name) {
-        addError("name", "Name is required");
+        addError("name", t("Name is required"));
       }
     },
     cancel: toggleShowAddFolder,
@@ -37,19 +39,19 @@ export function AddFolderModal({ resourceHubId, folderId, onCreated, onCreateFol
   });
 
   return (
-    <Modal title="New folder" isOpen={showAddFolder} onClose={toggleShowAddFolder}>
+    <Modal title={t("New folder")} isOpen={showAddFolder} onClose={toggleShowAddFolder}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
           <Forms.TextInput
-            label="Name"
+            label={t("Name")}
             field="name"
             testId="new-folder-name"
             autoFocus
-            placeholder="e.g. Monthly Reports"
+            placeholder={t("e.g. Monthly Reports")}
           />
         </Forms.FieldGroup>
 
-        <Forms.Submit cancelText="Cancel" />
+        <Forms.Submit cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );
