@@ -253,6 +253,24 @@ operately projects update_description \
   --description-file ./roadmap.md
 ```
 
+Markdown files can contain GitHub-style pipe tables:
+
+```markdown
+| Milestone | Status |
+| --- | --- |
+| **Launch** | Ready |
+| Review | First pass<br>Final pass |
+```
+
+Use the same `--content-file` or `--description-file` flags. Tables support inline formatting,
+links, escaped pipes (`\|`), and `<br>` cell breaks. Short rows are padded; excess cells cause
+an input error. Alignment markers are accepted but not stored. Exporting a headerless web
+table adds an empty header row, which remains when imported. Mentions retain their `@label`
+text; Markdown does not carry person IDs. Images in cells become links with their labels.
+
+Table input requires the CLI release containing this feature; **1.9.0 and earlier do not
+support it**. Publish the compatible CLI only after the server's table support is deployed.
+
 Contextual dates let you pass either an exact day or a broader period.
 For `year`, `quarter`, and `month` values, the CLI resolves the value to a real date:
 

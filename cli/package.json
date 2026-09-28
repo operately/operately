@@ -31,14 +31,15 @@
     "@tiptap/core": "^3.30.5",
     "@tiptap/extension-highlight": "^3.30.5",
     "@tiptap/extension-link": "^3.30.5",
+    "@tiptap/extension-list": "^3.30.5",
+    "@tiptap/extension-table": "^3.30.5",
     "@tiptap/pm": "^3.30.5",
     "@tiptap/starter-kit": "^3.30.5",
     "axios": "^1.20.0",
     "jsdom": "^23.0.1",
     "marked": "^11.1.1",
     "open": "^10.1.0",
-    "sharp": "^0.35.4",
-    "@tiptap/extension-list": "^3.30.5"
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",
