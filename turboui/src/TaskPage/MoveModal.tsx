@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -8,12 +9,8 @@ import { Dropdown } from "../FormElements/Dropdown";
 import { showErrorToast } from "../Toasts";
 import { TaskPage } from "./types";
 
-const DESTINATION_TYPES = [
-  { id: "project", name: "Project", testId: "move-task-destination-project" },
-  { id: "space", name: "Space", testId: "move-task-destination-space" },
-] as const;
-
 export function MoveModal(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   const [isMoving, setIsMoving] = React.useState(false);
   const [destinationType, setDestinationType] = React.useState<TaskPage.MoveDestinationType>("project");
   const [project, setProject] = React.useState<ProjectField.Project | null>(null);
@@ -49,23 +46,26 @@ export function MoveModal(props: TaskPage.ContentState) {
       if (moved !== false) {
         props.closeMoveModal();
       } else {
-        showErrorToast("Failed to move task", "Please try again");
+        showErrorToast(t("Failed to move task"), t("Please try again"));
       }
     } catch {
-      showErrorToast("Failed to move task", "Please try again");
+      showErrorToast(t("Failed to move task"), t("Please try again"));
     } finally {
       setIsMoving(false);
     }
   };
 
   return (
-    <Modal isOpen={props.isMoveModalOpen} onClose={props.closeMoveModal} size="small" title="Move task">
+    <Modal isOpen={props.isMoveModalOpen} onClose={props.closeMoveModal} size="small" title={t("Move task")}>
       <form className="space-y-6" onSubmit={handleSubmit} data-test-id="move-task-modal">
         <div>
-          <label className="font-bold text-sm mb-1.5 block">Destination type</label>
+          <label className="font-bold text-sm mb-1.5 block">{t("Destination type")}</label>
           <Dropdown
             testId="move-task-destination-type"
-            items={DESTINATION_TYPES.map((item) => ({ ...item }))}
+            items={[
+              { id: "project", name: t("Project"), testId: "move-task-destination-project" },
+              { id: "space", name: t("Space"), testId: "move-task-destination-space" },
+            ]}
             value={destinationType}
             onSelect={(item) => setDestinationType(item.id as TaskPage.MoveDestinationType)}
           />
@@ -73,7 +73,7 @@ export function MoveModal(props: TaskPage.ContentState) {
 
         <div>
           <label className="font-bold text-sm mb-1.5 block">
-            {destinationType === "project" ? "Select destination project" : "Select destination space"}
+            {destinationType === "project" ? t("Select destination project") : t("Select destination space")}
           </label>
 
           {destinationType === "project" ? (
@@ -103,10 +103,10 @@ export function MoveModal(props: TaskPage.ContentState) {
             disabled={isMoving || !destinationId}
             testId="confirm-move-task"
           >
-            Move
+            {t("Move")}
           </PrimaryButton>
           <SecondaryButton size="sm" onClick={props.closeMoveModal} testId="cancel-move-task">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
         </div>
       </form>

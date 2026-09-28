@@ -17,6 +17,38 @@ import {
   mockSpace,
 } from "./mockData";
 import { formatNumber, formatShortDate, formatValue } from "./utils";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
+
+test("uses substituted catalog copy for the empty KPI list and create action", async () => {
+  i18n.addResourceBundle(
+    "en",
+    "translation",
+    {
+      "No KPIs yet": "Translated KPI empty state",
+      "New KPI": "Expanded new KPI action",
+      "Can't be empty": "Translated name validation",
+    },
+    true,
+    true,
+  );
+  renderPage({ kpis: [] });
+  expect(screen.getByText("Translated KPI empty state")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Expanded new KPI action" }));
+  expect(screen.getByRole("dialog", { name: "Expanded new KPI action" })).toBeInTheDocument();
+  fireEvent.change(screen.getByRole("textbox", { name: "Name *" }), { target: { value: " " } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Unit *" }), { target: { value: "users" } });
+  fireEvent.click(screen.getByRole("button", { name: "Create KPI" }));
+  expect(await screen.findByText("Translated name validation")).toBeInTheDocument();
+});
+
+test("uses a translated error heading with the supplied KPI load error", () => {
+  i18n.addResourceBundle("en", "translation", { "Couldn't load KPIs": "Translated KPI load failure" }, true, true);
+  renderPage({ error: "Service unavailable" });
+  expect(screen.getByText("Translated KPI load failure")).toBeInTheDocument();
+  expect(screen.getByText("Service unavailable")).toBeInTheDocument();
+});
 
 // This codebase tags elements with `data-test-id` (not the default
 // `data-testid`), so we resolve them via the attribute selector, polling until

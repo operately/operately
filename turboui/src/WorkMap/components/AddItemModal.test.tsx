@@ -4,6 +4,9 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 
 import { AddItemModal } from "./AddItemModal";
+import { i18n, setupTestCatalog } from "../../../test/i18n";
+
+setupTestCatalog();
 
 jest.mock("react-select", () => {
   return function MockSelect({
@@ -38,6 +41,31 @@ const templates = [
 ];
 
 describe("AddItemModal", () => {
+  it("looks up the complete project action and its validation message", async () => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      { "Add Project": "Expanded add project action", "Cannot be empty": "Translated name validation" },
+      true,
+      true,
+    );
+    const save = jest.fn();
+    render(
+      <AddItemModal
+        isOpen
+        close={jest.fn()}
+        parentGoal={null}
+        spaceSearch={async () => []}
+        save={save}
+        space={generalSpace}
+        initialItemType="project"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Expanded add project action" }));
+    expect(await screen.findByText("Translated name validation")).toBeInTheDocument();
+    expect(save).not.toHaveBeenCalled();
+  });
+
   it("stops submitting when validation fails", async () => {
     const user = userEvent.setup();
     const save = jest.fn();

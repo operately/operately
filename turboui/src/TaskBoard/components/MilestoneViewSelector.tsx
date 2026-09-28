@@ -1,11 +1,10 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Menu, MenuActionItem, MenuSeparator } from "../../Menu";
 import { IconCheck, IconChevronDown, IconFlag, IconFlagFilled, IconList, IconPlus } from "../../icons";
 import { MilestoneCreationModal } from "./MilestoneCreationModal";
 import type { NewMilestonePayload } from "../types";
-
-const ALL_PROJECT_TASKS_LABEL = "All project tasks";
 
 export type MilestoneViewSelectorMilestone = {
   id: string;
@@ -35,8 +34,9 @@ export function MilestoneViewSelector({
   onChange,
   onCreateMilestone,
 }: MilestoneViewSelectorProps) {
+  const { t } = useTranslation();
   const [isCreationModalOpen, setIsCreationModalOpen] = React.useState(false);
-  const selectedLabel = selectedMilestone?.name ?? ALL_PROJECT_TASKS_LABEL;
+  const selectedLabel = selectedMilestone?.name ?? t("All project tasks");
 
   const createMilestone = async (milestone: NewMilestonePayload) => {
     const result = await Promise.resolve(onCreateMilestone(milestone));
@@ -49,14 +49,14 @@ export function MilestoneViewSelector({
   return (
     <>
       <div className="flex min-w-0 items-center gap-2 text-sm">
-        <span className="flex-shrink-0 font-medium text-content-dimmed">Viewing tasks for</span>
+        <span className="flex-shrink-0 font-medium text-content-dimmed">{t("Viewing tasks for")}</span>
 
         <Menu
           customTrigger={
             <button
               type="button"
               className="flex min-w-0 items-center gap-2 rounded-md border border-surface-outline bg-surface-base px-3 py-1.5 font-medium text-content-base shadow-sm transition hover:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface-outline"
-              aria-label={`Viewing tasks for ${selectedLabel}`}
+              aria-label={t("Viewing tasks for {{milestone}}", { milestone: selectedLabel })}
               data-test-id="milestone-view-selector"
             >
               <MilestoneStatusIcon milestone={selectedMilestone} />
@@ -86,7 +86,7 @@ export function MilestoneViewSelector({
                 onClick={() => setIsCreationModalOpen(true)}
                 testId="create-milestone-from-board"
               >
-                Create milestone
+                {t("Create milestone")}
               </MenuActionItem>
             </>
           )}
@@ -111,7 +111,8 @@ function MilestoneOption({
   isSelected: boolean;
   onSelect: () => void;
 }) {
-  const label = milestone?.name ?? ALL_PROJECT_TASKS_LABEL;
+  const { t } = useTranslation();
+  const label = milestone?.name ?? t("All project tasks");
 
   return (
     <MenuActionItem onClick={onSelect}>

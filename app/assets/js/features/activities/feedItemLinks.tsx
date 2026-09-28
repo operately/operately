@@ -28,6 +28,8 @@ export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element
   );
 };
 
+export const activityAuthorName = (activity: api.Activity) => People.firstName(activity.author);
+
 export const projectLink = (paths: Paths, project: api.Project) => {
   const path = paths.projectPath(project!.id!);
   const name = project!.name!;

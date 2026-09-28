@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { useLocation } from "react-router";
 import { IconTable, IconTimeline } from "../../icons";
@@ -12,6 +13,7 @@ export interface Props {
 }
 
 export function WorkMapNavigation({ tabsState, timelineAvailable = false, view = "table" }: Props) {
+  const { t } = useTranslation();
   const location = useLocation();
   const tablePath = buildViewPath(location.pathname, location.search, "table");
   const timelinePath = buildViewPath(location.pathname, location.search, "timeline");
@@ -28,8 +30,8 @@ export function WorkMapNavigation({ tabsState, timelineAvailable = false, view =
           value={view}
           ariaLabel="Work map view"
           options={[
-            { value: "table", label: "Table", icon: <IconTable size={14} />, to: tablePath },
-            { value: "timeline", label: "Timeline", icon: <IconTimeline size={14} />, to: timelinePath },
+            { value: "table", label: t("Table"), icon: <IconTable size={14} />, to: tablePath },
+            { value: "timeline", label: t("Timeline"), icon: <IconTimeline size={14} />, to: timelinePath },
           ]}
         />
       )}

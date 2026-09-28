@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Input } from "../Forms";
@@ -12,7 +13,8 @@ export function ResourceHubSearchInput({
   search: ResourceHubSearchProps;
   searchState: ResourceHubSearchState;
 }) {
-  const placeholder = search.placeholder ?? "Search documents and files…";
+  const { t } = useTranslation();
+  const placeholder = search.placeholder ?? t("Search documents and files…");
   const testId = search.testId ?? "resource-hub-search";
 
   return (
@@ -35,7 +37,7 @@ export function ResourceHubSearchInput({
       {searchState.query && (
         <button
           type="button"
-          aria-label="Clear search"
+          aria-label={t("Clear search")}
           onClick={() => searchState.setQuery("")}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-content-dimmed hover:text-content-accent"
         >
@@ -47,16 +49,17 @@ export function ResourceHubSearchInput({
 }
 
 export function ResourceHubSearchMessage({ searchState }: { searchState: ResourceHubSearchState }) {
+  const { t } = useTranslation();
   if (searchState.status === "loading") {
-    return <SearchMessage role="status">Searching…</SearchMessage>;
+    return <SearchMessage role="status">{t("Searching…")}</SearchMessage>;
   }
 
   if (searchState.status === "error") {
-    return <SearchMessage role="alert">Search is unavailable. Try again.</SearchMessage>;
+    return <SearchMessage role="alert">{t("Search is unavailable. Try again.")}</SearchMessage>;
   }
 
   if (searchState.status === "success" && searchState.results.length === 0) {
-    return <SearchMessage role="status">No matching items. Try different keywords.</SearchMessage>;
+    return <SearchMessage role="status">{t("No matching items. Try different keywords.")}</SearchMessage>;
   }
 
   return null;

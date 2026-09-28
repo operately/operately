@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { DangerButton } from "../Button";
@@ -17,6 +18,7 @@ interface AnnotationFormProps {
 }
 
 export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onEdit, onDelete }: AnnotationFormProps) {
+  const { t } = useTranslation();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const isEditing = annotation !== null;
@@ -27,8 +29,8 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
       title: annotation?.title ?? "",
     },
     validate: (addError) => {
-      if (!form.values.date) addError("date", "Choose a date");
-      if (!form.values.title.trim()) addError("title", "Enter a title");
+      if (!form.values.date) addError("date", t("Choose a date"));
+      if (!form.values.title.trim()) addError("title", t("Enter a title"));
     },
     submit: async () => {
       if (!kpi) return;
@@ -50,7 +52,7 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
         form.actions.reset();
         onClose();
       } else {
-        setSubmitError(result.error ?? "Something went wrong. Please try again.");
+        setSubmitError(result.error ?? t("Something went wrong. Please try again."));
       }
     },
     cancel: onClose,
@@ -78,7 +80,7 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
         form.actions.reset();
         onClose();
       } else {
-        setSubmitError(result.error ?? "Something went wrong. Please try again.");
+        setSubmitError(result.error ?? t("Something went wrong. Please try again."));
       }
     } finally {
       setIsDeleting(false);
@@ -91,22 +93,23 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? "Edit annotation" : "Add annotation"}
+      title={isEditing ? t("Edit annotation") : t("Add annotation")}
       size="x-small"
       testId="kpi-annotation-modal"
     >
       <Form form={form}>
         <p className="mb-4 text-sm text-content-dimmed">
-          Mark a date on this chart with something that happened — a launch, a pricing change, or another event that
-          helps explain the numbers.
+          {t(
+            "Mark a date on this chart with something that happened — a launch, a pricing change, or another event that helps explain the numbers.",
+          )}
         </p>
 
         <div className="space-y-4">
-          <DateInput field="date" label="Date" required />
+          <DateInput field="date" label={t("Date")} required />
           <TextInput
             field="title"
-            label="Title"
-            placeholder="e.g. Launched enterprise plan"
+            label={t("Title")}
+            placeholder={t("e.g. Launched enterprise plan")}
             required
             autoFocus
             maxLength={80}
@@ -119,7 +122,7 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
           </div>
         )}
 
-        <Submit saveText={isEditing ? "Save annotation" : "Add annotation"} cancelText="Cancel" />
+        <Submit saveText={isEditing ? t("Save annotation") : t("Add annotation")} cancelText={t("Cancel")} />
       </Form>
 
       {isEditing && (
@@ -131,7 +134,7 @@ export function AnnotationForm({ kpi, annotation, isOpen, onClose, onCreate, onE
             disabled={isDeleting}
             testId="delete-kpi-annotation"
           >
-            Delete annotation
+            {t("Delete annotation")}
           </DangerButton>
         </div>
       )}

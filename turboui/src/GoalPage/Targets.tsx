@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { GoalPage } from ".";
@@ -6,15 +7,16 @@ import { GoalTargetList } from "../GoalTargetList";
 import { SectionHeader } from "./SectionHeader";
 
 export function Targets(props: GoalPage.State) {
+  const { t } = useTranslation();
   const [addActive, setAddActive] = React.useState(false);
 
   return (
     <div>
       <SectionHeader
-        title="Targets"
+        title={t("Targets")}
         buttons={
           <SecondaryButton size="xxs" onClick={() => setAddActive(true)} testId="add-target">
-            Add
+            {t("Add")}
           </SecondaryButton>
         }
         showButtons={props.permissions.canEdit && !addActive}
@@ -24,8 +26,8 @@ export function Targets(props: GoalPage.State) {
         <div className="mt-1">
           <div className="text-content-dimmed text-sm">
             {props.permissions.canEdit
-              ? "Add targets to track quantitative progress with numbers."
-              : "The champion hasn't yet set targets for this goal."}
+              ? t("Add targets to track quantitative progress with numbers.")
+              : t("The champion hasn't yet set targets for this goal.")}
           </div>
         </div>
       )}

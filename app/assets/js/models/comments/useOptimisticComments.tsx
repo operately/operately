@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { type CommentQueryInvalidator } from "./commentLifecycle";
 import { type Comment, type CommentParentType, type Reaction } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -38,7 +39,7 @@ export function useOptimisticComments(opts: {
 
   async function addComment(content: unknown): Promise<boolean> {
     if (!taskId || !me) {
-      showErrorToast("Error", "Failed to add comment.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to add comment."));
       return false;
     }
     const serialized = stringifyCommentContent(content);
@@ -67,13 +68,13 @@ export function useOptimisticComments(opts: {
         };
         return (current) => [...current.filter((item) => item.id !== comment.id), confirmed];
       },
-      "Failed to add comment.",
+      i18n.t("Failed to add comment."),
     );
   }
 
   async function editComment(commentId: string, content: unknown): Promise<boolean> {
     if (!hasSavedComment(commentId)) {
-      showErrorToast("Error", "Failed to edit comment.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to edit comment."));
       return false;
     }
     const serialized = stringifyCommentContent(content);
@@ -84,13 +85,13 @@ export function useOptimisticComments(opts: {
         const { comment } = await update({ commentId, parentType, content: serialized });
         return changeComment(commentId, (current) => ({ ...current, content: comment?.content ?? serialized }));
       },
-      "Failed to edit comment.",
+      i18n.t("Failed to edit comment."),
     );
   }
 
   async function deleteComment(commentId: string): Promise<void> {
     if (!hasSavedComment(commentId)) {
-      showErrorToast("Error", "Failed to delete comment.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to delete comment."));
       return;
     }
     const apply: CommentUpdate = (current) => current.filter((comment) => comment.id !== commentId);
@@ -100,13 +101,13 @@ export function useOptimisticComments(opts: {
         await remove({ commentId, parentType });
         return apply;
       },
-      "Failed to delete comment.",
+      i18n.t("Failed to delete comment."),
     );
   }
 
   async function addReaction(commentId: string, emoji: string): Promise<void> {
     if (!me || !hasSavedComment(commentId)) {
-      showErrorToast("Error", "Failed to add reaction.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to add reaction."));
       return;
     }
     const optimistic: Reaction = { __typename: "reaction", id: temporaryId(), emoji, person: me };
@@ -123,13 +124,13 @@ export function useOptimisticComments(opts: {
         reactionIds.set(optimistic.id, reaction.id);
         return append({ ...reaction, person: reaction.person ?? optimistic.person });
       },
-      "Failed to add reaction.",
+      i18n.t("Failed to add reaction."),
     );
   }
 
   async function removeReaction(commentId: string, reactionId: string): Promise<void> {
     if (!hasSavedComment(commentId)) {
-      showErrorToast("Error", "Failed to remove reaction.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to remove reaction."));
       return;
     }
     const apply = changeComment(commentId, (comment) => ({
@@ -146,7 +147,7 @@ export function useOptimisticComments(opts: {
         if (!savedId.startsWith("temp-")) await deleteReaction({ reactionId: savedId });
         return apply;
       },
-      "Failed to remove reaction.",
+      i18n.t("Failed to remove reaction."),
     );
   }
 

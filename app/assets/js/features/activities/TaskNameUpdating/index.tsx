@@ -1,9 +1,11 @@
+import { Trans } from "react-i18next";
+import i18n from "@/i18n";
 import React from "react";
 
 import type { ActivityContentTaskNameUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
@@ -50,12 +52,22 @@ const TaskNameUpdating: ActivityHandler = {
     if (hasAggregatedTasks(activity)) {
       const tasks = <UpdatedTaskList activity={activity} paths={paths} />;
 
-      if (page === "project") {
-        return feedTitle(activity, "renamed", tasks);
-      } else if (page === "space" && !project) {
-        return feedTitle(activity, "renamed", tasks);
+      if (page === "project" || (page === "space" && !project)) {
+        return (
+          <Trans
+            i18nKey="{{author}} renamed <tasks/>"
+            values={{ author: activityAuthorName(activity) }}
+            components={{ tasks }}
+          />
+        );
       } else {
-        return feedTitle(activity, "renamed", tasks, "in", location);
+        return (
+          <Trans
+            i18nKey="{{author}} renamed <tasks/> in <location>{{locationName}}</location>"
+            values={{ author: activityAuthorName(activity), locationName: project?.name ?? space.name }}
+            components={{ tasks, location }}
+          />
+        );
       }
     }
 
@@ -63,12 +75,22 @@ const TaskNameUpdating: ActivityHandler = {
       ? taskLink(paths, task, { taskName: newName, spaceId: !project ? space.id : undefined })
       : newName;
 
-    if (page === "project") {
-      return feedTitle(activity, "renamed task to", name);
-    } else if (page === "space" && !project) {
-      return feedTitle(activity, "renamed task to", name);
+    if (page === "project" || (page === "space" && !project)) {
+      return (
+        <Trans
+          i18nKey="{{author}} renamed task to <task>{{newName}}</task>"
+          values={{ author: activityAuthorName(activity), newName }}
+          components={{ task: typeof name === "string" ? <></> : name }}
+        />
+      );
     } else {
-      return feedTitle(activity, "renamed task to", name, "in", location);
+      return (
+        <Trans
+          i18nKey="{{author}} renamed task to <task>{{newName}}</task> in <location>{{locationName}}</location>"
+          values={{ author: activityAuthorName(activity), newName, locationName: project?.name ?? space.name }}
+          components={{ task: typeof name === "string" ? <></> : name, location }}
+        />
+      );
     }
   },
 
@@ -77,7 +99,7 @@ const TaskNameUpdating: ActivityHandler = {
 
     const { oldName } = content(activity);
 
-    return <>Previously, the task was named "{oldName}".</>;
+    return <Trans i18nKey={'Previously, the task was named "{{oldName}}".'} values={{ oldName }} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -94,7 +116,7 @@ const TaskNameUpdating: ActivityHandler = {
 
   NotificationTitle(props: { activity: Activity }) {
     const { newName, oldName } = content(props.activity);
-    return `Task "${oldName}" was renamed to "${newName}"`;
+    return i18n.t('Task "{{oldName}}" was renamed to "{{newName}}"', { oldName, newName });
   },
 
   NotificationLocation(props: { activity: Activity }) {

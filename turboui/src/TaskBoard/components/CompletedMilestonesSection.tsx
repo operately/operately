@@ -1,3 +1,5 @@
+import { Trans, useTranslation } from "react-i18next";
+import { tn } from "../../i18n";
 import React, { useId, useState } from "react";
 
 import { FormattedTime } from "../../FormattedTime";
@@ -12,9 +14,10 @@ interface CompletedMilestonesSectionProps {
 }
 
 export function CompletedMilestonesSection({ milestones, formattedTimePreferences }: CompletedMilestonesSectionProps) {
+  useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const contentId = useId();
-  const sectionLabel = `${milestones.length} completed milestone${milestones.length === 1 ? "" : "s"}`;
+  const sectionLabel = tn("1 completed milestone", "{{count}} completed milestones", milestones.length);
   const openTaskCount = milestones.reduce(
     (total, milestoneData) =>
       total + Math.max(0, milestoneData.stats.total - milestoneData.stats.done - milestoneData.stats.canceled),
@@ -35,7 +38,7 @@ export function CompletedMilestonesSection({ milestones, formattedTimePreference
         <span>{sectionLabel}</span>
         {openTaskCount > 0 && (
           <span className="text-callout-warning-content">
-            · {openTaskCount} open task{openTaskCount === 1 ? "" : "s"}
+            · {tn("1 open task", "{{count}} open tasks", openTaskCount)}
           </span>
         )}
       </button>
@@ -63,6 +66,7 @@ interface CompletedMilestoneRowProps {
 }
 
 function CompletedMilestoneRow({ milestoneData, formattedTimePreferences, hasDivider }: CompletedMilestoneRowProps) {
+  useTranslation();
   const { milestone, stats } = milestoneData;
   const openTaskCount = stats.pending + stats.inProgress;
 
@@ -88,15 +92,20 @@ function CompletedMilestoneRow({ milestoneData, formattedTimePreferences, hasDiv
         <div className="flex flex-shrink-0 items-center gap-2 text-xs text-content-dimmed">
           {openTaskCount > 0 && (
             <span className="text-callout-warning-content">
-              {openTaskCount} open task{openTaskCount === 1 ? "" : "s"}
+              {tn("1 open task", "{{count}} open tasks", openTaskCount)}
             </span>
           )}
-          <span>
-            {stats.total} task{stats.total === 1 ? "" : "s"}
-          </span>
+          <span>{tn("1 task", "{{count}} tasks", stats.total)}</span>
           {milestone.completedAt && (
             <span className="hidden sm:inline">
-              Completed <FormattedTime {...formattedTimePreferences} time={milestone.completedAt} format="short-date" />
+              <Trans
+                i18nKey="Completed <date/>"
+                components={{
+                  date: (
+                    <FormattedTime {...formattedTimePreferences} time={milestone.completedAt} format="short-date" />
+                  ),
+                }}
+              />
             </span>
           )}
         </div>

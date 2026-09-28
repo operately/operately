@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n, { tn } from "../i18n";
 import { IconArchive, IconCalendar, IconCircleArrowRight, IconLink, IconPlus, IconTrash } from "../icons";
 import React from "react";
 import { TaskPage } from "./types";
@@ -52,14 +54,15 @@ export function MobileSidebar(props: TaskPage.ContentState) {
 }
 
 function DueDate(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   if (props.variant === "template") {
     return (
-      <SidebarSection title="Relative due date">
+      <SidebarSection title={t("Relative due date")}>
         <RelativeDayField
           value={props.dueOffsetDays ?? null}
           onChange={props.onDueOffsetDaysChange}
           readonly={!props.canEdit}
-          placeholder="Set relative date"
+          placeholder={t("Set relative date")}
           testId="task-due-offset"
         />
       </SidebarSection>
@@ -67,13 +70,13 @@ function DueDate(props: TaskPage.ContentState) {
   }
 
   return (
-    <SidebarSection title="Due date">
+    <SidebarSection title={t("Due date")}>
       <DateField
         date={props.dueDate ?? null}
         onDateSelect={props.onDueDateChange}
         readonly={!props.canEdit}
         showOverdueWarning={!props.status?.closed}
-        placeholder="Set due date"
+        placeholder={t("Set due date")}
         testId="task-due-date"
         calendarOnly
       />
@@ -83,6 +86,7 @@ function DueDate(props: TaskPage.ContentState) {
 }
 
 function Reminders(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   const reminderKeys = React.useRef<string[]>([]);
 
   if (!variantFeatures(props.variant).showReminders) return null;
@@ -112,7 +116,7 @@ function Reminders(props: TaskPage.ContentState) {
   };
 
   return (
-    <SidebarSection title="Reminders" testId="task-reminders">
+    <SidebarSection title={t("Reminders")} testId="task-reminders">
       <div className="space-y-2">
         {reminders.map((reminder, index) => (
           <ReminderRow
@@ -134,7 +138,7 @@ function Reminders(props: TaskPage.ContentState) {
             className="inline-flex items-center gap-1 text-xs text-content-dimmed hover:text-content-base"
           >
             <IconPlus size={12} />
-            Add reminder
+            {t("Add reminder")}
           </button>
         )}
       </div>
@@ -161,7 +165,8 @@ function ReminderRow({
   onUpdate: (index: number, updates: Partial<TaskPage.Reminder>) => void;
   onRemove: (index: number) => void;
 }) {
-  const dayLabel = (reminder.days ?? 1) === 1 ? "day" : "days";
+  useTranslation();
+  const dayLabel = tn("day", "days", reminder.days ?? 1);
   const typeOptions = reminderTypeOptions(hasDueDate);
 
   return (
@@ -171,7 +176,7 @@ function ReminderRow({
         disabled={readonly}
         onChange={(e) => onUpdate(index, { type: e.target.value as TaskPage.ReminderType })}
         className="min-w-0 flex-1 rounded border border-stroke-base bg-surface-base px-2 py-1"
-        aria-label="Reminder type"
+        aria-label={i18n.t("Reminder type")}
       >
         {typeOptions.map((option) => (
           <option key={option.type} value={option.type}>
@@ -189,7 +194,7 @@ function ReminderRow({
             disabled={readonly}
             onChange={(e) => onUpdate(index, { days: normalizeReminderDays(e.target.value) })}
             className="w-14 rounded border border-stroke-base bg-surface-base px-2 py-1"
-            aria-label="Days before due date"
+            aria-label={i18n.t("Days before due date")}
           />
           <span className="w-10 text-content-dimmed">{dayLabel}</span>
         </>
@@ -202,7 +207,7 @@ function ReminderRow({
           disabled={readonly}
           onChange={(e) => onUpdate(index, { date: normalizeReminderDate(e.target.value) })}
           className="w-32 rounded border border-stroke-base bg-surface-base px-2 py-1"
-          aria-label="Reminder date"
+          aria-label={i18n.t("Reminder date")}
         />
       )}
 
@@ -211,7 +216,7 @@ function ReminderRow({
           type="button"
           onClick={() => onRemove(index)}
           className="p-1 text-content-dimmed hover:text-content-error"
-          aria-label="Remove reminder"
+          aria-label={i18n.t("Remove reminder")}
         >
           <IconTrash size={14} />
         </button>
@@ -247,12 +252,12 @@ function normalizeReminders(reminders: TaskPage.Reminder[], dueDate: TaskPage.Co
 
 function reminderTypeOptions(hasDueDate: boolean) {
   const dueDateOptions: Array<{ type: TaskPage.ReminderType; label: string }> = [
-    { type: "before_due", label: "Before due date" },
-    { type: "due_day", label: "Due date" },
-    { type: "overdue", label: "Overdue" },
+    { type: "before_due", label: i18n.t("Before due date") },
+    { type: "due_day", label: i18n.t("Due date") },
+    { type: "overdue", label: i18n.t("Overdue") },
   ];
 
-  const onDateOption = { type: "on_date" as const, label: "On date" };
+  const onDateOption = { type: "on_date" as const, label: i18n.t("On date") };
 
   if (hasDueDate) return [...dueDateOptions, onDateOption];
   return [onDateOption];
@@ -291,15 +296,16 @@ function createReminderKey() {
 }
 
 function Assignees(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   return (
-    <SidebarSection title="Assignees">
+    <SidebarSection title={t("Assignees")}>
       <AssigneesField
         people={props.assignees}
         setPeople={props.onAssigneesChange}
         readonly={!props.canEdit}
         searchData={props.assigneePersonSearch}
-        emptyStateMessage="Assign task"
-        emptyStateReadOnlyMessage="No assignees"
+        emptyStateMessage={t("Assign task")}
+        emptyStateReadOnlyMessage={t("No assignees")}
         testId="assignee"
       />
     </SidebarSection>
@@ -307,27 +313,28 @@ function Assignees(props: TaskPage.ContentState) {
 }
 
 function DueDateMobile(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   if (props.variant === "template") {
     return (
-      <SidebarSection title="Relative due date">
+      <SidebarSection title={t("Relative due date")}>
         <RelativeDayField
           value={props.dueOffsetDays ?? null}
           onChange={props.onDueOffsetDaysChange}
           readonly={!props.canEdit}
-          placeholder="Set relative date"
+          placeholder={t("Set relative date")}
         />
       </SidebarSection>
     );
   }
 
   return (
-    <SidebarSection title="Due date">
+    <SidebarSection title={t("Due date")}>
       <DateField
         date={props.dueDate ?? null}
         onDateSelect={props.onDueDateChange}
         readonly={!props.canEdit}
         showOverdueWarning={!props.status?.closed}
-        placeholder="Set due date"
+        placeholder={t("Set due date")}
         calendarOnly
         size="small"
       />
@@ -336,15 +343,16 @@ function DueDateMobile(props: TaskPage.ContentState) {
 }
 
 function AssigneeMobile(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   return (
-    <SidebarSection title="Assignees">
+    <SidebarSection title={t("Assignees")}>
       <AssigneesField
         people={props.assignees}
         setPeople={props.onAssigneesChange}
         readonly={!props.canEdit}
         searchData={props.assigneePersonSearch}
-        emptyStateMessage="Assign task"
-        emptyStateReadOnlyMessage="No assignees"
+        emptyStateMessage={t("Assign task")}
+        emptyStateReadOnlyMessage={t("No assignees")}
         size="small"
         showTitle={false}
       />
@@ -353,18 +361,19 @@ function AssigneeMobile(props: TaskPage.ContentState) {
 }
 
 function Milestone(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   if (!variantFeatures(props.variant).showMilestone) return null;
 
   return (
-    <SidebarSection title="Milestone" testId="task-milestone">
+    <SidebarSection title={t("Milestone")} testId="task-milestone">
       <MilestoneField
         milestone={props.milestone}
         setMilestone={props.onMilestoneChange}
         readonly={!props.canEdit}
         milestones={props.milestones}
         onSearch={props.onMilestoneSearch}
-        emptyStateMessage="Select milestone"
-        emptyStateReadOnlyMessage="No milestone"
+        emptyStateMessage={t("Select milestone")}
+        emptyStateReadOnlyMessage={t("No milestone")}
         formattedTimePreferences={props.formattedTimePreferences}
       />
     </SidebarSection>
@@ -372,10 +381,11 @@ function Milestone(props: TaskPage.ContentState) {
 }
 
 function CreatedBy(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   if (!props.createdBy) return null;
 
   return (
-    <SidebarSection title="Created">
+    <SidebarSection title={t("Created")}>
       <div className="space-y-2 text-sm">
         <AvatarWithName person={props.createdBy} size={"tiny"} nameFormat="short" link={props.createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
@@ -394,39 +404,42 @@ function Subscription(props: TaskPage.ContentState) {
 }
 
 function Actions(props: TaskPage.ContentState) {
+  const { t } = useTranslation();
   const { showMoveAndArchive } = variantFeatures(props.variant);
 
   const handleCopyURL = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      showSuccessToast("Success", "Task URL copied to clipboard");
+      showSuccessToast(t("Success"), t("Task URL copied to clipboard"));
     } catch {
-      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+      showErrorToast(t("Copy failed"), t("Unable to copy URL to clipboard"));
     }
   };
 
   const actions = [
     {
-      label: "Copy URL",
+      label: t("Copy URL"),
       onClick: handleCopyURL,
       icon: IconLink,
       show: true,
     },
     {
-      label: "Move task",
+      label: t("Move task"),
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      show: Boolean(showMoveAndArchive && props.canEdit && props.onMoveTask && props.projectSearch && props.spaceSearch),
+      show: Boolean(
+        showMoveAndArchive && props.canEdit && props.onMoveTask && props.projectSearch && props.spaceSearch,
+      ),
       testId: "move-task",
     },
     {
-      label: "Archive",
+      label: t("Archive"),
       onClick: props.onArchive,
       icon: IconArchive,
       show: Boolean(showMoveAndArchive && props.onArchive),
     },
     {
-      label: "Delete",
+      label: t("Delete"),
       onClick: props.openDeleteModal,
       icon: IconTrash,
       show: props.canEdit,
@@ -438,7 +451,7 @@ function Actions(props: TaskPage.ContentState) {
   if (actions.length === 0) return null;
 
   return (
-    <SidebarSection title="Actions">
+    <SidebarSection title={t("Actions")}>
       <div className="space-y-1">
         {actions.map((action, index) => (
           <button
@@ -467,7 +480,7 @@ function OverdueWarning(props: TaskPage.ContentState) {
 
   return (
     <div className="mt-2">
-      <WarningCallout message={`Overdue by ${duration}.`} />
+      <WarningCallout message={i18n.t("Overdue by {{duration}}.", { duration })} />
     </div>
   );
 }

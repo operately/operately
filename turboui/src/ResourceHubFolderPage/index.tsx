@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Page } from "../Page";
@@ -18,6 +19,7 @@ export namespace ResourceHubFolderPage {
 }
 
 export function ResourceHubFolderPage(props: ResourceHubFolderPage.Props) {
+  const { t } = useTranslation();
   const [showRenameForm, setShowRenameForm] = React.useState(false);
 
   const toggleRenameForm = React.useCallback(() => {
@@ -29,7 +31,7 @@ export function ResourceHubFolderPage(props: ResourceHubFolderPage.Props) {
       {
         type: "action",
         icon: IconEdit,
-        label: "Rename",
+        label: t("Rename"),
         onClick: toggleRenameForm,
         hidden: !props.folder.permissions?.canRenameFolder,
         testId: "rename-folder",

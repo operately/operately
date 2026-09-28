@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
@@ -42,6 +43,7 @@ export function LinkMenu({ link }: LinkMenuProps) {
 }
 
 function EditLinkMenuItem({ link }: LinkMenuProps) {
+  const { t } = useTranslation();
   const { paths } = useResourceHubNodesListContext();
 
   if (!paths) return null;
@@ -51,22 +53,31 @@ function EditLinkMenuItem({ link }: LinkMenuProps) {
 
   return (
     <MenuLinkItem to={editPath} testId={editId}>
-      Edit
+      {t("Edit")}
     </MenuLinkItem>
   );
 }
 
 function DeleteLinkMenuItem({ link, toggleDeleteModal }: { link: ResourceHubLink; toggleDeleteModal: () => void }) {
+  const { t } = useTranslation();
   const deleteId = createTestId("delete", link.id);
 
   return (
     <MenuActionItem onClick={toggleDeleteModal} testId={deleteId} danger>
-      Delete
+      {t("Delete")}
     </MenuActionItem>
   );
 }
 
-function DeleteLinkModal({ link, isOpen, hideModal }: { link: ResourceHubLink; isOpen: boolean; hideModal: () => void }) {
+function DeleteLinkModal({
+  link,
+  isOpen,
+  hideModal,
+}: {
+  link: ResourceHubLink;
+  isOpen: boolean;
+  hideModal: () => void;
+}) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
 
   const handleDelete = async () => {

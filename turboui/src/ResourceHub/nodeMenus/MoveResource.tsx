@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import * as Forms from "../../Forms";
@@ -15,11 +16,12 @@ interface MoveResourceMenuItemProps {
 }
 
 export function MoveResourceMenuItem({ resource, showModal }: MoveResourceMenuItemProps) {
+  const { t } = useTranslation();
   const testId = createTestId("move", resource.id);
 
   return (
     <MenuActionItem onClick={showModal} testId={testId}>
-      Move
+      {t("Move")}
     </MenuActionItem>
   );
 }
@@ -32,6 +34,7 @@ interface MoveResourceModalProps {
 }
 
 export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }: MoveResourceModalProps) {
+  const { t } = useTranslation();
   const { parent, onRefetch, actions } = useResourceHubNodesListContext();
   const parentFolderId = getResourceParentFolderId(resource);
 
@@ -51,7 +54,7 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
     validate: (addError: (field: string, message: string) => void) => {
       const location = form.values.location as { id?: string | null };
       if (resource.id === location.id) {
-        addError("location", "Folder cannot be moved inside itself.");
+        addError("location", t("Folder cannot be moved inside itself."));
       }
     },
     cancel: hideModal,
@@ -79,17 +82,17 @@ export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }:
   );
 
   return (
-    <Modal title={`Move ${getResourceName(resource)}`} isOpen={isOpen} onClose={hideModal}>
+    <Modal title={t("Move {{name}}", { name: getResourceName(resource) })} isOpen={isOpen} onClose={hideModal}>
       <Forms.Form form={form} testId="move-resource-modal">
         <Forms.FieldGroup>
           <ResourceHubFolderSelectField
             field="location"
             notAllowedSelections={notAllowedSelections}
-            label="Select destination"
+            label={t("Select destination")}
           />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Move Here" cancelText="Cancel" />
+        <Forms.Submit saveText={t("Move Here")} cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );

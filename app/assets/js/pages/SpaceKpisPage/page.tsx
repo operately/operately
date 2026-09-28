@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -97,7 +98,7 @@ export function Page() {
     });
 
     if (!result.success) {
-      showErrorToast("Error", "Failed to update KPI description.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update KPI description."));
     }
 
     return result.success;
@@ -127,7 +128,7 @@ export function Page() {
             content: Comments.stringifyCommentContent(input.comment),
           });
         } catch {
-          showErrorToast("Note not posted", "The value was recorded, but the note wasn't saved.");
+          showErrorToast(i18n.t("Note not posted"), i18n.t("The value was recorded, but the note wasn't saved."));
         }
       }
 
@@ -224,6 +225,6 @@ async function run(fn: () => Promise<string | void>): Promise<SpaceKpisPageTypes
     const id = await fn();
     return { success: true, id: id ?? undefined };
   } catch (error: any) {
-    return { success: false, error: error?.message ?? "Something went wrong. Please try again." };
+    return { success: false, error: error?.message ?? i18n.t("Something went wrong. Please try again.") };
   }
 }

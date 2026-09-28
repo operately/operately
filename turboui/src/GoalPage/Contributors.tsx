@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
@@ -7,13 +8,14 @@ import { Tooltip } from "../Tooltip";
 import { SectionHeader } from "./SectionHeader";
 
 export function Contributors(props: GoalPage.State) {
+  const { t } = useTranslation();
   if (props.contributors.length === 0) {
     return null;
   }
 
   return (
     <div>
-      <SectionHeader title="Contributors" buttons={<Info />} showButtons={true} />
+      <SectionHeader title={t("Contributors")} buttons={<Info />} showButtons={true} />
 
       <div className="mt-4">
         {props.contributors!.map((c) => (
@@ -47,11 +49,12 @@ export function Contributors(props: GoalPage.State) {
 }
 
 function Info() {
+  const { t } = useTranslation();
   const tooltip = (
     <div className="max-w-xs">
-      <div className="font-bold text-sm">Who is listed as a contributor?</div>
+      <div className="font-bold text-sm">{t("Who is listed as a contributor?")}</div>
       <div className="mt-2 text-xs">
-        Contributors are people who made contributions to this goal by working on subgoals and projects.
+        {t("Contributors are people who made contributions to this goal by working on subgoals and projects.")}
       </div>
     </div>
   );

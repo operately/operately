@@ -1,11 +1,12 @@
+import i18n from "../i18n";
 import type { SpaceKpisPage } from "./types";
 
 export function formatCadence(cadence: SpaceKpisPage.Cadence): string {
   switch (cadence) {
     case "weekly":
-      return "Weekly";
+      return i18n.t("Weekly");
     case "monthly":
-      return "Monthly";
+      return i18n.t("Monthly");
     default:
       return cadence;
   }

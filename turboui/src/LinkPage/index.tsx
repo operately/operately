@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { BulletDot } from "../BulletDot";
@@ -15,6 +16,7 @@ import { CurrentSubscriptions } from "../Subscriptions";
 import type { LinkPage as LinkPageNS } from "./types";
 
 export function LinkPage(props: LinkPageNS.Props) {
+  const { t } = useTranslation();
   const hasDescription = props.description != null && !isContentEmpty(props.description);
 
   return (
@@ -32,7 +34,7 @@ export function LinkPage(props: LinkPageNS.Props) {
           <div className="font-medium inline-flex gap-1">
             {props.author && <span>{props.author.fullName}</span>}
             {props.author && <BulletDot />}
-            <span>Posted</span>
+            <span>{t("Posted")}</span>
             <FormattedTime {...props.formattedTimePreferences} time={props.postedAt} format="relative-time-or-date" />
           </div>
         </div>
@@ -41,7 +43,7 @@ export function LinkPage(props: LinkPageNS.Props) {
           <div className="flex flex-col rounded gap-4">
             <div className="flex items-center gap-2">
               <PrimaryButton linkTo={props.url} linkTarget="_blank">
-                Open Link
+                {t("Open Link")}
               </PrimaryButton>
             </div>
           </div>
@@ -50,7 +52,7 @@ export function LinkPage(props: LinkPageNS.Props) {
         {hasDescription && (
           <>
             <Spacer size={2} />
-            <div className="font-bold text-content-accent">Notes:</div>
+            <div className="font-bold text-content-accent">{t("Notes:")}</div>
             <RichContent
               content={props.description}
               mentionedPersonLookup={props.mentionedPersonLookup}

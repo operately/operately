@@ -1,8 +1,11 @@
+import React from "react";
+import { Trans } from "react-i18next";
+import i18n from "@/i18n";
 import type { ActivityContentProjectCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,9 +32,15 @@ const ProjectCreated: ActivityHandler = {
     const project = projectLink(paths, content(activity).project!);
 
     if (page === "project") {
-      return feedTitle(activity, "created the project");
+      return <Trans i18nKey="{{author}} created the project" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "created the", project, "project");
+      return (
+        <Trans
+          i18nKey="{{author}} created the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: content(activity).project?.name }}
+          components={{ project }}
+        />
+      );
     }
   },
 
@@ -52,7 +61,7 @@ const ProjectCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Added the " + content(activity).project!.name! + " project";
+    return i18n.t("Added the {{projectName}} project", { projectName: content(activity).project?.name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
