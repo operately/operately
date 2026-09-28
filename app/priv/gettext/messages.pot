@@ -7,6 +7,11 @@ msgstr "Language: \n"
 "X-Generator: Operately I18n\n"
 
 #.frontend
+#: assets/js/features/activities/GoalCreated/index.tsx:43
+msgid "%{author} added a goal"
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:67
 msgid "%{author} added tasks <tasks/>"
 msgstr ""
@@ -17,7 +22,7 @@ msgid "%{author} added tasks <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/GoalCreated/index.tsx:40
+#: assets/js/features/activities/GoalCreated/index.tsx:47
 msgid "%{author} added the <goal>%{goalName}</goal> goal"
 msgstr ""
 
@@ -42,7 +47,7 @@ msgid "%{author} added the task <task>%{taskName}</task> in <location>%{location
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/GoalCreated/index.tsx:37
+#: assets/js/features/activities/GoalCreated/index.tsx:39
 msgid "%{author} added this goal"
 msgstr ""
 
@@ -177,17 +182,17 @@ msgid "%{percentage}% tasks completed, %{completed}/%{total} tasks completed"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/GoalCreated/index.tsx:71
+#: assets/js/features/activities/GoalCreated/index.tsx:77
 msgid "%{person} added a new goal and assigned you as a contributor"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/GoalCreated/index.tsx:69
+#: assets/js/features/activities/GoalCreated/index.tsx:75
 msgid "%{person} added a new goal and assigned you as the champion"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/GoalCreated/index.tsx:70
+#: assets/js/features/activities/GoalCreated/index.tsx:76
 msgid "%{person} added a new goal and assigned you as the reviewer"
 msgstr ""
 
@@ -1376,7 +1381,7 @@ msgstr ""
 #: ../turboui/src/InvitePeoplePage/index.tsx:168
 #: ../turboui/src/MilestoneList/AddMilestoneForm.tsx:107
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:131
-#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:50
+#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:51
 #: ../turboui/src/ProfileEditPage/index.tsx:200
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:50
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:54
@@ -2374,11 +2379,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:37
 #: ../turboui/src/GoalPage/DeleteModal.tsx:75
-#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:47
+#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:48
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:47
 #: ../turboui/src/TaskPage/DeleteModal.tsx:30
 #: ../turboui/src/TaskPage/DeleteModal.tsx:72
 msgid "Delete Forever"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:10
+msgid "Delete Milestone"
 msgstr ""
 
 #.frontend
@@ -2433,7 +2443,7 @@ msgid "Deleting a goal is permanent and cannot be undone. Please confirm that yo
 msgstr ""
 
 #.frontend
-#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:40
+#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:41
 msgid "Deleting a milestone is permanent and cannot be undone. Please confirm that you want to delete this milestone."
 msgstr ""
 
@@ -6065,6 +6075,11 @@ msgid "Save annotation"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/NewDocumentPage/index.tsx:137
+msgid "Save as draft"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:380
 msgid "Save as template"
 msgstr ""
@@ -6999,7 +7014,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:66
-#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:39
+#: ../turboui/src/MilestonePage/components/DeleteModal.tsx:40
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:38
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:53
 #: ../turboui/src/TaskPage/DeleteModal.tsx:64
@@ -7959,6 +7974,11 @@ msgstr ""
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:69
 msgid "Work Map"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:31
+msgid "Work map view"
 msgstr ""
 
 #.frontend

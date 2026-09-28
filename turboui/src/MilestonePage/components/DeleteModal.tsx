@@ -6,7 +6,8 @@ import { WarningCallout } from "../../Callouts";
 import Modal from "../../Modal";
 
 export function DeleteModal(props: Pick<MilestonePage.State, "isDeleteModalOpen" | "closeDeleteModal" | "onDelete">) {
-  const title = "Delete Milestone";
+  const { t } = useTranslation();
+  const title = t("Delete Milestone");
 
   return (
     <Modal isOpen={props.isDeleteModalOpen} onClose={props.closeDeleteModal} size="large" title={title}>

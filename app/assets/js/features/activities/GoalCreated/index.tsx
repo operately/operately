@@ -33,17 +33,23 @@ const GoalCreated: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
+    const goal = content(activity).goal;
+
     if (page === "goal") {
       return <Trans i18nKey="{{author}} added this goal" values={{ author: activityAuthorName(activity) }} />;
-    } else {
-      return (
-        <Trans
-          i18nKey="{{author}} added the <goal>{{goalName}}</goal> goal"
-          values={{ author: activityAuthorName(activity), goalName: content(activity).goal?.name }}
-          components={{ goal: goalLink(paths, content(activity).goal!) }}
-        />
-      );
     }
+
+    if (!goal) {
+      return <Trans i18nKey="{{author}} added a goal" values={{ author: activityAuthorName(activity) }} />;
+    }
+
+    return (
+      <Trans
+        i18nKey="{{author}} added the <goal>{{goalName}}</goal> goal"
+        values={{ author: activityAuthorName(activity), goalName: goal.name }}
+        components={{ goal: goalLink(paths, goal) }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

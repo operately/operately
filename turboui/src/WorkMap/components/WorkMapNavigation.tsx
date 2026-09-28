@@ -28,7 +28,7 @@ export function WorkMapNavigation({ tabsState, timelineAvailable = false, view =
         <ViewToggle
           className="my-2 shrink-0"
           value={view}
-          ariaLabel="Work map view"
+          ariaLabel={t("Work map view")}
           options={[
             { value: "table", label: t("Table"), icon: <IconTable size={14} />, to: tablePath },
             { value: "timeline", label: t("Timeline"), icon: <IconTimeline size={14} />, to: timelinePath },

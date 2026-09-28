@@ -134,7 +134,7 @@ function FormActions({
         {!hideDraftActions && (
           <Forms.SubmitButton
             name="save-as-draft"
-            text="Save as draft"
+            text={t("Save as draft")}
             buttonSize="base"
             onClick={() => form.actions.submit(true)}
           />
