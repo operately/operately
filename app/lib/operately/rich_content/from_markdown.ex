@@ -2,7 +2,7 @@ defmodule Operately.RichContent.FromMarkdown do
   @moduledoc """
   Converts plain text or simple markdown into Operately rich content (ProseMirror JSON).
 
-  Supports headings, paragraphs, bullet, numbered and task lists, bold text, links, and optional
+  Supports headings, paragraphs, bullet, numbered and task lists, tables, bold text, links, and optional
   `@mentions` when a `:mention_resolver` option is provided.
 
   ## Options
@@ -20,7 +20,9 @@ defmodule Operately.RichContent.FromMarkdown do
     if String.trim(content) == "" do
       {:error, :invalid_arguments}
     else
-      {:ok, parse(content, opts)}
+      with {:ok, nodes} <- Operately.RichContent.MarkdownTables.parse(content, &parse(&1, opts), opts) do
+        {:ok, build_document(nodes)}
+      end
     end
   end
 
@@ -30,7 +32,6 @@ defmodule Operately.RichContent.FromMarkdown do
     content
     |> String.split("\n\n", trim: true)
     |> Enum.reduce([], &parse_block(&1, &2, opts))
-    |> build_document()
   end
 
   defp build_document(content) do

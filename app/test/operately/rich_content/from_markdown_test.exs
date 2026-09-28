@@ -3,6 +3,71 @@ defmodule Operately.RichContent.FromMarkdownTest do
 
   alias Operately.RichContent.FromMarkdown
 
+  @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+  for fixture <- @table_fixtures do
+    @fixture fixture
+    test "imports and round trips table export: #{@fixture["name"]}" do
+      assert {:ok, doc} = FromMarkdown.to_rich_text(@fixture["markdown"])
+      table = Enum.find(doc["content"], &(&1["type"] == "table"))
+      assert table
+      expected = @fixture["markdown"] |> String.replace_prefix("Before\n\n", "") |> String.replace_suffix("\n\nAfter", "")
+      # Unsupported images become links; mention labels remain text without a resolver.
+      expected = String.replace(expected, "![", "[")
+      assert Operately.MD.Table.render(table) == expected
+      assert {:ok, reparsed} = FromMarkdown.to_rich_text(Operately.MD.RichText.render(doc))
+      assert Enum.find(reparsed["content"], &(&1["type"] == "table")) == table
+    end
+  end
+
+  test "escaped table breaks survive Markdown export and reimport" do
+    markdown = "| Literal | Break |\n| --- | --- |\n| \\<br> | first<br>second |"
+    assert {:ok, doc} = FromMarkdown.to_rich_text(markdown)
+    exported = Operately.MD.RichText.render(doc)
+    assert exported =~ "| &lt;br&gt; | first<br>second |"
+    assert {:ok, ^doc} = FromMarkdown.to_rich_text(exported)
+  end
+
+  test "empty fenced code blocks survive Markdown export and reimport" do
+    for markdown <- ["```\n```", "```elixir\n```", "~~~\n~~~"] do
+      assert {:ok, doc} = FromMarkdown.to_rich_text(markdown)
+      assert [%{"type" => "codeBlock", "content" => []}] = doc["content"]
+      exported = Operately.MD.RichText.render(doc)
+      assert String.starts_with?(exported, "```")
+      assert {:ok, ^doc} = FromMarkdown.to_rich_text(exported)
+    end
+  end
+
+  test "pads short table rows, ignores alignment, and preserves adjacent blocks" do
+    assert {:ok, doc} = FromMarkdown.to_rich_text("Before\n| A | B |\n| :--- | ---: |\n| one |\n\nAfter")
+    assert [_, _, table, _, _] = doc["content"]
+    assert table["type"] == "table"
+    assert [header, row] = table["content"]
+    assert Enum.all?(header["content"], &(&1["type"] == "tableHeader"))
+    assert length(row["content"]) == 2
+    assert List.last(row["content"])["content"] == [%{"type" => "paragraph", "content" => []}]
+  end
+
+  test "rejects excess table cells instead of dropping them" do
+    assert {:error, :invalid_arguments} = FromMarkdown.to_rich_text("| A | B |\n| --- | --- |\n| 1 | 2 | 3 |")
+  end
+
+  test "does not recognize ordinary pipe text or fenced code as tables" do
+    for content <- ["a | b\nc | d", "```md\n| A | B |\n| --- | --- |\n| 1 | 2 | 3 |\n```", "~~~\n\n| A |\n| --- |\n~~~"] do
+      assert {:ok, doc} = FromMarkdown.to_rich_text(content)
+      refute Enum.any?(doc["content"], &(&1["type"] == "table"))
+    end
+  end
+
+  test "resolves mentions inside formatted table cells" do
+    resolver = fn "alice" -> %{id: "person-1", label: "Alice"} end
+    assert {:ok, doc} = FromMarkdown.to_rich_text("| Owner |\n| --- |\n| **@alice** |", mention_resolver: resolver)
+    mention = get_in(doc, ["content", Access.at(0), "content", Access.at(1), "content", Access.at(0), "content", Access.at(0), "content", Access.at(0)])
+    assert mention["type"] == "mention"
+    assert mention["attrs"] == %{"id" => "person-1", "label" => "Alice"}
+    assert mention["marks"] == [%{"type" => "bold"}]
+  end
+
   test "numbered checkboxes preserve checked state and nested tasks" do
     assert {:ok, doc} = FromMarkdown.to_rich_text("1. [ ] **Review**\n   1. [X] Nested\n2. [x] Ship")
     assert [list | _] = doc["content"]
