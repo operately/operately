@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { GhostButton } from "../Button";
 import { ConfirmDialog } from "../ConfirmDialog";
@@ -25,6 +26,7 @@ export {
 export type { ComparisonStatus, VersionSnapshot, DocumentVersionHistoryPageProps, RestoreResult } from "./types";
 
 export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Props) {
+  const { t } = useTranslation();
   const versions = sortVersionsNewestFirst(props.versions);
   // null follows the latest/current version when props.versions refresh
   const [selectedVersionNumber, setSelectedVersionNumber] = React.useState<number | null>(null);
@@ -88,22 +90,22 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
     <Page title={props.title} size="xlarge" navigation={props.navigation} testId="document-version-history-page">
       <div className="min-h-[75vh] px-4 py-8 sm:px-10">
         <header className="mb-8">
-          <h1 className="text-3xl font-extrabold text-content-accent md:text-4xl">History of changes</h1>
+          <h1 className="text-3xl font-extrabold text-content-accent md:text-4xl">{t("History of changes")}</h1>
         </header>
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(280px,380px)]">
           <section
             className="min-w-0 rounded-lg border border-surface-outline bg-surface-base p-5 sm:p-6"
-            aria-label="Selected version"
+            aria-label={t("Selected version")}
             data-test-id="selected-version-preview"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-xl font-bold text-content-accent md:text-2xl">
-                {selectedVersion?.title || "Untitled"}
+                {selectedVersion?.title || t("Untitled")}
               </h2>
               {canRestoreSelected && (
                 <GhostButton size="xxs" onClick={() => setConfirmOpen(true)} testId="restore-this-version">
-                  Restore This Version
+                  {t("Restore This Version")}
                 </GhostButton>
               )}
             </div>
@@ -133,10 +135,12 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
           isOpen={confirmOpen}
           onCancel={() => setConfirmOpen(false)}
           onConfirm={handleConfirmRestore}
-          title="Restore this version?"
-          message="This replaces the current title and content with the selected version. Later versions will stay in the history."
-          confirmText={restoring ? "Restoring…" : "Restore"}
-          cancelText="Cancel"
+          title={t("Restore this version?")}
+          message={t(
+            "This replaces the current title and content with the selected version. Later versions will stay in the history.",
+          )}
+          confirmText={restoring ? t("Restoring…") : t("Restore")}
+          cancelText={t("Cancel")}
           testId="restore-version-confirm"
         />
       )}
@@ -145,10 +149,10 @@ export function DocumentVersionHistoryPage(props: DocumentVersionHistoryPage.Pro
         isOpen={conflict}
         onCancel={() => setConflict(false)}
         onConfirm={handleReload}
-        title="Document changed since you opened it"
-        message="A newer version was saved. Reload the latest version and try again."
-        confirmText="Reload"
-        cancelText="Cancel"
+        title={t("Document changed since you opened it")}
+        message={t("A newer version was saved. Reload the latest version and try again.")}
+        confirmText={t("Reload")}
+        cancelText={t("Cancel")}
         testId="restore-conflict"
         size="medium"
       />

@@ -1,6 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { DimmedLink, Forms, SubscribersSelector } from "turboui";
@@ -10,10 +11,11 @@ import { useForm } from "./useForm";
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { project } = useLoadedData();
 
   return (
-    <Pages.Page title={["New Discussion", project.name]}>
+    <Pages.Page title={[t("New Discussion"), project.name]}>
       <Paper.Root>
         <Nav />
         <Paper.Body>
@@ -25,24 +27,26 @@ export function Page() {
 }
 
 function Nav() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { project } = useLoadedData();
   const items: Paper.NavigationItem[] = [];
 
   if (project.space) {
     items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
-    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: t("Work Map") });
   } else {
-    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+    items.push({ to: paths.workMapPath("projects"), label: t("Work Map") });
   }
 
   items.push({ to: paths.projectPath(project.id, { tab: "overview" }), label: project.name });
-  items.push({ to: paths.projectPath(project.id, { tab: "discussions" }), label: "Discussions" });
+  items.push({ to: paths.projectPath(project.id, { tab: "discussions" }), label: t("Discussions") });
 
   return <Paper.Navigation items={items} />;
 }
 
 function Form() {
+  const { t } = useTranslation();
   const { project } = useLoadedData();
   const paths = usePaths();
 
@@ -60,16 +64,16 @@ function Form() {
         <div>
           <Forms.TitleInput
             field="title"
-            placeholder="Title..."
+            placeholder={t("Title...")}
             autoFocus
             testId="discussion-title"
-            errorMessage="Please add a title"
+            errorMessage={t("Please add a title")}
           />
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
             <Forms.RichTextArea
               field="message"
               richTextHandlers={richTextHandlers}
-              placeholder="Start a new discussion..."
+              placeholder={t("Start a new discussion...")}
               hideBorder
               height="min-h-[350px]"
               fontSize="text-lg"
@@ -84,11 +88,16 @@ function Form() {
         <SubscribersSelector {...subscriptionsState} />
       </div>
 
-      <Forms.FormError message="Fill out all the required fields" className="mt-4" />
+      <Forms.FormError message={t("Fill out all the required fields")} className="mt-4" />
 
       <div className="flex items-center gap-4 mt-4">
-        <Forms.Submit saveText="Post Discussion" buttonSize="base" testId="post-discussion" containerClassName="mt-0" />
-        <DimmedLink to={paths.projectPath(project.id)}>Cancel</DimmedLink>
+        <Forms.Submit
+          saveText={t("Post Discussion")}
+          buttonSize="base"
+          testId="post-discussion"
+          containerClassName="mt-0"
+        />
+        <DimmedLink to={paths.projectPath(project.id)}>{t("Cancel")}</DimmedLink>
       </div>
     </Forms.Form>
   );

@@ -54,7 +54,7 @@ export function DocumentPublicSharingModal({ isOpen, onClose, publicUrl, onChang
               <CopyToClipboard
                 text={publicUrl}
                 size={20}
-                ariaLabel="Copy public link"
+                ariaLabel={t("Copy public link")}
                 testId="copy-public-document-url"
               />
             </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { OptionsButton } from "../Button";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -49,12 +50,16 @@ export function ScheduleFlowControls({
   scheduledPrimaryLabel,
   showScheduleOption = true,
 }: ScheduleFlowControlsProps) {
+  const { t } = useTranslation();
   const buttonLabel =
     scheduleFlow.isScheduledLocally && scheduledPrimaryLabel
       ? scheduledPrimaryLabel
       : scheduleFlow.primaryButtonLabel(primaryLabel);
   const buttonOptions = showScheduleOption
-    ? [...options, { label: "Schedule for later", action: scheduleFlow.openScheduleModal, testId: "schedule-for-later" }]
+    ? [
+        ...options,
+        { label: t("Schedule for later"), action: scheduleFlow.openScheduleModal, testId: "schedule-for-later" },
+      ]
     : options;
 
   return (

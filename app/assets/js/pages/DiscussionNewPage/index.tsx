@@ -1,5 +1,6 @@
 import { loader, useLoadedData } from "./loader";
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -13,11 +14,12 @@ import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { space } = useLoadedData();
   const form = useForm({ space: space, mode: "create", potentialSubscribers: space.potentialSubscribers ?? [] });
 
   return (
-    <Pages.Page title="New Discussion" testId="new-discussion">
+    <Pages.Page title={t("New Discussion")} testId="new-discussion">
       <Paper.Root>
         <Navigation space={space} />
 
@@ -44,37 +46,33 @@ function Footer({ form }: { form: FormState }) {
 }
 
 function Submit({ form }: { form: FormState }) {
+  const { t } = useTranslation();
   const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <div>
       <ScheduleFlowControls
         scheduleFlow={form.scheduleFlow}
-        primaryLabel="Post"
+        primaryLabel={t("Post")}
         onPrimaryClick={form.postMessage}
         loading={form.postMessageSubmitting || form.scheduleSubmitting}
         testId="post-discussion"
         formattedTimePreferences={formattedTimePreferences}
-        modalTitle="Schedule Discussion"
+        modalTitle={t("Schedule Discussion")}
         secondaryAction={
           <GhostButton loading={form.postAsDraftSubmitting} testId="save-as-draft" onClick={form.postAsDraft}>
-            Save as draft
+            {t("Save as draft")}
           </GhostButton>
         }
       />
 
       <div className="mt-4">
-        Or, <DiscardLink form={form} />
+        <Trans
+          i18nKey="Or, <discard>Discard this message</discard>"
+          components={{ discard: <Link to={form.cancelPath} testId="discard" className="font-medium" /> }}
+        />
       </div>
     </div>
-  );
-}
-
-function DiscardLink({ form }: { form: FormState }) {
-  return (
-    <Link to={form.cancelPath} testId="discard" className="font-medium">
-      Discard this message
-    </Link>
   );
 }
 

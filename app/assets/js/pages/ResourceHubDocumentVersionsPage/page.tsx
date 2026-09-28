@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 
 import { DocumentVersionHistoryPage, showErrorToast, showSuccessToast } from "turboui";
@@ -13,6 +14,7 @@ import { useLoadedData, useRefresh } from "./loader";
 import { buildDocumentVersionsPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { document, resourceHub, versions } = useLoadedData();
   const refresh = useRefresh();
   const mutationScope = {
@@ -29,7 +31,7 @@ export function Page() {
   assertPresent(document.permissions, "permissions must be present in document");
 
   const props: DocumentVersionHistoryPage.Props = {
-    title: ["History of changes", document.name || "Document"],
+    title: [t("History of changes"), document.name || t("Document")],
     navigation: buildDocumentVersionsPageNavigation(document, resourceHub, paths),
     versions,
     formattedTimePreferences,
@@ -44,14 +46,17 @@ export function Page() {
           versionNumber,
           expectedCurrentVersion,
         });
-        showSuccessToast("Version restored", `Version ${versionNumber} restored as the current document.`);
+        showSuccessToast(
+          t("Version restored"),
+          t("Version {{version}} restored as the current document.", { version: versionNumber }),
+        );
         return "ok";
       } catch (error) {
         if (isVersionConflict(error)) {
           return "conflict";
         }
 
-        showErrorToast("Restore failed", "We couldn't restore that version. Please try again.");
+        showErrorToast(t("Restore failed"), t("We couldn't restore that version. Please try again."));
         return "error";
       }
     },

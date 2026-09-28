@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import React from "react";
 
 import { Link } from "../Link";
@@ -58,10 +58,10 @@ export function NewDocumentPage(props: NewDocumentPage.Props) {
     },
     validate: (addError) => {
       if (!form.values.title.trim()) {
-        addError("title", "Title is required");
+        addError("title", t("Title is required"));
       }
       if (isContentEmpty(form.values.content)) {
-        addError("content", "Content is required");
+        addError("content", t("Content is required"));
       }
     },
     submit: async (isDraft?: boolean) => {
@@ -99,7 +99,7 @@ export function NewDocumentPage(props: NewDocumentPage.Props) {
           {!props.hideSubscriptions && <SubscribersSelector {...props.subscriptions} />}
 
           <FormActions
-            submitLabel={props.submitLabel ?? "Create document"}
+            submitLabel={props.submitLabel ?? t("Create document")}
             cancelLink={props.cancelLink}
             hideDraftActions={Boolean(props.hideDraftActions)}
           />
@@ -142,10 +142,10 @@ function FormActions({
       </div>
 
       <div className="mt-4">
-        Or,{" "}
-        <Link to={cancelLink} testId="discard" className="font-medium">
-          {t("Discard this document")}
-        </Link>
+        <Trans
+          i18nKey="Or, <discard>Discard this document</discard>"
+          components={{ discard: <Link to={cancelLink} testId="discard" className="font-medium" /> }}
+        />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { WorkMap } from "..";
 import { compareIds } from "../../../utils/ids";
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function RoleCell({ item, profileUser, hide }: Props) {
+  const { t } = useTranslation();
   if (hide) return null;
 
   const isChampion = item.type !== "task" && compareIds(profileUser.id, item.owner?.id);
@@ -21,10 +23,10 @@ export function RoleCell({ item, profileUser, hide }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 hidden xl:table-cell">
       <div className="max-w-[120px] overflow-hidden text-sm">
-        {isAssignee && "Assignee"}
-        {isChampion && "Champion"}
-        {isReviewer && "Reviewer"}
-        {isContributor && "Contributor"}
+        {isAssignee && t("Assignee")}
+        {isChampion && t("Champion")}
+        {isReviewer && t("Reviewer")}
+        {isContributor && t("Contributor")}
       </div>
     </td>
   );

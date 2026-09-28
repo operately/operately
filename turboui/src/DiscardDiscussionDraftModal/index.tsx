@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Form, Submit, useForm } from "../Forms";
 import { Modal } from "../Modal";
@@ -11,13 +12,19 @@ export interface DiscardDiscussionDraftModalProps {
   onSuccess: () => void;
 }
 
-export function DiscardDiscussionDraftModal({ isOpen, onClose, onDiscard, onSuccess }: DiscardDiscussionDraftModalProps) {
+export function DiscardDiscussionDraftModal({
+  isOpen,
+  onClose,
+  onDiscard,
+  onSuccess,
+}: DiscardDiscussionDraftModalProps) {
+  const { t } = useTranslation();
   const form = useForm({
     fields: {},
     cancel: onClose,
     submit: async () => {
       await onDiscard();
-      showSuccessToast("Draft discarded", "The draft has been discarded.");
+      showSuccessToast(t("Draft discarded"), t("The draft has been discarded."));
       onSuccess();
     },
   });
@@ -25,8 +32,8 @@ export function DiscardDiscussionDraftModal({ isOpen, onClose, onDiscard, onSucc
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Form form={form}>
-        <p>Are you sure you want to discard this draft?</p>
-        <Submit saveText="Discard draft" cancelText="Cancel" />
+        <p>{t("Are you sure you want to discard this draft?")}</p>
+        <Submit saveText={t("Discard draft")} cancelText={t("Cancel")} />
       </Form>
     </Modal>
   );

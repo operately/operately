@@ -1,27 +1,30 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { SecondaryButton } from "../Button";
 
 export function NoChangesState() {
+  const { t } = useTranslation();
   return (
     <div
       className="border-t border-surface-outline bg-surface-dimmed py-4 text-sm text-content-dimmed"
       data-test-id="no-content-changes"
     >
-      No content changes between these versions.
+      {t("No content changes between these versions.")}
     </div>
   );
 }
 
 export function ComparisonLoadingState() {
+  const { t } = useTranslation();
   return (
     <div
       className="grid grid-cols-1 md:grid-cols-2"
       data-test-id="comparison-loading"
       role="status"
-      aria-label="Loading comparison"
+      aria-label={t("Loading comparison")}
     >
-      <span className="sr-only">Loading comparison…</span>
+      <span className="sr-only">{t("Loading comparison…")}</span>
       <LoadingPane position="before" />
       <LoadingPane position="after" />
     </div>
@@ -53,15 +56,16 @@ function LoadingPane({ position }: { position: "before" | "after" }) {
 }
 
 export function ComparisonErrorState({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation();
   return (
     <div data-test-id="comparison-error" role="alert">
-      <h2 className="font-medium text-content-error">Unable to load this comparison</h2>
+      <h2 className="font-medium text-content-error">{t("Unable to load this comparison")}</h2>
       <p className="mt-1 text-sm text-content-dimmed">
-        One of the selected versions could not be loaded. Try again or choose another version from the history.
+        {t("One of the selected versions could not be loaded. Try again or choose another version from the history.")}
       </p>
       <div className="mt-4">
         <SecondaryButton size="sm" onClick={onRetry} testId="retry-comparison">
-          Retry
+          {t("Retry")}
         </SecondaryButton>
       </div>
     </div>
@@ -69,11 +73,12 @@ export function ComparisonErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 export function VersionUnavailableState() {
+  const { t } = useTranslation();
   return (
     <div data-test-id="version-unavailable" role="alert">
-      <h2 className="font-medium text-content-error">Version unavailable</h2>
+      <h2 className="font-medium text-content-error">{t("Version unavailable")}</h2>
       <p className="mt-1 text-sm text-content-dimmed">
-        That version could not be found. Choose another version from the history list.
+        {t("That version could not be found. Choose another version from the history list.")}
       </p>
     </div>
   );

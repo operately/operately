@@ -1,5 +1,6 @@
 import { restoreRichTextSource } from "../RichContent/restoreSource";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as TipTap from "@tiptap/react";
 import { getSchema } from "@tiptap/core";
 import type { Extensions, JSONContent } from "@tiptap/core";
@@ -129,6 +130,7 @@ function ensureDiffStyles() {
 }
 
 export function RichContentDiff(props: RichContentDiffProps) {
+  const { t } = useTranslation();
   React.useEffect(() => {
     ensureDiffStyles();
   }, []);
@@ -140,10 +142,10 @@ export function RichContentDiff(props: RichContentDiffProps) {
     [schema, props.before, props.after],
   );
 
-  const beforeLabel = props.beforeLabel ?? "Before";
-  const afterLabel = props.afterLabel ?? "After";
-  const beforeAriaLabel = props.beforeAriaLabel ?? (typeof beforeLabel === "string" ? beforeLabel : "Before");
-  const afterAriaLabel = props.afterAriaLabel ?? (typeof afterLabel === "string" ? afterLabel : "After");
+  const beforeLabel = props.beforeLabel ?? t("Before");
+  const afterLabel = props.afterLabel ?? t("After");
+  const beforeAriaLabel = props.beforeAriaLabel ?? (typeof beforeLabel === "string" ? beforeLabel : t("Before"));
+  const afterAriaLabel = props.afterAriaLabel ?? (typeof afterLabel === "string" ? afterLabel : t("After"));
   const showTitles = props.beforeTitle !== undefined || props.afterTitle !== undefined;
   const titlesEqual = (props.beforeTitle ?? "") === (props.afterTitle ?? "");
 
@@ -153,9 +155,9 @@ export function RichContentDiff(props: RichContentDiffProps) {
         className={classNames("rounded-lg border border-surface-outline bg-surface-base p-4", props.className)}
         role="alert"
       >
-        <p className="font-medium text-content-error">Unable to compare these versions</p>
+        <p className="font-medium text-content-error">{t("Unable to compare these versions")}</p>
         <p className="mt-1 text-sm text-content-dimmed">
-          One of the snapshots could not be parsed with the current editor schema.
+          {t("One of the snapshots could not be parsed with the current editor schema.")}
         </p>
       </div>
     );
@@ -166,7 +168,7 @@ export function RichContentDiff(props: RichContentDiffProps) {
       {props.showLegend !== false && comparison.changeCount > 0 && <DiffLegend />}
       {comparison.changeCount === 0 && (
         <p className="text-sm text-content-dimmed" data-test-id="no-content-changes">
-          No content changes
+          {t("No content changes")}
         </p>
       )}
 
@@ -238,6 +240,7 @@ type DiffPaneProps = {
 };
 
 function DiffPane(props: DiffPaneProps) {
+  const { t } = useTranslation();
   const extensions = React.useMemo(
     () => [...props.baseExtensions, props.decorationsExtension],
     [props.baseExtensions, props.decorationsExtension],
@@ -252,11 +255,11 @@ function DiffPane(props: DiffPaneProps) {
       editorProps: {
         attributes: {
           class: "diff-pane focus:outline-none text-content-accent",
-          "aria-label": `${props.ariaLabel} content`,
+          "aria-label": t("{{version}} content", { version: props.ariaLabel }),
         },
       },
     },
-    [props.content, props.decorationsExtension, props.ariaLabel],
+    [props.content, props.decorationsExtension, props.ariaLabel, t],
   );
 
   const editorState = React.useMemo((): EditorState => {
@@ -301,7 +304,7 @@ function DiffPane(props: DiffPaneProps) {
           )}
           data-test-id={`title-${props.titleVariant}`}
         >
-          {props.title || "Untitled"}
+          {props.title || t("Untitled")}
         </div>
       )}
 
@@ -317,13 +320,14 @@ function DiffPane(props: DiffPaneProps) {
 }
 
 export function DiffLegend(props: { className?: string }) {
+  const { t } = useTranslation();
   return (
     <div
       className={classNames("flex flex-wrap items-center gap-4 text-sm text-content-dimmed", props.className)}
-      aria-label="Diff legend"
+      aria-label={t("Diff legend")}
     >
-      <ChangeBadge kind="removed" label="Removed" />
-      <ChangeBadge kind="added" label="Added" />
+      <ChangeBadge kind="removed" label={t("Removed")} />
+      <ChangeBadge kind="added" label={t("Added")} />
     </div>
   );
 }

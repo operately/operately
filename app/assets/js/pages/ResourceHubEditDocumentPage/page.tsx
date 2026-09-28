@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { useUpdateDocument, usePublishDocument } from "@/models/resourceHubs";
@@ -14,12 +15,17 @@ import { useLoadedData } from "./loader";
 import { buildEditDocumentPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { document } = useLoadedData();
   const me = useMe();
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const mutationScope = { spaceId: document.space?.id, resourceHubId: document.resourceHubId, parentFolderId: document.parentFolderId };
+  const mutationScope = {
+    spaceId: document.space?.id,
+    resourceHubId: document.resourceHubId,
+    parentFolderId: document.parentFolderId,
+  };
 
   const { mutateAsync: edit } = useUpdateDocument(mutationScope);
   const { mutateAsync: publish } = usePublishDocument(mutationScope);
@@ -93,13 +99,13 @@ export function Page() {
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("Document not updated", "Check the form and try again.");
+      showErrorToast(t("Document not updated"), t("Check the form and try again."));
       return false;
     }
   }
 
   const shared = {
-    pageTitle: "Edit Document" as const,
+    pageTitle: t("Edit Document"),
     navigation: buildEditDocumentPageNavigation(document, paths),
     testId: "resource-hub-edit-document-page",
     richTextHandlers,

@@ -1,4 +1,5 @@
 import type { Page } from "turboui";
+import i18n from "@/i18n";
 
 import type { ResourceHub, ResourceHubDocument } from "@/models/resourceHubs";
 import type { Paths } from "@/routes/paths";
@@ -14,7 +15,7 @@ export function buildDocumentVersionComparisonPageNavigation(
     ...buildDocumentVersionsPageNavigation(document, resourceHub, paths),
     {
       to: paths.resourceHubDocumentVersionsPath(document.id!),
-      label: "History of changes",
+      label: i18n.t("History of changes"),
     },
   ];
 }
