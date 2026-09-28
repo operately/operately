@@ -129,4 +129,30 @@ defmodule Operately.Support.CliE2E.Documents.CreateSteps do
 
     ctx
   end
+
+  step :round_trip_table_files, ctx do
+    fixtures = "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+    for fixture <- fixtures do
+      file = create_temp_file!("table-import", fixture["markdown"], ".md")
+      on_exit(fn -> File.rm(file) end)
+      result = run_cli(ctx, ["documents", "create_document", "--space-id", ctx.engineering.id, "--name", fixture["name"], "--content-file", file])
+      assert result.exit_code == 0, result.output
+      api_id = Jason.decode!(result.output)["document"]["id"]
+      document = Repo.get!(Document, HubScopeSteps.decode_cli_id(api_id))
+      table = Enum.find(document.content["content"], &(&1["type"] == "table"))
+      expected = fixture["markdown"] |> String.replace_prefix("Before\n\n", "") |> String.replace_suffix("\n\nAfter", "") |> String.replace("![", "[")
+      assert Operately.MD.Table.render(table) == expected
+
+      # Feed exported Markdown back through the CLI's existing update endpoint.
+      File.write!(file, Operately.MD.RichText.render(document.content) <> "\n\nUpdated")
+      result = run_cli(ctx, ["documents", "update_document", "--document-id", api_id, "--name", fixture["name"], "--content-file", file])
+      assert result.exit_code == 0, result.output
+      updated = Repo.reload!(document)
+      assert Enum.find(updated.content["content"], &(&1["type"] == "table")) == table
+      assert updated.current_version == document.current_version + 1
+    end
+
+    ctx
+  end
 end

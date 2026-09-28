@@ -469,3 +469,19 @@ test("rejects unreadable files for markdown companion flags", () => {
     (err: any) => err instanceof UsageError && err.message.includes("Failed to read file"),
   );
 });
+
+test("rejects excess table cells through the existing markdown input error", () => {
+  // One header column, but two body cells; marked would silently discard "two":
+  // | A |
+  // | --- |
+  // | one | two |
+  assert.throws(
+    () =>
+      parseCommand(
+        ["projects", "update_description", "--project-id", "p1", "--description", "| A |\n| --- |\n| one | two |"],
+        registry,
+        fixtureCatalog.types,
+      ),
+    /Failed to parse markdown for 'description'.*Table row has more cells/,
+  );
+});
