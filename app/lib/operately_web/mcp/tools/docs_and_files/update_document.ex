@@ -19,6 +19,14 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocument do
       discovery_metadata: %{"category" => "docs_and_files"},
       examples: [
         %{
+          "title" => "Write a document with a table",
+          "arguments" => %{
+            "document_id" => "document_123",
+            "name" => "Launch plan",
+            "content" => "| Milestone | Status |\n| --- | --- |\n| **Launch** | Ready |"
+          }
+        },
+        %{
           "title" => "Update a document",
           "arguments" => %{
             "document_id" => "document_123",
@@ -41,7 +49,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocument do
           %{
             "document_id" => JsonSchema.string("The document identifier."),
             "name" => JsonSchema.string("The document name."),
-            "content" => JsonSchema.string("The document body in plain text or markdown."),
+            "content" => JsonSchema.string("The document body in plain text or markdown, including pipe tables."),
             "notify_person_ids" =>
               JsonSchema.array(
                 JsonSchema.string("A person identifier."),
