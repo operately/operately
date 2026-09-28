@@ -71,11 +71,23 @@ Most space administration copy was already cataloged. This follow-up closes the 
 
 Goal/project overview panels, goal creation, task-board and milestone controls, task operation errors (including generic “Update failed”), resource menus/empty states, space home/discussion/work-map controls, and initial KPI/activity presentation now use the catalog. New messages in this batch have Brazilian Portuguese translations drafted from the glossary. Stored activity payloads and user names remain unchanged.
 
-Validation includes substituted translations, Portuguese catalog lookup, missing-Portuguese fallback, zero/singular/plural completed-milestone counts, English with a saved Portuguese preference and the flag disabled, and an expanded-text milestone dialog Storybook interaction. Catalog generation preserves existing translations and is checked for determinism. PR 6 is not complete: access/check-in/operation forms, many activity handlers, resource upload/version flows, template surfaces, remaining KPI/work-map/shared presentation, and exhaustive visual/workflow validation remain. These client-authored gaps are not reclassified as PR 7 work.
+Validation includes substituted translations, Portuguese catalog lookup, missing-Portuguese fallback, zero/singular/plural completed-milestone counts, English with a saved Portuguese preference and the flag disabled, and an expanded-text milestone dialog Storybook interaction. Catalog generation preserves existing translations and is checked for determinism. These client-authored gaps remain PR 6 work, not PR 7 deferrals:
+
+- Goal access pages, check-in/closing/reopening/discussion forms, target/checklist editors, and remaining contributor presentation
+- Project add/check-in/closing/pause/resume/retrospective/discussion forms and check-in presentation
+- Remaining shared work-management fields, status customization/display, subscription/comment/timeline presentation, and milestone-completion copy
+- Remaining task-board sentences and accessibility text, including selected filter descriptions and Kanban add-status presentation
+- Remaining discussion composer/draft pages and related wrapper errors
+- Docs & Files upload/add menus and failures, resource version history/comparison/restore, document display/header actions, and remaining editor/folder-selector copy
+- Most activity handlers beyond the four in this batch; keep translations out of stored activity data
+- Remaining work-map tabs, row summaries/tooltips, timeline and zero-state copy; space completed-work summaries
+- KPI detail/sidebar/update-history/comment interactions, log/edit/delete-entry forms, and remaining chart/cadence copy
+- Project-template selection, creation, lifecycle, and template project/task/discussion/Docs & Files flows
+- Exhaustive narrow-screen/expanded-translation visual review and app-level end-to-end workflow verification
 
 Remaining gaps before general availability:
 
-- PR 6: remaining work-management extraction and validation (access and check-in forms, other operation forms, many activity handlers, resource upload and version flows, template flows, and further KPI, work-map, and shared UI text).
+- PR 6: remaining work-management extraction and validation listed above.
 - PR 7: remaining backend messages and email copy, digests, and server-rendered pages.
 - People directory and org-chart page copy still need extraction.
 - PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted translations, and coverage checks.
