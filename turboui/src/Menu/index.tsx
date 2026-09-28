@@ -10,6 +10,7 @@ import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
 interface MenuProps extends TestableElement {
+  triggerLabel?: string;
   children: React.ReactNode;
   customTrigger?: React.ReactNode;
   headerContent?: React.ReactNode;
@@ -120,6 +121,7 @@ function Trigger(props: MenuProps) {
     return (
       <DropdownMenu.Trigger
         className={menuTriggerClass}
+        aria-label={props.triggerLabel}
         data-test-id={props.testId}
         disabled={props.readonly}
         aria-readonly={props.readonly || undefined}

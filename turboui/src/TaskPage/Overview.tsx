@@ -1,4 +1,5 @@
 import React from "react";
+import { TaskTimeSection } from "../TimeTracking";
 import { useTranslation } from "react-i18next";
 import { translationText } from "../i18n";
 import { TaskPage } from "./types";
@@ -18,6 +19,7 @@ export function Overview(props: TaskPage.ContentState) {
         zeroStatePlaceholder={translationText(t("Add notes about this task..."))}
         localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
       />
+      {props.variant !== "template" && props.timeTracking && <TaskTimeSection {...props.timeTracking} />}
       <ActivitySection {...props} />
     </div>
   );

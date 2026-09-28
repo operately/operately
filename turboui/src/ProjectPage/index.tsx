@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
+import type { ProjectTimeSectionProps } from "../TimeTracking";
 
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useProjectPageTabs } from "../ProjectPageLayout/useProjectPageTabs";
@@ -98,6 +99,7 @@ export namespace ProjectPage {
   export type DocsAndFiles = PageDocsAndFiles;
 
   interface CommonProps {
+    timeTracking?: ProjectTimeSectionProps;
     closeLink: string;
     reopenLink: string;
     pauseLink: string;
@@ -281,7 +283,9 @@ export function ProjectPage(props: ProjectPage.Props) {
     showDocsAndFiles: Boolean(state.docsAndFiles || state.docsAndFilesAvailable),
   });
   const activeTab =
-    !state.docsAndFiles && !state.docsAndFilesAvailable && tabs.active === "docs-and-files" ? "overview" : tabs.active;
+    (!state.docsAndFiles && !state.docsAndFilesAvailable && tabs.active === "docs-and-files") || tabs.active === "time"
+      ? "overview"
+      : tabs.active;
 
   return (
     <ProjectPageLayout
@@ -289,7 +293,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       projectName={state.project.name}
       taskCompletion={taskCompletion}
       testId="project-page"
-      tabs={tabs}
+      tabs={{ ...tabs, active: activeTab }}
       {...state}
     >
       <div className="flex-1 overflow-auto">

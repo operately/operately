@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { ProjectTimeSettings } from "../TimeTracking/ProjectTimeSettings";
 import { ActionList } from "../ActionList";
 import { SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -8,6 +9,7 @@ import {
   IconCircleArrowRight,
   IconCircleCheck,
   IconCopy,
+  IconClock,
   IconFileExport,
   IconInfoCircle,
   IconPlayerPause,
@@ -319,6 +321,7 @@ function Contributors(props: ProjectPage.State) {
 }
 
 function Actions(props: ProjectPage.State) {
+  const [timeSettingsOpen, setTimeSettingsOpen] = React.useState(false);
   const { t } = useTranslation();
   const handleCopyURL = async () => {
     try {
@@ -330,6 +333,14 @@ function Actions(props: ProjectPage.State) {
   };
 
   const actions = [
+    {
+      type: "action" as const,
+      label: t("Time tracking settings"),
+      onClick: () => setTimeSettingsOpen(true),
+      icon: IconClock,
+      testId: "time-tracking-settings",
+      hidden: !props.timeTracking?.onEnabledChange,
+    },
     {
       type: "action" as const,
       label: t("Copy URL"),
@@ -401,6 +412,13 @@ function Actions(props: ProjectPage.State) {
   return (
     <SidebarSection title={t("Actions")} testId="actions-section">
       <ActionList actions={visibleActions} />
+      {timeSettingsOpen && props.timeTracking?.onEnabledChange && (
+        <ProjectTimeSettings
+          enabled={props.timeTracking.projectDestination.enabled}
+          onChange={props.timeTracking.onEnabledChange}
+          onClose={() => setTimeSettingsOpen(false)}
+        />
+      )}
     </SidebarSection>
   );
 }

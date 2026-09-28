@@ -44,6 +44,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
   };
 
   const contentProps = {
+    timeTracking: props.timeTracking,
     milestone: props.milestone,
     onMilestoneChange: props.onMilestoneChange,
     milestones: props.milestones,
