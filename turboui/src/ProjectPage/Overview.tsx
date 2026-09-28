@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { ProjectTimeSection } from "../TimeTracking";
 import { DocsAndFilesPreview } from "../DocsAndFiles";
 import { MilestoneList } from "../MilestoneList";
 import { OverviewSidebar } from "./OverviewSidebar";
@@ -33,6 +34,11 @@ function LeftColumn(props: ProjectPage.State) {
           onMilestoneReorder={props.onMilestoneReorder}
         />
       </div>
+      {props.timeTracking && (
+        <div className="pt-8 mt-8 border-t border-surface-outline">
+          <ProjectTimeSection key={props.project.id} {...props.timeTracking} />
+        </div>
+      )}
       {props.docsAndFiles && (
         <div className="pt-8 mt-8 border-t border-surface-outline">
           <ResourcesSection {...props} />
