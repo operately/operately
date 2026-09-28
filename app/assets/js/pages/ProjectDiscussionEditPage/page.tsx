@@ -18,8 +18,11 @@ export function Page() {
   const { t } = useTranslation();
   const { discussion } = useLoadedData();
 
+  assertPresent(discussion.title, "title must be present in discussion");
+  assertPresent(discussion.project, "project must be present in discussion");
+
   return (
-    <Pages.Page title={[t("Edit"), discussion.title!, discussion.project!.name!]}>
+    <Pages.Page title={[t("Edit"), discussion.title, discussion.project.name]}>
       <Paper.Root>
         <Nav />
         <Paper.Body>
