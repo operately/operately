@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Form, NumberInput, Submit, useForm } from "../Forms";
 import { Modal } from "../Modal";
@@ -14,6 +15,7 @@ interface EditEntryFormProps {
 }
 
 export function EditEntryForm({ kpi, entry, isOpen, onClose, onEdit }: EditEntryFormProps) {
+  const { t } = useTranslation();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const form = useForm<{ value: string; period: string }>({
@@ -23,10 +25,10 @@ export function EditEntryForm({ kpi, entry, isOpen, onClose, onEdit }: EditEntry
     },
     validate: (addError) => {
       if (form.values.value.trim() === "" || Number.isNaN(Number(form.values.value))) {
-        addError("value", "Enter a value");
+        addError("value", t("Enter a value"));
       }
       if (!form.values.period) {
-        addError("period", "Choose a date");
+        addError("period", t("Choose a date"));
       }
     },
     submit: async () => {
@@ -42,7 +44,7 @@ export function EditEntryForm({ kpi, entry, isOpen, onClose, onEdit }: EditEntry
       if (result.success) {
         onClose();
       } else {
-        setSubmitError(result.error ?? "Something went wrong. Please try again.");
+        setSubmitError(result.error ?? t("Something went wrong. Please try again."));
       }
     },
     cancel: onClose,
@@ -64,23 +66,31 @@ export function EditEntryForm({ kpi, entry, isOpen, onClose, onEdit }: EditEntry
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Edit update — ${kpi.name}`}
+      title={t("Edit update — {{name}}", { name: kpi.name })}
       size="x-small"
       testId="edit-entry-modal"
     >
       <Form form={form}>
         <p className="mb-4 text-sm text-content-dimmed">
-          Correct the value recorded on{" "}
-          <span className="font-medium text-content-base">{formatShortDate(entry.recordedAt)}</span>. The previous
-          number stays visible on this update.
+          <Trans
+            i18nKey="Correct the value recorded on <date>{{date}}</date>. The previous number stays visible on this update."
+            values={{ date: formatShortDate(entry.recordedAt) }}
+            components={{ date: <span className="font-medium text-content-base" /> }}
+          />
         </p>
 
         <div className="space-y-2">
-          <NumberInput field="value" label={`Value (${kpi.unit})`} placeholder="0" autoFocus required />
+          <NumberInput
+            field="value"
+            label={t("Value ({{unit}})", { unit: kpi.unit })}
+            placeholder="0"
+            autoFocus
+            required
+          />
 
           <div>
             <label htmlFor="edit-kpi-entry-period" className="mb-1 block text-sm font-medium text-content-accent">
-              Date
+              {t("Date")}
             </label>
             <input
               id="edit-kpi-entry-period"
@@ -100,7 +110,7 @@ export function EditEntryForm({ kpi, entry, isOpen, onClose, onEdit }: EditEntry
           </div>
         )}
 
-        <Submit saveText="Save changes" cancelText="Cancel" />
+        <Submit saveText={t("Save changes")} cancelText={t("Cancel")} />
       </Form>
     </Modal>
   );

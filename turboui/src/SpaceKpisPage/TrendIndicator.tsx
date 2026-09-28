@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconChevronDown, IconChevronUp, IconMinus } from "../icons";
 import classNames from "../utils/classnames";
@@ -10,6 +11,7 @@ import { formatNumber } from "./utils";
 // The plain variant sits in dense contexts such as list rows; the badge variant
 // carries a tinted pill so it holds its own next to a KPI's headline value.
 export function TrendIndicator({ delta, variant = "plain" }: { delta: number | null; variant?: "plain" | "badge" }) {
+  const { t } = useTranslation();
   if (delta === null) return null;
 
   const isBadge = variant === "badge";
@@ -20,7 +22,7 @@ export function TrendIndicator({ delta, variant = "plain" }: { delta: number | n
         className={classNames("inline-flex items-center gap-0.5 text-xs text-content-dimmed", {
           "rounded-full bg-surface-dimmed px-1.5 py-0.5": isBadge,
         })}
-        title="No change"
+        title={t("No change")}
       >
         <IconMinus size={12} />
       </span>
@@ -39,7 +41,10 @@ export function TrendIndicator({ delta, variant = "plain" }: { delta: number | n
   });
 
   return (
-    <span className={className} title={`${isUp ? "+" : "−"}${formatNumber(Math.abs(delta))} vs previous`}>
+    <span
+      className={className}
+      title={t("{{delta}} vs previous", { delta: `${isUp ? "+" : "−"}${formatNumber(Math.abs(delta))}` })}
+    >
       <Icon size={12} />
       {formatNumber(Math.abs(delta))}
     </span>

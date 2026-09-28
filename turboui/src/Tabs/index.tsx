@@ -24,6 +24,7 @@ interface Tab {
   icon: React.ReactNode;
   count?: number;
   hidden?: boolean;
+  testId?: string;
 }
 
 interface TabsConfig {
@@ -74,13 +75,16 @@ export function Tabs({ tabs, showBorder = true }: { tabs: TabsState; showBorder?
 
 function TabItem({ tab, activeTab, urlPath }: { tab: Tab; activeTab: string; urlPath?: string }) {
   const tabPath = useTabPath(tab.id, urlPath);
-  const testId = `tab-${tab.label.toLowerCase()}`;
+  const testId = `tab-${(tab.testId ?? tab.label).toLowerCase()}`;
 
-  const labelClass = classNames("flex items-center gap-1 px-1 py-1.5 text-sm relative -mb-px font-medium sm:px-1.5 sm:-mx-1.5", {
-    "text-white rounded-t": activeTab === tab.id,
-    "text-content-dimmed hover:text-content-base": activeTab !== tab.id,
-    "hover:bg-surface-dimmed rounded-lg": activeTab !== tab.id,
-  });
+  const labelClass = classNames(
+    "flex items-center gap-1 px-1 py-1.5 text-sm relative -mb-px font-medium sm:px-1.5 sm:-mx-1.5",
+    {
+      "text-white rounded-t": activeTab === tab.id,
+      "text-content-dimmed hover:text-content-base": activeTab !== tab.id,
+      "hover:bg-surface-dimmed rounded-lg": activeTab !== tab.id,
+    },
+  );
 
   return (
     <div className="relative pb-1.5">

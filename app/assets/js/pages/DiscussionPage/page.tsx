@@ -5,6 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Discussions from "@/models/discussions";
 import { useOptimisticReactions } from "@/models/reactions/useOptimisticReactions";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useCommentSection } from "@/features/CommentSection/useCommentSection";
 import { type QueryClient } from "@tanstack/react-query";
@@ -153,18 +154,20 @@ function DiscussionTitle() {
 }
 
 function Navigation({ space }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   return (
     <Paper.Navigation
       items={[
         { to: paths.spacePath(space.id), label: space.name },
-        { to: paths.spaceDiscussionsPath(space.id), label: "Discussions" },
+        { to: paths.spaceDiscussionsPath(space.id), label: t("Discussions") },
       ]}
     />
   );
 }
 
 function Options() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const me = useMe();
   const navigate = useNavigate();
@@ -195,7 +198,7 @@ function Options() {
       <PageOptions.Root testId="options-button">
         <PageOptions.Link
           icon={IconEdit}
-          title="Edit"
+          title={t("Edit")}
           to={paths.discussionEditPath(discussion.id)}
           testId="edit-discussion"
           keepOutsideOnBigScreen
@@ -204,12 +207,17 @@ function Options() {
         {isUnpublished ? (
           <PageOptions.Action
             icon={IconTrash}
-            title="Discard draft"
+            title={t("Discard draft")}
             onClick={toggleDiscardModal}
             testId="discard-draft"
           />
         ) : (
-          <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleArchive} testId="archive-discussion" />
+          <PageOptions.Action
+            icon={IconTrash}
+            title={t("Delete")}
+            onClick={handleArchive}
+            testId="archive-discussion"
+          />
         )}
       </PageOptions.Root>
 

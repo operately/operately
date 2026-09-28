@@ -1,4 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
+import i18n from "../i18n";
 
 import type { DocumentVersion } from "../ApiTypes";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -82,8 +83,8 @@ export function resolveSelection(
 }
 
 export function editorLabel(version: DocumentVersion): string {
-  if (!version.editor) return "Former member";
-  return version.editor.fullName || "Former member";
+  if (!version.editor) return i18n.t("Former member");
+  return version.editor.fullName || i18n.t("Former member");
 }
 
 /** Previous version in number order (n-1), from a newest-first list. */
@@ -97,18 +98,21 @@ export function previousVersion(
 /** Action text after the editor name. */
 export function eventActionText(version: DocumentVersion, previous: DocumentVersion | null): string {
   if (version.origin === "created" || version.versionNumber === 1) {
-    return "created this document";
+    return i18n.t("created this document");
   }
 
   if (version.origin === "restored" && version.restoredFromVersionNumber) {
-    return `restored this document from Version ${version.restoredFromVersionNumber}`;
+    return i18n.t("restored this document from Version {{version}}", { version: version.restoredFromVersionNumber });
   }
 
   if (version.titleChanged && !version.contentChanged && previous) {
-    return `changed the title of this document from “${previous.title}” to “${version.title}”`;
+    return i18n.t("changed the title of this document from “{{previousTitle}}” to “{{title}}”", {
+      previousTitle: previous.title,
+      title: version.title,
+    });
   }
 
-  return "updated this document";
+  return i18n.t("updated this document");
 }
 
 export function eventDescription(version: DocumentVersion, previous: DocumentVersion | null = null): string {

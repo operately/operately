@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { DimmedLink, Forms, SubscribersSelector } from "turboui";
@@ -11,6 +12,7 @@ import { useForm } from "./useForm";
 import { usePaths } from "@/routes/paths";
 
 export function Form({ goal }: { goal: Goals.Goal }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
   assertPresent(goal.id, "goal id must be present in goal");
@@ -30,16 +32,16 @@ export function Form({ goal }: { goal: Goals.Goal }) {
         <div>
           <Forms.TitleInput
             field="title"
-            placeholder="Title..."
+            placeholder={t("Title...")}
             autoFocus
             testId="discussion-title"
-            errorMessage="Please add a title"
+            errorMessage={t("Please add a title")}
           />
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
             <Forms.RichTextArea
               field="message"
               richTextHandlers={richTextHandlers}
-              placeholder="Start a new discussion..."
+              placeholder={t("Start a new discussion...")}
               hideBorder
               height="min-h-[350px]"
               fontSize="text-lg"
@@ -54,11 +56,16 @@ export function Form({ goal }: { goal: Goals.Goal }) {
         <SubscribersSelector {...subscriptionsState} />
       </div>
 
-      <Forms.FormError message="Fill out all the required fields" className="mt-4" />
+      <Forms.FormError message={t("Fill out all the required fields")} className="mt-4" />
 
       <div className="flex items-center gap-4 mt-4">
-        <Forms.Submit saveText="Post Discussion" buttonSize="base" testId="post-discussion" containerClassName="mt-0" />
-        <DimmedLink to={paths.goalPath(goal.id, { tab: "discussions" })}>Cancel</DimmedLink>
+        <Forms.Submit
+          saveText={t("Post Discussion")}
+          buttonSize="base"
+          testId="post-discussion"
+          containerClassName="mt-0"
+        />
+        <DimmedLink to={paths.goalPath(goal.id, { tab: "discussions" })}>{t("Cancel")}</DimmedLink>
       </div>
     </Forms.Form>
   );

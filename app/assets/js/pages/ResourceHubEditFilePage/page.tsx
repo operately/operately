@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { useUpdateFile } from "@/models/resourceHubs";
@@ -12,11 +13,16 @@ import { useLoadedData } from "./loader";
 import { buildEditFilePageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { file } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const mutationScope = { spaceId: file.space?.id, resourceHubId: file.resourceHubId, parentFolderId: file.parentFolderId };
+  const mutationScope = {
+    spaceId: file.space?.id,
+    resourceHubId: file.resourceHubId,
+    parentFolderId: file.parentFolderId,
+  };
   const { mutateAsync: edit } = useUpdateFile(mutationScope);
 
   assertPresent(file.name, "name must be present in file");
@@ -39,14 +45,14 @@ export function Page() {
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("File not updated", "Check the form and try again.");
+      showErrorToast(t("File not updated"), t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <FileEditPage
-      pageTitle="Edit File"
+      pageTitle={t("Edit File")}
       navigation={buildEditFilePageNavigation(file, paths)}
       testId="resource-hub-edit-file-page"
       richTextHandlers={richTextHandlers}

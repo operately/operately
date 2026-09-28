@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { ScheduleFlowState } from "./ScheduleFlowControls";
 
@@ -23,6 +24,7 @@ function parseScheduledAt(value?: string | Date | null): Date | null {
 export function useScheduleFlowState({
   initialScheduledAt = null,
 }: UseScheduleFlowStateOptions = {}): ScheduleFlowStateWithIso {
+  const { t } = useTranslation();
   const initialDate = parseScheduledAt(initialScheduledAt);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scheduledAt, setScheduledAt] = useState<Date | null>(initialDate);
@@ -41,6 +43,6 @@ export function useScheduleFlowState({
       setIsModalOpen(false);
     },
     cancelSchedule: () => setIsModalOpen(false),
-    primaryButtonLabel: (immediateLabel: string) => (isScheduledLocally ? "Confirm" : immediateLabel),
+    primaryButtonLabel: (immediateLabel: string) => (isScheduledLocally ? t("Confirm") : immediateLabel),
   };
 }

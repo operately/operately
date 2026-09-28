@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { useUpdateLink } from "@/models/resourceHubs";
@@ -12,10 +13,15 @@ import { useLoadedData } from "./loader";
 import { buildEditLinkPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { link } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
-  const mutationScope = { spaceId: link.space?.id, resourceHubId: link.resourceHubId, parentFolderId: link.parentFolderId };
+  const mutationScope = {
+    spaceId: link.space?.id,
+    resourceHubId: link.resourceHubId,
+    parentFolderId: link.parentFolderId,
+  };
   const { mutateAsync: edit } = useUpdateLink(mutationScope);
 
   assertPresent(link.name, "name must be present in link");
@@ -41,14 +47,14 @@ export function Page() {
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("Link not updated", "Check the form and try again.");
+      showErrorToast(t("Link not updated"), t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <LinkEditPage
-      pageTitle="Edit Link"
+      pageTitle={t("Edit Link")}
       navigation={buildEditLinkPageNavigation(link, paths)}
       testId="resource-hub-edit-link-page"
       richTextHandlers={richTextHandlers}

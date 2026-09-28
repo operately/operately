@@ -151,7 +151,7 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRena
     },
     validate: (addError: (field: string, message: string) => void) => {
       if (!form.values.name) {
-        addError("name", "Name is required");
+        addError("name", t("Name is required"));
       }
     },
     cancel: toggleForm,
@@ -176,7 +176,7 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRena
           <Forms.TextInput label={t("Name")} field="name" testId="new-folder-name" autoFocus />
         </Forms.FieldGroup>
 
-        <Forms.Submit cancelText="Cancel" />
+        <Forms.Submit cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );

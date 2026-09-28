@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import React, { useMemo } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
 
 import { Page } from "../Page";
@@ -25,10 +25,10 @@ export function LinkNewPage(props: LinkNewPageNS.Props) {
     },
     validate: (addError) => {
       if (!form.values.title.trim()) {
-        addError("title", "Title is required");
+        addError("title", t("Title is required"));
       }
       if (!isValidURL(form.values.link)) {
-        addError("link", "Invalid link");
+        addError("link", t("Invalid link"));
       }
     },
     cancel: () => navigate(props.cancelLink),
@@ -73,7 +73,7 @@ export function LinkNewPage(props: LinkNewPageNS.Props) {
 
               <div className="mt-12">
                 {!props.hideSubscriptions && <SubscribersSelector {...props.subscriptions} />}
-                <Forms.Submit saveText={props.submitLabel ?? "Add link"} buttonSize="base" />
+                <Forms.Submit saveText={props.submitLabel ?? t("Add link")} buttonSize="base" />
               </div>
             </div>
           </div>
@@ -86,7 +86,7 @@ export function LinkNewPage(props: LinkNewPageNS.Props) {
 function SelectTypeField() {
   const { t } = useTranslation();
   const [type] = Forms.useFieldValue<ResourceHubLinkType>("type");
-  const isGoogleOption = useMemo(() => type != null && GOOGLE_OPTIONS.some((option) => option.value === type), [type]);
+  const isGoogleOption = type != null && GOOGLE_TYPES.includes(type);
 
   if (!isGoogleOption) return null;
 
@@ -94,15 +94,15 @@ function SelectTypeField() {
     <Forms.RadioButtons
       label={t("What kind of document is this?")}
       field="type"
-      options={GOOGLE_OPTIONS}
+      options={[
+        { label: t("Doc"), value: "google_doc" },
+        { label: t("Sheet"), value: "google_sheet" },
+        { label: t("Slide"), value: "google_slides" },
+        { label: t("Other"), value: "google" },
+      ]}
       containerClass="flex items-center flex-wrap gap-8"
     />
   );
 }
 
-const GOOGLE_OPTIONS = [
-  { label: "Doc", value: "google_doc" },
-  { label: "Sheet", value: "google_sheet" },
-  { label: "Slide", value: "google_slides" },
-  { label: "Other", value: "google" },
-];
+const GOOGLE_TYPES: ResourceHubLinkType[] = ["google_doc", "google_sheet", "google_slides", "google"];
