@@ -1,9 +1,7 @@
 import React from "react";
 
 import { Toolbar } from "./components/Toolbar";
-import { TableHoverControls } from "./components/TableHoverControls";
-import { TableSettingsMenus } from "./components/TableSettingsMenus";
-import { TableAxisMenus } from "./components/TableAxisMenus";
+import { TableControls } from "./components/TableControls";
 import { EditorContext, TipTapEditorContent } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 import { EditorState } from "./useEditor";
@@ -68,9 +66,7 @@ function EditorContent(props: EditorProps): JSX.Element {
 
       <div onClick={handleFocus} className="ProseMirror cursor-text text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
-        <TableHoverControls />
-        <TableAxisMenus />
-        <TableSettingsMenus />
+        <TableControls />
       </div>
     </div>
   );
