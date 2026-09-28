@@ -41,6 +41,30 @@
     :why: 
     :versions: []
     :when: 2023-09-25 14:41:40.593917094 Z
+- - :permit
+  - BlueOak-1.0.0
+  - :who: SuperPlane Agent
+    :why: OSI-approved permissive license used by the npm glob ecosystem; reported by LicenseFinder 7.2
+    :versions: []
+    :when: 2026-09-28 13:20:00.000000000 Z
+- - :permit
+  - CC-BY-4.0
+  - :who: SuperPlane Agent
+    :why: Creative Commons Attribution 4.0 used by caniuse-lite; reported by LicenseFinder 7.2
+    :versions: []
+    :when: 2026-09-28 13:20:00.000000000 Z
+- - :permit
+  - Python-2.0
+  - :who: SuperPlane Agent
+    :why: OSI-approved Python license used by argparse; reported by LicenseFinder 7.2
+    :versions: []
+    :when: 2026-09-28 13:20:00.000000000 Z
+- - :permit
+  - BSD Zero Clause License
+  - :who: SuperPlane Agent
+    :why: 0BSD public-domain-equivalent license used by tslib; reported by LicenseFinder 7.2
+    :versions: []
+    :when: 2026-09-28 13:20:00.000000000 Z
 - - :approve
   - absinthe_graphql_ws
   - :who: Igor Sarcevic
