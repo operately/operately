@@ -3,10 +3,19 @@ defmodule Operately.RichContent.MarkdownTableCell do
 
   def parse(text, opts) do
     {text, codes} = protect_code_spans(text)
+    text = protect_escaped_angle_brackets(text)
     opts = Keyword.put(opts, :table_code_spans, codes)
     # A plain prefix keeps cell text such as '# Title' from becoming a block.
     {_, [{"p", _, [first | rest], _}], _} = EarmarkParser.as_ast("cell " <> text, pure_links: false)
     inline([String.replace_prefix(first, "cell ", "") | rest], [], opts)
+  end
+
+  # Preserve escaped '<' as an entity until after break detection; paired backslashes leave it unescaped.
+  defp protect_escaped_angle_brackets(text) do
+    Regex.replace(~r/\\\\|\\</, text, fn
+      "\\<" -> "&lt;"
+      backslashes -> backslashes
+    end)
   end
 
   # Earmark collapses code whitespace. Use placeholders so it can still parse surrounding

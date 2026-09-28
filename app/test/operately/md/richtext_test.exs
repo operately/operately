@@ -215,6 +215,14 @@ defmodule Operately.MD.RichTextTest do
   end
 
   describe "code blocks" do
+    test "renders empty code blocks with empty or omitted content" do
+      for block <- [%{"type" => "codeBlock", "content" => []}, %{"type" => "codeBlock"}] do
+        assert RichText.render(%{"type" => "doc", "content" => [block]}) == "```\n```"
+        block = Map.put(block, "attrs", %{"language" => "elixir"})
+        assert RichText.render(%{"type" => "doc", "content" => [block]}) == "```elixir\n```"
+      end
+    end
+
     test "renders code block without language" do
       doc = %{
         "type" => "doc",

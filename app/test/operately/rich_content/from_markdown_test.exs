@@ -20,6 +20,24 @@ defmodule Operately.RichContent.FromMarkdownTest do
     end
   end
 
+  test "escaped table breaks survive Markdown export and reimport" do
+    markdown = "| Literal | Break |\n| --- | --- |\n| \\<br> | first<br>second |"
+    assert {:ok, doc} = FromMarkdown.to_rich_text(markdown)
+    exported = Operately.MD.RichText.render(doc)
+    assert exported =~ "| &lt;br&gt; | first<br>second |"
+    assert {:ok, ^doc} = FromMarkdown.to_rich_text(exported)
+  end
+
+  test "empty fenced code blocks survive Markdown export and reimport" do
+    for markdown <- ["```\n```", "```elixir\n```", "~~~\n~~~"] do
+      assert {:ok, doc} = FromMarkdown.to_rich_text(markdown)
+      assert [%{"type" => "codeBlock", "content" => []}] = doc["content"]
+      exported = Operately.MD.RichText.render(doc)
+      assert String.starts_with?(exported, "```")
+      assert {:ok, ^doc} = FromMarkdown.to_rich_text(exported)
+    end
+  end
+
   test "pads short table rows, ignores alignment, and preserves adjacent blocks" do
     assert {:ok, doc} = FromMarkdown.to_rich_text("Before\n| A | B |\n| :--- | ---: |\n| one |\n\nAfter")
     assert [_, _, table, _, _] = doc["content"]

@@ -3,6 +3,22 @@ defmodule Operately.RichContent.MarkdownTableCellTest do
 
   alias Operately.RichContent.MarkdownTableCell
 
+  test "escaped break tags stay literal while unescaped tags create breaks" do
+    for tag <- ["<br>", "<br/>", "<BR />"] do
+      assert MarkdownTableCell.parse("\\" <> tag, []) == [%{"type" => "text", "text" => tag}]
+      assert MarkdownTableCell.parse("\\\\" <> tag, []) == [%{"type" => "text", "text" => "\\"}, %{"type" => "hardBreak"}]
+      assert MarkdownTableCell.parse("\\\\\\" <> tag, []) == [%{"type" => "text", "text" => "\\" <> tag}]
+    end
+  end
+
+  test "escaped breaks retain formatting, links, and literal code" do
+    assert MarkdownTableCell.parse("**\\<br>**", []) == [%{"type" => "text", "text" => "<br>", "marks" => [%{"type" => "bold"}]}]
+    assert [link] = MarkdownTableCell.parse("[\\<br>](https://example.com)", [])
+    assert link["text"] == "<br>"
+    assert hd(link["marks"])["type"] == "link"
+    assert MarkdownTableCell.parse("`\\<br>`", []) == [%{"type" => "text", "text" => "\\<br>", "marks" => [%{"type" => "code"}]}]
+  end
+
   test "cell syntax never creates blocks or interprets escaped breaks as real breaks" do
     assert MarkdownTableCell.parse("# Title &lt;br&gt;<br/>next", []) == [
              %{"type" => "text", "text" => "# Title <br>"},
