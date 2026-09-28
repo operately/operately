@@ -15,6 +15,9 @@ interface MenuProps extends TestableElement {
   headerContent?: React.ReactNode;
   size?: Size;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+  anchorPosition?: { x: number; y: number };
+  contentProps?: Omit<DropdownMenu.DropdownMenuContentProps, "children">;
   onCloseAutoFocus?: DropdownMenu.DropdownMenuContentProps["onCloseAutoFocus"];
   showArrow?: boolean;
   align?: "start" | "center" | "end";
@@ -33,6 +36,10 @@ interface MenuLinkItemProps extends MenuItemProps {
 }
 
 interface MenuActionItemProps extends MenuItemProps {
+  onPointerEnter?: React.PointerEventHandler<HTMLDivElement>;
+  onPointerLeave?: React.PointerEventHandler<HTMLDivElement>;
+  onFocus?: React.FocusEventHandler<HTMLDivElement>;
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
   onClick: () => void;
   keepOpen?: boolean;
   disabled?: boolean;
@@ -54,12 +61,13 @@ export function Menu(props: MenuProps) {
   }
 
   return (
-    <DropdownMenu.Root onOpenChange={props.onOpenChange} modal={false} open={props.readonly ? false : undefined}>
+    <DropdownMenu.Root onOpenChange={props.onOpenChange} modal={false} open={props.readonly ? false : props.open}>
       <Trigger {...props} />
 
       {!props.readonly && (
         <DropdownMenu.Portal>
           <DropdownMenu.Content
+            {...props.contentProps}
             className={menuContentClass}
             style={menuContentStyle(props.size)}
             align={props.align}
@@ -78,6 +86,25 @@ export function Menu(props: MenuProps) {
 }
 
 function Trigger(props: MenuProps) {
+  if (props.anchorPosition) {
+    // A noninteractive anchor positions a controlled menu at a context-click location.
+    return (
+      <DropdownMenu.Trigger asChild>
+        <span
+          aria-hidden="true"
+          tabIndex={-1}
+          style={{
+            position: "fixed",
+            left: props.anchorPosition.x,
+            top: props.anchorPosition.y,
+            width: 1,
+            height: 1,
+            pointerEvents: "none",
+          }}
+        />
+      </DropdownMenu.Trigger>
+    );
+  }
   if (props.customTrigger) {
     return (
       <DropdownMenu.Trigger
@@ -161,6 +188,10 @@ export function MenuActionItem(props: MenuActionItemProps) {
     <DropdownMenu.Item
       className={classNames(menuItemClassNames(props), props.className)}
       disabled={props.disabled}
+      onPointerEnter={props.onPointerEnter}
+      onPointerLeave={props.onPointerLeave}
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
       data-test-id={props.testId}
       onSelect={(event) => {
         if (props.keepOpen) event.preventDefault();
