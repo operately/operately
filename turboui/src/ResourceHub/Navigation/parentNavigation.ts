@@ -1,3 +1,4 @@
+import i18n from "../../i18n";
 import type { ResourceHub, ResourceHubFolder, ResourceHubNavigationPaths } from "../types";
 
 export interface NavigationItem {
@@ -71,10 +72,7 @@ export function resourceHubFolderNavigation(
   );
 }
 
-function resourceHubBaseNavigation(
-  resourceHub: ResourceHub,
-  paths: ResourceHubNavigationPaths,
-): NavigationItem[] {
+function resourceHubBaseNavigation(resourceHub: ResourceHub, paths: ResourceHubNavigationPaths): NavigationItem[] {
   const projectNavigation = resourceHubProjectNavigation(resourceHub, paths);
   if (projectNavigation) return projectNavigation;
 
@@ -97,9 +95,9 @@ function resourceHubProjectNavigation(
 
   return [
     { to: paths.spacePath(resourceHub.space.id), label: resourceHub.space.name ?? "" },
-    { to: paths.projectWorkMapPath(resourceHub.space.id), label: "Work Map" },
+    { to: paths.projectWorkMapPath(resourceHub.space.id), label: i18n.t("Work Map") },
     { to: paths.projectOverviewPath(resourceHub.project.id), label: resourceHub.project.name ?? "" },
-    { to: paths.projectDocsAndFilesPath(resourceHub.project.id), label: "Docs & Files" },
+    { to: paths.projectDocsAndFilesPath(resourceHub.project.id), label: i18n.t("Docs & Files") },
   ];
 }
 
@@ -111,16 +109,13 @@ function resourceHubGoalNavigation(
 
   return [
     { to: paths.spacePath(resourceHub.space.id), label: resourceHub.space.name ?? "" },
-    { to: paths.goalWorkMapPath(resourceHub.space.id), label: "Work Map" },
+    { to: paths.goalWorkMapPath(resourceHub.space.id), label: i18n.t("Work Map") },
     { to: paths.goalOverviewPath(resourceHub.goal.id), label: resourceHub.goal.name ?? "" },
-    { to: paths.goalDocsAndFilesPath(resourceHub.goal.id), label: "Docs & Files" },
+    { to: paths.goalDocsAndFilesPath(resourceHub.goal.id), label: i18n.t("Docs & Files") },
   ];
 }
 
-function resourceHubNavigationItem(
-  resourceHub: ResourceHub,
-  paths: ResourceHubNavigationPaths,
-): NavigationItem | null {
+function resourceHubNavigationItem(resourceHub: ResourceHub, paths: ResourceHubNavigationPaths): NavigationItem | null {
   if (!resourceHub.id) return null;
 
   return {
@@ -129,9 +124,7 @@ function resourceHubNavigationItem(
   };
 }
 
-function hasProjectParent(
-  resourceHub: ResourceHub,
-): resourceHub is ResourceHub & {
+function hasProjectParent(resourceHub: ResourceHub): resourceHub is ResourceHub & {
   space: { id: string; name: string };
   project: { id: string; name: string };
 } {
@@ -140,13 +133,9 @@ function hasProjectParent(
   );
 }
 
-function hasGoalParent(
-  resourceHub: ResourceHub,
-): resourceHub is ResourceHub & {
+function hasGoalParent(resourceHub: ResourceHub): resourceHub is ResourceHub & {
   space: { id: string; name: string };
   goal: { id: string; name: string };
 } {
-  return Boolean(
-    resourceHub.space?.id && resourceHub.space?.name && resourceHub.goal?.id && resourceHub.goal?.name,
-  );
+  return Boolean(resourceHub.space?.id && resourceHub.space?.name && resourceHub.goal?.id && resourceHub.goal?.name);
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { DateField } from "../DateField";
 import { TaskCreationModal } from "../TaskCreationModal";
@@ -199,15 +200,21 @@ function isClosedStatus(status: Types.Status) {
 }
 
 function TemplateMilestoneLayout({ state }: { state: MilestonePage.TemplateState }) {
+  const { t } = useTranslation();
   const tabs = useTabs(
     "tasks",
     [
-      { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-      { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} />, count: state.tasksCount },
-      { id: "discussions", label: "Discussions", icon: <IconMessageCircle size={14} />, count: state.discussionsCount },
+      { id: "overview", label: t("Overview"), icon: <IconClipboardText size={14} /> },
+      { id: "tasks", label: t("Tasks"), icon: <IconListCheck size={14} />, count: state.tasksCount },
+      {
+        id: "discussions",
+        label: t("Discussions"),
+        icon: <IconMessageCircle size={14} />,
+        count: state.discussionsCount,
+      },
       {
         id: "docs-and-files",
-        label: "Docs & Files",
+        label: t("Docs & Files"),
         icon: <IconPaperclip size={14} />,
         count: state.docsAndFilesCount,
       },
@@ -250,6 +257,7 @@ function TemplateMilestoneLayout({ state }: { state: MilestonePage.TemplateState
 }
 
 export function MilestoneContent(props: MilestonePage.ContentState) {
+  const { t } = useTranslation();
   const features = variantFeatures(props.variant);
   const canEdit = props.permissions.canEdit || false;
 
@@ -272,9 +280,9 @@ export function MilestoneContent(props: MilestonePage.ContentState) {
             onDescriptionChange={props.onDescriptionChange}
             richTextHandlers={props.richTextHandlers}
             canEdit={canEdit}
-            label="Notes"
-            placeholder="Describe the milestone..."
-            zeroStatePlaceholder="Add details about this milestone..."
+            label={t("Notes")}
+            placeholder={t("Describe the milestone...")}
+            zeroStatePlaceholder={t("Add details about this milestone...")}
             emptyTestId="description-section-empty"
             localDraftKey={props.localDraftKeyBase ? `${props.localDraftKeyBase}:description` : undefined}
           />
@@ -293,18 +301,19 @@ export function MilestoneContent(props: MilestonePage.ContentState) {
 }
 
 function MobileMeta(props: MilestonePage.ContentState) {
+  const { t } = useTranslation();
   const features = variantFeatures(props.variant);
   const canEdit = props.permissions.canEdit || false;
 
   if (features.showRelativeDueDate && isTemplateMilestoneState(props)) {
     return (
       <div className="mb-6 mt-4 sm:hidden" data-test-id={features.mobileMetaTestId}>
-        <SidebarSection title="Relative due date">
+        <SidebarSection title={t("Relative due date")}>
           <RelativeDayField
             value={props.dueOffsetDays}
             onChange={props.onDueOffsetDaysChange}
             readonly={!canEdit}
-            placeholder="Set relative date"
+            placeholder={t("Set relative date")}
           />
         </SidebarSection>
       </div>
@@ -330,31 +339,31 @@ function MobileMeta(props: MilestonePage.ContentState) {
     <div className="mb-6 mt-4 sm:hidden" data-test-id={features.mobileMetaTestId}>
       <div className="flex flex-wrap gap-4">
         {features.showCalendarDueDate && (
-          <SidebarSection title="Due date" className="min-w-[160px] flex-1">
+          <SidebarSection title={t("Due date")} className="min-w-[160px] flex-1">
             <DateField
               date={dueDate ?? milestone.dueDate ?? null}
               onDateSelect={onDueDateChange}
               readonly={!canEdit}
               showOverdueWarning={showOverdueWarning}
-              placeholder="Set due date"
+              placeholder={t("Set due date")}
               size="small"
             />
           </SidebarSection>
         )}
 
         {features.showStatus && (
-          <SidebarSection title="Milestone status" className="min-w-[160px] flex-1">
+          <SidebarSection title={t("Milestone status")} className="min-w-[160px] flex-1">
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <div className="flex items-center gap-2">
                 {isCompleted ? (
                   <>
                     <IconFlagFilled size={16} className="text-accent-1" />
-                    <span className="font-medium text-accent-1">Completed</span>
+                    <span className="font-medium text-accent-1">{t("Completed")}</span>
                   </>
                 ) : (
                   <>
                     <IconFlag size={16} className="text-content-dimmed" />
-                    <span className="text-content-base">Active</span>
+                    <span className="text-content-base">{t("Active")}</span>
                   </>
                 )}
               </div>
@@ -362,11 +371,11 @@ function MobileMeta(props: MilestonePage.ContentState) {
               {canEdit &&
                 (isCompleted ? (
                   <SecondaryButton size="xs" onClick={handleStatusToggle}>
-                    Reopen
+                    {t("Reopen")}
                   </SecondaryButton>
                 ) : (
                   <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
-                    Mark complete
+                    {t("Mark complete")}
                   </GhostButton>
                 ))}
             </div>
@@ -388,11 +397,12 @@ function MainContainer({ children }: { children: React.ReactNode }) {
 }
 
 function TimelineSection(props: MilestonePage.ProjectState) {
+  const { t } = useTranslation();
   if (!variantFeatures(props.variant).showActivity) return null;
 
   return (
     <div className="pt-8" data-test-id="timeline-section">
-      <h3 className="mb-4 font-bold">Comments & Activity</h3>
+      <h3 className="mb-4 font-bold">{t("Comments & Activity")}</h3>
       <Timeline
         items={props.timelineItems}
         currentUser={props.currentUser}

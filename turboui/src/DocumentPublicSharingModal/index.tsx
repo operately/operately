@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { ErrorCallout } from "../Callouts";
@@ -14,6 +15,7 @@ export namespace DocumentPublicSharingModal {
 }
 
 export function DocumentPublicSharingModal({ isOpen, onClose, publicUrl, onChange }: DocumentPublicSharingModal.Props) {
+  const { t } = useTranslation();
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState(false);
 
@@ -33,12 +35,16 @@ export function DocumentPublicSharingModal({ isOpen, onClose, publicUrl, onChang
     <Modal
       isOpen={isOpen}
       onClose={saving ? () => {} : onClose}
-      title="Share publicly"
+      title={t("Share publicly")}
       size="medium"
       testId="document-public-sharing-modal"
     >
       <div className="flex flex-col gap-4">
-        <p>Anyone with the link can read the latest version of this document and its attachments without signing in.</p>
+        <p>
+          {t(
+            "Anyone with the link can read the latest version of this document and its attachments without signing in.",
+          )}
+        </p>
         {publicUrl ? (
           <>
             <div className="flex items-center gap-2 rounded border border-surface-outline p-3">
@@ -53,14 +59,17 @@ export function DocumentPublicSharingModal({ isOpen, onClose, publicUrl, onChang
               />
             </div>
             <p className="text-sm text-content-dimmed">
-              Disabling sharing stops this link from working. Enabling it again creates a new link.
+              {t("Disabling sharing stops this link from working. Enabling it again creates a new link.")}
             </p>
           </>
         ) : (
-          <p className="text-sm text-content-dimmed">Public sharing is off. Enable it to create a link.</p>
+          <p className="text-sm text-content-dimmed">{t("Public sharing is off. Enable it to create a link.")}</p>
         )}
         {error && (
-          <ErrorCallout message="Could not update public sharing. Please try again." testId="public-sharing-error" />
+          <ErrorCallout
+            message={t("Could not update public sharing. Please try again.")}
+            testId="public-sharing-error"
+          />
         )}
         <div className="flex flex-wrap gap-2">
           {publicUrl ? (
@@ -70,7 +79,7 @@ export function DocumentPublicSharingModal({ isOpen, onClose, publicUrl, onChang
               disabled={saving}
               testId="disable-public-sharing"
             >
-              Disable public sharing
+              {t("Disable public sharing")}
             </SecondaryButton>
           ) : (
             <PrimaryButton
@@ -79,11 +88,11 @@ export function DocumentPublicSharingModal({ isOpen, onClose, publicUrl, onChang
               disabled={saving}
               testId="enable-public-sharing"
             >
-              Enable public sharing
+              {t("Enable public sharing")}
             </PrimaryButton>
           )}
           <SecondaryButton onClick={onClose} disabled={saving}>
-            Done
+            {t("Done")}
           </SecondaryButton>
         </div>
       </div>

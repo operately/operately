@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from "react-i18next";
 import React from "react";
 import Modal from "../../Modal";
 
@@ -55,6 +56,7 @@ export namespace AddItemModal {
 }
 
 export function AddItemModal(props: AddItemModal.Props) {
+  const { t } = useTranslation();
   const state = useAddItemModalState(props);
   const selectedSpaceId = state.space?.id;
   const showTemplates = state.itemType === "project" && Boolean(selectedSpaceId);
@@ -72,12 +74,16 @@ export function AddItemModal(props: AddItemModal.Props) {
       testId="add-item-modal"
     >
       <div className="p-4">
-        <h1 className="font-bold text-xl w-52">Add {state.itemType === "goal" ? "goal" : "project"}</h1>
+        <h1 className="font-bold text-xl w-52">{state.itemType === "goal" ? t("Add goal") : t("Add project")}</h1>
 
         <div className="mb-2">
           {props.parentGoal && (
             <div className="text-xs text-content-dimmed mb-1">
-              Adding under <span className="font-medium">{props.parentGoal.name}</span>
+              <Trans
+                i18nKey="Adding under <goal>{{goalName}}</goal>"
+                values={{ goalName: props.parentGoal.name }}
+                components={{ goal: <span className="font-medium" /> }}
+              />
             </div>
           )}
         </div>
@@ -87,13 +93,13 @@ export function AddItemModal(props: AddItemModal.Props) {
             options={[
               {
                 value: "goal",
-                label: "Goal",
-                description: "big-picture outcome",
+                label: t("Goal"),
+                description: t("big-picture outcome"),
               },
               {
                 value: "project",
-                label: "Project",
-                description: "concrete actions or deliverables",
+                label: t("Project"),
+                description: t("concrete actions or deliverables"),
               },
             ]}
             value={state.itemType}
@@ -111,10 +117,10 @@ export function AddItemModal(props: AddItemModal.Props) {
           <div className="flex flex-col gap-4">
             <TextField
               autofocus
-              label="Name"
+              label={t("Name")}
               variant="form-field"
               placeholder={
-                state.itemType === "goal" ? "e.g. Increase user acquisition" : "e.g. Implement new website design"
+                state.itemType === "goal" ? t("e.g. Increase user acquisition") : t("e.g. Implement new website design")
               }
               text={state.name}
               onChange={state.setName}
@@ -123,7 +129,7 @@ export function AddItemModal(props: AddItemModal.Props) {
             />
 
             <SpaceField
-              label="Space"
+              label={t("Space")}
               space={state.space}
               setSpace={state.setSpace}
               search={state.spaceSearch}
@@ -150,24 +156,24 @@ export function AddItemModal(props: AddItemModal.Props) {
               setAccessLevels={state.setAccessLevels}
               resourceType={state.itemType}
               variant="form-field"
-              label="Privacy"
+              label={t("Privacy")}
               hideCompanyAccess={Boolean(props.hideCompanyAccess)}
             />
           </div>
 
           <div className="flex items-center mt-8">
             {!props.hideCreateMore && (
-              <SwitchToggle value={state.createMore} setValue={state.setCreateMore} label="Create more" />
+              <SwitchToggle value={state.createMore} setValue={state.setCreateMore} label={t("Create more")} />
             )}
 
             <div className="flex-1"></div>
             <div className="flex space-x-3">
               <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
-                Cancel
+                {t("Cancel")}
               </SecondaryButton>
 
               <PrimaryButton type="submit" loading={state.submitting} testId="submit" size="sm">
-                Add {state.itemType === "goal" ? "Goal" : "Project"}
+                {state.itemType === "goal" ? t("Add Goal") : t("Add Project")}
               </PrimaryButton>
             </div>
           </div>
@@ -178,6 +184,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 }
 
 function useAddItemModalState(props: AddItemModal.Props) {
+  const { t } = useTranslation();
   const [itemType, setItemType] = React.useState<"goal" | "project">(props.initialItemType || "goal");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
@@ -237,21 +244,21 @@ function useAddItemModalState(props: AddItemModal.Props) {
     let ok = true;
 
     if (name.trim() === "") {
-      setNameError("Cannot be empty");
+      setNameError(t("Cannot be empty"));
       ok = false;
     } else {
       setNameError(undefined);
     }
 
     if (!space) {
-      setSpaceError("Please select a space");
+      setSpaceError(t("Please select a space"));
       ok = false;
     } else {
       setSpaceError(undefined);
     }
 
     if (itemType === "project" && templateId && !startDate) {
-      setStartDateError("Select a project start date.");
+      setStartDateError(t("Select a project start date."));
       ok = false;
     } else {
       setStartDateError(undefined);
@@ -295,7 +302,10 @@ function useAddItemModalState(props: AddItemModal.Props) {
       }
     } catch (error) {
       console.error("Failed to create item:", error);
-      showErrorToast("Network error", "Failed to create the " + itemType + ".");
+      showErrorToast(
+        t("Network error"),
+        itemType === "goal" ? t("Failed to create the goal.") : t("Failed to create the project."),
+      );
       setSubmitting(false);
     }
   };

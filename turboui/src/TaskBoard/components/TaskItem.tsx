@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { tn } from "../../i18n";
 import { IconFileText, IconMessageCircle } from "../../icons";
 import React, { useCallback, useState } from "react";
 import { DateField } from "../../DateField";
@@ -48,6 +50,7 @@ export function TaskItem({
   onTaskClick,
   onTaskOpen,
 }: TaskItemProps) {
+  const { t } = useTranslation();
   const [currentAssignees, setCurrentAssignees] = useState<Person[]>(task.assignees || []);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
   const [currentStatus, setCurrentStatus] = useState<StatusSelector.StatusOption | null>(
@@ -264,7 +267,7 @@ export function TaskItem({
               variant="inline"
               hideCalendarIcon={!!currentDueDate}
               showOverdueWarning={!task.status?.closed}
-              placeholder={currentDueDate ? "Set due date" : ""}
+              placeholder={currentDueDate ? t("Set due date") : ""}
               readonly={!onTaskDueDateChange}
               size={currentDueDate ? "small" : "lg"}
               calendarOnly
@@ -288,7 +291,7 @@ export function TaskItem({
               variant="inline"
               hideCalendarIcon={true}
               showOverdueWarning={!task.status?.closed}
-              placeholder={currentDueDate ? "" : "Set due date"}
+              placeholder={currentDueDate ? "" : t("Set due date")}
               readonly={!onTaskDueDateChange}
               size="small"
               calendarOnly
@@ -339,6 +342,7 @@ export function TaskItem({
 }
 
 function TaskTitleContent({ task }: { task: TaskWithIndex }) {
+  const { t } = useTranslation();
   return (
     <span className="inline-flex items-center gap-1.5 truncate max-w-full h-6 relative top-[-1px]">
       <span className="truncate">{task.title}</span>
@@ -346,7 +350,7 @@ function TaskTitleContent({ task }: { task: TaskWithIndex }) {
       {task.hasDescription && (
         <span
           className="text-content-dimmed flex-shrink-0"
-          title="Has description"
+          title={t("Has description")}
           data-test-id="description-indicator"
         >
           <IconFileText size={14} />
@@ -356,7 +360,7 @@ function TaskTitleContent({ task }: { task: TaskWithIndex }) {
       {task.hasComments && (
         <span
           className="text-content-dimmed flex items-center flex-shrink-0"
-          title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
+          title={tn("1 comment", "{{count}} comments", task.commentCount ?? 0)}
           data-test-id="comments-indicator"
         >
           <IconMessageCircle size={14} />

@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useMemo } from "react";
 import { showErrorToast } from "turboui";
 import {
@@ -61,7 +62,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
       return { success: true, id };
     } catch (error) {
       console.error("Failed to add target", error);
-      showErrorToast("Error", "Failed to add target");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to add target"));
       return { success: false, id: "" };
     }
   };
@@ -85,7 +86,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
       );
     } catch (error) {
       console.error(message, error);
-      showErrorToast("Error", message);
+      showErrorToast(i18n.t("Error"), message);
       return false;
     }
   };
@@ -95,7 +96,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
       id,
       (items) => normalize(items.filter((item) => item.id !== resolveId(id))),
       () => remove.mutateAsync({ goalId, targetId: resolveId(id) }),
-      "Failed to delete target",
+      i18n.t("Failed to delete target"),
     );
 
   const updateTarget = (inputs: TargetInputs & { targetId: string }) =>
@@ -114,7 +115,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
             : item,
         ),
       () => update.mutateAsync({ goalId, ...inputs, targetId: resolveId(inputs.targetId) }),
-      "Failed to update target",
+      i18n.t("Failed to update target"),
     );
 
   const updateTargetValue = (id: string, value: number) =>
@@ -122,7 +123,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
       id,
       (items) => items.map((item) => (item.id === resolveId(id) ? { ...item, value, mode: "view" } : item)),
       () => updateValue.mutateAsync({ goalId, targetId: resolveId(id), value }),
-      "Failed to update target value",
+      i18n.t("Failed to update target value"),
     );
 
   const updateTargetIndex = (id: string, index: number) => {

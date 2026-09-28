@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useCallback, useEffect, useState } from "react";
 import { IconSettings } from "../../icons";
 import { Menu, MenuActionItem } from "../../Menu";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function TasksMenu({ canManageStatuses, statuses, onSaveCustomStatuses }: Props) {
+  const { t } = useTranslation();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [statusModalStatuses, setStatusModalStatuses] = useState<StatusSelector.StatusOption[]>(statuses);
 
@@ -40,7 +42,7 @@ export function TasksMenu({ canManageStatuses, statuses, onSaveCustomStatuses }:
           customTrigger={
             <button
               className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:min-h-0 sm:min-w-0 sm:p-1.5"
-              aria-label="Settings"
+              aria-label={t("Settings")}
             >
               <IconSettings size={20} />
             </button>
@@ -49,7 +51,7 @@ export function TasksMenu({ canManageStatuses, statuses, onSaveCustomStatuses }:
           align="end"
         >
           <MenuActionItem icon={IconSettings} onClick={openStatusModal}>
-            Manage statuses
+            {t("Manage statuses")}
           </MenuActionItem>
         </Menu>
       )}

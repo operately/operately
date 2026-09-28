@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import Api from "@/api";
@@ -17,6 +18,7 @@ import { shouldShowFirstProjectOnboarding } from "./firstProjectOnboarding";
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -37,11 +39,11 @@ export function Page() {
   React.useEffect(() => {
     if (!creationFailed) return;
 
-    const id = showErrorToast("Couldn't load options for adding goals and projects.", "Try loading them again.", {
+    const id = showErrorToast(t("Couldn't load options for adding goals and projects."), t("Try loading them again."), {
       id: `company-work-map-creation-${company.id}`,
       duration: Infinity,
       action: {
-        label: "Try again",
+        label: t("Try again"),
         onClick: () => {
           void retryCreation.current();
         },

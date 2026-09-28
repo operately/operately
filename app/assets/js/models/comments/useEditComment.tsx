@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import React from "react";
 import Api, { CommentParentType } from "@/api";
 import { showErrorToast } from "turboui";
@@ -32,7 +33,7 @@ export function useEditComment<T extends { id?: string | null; content?: any }>(
         if (comment) {
           setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...comment } : c)));
         }
-        showErrorToast("Error", "Failed to edit comment.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to edit comment."));
         return false;
       }
     },

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -9,6 +10,7 @@ import { findNameAndExtension } from "../ResourceHub/utils";
 import type { FileEditPage as FileEditPageNS } from "./types";
 
 export function FileEditPage(props: FileEditPageNS.Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { name, extension } = findNameAndExtension(props.initialTitle);
 
@@ -38,11 +40,11 @@ export function FileEditPage(props: FileEditPageNS.Props) {
       <Forms.Form form={form}>
         <div className="px-12 py-10">
           <Forms.FieldGroup>
-            <Forms.TitleInput field="title" placeholder="Title..." />
+            <Forms.TitleInput field="title" placeholder={t("Title...")} />
             <Forms.RichTextArea
               field="description"
               richTextHandlers={props.richTextHandlers}
-              placeholder="Write here..."
+              placeholder={t("Write here...")}
               hideBorder
             />
           </Forms.FieldGroup>

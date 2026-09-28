@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useCallback, useEffect, useState } from "react";
 import { IconFileText, IconGripVertical, IconMessageCircle } from "../../icons";
 import { DateField } from "../../DateField";
@@ -42,6 +43,7 @@ export function Card({
   onTaskClick,
   selected = false,
 }: CardProps) {
+  const { t } = useTranslation();
   const [currentAssignees, setCurrentAssignees] = useState<TaskBoard.Person[]>(task.assignees || []);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
   const [currentDueOffsetDays, setCurrentDueOffsetDays] = useState<number | null>(task.dueOffsetDays ?? null);
@@ -211,7 +213,7 @@ export function Card({
               {shouldShowDescriptionIndicator && (
                 <span
                   className="inline-flex items-center gap-1"
-                  title="Has description"
+                  title={t("Has description")}
                   data-test-id="description-indicator"
                 >
                   <IconFileText size={14} />
@@ -219,7 +221,11 @@ export function Card({
               )}
 
               {shouldShowCommentsIndicator && (
-                <span className="inline-flex items-center gap-1" title="Has comments" data-test-id="comments-indicator">
+                <span
+                  className="inline-flex items-center gap-1"
+                  title={t("Has comments")}
+                  data-test-id="comments-indicator"
+                >
                   <IconMessageCircle size={14} />
                   {shouldShowCommentCount && <span>{task.commentCount}</span>}
                 </span>
@@ -234,7 +240,7 @@ export function Card({
                     onChange={onTaskDueOffsetDaysChange ? handleDueOffsetDaysChange : undefined}
                     variant="inline"
                     hideCalendarIcon={true}
-                    placeholder={hasDueDate ? "" : "Set when due"}
+                    placeholder={hasDueDate ? "" : t("Set when due")}
                     readonly={!onTaskDueOffsetDaysChange}
                     className={dateFieldClassName}
                     testId={createTestId("kanban-card-due-offset", task.id)}
@@ -248,7 +254,7 @@ export function Card({
                     variant="inline"
                     hideCalendarIcon={true}
                     showOverdueWarning={!task.status?.closed}
-                    placeholder={currentDueDate ? "" : "Set due date"}
+                    placeholder={currentDueDate ? "" : t("Set due date")}
                     readonly={!onTaskDueDateChange}
                     size="small"
                     calendarOnly

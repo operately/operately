@@ -97,6 +97,14 @@ Remaining coverage gaps:
 
 Operator SaaS administration is outside PR 5's scope. User-authored names, emails, company names, space names, and API identifiers stay outside translation lookup. The language flag, preference, and selector behavior are unchanged.
 
+## Work-management extraction (PR 6) — in progress
+
+The first PR 6 batch catalogs goal/project overview panels, goal creation, task and milestone controls, task-board filters/menus, project/space task operation errors (including “Update failed”), Docs & Files menus/empty states, space home/discussion/work-map controls, KPI list/create/annotation surfaces, and four activity handlers. See the [work-management audit](i18n-work-management-audit.md) for the precise coverage, validation, and remaining client-authored gaps.
+
+English and missing-Portuguese fallback are tested, including zero/singular/plural counts and saved Portuguese preferences with the company flag off. Substituted translations verify real component/hook lookup, rich activity sentences, dialog/menu labels, and representative expanded-text behavior. Existing reviewed translations are retained; new Portuguese coverage is left for PR 8. PR 6 remains open until the audit's remaining surfaces and visual/workflow checks are complete. The completed PR 5 scope is unchanged.
+
+When passing links to `Trans`, include their text as named placeholders inside the translation tags (for example, `<project>{{projectName}}</project>`). A self-closing tag can clear a passed element's existing children. Self-closing tags are appropriate for components that render their own content, such as `FormattedTime` or an aggregated task list. Verify link text and destinations in rendered tests.
+
 ## Catalog files
 
 ```text

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { GhostButton } from "turboui";
@@ -14,25 +15,27 @@ export function ZeroState() {
 }
 
 function ExplanationAndButton() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center group">
-      <div className="text-base font-bold">Discussions</div>
+      <div className="text-base font-bold">{t("Discussions")}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-        Post announcements, pitch ideas, and discuss ideas with your team.
+        {t("Post announcements, pitch ideas, and discuss ideas with your team.")}
       </div>
 
-      <GhostButton size="sm">Write a new post</GhostButton>
+      <GhostButton size="sm">{t("Write a new post")}</GhostButton>
     </div>
   );
 }
 
 function Examples() {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full h-[170px] mt-10 opacity-75 px-[65px] flex flex-col gap-3">
-      <Example icon={IconSpeakerphone} title="Post Announcements" body="We have a new team member..." />
-      <Example icon={IconBulb} title="Pitch Ideas" body="I have an idea to expand..." />
-      <Example icon={IconMessage} title="Discuss ideas" body="We need to make a decision..." />
+      <Example icon={IconSpeakerphone} title={t("Post Announcements")} body={t("We have a new team member...")} />
+      <Example icon={IconBulb} title={t("Pitch Ideas")} body={t("I have an idea to expand...")} />
+      <Example icon={IconMessage} title={t("Discuss ideas")} body={t("We need to make a decision...")} />
     </div>
   );
 }

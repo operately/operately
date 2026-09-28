@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import type { ProjectsCreateMilestoneCommentInput, ProjectsCreateMilestoneCommentResult } from "@/api";
@@ -60,8 +61,8 @@ function Page() {
       await updateProjectName.mutateAsync({ projectId, name });
       await refreshPageData();
     },
-    onError: (e) => showErrorToast(errorMessage(e), "Reverted the project name to its previous value."),
-    validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
+    onError: (e) => showErrorToast(errorMessage(e), i18n.t("Reverted the project name to its previous value.")),
+    validations: [(v) => (v?.trim() === "" ? i18n.t("Project name cannot be empty") : null)],
     projectIdToInvalidate: projectId,
   });
 
@@ -70,7 +71,7 @@ function Page() {
     value: () => milestone.description && JSON.parse(milestone.description),
     update: (v) =>
       updateMilestoneDescription.mutateAsync({ milestoneId: milestone.id, description: JSON.stringify(v) }),
-    onError: () => showErrorToast("Error", "Failed to update milestone description."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update milestone description.")),
     projectIdToInvalidate: projectId,
   });
 
@@ -79,7 +80,7 @@ function Page() {
     value: () => parseContextualDate(milestone.timeframe?.contextualEndDate),
     update: (v) =>
       updateMilestoneDueDate.mutateAsync({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
-    onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone due date."),
+    onError: (e) => showErrorToast(errorMessage(e), i18n.t("Failed to update milestone due date.")),
     projectIdToInvalidate: projectId,
   });
 
@@ -420,7 +421,7 @@ function useStatusField(
         resolution,
         createComment: (input) => createMilestoneComment.mutateAsync(input),
       }),
-    onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone status."),
+    onError: (e) => showErrorToast(errorMessage(e), i18n.t("Failed to update milestone status.")),
     projectIdToInvalidate: projectId,
   });
 
@@ -514,8 +515,8 @@ function useMilestones(milestone: Milestones.Milestone, projectId: string) {
     queryData: milestone,
     value: () => milestone.title,
     update: (v) => updateMilestoneTitle.mutateAsync({ milestoneId: milestone.id, title: v }),
-    onError: (e) => showErrorToast(errorMessage(e), "Failed to update milestone name."),
-    validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
+    onError: (e) => showErrorToast(errorMessage(e), i18n.t("Failed to update milestone name.")),
+    validations: [(v) => (v.trim() === "" ? i18n.t("Milestone name cannot be empty") : null)],
     projectIdToInvalidate: projectId,
   });
 

@@ -61,7 +61,7 @@ function Page() {
     queryData: task,
     value: () => project.name,
     update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }),
-    onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
+    onError: (e: string) => showErrorToast(e, i18n.t("Reverted the project name to its previous value.")),
     validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Project name cannot be empty")) : null)],
     refreshPageData,
     projectIdToInvalidate: project.id,
@@ -81,7 +81,7 @@ function Page() {
     value: () => task.description && JSON.parse(task.description),
     update: (v) =>
       updateTaskDescription.mutateAsync({ taskId: task.id, description: JSON.stringify(v), type: "project" }),
-    onError: () => showErrorToast("Error", "Failed to update task description."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update task description.")),
     refreshPageData,
   });
 
@@ -90,7 +90,7 @@ function Page() {
     value: () => Tasks.parseTaskForTurboUi(paths, task, { type: "project" }).status,
     update: (v) =>
       updateTaskStatus.mutateAsync({ taskId: task.id, status: Tasks.serializeTaskStatus(v), type: "project" }),
-    onError: () => showErrorToast("Error", "Failed to update task status."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update task status.")),
     refreshPageData,
   });
 
@@ -99,7 +99,7 @@ function Page() {
     value: () => parseContextualDate(task.dueDate),
     update: (v) =>
       updateTaskDueDate.mutateAsync({ taskId: task.id, dueDate: serializeContextualDate(v), type: "project" }),
-    onError: () => showErrorToast("Error", "Failed to update due date."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update due date.")),
     refreshPageData,
   });
 
@@ -112,7 +112,7 @@ function Page() {
         reminders: Tasks.serializeTaskReminders(v),
         type: "project",
       }),
-    onError: () => showErrorToast("Error", "Failed to update task reminders."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update task reminders.")),
     refreshPageData,
   });
 
@@ -129,7 +129,7 @@ function Page() {
         assigneeIds: v.map((assignee) => assignee.id),
         type: "project",
       }),
-    onError: () => showErrorToast("Error", "Failed to update assignees."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update assignees.")),
     refreshPageData,
   });
 
@@ -137,7 +137,7 @@ function Page() {
     queryData: task,
     value: () => (task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null),
     update: (v) => updateTaskMilestone.mutateAsync({ taskId: task.id, milestoneId: v?.id ?? null }),
-    onError: () => showErrorToast("Error", "Failed to update milestone."),
+    onError: () => showErrorToast(i18n.t("Error"), i18n.t("Failed to update milestone.")),
     refreshPageData,
   });
 
@@ -167,7 +167,7 @@ function Page() {
         navigate(paths.homePath());
       }
     } catch (error) {
-      showErrorToast("Error", "Failed to delete task.");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to delete task."));
     }
   };
 
@@ -326,7 +326,7 @@ function usePageField<T>({
 
       if (result === false || (typeof result === "object" && result?.success === false)) {
         setState(previousValue);
-        onError("Update failed");
+        onError(i18n.t("Update failed"));
         return false;
       }
 
@@ -379,7 +379,7 @@ function useMoveTaskHandler(task: Tasks.Task, refreshPageData: () => Promise<voi
         return true;
       } catch (error) {
         console.error("Failed to move task", error);
-        showErrorToast("Error", "Failed to move task.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to move task."));
         return false;
       }
     },

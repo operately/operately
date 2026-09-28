@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import * as People from "@/models/people";
@@ -17,9 +18,10 @@ interface Props {
 const MAX_TASKS = 7;
 
 export function RegularState(props: Props) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col h-full">
-      <Title title="Tasks" />
+      <Title title={t("Tasks")} />
 
       <div className="bg-surface-dimmed rounded mx-2 flex-1">
         <TasksList tasks={props.tasks} space={props.space} />

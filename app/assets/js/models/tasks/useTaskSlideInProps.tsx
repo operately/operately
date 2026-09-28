@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
 import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
@@ -213,7 +214,7 @@ export function useTaskSlideInProps(opts: {
             return true;
           } catch (error) {
             console.error("Failed to move task", error);
-            showErrorToast("Error", "Failed to move task.");
+            showErrorToast(i18n.t("Error"), i18n.t("Failed to move task."));
             return false;
           }
         },

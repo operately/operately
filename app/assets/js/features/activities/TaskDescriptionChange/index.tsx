@@ -1,9 +1,11 @@
+import { Trans } from "react-i18next";
+import i18n from "@/i18n";
 import React from "react";
 
 import type { ActivityContentTaskDescriptionChange } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { feedTitle, taskLink } from "../feedItemLinks";
+import { activityAuthorName, taskLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -46,15 +48,39 @@ const TaskDescriptionChange: ActivityHandler = {
         : task.name
       : task
         ? taskLink(paths, task)
-        : "a task";
+        : null;
 
     // Add context suffix based on page view
     const shouldShowContext = (isSpaceTask && page !== "space") || (!isSpaceTask && page !== "project");
     const context = shouldShowContext ? (isSpaceTask ? space?.name : projectName) : undefined;
 
-    return context
-      ? feedTitle(activity, "updated the description of", link, "in", context)
-      : feedTitle(activity, "updated the description of", link);
+    if (!task) {
+      return context ? (
+        <Trans
+          i18nKey="{{author}} updated the description of a task in {{context}}"
+          values={{ author: activityAuthorName(activity), context }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} updated the description of a task"
+          values={{ author: activityAuthorName(activity) }}
+        />
+      );
+    }
+
+    return context ? (
+      <Trans
+        i18nKey="{{author}} updated the description of <task>{{taskName}}</task> in {{context}}"
+        values={{ author: activityAuthorName(activity), context, taskName: task.name }}
+        components={{ task: React.isValidElement(link) ? link : <></> }}
+      />
+    ) : (
+      <Trans
+        i18nKey="{{author}} updated the description of <task>{{taskName}}</task>"
+        values={{ author: activityAuthorName(activity), taskName: task.name }}
+        components={{ task: React.isValidElement(link) ? link : <></> }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -85,7 +111,9 @@ const TaskDescriptionChange: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const { task } = content(activity);
 
-    return "Updated the description of: " + (task?.name || "a task");
+    return task?.name
+      ? i18n.t("Updated the description of: {{taskName}}", { taskName: task.name })
+      : i18n.t("Updated the description of: a task");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -7,6 +7,9 @@ import { NewDocumentPage } from "./index";
 import { SubscribersSelector } from "../Subscriptions";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asSubscriber, genPeople } from "../utils/storybook/genPeople";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
 
 jest.mock("../RichEditor", () => ({
   Editor: () => <div data-testid="rich-editor" />,
@@ -102,5 +105,24 @@ describe("NewDocumentPage", () => {
       "href",
       "/project-templates/template-1?tab=docs-and-files",
     );
+  });
+
+  test("uses substituted catalog copy for the draft action", () => {
+    i18n.addResourceBundle("en", "translation", { "Save as draft": "Translated save as draft" }, true, true);
+
+    render(
+      <MemoryRouter>
+        <NewDocumentPage
+          pageTitle="New Document"
+          navigation={navigation}
+          richTextHandlers={createMockRichEditorHandlers()}
+          cancelLink="/resource-hubs/hub-1"
+          subscriptions={subscriptionsProps()}
+          onSubmit={jest.fn().mockResolvedValue(true)}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("button", { name: "Translated save as draft" })).toBeInTheDocument();
   });
 });

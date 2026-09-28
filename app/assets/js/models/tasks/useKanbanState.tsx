@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useProjectKanbanState } from "./useProjectKanbanState";
 import * as React from "react";
 
@@ -118,7 +119,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
         return true;
       } catch (e) {
         console.error("Failed to update Kanban state", e);
-        showErrorToast("Error", "Failed to update task position");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update task position"));
         setKanbanState(previousState);
         return false;
       }
@@ -240,14 +241,14 @@ function isClosedStatus(status: StatusOption): boolean {
 function validateStatusForBackend(statusOption: StatusOption | null): TaskStatus | null {
   if (statusOption?.value === "unknown-status") {
     console.error("Cannot move task to unknown-status");
-    showErrorToast("Error", "Cannot move task to unknown status");
+    showErrorToast(i18n.t("Error"), i18n.t("Cannot move task to unknown status"));
     return null;
   }
 
   const backendStatus = serializeTaskStatus(statusOption);
   if (!backendStatus) {
     console.error("Unknown Kanban status");
-    showErrorToast("Error", "Failed to update task status");
+    showErrorToast(i18n.t("Error"), i18n.t("Failed to update task status"));
     return null;
   }
 

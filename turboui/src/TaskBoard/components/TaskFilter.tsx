@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import {
@@ -29,13 +31,13 @@ function getStatusConfig(status: Types.Status | null | undefined): {
 } {
   if (!status) {
     return {
-      label: "Unknown status",
+      label: i18n.t("Unknown status"),
       icon: <IconCircleDashed size={14} />,
       color: "text-content-dimmed",
     };
   }
 
-  const label = status.label || status.value || "Unknown status";
+  const label = status.label || status.value || i18n.t("Unknown status");
 
   switch (status.color) {
     case "blue":
@@ -58,54 +60,86 @@ interface FilterOption {
   hasSubmenu?: boolean;
 }
 
-const filterOptions: FilterOption[] = [
-  { type: "status", label: "Status", icon: <IconCircle size={14} />, operators: ["is", "is_not"], hasSubmenu: true },
-  { type: "assignee", label: "Assignee", icon: <IconUser size={14} />, operators: ["is", "is_not"], hasSubmenu: true },
-  { type: "creator", label: "Creator", icon: <IconUser size={14} />, operators: ["is", "is_not"], hasSubmenu: true },
-  {
-    type: "milestone",
-    label: "Milestone",
-    icon: <IconFlag size={14} />,
-    operators: ["is", "is_not"],
-    hasSubmenu: true,
-  },
-  { type: "content", label: "Content", icon: <IconMessage size={14} />, operators: ["contains", "does_not_contain"] },
-  { type: "due_date", label: "Due date", icon: <IconCalendar size={14} />, operators: ["before", "after", "between"] },
-  {
-    type: "created_date",
-    label: "Created date",
-    icon: <IconCalendar size={14} />,
-    operators: ["before", "after", "between"],
-  },
-  {
-    type: "updated_date",
-    label: "Updated date",
-    icon: <IconCalendar size={14} />,
-    operators: ["before", "after", "between"],
-  },
-  {
-    type: "started_date",
-    label: "Started date",
-    icon: <IconCalendar size={14} />,
-    operators: ["before", "after", "between"],
-  },
-  {
-    type: "completed_date",
-    label: "Completed date",
-    icon: <IconCalendar size={14} />,
-    operators: ["before", "after", "between"],
-  },
-];
+function getFilterOptions(): FilterOption[] {
+  return [
+    {
+      type: "status",
+      label: i18n.t("Status"),
+      icon: <IconCircle size={14} />,
+      operators: ["is", "is_not"],
+      hasSubmenu: true,
+    },
+    {
+      type: "assignee",
+      label: i18n.t("Assignee"),
+      icon: <IconUser size={14} />,
+      operators: ["is", "is_not"],
+      hasSubmenu: true,
+    },
+    {
+      type: "creator",
+      label: i18n.t("Creator"),
+      icon: <IconUser size={14} />,
+      operators: ["is", "is_not"],
+      hasSubmenu: true,
+    },
+    {
+      type: "milestone",
+      label: i18n.t("Milestone"),
+      icon: <IconFlag size={14} />,
+      operators: ["is", "is_not"],
+      hasSubmenu: true,
+    },
+    {
+      type: "content",
+      label: i18n.t("Content"),
+      icon: <IconMessage size={14} />,
+      operators: ["contains", "does_not_contain"],
+    },
+    {
+      type: "due_date",
+      label: i18n.t("Due date"),
+      icon: <IconCalendar size={14} />,
+      operators: ["before", "after", "between"],
+    },
+    {
+      type: "created_date",
+      label: i18n.t("Created date"),
+      icon: <IconCalendar size={14} />,
+      operators: ["before", "after", "between"],
+    },
+    {
+      type: "updated_date",
+      label: i18n.t("Updated date"),
+      icon: <IconCalendar size={14} />,
+      operators: ["before", "after", "between"],
+    },
+    {
+      type: "started_date",
+      label: i18n.t("Started date"),
+      icon: <IconCalendar size={14} />,
+      operators: ["before", "after", "between"],
+    },
+    {
+      type: "completed_date",
+      label: i18n.t("Completed date"),
+      icon: <IconCalendar size={14} />,
+      operators: ["before", "after", "between"],
+    },
+  ];
+}
 
-const operatorLabels: Record<Types.FilterOperator, string> = {
-  is: "is",
-  is_not: "is not",
-  contains: "contains",
-  does_not_contain: "does not contain",
-  before: "before",
-  after: "after",
-  between: "between",
-};
+function getOperatorLabels(): Record<Types.FilterOperator, string> {
+  return {
+    is: i18n.t("is", { context: "filter operator" }),
+    is_not: i18n.t("is not", { context: "filter operator" }),
+    contains: i18n.t("contains", { context: "filter operator" }),
+    does_not_contain: i18n.t("does not contain", { context: "filter operator" }),
+    before: i18n.t("before", { context: "filter operator" }),
+    after: i18n.t("after", { context: "filter operator" }),
+    between: i18n.t("between", { context: "filter operator" }),
+  };
+}
 
 interface TaskFilterProps {
   filters: Types.FilterCondition[];
@@ -114,6 +148,9 @@ interface TaskFilterProps {
 }
 
 export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps) {
+  const { t } = useTranslation();
+  const filterOptions = getFilterOptions();
+  const operatorLabels = getOperatorLabels();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hoveredOption, setHoveredOption] = useState<Types.FilterType | null>(null);
@@ -234,7 +271,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
       type: "status",
       operator: "is",
       value: status,
-      label: `Status is ${config.label}`,
+      label: t("Status is {{status}}", { status: config.label }),
     };
 
     onFiltersChange([...filters, newFilter]);
@@ -249,7 +286,10 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
       type: filterType,
       operator: "is",
       value: person,
-      label: `${filterType === "assignee" ? "Assignee" : "Creator"} is ${person.fullName}`,
+      label:
+        filterType === "assignee"
+          ? t("Assignee is {{name}}", { name: person.fullName })
+          : t("Creator is {{name}}", { name: person.fullName }),
     };
 
     onFiltersChange([...filters, newFilter]);
@@ -264,7 +304,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
       type: "milestone",
       operator: "is",
       value: milestone,
-      label: `Milestone is ${milestone.name}`,
+      label: t("Milestone is {{name}}", { name: milestone.name }),
     };
 
     onFiltersChange([...filters, newFilter]);
@@ -280,7 +320,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
         type: "content",
         operator: "contains",
         value: contentSearchTerm.trim(),
-        label: `Content ${operatorLabels["contains"]} "${contentSearchTerm.trim()}"`,
+        label: t('Content contains "{{query}}"', { query: contentSearchTerm.trim() }),
       };
 
       onFiltersChange([...filters, newFilter]);
@@ -330,7 +370,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
         <Popover.Trigger asChild>
           <button className="inline-flex items-center gap-1.5 px-2 py-1 text-sm bg-surface-accent text-content-base border border-surface-outline rounded-md hover:bg-surface-accent-hover transition-colors">
             <IconFilter size={14} />
-            Filter
+            {t("Filter")}
             <IconChevronDown size={12} />
           </button>
         </Popover.Trigger>
@@ -353,7 +393,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
                   <input
                     ref={searchInputRef}
                     type="text"
-                    placeholder="Search filters..."
+                    placeholder={t("Search filters...")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 text-sm border border-surface-outline rounded bg-surface-base text-content-base placeholder-content-subtle focus:outline-none focus:ring-1 focus:ring-primary-base"
@@ -479,7 +519,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
             </button>
           ))}
           {availablePeople.length === 0 && (
-            <div className="px-2 py-1.5 text-sm text-content-subtle">No assignees found</div>
+            <div className="px-2 py-1.5 text-sm text-content-subtle">{t("No assignees found")}</div>
           )}
         </FilterSubmenu>
 
@@ -503,7 +543,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
             </button>
           ))}
           {availablePeople.length === 0 && (
-            <div className="px-2 py-1.5 text-sm text-content-subtle">No people found</div>
+            <div className="px-2 py-1.5 text-sm text-content-subtle">{t("No people found")}</div>
           )}
         </FilterSubmenu>
 
@@ -528,7 +568,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
             </button>
           ))}
           {availableMilestones.length === 0 && (
-            <div className="px-2 py-1.5 text-sm text-content-subtle">No milestones found</div>
+            <div className="px-2 py-1.5 text-sm text-content-subtle">{t("No milestones found")}</div>
           )}
         </FilterSubmenu>
       </Popover.Root>
@@ -537,14 +577,14 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
       {contentModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-surface-base border border-surface-outline rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-content-base mb-4">Search content</h3>
+            <h3 className="text-lg font-semibold text-content-base mb-4">{t("Search content")}</h3>
 
             <input
               type="text"
               value={contentSearchTerm}
               onChange={(e) => setContentSearchTerm(e.target.value)}
               onKeyDown={handleContentKeyDown}
-              placeholder="Enter text to search for..."
+              placeholder={t("Enter text to search for...")}
               className="w-full px-3 py-2 text-sm border border-surface-outline rounded-md bg-surface-base text-content-base placeholder-content-subtle focus:outline-none focus:ring-1 focus:ring-primary-base mb-6"
               autoFocus
             />
@@ -552,10 +592,10 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
             {/* Buttons */}
             <div className="flex justify-end gap-2">
               <SecondaryButton size="sm" onClick={handleContentFilterCancel}>
-                Cancel
+                {t("Cancel")}
               </SecondaryButton>
               <PrimaryButton size="sm" onClick={handleContentFilterApply} disabled={!contentSearchTerm.trim()}>
-                Apply Filter
+                {t("Apply Filter")}
               </PrimaryButton>
             </div>
           </div>
@@ -617,6 +657,9 @@ export function FilterBadges({
   filters: Types.FilterCondition[];
   onFiltersChange: (filters: Types.FilterCondition[]) => void;
 }) {
+  useTranslation();
+  const filterOptions = getFilterOptions();
+  const operatorLabels = getOperatorLabels();
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
   const removeFilter = (filterId: string) => {
