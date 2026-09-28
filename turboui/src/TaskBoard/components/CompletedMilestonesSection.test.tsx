@@ -16,7 +16,11 @@ function milestones(count: number): MilestoneWithStats[] {
   }));
 }
 
-test.each([0, 1, 3])("falls back to English for %i completed milestones in Portuguese", async (count) => {
+test.each([
+  [0, "0 marcos concluídos"],
+  [1, "1 marco concluído"],
+  [3, "3 marcos concluídos"],
+])("uses Portuguese catalog copy for %i completed milestones", async (count, label) => {
   await i18n.changeLanguage("pt-BR");
   render(
     <CompletedMilestonesSection
@@ -24,7 +28,7 @@ test.each([0, 1, 3])("falls back to English for %i completed milestones in Portu
       formattedTimePreferences={defaultFormattedTimePreferences}
     />,
   );
-  expect(screen.getByRole("button")).toHaveAccessibleName(`${count} completed milestone${count === 1 ? "" : "s"}`);
+  expect(screen.getByRole("button")).toHaveAccessibleName(label);
 });
 
 test.each([0, 1, 3])("uses substituted plural forms for %i completed milestones", (count) => {

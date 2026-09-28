@@ -152,14 +152,25 @@ describe("catalog presentation", () => {
     }
   }
 
-  test.each(["en", "pt-BR"])("preserves English fallback, links and names in %s", async (language) => {
-    await applyLanguage(language);
+  test("preserves English copy, links and names", async () => {
+    await applyLanguage("en");
     const item = renamedActivity();
     expect(await renderTitle(item, "project")).toBe(
       'Alex renamed task to <a href="/tasks/task-1">Research &amp; development</a>',
     );
     expect(Handler.NotificationTitle({ activity: item })).toBe(
       'Task "Old name" was renamed to "Research & development"',
+    );
+  });
+
+  test("preserves Portuguese copy, links and names", async () => {
+    await applyLanguage("pt-BR");
+    const item = renamedActivity();
+    expect(await renderTitle(item, "project")).toBe(
+      'Alex renomeou a tarefa para <a href="/tasks/task-1">Research &amp; development</a>',
+    );
+    expect(Handler.NotificationTitle({ activity: item })).toBe(
+      'A tarefa "Old name" foi renomeada para "Research & development"',
     );
   });
 

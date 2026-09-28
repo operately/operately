@@ -10,14 +10,14 @@ import { i18n, setupTestCatalog } from "../../test/i18n";
 setupTestCatalog();
 
 describe("DocsAndFilesTab", () => {
-  test("uses the catalog for an empty folder and falls back for missing Portuguese copy", async () => {
+  test("uses the catalog for an empty folder and substituted Portuguese copy", async () => {
     await i18n.changeLanguage("pt-BR");
     const { rerender } = render(
       <MemoryRouter>
         <DocsAndFilesTab title="Docs & Files" items={[]} emptyStateKind="folder" />
       </MemoryRouter>,
     );
-    expect(screen.getByText("This folder is empty. Click 'Add' to upload your first file.")).toBeInTheDocument();
+    expect(screen.getByText("Esta pasta está vazia. Clique em 'Adicionar' para enviar seu primeiro arquivo.")).toBeInTheDocument();
     i18n.addResourceBundle(
       "pt-BR",
       "translation",

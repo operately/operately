@@ -27,7 +27,7 @@ test.each(["en", "pt-BR"])("validates a goal and preserves the user's name when 
   fireEvent.click(button);
   expect(save).not.toHaveBeenCalled();
   expect(await screen.findByText(i18n.t("Cannot be empty"))).toBeInTheDocument();
-  const name = screen.getByPlaceholderText("What do you want to achieve?");
+  const name = screen.getByPlaceholderText(i18n.t("What do you want to achieve?"));
   fireEvent.change(name, { target: { value: "Research & discovery" } });
   fireEvent.blur(name);
   fireEvent.click(button);
@@ -61,7 +61,7 @@ test("looks up goal validation and operation errors in the catalog", async () =>
     );
     fireEvent.click(screen.getByRole("button", { name: "Add Goal" }));
     expect(await screen.findByText("Translated validation")).toBeInTheDocument();
-    const name = screen.getByPlaceholderText("What do you want to achieve?");
+  const name = screen.getByPlaceholderText(i18n.t("What do you want to achieve?"));
     fireEvent.change(name, { target: { value: "Original name" } });
     fireEvent.blur(name);
     fireEvent.click(screen.getByRole("button", { name: "Add Goal" }));

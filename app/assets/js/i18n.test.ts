@@ -114,6 +114,20 @@ describe("i18n", () => {
       ).toBe("* Se você entrar com o Google, use o e-mail <email>ana@example.com</email>.");
     });
 
+    it("renders Portuguese work-management copy", async () => {
+      await applyLanguage("pt-BR");
+
+      expect(i18n.t("Create milestone")).toBe("Criar marco");
+      expect(i18n.t("Failed to update task due date")).toBe("Falha ao atualizar a data de conclusão da tarefa");
+      expect(i18n.t("No discussions yet")).toBe("Nenhuma discussão ainda");
+      expect(i18n.t("Your drafts ({{count}})", { count: 3 })).toBe("Seus rascunhos (3)");
+      expect(i18n.t("Save as draft")).toBe("Salvar como rascunho");
+      expect(i18n.t("Work map view")).toBe("Visualização do mapa de trabalho");
+      expect(tn("1 completed milestone", "{{count}} completed milestones", 0)).toBe("0 marcos concluídos");
+      expect(tn("1 completed milestone", "{{count}} completed milestones", 1)).toBe("1 marco concluído");
+      expect(tn("1 completed milestone", "{{count}} completed milestones", 3)).toBe("3 marcos concluídos");
+    });
+
     it("ignores unsupported languages and keeps English", async () => {
       await applyLanguage("fr");
 
