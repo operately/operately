@@ -62,7 +62,7 @@ defmodule Operately.Support.Features.RichTextTablesSteps do
     |> UI.click(testid: "toolbar-button-table-settings")
     |> UI.click(testid: "table-addRowBefore")
     |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] tr", count: 4))
-    |> UI.click(testid: "toolbar-button-add-column-right")
+    |> UI.click(testid: "table-toolbar-addColumnAfter")
     |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] th", count: 4))
   end
 

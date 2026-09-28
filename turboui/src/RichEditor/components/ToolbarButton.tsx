@@ -1,13 +1,14 @@
 import classNames from "classnames";
 import React from "react";
-import { createTestId } from "../../TestableElement";
+import { createTestId, type TestableElement } from "../../TestableElement";
 
-type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  title: string;
-};
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  TestableElement & {
+    title: string;
+  };
 
 export const ToolbarButton = React.forwardRef<HTMLButtonElement, Props>(function ToolbarButton(
-  { children, onClick, title, disabled = false, tabIndex = -1, className: extraClassName, ...props },
+  { children, onClick, title, testId, disabled = false, tabIndex = -1, className: extraClassName, ...props },
   ref,
 ) {
   const className = classNames(
@@ -18,8 +19,6 @@ export const ToolbarButton = React.forwardRef<HTMLButtonElement, Props>(function
       "text-content-subtle": disabled,
     },
   );
-
-  const testId = createTestId("toolbar-button", title);
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -39,7 +38,7 @@ export const ToolbarButton = React.forwardRef<HTMLButtonElement, Props>(function
       className={className}
       disabled={disabled}
       title={title}
-      data-test-id={testId}
+      data-test-id={testId ?? createTestId("toolbar-button", title)}
       tabIndex={tabIndex}
     >
       {children}

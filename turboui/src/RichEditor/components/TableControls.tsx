@@ -30,6 +30,7 @@ export function TableControls() {
   });
   const actionButton = (action: TableAction, label: string, icon: React.ReactNode) => (
     <ToolbarButton
+      testId={`table-toolbar-${action}`}
       title={label}
       aria-label={label}
       tabIndex={0}
@@ -127,6 +128,7 @@ export function TableControls() {
             }}
             customTrigger={
               <ToolbarButton
+                testId="toolbar-button-table-settings"
                 title="Table settings"
                 aria-label="Table settings"
                 tabIndex={0}
