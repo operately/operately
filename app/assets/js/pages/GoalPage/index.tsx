@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useSpaceSearch } from "@/models/spaces";
 import { useParentGoalSearch } from "@/models/goals/useParentGoalSearch";
 import { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
@@ -68,22 +69,23 @@ function Page() {
     update: (v) => updateName.mutateAsync({ goalId: goal.id, name: v }),
     onError: (error) =>
       showErrorToast(
-        typeof error === "string" ? error : "Network Error",
-        "Reverted the goal name to its previous value.",
+        typeof error === "string" ? error : i18n.t("Network Error"),
+        i18n.t("Reverted the goal name to its previous value."),
       ),
-    validations: [(v) => (v.trim() === "" ? "Goal name cannot be empty" : null)],
+    validations: [(v) => (v.trim() === "" ? i18n.t("Goal name cannot be empty") : null)],
   });
 
   const [description, setDescription] = usePageField({
     value: (data: { goal: Goal }) => data.goal.description && JSON.parse(data.goal.description),
     update: (v) => updateDescription.mutateAsync({ goalId: goal.id, description: JSON.stringify(v) }),
-    onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the description to its previous value.")),
   });
 
   const [accessLevels, setAccessLevels] = usePageField({
     value: (data) => accessLevelsAsStrings(data.goal.accessLevels),
     update: (v) => updateAccessLevels.mutateAsync({ goalId: goal.id, accessLevels: accessLevelsAsNumbers(v) }),
-    onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
+    onError: () =>
+      showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the access levels to their previous values.")),
   });
 
   const [space, setSpace] = usePageField({
@@ -93,38 +95,39 @@ function Page() {
 
       return updateSpace.mutateAsync({ goalId: goal.id, spaceId: v.id });
     },
-    onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the space to its previous value.")),
   });
 
   const [startDate, setStartDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualStartDate),
     update: (v) => updateStartDate.mutateAsync({ goalId: goal.id, startDate: serializeContextualDate(v) }),
-    onError: () => showErrorToast("Network Error", "Reverted the start date to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the start date to its previous value.")),
   });
 
   const [dueDate, setDueDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualEndDate),
     update: (v) => updateDueDate.mutateAsync({ goalId: goal.id, dueDate: serializeContextualDate(v) }),
-    onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the due date to its previous value.")),
   });
 
   const [champion, setChampion] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.champion),
     update: (v) => updateChampion.mutateAsync({ goalId: goal.id, championId: v && v.id }),
-    onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the champion to its previous value.")),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.reviewer),
     update: (v) => updateReviewer.mutateAsync({ goalId: goal.id, reviewerId: v && v.id }),
-    onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the reviewer to its previous value.")),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
     value: (data) => parseParentGoalForTurboUi(paths, data.goal.parentGoal),
     update: (v) => updateParentGoal.mutateAsync({ goalId: goal.id, parentGoalId: v && v.id }),
-    onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
-    onSuccess: () => showSuccessToast("Parent Goal Updated", "The parent goal has been successfully changed."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the parent goal to its previous value.")),
+    onSuccess: () =>
+      showSuccessToast(i18n.t("Parent Goal Updated"), i18n.t("The parent goal has been successfully changed.")),
   });
 
   // Transform function must be memoized to prevent infinite loop in the hook
@@ -189,7 +192,7 @@ function Page() {
       }
     } catch (error) {
       console.error("Failed to delete goal:", error);
-      showErrorToast("Something went wrong", "Failed to delete the goal. Please try again.");
+      showErrorToast(i18n.t("Something went wrong"), i18n.t("Failed to delete the goal. Please try again."));
     }
   };
 
@@ -445,8 +448,8 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
 function GoalFeedItems({ goalId }: { goalId: string }) {
   const { data, loading, error, pagination } = useFeedItemsQuery("goal", goalId);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (loading) return <div>{i18n.t("Loading...")}</div>;
+  if (error) return <div>{i18n.t("Error: {{message}}", { message: error.message })}</div>;
 
   return <Feed pagination={pagination} items={data?.activities || []} page="goal" testId="goal-feed" />;
 }

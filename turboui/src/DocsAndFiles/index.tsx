@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { tn } from "../i18n";
 import * as React from "react";
 
 import type { AvatarPerson } from "../Avatar";
@@ -109,14 +111,14 @@ export function DocsAndFilesPreview({
   getNodePath,
   limit = DEFAULT_PREVIEW_LIMIT,
 }: DocsAndFilesPreviewProps) {
+  const { t } = useTranslation();
   const recentNodes = React.useMemo(() => getRecentPreviewNodes(nodes, limit), [nodes, limit]);
   const hiddenCount = Math.max(nodes.length - recentNodes.length, 0);
-  const hiddenCountLabel = hiddenCount === 1 ? "1 more" : `${hiddenCount} more`;
 
   return (
     <div className="space-y-3" data-test-id="docs-and-files-preview">
       <div className="flex items-center gap-2">
-        <h2 className="font-bold">Docs & Files</h2>
+        <h2 className="font-bold">{t("Docs & Files")}</h2>
       </div>
 
       {recentNodes.length > 0 ? (
@@ -130,15 +132,15 @@ export function DocsAndFilesPreview({
           ))}
           {hiddenCount > 0 && (
             <Link to={tabPath} underline="hover" className="inline-block pt-1 text-sm font-medium">
-              Show {hiddenCountLabel}
+              {tn("Show 1 more", "Show {{count}} more", hiddenCount)}
             </Link>
           )}
         </div>
       ) : (
         <div className="text-sm text-content-dimmed">
-          No support materials yet.{" "}
+          {t("No support materials yet.")}{" "}
           <Link to={tabPath} underline="hover" className="font-medium">
-            Add files, docs, or links
+            {t("Add files, docs, or links")}
           </Link>
         </div>
       )}
@@ -230,9 +232,10 @@ function Breadcrumbs({ breadcrumbs }: { breadcrumbs?: DocsAndFiles.Breadcrumb[] 
 }
 
 export function DocsAndFilesDraftPrompt({ prompt }: { prompt?: DocsAndFiles.DraftPrompt | null }) {
+  const { t } = useTranslation();
   if (!prompt || prompt.count === 0) return null;
 
-  const label = `Your drafts (${prompt.count})`;
+  const label = t("Your drafts ({{count}})", { count: prompt.count });
 
   return (
     <div className="flex justify-center py-3">
@@ -427,16 +430,17 @@ function ItemDetails({
 }
 
 function EmptyState({ kind }: { kind: "resourceHub" | "folder" }) {
+  const { t } = useTranslation();
   const message =
     kind === "folder"
-      ? "This folder is empty. Click 'Add' to upload your first file."
-      : "Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.";
+      ? t("This folder is empty. Click 'Add' to upload your first file.")
+      : t("Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started.");
 
   return (
     <div className="mt-6 flex w-full items-start gap-4 rounded-md border border-dashed border-surface-outline bg-surface-dimmed px-5 py-5">
       <IconFile size={40} className="shrink-0 text-content-dimmed" />
       <div className="max-w-[56ch]">
-        <div className="font-semibold">Ready for your first document</div>
+        <div className="font-semibold">{t("Ready for your first document")}</div>
         <div className="mt-1 text-sm text-content-dimmed">{message}</div>
       </div>
     </div>

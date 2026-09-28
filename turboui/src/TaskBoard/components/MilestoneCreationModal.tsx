@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
@@ -12,11 +13,8 @@ interface MilestoneCreationModalProps {
   onCreateMilestone: (milestone: Types.NewMilestonePayload) => void;
 }
 
-export function MilestoneCreationModal({
-  isOpen,
-  onClose,
-  onCreateMilestone,
-}: MilestoneCreationModalProps) {
+export function MilestoneCreationModal({ isOpen, onClose, onCreateMilestone }: MilestoneCreationModalProps) {
+  const { t } = useTranslation();
   // Form state
   const [name, setName] = useState("");
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
@@ -78,45 +76,40 @@ export function MilestoneCreationModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Create Milestone"
-      size="medium"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={t("Create Milestone")} size="medium">
       <form onSubmit={handleSubmit} className="space-y-6">
         <TextField
           variant="form-field"
-          label="Milestone name"
+          label={t("Milestone name")}
           text={name}
           onChange={setName}
-          placeholder="Enter milestone name"
+          placeholder={t("Enter milestone name")}
           testId="milestone-name"
           autofocus
           inputRef={nameInputRef}
         />
 
         <div>
-          <label className="block text-sm font-medium text-content-base mb-1">Due date</label>
+          <label className="block text-sm font-medium text-content-base mb-1">{t("Due date")}</label>
           <DateField
             variant="form-field"
             date={dueDate}
             onDateSelect={setDueDate}
-            placeholder="Set due date"
+            placeholder={t("Set due date")}
             calendarOnly
             testId="milestone-due-date"
           />
         </div>
 
         <div className="flex items-center mt-4 gap-4">
-          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" testId="add-more-switch" />
+          <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} testId="add-more-switch" />
           <div className="flex-1" />
           <div className="flex gap-3">
             <SecondaryButton onClick={onClose} type="button">
-              Cancel
+              {t("Cancel")}
             </SecondaryButton>
             <PrimaryButton type="submit" disabled={!name.trim()}>
-              Create milestone
+              {t("Create milestone")}
             </PrimaryButton>
           </div>
         </div>

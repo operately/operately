@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { ContentListState } from "../ContentListState";
 
@@ -68,9 +69,10 @@ export function PageDocsAndFilesTab({
   error?: boolean;
   onRetry?: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={docsAndFiles ? undefined : "p-4 max-w-6xl mx-auto my-6"}>
-      {!docsAndFiles && <h2 className="text-xl font-semibold tracking-tight mb-4">Docs & Files</h2>}
+      {!docsAndFiles && <h2 className="text-xl font-semibold tracking-tight mb-4">{t("Docs & Files")}</h2>}
 
       <ContentListState name="docs-and-files" loading={loading} error={error} onRetry={onRetry}>
         {docsAndFiles && (

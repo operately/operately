@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { SecondaryButton } from "../../Button";
@@ -39,6 +40,7 @@ export function ProjectTasksSection({
   selectedTaskId,
   onTaskOpen,
 }: MilestonePage.ProjectState & Props) {
+  const { t } = useTranslation();
   const {
     containerRef: keyboardNavigationRef,
     selectedTaskId: keyboardSelectedTaskId,
@@ -98,12 +100,12 @@ export function ProjectTasksSection({
                 underline="hover"
               >
                 <IconLayoutKanban size={18} className="text-content-dimmed" />
-                <span className="sr-only">View on board</span>
+                <span className="sr-only">{t("View on board")}</span>
               </BlackLink>
             </Tooltip>
           )}
           <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="tasks-section-add-task">
-            <span className="sr-only">Add task</span>
+            <span className="sr-only">{t("Add task")}</span>
           </SecondaryButton>
         </>
       }

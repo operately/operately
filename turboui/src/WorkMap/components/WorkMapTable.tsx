@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import React from "react";
 
 import { WorkMap } from "..";
@@ -166,6 +168,7 @@ interface HeaderProps {
 }
 
 export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: HeaderProps) {
+  const { t } = useTranslation();
   const isCompletedPage = tab === "completed";
   const roleLabel = getRoleLabel(viewer, profileUser);
 
@@ -175,31 +178,31 @@ export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: He
         <HeaderCell
           className={isCompletedPage ? "w-[65%] md:w-[58%] md:px-4" : "w-[65%] lg:w-[55%] xl:w-[40%] md:px-4"}
         >
-          Name
+          {t("Name")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideStatus} className={isCompletedPage ? "md:px-4" : "md:px-4"}>
-          Status
+          {t("Status")}
         </HeaderCell>
         <HeaderCell hide={isCompletedPage || columnOptions.hideProgress} className="pr-6 lg:px-4">
-          Progress
+          {t("Progress")}
         </HeaderCell>
         <HeaderCell
           hide={columnOptions.hideDueDate}
           className={isCompletedPage ? "md:px-4" : "hidden lg:table-cell md:px-4"}
         >
-          {isCompletedPage ? "Completed On" : "Due Date"}
+          {isCompletedPage ? t("Completed On") : t("Due Date")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideAssignedDate} className="hidden lg:table-cell md:px-4">
-          Assigned On
+          {t("Assigned On")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideSpace} className="hidden lg:table-cell md:px-4">
-          Space
+          {t("Space")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideProject} className="hidden lg:table-cell md:px-4">
-          Project
+          {t("Project")}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideOwner} className="hidden xl:table-cell md:px-4">
-          Champion
+          {t("Champion")}
         </HeaderCell>
         {roleLabel && (
           <HeaderCell hide={columnOptions.hideRole} className="hidden xl:table-cell md:px-4">
@@ -229,12 +232,13 @@ function HeaderCell({ className, hide, children }: HeaderCellProps) {
 }
 
 function NextStepHeaderCell({ hide }: { hide?: boolean }) {
+  const { t } = useTranslation();
   const tooltipContent = (
     <div className="text-xs">
-      <p className="mb-2">Shows what needs to happen next for this work to progress.</p>
-      <p>For goals: The first target or checklist item that hasn't been completed yet</p>
-      <p className="mb-2">For projects: The upcoming milestone (by due date)</p>
-      <p>Empty when all targets/milestones are complete or none are defined.</p>
+      <p className="mb-2">{t("Shows what needs to happen next for this work to progress.")}</p>
+      <p>{t("For goals: The first target or checklist item that hasn't been completed yet")}</p>
+      <p className="mb-2">{t("For projects: The upcoming milestone (by due date)")}</p>
+      <p>{t("Empty when all targets/milestones are complete or none are defined.")}</p>
     </div>
   );
 
@@ -278,11 +282,11 @@ function AddNewRow({
       <td className="py-2 px-2 sm:px-4">
         <button
           className="flex items-center gap-1 text-sm text-content-dimmed hover:text-content-base transition-colors py-1.5 px-2 rounded-md hover:bg-surface-highlight"
-          aria-label="Add new item"
+          aria-label={i18n.t("Add new item")}
           onClick={open}
         >
           <IconPlus size={16} className="text-content-dimmed" />
-          <span>Add new item</span>
+          <span>{i18n.t("Add new item")}</span>
         </button>
 
         <AddItemModal
@@ -305,5 +309,5 @@ function getRoleLabel(viewer?: WorkMap.Person, profileUser?: WorkMap.Person) {
   if (!profileUser) return;
 
   const isViewer = compareIds(viewer?.id, profileUser?.id);
-  return isViewer ? "My Role" : "Role";
+  return isViewer ? i18n.t("My Role") : i18n.t("Role");
 }

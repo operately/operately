@@ -1,3 +1,4 @@
+import { Trans } from "react-i18next";
 import * as React from "react";
 
 import { AvatarWithName, type AvatarPerson } from "../Avatar";
@@ -41,7 +42,12 @@ export function NodeMetadata({
 
       {hasUpdatedAt && updatedAt && formattedTimePreferences && (
         <div className="shrink-0 whitespace-nowrap" data-test-id="resource-hub-node-updated-at">
-          Updated <FormattedTime {...formattedTimePreferences} time={updatedAt} format="relative-time-or-date" />
+          <Trans
+            i18nKey="Updated <date/>"
+            components={{
+              date: <FormattedTime {...formattedTimePreferences} time={updatedAt} format="relative-time-or-date" />,
+            }}
+          />
         </div>
       )}
 

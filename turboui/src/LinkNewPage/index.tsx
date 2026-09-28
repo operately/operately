@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router";
 
@@ -12,6 +13,7 @@ import { isValidURL } from "../utils/url";
 import type { LinkNewPage as LinkNewPageNS } from "./types";
 
 export function LinkNewPage(props: LinkNewPageNS.Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const form = Forms.useForm<LinkNewPageNS.Values>({
@@ -46,16 +48,26 @@ export function LinkNewPage(props: LinkNewPageNS.Props) {
 
             <div>
               <Forms.FieldGroup>
-                <Forms.TextInput label="Link Title" placeholder="Type the title of this link" field="title" required />
-                <Forms.TextInput label="URL" placeholder="eg. https://www.example.com/file/8430762" field="link" required />
+                <Forms.TextInput
+                  label={t("Link Title")}
+                  placeholder={t("Type the title of this link")}
+                  field="title"
+                  required
+                />
+                <Forms.TextInput
+                  label={t("URL")}
+                  placeholder={t("eg. https://www.example.com/file/8430762")}
+                  field="link"
+                  required
+                />
 
                 <SelectTypeField />
 
                 <Forms.RichTextArea
-                  label="Description (optional)"
+                  label={t("Description (optional)")}
                   field="description"
                   richTextHandlers={props.richTextHandlers}
-                  placeholder="Add any notes here..."
+                  placeholder={t("Add any notes here...")}
                 />
               </Forms.FieldGroup>
 
@@ -72,6 +84,7 @@ export function LinkNewPage(props: LinkNewPageNS.Props) {
 }
 
 function SelectTypeField() {
+  const { t } = useTranslation();
   const [type] = Forms.useFieldValue<ResourceHubLinkType>("type");
   const isGoogleOption = useMemo(() => type != null && GOOGLE_OPTIONS.some((option) => option.value === type), [type]);
 
@@ -79,7 +92,7 @@ function SelectTypeField() {
 
   return (
     <Forms.RadioButtons
-      label="What kind of document is this?"
+      label={t("What kind of document is this?")}
       field="type"
       options={GOOGLE_OPTIONS}
       containerClass="flex items-center flex-wrap gap-8"

@@ -1,9 +1,10 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Form, SelectBox, SelectPerson, Submit, TextInput, useForm } from "../Forms";
 import { Modal } from "../Modal";
 import type { SpaceKpisPage } from "./types";
-import { CADENCE_OPTIONS } from "./utils";
+import { formatCadence } from "./utils";
 
 interface NewKpiModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface NewKpiModalProps {
 // Mirrors the goal add form: presentational form, no direct data access. There
 // is no edit mode: an existing KPI's fields are edited in place on its own page.
 export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKpiModalProps) {
+  const { t } = useTranslation();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const searchFn = React.useCallback(
@@ -34,10 +36,10 @@ export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKp
       championId: null,
     },
     validate: (addError) => {
-      if (!form.values.name.trim()) addError("name", "Name is required");
-      if (!form.values.unit.trim()) addError("unit", "Unit is required");
+      if (!form.values.name.trim()) addError("name", t("Name is required"));
+      if (!form.values.unit.trim()) addError("unit", t("Unit is required"));
       if (form.values.cadence !== "weekly" && form.values.cadence !== "monthly") {
-        addError("cadence", "Choose a cadence");
+        addError("cadence", t("Choose a cadence"));
       }
     },
     submit: async () => {
@@ -54,27 +56,40 @@ export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKp
         form.actions.reset();
         onClose();
       } else {
-        setSubmitError(result.error ?? "Something went wrong. Please try again.");
+        setSubmitError(result.error ?? t("Something went wrong. Please try again."));
       }
     },
     cancel: onClose,
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="New KPI" size="small" testId="new-kpi-modal">
+    <Modal isOpen={isOpen} onClose={onClose} title={t("New KPI")} size="small" testId="new-kpi-modal">
       <Form form={form}>
         <div className="space-y-4">
-          <TextInput field="name" label="Name" placeholder="e.g. Monthly Recurring Revenue" required autoFocus />
+          <TextInput
+            field="name"
+            label={t("Name")}
+            placeholder={t("e.g. Monthly Recurring Revenue")}
+            required
+            autoFocus
+          />
           <div className="grid grid-cols-2 gap-4">
-            <TextInput field="unit" label="Unit" placeholder="e.g. USD, %, users" required />
-            <SelectBox field="cadence" label="Cadence" options={CADENCE_OPTIONS} />
+            <TextInput field="unit" label={t("Unit")} placeholder={t("e.g. USD, %, users")} required />
+            <SelectBox
+              field="cadence"
+              label={t("Cadence")}
+              options={[
+                { value: "weekly", label: formatCadence("weekly") },
+                { value: "monthly", label: formatCadence("monthly") },
+              ]}
+            />
           </div>
           <SelectPerson
             field="championId"
-            label="Champion"
+            label={t("Champion")}
             searchFn={searchFn}
             allowEmpty
-            emptyLabel="No champion"
+            emptyLabel={t("No champion")}
             required={false}
             portalMenu
           />
@@ -86,7 +101,7 @@ export function NewKpiModal({ isOpen, onClose, championSearch, onCreate }: NewKp
           </div>
         )}
 
-        <Submit saveText="Create KPI" cancelText="Cancel" />
+        <Submit saveText={t("Create KPI")} cancelText={t("Cancel")} />
       </Form>
     </Modal>
   );

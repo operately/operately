@@ -64,6 +64,7 @@ export function Modal({
   testId,
 }: ModalProps) {
   const { t } = useTranslation();
+  const titleId = React.useId();
   const [mounted, setMounted] = useState(false);
 
   // Handle mounting the modal in the DOM
@@ -119,6 +120,7 @@ export function Modal({
       onClick={handleBackdropClick}
       aria-modal="true"
       role="dialog"
+      aria-labelledby={title ? titleId : undefined}
       data-test-id={testId}
     >
       <div
@@ -126,7 +128,9 @@ export function Modal({
       >
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-surface-outline">
-            <h2 className="text-lg font-semibold text-content-accent">{title}</h2>
+            <h2 id={titleId} className="text-lg font-semibold text-content-accent">
+              {title}
+            </h2>
             <button
               onClick={onClose}
               className="text-content-subtle hover:text-content-base transition-colors p-1 rounded-full hover:bg-surface-highlight"

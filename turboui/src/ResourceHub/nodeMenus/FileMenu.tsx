@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
@@ -24,7 +25,12 @@ export function FileMenu({ file }: FileMenuProps) {
 
   const menuId = createTestId("menu", file.id);
 
-  const relevantPermissions = [permissions.canView, permissions.canEditFile, permissions.canEditParentFolder, permissions.canDeleteFile];
+  const relevantPermissions = [
+    permissions.canView,
+    permissions.canEditFile,
+    permissions.canEditParentFolder,
+    permissions.canDeleteFile,
+  ];
 
   if (!relevantPermissions.some(Boolean)) return null;
 
@@ -44,6 +50,7 @@ export function FileMenu({ file }: FileMenuProps) {
 }
 
 function DownloadFileMenuItem({ file }: FileMenuProps) {
+  const { t } = useTranslation();
   const { actions } = useResourceHubNodesListContext();
   const downloadUrl = file.blob?.url;
 
@@ -57,10 +64,11 @@ function DownloadFileMenuItem({ file }: FileMenuProps) {
     downloadFile(downloadUrl, file.name);
   };
 
-  return <MenuActionItem onClick={handleDownload}>Download</MenuActionItem>;
+  return <MenuActionItem onClick={handleDownload}>{t("Download")}</MenuActionItem>;
 }
 
 function EditFileMenuItem({ file }: FileMenuProps) {
+  const { t } = useTranslation();
   const { paths } = useResourceHubNodesListContext();
 
   if (!paths) return null;
@@ -70,22 +78,31 @@ function EditFileMenuItem({ file }: FileMenuProps) {
 
   return (
     <MenuLinkItem testId={editId} to={editPath}>
-      Edit
+      {t("Edit")}
     </MenuLinkItem>
   );
 }
 
 function DeleteFileMenuItem({ file, toggleDeleteModal }: { file: ResourceHubFile; toggleDeleteModal: () => void }) {
+  const { t } = useTranslation();
   const deleteId = createTestId("delete", file.id);
 
   return (
     <MenuActionItem onClick={toggleDeleteModal} testId={deleteId} danger>
-      Delete
+      {t("Delete")}
     </MenuActionItem>
   );
 }
 
-function DeleteFileModal({ file, isOpen, hideModal }: { file: ResourceHubFile; isOpen: boolean; hideModal: () => void }) {
+function DeleteFileModal({
+  file,
+  isOpen,
+  hideModal,
+}: {
+  file: ResourceHubFile;
+  isOpen: boolean;
+  hideModal: () => void;
+}) {
   const { onRefetch, actions } = useResourceHubNodesListContext();
 
   const handleDelete = async () => {

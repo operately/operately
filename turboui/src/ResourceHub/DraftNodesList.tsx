@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { ErrorCallout } from "../Callouts";
@@ -50,6 +51,7 @@ function DraftDescription({ node, preferences }: { node: ResourceHubNode; prefer
 }
 
 function DeleteDraft({ node, onDelete }: { node: ResourceHubNode; onDelete: (id: string) => Promise<void> }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
   const documentId = node.document?.id;
@@ -68,10 +70,12 @@ function DeleteDraft({ node, onDelete }: { node: ResourceHubNode; onDelete: (id:
 
   return (
     <div>
-      {failed && <ErrorCallout testId="draft-delete-error" message="Couldn't delete the draft. Please try again." />}
+      {failed && (
+        <ErrorCallout testId="draft-delete-error" message={t("Couldn't delete the draft. Please try again.")} />
+      )}
       <Menu size="medium" testId={`draft-menu-${documentId}`}>
         <MenuActionItem danger onClick={() => setIsOpen(true)} testId={`delete-draft-${documentId}`}>
-          Delete draft
+          {t("Delete draft")}
         </MenuActionItem>
       </Menu>
       <DeleteResourceConfirmModal

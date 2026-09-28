@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { timeAxisTicks } from "./timeAxis";
@@ -20,13 +21,14 @@ interface KpiLineChartProps {
 //
 // Deliberately dependency-free so it renders identically in Storybook and the app.
 export function KpiLineChart({ entries, unit, height = 220, annotations = [], onAnnotationClick }: KpiLineChartProps) {
+  const { t } = useTranslation();
   // Until there are two points to join there is nothing to plot, and the current
   // value is already on the page, so these states only say what is missing.
   if (entries.length === 0) {
     return (
       <Placeholder
-        title="No data yet"
-        hint="Values appear here once they are logged."
+        title={t("No data yet")}
+        hint={t("Values appear here once they are logged.")}
         testId="kpi-line-chart-empty"
         height={height}
       />
@@ -36,8 +38,8 @@ export function KpiLineChart({ entries, unit, height = 220, annotations = [], on
   if (entries.length === 1) {
     return (
       <Placeholder
-        title="Only one update so far"
-        hint="A second update is needed to plot a trend line."
+        title={t("Only one update so far")}
+        hint={t("A second update is needed to plot a trend line.")}
         testId="kpi-line-chart-single"
         height={height}
       />
@@ -93,6 +95,7 @@ function MultiPointChart({
   onAnnotationClick,
 }: Required<Pick<KpiLineChartProps, "entries" | "unit" | "height" | "annotations">> &
   Pick<KpiLineChartProps, "onAnnotationClick">) {
+  const { t } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
   const [hoveredAnnotationId, setHoveredAnnotationId] = React.useState<string | null>(null);
 
@@ -158,7 +161,7 @@ function MultiPointChart({
         className="w-full"
         style={{ height }}
         role="img"
-        aria-label="KPI history line chart"
+        aria-label={t("KPI history line chart")}
         onMouseLeave={() => {
           setHoveredIndex(null);
           setHoveredAnnotationId(null);

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import * as Forms from "../../Forms";
@@ -79,21 +80,23 @@ function DeleteFolderMenuItem({
   folder: ResourceHubFolder;
   showConfirmModal: () => void;
 }) {
+  const { t } = useTranslation();
   const deleteId = createTestId("delete", folder.id);
 
   return (
     <MenuActionItem onClick={showConfirmModal} testId={deleteId} danger>
-      Delete
+      {t("Delete")}
     </MenuActionItem>
   );
 }
 
 function RenameFolderMenuItem({ folder, showForm }: { folder: ResourceHubFolder; showForm: () => void }) {
+  const { t } = useTranslation();
   const testId = createTestId("rename-folder", folder.id);
 
   return (
     <MenuActionItem onClick={showForm} testId={testId}>
-      Rename
+      {t("Rename")}
     </MenuActionItem>
   );
 }
@@ -139,6 +142,7 @@ export interface RenameFolderModalProps {
 }
 
 export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRename }: RenameFolderModalProps) {
+  const { t } = useTranslation();
   const folderName = folder.name ?? "";
 
   const form = Forms.useForm({
@@ -166,10 +170,10 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave, onRena
   });
 
   return (
-    <Modal title="Rename folder" isOpen={showForm} onClose={toggleForm}>
+    <Modal title={t("Rename folder")} isOpen={showForm} onClose={toggleForm}>
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput label="Name" field="name" testId="new-folder-name" autoFocus />
+          <Forms.TextInput label={t("Name")} field="name" testId="new-folder-name" autoFocus />
         </Forms.FieldGroup>
 
         <Forms.Submit cancelText="Cancel" />

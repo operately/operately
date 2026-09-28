@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { tn } from "../../i18n";
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { projectItemsWithPlaceholder, SubtleDropPlaceholder } from "../../utils/PragmaticDragAndDrop";
@@ -57,6 +59,7 @@ export function TaskList({
   onTaskClick,
   onTaskOpen,
 }: TaskListProps) {
+  const { t } = useTranslation();
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -170,8 +173,8 @@ export function TaskList({
           showHiddenTasksToggle &&
           !suppressEmptyStateWhenOnlyHiddenTasks && (
             <div className="py-3 px-4 text-left text-content-subtle text-sm bg-surface-base sm:text-center">
-              <span className="sm:hidden">Tap + to add a task.</span>
-              <span className="hidden sm:inline">Click + or press c to add a task, or drag a task here.</span>
+              <span className="sm:hidden">{t("Tap + to add a task.")}</span>
+              <span className="hidden sm:inline">{t("Click + or press c to add a task, or drag a task here.")}</span>
             </div>
           )}
       </div>
@@ -188,18 +191,22 @@ export function TaskList({
             </div>
             {hiddenTasksExpanded ? (
               <>
-                <span className="sm:hidden">Hide completed</span>
+                <span className="sm:hidden">{t("Hide completed")}</span>
                 <span className="hidden sm:inline">
-                  {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""} (click to collapse)
+                  {tn(
+                    "1 completed task (click to collapse)",
+                    "{{count}} completed tasks (click to collapse)",
+                    totalHiddenCount,
+                  )}
                 </span>
               </>
             ) : (
               <>
                 <span className="sm:hidden">
-                  {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""}
+                  {tn("1 completed task", "{{count}} completed tasks", totalHiddenCount)}
                 </span>
                 <span className="hidden sm:inline">
-                  Show {totalHiddenCount} completed task{totalHiddenCount !== 1 ? "s" : ""}
+                  {tn("Show 1 completed task", "Show {{count}} completed tasks", totalHiddenCount)}
                 </span>
               </>
             )}

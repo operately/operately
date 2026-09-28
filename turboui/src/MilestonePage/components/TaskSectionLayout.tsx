@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { PieChart } from "../../PieChart";
@@ -11,6 +12,7 @@ export function TaskSectionLayout({
   filterControls,
   children,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4 pt-6" data-test-id={sectionTestId} {...hoverBind}>
       {taskSlideIn}
@@ -29,7 +31,7 @@ export function TaskSectionLayout({
                 ]}
               />
             </div>
-            <h2 className="font-bold">Tasks</h2>
+            <h2 className="font-bold">{t("Tasks")}</h2>
           </div>
           <div className="flex items-center gap-4">{headerActions}</div>
         </div>

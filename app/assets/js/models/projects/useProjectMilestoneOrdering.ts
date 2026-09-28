@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 
 import { useUpdateProjectMilestoneOrdering } from "./projectLifecycle";
@@ -128,7 +129,7 @@ export function useProjectMilestoneOrdering({
           await refresh();
         }
       } catch (error) {
-        showErrorToast("Error", "Failed to reorder milestones");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to reorder milestones"));
         setOrderingState(snapshotOrder);
         setMilestonesState(snapshotMilestones);
       }

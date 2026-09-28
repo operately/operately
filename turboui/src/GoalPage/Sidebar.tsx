@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../utils/formatting";
 import React from "react";
 import classNames from "../utils/classnames";
 
@@ -48,15 +50,16 @@ export function Sidebar(props: GoalPage.State) {
 }
 
 function StartDate(props: GoalPage.State) {
+  const { t } = useTranslation();
   const isReadonly = !props.permissions.canEdit || !!props.closedAt;
   const testId = isReadonly ? "start-date-field-readonly" : "start-date-field";
 
   return (
-    <SidebarSection title="Start Date">
+    <SidebarSection title={t("Start Date")}>
       <DateField
         date={props.startDate}
         onDateSelect={props.setStartDate}
-        placeholder="Set date"
+        placeholder={t("Set date")}
         readonly={isReadonly}
         testId={testId}
         useStartOfPeriod
@@ -66,15 +69,16 @@ function StartDate(props: GoalPage.State) {
 }
 
 function DueDate(props: GoalPage.State) {
+  const { t } = useTranslation();
   const isReadonly = !props.permissions.canEdit || !!props.closedAt;
   const testId = isReadonly ? "due-date-field-readonly" : "due-date-field";
 
   return (
-    <SidebarSection title="Due Date">
+    <SidebarSection title={t("Due Date")}>
       <DateField
         date={props.dueDate}
         onDateSelect={props.setDueDate}
-        placeholder="Set date"
+        placeholder={t("Set date")}
         readonly={isReadonly}
         showOverdueWarning={!props.closedAt}
         testId={testId}
@@ -86,17 +90,20 @@ function DueDate(props: GoalPage.State) {
 }
 
 function CompletedOn(props: GoalPage.State) {
+  const { t } = useTranslation();
   if (!props.closedAt) return null;
 
   return (
-    <SidebarSection title="Completed On">
+    <SidebarSection title={t("Completed On")}>
       <DateField
         date={{
           date: props.closedAt,
           dateType: "day",
-          value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
-            props.closedAt,
-          ),
+          value: formatDate(props.closedAt, props.formattedTimePreferences.locale, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
         }}
         readonly
         showOverdueWarning={false}
@@ -106,26 +113,28 @@ function CompletedOn(props: GoalPage.State) {
 }
 
 function ParentGoal(props: GoalPage.State) {
+  const { t } = useTranslation();
   if (!props.parentGoal && !props.permissions.canEdit) {
     return null;
   }
 
   return (
-    <SidebarSection title="Parent Goal">
+    <SidebarSection title={t("Parent Goal")}>
       <GoalField
         testId="parent-goal-field"
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
         readonly={!props.permissions.canEdit}
-        emptyStateMessage="Set parent goal"
-        emptyStateReadOnlyMessage="No parent goal"
+        emptyStateMessage={t("Set parent goal")}
+        emptyStateReadOnlyMessage={t("No parent goal")}
       />
     </SidebarSection>
   );
 }
 
 function Champion(props: GoalPage.State) {
+  const { t } = useTranslation();
   const readonly = !props.permissions.hasFullAccess;
   const testId = readonly ? "champion-field-readonly" : "champion-field";
 
@@ -133,13 +142,13 @@ function Champion(props: GoalPage.State) {
     <SidebarSection
       title={
         <div className="flex items-center gap-2">
-          <span>Champion</span>
+          <span>{t("Champion")}</span>
           <Tooltip
             content={
               <div className="max-w-xs">
-                <div className="font-semibold mb-2">Goal Champion</div>
+                <div className="font-semibold mb-2">{t("Goal Champion")}</div>
                 <div className="text-sm">
-                  The goal owner accountable for completion. Plans projects and submits monthly check-ins.
+                  {t("The goal owner accountable for completion. Plans projects and submits monthly check-ins.")}
                 </div>
               </div>
             }
@@ -155,11 +164,11 @@ function Champion(props: GoalPage.State) {
         setPerson={props.setChampion}
         readonly={readonly}
         searchData={props.championSearch}
-        emptyStateMessage="Set champion"
-        emptyStateReadOnlyMessage="No champion"
+        emptyStateMessage={t("Set champion")}
+        emptyStateReadOnlyMessage={t("No champion")}
         extraDialogMenuOptions={[
           {
-            label: "Assign as reviewer",
+            label: t("Assign as reviewer"),
             onClick: () => {
               props.setReviewer(props.champion!);
               props.setChampion(null);
@@ -173,6 +182,7 @@ function Champion(props: GoalPage.State) {
 }
 
 function Reviewer(props: GoalPage.State) {
+  const { t } = useTranslation();
   const readonly = !props.permissions.hasFullAccess;
   const testId = readonly ? "reviewer-field-readonly" : "reviewer-field";
 
@@ -180,13 +190,13 @@ function Reviewer(props: GoalPage.State) {
     <SidebarSection
       title={
         <div className="flex items-center gap-2">
-          <span>Reviewer</span>
+          <span>{t("Reviewer")}</span>
           <Tooltip
             content={
               <div className="max-w-xs">
-                <div className="font-semibold mb-2">Goal Reviewer</div>
+                <div className="font-semibold mb-2">{t("Goal Reviewer")}</div>
                 <div className="text-sm">
-                  Provides feedback throughout the goal, and is responsible for acknowledging monthly check-ins.
+                  {t("Provides feedback throughout the goal, and is responsible for acknowledging monthly check-ins.")}
                 </div>
               </div>
             }
@@ -202,11 +212,11 @@ function Reviewer(props: GoalPage.State) {
         setPerson={props.setReviewer}
         readonly={readonly}
         searchData={props.reviewerSearch}
-        emptyStateMessage="Set reviewer"
-        emptyStateReadOnlyMessage="No reviewer"
+        emptyStateMessage={t("Set reviewer")}
+        emptyStateReadOnlyMessage={t("No reviewer")}
         extraDialogMenuOptions={[
           {
-            label: "Assign as champion",
+            label: t("Assign as champion"),
             onClick: () => {
               props.setReviewer(null);
               props.setChampion(props.reviewer!);
@@ -220,6 +230,7 @@ function Reviewer(props: GoalPage.State) {
 }
 
 function CheckInsSection(props: GoalPage.State) {
+  const { t } = useTranslation();
   const checkIns = props.checkIns || [];
   const isClosed = props.state === "closed";
   const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
@@ -227,23 +238,25 @@ function CheckInsSection(props: GoalPage.State) {
   const isChampion = !!props.currentUser?.id && !!props.champion?.id && props.currentUser.id === props.champion.id;
   const championFirstName = props.champion?.fullName?.split(" ")[0];
 
-  let zeroStateCopy = "Monthly check-ins keep everyone in the loop. Updates will appear here.";
+  let zeroStateCopy = t("Monthly check-ins keep everyone in the loop. Updates will appear here.");
 
   if (isClosed) {
-    zeroStateCopy = "This goal is closed. Earlier check-ins stay available for reference.";
+    zeroStateCopy = t("This goal is closed. Earlier check-ins stay available for reference.");
   } else if (viewerCanCheckIn && isChampion) {
-    zeroStateCopy = "Share the first update to set the goal status and start the monthly cadence.";
+    zeroStateCopy = t("Share the first update to set the goal status and start the monthly cadence.");
   } else if (championFirstName) {
-    zeroStateCopy = `${championFirstName} hasn't shared a check-in yet. Updates will land here soon.`;
+    zeroStateCopy = t("{{championName}} hasn't shared a check-in yet. Updates will land here soon.", {
+      championName: championFirstName,
+    });
   }
 
   const header = (
     <div className="flex items-center gap-2">
-      <span>Last update</span>
+      <span>{t("Last update")}</span>
       {viewerCanCheckIn && (
         <span className="shrink-0">
           <SecondaryButton size="xxs" linkTo={props.newCheckInLink} testId="sidebar-check-in-button">
-            Check in
+            {t("Check in")}
           </SecondaryButton>
         </span>
       )}
@@ -269,6 +282,7 @@ function CheckInsSection(props: GoalPage.State) {
 }
 
 function Retrospective(props: GoalPage.State) {
+  const { t } = useTranslation();
   if (props.state !== "closed") return null;
   if (!props.retrospective) return null;
 
@@ -293,7 +307,7 @@ function Retrospective(props: GoalPage.State) {
   return (
     <div className="text-sm">
       <DivLink to={retro.link} className={className}>
-        <div className="flex items-center font-semibold">Goal Retrospective</div>
+        <div className="flex items-center font-semibold">{t("Goal Retrospective")}</div>
 
         <Summary
           content={retro.content}
@@ -314,6 +328,7 @@ function Retrospective(props: GoalPage.State) {
 }
 
 function OverdueWarning(props: GoalPage.State) {
+  const { t } = useTranslation();
   if (props.state === "closed") return null;
   if (!props.dueDate) return null;
   if (!isOverdue(props.dueDate.date)) return null;
@@ -322,14 +337,15 @@ function OverdueWarning(props: GoalPage.State) {
 
   return (
     <div className="mt-2">
-      <WarningCallout message={`Overdue by ${duration}.`} />
+      <WarningCallout message={t("Overdue by {{duration}}.", { duration })} />
     </div>
   );
 }
 
 function Privacy(props: GoalPage.State) {
+  const { t } = useTranslation();
   return (
-    <SidebarSection title="Privacy">
+    <SidebarSection title={t("Privacy")}>
       <PrivacyField
         testId="goal-privacy-field"
         accessLevels={props.accessLevels}
@@ -340,7 +356,7 @@ function Privacy(props: GoalPage.State) {
       {props.permissions.hasFullAccess && props.manageAccessLink && (
         <div className="mt-3">
           <SecondaryButton linkTo={props.manageAccessLink} size="xs" testId="manage-goal-access-button">
-            Manage access
+            {t("Manage access")}
           </SecondaryButton>
         </div>
       )}
@@ -349,12 +365,13 @@ function Privacy(props: GoalPage.State) {
 }
 
 function Actions(props: GoalPage.State) {
+  const { t } = useTranslation();
   const hasSpace = "space" in props;
 
   const actions = [
     {
       type: "link" as const,
-      label: "Close Goal",
+      label: t("Close Goal"),
       link: props.closeLink,
       icon: IconCircleCheck,
       hidden: !props.permissions.canEdit || props.state === "closed",
@@ -362,7 +379,7 @@ function Actions(props: GoalPage.State) {
     },
     {
       type: "link" as const,
-      label: "Re-open Goal",
+      label: t("Re-open Goal"),
       link: props.reopenLink,
       icon: IconRotateDot,
       hidden: !props.permissions.canEdit || props.state !== "closed",
@@ -370,7 +387,7 @@ function Actions(props: GoalPage.State) {
     },
     {
       type: "action" as const,
-      label: "Move to another space",
+      label: t("Move to another space"),
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
       hidden: !props.permissions.hasFullAccess || !hasSpace,
@@ -378,7 +395,7 @@ function Actions(props: GoalPage.State) {
     },
     {
       type: "action" as const,
-      label: "Export as Markdown",
+      label: t("Export as Markdown"),
       onClick: props.exportMarkdown,
       icon: IconFileExport,
       testId: "export-as-markdown",
@@ -386,7 +403,7 @@ function Actions(props: GoalPage.State) {
     },
     {
       type: "action" as const,
-      label: "Delete",
+      label: t("Delete"),
       onClick: props.openDeleteModal,
       icon: IconTrash,
       hidden: !props.permissions.hasFullAccess,

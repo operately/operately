@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 import { type TaskStatus } from "@/api";
 import { showErrorToast } from "turboui";
@@ -63,13 +64,13 @@ export function useTaskStatuses(
         if (!isCurrent()) return;
 
         if (res.success === false) {
-          showErrorToast("Error", "Failed to update task statuses");
+          showErrorToast(i18n.t("Error"), i18n.t("Failed to update task statuses"));
           return;
         }
       } catch (error) {
         if (!isCurrent()) return;
         console.error("Failed to update task statuses", error);
-        showErrorToast("Error", "Failed to update task statuses");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update task statuses"));
         return;
       }
 

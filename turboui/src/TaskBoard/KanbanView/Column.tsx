@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useRef } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { Menu, MenuActionItem } from "../../Menu";
@@ -200,6 +201,7 @@ function TaskCreationForm({
   onModeChange,
   canCreateTask = true,
 }: TaskCreationFormProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -235,7 +237,7 @@ function TaskCreationForm({
           ref={inputRef}
           autoFocus
           type="text"
-          placeholder="What needs to be done?"
+          placeholder={t("What needs to be done?")}
           className="w-full text-sm bg-transparent border-none focus:ring-0 p-0 mb-2 text-content-base placeholder:text-content-subtle"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -248,7 +250,7 @@ function TaskCreationForm({
             onClick={handleCreate}
             data-test-id={createTestId("new-task-submit", statusValue)}
           >
-            Add
+            {t("Add")}
           </button>
           <button
             className="px-2 py-1 text-xs font-medium text-content-dimmed hover:text-content-base"
@@ -258,7 +260,7 @@ function TaskCreationForm({
             }}
             data-test-id={createTestId("new-task-cancel", statusValue)}
           >
-            Cancel
+            {t("Cancel")}
           </button>
         </div>
       </div>
@@ -275,7 +277,7 @@ function TaskCreationForm({
         <span className="text-lg leading-none" aria-hidden="true">
           +
         </span>
-        Add task
+        {t("Add task")}
       </button>
     );
   }
@@ -291,6 +293,7 @@ interface MenuProps {
 }
 
 function ColumnMenu({ status, canManageStatuses, onEditStatus, onDeleteStatus }: MenuProps) {
+  const { t } = useTranslation();
   if (!canManageStatuses) return null;
 
   return (
@@ -312,7 +315,7 @@ function ColumnMenu({ status, canManageStatuses, onEditStatus, onDeleteStatus }:
           icon={IconPencil}
           testId={createTestId("edit-status", status.value)}
         >
-          Edit
+          {t("Edit")}
         </MenuActionItem>
         <MenuActionItem
           onClick={() => onDeleteStatus && onDeleteStatus(status)}
@@ -320,7 +323,7 @@ function ColumnMenu({ status, canManageStatuses, onEditStatus, onDeleteStatus }:
           danger
           testId={createTestId("delete-status", status.value)}
         >
-          Delete
+          {t("Delete")}
         </MenuActionItem>
       </Menu>
     </div>

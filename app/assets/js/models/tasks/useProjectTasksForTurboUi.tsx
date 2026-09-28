@@ -223,7 +223,7 @@ export function useProjectTasksForTurboUi({
       })
       .catch((e) => {
         console.error("Failed to update task due date", e);
-        showErrorToast("Error", "Failed to update task due date");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update task due date"));
 
         return false;
       });
@@ -252,7 +252,7 @@ export function useProjectTasksForTurboUi({
       return true;
     } catch (e) {
       console.error("Failed to update task reminders", e);
-      showErrorToast("Error", "Failed to update task reminders");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task reminders"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -277,7 +277,7 @@ export function useProjectTasksForTurboUi({
       })
       .catch((e) => {
         console.error("Failed to update task assignee", e);
-        showErrorToast("Error", "Failed to update task assignee");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update task assignee"));
 
         return false;
       });
@@ -338,7 +338,7 @@ export function useProjectTasksForTurboUi({
         return true;
       } catch (e) {
         console.error("Failed to update task description", e);
-        showErrorToast("Error", "Failed to update task description.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update task description."));
         restoreSnapshot(snapshot);
         return false;
       }
@@ -377,7 +377,7 @@ export function useProjectTasksForTurboUi({
       return true;
     } catch (e) {
       console.error("Failed to update task status", e);
-      showErrorToast("Error", "Failed to update task status");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task status"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -392,7 +392,7 @@ export function useProjectTasksForTurboUi({
 
       if (!taskToMove) {
         console.error("Task not found", taskId);
-        showErrorToast("Error", "Something went wrong");
+        showErrorToast(i18n.t("Error"), i18n.t("Something went wrong"));
         return false;
       }
 
@@ -448,7 +448,7 @@ export function useProjectTasksForTurboUi({
       return true;
     } catch (e) {
       console.error("Failed to update task milestone", e);
-      showErrorToast("Error", "Failed to update task milestone");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to update task milestone"));
       restoreSnapshot(snapshot);
       return false;
     }
@@ -460,7 +460,7 @@ export function useProjectTasksForTurboUi({
 
     if (!taskToDelete) {
       console.error("Task not found", taskId);
-      showErrorToast("Error", "Something went wrong");
+      showErrorToast(i18n.t("Error"), i18n.t("Something went wrong"));
       return { success: false };
     }
 
@@ -495,7 +495,7 @@ export function useProjectTasksForTurboUi({
       return { success: true };
     } catch (e) {
       console.error("Failed to delete task", e);
-      showErrorToast("Error", "Failed to delete task");
+      showErrorToast(i18n.t("Error"), i18n.t("Failed to delete task"));
       restoreSnapshot(snapshot);
       return { success: false };
     }

@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from "react-i18next";
 import React from "react";
 
 import { PrimaryButton } from "../Button";
@@ -9,7 +10,8 @@ import { showErrorToast } from "../Toasts";
 import { BlackLink } from "../Link";
 
 export function GoalAddPage(props: GoalAddForm.Props) {
-  const title = props.parentGoal ? "Add a subgoal" : "Add a new goal";
+  const { t } = useTranslation();
+  const title = props.parentGoal ? t("Add a subgoal") : t("Add a new goal");
 
   return (
     <Page title={title} testId="goal-add-page" size="small">
@@ -62,27 +64,35 @@ export namespace GoalAddForm {
 }
 
 export function GoalAddForm(props: GoalAddForm.Props) {
+  const { t } = useTranslation();
   const state = useFormState(props);
-  const title = props.parentGoal ? "Add a subgoal" : "Add a new goal";
+  const title = props.parentGoal ? t("Add a subgoal") : t("Add a new goal");
 
   return (
     <div>
       <h1 className="font-bold text-xl">{title}</h1>
       {props.parentGoal && (
         <div className="text-xs text-content-dimmed">
-          Adding under{" "}
-          <BlackLink to={props.parentGoal.link} className="font-medium" underline="hover">
-            {props.parentGoal.name}
-          </BlackLink>
+          <Trans
+            i18nKey="Adding under <goal>{{goalName}}</goal>"
+            values={{ goalName: props.parentGoal.name }}
+            components={{
+              goal: (
+                <BlackLink to={props.parentGoal.link} className="font-medium" underline="hover">
+                  {null}
+                </BlackLink>
+              ),
+            }}
+          />
         </div>
       )}
 
       <div className="mt-4 flex flex-col gap-4">
         <TextField
           autofocus
-          label="Name"
+          label={t("Name")}
           variant="form-field"
-          placeholder="What do you want to achieve?"
+          placeholder={t("What do you want to achieve?")}
           text={state.name}
           onChange={state.setName}
           error={state.nameError}
@@ -90,7 +100,7 @@ export function GoalAddForm(props: GoalAddForm.Props) {
         />
 
         <SpaceField
-          label="Space"
+          label={t("Space")}
           space={state.space}
           setSpace={state.setSpace}
           search={state.spaceSearch}
@@ -104,13 +114,13 @@ export function GoalAddForm(props: GoalAddForm.Props) {
           setAccessLevels={state.setAccessLevels}
           resourceType={"goal"}
           variant="form-field"
-          label="Privacy"
+          label={t("Privacy")}
         />
       </div>
 
       <div className="mt-6 flex items-center gap-2">
         <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
-          Add Goal
+          {t("Add Goal")}
         </PrimaryButton>
       </div>
     </div>
@@ -118,6 +128,7 @@ export function GoalAddForm(props: GoalAddForm.Props) {
 }
 
 function useFormState(props: GoalAddForm.Props): GoalAddForm.State {
+  const { t } = useTranslation();
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
@@ -133,14 +144,14 @@ function useFormState(props: GoalAddForm.Props): GoalAddForm.State {
     let ok = true;
 
     if (name.trim() === "") {
-      setNameError("Cannot be empty");
+      setNameError(t("Cannot be empty"));
       ok = false;
     } else {
       setNameError(undefined);
     }
 
     if (!space) {
-      setSpaceError("Please select a space");
+      setSpaceError(t("Please select a space"));
       ok = false;
     } else {
       setSpaceError(undefined);
@@ -169,7 +180,7 @@ function useFormState(props: GoalAddForm.Props): GoalAddForm.State {
       props.onSuccess?.(res.id);
     } catch (error) {
       console.error("Failed to create goal:", error);
-      showErrorToast("Network error", "Failed to create the goal");
+      showErrorToast(t("Network error"), t("Failed to create the goal"));
     } finally {
       setSubmitting(false);
     }

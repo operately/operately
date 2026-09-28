@@ -5,8 +5,34 @@ import { MemoryRouter } from "react-router";
 
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { DocsAndFilesDraftPrompt, DocsAndFilesTab } from ".";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
 
 describe("DocsAndFilesTab", () => {
+  test("uses the catalog for an empty folder and substituted Portuguese copy", async () => {
+    await i18n.changeLanguage("pt-BR");
+    const { rerender } = render(
+      <MemoryRouter>
+        <DocsAndFilesTab title="Docs & Files" items={[]} emptyStateKind="folder" />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("Esta pasta está vazia. Clique em 'Adicionar' para enviar seu primeiro arquivo.")).toBeInTheDocument();
+    i18n.addResourceBundle(
+      "pt-BR",
+      "translation",
+      { "This folder is empty. Click 'Add' to upload your first file.": "Expanded translated folder empty state" },
+      true,
+      true,
+    );
+    rerender(
+      <MemoryRouter>
+        <DocsAndFilesTab title="Docs & Files" items={[]} emptyStateKind="folder" />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("Expanded translated folder empty state")).toBeInTheDocument();
+  });
+
   test("renders compact author and update metadata for a document", () => {
     render(
       <MemoryRouter>
