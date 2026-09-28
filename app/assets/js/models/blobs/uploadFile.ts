@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from "axios";
+import i18n from "@/i18n";
 import csrftoken from "@/utils/csrf_token";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 import { showErrorToast } from "turboui";
@@ -52,9 +53,12 @@ async function uploadWithCreator(
 
     if (limitError?.code === "storage_limit_exceeded") {
       showErrorToast(
-        "Storage limit reached",
+        i18n.t("Storage limit reached"),
         message ||
-          `This company has reached its storage limit: ${formatStorageBytes(limitError.currentUsage)} of ${formatStorageBytes(limitError.limit)} used. Uploading files is blocked until this company is back within its plan limits.`,
+          i18n.t(
+            "This company has reached its storage limit: {{used}} of {{limit}} used. Uploading files is blocked until this company is back within its plan limits.",
+            { used: formatStorageBytes(limitError.currentUsage), limit: formatStorageBytes(limitError.limit) },
+          ),
       );
     }
 

@@ -5,6 +5,7 @@ import * as Discussions from "@/models/discussions";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { Discussion } from "@/models/discussions";
@@ -30,10 +31,11 @@ import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { space, myDrafts } = useLoadedData();
 
   return (
-    <Pages.Page title={["Drafts", "Discussions", space.name]} testId="discussions-page">
+    <Pages.Page title={[t("Drafts"), t("Discussions"), space.name]} testId="discussions-page">
       <Paper.Root size="large">
         <Navigation />
 
@@ -47,6 +49,7 @@ function Page() {
 }
 
 function Navigation() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { space } = useLoadedData();
 
@@ -54,31 +57,39 @@ function Navigation() {
     <Paper.Navigation
       items={[
         { to: paths.spacePath(space.id), label: space.name },
-        { to: paths.spaceDiscussionsPath(space.id), label: "Discussions" },
+        { to: paths.spaceDiscussionsPath(space.id), label: t("Discussions") },
       ]}
     />
   );
 }
 
 function Header() {
+  const { t } = useTranslation();
   return (
-    <Paper.Header title="Your Drafts" layout="title-center-actions-left" underline actions={<NewDiscussionButton />} />
+    <Paper.Header
+      title={t("Your Drafts")}
+      layout="title-center-actions-left"
+      underline
+      actions={<NewDiscussionButton />}
+    />
   );
 }
 
 function NewDiscussionButton() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { space } = useLoadedData();
 
   return (
     <PrimaryButton linkTo={paths.discussionNewPath(space.id)} size="sm" testId="new-discussion">
-      New Discussion
+      {t("New Discussion")}
     </PrimaryButton>
   );
 }
 
 function ZeroDiscussions() {
-  return <div className="text-center text-base font-medium mt-28">You don't have any drafts.</div>;
+  const { t } = useTranslation();
+  return <div className="text-center text-base font-medium mt-28">{t("You don't have any drafts.")}</div>;
 }
 
 function DiscussionList() {
@@ -135,8 +146,18 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
           <div className="font-semibold leading-none mb-1">{discussion.title}</div>
           <div className="break-words line-clamp-2">
             <span className="font-medium text-content-dimmed">
-              Last edited on{" "}
-              <FormattedTime {...formattedTimePreferences} time={discussion.updatedAt} format="relative-time-or-date" />{" "}
+              <Trans
+                i18nKey="Last edited on <date/>"
+                components={{
+                  date: (
+                    <FormattedTime
+                      {...formattedTimePreferences}
+                      time={discussion.updatedAt}
+                      format="relative-time-or-date"
+                    />
+                  ),
+                }}
+              />{" "}
               &mdash;{" "}
             </span>
             {truncateString(contentSnippet, 60)}
@@ -150,6 +171,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
 }
 
 function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const { space } = useLoadedData();
@@ -166,8 +188,8 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
           customTrigger={
             <button
               type="button"
-              title="Draft actions"
-              aria-label="Draft actions"
+              title={t("Draft actions")}
+              aria-label={t("Draft actions")}
               className="w-6 h-6 flex items-center justify-center rounded-full text-content-dimmed hover:text-content-base hover:bg-surface-dimmed focus:text-content-base focus:bg-surface-dimmed focus:outline-none"
             >
               <IconDots size={16} />
@@ -180,7 +202,7 @@ function DiscussionDraftOptions({ discussion }: { discussion: Discussion }) {
             icon={IconTrash}
             danger
           >
-            Discard draft
+            {t("Discard draft")}
           </MenuActionItem>
         </Menu>
       </div>

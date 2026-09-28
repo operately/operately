@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { resourceHubLandingPath, useCreateLink } from "@/models/resourceHubs";
@@ -13,6 +14,7 @@ import { useLoadedData } from "./loader";
 import { buildNewLinkPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { resourceHub, folder, linkType } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -43,14 +45,14 @@ export function Page() {
       navigate(paths.resourceHubLinkPath(res.link.id));
       return true;
     } catch {
-      showErrorToast("Link not created", "Check the form and try again.");
+      showErrorToast(t("Link not created"), t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <LinkNewPage
-      pageTitle="New Link"
+      pageTitle={t("New Link")}
       navigation={buildNewLinkPageNavigation(resourceHub, folder, paths)}
       testId="resource-hub-new-link-page"
       richTextHandlers={richTextHandlers}

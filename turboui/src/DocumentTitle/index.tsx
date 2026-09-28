@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Trans } from "react-i18next";
 
 import { Avatar, type AvatarPerson } from "../Avatar";
 import { BulletDot } from "../BulletDot";
@@ -50,8 +51,15 @@ export function DocumentTitle({
         {state === "published" && (
           <>
             {author && <BulletDot margin="mx-0.5" />}
-            <span>Posted</span>
-            <FormattedTime {...formattedTimePreferences} time={publishedAt!} format="relative-time-or-date" />
+            <Trans
+              i18nKey="<label>Posted</label> <date/>"
+              components={{
+                label: <span />,
+                date: (
+                  <FormattedTime {...formattedTimePreferences} time={publishedAt!} format="relative-time-or-date" />
+                ),
+              }}
+            />
           </>
         )}
 
@@ -65,8 +73,13 @@ export function DocumentTitle({
         {state === "published" && showModifiedAt && (
           <>
             <BulletDot margin="mx-0.5" />
-            <span>Edited</span>
-            <FormattedTime {...formattedTimePreferences} time={modifiedAt!} format="relative-time-or-date" />
+            <Trans
+              i18nKey="<label>Edited</label> <date/>"
+              components={{
+                label: <span />,
+                date: <FormattedTime {...formattedTimePreferences} time={modifiedAt!} format="relative-time-or-date" />,
+              }}
+            />
           </>
         )}
       </div>

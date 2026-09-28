@@ -28,10 +28,11 @@ import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
 
 export function Page() {
+  const { t } = useTranslation();
   const { space, discussions } = useLoadedData();
 
   return (
-    <Pages.Page title={["Discussions", space.name]} testId="discussions-page">
+    <Pages.Page title={[t("Discussions"), space.name]} testId="discussions-page">
       <Paper.Root size="large">
         <SpacePageNavigation space={space} />
 

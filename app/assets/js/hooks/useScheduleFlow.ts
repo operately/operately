@@ -1,6 +1,7 @@
 import type { ScheduleFlowState } from "turboui";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface UseScheduleFlowOptions {
   initialScheduledAt?: string | Date | null;
@@ -24,6 +25,7 @@ function parseScheduledAt(value?: string | Date | null): Date | null {
 }
 
 export function useScheduleFlow({ initialScheduledAt = null }: UseScheduleFlowOptions = {}): ScheduleFlow {
+  const { t } = useTranslation();
   const initialDate = parseScheduledAt(initialScheduledAt);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scheduledAt, setScheduledAt] = useState<Date | null>(initialDate);
@@ -59,6 +61,6 @@ export function useScheduleFlow({ initialScheduledAt = null }: UseScheduleFlowOp
     confirmSchedule,
     cancelSchedule,
     clearSchedule,
-    primaryButtonLabel: (immediateLabel: string) => (isScheduledLocally ? "Confirm" : immediateLabel),
+    primaryButtonLabel: (immediateLabel: string) => (isScheduledLocally ? t("Confirm") : immediateLabel),
   };
 }

@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 
 import { Airtable } from "../BrandIcons/Airtable";
 import { Dropbox } from "../BrandIcons/Dropbox";
@@ -26,13 +28,14 @@ export function AddFilesButton({
   onUploadFiles,
   onNewLink,
 }: AddFilesButtonProps) {
+  const { t } = useTranslation();
   const breakpoint = useWindowSizeBreakpoints();
   const options = buildOptions({ permissions, onNewDocument, onNewFolder, onUploadFiles, onNewLink });
   const size = breakpoint === "xs" ? "xs" : "sm";
 
   return (
     <PrimaryButton size={size} optionsAlign="start" options={options} testId="add-options">
-      Add
+      {t("Add")}
     </PrimaryButton>
   );
 }
@@ -57,7 +60,7 @@ function buildOptions({
       onClick={onNewDocument}
       testId="new-document"
       hidden={!permissions?.canCreateDocument}
-      children="New document"
+      children={i18n.t("New document")}
     />,
     <MenuActionItem
       key={2}
@@ -65,7 +68,7 @@ function buildOptions({
       onClick={onNewFolder}
       testId="new-folder"
       hidden={!permissions?.canCreateFolder}
-      children="New folder"
+      children={i18n.t("New folder")}
     />,
     <MenuActionItem
       key={3}
@@ -73,29 +76,25 @@ function buildOptions({
       onClick={onUploadFiles}
       testId="upload-files"
       hidden={!permissions?.canCreateFile}
-      children="Upload files"
+      children={i18n.t("Upload files")}
     />,
     <NewLinkSubMenu key={4} hidden={!permissions?.canCreateLink} onNewLink={onNewLink} />,
   ];
 }
 
 function NewLinkSubMenu({ hidden, onNewLink }: { hidden: boolean; onNewLink: (type?: ResourceHubLinkType) => void }) {
+  const { t } = useTranslation();
   if (hidden) return null;
 
   return (
-    <SubMenu label="Add link" icon={IconLink}>
+    <SubMenu label={t("Add link")} icon={IconLink}>
       <MenuActionItem
         onClick={() => onNewLink("airtable")}
         testId="link-to-airtable"
         icon={Airtable}
         children="Airtable"
       />
-      <MenuActionItem
-        onClick={() => onNewLink("dropbox")}
-        testId="link-to-dropbox"
-        icon={Dropbox}
-        children="Dropbox"
-      />
+      <MenuActionItem onClick={() => onNewLink("dropbox")} testId="link-to-dropbox" icon={Dropbox} children="Dropbox" />
       <MenuActionItem onClick={() => onNewLink("figma")} testId="link-to-figma" icon={Figma} children="Figma" />
       <MenuActionItem
         onClick={() => onNewLink("google_doc")}
@@ -103,17 +102,12 @@ function NewLinkSubMenu({ hidden, onNewLink }: { hidden: boolean; onNewLink: (ty
         icon={GoogleLogo}
         children="Google Drive"
       />
-      <MenuActionItem
-        onClick={() => onNewLink("notion")}
-        testId="link-to-notion"
-        icon={Notion}
-        children="Notion"
-      />
+      <MenuActionItem onClick={() => onNewLink("notion")} testId="link-to-notion" icon={Notion} children="Notion" />
       <MenuActionItem
         onClick={() => onNewLink()}
         testId="link-to-other-resource"
         icon={IconLink}
-        children="Other"
+        children={t("Other")}
       />
     </SubMenu>
   );

@@ -1,3 +1,5 @@
+import i18n from "../../i18n";
+
 export type TimelineScale = "week" | "month";
 
 export interface TimelineColumn {
@@ -95,11 +97,11 @@ export function formatRangeLabel(item: TimelineDatedItem) {
   }
 
   if (item.startDate && !item.endDate) {
-    return `${compactDateLabel.format(item.startDate)} - no deadline`;
+    return i18n.t("{{date}} - no deadline", { date: compactDateLabel.format(item.startDate) });
   }
 
   if (!item.startDate && item.endDate) {
-    return `Due ${compactDateLabel.format(item.endDate)}`;
+    return i18n.t("Due {{date}}", { date: compactDateLabel.format(item.endDate) });
   }
 
   return null;

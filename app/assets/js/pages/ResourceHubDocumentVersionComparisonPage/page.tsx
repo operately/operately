@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { DocumentVersionComparisonPage, resolveSelection } from "turboui";
 
@@ -11,6 +12,7 @@ import { useLoadedData } from "./loader";
 import { buildDocumentVersionComparisonPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { document, resourceHub, versions, routeVersionNumber } = useLoadedData();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -21,7 +23,7 @@ export function Page() {
   const comparison = useVersionComparison(document.id, selection.before, selection.after);
 
   const props: DocumentVersionComparisonPage.Props = {
-    title: ["See what changed", document.name || "Document"],
+    title: [t("See what changed"), document.name || t("Document")],
     navigation: buildDocumentVersionComparisonPageNavigation(document, resourceHub, paths),
     versions,
     ...comparison,

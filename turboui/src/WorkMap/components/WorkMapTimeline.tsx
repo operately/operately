@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import { WorkMap } from ".";
 import { BlackLink } from "../../Link";
 import { IconArrowLeft, IconArrowRight, IconFlag, IconFlagFilled } from "../../icons";
@@ -16,7 +18,13 @@ import {
   getMarkerPosition,
   type TimelineColumn as Column,
 } from "../utils/timeline";
-import { flattenTimelineItems, normalizeTimelineDate, toTimelineItem, type TimelineItem, type TimelineMilestone } from "../utils/timelineItem";
+import {
+  flattenTimelineItems,
+  normalizeTimelineDate,
+  toTimelineItem,
+  type TimelineItem,
+  type TimelineMilestone,
+} from "../utils/timelineItem";
 
 interface Props {
   items: WorkMap.Item[];
@@ -48,6 +56,7 @@ interface TimelineViewport {
 }
 
 export function WorkMapTimeline({ items, tab }: Props) {
+  const { t } = useTranslation();
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const centeredRangeRef = React.useRef<string | null>(null);
   const [viewport, setViewport] = React.useState<TimelineViewport | null>(null);
@@ -56,10 +65,7 @@ export function WorkMapTimeline({ items, tab }: Props) {
   const hiddenUndatedCount = timelineItems.filter((item) => !item.startDate && !item.endDate).length;
 
   const visibleItems = React.useMemo(
-    () =>
-      timelineItems
-        .filter((item) => item.startDate || item.endDate)
-        .sort(compareTimelineItems),
+    () => timelineItems.filter((item) => item.startDate || item.endDate).sort(compareTimelineItems),
     [timelineItems],
   );
 
@@ -111,14 +117,16 @@ export function WorkMapTimeline({ items, tab }: Props) {
   }
 
   if (visibleItems.length === 0) {
-    return <TimelineEmptyState message="Nothing in this view has dates yet." hiddenUndatedCount={hiddenUndatedCount} />;
+    return (
+      <TimelineEmptyState message={t("Nothing in this view has dates yet.")} hiddenUndatedCount={hiddenUndatedCount} />
+    );
   }
 
   return (
     <div className="bg-surface-base rounded-b-lg">
       {hiddenUndatedCount > 0 && (
         <div className="px-4 py-3 border-b border-surface-outline dark:border-gray-700 text-xs text-content-dimmed">
-          {hiddenUndatedCount} hidden without dates
+          {t("{{count}} hidden without dates", { count: hiddenUndatedCount })}
         </div>
       )}
 
@@ -169,7 +177,8 @@ function TimelineRow({
   const finiteEnd = item.endDate ? clampPercent(((item.endDate.getTime() - rangeStart) / rangeMs) * 100) : null;
   const hasInfiniteBar = item.startDate && !item.endDate;
   const barWidth = left !== null && finiteEnd !== null ? Math.max(finiteEnd - left, 8) : null;
-  const visualBarEnd = left === null ? null : hasInfiniteBar ? Math.max(100, left + 12) : barWidth === null ? null : left + barWidth;
+  const visualBarEnd =
+    left === null ? null : hasInfiniteBar ? Math.max(100, left + 12) : barWidth === null ? null : left + barWidth;
   const rangeLabel = formatRangeLabel(item);
 
   return (
@@ -313,7 +322,10 @@ function TimelineHeader({
 
 function TimelineGrid({ columns, highlightedColumnKey }: { columns: Column[]; highlightedColumnKey: string | null }) {
   return (
-    <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}>
+    <div
+      className="absolute inset-0 grid"
+      style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(96px, 1fr))` }}
+    >
       {columns.map((column, index) => (
         <div
           key={column.key}
@@ -339,12 +351,13 @@ function TimelineMarker({ left, className }: { left: number | null; className: s
 }
 
 function TodayBadge({ left, label }: { left: number | null; label: string | null }) {
+  const { t } = useTranslation();
   if (left === null || !label) return null;
 
   return (
     <div className="pointer-events-none absolute top-1 z-30 -translate-x-1/2" style={{ left: `${left}%` }}>
       <div className="rounded-full border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-semibold leading-none text-blue-700 shadow-sm dark:border-blue-700 dark:bg-blue-900 dark:text-blue-100 dark:shadow-none">
-        Today · {label}
+        {t("Today · {{date}}", { date: label })}
       </div>
     </div>
   );
@@ -399,10 +412,13 @@ function MilestoneMarker({
   outsideBar: boolean;
   placement: MilestonePlacement;
 }) {
+  const { t } = useTranslation();
   if (left === null) return null;
 
   const done = milestone.status === "done";
-  const title = `${milestone.name} · ${formatMilestoneDate(milestone.dueDate)}${done ? " · Done" : ""}`;
+  const title = done
+    ? t("{{name}} · {{date}} · Done", { name: milestone.name, date: formatMilestoneDate(milestone.dueDate) })
+    : `${milestone.name} · ${formatMilestoneDate(milestone.dueDate)}`;
 
   return (
     <BlackLink
@@ -529,10 +545,15 @@ function formatMilestoneDate(date: Date) {
 }
 
 function TimelineEmptyState({ message, hiddenUndatedCount }: { message: string; hiddenUndatedCount?: number }) {
+  const { t } = useTranslation();
   return (
     <div className="px-6 py-12 text-sm text-content-dimmed">
       <div>{message}</div>
-      {hiddenUndatedCount ? <div className="mt-2">{hiddenUndatedCount} items are hidden because they do not have dates.</div> : null}
+      {hiddenUndatedCount ? (
+        <div className="mt-2">
+          {t("{{count}} items are hidden because they do not have dates.", { count: hiddenUndatedCount })}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -540,14 +561,14 @@ function TimelineEmptyState({ message, hiddenUndatedCount }: { message: string; 
 function emptyStateMessage(tab: WorkMap.Filter) {
   switch (tab) {
     case "goals":
-      return "No goals to show.";
+      return i18n.t("No goals to show.");
     case "projects":
-      return "No projects to show.";
+      return i18n.t("No projects to show.");
     case "completed":
-      return "No completed work to show.";
+      return i18n.t("No completed work to show.");
     case "paused":
-      return "No paused work to show.";
+      return i18n.t("No paused work to show.");
     default:
-      return "No work to show.";
+      return i18n.t("No work to show.");
   }
 }

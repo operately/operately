@@ -1,4 +1,5 @@
 import * as Projects from "@/models/projects";
+import { useTranslation } from "react-i18next";
 
 import { useNavigate } from "react-router";
 
@@ -14,6 +15,7 @@ interface UseFormProps {
 }
 
 export function useForm({ project, subscriptionsState }: UseFormProps) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const createDiscussion = Projects.useCreateProjectDiscussion();
@@ -25,7 +27,7 @@ export function useForm({ project, subscriptionsState }: UseFormProps) {
     },
     validate: (addError) => {
       if (isContentEmpty(form.values.message)) {
-        addError("message", "Body is required");
+        addError("message", t("Body is required"));
       }
     },
     submit: async () => {

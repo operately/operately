@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar } from "../Avatar";
 import { CommentSection } from "../CommentSection";
@@ -107,6 +108,7 @@ function Title(props: FilePageNS.BaseProps) {
 }
 
 function Preview({ title, blob }: { title: string; blob: FilePageNS.BlobPreview }) {
+  const { t } = useTranslation();
   if (blob.contentType?.includes("image")) {
     return <ImageWithPlaceholder src={blob.url} alt={title} ratio={calculateImageRatio(blob.width, blob.height)} />;
   }
@@ -125,7 +127,7 @@ function Preview({ title, blob }: { title: string; blob: FilePageNS.BlobPreview 
       >
         <video controls style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
           <source src={blob.url} type={blob.contentType || "video/mp4"} />
-          Your browser does not support videos.
+          {t("Your browser does not support videos.")}
         </video>
       </div>
     );
@@ -153,6 +155,7 @@ function FileInfo({
   viewUrl: string;
   onDownload: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-2 justify-center items-center">
       <div className="text-content-dimmed">
@@ -160,11 +163,11 @@ function FileInfo({
       </div>
       <div className="text-content-dimmed">•</div>
       <div className="text-content-dimmed underline cursor-pointer" onClick={onDownload}>
-        Download
+        {t("Download")}
       </div>
       <div className="text-content-dimmed">•</div>
       <a className="text-content-dimmed underline cursor-pointer" href={viewUrl} target="_blank">
-        View
+        {t("View")}
       </a>
     </div>
   );

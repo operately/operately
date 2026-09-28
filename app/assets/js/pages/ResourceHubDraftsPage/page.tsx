@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { ResourceHubDraftsPage } from "turboui";
 import { getDraftEditPath, getNodePath, resourceHubLandingPath, useDeleteDocument } from "@/models/resourceHubs";
@@ -10,6 +11,7 @@ import { usePaths } from "@/routes/paths";
 import { buildDraftsPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { resourceHub, draftNodes } = useLoadedData();
   const paths = usePaths();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -18,7 +20,7 @@ export function Page() {
   const { mutateAsync: deleteDocument } = useDeleteDocument(mutationScope);
 
   const props: ResourceHubDraftsPage.Props = {
-    title: ["Drafts", resourceHub.name ?? "Docs & Files"],
+    title: [t("Drafts"), resourceHub.name ?? t("Docs & Files")],
     navigation: buildDraftsPageNavigation(resourceHub, paths),
     nodes: draftNodes,
     resourceHubPath: resourceHubLandingPath(paths, resourceHub),
