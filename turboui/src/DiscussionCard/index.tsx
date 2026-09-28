@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Avatar, AvatarPerson } from "../Avatar";
 import { MentionedPersonLookupFn } from "../RichEditor";
@@ -30,11 +31,8 @@ namespace DiscussionCard {
   }
 }
 
-export function DiscussionCard({
-  discussion,
-  mentionedPersonLookup,
-  formattedTimePreferences,
-}: DiscussionCard.Props) {
+export function DiscussionCard({ discussion, mentionedPersonLookup, formattedTimePreferences }: DiscussionCard.Props) {
+  const { t } = useTranslation();
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",
@@ -55,7 +53,12 @@ export function DiscussionCard({
           <div className="flex items-center gap-2 mb-1">
             <div className="font-semibold leading-none">{discussion.title}</div>
             {discussion.state === "draft" && (
-              <StatusBadge status="pending" customLabel="Draft" hideIcon className="scale-95 inline-block shrink-0" />
+              <StatusBadge
+                status="pending"
+                customLabel={t("Draft")}
+                hideIcon
+                className="scale-95 inline-block shrink-0"
+              />
             )}
             {discussion.state === "scheduled" && <ScheduledPostLabel />}
           </div>

@@ -5,6 +5,9 @@ import React from "react";
 import { MemoryRouter } from "react-router";
 
 import { ZeroState } from "./ZeroState";
+import { i18n, setupTestCatalog } from "../../../test/i18n";
+
+setupTestCatalog();
 
 const generalSpace = { id: "general", name: "General", link: "/spaces/general" };
 const spaceSearch = jest.fn().mockResolvedValue([generalSpace]);
@@ -37,6 +40,41 @@ function renderFirstProjectState(
 }
 
 describe("Work Map first-project state", () => {
+  it("looks up the empty state, validation, and creation failure and can recover", async () => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      {
+        "Add your first project": "Expanded translated heading for adding your very first project",
+        "Project name": "Translated project name",
+        "Enter a project name.": "Translated required name",
+        "The project could not be created. Try again.": "Translated creation failure",
+        "Create project": "Translated create project",
+      },
+      true,
+      true,
+    );
+    const user = userEvent.setup();
+    const addItem = jest.fn().mockRejectedValueOnce(new Error("offline")).mockResolvedValue({ id: "project-1" });
+    const errorLog = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const { onItemCreated } = renderFirstProjectState(addItem);
+      expect(
+        screen.getByRole("heading", { name: "Expanded translated heading for adding your very first project" }),
+      ).toHaveClass("text-balance");
+      await user.click(screen.getByRole("button", { name: "Translated create project" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent("Translated required name");
+      await user.type(screen.getByLabelText("Translated project name"), "User-authored project");
+      await user.click(screen.getByRole("button", { name: "Translated create project" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent("Translated creation failure");
+      await user.click(screen.getByRole("button", { name: "Translated create project" }));
+      await waitFor(() => expect(onItemCreated).toHaveBeenCalledWith("project", "project-1"));
+      expect(addItem).toHaveBeenLastCalledWith(expect.objectContaining({ name: "User-authored project" }));
+    } finally {
+      errorLog.mockRestore();
+    }
+  });
+
   it("focuses the hierarchy on creating a project", () => {
     renderFirstProjectState();
 

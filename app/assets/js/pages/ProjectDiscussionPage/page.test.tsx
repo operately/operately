@@ -1,5 +1,6 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React from "react";
+import "@/i18n";
 import { renderHook } from "@/__tests__/renderHook";
 import { Page } from "./page";
 

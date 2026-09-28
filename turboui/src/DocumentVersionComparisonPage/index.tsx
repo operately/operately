@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Page } from "../Page";
 import type { DocumentVersion } from "../ApiTypes";
@@ -25,12 +26,13 @@ export namespace DocumentVersionComparisonPage {
 export type { ComparisonStatus, VersionSnapshot };
 
 export function DocumentVersionComparisonPage(props: DocumentVersionComparisonPage.Props) {
+  const { t } = useTranslation();
   const showLegend = props.comparisonStatus === "ready" && props.before !== null && props.after !== null;
 
   return (
     <Page title={props.title} size="xlarge" navigation={props.navigation} testId="document-version-comparison-page">
       <div className="min-h-[75vh] px-4 py-8 sm:px-8 sm:py-10 lg:px-10">
-        <DocumentVersionPageHeader title="See what changed" showLegend={showLegend} />
+        <DocumentVersionPageHeader title={t("See what changed")} showLegend={showLegend} />
 
         <ComparisonPanel
           versions={props.versions}

@@ -60,7 +60,8 @@ export namespace SpaceKanbanPage {
 }
 
 export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
-  const title = `${props.space.name} Tasks`;
+  const { t } = useTranslation();
+  const title = t("{{space}} Tasks", { space: props.space.name });
 
   return (
     <PageNew title={title} size="fullwidth" testId={createTestId("space-kanban-page", props.space.id)}>

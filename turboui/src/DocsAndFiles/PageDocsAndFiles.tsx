@@ -38,7 +38,7 @@ import type { FormattedTimePreferences } from "../FormattedTime";
 import type { SharedListPageProps } from "../ResourceHubPage/SharedListPage";
 import type { ResourceHubSearchProps } from "../ResourceHubPage/types";
 import { nodeDisplayInsertedAt } from "../utils/drafts";
-import { plurarize } from "../utils/plurarize";
+import { tn } from "../i18n";
 import { truncate } from "../utils/strings";
 
 export interface PageDocsAndFiles {
@@ -95,20 +95,21 @@ function PageDocsAndFilesTabContent({
   docsAndFiles: PageDocsAndFiles;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   const { filesSelected, navigateToNewDocument, navigateToNewLink, selectFiles, toggleShowAddFolder } =
     useNewFileModalsContext();
   const searchState = useResourceHubSearch(docsAndFiles.search);
   const displayedNodes = searchState.isActive ? searchState.results : docsAndFiles.nodesListProps.nodes;
   const items = React.useMemo(
     () => displayedNodes.flatMap((node) => mapNodeToItem(node, docsAndFiles)),
-    [displayedNodes, docsAndFiles],
+    [displayedNodes, docsAndFiles, t],
   );
   const draftPrompt = React.useMemo(() => buildDraftPrompt(docsAndFiles), [docsAndFiles]);
   return (
     <ResourceHubNodesListProvider value={docsAndFiles.nodesListProps.listContext}>
       <FileDragAndDropArea onFilesDropped={docsAndFiles.newFileModals.setFiles}>
         <DocsAndFilesTab
-          title={docsAndFiles.resourceHub.name ?? "Documents & Files"}
+          title={docsAndFiles.resourceHub.name ?? t("Documents & Files")}
           items={items}
           draftPrompt={draftPrompt}
           emptyStateKind="resourceHub"
@@ -169,7 +170,7 @@ function buildNodeDetails(node: ResourceHubNode, docsAndFiles: PageDocsAndFiles)
 
     if (childrenCount === null) return [];
 
-    return [plurarize(childrenCount, "item", "items")];
+    return [tn("1 item", "{{count}} items", childrenCount)];
   }
 
   return [buildFileSize(node, docsAndFiles), buildContentSnippet(node)].filter((detail): detail is string =>

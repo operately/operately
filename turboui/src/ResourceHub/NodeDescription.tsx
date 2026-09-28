@@ -1,7 +1,8 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import type { FormattedTimePreferences } from "../FormattedTime";
-import { plurarize } from "../utils/plurarize";
+import { tn } from "../i18n";
 import { NodeMetadata } from "./NodeMetadata";
 import {
   getNodeAuthor,
@@ -29,6 +30,7 @@ export function NodeDescription({
   maxCharacters = DEFAULT_MAX_CHARACTERS,
   formattedTimePreferences,
 }: NodeDescriptionProps) {
+  useTranslation();
   return (
     <NodeMetadata
       author={getNodeAuthor(node)}
@@ -57,7 +59,7 @@ function subItemsCount(node: ResourceHubNode) {
   const childrenCount = getNodeChildrenCount(node);
 
   if (getNodeType(node) !== "folder" || childrenCount === null) return null;
-  return plurarize(childrenCount, "item", "items");
+  return tn("1 item", "{{count}} items", childrenCount);
 }
 
 function contentSnippet(node: ResourceHubNode, maxCharacters: number) {

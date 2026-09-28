@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { tn } from "../i18n";
 import { useEffect, useState } from "react";
 import * as Forms from "../Forms";
 import Modal from "../Modal";
@@ -53,6 +55,7 @@ function AddFileForm({
   onUpload,
   onClose,
 }: AddFileWidgetProps & { files: File[]; onClose: () => void }) {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(0);
 
   const form = Forms.useForm({
@@ -62,7 +65,7 @@ function AddFileForm({
     validate: (addError: (field: string, message: string) => void) => {
       (form.values.items as PayloadItem[]).forEach((item, idx) => {
         if (!item.name) {
-          addError(`items[${idx}].name`, "Name is required");
+          addError(`items[${idx}].name`, t("Name is required"));
         }
       });
     },
@@ -95,7 +98,7 @@ function AddFileForm({
         <div className="mt-4" />
         <SubscribersSelector {...subscriptions} />
 
-        <Forms.Submit cancelText="Cancel" />
+        <Forms.Submit cancelText={t("Cancel")} />
       </Forms.Form>
     </div>
   );
@@ -135,6 +138,7 @@ function FileForm({
   formatFileSize: (size: number) => string;
   richTextHandlers: RichEditorHandlers;
 }) {
+  const { t } = useTranslation();
   const [item] = Forms.useFieldValue<PayloadItem>(`items[${index}]`);
   const { setFiles } = useNewFileModalsContext();
 
@@ -163,7 +167,7 @@ function FileForm({
 
           <Forms.RichTextArea
             field={`items[${index}].description`}
-            placeholder="Leave notes here..."
+            placeholder={t("Leave notes here...")}
             richTextHandlers={richTextHandlers}
             height="min-h-[80px]"
             localDraftKey={null}
@@ -180,22 +184,24 @@ function FileForm({
 }
 
 function FileDetails({ file, formatFileSize }: { file: File; formatFileSize: (size: number) => string }) {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-4 items-center text-sm">
       <div>
-        <b>File:</b> {file.name}
+        <b>{t("File:")}</b> {file.name}
       </div>
       <div>&middot;</div>
       <div>
-        <b>Size:</b> {formatFileSize(file.size)}
+        <b>{t("Size:")}</b> {formatFileSize(file.size)}
       </div>
     </div>
   );
 }
 
 function UploadingModal({ progress, isOpen }: { progress: number; isOpen: boolean }) {
+  useTranslation();
   const { files } = useNewFileModalsContext();
-  const text = files?.length === 1 ? "Uploading file" : "Uploading files";
+  const text = tn("Uploading file", "Uploading files", files?.length ?? 0);
 
   return (
     <Modal isOpen={isOpen} onClose={() => undefined} closeOnBackdropClick={false}>

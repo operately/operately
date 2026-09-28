@@ -1,5 +1,6 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React, { act } from "react";
+import "@/i18n";
 import { createRoot } from "react-dom/client";
 import { useForm } from "./useForm";
 const mockCreate = jest.fn();

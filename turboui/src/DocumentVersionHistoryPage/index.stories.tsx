@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { I18nextProvider } from "react-i18next";
+import { expect, userEvent, within } from "storybook/test";
+import { createInstance } from "i18next";
+import { i18nOptions } from "../i18nOptions";
 
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
@@ -99,5 +103,51 @@ export const MobileStacked: Story = {
   args: baseProps(),
   parameters: {
     viewport: { defaultViewport: "mobile1" },
+  },
+};
+
+const expandedCatalog = createInstance();
+void expandedCatalog.init({ ...i18nOptions, initImmediate: false });
+expandedCatalog.addResourceBundle(
+  "en",
+  "translation",
+  {
+    "History of changes": "Expanded translated history of all changes made to this document",
+    "Restore This Version": "Restore this earlier version of the document",
+    "Restore this version?": "Restore this earlier version as the current document?",
+    "This replaces the current title and content with the selected version. Later versions will stay in the history.":
+      "Expanded translated confirmation: the selected version replaces the current document title and content, and all later versions remain available in the history.",
+    Restore: "Confirm restoring this document version",
+  },
+  true,
+  true,
+);
+
+export const ExpandedCatalog: Story = {
+  args: baseProps({ canRestore: true, currentVersionNumber: 5, onRestore: async () => "ok" }),
+  decorators: [
+    (Story) => (
+      <I18nextProvider i18n={expandedCatalog}>
+        <Story />
+      </I18nextProvider>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const heading = canvas.getByRole("heading", { level: 1 });
+    await expect(heading).toHaveTextContent("Expanded translated history of all changes made to this document");
+    await expect(heading.scrollWidth).toBeLessThanOrEqual(heading.clientWidth);
+    const version = canvasElement.querySelector('[data-test-id="select-version-4"]') as HTMLButtonElement | null;
+    if (!version) throw new Error("Version selection is missing");
+    await userEvent.click(version);
+    await userEvent.click(canvas.getByRole("button", { name: "Restore this earlier version of the document" }));
+    await canvas.findByRole("heading", { name: "Restore this earlier version as the current document?" });
+    const dialog = canvasElement.querySelector('[data-test-id="restore-version-confirm"]') as HTMLElement | null;
+    if (!dialog) throw new Error("Restore confirmation is missing");
+    const confirm = within(dialog).getByRole("button", { name: "Confirm restoring this document version" });
+    await expect(confirm).toBeVisible();
+    await expect(dialog.scrollWidth).toBeLessThanOrEqual(dialog.clientWidth);
+    await expect(confirm.scrollWidth).toBeLessThanOrEqual(confirm.clientWidth);
+    await userEvent.click(confirm);
   },
 };
