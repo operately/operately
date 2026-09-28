@@ -38,9 +38,11 @@ defmodule Operately.MD.RichText do
     |> Enum.join("\n")
   end
 
-  defp render_block(%{"type" => "codeBlock", "attrs" => attrs, "content" => [%{"type" => "text", "text" => code}]}) do
-    lang = Map.get(attrs, "language", "")
-    "```#{lang}\n#{code}\n```"
+  defp render_block(%{"type" => "codeBlock"} = block) do
+    lang = get_in(block, ["attrs", "language"]) || ""
+    code = Enum.map_join(block["content"] || [], &(&1["text"] || ""))
+    body = if code == "", do: "", else: code <> "\n"
+    "```#{lang}\n#{body}```"
   end
 
   defp render_block(%{"type" => "horizontalRule"}) do
