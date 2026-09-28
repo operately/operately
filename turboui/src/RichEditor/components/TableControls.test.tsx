@@ -409,3 +409,50 @@ it.each([2, 3])("previews all %i rows covered by a legacy spanning cell before d
   await user.click(screen.getByRole("button", { name: "Delete row" }));
   expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(3 - span);
 });
+
+it.each([{ button: 2 }, { button: 0, ctrlKey: true }, { button: 0 }])(
+  "ignores the opening gesture's release over a context-menu item: %j",
+  async (pointer) => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    select();
+    const original = editor.getJSON();
+    jest.spyOn(editor.view, "posAtCoords").mockReturnValue(null);
+    fireEvent.contextMenu(cell(0), { clientX: 80, clientY: 100 });
+    const action = screen.getByRole("menuitem", { name: "Add row above" });
+    fireEvent.pointerUp(action, pointer);
+    expect(editor.getJSON()).toEqual(original);
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+
+    await user.click(action);
+    expect(editor.state.doc.firstChild?.childCount).toBe(3);
+  },
+);
+
+it("requires a press on the same context-menu item before releasing", () => {
+  render(<Harness />);
+  select();
+  const original = editor.getJSON();
+  jest.spyOn(editor.view, "posAtCoords").mockReturnValue(null);
+  fireEvent.contextMenu(cell(0), { clientX: 80, clientY: 100 });
+  fireEvent.pointerDown(screen.getByRole("menuitem", { name: "Add column left" }), { button: 0 });
+  fireEvent.pointerUp(screen.getByRole("menuitem", { name: "Add row above" }), { button: 0 });
+  expect(editor.getJSON()).toEqual(original);
+});
+
+it.each(["keyboard", "touch"])("keeps deliberate context-menu activation working with %s", async (input) => {
+  const user = userEvent.setup();
+  render(<Harness />);
+  select();
+  jest.spyOn(editor.view, "posAtCoords").mockReturnValue(null);
+  fireEvent.contextMenu(cell(0), { clientX: 80, clientY: 100 });
+  const action = screen.getByRole("menuitem", { name: "Add row above" });
+  if (input === "keyboard") {
+    act(() => action.focus());
+    await user.keyboard("{Enter}");
+  } else {
+    await user.pointer([{ keys: "[TouchA>]", target: action }, { keys: "[/TouchA]" }]);
+  }
+  expect(editor.state.doc.firstChild?.childCount).toBe(3);
+  expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+});

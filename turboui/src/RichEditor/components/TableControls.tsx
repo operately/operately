@@ -14,9 +14,11 @@ export function TableControls() {
   const controls = useTableControls(editor);
   const { target, owner, menu, setMenu, closeMenu, preview, setPreview, run } = controls;
   const restoreFocus = React.useRef(true);
+  const pressedContextItem = React.useRef<Element | null>(null);
 
   React.useEffect(() => {
     if (menu) restoreFocus.current = true;
+    pressedContextItem.current = null;
   }, [menu]);
   if (!target || editor.isDestroyed || !editor.isEditable) return null;
 
@@ -145,7 +147,33 @@ export function TableControls() {
           align="start"
           open
           anchorPosition={menu}
-          contentProps={{ ...contentProps, "aria-label": "Cell actions" }}
+          contentProps={{
+            ...contentProps,
+            "aria-label": "Cell actions",
+            onPointerDownCapture: (event) => {
+              pressedContextItem.current =
+                event.button === 0 && !event.ctrlKey && event.target instanceof Element
+                  ? event.target.closest('[role="menuitem"]')
+                  : null;
+            },
+            onPointerUpCapture: (event) => {
+              const pressedItem = pressedContextItem.current;
+              pressedContextItem.current = null;
+              // Radix can synthesize a click on release; don't select with the gesture that opened the menu.
+              if (
+                event.button !== 0 ||
+                event.ctrlKey ||
+                !(event.target instanceof Node) ||
+                !pressedItem?.contains(event.target)
+              ) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+            },
+            onPointerCancelCapture: () => {
+              pressedContextItem.current = null;
+            },
+          }}
           onOpenChange={(open) => {
             if (!open) closeMenu();
           }}
