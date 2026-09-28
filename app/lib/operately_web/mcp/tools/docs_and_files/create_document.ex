@@ -19,6 +19,14 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument do
       discovery_metadata: %{"category" => "docs_and_files"},
       examples: [
         %{
+          "title" => "Write a document with a table",
+          "arguments" => %{
+            "project_id" => "project_123",
+            "name" => "Launch plan",
+            "content" => "| Milestone | Status |\n| --- | --- |\n| **Launch** | Ready |"
+          }
+        },
+        %{
           "title" => "Create a project document",
           "arguments" => %{"project_id" => "project_123", "name" => "Launch plan", "content" => "# Launch plan"}
         },
@@ -40,7 +48,7 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocument do
             "goal_id" => JsonSchema.string("The parent goal identifier."),
             "folder_id" => JsonSchema.string("An optional parent folder identifier."),
             "name" => JsonSchema.string("The document name."),
-            "content" => JsonSchema.string("The document body in plain text or markdown."),
+            "content" => JsonSchema.string("The document body in plain text or markdown, including pipe tables."),
             "notify_person_ids" =>
               JsonSchema.array(
                 JsonSchema.string("A person identifier."),

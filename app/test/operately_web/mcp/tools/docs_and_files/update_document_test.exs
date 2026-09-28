@@ -98,6 +98,25 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.UpdateDocumentTest do
              })
   end
 
+  test "table updates create versions, and invalid tables leave content and history unchanged" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space) |> Factory.add_document(:document, :hub)
+    markdown = "| Item | Status |\n| --- | --- |\n| **Launch** | Ready |"
+    arguments = %{"document_id" => Paths.document_id(ctx.document), "name" => ctx.document.name, "content" => markdown}
+
+    assert {:ok, _} = UpdateDocument.call(ToolConnHelper.conn(ctx), arguments)
+    updated = Repo.reload!(ctx.document)
+    assert Operately.MD.RichText.render(updated.content) |> String.trim() == markdown
+    [current, previous] = Operately.ResourceHubs.DocumentVersion.list_for_document(updated.id)
+    assert current.content == updated.content
+    assert current.editor_id == ctx.creator.id
+    assert previous.content == ctx.document.content
+
+    assert {:error, :invalid_arguments} = UpdateDocument.call(ToolConnHelper.conn(ctx), %{arguments | "content" => "| A |\n| --- |\n| one | two |"})
+    assert Repo.reload!(updated).content == updated.content
+    assert Repo.reload!(updated).current_version == updated.current_version
+    assert length(Operately.ResourceHubs.DocumentVersion.list_for_document(updated.id)) == 2
+  end
+
   defp subscription_list!(parent_id) do
     {:ok, list} = SubscriptionList.get(:system, parent_id: parent_id, opts: [preload: :subscriptions])
     list

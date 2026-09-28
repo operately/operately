@@ -148,6 +148,36 @@ defmodule OperatelyWeb.Mcp.Tools.DocsAndFiles.CreateDocumentTest do
              })
   end
 
+  test "creates a document from Markdown tables and rejects excess cells" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space)
+    fixtures = "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
+
+    for fixture <- fixtures do
+      assert {:ok, %{document: result}} =
+               CreateDocument.call(ToolConnHelper.conn(ctx), %{
+                 "space_id" => Paths.space_id(ctx.space),
+                 "name" => fixture["name"],
+                 "content" => fixture["markdown"]
+               })
+
+      document = Repo.get!(Document, ToolConnHelper.decode_id!(result.id))
+      table = Enum.find(document.content["content"], &(&1["type"] == "table"))
+      expected = fixture["markdown"] |> String.replace_prefix("Before\n\n", "") |> String.replace_suffix("\n\nAfter", "") |> String.replace("![", "[")
+      assert Operately.MD.Table.render(table) == expected
+    end
+
+    count = Repo.aggregate(Document, :count)
+
+    assert {:error, :invalid_arguments} =
+             CreateDocument.call(ToolConnHelper.conn(ctx), %{
+               "space_id" => Paths.space_id(ctx.space),
+               "name" => "Invalid",
+               "content" => "| A |\n| --- |\n| one | two |"
+             })
+
+    assert Repo.aggregate(Document, :count) == count
+  end
+
   defp subscription_list!(parent_id) do
     {:ok, list} = SubscriptionList.get(:system, parent_id: parent_id, opts: [preload: :subscriptions])
     list
