@@ -58,25 +58,12 @@ defmodule Operately.Support.Features.RichTextTablesSteps do
 
   step :manage_table, ctx do
     ctx
-    |> hover_first_cell_edge()
-    |> UI.click(testid: "toolbar-button-row-actions")
+    |> UI.click(css: "[contenteditable=true] th:first-child")
+    |> UI.click(testid: "toolbar-button-table-settings")
     |> UI.click(testid: "table-addRowBefore")
     |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] tr", count: 4))
-    |> hover_first_cell_edge()
-    |> UI.click(testid: "toolbar-button-column-actions")
-    |> UI.click(testid: "table-addColumnAfter")
+    |> UI.click(testid: "toolbar-button-add-column-right")
     |> UI.assert_has(Wallaby.Query.css("[contenteditable=true] th", count: 4))
-  end
-
-  defp hover_first_cell_edge(ctx) do
-    selector = "[contenteditable=true] th:first-child"
-    ctx = UI.hover(ctx, css: selector)
-
-    Wallaby.Browser.execute_script(ctx.session, "return document.querySelector(arguments[0]).getBoundingClientRect().toJSON()", [selector], fn rect ->
-      Wallaby.Browser.move_mouse_by(ctx.session, round(12 - rect["width"] / 2), round(12 - rect["height"] / 2))
-    end)
-
-    ctx
   end
 
   step :reload_created_table, ctx do
