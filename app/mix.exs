@@ -68,6 +68,8 @@ defmodule Operately.MixProject do
       {:swoosh, "~> 1.26.3"},
       {:gen_smtp, "~> 1.1"},
       {:gettext, "~> 0.26"},
+      {:earmark_parser, "~> 1.4"},
+      {:html_entities, "~> 0.5"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},
