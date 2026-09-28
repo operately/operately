@@ -85,7 +85,7 @@ function LoadedPage() {
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
     update: (v) => updateProjectName.mutateAsync({ projectId: project.id, name: v }).then(() => true),
-    onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
+    onError: (e: string) => showErrorToast(e, i18n.t("Reverted the project name to its previous value.")),
     validations: [(v) => (v.trim() === "" ? translationText(i18n.t("Project name cannot be empty")) : null)],
   });
 
@@ -93,7 +93,7 @@ function LoadedPage() {
     value: (data: { project: Projects.Project }) => data.project.description && JSON.parse(data.project.description),
     update: (v) =>
       updateProjectDescription.mutateAsync({ projectId: project.id, description: JSON.stringify(v) }).then(() => true),
-    onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the description to its previous value.")),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
@@ -103,7 +103,7 @@ function LoadedPage() {
         projectId: project.id,
         goalId: v && v.id,
       }),
-    onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the parent goal to its previous value.")),
   });
 
   const [accessLevels, setAccessLevels] = usePageField({
@@ -118,19 +118,20 @@ function LoadedPage() {
           },
         })
         .then(() => true),
-    onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
+    onError: () =>
+      showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the access levels to their previous values.")),
   });
 
   const [dueDate, setDueDate] = usePageField({
     value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualEndDate),
     update: (v) => updateProjectDueDate.mutateAsync({ projectId: project.id, dueDate: serializeContextualDate(v) }),
-    onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the due date to its previous value.")),
   });
 
   const [startedDate, setStartedDate] = usePageField({
     value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualStartDate),
     update: (v) => updateProjectStartDate.mutateAsync({ projectId: project.id, startDate: serializeContextualDate(v) }),
-    onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the started date to its previous value.")),
   });
 
   const {
@@ -205,7 +206,7 @@ function LoadedPage() {
         }
       } catch (error) {
         console.error("Failed to update tasks view", error);
-        showErrorToast("Error", "Failed to update tasks view");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update tasks view"));
 
         if (refresh) {
           await refresh();
@@ -286,7 +287,7 @@ function LoadedPage() {
       })
       .catch((e) => {
         console.error("Failed to delete project", e);
-        showErrorToast("Error", "Failed to delete project");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to delete project"));
 
         return { success: false };
       });
@@ -628,7 +629,7 @@ function usePageField<T>({
       update(newVal)
         .then((res) => {
           if (res === false || (typeof res === "object" && res?.success === false)) {
-            errorHandler("Update failed");
+            errorHandler(i18n.t("Update failed"));
           } else {
             successHandler();
           }
@@ -661,19 +662,19 @@ function useSpaceProps({
   const [space, setSpace] = usePageField({
     value: (data) => (data.space ? Spaces.parseSpaceForTurboUI(paths, data.space) : null),
     update: (v) => moveProject.mutateAsync({ projectId: project.id, spaceId: v!.id }).then(() => true),
-    onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the space to its previous value.")),
   });
 
   const [champion, updateChampion] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
     update: (v) => updateChampionMutation.mutateAsync({ projectId: project.id, championId: v?.id ?? null }),
-    onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the champion to its previous value.")),
   });
 
   const [reviewer, updateReviewer] = usePageField<ProjectPage.Person | null>({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
     update: (v) => updateReviewerMutation.mutateAsync({ projectId: project.id, reviewerId: v?.id ?? null }),
-    onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
+    onError: () => showErrorToast(i18n.t("Network Error"), i18n.t("Reverted the reviewer to its previous value.")),
   });
 
   const spaceSearch = Spaces.useSpaceSearch();
@@ -784,7 +785,7 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
       })
       .catch((e) => {
         console.error("Failed to create milestone", e);
-        showErrorToast("Error", "Failed to create milestone");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to create milestone"));
 
         return { success: false };
       });
@@ -813,7 +814,7 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
       })
       .catch((e) => {
         console.error("Failed to update milestone", e);
-        showErrorToast("Error", "Failed to update milestone");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to update milestone"));
 
         return { success: false };
       });

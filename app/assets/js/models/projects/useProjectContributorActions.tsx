@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 
 import { type Project, type ProjectContributor } from "@/api";
@@ -87,7 +88,7 @@ export function useProjectContributorActions({ project }: UseProjectContributorA
         const realId = result.projectContributor?.id;
         if (!realId) {
           setContributors((prev) => prev.filter((contributor) => contributor.id !== tempId));
-          showErrorToast("Contributor not added", "Something went wrong. Please try again.");
+          showErrorToast(i18n.t("Contributor not added"), i18n.t("Something went wrong. Please try again."));
           return false;
         }
 
@@ -98,7 +99,7 @@ export function useProjectContributorActions({ project }: UseProjectContributorA
       } catch (error) {
         console.error("Failed to add contributor", error);
         setContributors((prev) => prev.filter((contributor) => contributor.id !== tempId));
-        showErrorToast("Contributor not added", "Something went wrong. Please try again.");
+        showErrorToast(i18n.t("Contributor not added"), i18n.t("Something went wrong. Please try again."));
         return false;
       }
     },
@@ -146,7 +147,7 @@ export function useProjectContributorActions({ project }: UseProjectContributorA
       } catch (error) {
         console.error("Failed to update contributor", error);
         setContributors(snapshot);
-        showErrorToast("Contributor not updated", "Something went wrong. Please try again.");
+        showErrorToast(i18n.t("Contributor not updated"), i18n.t("Something went wrong. Please try again."));
         return false;
       }
     },
@@ -167,7 +168,7 @@ export function useProjectContributorActions({ project }: UseProjectContributorA
       } catch (error) {
         console.error("Failed to remove contributor", error);
         setContributors(snapshot);
-        showErrorToast("Contributor not removed", "Something went wrong. Please try again.");
+        showErrorToast(i18n.t("Contributor not removed"), i18n.t("Something went wrong. Please try again."));
       }
     },
     [deleteContributor],

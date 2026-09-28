@@ -1,6 +1,7 @@
 import { IconFileText, IconFlagFilled, IconMessageCircle, IconPlus } from "../../icons";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { formatNumber } from "../../utils/formatting";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
@@ -82,7 +83,12 @@ export function MilestoneCard({
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
   const completionPercentage = calculateCompletionPercentage(milestoneStats);
-  const completionLabel = `${Math.round(completionPercentage)}% complete`;
+  const completionLabel = t("Milestone progress: {{progress}} complete", {
+    progress: formatNumber(completionPercentage / 100, formattedTimePreferences.locale, {
+      style: "percent",
+      maximumFractionDigits: 0,
+    }),
+  });
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const {
     open: creatorOpen,
@@ -137,8 +143,8 @@ export function MilestoneCard({
             ) : (
               <PieChart
                 size={16}
-                ariaLabel={`Milestone progress: ${completionLabel}`}
-                title={`Milestone progress: ${completionLabel}`}
+                ariaLabel={completionLabel}
+                title={completionLabel}
                 slices={[
                   {
                     percentage: completionPercentage,
@@ -184,7 +190,7 @@ export function MilestoneCard({
                     onDateSelect={handleMilestoneDueDateChange}
                     variant="inline"
                     showOverdueWarning={showOverdueWarning}
-                    placeholder="Set due date"
+                    placeholder={t("Set due date")}
                     readonly={!onMilestoneUpdate}
                     size="small"
                   />
@@ -196,7 +202,7 @@ export function MilestoneCard({
                       onDateSelect={handleMilestoneDueDateChange}
                       variant="inline"
                       showOverdueWarning={showOverdueWarning}
-                      placeholder="Set due date"
+                      placeholder={t("Set due date")}
                       readonly={false}
                       size="small"
                     />
@@ -267,13 +273,15 @@ export function MilestoneCard({
                   testId="inline-task-creator-empty"
                 />
                 <div className="hidden px-4 pb-3 text-center text-content-subtle text-xs sm:block">
-                  Press Enter to add. You can also drag tasks here.
+                  {t("Press Enter to add. You can also drag tasks here.")}
                 </div>
               </>
             ) : (
               <div className="text-left text-content-subtle text-sm sm:text-center">
-                <span className="sm:hidden">Tap + to add a task.</span>
-                <span className="hidden sm:inline">Click + or press 'c' to add a task, or drag a task here.</span>
+                <span className="sm:hidden">{t("Tap + to add a task.")}</span>
+                <span className="hidden sm:inline">
+                  {t("Click + or press 'c' to add a task, or drag a task here.")}
+                </span>
               </div>
             )}
           </EmptyMilestoneDropZone>

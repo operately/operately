@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { WarningCallout } from "../Callouts";
@@ -12,20 +13,27 @@ type Props = ProjectPage.State & {
 };
 
 export function CheckInOverdueCallout(props: Props) {
+  const { t } = useTranslation();
   if (!isCheckInOverdue(props.nextCheckInScheduledAt, props.state)) return null;
 
   const variant = props.variant || "full";
   const championName = props.champion?.fullName;
   const canPost = viewerCanPostCheckIn(props);
   const description = canPost
-    ? "Post a check-in to keep the team updated on the project's latest progress."
-    : `${championName || "The project champion"} needs to post a check-in to keep the team updated on the project's latest progress.`;
+    ? t("Post a check-in to keep the team updated on the project's latest progress.")
+    : championName
+      ? t("{{championName}} needs to post a check-in to keep the team updated on the project's latest progress.", {
+          championName,
+        })
+      : t("The project champion needs to post a check-in to keep the team updated on the project's latest progress.");
 
   if (variant === "compact") {
     const compactChampionName = compactPersonName(championName);
     const compactDescription = canPost
-      ? "Post the update to keep the team current."
-      : `${compactChampionName || "The champion"} needs to post the update.`;
+      ? t("Post the update to keep the team current.")
+      : compactChampionName
+        ? t("{{championName}} needs to post the update.", { championName: compactChampionName })
+        : t("The champion needs to post the update.");
 
     return (
       <div
@@ -35,7 +43,7 @@ export function CheckInOverdueCallout(props: Props) {
         <div className="flex items-start gap-2">
           <IconAlertTriangleFilled aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
-            <div className="font-semibold">Check-in overdue</div>
+            <div className="font-semibold">{t("Check-in overdue")}</div>
             <div className="mt-1">{compactDescription}</div>
           </div>
         </div>
@@ -47,7 +55,7 @@ export function CheckInOverdueCallout(props: Props) {
     <div className={props.className}>
       <WarningCallout
         testId="overdue-check-in-callout"
-        message="Project check-in is overdue"
+        message={t("Project check-in is overdue")}
         description={description}
       />
     </div>

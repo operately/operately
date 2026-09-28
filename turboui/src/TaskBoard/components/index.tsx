@@ -344,7 +344,7 @@ export function TaskBoard({
               {/* If no tasks at all */}
               {showNoTasksMsg && (
                 <li className="py-4 text-center text-content-subtle">
-                  Add the first task to start breaking down the work.
+                  {t("Add the first task to start breaking down the work.")}
                 </li>
               )}
 

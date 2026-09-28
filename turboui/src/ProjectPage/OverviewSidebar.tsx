@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { ActionList } from "../ActionList";
 import { SecondaryButton } from "../Button";
@@ -53,29 +54,32 @@ export function OverviewSidebar(props: ProjectPage.State) {
 }
 
 function CheckInsSection(props: ProjectPage.State) {
+  const { t } = useTranslation();
   const checkIns = props.checkIns || [];
   const isClosed = props.state === "closed";
   const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
   const viewerCanCheckIn = viewerCanPostCheckIn(props);
   const championFirstName = props.champion?.fullName?.split(" ")[0];
 
-  let zeroStateCopy = "Weekly check-ins keep everyone in the loop. Updates will appear here.";
+  let zeroStateCopy = t("Weekly check-ins keep everyone in the loop. Updates will appear here.");
 
   if (isClosed) {
-    zeroStateCopy = "This project is closed. Earlier check-ins stay available for reference.";
+    zeroStateCopy = t("This project is closed. Earlier check-ins stay available for reference.");
   } else if (viewerCanCheckIn) {
-    zeroStateCopy = "Share the first update to set the project status and start the weekly cadence.";
+    zeroStateCopy = t("Share the first update to set the project status and start the weekly cadence.");
   } else if (championFirstName) {
-    zeroStateCopy = `${championFirstName} hasn't shared a check-in yet. Updates will land here soon.`;
+    zeroStateCopy = t("{{championName}} hasn't shared a check-in yet. Updates will land here soon.", {
+      championName: championFirstName,
+    });
   }
 
   const header = (
     <div className="flex items-center gap-2">
-      <span>Last update</span>
+      <span>{t("Last update")}</span>
       {viewerCanCheckIn && (
         <span className="shrink-0">
           <SecondaryButton size="xxs" linkTo={props.newCheckInLink} testId="sidebar-check-in-button">
-            Check in
+            {t("Check in")}
           </SecondaryButton>
         </span>
       )}
@@ -102,45 +106,47 @@ function CheckInsSection(props: ProjectPage.State) {
 }
 
 function ParentGoal(props: ProjectPage.State) {
+  const { t } = useTranslation();
   if (!props.parentGoal && !props.permissions.canEdit) {
     return null;
   }
 
   return (
-    <SidebarSection title="Parent goal">
+    <SidebarSection title={t("Parent goal")}>
       <GoalField
         testId="parent-goal-field"
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
         readonly={!props.permissions.canEdit}
-        emptyStateMessage="Set parent goal"
-        emptyStateReadOnlyMessage="No parent goal"
+        emptyStateMessage={t("Set parent goal")}
+        emptyStateReadOnlyMessage={t("No parent goal")}
       />
     </SidebarSection>
   );
 }
 
 function ProjectDates(props: ProjectPage.State) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
-      <SidebarSection title="Start date">
+      <SidebarSection title={t("Start date")}>
         <DateField
           date={props.startedAt || null}
           onDateSelect={props.setStartedAt || (() => {})}
           readonly={!props.permissions.canEdit}
-          placeholder="Set start date"
+          placeholder={t("Set start date")}
           showOverdueWarning={false}
           useStartOfPeriod={true}
           testId="project-start-date"
         />
       </SidebarSection>
-      <SidebarSection title="Due date">
+      <SidebarSection title={t("Due date")}>
         <DateField
           date={props.dueAt || null}
           onDateSelect={props.setDueAt || (() => {})}
           readonly={!props.permissions.canEdit}
-          placeholder="Set due date"
+          placeholder={t("Set due date")}
           testId="project-due-date"
           showOverdueWarning={props.state === "active"}
           showOverdueMessage={props.state === "active"}
@@ -151,19 +157,21 @@ function ProjectDates(props: ProjectPage.State) {
 }
 
 function Champion(props: ProjectPage.State) {
+  const { t } = useTranslation();
   const readonly = !props.permissions.hasFullAccess || !("setChampion" in props) || !("championSearch" in props);
   return (
     <SidebarSection
       title={
         <div className="flex items-center gap-2">
-          <span>Champion</span>
+          <span>{t("Champion")}</span>
           <Tooltip
             content={
               <div className="max-w-xs">
-                <div className="font-semibold mb-2">Project champion</div>
+                <div className="font-semibold mb-2">{t("Project champion")}</div>
                 <div className="text-sm">
-                  The project owner accountable for completion. Plans, assigns responsibilities, and submits weekly
-                  check-ins.
+                  {t(
+                    "The project owner accountable for completion. Plans, assigns responsibilities, and submits weekly check-ins.",
+                  )}
                 </div>
               </div>
             }
@@ -178,8 +186,8 @@ function Champion(props: ProjectPage.State) {
           testId="champion-field"
           person={props.champion}
           readonly={true}
-          emptyStateMessage="Set champion"
-          emptyStateReadOnlyMessage="No champion"
+          emptyStateMessage={t("Set champion")}
+          emptyStateReadOnlyMessage={t("No champion")}
         />
       ) : (
         <PersonField
@@ -187,8 +195,8 @@ function Champion(props: ProjectPage.State) {
           person={props.champion}
           setPerson={props.setChampion}
           searchData={props.championSearch}
-          emptyStateMessage="Set champion"
-          emptyStateReadOnlyMessage="No champion"
+          emptyStateMessage={t("Set champion")}
+          emptyStateReadOnlyMessage={t("No champion")}
         />
       )}
     </SidebarSection>
@@ -196,18 +204,21 @@ function Champion(props: ProjectPage.State) {
 }
 
 function Reviewer(props: ProjectPage.State) {
+  const { t } = useTranslation();
   const readonly = !props.permissions.hasFullAccess || !("setReviewer" in props) || !("reviewerSearch" in props);
   return (
     <SidebarSection
       title={
         <div className="flex items-center gap-2">
-          <span>Reviewer</span>
+          <span>{t("Reviewer")}</span>
           <Tooltip
             content={
               <div className="max-w-xs">
-                <div className="font-semibold mb-2">Project reviewer</div>
+                <div className="font-semibold mb-2">{t("Project reviewer")}</div>
                 <div className="text-sm">
-                  Provides feedback throughout the project, and is responsible for acknowledging weekly check-ins.
+                  {t(
+                    "Provides feedback throughout the project, and is responsible for acknowledging weekly check-ins.",
+                  )}
                 </div>
               </div>
             }
@@ -222,8 +233,8 @@ function Reviewer(props: ProjectPage.State) {
           testId="reviewer-field"
           person={props.reviewer || null}
           readonly={true}
-          emptyStateMessage="Set reviewer"
-          emptyStateReadOnlyMessage="No reviewer"
+          emptyStateMessage={t("Set reviewer")}
+          emptyStateReadOnlyMessage={t("No reviewer")}
         />
       ) : (
         <PersonField
@@ -231,8 +242,8 @@ function Reviewer(props: ProjectPage.State) {
           person={props.reviewer || null}
           setPerson={props.setReviewer || (() => {})}
           searchData={props.reviewerSearch}
-          emptyStateMessage="Set reviewer"
-          emptyStateReadOnlyMessage="No reviewer"
+          emptyStateMessage={t("Set reviewer")}
+          emptyStateReadOnlyMessage={t("No reviewer")}
         />
       )}
     </SidebarSection>
@@ -240,6 +251,7 @@ function Reviewer(props: ProjectPage.State) {
 }
 
 function Privacy(props: ProjectPage.State) {
+  const { t } = useTranslation();
   const [otherPeopleOpen, setOtherPeopleOpen] = React.useState(false);
 
   const openOtherPeople = () => {
@@ -248,7 +260,7 @@ function Privacy(props: ProjectPage.State) {
   };
 
   return (
-    <SidebarSection title="Privacy">
+    <SidebarSection title={t("Privacy")}>
       <PrivacyField
         testId="project-privacy-field"
         accessLevels={props.accessLevels}
@@ -263,7 +275,7 @@ function Privacy(props: ProjectPage.State) {
           underline="hover"
           className="text-xs"
         >
-          Who else has access?
+          {t("Who else has access?")}
         </DimmedActionLink>
       </div>
       <OtherPeopleWithAccessModal
@@ -307,32 +319,33 @@ function Contributors(props: ProjectPage.State) {
 }
 
 function Actions(props: ProjectPage.State) {
+  const { t } = useTranslation();
   const handleCopyURL = async () => {
     try {
       await navigator.clipboard?.writeText(window.location.href);
-      showSuccessToast("Success", "Project URL copied to clipboard");
+      showSuccessToast(t("Success"), t("Project URL copied to clipboard"));
     } catch {
-      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+      showErrorToast(t("Copy failed"), t("Unable to copy URL to clipboard"));
     }
   };
 
   const actions = [
     {
       type: "action" as const,
-      label: "Copy URL",
+      label: t("Copy URL"),
       onClick: handleCopyURL,
       icon: IconCopy,
     },
     {
       type: "action" as const,
-      label: "Move to another space",
+      label: t("Move to another space"),
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
       hidden: !props.permissions.hasFullAccess || !("space" in props),
     },
     {
       type: "link" as const,
-      label: "Pause project",
+      label: t("Pause project"),
       link: props.pauseLink,
       icon: IconPlayerPause,
       testId: "pause-project",
@@ -340,7 +353,7 @@ function Actions(props: ProjectPage.State) {
     },
     {
       type: "link" as const,
-      label: "Close project",
+      label: t("Close project"),
       link: props.closeLink,
       icon: IconCircleCheck,
       testId: "close-project",
@@ -348,7 +361,7 @@ function Actions(props: ProjectPage.State) {
     },
     {
       type: "link" as const,
-      label: "Resume project",
+      label: t("Resume project"),
       link: props.reopenLink,
       icon: IconRotateDot,
       testId: "resume-project",
@@ -356,7 +369,7 @@ function Actions(props: ProjectPage.State) {
     },
     {
       type: "action" as const,
-      label: "Export as Markdown",
+      label: t("Export as Markdown"),
       onClick: props.exportMarkdown,
       icon: IconFileExport,
       testId: "export-as-markdown",
@@ -364,7 +377,7 @@ function Actions(props: ProjectPage.State) {
     },
     {
       type: "action" as const,
-      label: "Save as template",
+      label: t("Save as template"),
       onClick: props.openSaveAsTemplateModal ?? (() => undefined),
       icon: IconStack2,
       testId: "save-project-as-template-action",
@@ -372,7 +385,7 @@ function Actions(props: ProjectPage.State) {
     },
     {
       type: "action" as const,
-      label: "Delete",
+      label: t("Delete"),
       onClick: props.openDeleteModal,
       icon: IconTrash,
       hidden: !props.permissions.hasFullAccess,
@@ -386,7 +399,7 @@ function Actions(props: ProjectPage.State) {
   }
 
   return (
-    <SidebarSection title="Actions" testId="actions-section">
+    <SidebarSection title={t("Actions")} testId="actions-section">
       <ActionList actions={visibleActions} />
     </SidebarSection>
   );

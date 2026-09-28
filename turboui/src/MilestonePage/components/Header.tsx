@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { IconFlag, IconFlagFilled } from "../../icons";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function Header({ variant, title, canEdit, status = "pending", onMilestoneTitleChange }: Props) {
+  const { t } = useTranslation();
   const showStatus = variantFeatures(variant).showStatus;
   const isCompleted = status === "done";
 
@@ -40,7 +42,7 @@ export function Header({ variant, title, canEdit, status = "pending", onMileston
         {showStatus && (
           <StatusBadge
             status={isCompleted ? "completed" : "in_progress"}
-            customLabel={isCompleted ? undefined : "Active"}
+            customLabel={isCompleted ? undefined : t("Active")}
             hideIcon={true}
             className="hidden sm:inline-flex sm:ml-2"
           />

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useRef, useState } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -14,6 +15,7 @@ interface AddMilestoneFormProps {
 }
 
 export function AddMilestoneForm({ variant, isOpen, onClose, onCreate }: AddMilestoneFormProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [dueOffsetDays, setDueOffsetDays] = useState<number | null>(null);
@@ -74,7 +76,7 @@ export function AddMilestoneForm({ variant, isOpen, onClose, onCreate }: AddMile
           variant="form-field"
           text={title}
           onChange={setTitle}
-          placeholder="Milestone name"
+          placeholder={t("Milestone name")}
           autofocus
           onChangeOnType
           trimBeforeSave
@@ -85,7 +87,7 @@ export function AddMilestoneForm({ variant, isOpen, onClose, onCreate }: AddMile
           <DateField
             date={dueDate}
             onDateSelect={setDueDate}
-            placeholder="Set target date"
+            placeholder={t("Set target date")}
             testId="new-milestone-due-date"
             calendarOnly
           />
@@ -93,19 +95,19 @@ export function AddMilestoneForm({ variant, isOpen, onClose, onCreate }: AddMile
           <RelativeDayField
             value={dueOffsetDays}
             onChange={setDueOffsetDays}
-            placeholder="Set relative date"
+            placeholder={t("Set relative date")}
             testId="new-milestone-due-offset"
           />
         )}
         <div className="flex items-center justify-between gap-4">
-          <SwitchToggle testId="add-more-switch" value={createMore} setValue={setCreateMore} label="Create more" />
+          <SwitchToggle testId="add-more-switch" value={createMore} setValue={setCreateMore} label={t("Create more")} />
           <div className="flex-1" />
           <div className="flex gap-2">
             <SecondaryButton size="sm" onClick={onClose} type="button">
-              Cancel
+              {t("Cancel")}
             </SecondaryButton>
             <PrimaryButton size="sm" type="submit" disabled={!title.trim()}>
-              Add milestone
+              {t("Add milestone")}
             </PrimaryButton>
           </div>
         </div>

@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import { MilestoneCreationModal } from "../components/MilestoneCreationModal";
 import * as Types from "../types";
 import { PrimaryButton } from "../../Button";
+import { createInstance } from "i18next";
+import { I18nextProvider } from "react-i18next";
+import { expect, userEvent, within } from "storybook/test";
+import { i18nOptions } from "../../i18nOptions";
 
 /**
  * MilestoneCreationModal is a dialog for creating new milestones in the TaskBoard component.
@@ -38,9 +42,9 @@ export const Default: Story = {
       };
 
       console.log("=== Created new milestone ===\n", JSON.stringify(newMilestone, null, 2));
-      
+
       // Add the new milestone to the list
-      setCreatedMilestones(prev => [...prev, newMilestone]);
+      setCreatedMilestones((prev) => [...prev, newMilestone]);
     };
 
     return (
@@ -53,7 +57,7 @@ export const Default: Story = {
             onCreateMilestone={handleCreateMilestone}
           />
         </div>
-        
+
         {createdMilestones.length > 0 && (
           <div className="mt-8 p-4 border border-surface-outline rounded-md">
             <h3 className="text-lg font-semibold mb-2">Created Milestones</h3>
@@ -99,5 +103,45 @@ export const OpenByDefault: Story = {
         />
       </div>
     );
+  },
+};
+
+const expandedCatalog = createInstance();
+void expandedCatalog.init({
+  ...i18nOptions,
+  initImmediate: false,
+  resources: {
+    en: {
+      translation: {
+        "Create Milestone": "Create a new milestone for the project",
+        "Milestone name": "Name of the new project milestone",
+        "Enter milestone name": "Enter a descriptive name for this milestone",
+        "Create more": "Continue creating milestones",
+        "Create milestone": "Create this new project milestone",
+        Cancel: "Cancel milestone creation",
+        Close: "Close the milestone creation dialog",
+      },
+    },
+  },
+});
+
+export const ExpandedCatalog: Story = {
+  render: () => (
+    <I18nextProvider i18n={expandedCatalog}>
+      <MilestoneCreationModal isOpen onClose={() => {}} onCreateMilestone={() => {}} />
+    </I18nextProvider>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+    const dialog = await page.findByRole("dialog", { name: "Create a new milestone for the project" });
+    const controls = within(dialog);
+    await expect(controls.getByRole("button", { name: "Close the milestone creation dialog" })).toBeVisible();
+    await userEvent.type(
+      controls.getByPlaceholderText("Enter a descriptive name for this milestone"),
+      "Release readiness",
+    );
+    await userEvent.tab();
+    await expect(controls.getByRole("button", { name: "Create this new project milestone" })).toBeEnabled();
+    await expect(dialog.scrollWidth).toBeLessThanOrEqual(dialog.clientWidth);
   },
 };

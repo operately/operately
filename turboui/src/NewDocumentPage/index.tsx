@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Link } from "../Link";
@@ -49,6 +50,7 @@ export namespace NewDocumentPage {
 }
 
 export function NewDocumentPage(props: NewDocumentPage.Props) {
+  const { t } = useTranslation();
   const form = Forms.useForm<NewDocumentPage.Values>({
     fields: {
       title: "",
@@ -68,16 +70,21 @@ export function NewDocumentPage(props: NewDocumentPage.Props) {
   });
 
   return (
-    <Page title={props.pageTitle} size="medium" navigation={props.navigation} testId={props.testId ?? "new-document-page"}>
+    <Page
+      title={props.pageTitle}
+      size="medium"
+      navigation={props.navigation}
+      testId={props.testId ?? "new-document-page"}
+    >
       <Forms.Form form={form}>
         <div className="px-12 py-10">
           <Forms.FieldGroup>
-            <Forms.TitleInput field="title" placeholder="Title..." autoFocus />
+            <Forms.TitleInput field="title" placeholder={t("Title...")} autoFocus />
 
             <Forms.RichTextArea
               field="content"
               richTextHandlers={props.richTextHandlers}
-              placeholder="Write here..."
+              placeholder={t("Write here...")}
               hideBorder
               showToolbarTopBorder
               fontSize="text-lg"
@@ -111,6 +118,7 @@ function FormActions({
   cancelLink: string;
   hideDraftActions: boolean;
 }) {
+  const { t } = useTranslation();
   const form = Forms.useFormContext();
 
   return (
@@ -124,14 +132,19 @@ function FormActions({
           onClick={() => form.actions.submit(false)}
         />
         {!hideDraftActions && (
-          <Forms.SubmitButton name="save-as-draft" text="Save as draft" buttonSize="base" onClick={() => form.actions.submit(true)} />
+          <Forms.SubmitButton
+            name="save-as-draft"
+            text={t("Save as draft")}
+            buttonSize="base"
+            onClick={() => form.actions.submit(true)}
+          />
         )}
       </div>
 
       <div className="mt-4">
         Or,{" "}
         <Link to={cancelLink} testId="discard" className="font-medium">
-          Discard this document
+          {t("Discard this document")}
         </Link>
       </div>
     </div>

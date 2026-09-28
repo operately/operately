@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { ErrorCallout } from "../Callouts";
@@ -21,6 +22,7 @@ import { useKpiFields, type KpiFields } from "./useKpiFields";
 // header + tool title) mirrors the other space tools such as the Work Map and
 // Tasks/Kanban pages so the experience feels consistent across a space.
 export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
+  const { t } = useTranslation();
   const canManage = props.canManage ?? true;
 
   const [isNewOpen, setIsNewOpen] = React.useState(false);
@@ -59,12 +61,12 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   if (canManage && contentReady) {
     if (selectedKpi) {
       primaryAction = {
-        label: "Log update",
+        label: t("Log update"),
         onClick: () => setLogKpiId(selectedKpi.id),
         testId: "kpi-detail-log-update",
       };
     } else {
-      primaryAction = { label: "New KPI", onClick: () => setIsNewOpen(true), testId: "new-kpi" };
+      primaryAction = { label: t("New KPI"), onClick: () => setIsNewOpen(true), testId: "new-kpi" };
     }
   }
 
@@ -166,6 +168,7 @@ interface PageHeaderProps {
 // KpiDetail), so the header collapses to the trail back to the list with the
 // page action beside it.
 function PageHeader(props: PageHeaderProps) {
+  const { t } = useTranslation();
   if (props.isKpiOpen) {
     return (
       <header className="border-b border-surface-outline px-4 py-3">
@@ -184,7 +187,7 @@ function PageHeader(props: PageHeaderProps) {
       <div className="mt-1 flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
           <IconChartColumn size={20} className="shrink-0 text-content-dimmed" />
-          <h1 className="text-sm font-bold text-content-accent sm:text-base">KPIs</h1>
+          <h1 className="text-sm font-bold text-content-accent sm:text-base">{t("KPIs")}</h1>
         </div>
 
         <PrimaryAction action={props.primaryAction} />
@@ -258,6 +261,7 @@ interface KpisContentProps extends SpaceKpisPageNS.Props {
 }
 
 function KpisContent(props: KpisContentProps) {
+  const { t } = useTranslation();
   const { selectedKpi, openKpi } = props;
 
   if (props.loading) {
@@ -265,7 +269,7 @@ function KpisContent(props: KpisContentProps) {
   }
 
   if (props.error) {
-    return <ErrorCallout message="Couldn't load KPIs" description={props.error} testId="kpis-error" />;
+    return <ErrorCallout message={t("Couldn't load KPIs")} description={props.error} testId="kpis-error" />;
   }
 
   if (selectedKpi && openKpi) {

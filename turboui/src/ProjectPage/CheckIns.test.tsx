@@ -5,6 +5,26 @@ import "@testing-library/jest-dom";
 import { CheckIns } from "./CheckIns";
 import type { ProjectPage } from ".";
 import { generatePermissions } from "../utils/storybook/permissions";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
+
+it("uses substituted project check-in and error copy", () => {
+  i18n.addResourceBundle(
+    "en",
+    "translation",
+    { "Post check-in": "Expanded post project check-in", "Unable to load check-ins.": "Translated check-in error" },
+    true,
+    true,
+  );
+  render(
+    <MemoryRouter>
+      <CheckIns {...props} checkInsError />
+    </MemoryRouter>,
+  );
+  expect(screen.getByRole("link", { name: "Expanded post project check-in" })).toHaveAttribute("href", "/new");
+  expect(screen.getByRole("alert")).toHaveTextContent("Translated check-in error");
+});
 
 jest.mock("./CheckInOverdueCallout", () => ({ CheckInOverdueCallout: () => null }));
 const props = {

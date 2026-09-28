@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Time from "@/utils/time";
 
@@ -17,13 +18,14 @@ interface Props {
 }
 
 export function AllDoneState(props: Props) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col h-full">
       <Title title={props.title} />
 
       <div className="bg-surface-dimmed rounded mx-2 flex-1 flex flex-col px-2 py-4 items-center">
         <IconTrophy size={35} />
-        <div className="text-sm font-bold mt-3 mb-1">All done!</div>
+        <div className="text-sm font-bold mt-3 mb-1">{t("All done!")}</div>
         <div className="text-xs mb-1">{message(props)}</div>
       </div>
     </div>

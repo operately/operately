@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
@@ -10,6 +11,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { useNavigate } from "react-router";
 
 export function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
 
@@ -28,11 +30,11 @@ export function Page() {
   React.useEffect(() => {
     if (!creationFailed) return;
 
-    const id = showErrorToast("Couldn't load options for adding goals and projects.", "Try loading them again.", {
+    const id = showErrorToast(t("Couldn't load options for adding goals and projects."), t("Try loading them again."), {
       id: `space-work-map-creation-${space.id}`,
       duration: Infinity,
       action: {
-        label: "Try again",
+        label: t("Try again"),
         onClick: () => {
           void retryCreation.current();
         },
@@ -64,7 +66,7 @@ export function Page() {
 
   return (
     <WorkMapPage
-      title="Work Map"
+      title={t("Work Map")}
       addingEnabled={canAddItem}
       creationLoading={creationData.isLoading}
       creationError={creationFailed}

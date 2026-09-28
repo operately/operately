@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Avatar } from "../Avatar";
@@ -19,6 +20,7 @@ interface KpiListProps {
 const ROW_GRID = "grid grid-cols-[minmax(0,1fr)_14rem_8rem_11rem] items-center";
 
 export function KpiList({ kpis, canManage, onNewKpi }: KpiListProps) {
+  const { t } = useTranslation();
   if (kpis.length === 0) {
     return <EmptyState canManage={canManage} onNewKpi={onNewKpi} />;
   }
@@ -29,10 +31,10 @@ export function KpiList({ kpis, canManage, onNewKpi }: KpiListProps) {
         <div
           className={`${ROW_GRID} border-b border-stroke-base bg-surface-dimmed text-left text-xs uppercase tracking-wide text-content-dimmed`}
         >
-          <div className="px-4 py-2 font-medium">KPI</div>
-          <div className="px-4 py-2 font-medium">Champion</div>
-          <div className="px-4 py-2 font-medium">History</div>
-          <div className="px-4 py-2 text-right font-medium">Latest value</div>
+          <div className="px-4 py-2 font-medium">{t("KPI")}</div>
+          <div className="px-4 py-2 font-medium">{t("Champion")}</div>
+          <div className="px-4 py-2 font-medium">{t("History")}</div>
+          <div className="px-4 py-2 text-right font-medium">{t("Latest value")}</div>
         </div>
 
         {kpis.map((kpi) => (
@@ -44,6 +46,7 @@ export function KpiList({ kpis, canManage, onNewKpi }: KpiListProps) {
 }
 
 function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
+  const { t } = useTranslation();
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
 
@@ -64,7 +67,7 @@ function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
             <span className="truncate text-content-base">{kpi.champion.fullName}</span>
           </div>
         ) : (
-          <span className="text-content-subtle">Unassigned</span>
+          <span className="text-content-subtle">{t("Unassigned")}</span>
         )}
       </div>
 
@@ -81,7 +84,7 @@ function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
             <TrendIndicator delta={trend} />
           </div>
         ) : (
-          <span className="text-content-subtle">No data</span>
+          <span className="text-content-subtle">{t("No data")}</span>
         )}
       </div>
     </DivLink>
@@ -89,15 +92,16 @@ function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
 }
 
 function EmptyState({ canManage, onNewKpi }: { canManage: boolean; onNewKpi: () => void }) {
+  const { t } = useTranslation();
   return (
     <div
       className="flex flex-col items-center justify-center rounded-lg border border-dashed border-surface-outline bg-surface-dimmed px-6 py-16 text-center"
       data-test-id="kpi-list-empty"
     >
       <IconChartColumn size={40} className="text-content-subtle" />
-      <h3 className="mt-4 font-bold text-content-accent">No KPIs yet</h3>
+      <h3 className="mt-4 font-bold text-content-accent">{t("No KPIs yet")}</h3>
       <p className="mt-1 max-w-sm text-sm text-content-dimmed">
-        Track key metrics for this space and record updates over time.
+        {t("Track key metrics for this space and record updates over time.")}
       </p>
       {canManage && (
         <button
@@ -106,7 +110,7 @@ function EmptyState({ canManage, onNewKpi }: { canManage: boolean; onNewKpi: () 
           onClick={onNewKpi}
           data-test-id="empty-new-kpi"
         >
-          Add the first KPI
+          {t("Add the first KPI")}
         </button>
       )}
     </div>
