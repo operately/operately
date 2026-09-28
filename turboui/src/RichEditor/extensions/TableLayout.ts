@@ -6,6 +6,9 @@ export class TableLayout {
   private frame: number | undefined;
   private observer: ResizeObserver | undefined;
   private destroyed = false;
+  private cellWidths = new WeakMap<Node, number>();
+  private measuredContainerWidth = 0;
+  private measuredViewportWidth = 0;
 
   constructor(
     private wrapper: HTMLElement,
@@ -18,8 +21,8 @@ export class TableLayout {
       this.observer.observe(wrapper);
     }
     win?.addEventListener("resize", this.schedule);
-    wrapper.ownerDocument.fonts?.addEventListener("loadingdone", this.schedule);
-    void wrapper.ownerDocument.fonts?.ready.then(() => this.schedule());
+    wrapper.ownerDocument.fonts?.addEventListener("loadingdone", this.invalidateMeasurements);
+    void wrapper.ownerDocument.fonts?.ready.then(() => this.invalidateMeasurements());
     this.schedule();
   }
 
@@ -36,34 +39,18 @@ export class TableLayout {
     const available = this.wrapper.clientWidth;
     if (!available || !this.table.rows.length) return;
 
-    // A hidden table keeps the same fonts/marks but removes wrapping and computed columns.
-    const measure = this.table.cloneNode(true) as HTMLTableElement;
-    measure.removeAttribute("id");
-    measure.setAttribute("aria-hidden", "true");
-    measure.querySelectorAll("colgroup").forEach((element) => element.remove());
-    Object.assign(measure.style, {
-      position: "fixed",
-      left: "-100000px",
-      top: "0",
-      visibility: "hidden",
-      pointerEvents: "none",
-      tableLayout: "auto",
-      width: "max-content",
-      minWidth: "0",
-      maxWidth: "none",
-    });
-    measure.querySelectorAll<HTMLElement>("td, th").forEach((cell) => {
-      cell.style.whiteSpace = "pre";
-    });
-    this.wrapper.appendChild(measure);
-    const naturalWidths = Array.from(measure.rows[0]?.cells ?? [], (cell) => cell.getBoundingClientRect().width);
-    measure.remove();
+    const viewportWidth = this.wrapper.ownerDocument.defaultView?.innerWidth ?? 768;
+    if (available !== this.measuredContainerWidth || viewportWidth !== this.measuredViewportWidth) {
+      this.cellWidths = new WeakMap();
+      this.measuredContainerWidth = available;
+      this.measuredViewportWidth = viewportWidth;
+    }
+    const naturalWidths = this.measureColumnWidths();
 
     // Collapsed outer borders sit outside the column widths; reserve their pixel to avoid clipping.
     const cell = this.table.rows[0]?.cells[0];
     const border = cell ? parseFloat(getComputedStyle(cell).borderLeftWidth) || 0 : 0;
     // On mobile, prefer horizontal scrolling over columns too narrow for readable text.
-    const viewportWidth = this.wrapper.ownerDocument.defaultView?.innerWidth ?? 768;
     const minimumWidth = viewportWidth < 768 ? 160 : undefined;
     const widths = allocateColumnWidths(naturalWidths, available - border, minimumWidth);
     const columns = this.table.querySelectorAll<HTMLElement>("colgroup > col");
@@ -78,13 +65,70 @@ export class TableLayout {
     this.table.style.minWidth = "";
   }
 
+  private invalidateMeasurements = () => {
+    this.cellWidths = new WeakMap();
+    this.schedule();
+  };
+
+  private measureColumnWidths(): number[] {
+    const pending: { node: Node; cell: HTMLTableCellElement }[] = [];
+    this.node().forEach((row, _offset, rowIndex) => {
+      row.forEach((node, _offset, column) => {
+        if (this.cellWidths.has(node)) return;
+        const cell = this.table.rows[rowIndex]?.cells[column];
+        if (cell) pending.push({ node, cell });
+      });
+    });
+    this.measureCells(pending);
+
+    const widths: number[] = [];
+    this.node().forEach((row) => {
+      row.forEach((cell, _offset, column) => {
+        widths[column] = Math.max(widths[column] ?? 0, this.cellWidths.get(cell) ?? 0);
+      });
+    });
+    return widths;
+  }
+
+  /** Immutable cell nodes let ordinary typing reuse every unchanged cell's measurement. */
+  private measureCells(pending: { node: Node; cell: HTMLTableCellElement }[]) {
+    if (!pending.length) return;
+    const container = this.wrapper.ownerDocument.createElement("div");
+    container.setAttribute("aria-hidden", "true");
+    Object.assign(container.style, {
+      position: "fixed",
+      left: "-100000px",
+      top: "0",
+      visibility: "hidden",
+      pointerEvents: "none",
+    });
+    const measurements = pending.map(({ node, cell }) => {
+      // Isolate each cell so another column cannot stretch its natural width.
+      const table = this.table.cloneNode(false) as HTMLTableElement;
+      table.removeAttribute("id");
+      Object.assign(table.style, { tableLayout: "auto", width: "max-content", minWidth: "0", maxWidth: "none" });
+      const clone = cell.cloneNode(true) as HTMLTableCellElement;
+      clone.style.whiteSpace = "pre";
+      table.createTBody().insertRow().appendChild(clone);
+      container.appendChild(table);
+      return { node, clone };
+    });
+    this.wrapper.appendChild(container);
+    try {
+      // Batch DOM writes before geometry reads to force layout only once.
+      measurements.forEach(({ node, clone }) => this.cellWidths.set(node, clone.getBoundingClientRect().width));
+    } finally {
+      container.remove();
+    }
+  }
+
   destroy() {
     this.destroyed = true;
     const win = this.wrapper.ownerDocument.defaultView;
     if (this.frame !== undefined) win?.cancelAnimationFrame(this.frame);
     this.observer?.disconnect();
     win?.removeEventListener("resize", this.schedule);
-    this.wrapper.ownerDocument.fonts?.removeEventListener("loadingdone", this.schedule);
+    this.wrapper.ownerDocument.fonts?.removeEventListener("loadingdone", this.invalidateMeasurements);
   }
 }
 

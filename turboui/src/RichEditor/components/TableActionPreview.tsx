@@ -1,5 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { TableMap } from "@tiptap/pm/tables";
 import type { TableAction, TableTarget } from "./tableActions";
 
 type Rect = { left: number; top: number; width: number; height: number };
@@ -62,9 +63,13 @@ function previewRect(target: TableTarget, action: TableAction): Rect | null {
       right = cell.right + 1;
       break;
     case "deleteRow":
-      if (target.rows > 1) {
-        top = row.top;
-        bottom = row.bottom;
+      {
+        // Tiptap deletes the full table-map range of a row-spanning cell.
+        const range = TableMap.get(target.node).findCell(target.cellPosition - target.position - 1);
+        if (range.bottom - range.top < target.rows) {
+          top = target.table.rows[range.top]?.getBoundingClientRect().top ?? cell.top;
+          bottom = target.table.rows[range.bottom - 1]?.getBoundingClientRect().bottom ?? cell.bottom;
+        }
       }
       break;
     case "deleteColumn":

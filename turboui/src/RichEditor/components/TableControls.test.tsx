@@ -357,3 +357,55 @@ it("offers deletion Undo until another edit makes it stale", async () => {
   await waitFor(() => expect(screen.queryByRole("status")).not.toBeInTheDocument());
   expect(editor.getText()).toContain("Newer edit");
 });
+
+it.each([2, 3])("previews all %i rows covered by a legacy spanning cell before deleting", async (span) => {
+  const user = userEvent.setup();
+  render(<Harness />);
+  const makeCell = (text: string, rowspan = 1) => ({
+    type: "tableCell",
+    attrs: { rowspan },
+    content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+  });
+  act(() =>
+    editor.commands.setContent({
+      type: "doc",
+      content: [
+        {
+          type: "table",
+          content: [0, 1, 2].map((row) => ({
+            type: "tableRow",
+            content:
+              row === 0
+                ? [makeCell("Merged", span), makeCell("First")]
+                : row < span
+                  ? [makeCell("Other")]
+                  : [makeCell("Remaining"), makeCell("Last")],
+          })),
+        },
+      ],
+    }),
+  );
+  select();
+  const rect = (top: number, height: number) => ({
+    left: 100,
+    right: 500,
+    top,
+    bottom: top + height,
+    width: 400,
+    height,
+    x: 100,
+    y: top,
+    toJSON: () => ({}),
+  });
+  editor.view.dom
+    .querySelectorAll("table, .tableWrapper")
+    .forEach((node) => jest.spyOn(node, "getBoundingClientRect").mockReturnValue(rect(100, 120)));
+  editor.view.dom
+    .querySelectorAll("tr")
+    .forEach((node, row) => jest.spyOn(node, "getBoundingClientRect").mockReturnValue(rect(100 + row * 40, 40)));
+  jest.spyOn(cell(0), "getBoundingClientRect").mockReturnValue(rect(100, span * 40));
+  fireEvent.pointerEnter(screen.getByRole("button", { name: "Delete row" }));
+  expect(preview()).toHaveStyle({ top: "100px", height: `${span * 40}px`, width: "400px" });
+  await user.click(screen.getByRole("button", { name: "Delete row" }));
+  expect(editor.view.dom.querySelectorAll("tr")).toHaveLength(3 - span);
+});
