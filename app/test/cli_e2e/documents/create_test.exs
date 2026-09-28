@@ -34,4 +34,9 @@ defmodule Operately.CliE2E.Documents.CreateTest do
     |> Steps.create_document_for_parent()
     |> Steps.assert_document_created_successfully()
   end
+
+  test "Markdown table files survive CLI create, update, and backend export", ctx do
+    ctx
+    |> Steps.round_trip_table_files()
+  end
 end

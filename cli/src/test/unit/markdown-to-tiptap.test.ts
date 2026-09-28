@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it } from "node:test";
 import * as assert from "node:assert";
 import { convertMarkdownToTiptap } from "../../core/markdown-to-tiptap";
@@ -160,3 +162,90 @@ it("preserves nested and mixed task lists, loose paragraphs, and inline formatti
   assert.ok(json.includes('"href":"https://example.com"'));
   assert.ok(json.includes('"type":"bulletList"'));
 });
+
+const tableFixtures = JSON.parse(
+  readFileSync(resolve(__dirname, "../../../../app/test/fixtures/rich_text/tables.json"), "utf8"),
+);
+
+for (const fixture of tableFixtures) {
+  it(`imports table export: ${fixture.name}`, () => {
+    const doc = convertMarkdownToTiptap(fixture.markdown) as any;
+    const table = doc.content.find((node: any) => node.type === "table");
+    assert.ok(table);
+    assert.ok(table.content[0].content.every((cell: any) => cell.type === "tableHeader"));
+    const original = fixture.document.content[1];
+    const headerless = original.content[0].content.some((cell: any) => cell.type !== "tableHeader");
+    assert.strictEqual(table.content.length, original.content.length + (headerless ? 1 : 0));
+    const cellText = (node: any): string => {
+      if (node.type === "hardBreak") return "\n";
+      if (node.type === "mention") return `@${node.attrs.label}`;
+      if (node.type === "blob") return node.attrs.title;
+      if (node.type === "text") return node.text;
+      return (node.content ?? [])
+        .map(cellText)
+        .join(node.type === "tableCell" || node.type === "tableHeader" ? "\n" : "");
+    };
+    const expected = original.content.map((row: any) => row.content.map(cellText));
+    if (headerless) expected.unshift(original.content[0].content.map(() => ""));
+    assert.deepStrictEqual(
+      table.content.map((row: any) => row.content.map(cellText)),
+      expected,
+    );
+    assert.strictEqual(doc.content[0].content[0].text, "Before");
+    assert.strictEqual(doc.content.at(-1).content[0].text, "After");
+  });
+}
+
+it("pads short rows and discards alignment", () => {
+  const doc = convertMarkdownToTiptap("| A | B |\n| :--- | ---: |\n| one |") as any;
+  const [header, row] = doc.content[0].content;
+  assert.strictEqual(row.content.length, 2);
+  assert.deepStrictEqual(row.content[1].content, [{ type: "paragraph" }]);
+  for (const cell of [...header.content, ...row.content]) {
+    assert.strictEqual(cell.attrs.colspan, 1);
+    assert.strictEqual(cell.attrs.rowspan, 1);
+    assert.strictEqual(cell.attrs.colwidth, null);
+    assert.strictEqual(cell.attrs.align, undefined);
+  }
+});
+
+it("rejects excess cells instead of silently truncating them", () => {
+  assert.throws(() => convertMarkdownToTiptap("| A | B |\n| --- | --- |\n| 1 | 2 | 3 |"), /table.*cells/i);
+});
+
+it("leaves ordinary pipe text and fenced tables alone", () => {
+  for (const markdown of [
+    "a | b\nc | d",
+    "```md\n| A | B |\n| --- | --- |\n| 1 | 2 | 3 |\n```",
+    "~~~\n\n| A |\n| --- |\n~~~",
+  ]) {
+    const doc = convertMarkdownToTiptap(markdown) as any;
+    assert.ok(doc.content.every((node: any) => node.type !== "table"));
+  }
+});
+
+const importFixtures = JSON.parse(
+  readFileSync(resolve(__dirname, "../../../../app/test/fixtures/rich_text/table_imports.json"), "utf8"),
+);
+for (const fixture of importFixtures) {
+  it(`shared table input: ${fixture.name}`, () => {
+    if (fixture.invalid) {
+      assert.throws(() => convertMarkdownToTiptap(fixture.markdown), /table.*cells/i);
+      return;
+    }
+    const table = (convertMarkdownToTiptap(fixture.markdown) as any).content[0];
+    const marks = new Set<string>();
+    const cells = table.content.map((row: any) =>
+      row.content.map((cell: any) =>
+        (cell.content[0].content ?? [])
+          .map((node: any) => {
+            for (const mark of node.marks ?? []) marks.add(mark.type);
+            return node.type === "hardBreak" ? "\n" : node.text;
+          })
+          .join(""),
+      ),
+    );
+    assert.deepStrictEqual(cells, fixture.cells);
+    assert.deepStrictEqual([...marks].sort(), [...fixture.marks].sort());
+  });
+}
