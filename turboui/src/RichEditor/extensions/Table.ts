@@ -6,6 +6,7 @@ import { Plugin, PluginKey, type Transaction } from "@tiptap/pm/state";
 import { isInTable, selectedRect } from "@tiptap/pm/tables";
 import type { EditorView, ViewMutationRecord } from "@tiptap/pm/view";
 import { normalizeTableHtml } from "../tablePaste";
+import { TableLayout } from "./TableLayout";
 
 const contentLoad = new PluginKey("tableContentLoad");
 
@@ -33,6 +34,7 @@ const TablePaste = Extension.create({
 
 class ScrollableTableView extends TableView {
   private settings: HTMLDivElement;
+  private layout: TableLayout;
   constructor(node: Node, cellMinWidth: number, view: EditorView, attributes: Record<string, unknown>) {
     super(node, cellMinWidth, view, attributes);
     // React renders edit-only controls here, outside the document's table content.
@@ -45,6 +47,17 @@ class ScrollableTableView extends TableView {
     this.dom.tabIndex = 0;
     this.dom.setAttribute("role", "region");
     this.dom.setAttribute("aria-label", "Table");
+    this.layout = new TableLayout(this.dom, this.table, () => this.node);
+  }
+
+  update(node: Node) {
+    const updated = super.update(node);
+    if (updated) this.layout.schedule();
+    return updated;
+  }
+
+  destroy() {
+    this.layout.destroy();
   }
 
   stopEvent(event: Event) {

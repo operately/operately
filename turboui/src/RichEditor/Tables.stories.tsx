@@ -33,23 +33,24 @@ function EmptyTableEditor({ compact = false }: { compact?: boolean }) {
 }
 
 export const Editable: Story = { render: () => <TableEditor /> };
-export const HoverInsertion: Story = {
-  render: () => <TableEditor />,
-  parameters: {
-    docs: {
-      description: {
-        story: "Hover over any table border for 200 ms, then click + to insert a row or column at that boundary.",
-      },
-    },
-  },
-};
-export const HoverDeletion: Story = {
+export const ActiveTableControls: Story = {
   render: () => <TableEditor />,
   parameters: {
     docs: {
       description: {
         story:
-          "Hover near the left or top edge for 500 ms to reveal row or column actions. Open a menu to highlight its target, add a row or column on either side, or choose Delete and use Undo to restore it.",
+          "Place the cursor in a table to show row, column, and settings controls. Hover or focus an action to preview its effect.",
+      },
+    },
+  },
+};
+export const CellMenu: Story = {
+  render: () => <TableEditor />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Right-click a cell or press Shift+F10 to open its actions. Alt+F10 focuses the table controls. The cog also offers all insertion directions for touch users.",
       },
     },
   },
@@ -77,7 +78,7 @@ export const TableSettings: Story = {
     docs: {
       description: {
         story:
-          "Each table has a settings cog for its header and deletion. The toolbar Table button always inserts another table, after the current table when the cursor is inside it.",
+          "Only the active table shows controls for its rows, columns, header, and deletion. The toolbar Table button always inserts another table, after the current table when the cursor is inside it.",
       },
     },
   },
@@ -130,3 +131,41 @@ export const SaveAndCancel: Story = {
     );
   },
 };
+
+const widthExamples = {
+  type: "doc",
+  content: [false, true].map((bothLong) => ({
+    type: "table",
+    content: [
+      {
+        type: "tableRow",
+        content: ["A", "B"].map((text) => ({
+          type: "tableHeader",
+          content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+        })),
+      },
+      ...[0, 1].map((row) => ({
+        type: "tableRow",
+        content: [
+          bothLong && row === 1 ? "Very long sentence bla bla bla bla bla" : "1 word",
+          "Very long sentence bla bla bla bla bla",
+        ].map((text) => ({ type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text }] }] })),
+      })),
+    ],
+  })),
+};
+
+function WidthExamples({ readonly = false }: { readonly?: boolean }) {
+  const state = useEditor({ content: widthExamples, handlers });
+  return readonly ? (
+    <RichContent
+      content={widthExamples}
+      mentionedPersonLookup={handlers.mentionedPersonLookup}
+      taskList={{ canEdit: false }}
+    />
+  ) : (
+    <Editor editor={state} />
+  );
+}
+export const ContentAwareWidths: Story = { render: () => <WidthExamples /> };
+export const ReadOnlyWidths: Story = { render: () => <WidthExamples readonly /> };
