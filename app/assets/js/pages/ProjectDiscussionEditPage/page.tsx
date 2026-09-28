@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { assertPresent } from "@/utils/assertions";
 
@@ -14,10 +15,11 @@ import { useNavigate } from "react-router";
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { discussion } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit", discussion.title!, discussion.project!.name!]}>
+    <Pages.Page title={[t("Edit"), discussion.title!, discussion.project!.name!]}>
       <Paper.Root>
         <Nav />
         <Paper.Body>
@@ -43,6 +45,7 @@ function Nav() {
 }
 
 function Form() {
+  const { t } = useTranslation();
   const { discussion } = useLoadedData();
   const paths = usePaths();
 
@@ -66,16 +69,16 @@ function Form() {
         <div>
           <Forms.TitleInput
             field="title"
-            placeholder="Title..."
+            placeholder={t("Title...")}
             autoFocus
             testId="discussion-title"
-            errorMessage="Please add a title"
+            errorMessage={t("Please add a title")}
           />
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
             <Forms.RichTextArea
               field="message"
               richTextHandlers={richTextHandlers}
-              placeholder="Write here..."
+              placeholder={t("Write here...")}
               hideBorder
               height="min-h-[350px]"
               fontSize="text-lg"
@@ -88,11 +91,11 @@ function Form() {
 
       <Subscribers discussion={discussion} subscriptionsState={subscriptionsState} />
 
-      <Forms.FormError message="Fill out all the required fields" className="mt-4" />
+      <Forms.FormError message={t("Fill out all the required fields")} className="mt-4" />
 
       <div className="flex items-center gap-4 mt-4">
-        <Forms.Submit saveText="Save" buttonSize="base" testId="post-discussion" containerClassName="mt-0" />
-        <DimmedLink to={paths.projectDiscussionPath(discussion.id)}>Cancel</DimmedLink>
+        <Forms.Submit saveText={t("Save")} buttonSize="base" testId="post-discussion" containerClassName="mt-0" />
+        <DimmedLink to={paths.projectDiscussionPath(discussion.id)}>{t("Cancel")}</DimmedLink>
       </div>
     </Forms.Form>
   );
@@ -125,6 +128,7 @@ interface UseFormProps {
 }
 
 function useForm({ discussion, subscriptionsState }: UseFormProps) {
+  const { t } = useTranslation();
   assertPresent(discussion.project, "project must be present in discussion");
 
   const paths = usePaths();
@@ -138,7 +142,7 @@ function useForm({ discussion, subscriptionsState }: UseFormProps) {
     },
     validate: (addError) => {
       if (isContentEmpty(form.values.message)) {
-        addError("message", "Body is required");
+        addError("message", t("Body is required"));
       }
     },
     submit: async () => {

@@ -1,4 +1,5 @@
 import type { Page } from "turboui";
+import i18n from "@/i18n";
 
 import { buildParentAwareResource, buildResourcePageNavigationItems } from "@/models/resourceHubs/pageNavigation";
 import type { ResourceHubFile } from "@/models/resourceHubs";
@@ -18,7 +19,7 @@ export function buildEditFilePageNavigation(
     ...items,
     {
       to: paths.resourceHubFilePath(file.id!),
-      label: file.name || "File",
+      label: file.name || i18n.t("File"),
     },
   ];
 }

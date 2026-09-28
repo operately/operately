@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { ErrorCallout } from "../Callouts";
@@ -35,7 +35,8 @@ export function DraftNodesList({ nodes, getNodePath, formattedTimePreferences, o
 }
 
 function DraftDescription({ node, preferences }: { node: ResourceHubNode; preferences: FormattedTimePreferences }) {
-  const path = ["Docs & Files", ...(node.pathToNode ?? []).map((folder) => folder.name)].join(" / ");
+  const { t } = useTranslation();
+  const path = [t("Docs & Files"), ...(node.pathToNode ?? []).map((folder) => folder.name)].join(" / ");
   const savedAt = node.document?.updatedAt;
 
   return (
@@ -43,7 +44,10 @@ function DraftDescription({ node, preferences }: { node: ResourceHubNode; prefer
       <div data-test-id="draft-location">{path}</div>
       {savedAt && (
         <div>
-          Last saved <FormattedTime time={savedAt} format="relative-time-or-date" {...preferences} />
+          <Trans
+            i18nKey="Last saved <date/>"
+            components={{ date: <FormattedTime time={savedAt} format="relative-time-or-date" {...preferences} /> }}
+          />
         </div>
       )}
     </div>

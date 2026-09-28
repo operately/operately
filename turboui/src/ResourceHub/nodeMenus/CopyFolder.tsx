@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import * as Forms from "../../Forms";
 import { useResourceHubNodesListContext } from "../contexts/NodesListContext";
@@ -13,11 +14,12 @@ interface CopyFolderModalProps {
 }
 
 export function CopyFolderModal({ resource, isOpen, hideModal }: CopyFolderModalProps) {
+  const { t } = useTranslation();
   const { parent, actions } = useResourceHubNodesListContext();
 
   const form = Forms.useForm({
     fields: {
-      name: `${getResourceName(resource)} - Copy`,
+      name: t("{{name}} - Copy", { name: getResourceName(resource) }),
       location: {
         id: parent.id,
         type: parent.type === "folder" ? "folder" : "resourceHub",

@@ -1,10 +1,12 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Forms } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { FormState } from "./useForm";
 
 export function Form({ form, children }: { form: FormState; children?: React.ReactNode }) {
+  const { t } = useTranslation();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "space", id: form.space.id } });
 
   return (
@@ -13,15 +15,15 @@ export function Form({ form, children }: { form: FormState; children?: React.Rea
         <div>
           <Forms.TitleInput
             field="title"
-            placeholder="Title..."
+            placeholder={t("Title...")}
             autoFocus
             testId="discussion-title"
-            errorMessage="Please add a title"
+            errorMessage={t("Please add a title")}
           />
           <Forms.RichTextArea
             field="body"
             richTextHandlers={richTextHandlers}
-            placeholder="Write here..."
+            placeholder={t("Write here...")}
             hideBorder
             height="min-h-[350px]"
             fontSize="text-lg"

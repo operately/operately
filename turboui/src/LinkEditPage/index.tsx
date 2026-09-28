@@ -21,13 +21,13 @@ export function LinkEditPage(props: LinkEditPageNS.Props) {
     },
     validate: (addError) => {
       if (!form.values.title.trim()) {
-        addError("title", "Title is required");
+        addError("title", t("Title is required"));
       }
       if (!form.values.url.trim()) {
-        addError("url", "Link is required");
+        addError("url", t("Link is required"));
       }
       if (!isValidURL(form.values.url)) {
-        addError("url", "Invalid link");
+        addError("url", t("Invalid link"));
       }
     },
     cancel: () => navigate(props.cancelLink),
@@ -68,7 +68,7 @@ export function LinkEditPage(props: LinkEditPageNS.Props) {
             />
           </Forms.FieldGroup>
 
-          <Forms.Submit saveText={props.submitLabel ?? "Save"} buttonSize="base" />
+          <Forms.Submit saveText={props.submitLabel ?? t("Save")} buttonSize="base" />
         </div>
       </Forms.Form>
     </Page>

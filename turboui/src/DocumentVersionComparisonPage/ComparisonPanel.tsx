@@ -1,5 +1,6 @@
 import { restoreRichTextSource } from "../RichContent/restoreSource";
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import type { DocumentVersion } from "../ApiTypes";
 import FormattedTime from "../FormattedTime";
@@ -53,6 +54,7 @@ function ReadyComparison(props: {
   formattedTimePreferences: FormattedTimePreferences;
   mentionedPersonLookup: MentionedPersonLookupFn;
 }) {
+  const { t } = useTranslation();
   const contentEqual =
     JSON.stringify(restoreRichTextSource(props.before.content)) ===
     JSON.stringify(restoreRichTextSource(props.after.content));
@@ -85,8 +87,8 @@ function ReadyComparison(props: {
       after={props.after.content}
       beforeLabel={beforeLabel}
       afterLabel={afterLabel}
-      beforeAriaLabel={beforeTime ? `Version from ${beforeTime}` : "Earlier version"}
-      afterAriaLabel={afterTime ? `Version from ${afterTime}` : "Later version"}
+      beforeAriaLabel={beforeTime ? t("Version from {{time}}", { time: beforeTime }) : t("Earlier version")}
+      afterAriaLabel={afterTime ? t("Version from {{time}}", { time: afterTime }) : t("Later version")}
       beforeTitle={props.before.title}
       afterTitle={props.after.title}
       mentionedPersonLookup={props.mentionedPersonLookup}
@@ -104,16 +106,19 @@ function versionInsertedAt(versions: DocumentVersion[], snapshot: VersionSnapsho
 }
 
 function VersionTimeLabel(props: { time: string | null; preferences: FormattedTimePreferences; testId: string }) {
+  const { t } = useTranslation();
   return (
     <span className="text-xs font-normal text-content-dimmed" data-test-id={props.testId}>
       {props.time ? (
-        <>
-          <FormattedTime {...props.preferences} time={props.time} format="short-date" />
-          {" at "}
-          <FormattedTime {...props.preferences} time={props.time} format="time-only" />
-        </>
+        <Trans
+          i18nKey="<date/> at <time/>"
+          components={{
+            date: <FormattedTime {...props.preferences} time={props.time} format="short-date" />,
+            time: <FormattedTime {...props.preferences} time={props.time} format="time-only" />,
+          }}
+        />
       ) : (
-        "Time unavailable"
+        t("Time unavailable")
       )}
     </span>
   );
@@ -151,6 +156,7 @@ function TitlePane(props: {
   variant: "normal" | "removed" | "added";
   position: "before" | "after";
 }) {
+  const { t } = useTranslation();
   return (
     <section
       className={classNames(
@@ -171,7 +177,7 @@ function TitlePane(props: {
         )}
         data-test-id={`title-${props.variant}`}
       >
-        {props.title || "Untitled"}
+        {props.title || t("Untitled")}
       </div>
     </section>
   );

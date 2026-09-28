@@ -71,7 +71,7 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   }
 
   // A KPI's own page is bookmarkable, so name it after the KPI.
-  const title = openKpi ? [openKpi.name, props.space.name] : [props.space.name, "KPIs"];
+  const title = openKpi ? [openKpi.name, props.space.name] : [props.space.name, t("KPIs")];
 
   return (
     <PageNew title={title} size="fullwidth" testId="space-kpis-page">
@@ -205,8 +205,9 @@ function Breadcrumbs({
   kpisLink: string;
   isKpiOpen: boolean;
 }) {
+  const { t } = useTranslation();
   return (
-    <nav className="mt-1 flex min-w-0 items-center gap-0.5" aria-label="Breadcrumb">
+    <nav className="mt-1 flex min-w-0 items-center gap-0.5" aria-label={t("Breadcrumb")}>
       {navigation.map((item, index) => (
         <React.Fragment key={index}>
           <BlackLink to={item.to} className="text-xs leading-snug text-content-dimmed" underline="hover">
@@ -223,10 +224,10 @@ function Breadcrumbs({
           underline="hover"
           testId="kpis-breadcrumb"
         >
-          KPIs
+          {t("KPIs")}
         </BlackLink>
       ) : (
-        <span className="text-xs leading-snug text-content-dimmed">KPIs</span>
+        <span className="text-xs leading-snug text-content-dimmed">{t("KPIs")}</span>
       )}
     </nav>
   );

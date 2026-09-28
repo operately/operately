@@ -1,5 +1,6 @@
 import { Modal } from "../Modal";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { InlineCalendar } from "../DateField/components/InlineCalendar";
 import { DateField } from "../DateField";
 import { SecondaryButton, PrimaryButton } from "../Button";
@@ -29,6 +30,7 @@ export function ScheduleModal({
   formattedTimePreferences,
   title,
 }: ScheduleModalProps) {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(() =>
     contextualDateFromScheduledAt(scheduledAt, formattedTimePreferences),
   );
@@ -71,7 +73,7 @@ export function ScheduleModal({
 
         <div className="mb-6 flex items-center gap-4">
           <label id="schedule-time-label" className="text-sm font-medium text-content-dimmed" htmlFor="schedule-time">
-            Time
+            {t("Time")}
           </label>
           <TimePicker
             value={time}
@@ -85,16 +87,16 @@ export function ScheduleModal({
 
         {isInvalid && selectedDate && (
           <div className="-mb-2 -mt-2 text-right text-xs text-red-500" role="alert">
-            {isNonexistentTime ? "This time does not exist in your timezone" : "Time must be in the future"}
+            {isNonexistentTime ? t("This time does not exist in your timezone") : t("Time must be in the future")}
           </div>
         )}
 
         <div className="flex justify-end gap-2 mt-4 items-center">
           <SecondaryButton onClick={handleCancel} size="sm">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton onClick={handleSchedule} size="sm" disabled={isInvalid} testId="confirm-schedule">
-            Schedule
+            {t("Schedule")}
           </PrimaryButton>
         </div>
       </Modal>

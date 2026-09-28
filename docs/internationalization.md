@@ -105,19 +105,30 @@ English, Portuguese catalog lookup, and missing-Portuguese fallback are tested, 
 
 Remaining client-authored PR 6 work, not PR 7 deferrals:
 
-- Goal access pages (`GoalAccess*`, `GoalEditAccessLevelsPage`), goal check-in/closing/reopening/discussion forms, target/checklist editors, and remaining contributor presentation
-- Project add/check-in/closing/pause/resume/retrospective/discussion forms and check-in presentation (`ProjectPageLayout/StatusBanner`, `CheckInHeader`, `CheckInCard`, `LastCheckIn`)
+- Goal access pages (`GoalAccess*`, `GoalEditAccessLevelsPage`), goal check-in/closing/reopening forms, target/checklist editors, and remaining contributor presentation
+- Project add/check-in/closing/pause/resume/retrospective forms and check-in presentation (`ProjectPageLayout/StatusBanner`, `CheckInHeader`, `CheckInCard`, `LastCheckIn`)
 - Remaining shared work-management fields, status customization/display, subscription/comment/timeline presentation, and milestone-completion copy
 - Remaining task-board sentences and accessibility text, including selected filter descriptions, milestone/task count summaries outside the converted completed sections, and Kanban add-status presentation
-- Remaining discussion composer/draft pages and related wrapper errors
-- Docs & Files upload/add menus and failures, resource version history/comparison/restore, document display/header actions, copy naming defaults, editor submit/validation copy, remaining folder-selector labels, and app resource wrappers/hooks
 - Most activity handlers beyond `GoalCreated`, `ProjectCreated`, `TaskNameUpdating`, and `TaskDescriptionChange`; keep translations out of stored activity data
-- Remaining work-map tabs, row summaries/tooltips, timeline and zero-state copy; space completed-work summaries and progress presentation
-- KPI detail/sidebar/update-history/comment interactions, log/edit/delete-entry forms, remaining chart annotation accessibility text, and cadence/formatting
 - Project-template selection, creation, lifecycle, and template project/task/discussion/Docs & Files flows
 - Exhaustive narrow-screen/expanded-translation visual review and app-level end-to-end workflow verification
 
 When passing links to `Trans`, include their text as named placeholders inside the translation tags (for example, `<project>{{projectName}}</project>`). A self-closing tag can clear a passed element's existing children. Self-closing tags are appropriate for components that render their own content, such as `FormattedTime` or an aggregated task list. Verify link text and destinations in rendered tests.
+
+### Discussions, Docs & Files, and space boards — cataloged
+
+This follow-up closes the discussion, Docs & Files, work-map, and KPI copy gaps from the initial PR 6 inventory. The [slice audit](i18n-discussions-files-space-audit.md) records the pre-extraction inventory, reused components, boundaries, and remaining gaps.
+
+- Discussions: space/goal/project composers, edit/view/draft pages, validation, discard confirmation and success feedback, draft action accessibility, publication metadata, and shared scheduling/draft-sharing controls.
+- Docs & Files: add/upload menus and progress, editor validation and submit controls, file display, folder counts, copy-name defaults, draft metadata, document header/public-sharing actions, version history/comparison/restore states, accessible labels, and app-supplied error/toast text. Folder selectors display resource names and reuse existing field controls. Backend pass-through errors remain as returned.
+- Space work management: company and space work-map titles/tabs, row roles and progress summaries, timeline tooltips/undated/empty states, first-project onboarding, space-home completion/progress summaries, kanban page title, and discussion lists. `MiniWorkMap` needs no new entries: it displays user names and existing shared status/avatar presentation.
+- KPIs: detail/sidebar/update history, log/edit/delete-entry forms, note/comment presentation, clipboard feedback, cadence labels, examples, and existing chart states. Existing formatting helpers are retained.
+
+English wording, permissions, interactions, stored activity payloads, and the default-off language flag remain unchanged. New messages have no Portuguese drafts; untranslated PO entries use the existing generated English fallback. Reviewed translations remain in the catalog, including obsolete entries when a fragment becomes a complete sentence.
+
+Focused tests verify real catalog substitution, success/empty/error states, resource-name preservation, saved Portuguese preferences with the flag disabled, and missing-Portuguese fallback. Folder counts and upload/progress states cover zero, singular, and plural cases. The expanded-catalog document-history Storybook interaction checks the heading and restore confirmation for overflow. This supplements, rather than replaces, exhaustive narrow-screen and end-to-end review.
+
+Remaining work stays explicit: the other PR 6 gaps above, people directory and org-chart extraction, backend/email/digest/server-rendered copy (PR 7), full Portuguese translation and native-speaker review (PR 8), formatting follow-ups, and default language-selection rollout. Earlier completed extraction is unchanged.
 
 ## Catalog files
 

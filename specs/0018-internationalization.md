@@ -73,17 +73,23 @@ Goal/project overview panels, goal creation, task-board and milestone controls, 
 
 Validation includes substituted translations, Portuguese catalog lookup, missing-Portuguese fallback, zero/singular/plural completed-milestone counts, English with a saved Portuguese preference and the flag disabled, and an expanded-text milestone dialog Storybook interaction. Catalog generation preserves existing translations and is checked for determinism. These client-authored gaps remain PR 6 work, not PR 7 deferrals:
 
-- Goal access pages, check-in/closing/reopening/discussion forms, target/checklist editors, and remaining contributor presentation
-- Project add/check-in/closing/pause/resume/retrospective/discussion forms and check-in presentation
+- Goal access pages, check-in/closing/reopening forms, target/checklist editors, and remaining contributor presentation
+- Project add/check-in/closing/pause/resume/retrospective forms and check-in presentation
 - Remaining shared work-management fields, status customization/display, subscription/comment/timeline presentation, and milestone-completion copy
 - Remaining task-board sentences and accessibility text, including selected filter descriptions and Kanban add-status presentation
-- Remaining discussion composer/draft pages and related wrapper errors
-- Docs & Files upload/add menus and failures, resource version history/comparison/restore, document display/header actions, and remaining editor/folder-selector copy
 - Most activity handlers beyond the four in this batch; keep translations out of stored activity data
-- Remaining work-map tabs, row summaries/tooltips, timeline and zero-state copy; space completed-work summaries
-- KPI detail/sidebar/update-history/comment interactions, log/edit/delete-entry forms, and remaining chart/cadence copy
 - Project-template selection, creation, lifecycle, and template project/task/discussion/Docs & Files flows
 - Exhaustive narrow-screen/expanded-translation visual review and app-level end-to-end workflow verification
+
+### Discussions, Docs & Files, and space-board extraction — cataloged
+
+The [slice audit](../docs/i18n-discussions-files-space-audit.md) inventories the remaining English before extraction. This follow-up catalogs space/goal/project discussion composers and drafts; shared discussion scheduling, discard, and publication presentation; Docs & Files upload/add/editor/file/document/version-history/comparison/restore surfaces and their app-supplied feedback; work-map tabs, timeline/row summaries and empty states; space-home progress/completion summaries; kanban page titles; and KPI detail/sidebar/history/log/edit/delete/comment presentation.
+
+Existing catalog entries and TurboUI primitives are reused. Resource names stay in sentence placeholders; user content and machine identifiers are not translated. English wording, permissions, interactions, formatting helpers, the language flag/selector, and stored activity payloads are preserved. New entries remain untranslated in Portuguese and fall back to English; reviewed PO translations are retained.
+
+Verification covers substituted translations in components and app bridges, success/empty/error states, saved Portuguese preferences with the flag off, and missing-Portuguese fallback including zero/singular/plural folder counts and upload/progress states. An expanded-catalog document-history Storybook interaction checks heading/confirmation layout and restore controls. Catalog generation, targeted Jest, TurboUI tests/build, and TypeScript checks are required for the slice.
+
+This does not complete people directory or org-chart copy, Portuguese/native-speaker review, remaining backend/email/digest/server-rendered copy, project-template workflows, other remaining shared work-management presentation, formatting follow-ups, exhaustive narrow-screen/end-to-end validation, or language-selection rollout. Earlier extraction remains intact.
 
 Remaining gaps before general availability:
 

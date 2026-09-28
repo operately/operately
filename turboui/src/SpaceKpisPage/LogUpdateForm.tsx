@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Form, NumberInput, RichTextArea, Submit, useForm } from "../Forms";
 import { Modal } from "../Modal";
@@ -33,6 +34,7 @@ function formatPeriodLabel(period: string): string {
 // Single-KPI "Log update" form → calls the `logKpiEntry` mutation.
 // This POC intentionally has NO "update all KPIs at once" batch UI — one KPI at a time.
 export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers }: LogUpdateFormProps) {
+  const { t } = useTranslation();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   // The date defaults to today and stays a low-prominence affordance; revealing
@@ -48,10 +50,10 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
     fields: { value: "", period: today(), note: emptyContent() },
     validate: (addError) => {
       if (form.values.value.trim() === "" || Number.isNaN(Number(form.values.value))) {
-        addError("value", "Enter a value");
+        addError("value", t("Enter a value"));
       }
       if (!form.values.period) {
-        addError("period", "Choose a period");
+        addError("period", t("Choose a period"));
       }
     },
     submit: async () => {
@@ -71,7 +73,7 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
         setEditingPeriod(false);
         onClose();
       } else {
-        setSubmitError(result.error ?? "Something went wrong. Please try again.");
+        setSubmitError(result.error ?? t("Something went wrong. Please try again."));
       }
     },
     cancel: onClose,
@@ -91,31 +93,44 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Log update — ${kpi.name}`}
+      title={t("Log update — {{name}}", { name: kpi.name })}
       size="x-small"
       testId="log-update-modal"
     >
       <Form form={form}>
         <p className="mb-4 text-sm text-content-dimmed">
-          Record the current value in <span className="font-medium text-content-base">{kpi.unit}</span>.
+          <Trans
+            i18nKey="Record the current value in <unit>{{unit}}</unit>."
+            values={{ unit: kpi.unit }}
+            components={{ unit: <span className="font-medium text-content-base" /> }}
+          />
           {latest ? (
             <>
               {" "}
-              Last recorded value was{" "}
-              <span className="font-medium text-content-base">{formatValue(latest.value, kpi.unit)}</span>.
+              <Trans
+                i18nKey="Last recorded value was <value>{{value}}</value>."
+                values={{ value: formatValue(latest.value, kpi.unit) }}
+                components={{ value: <span className="font-medium text-content-base" /> }}
+              />
             </>
           ) : (
-            " This will be the first recorded value."
+            <> {t("This will be the first recorded value.")}</>
           )}
         </p>
 
         <div className="space-y-2">
-          <NumberInput field="value" label={`Value (${kpi.unit})`} placeholder="0" autoFocus required />
+          <NumberInput
+            field="value"
+            label={t("Value ({{unit}})", { unit: kpi.unit })}
+            placeholder="0"
+            autoFocus
+            required
+          />
 
           {editingPeriod ? (
             <div>
               <label htmlFor="kpi-entry-period" className="block text-sm font-medium text-content-accent mb-1">
-                Date
+                {t("Date")}
               </label>
               <input
                 ref={periodInputRef}
@@ -134,10 +149,18 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
               data-test-id="log-update-period-summary"
             >
               <span>
-                Logging for{" "}
-                <span className="font-medium text-content-base">
-                  {form.values.period === today() ? "today" : formatPeriodLabel(form.values.period)}
-                </span>
+                {form.values.period === today() ? (
+                  <Trans
+                    i18nKey="Logging for <date>today</date>"
+                    components={{ date: <span className="font-medium text-content-base" /> }}
+                  />
+                ) : (
+                  <Trans
+                    i18nKey="Logging for <date>{{date}}</date>"
+                    values={{ date: formatPeriodLabel(form.values.period) }}
+                    components={{ date: <span className="font-medium text-content-base" /> }}
+                  />
+                )}
               </span>
               <button
                 type="button"
@@ -145,7 +168,7 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
                 className="font-medium text-link-base hover:underline"
                 data-test-id="log-update-change-date"
               >
-                Change date
+                {t("Change date")}
               </button>
             </div>
           )}
@@ -154,13 +177,13 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
         <div className="mt-4">
           <RichTextArea
             field="note"
-            label="Note (optional)"
-            placeholder="What's behind this number?"
+            label={t("Note (optional)")}
+            placeholder={t("What's behind this number?")}
             richTextHandlers={richTextHandlers}
             height="min-h-[80px]"
             hideToolbar
           />
-          <p className="mt-1 text-xs text-content-dimmed">Posted as the first comment on this update.</p>
+          <p className="mt-1 text-xs text-content-dimmed">{t("Posted as the first comment on this update.")}</p>
         </div>
 
         {submitError && (
@@ -169,7 +192,7 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
           </div>
         )}
 
-        <Submit saveText="Record update" cancelText="Cancel" />
+        <Submit saveText={t("Record update")} cancelText={t("Cancel")} />
       </Form>
     </Modal>
   );

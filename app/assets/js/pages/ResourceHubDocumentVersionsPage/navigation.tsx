@@ -1,4 +1,5 @@
 import type { Page } from "turboui";
+import i18n from "@/i18n";
 
 import { buildParentAwareResource, buildResourcePageNavigationItems } from "@/models/resourceHubs/pageNavigation";
 import type { ResourceHub, ResourceHubDocument } from "@/models/resourceHubs";
@@ -29,7 +30,7 @@ export function buildDocumentVersionsPageNavigation(
     ...items,
     {
       to: paths.resourceHubDocumentPath(document.id!),
-      label: document.name || "Document",
+      label: document.name || i18n.t("Document"),
     },
   ];
 }

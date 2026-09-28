@@ -7,6 +7,10 @@ import { useWorkMapItems } from "@/models/workMap";
 import { dismissToast, showErrorToast, WorkMapPage } from "turboui";
 import { Page } from "./page";
 import { useLoadedData } from "./loader";
+import { i18n, applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
+import { resolveEffectiveLanguage } from "@/i18n/languages";
+
+setupTestCatalog();
 
 jest.mock("./loader", () => ({ useLoadedData: jest.fn() }));
 jest.mock("turboui", () => ({
@@ -85,6 +89,41 @@ describe("CompanyWorkMapPage creation readiness", () => {
       emptyStateVariant: "standard",
     });
   });
+
+  it.each(["flag-off", "missing-portuguese", "substituted"])(
+    "looks up the work-map title and loading failure: %s",
+    async (mode) => {
+      if (mode === "missing-portuguese") i18n.removeResourceBundle("pt-BR", "translation");
+      if (mode === "substituted")
+        i18n.addResourceBundle(
+          "en",
+          "translation",
+          {
+            "{{company}} Work Map": "Expanded translated work map for {{company}}",
+            "Couldn't load options for adding goals and projects.": "Translated creation options failure",
+            "Try loading them again.": "Translated recovery instructions",
+            "Try again": "Translated retry",
+          },
+          true,
+          true,
+        );
+      await applyLanguage(resolveEffectiveLanguage("pt-BR", mode === "missing-portuguese"));
+      loaded.creationData.error = new Error("offline");
+      const props = await renderPage();
+      expect(props.title).toBe(
+        mode === "substituted" ? "Expanded translated work map for Fresh company" : "Fresh company Work Map",
+      );
+      expect(showErrorToast).toHaveBeenCalledWith(
+        mode === "substituted"
+          ? "Translated creation options failure"
+          : "Couldn't load options for adding goals and projects.",
+        mode === "substituted" ? "Translated recovery instructions" : "Try loading them again.",
+        expect.objectContaining({
+          action: expect.objectContaining({ label: mode === "substituted" ? "Translated retry" : "Try again" }),
+        }),
+      );
+    },
+  );
 
   it("enables first-project onboarding only after its default space is available", async () => {
     loaded.data.company = { ...company, generalSpace: undefined };

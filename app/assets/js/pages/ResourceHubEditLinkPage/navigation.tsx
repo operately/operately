@@ -1,4 +1,5 @@
 import type { Page } from "turboui";
+import i18n from "@/i18n";
 
 import { buildParentAwareResource, buildResourcePageNavigationItems } from "@/models/resourceHubs/pageNavigation";
 import type { ResourceHubLink } from "@/models/resourceHubs";
@@ -18,7 +19,7 @@ export function buildEditLinkPageNavigation(
     ...items,
     {
       to: paths.resourceHubLinkPath(link.id!),
-      label: link.name || "Link",
+      label: link.name || i18n.t("Link"),
     },
   ];
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import type { Page } from "turboui";
 import { IconDownload, IconEdit, IconTrash } from "turboui";
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function useFilePageOptions({ showDeleteModal }: Props): Page.Option[] {
+  const { t } = useTranslation();
   const { file } = useLoadedData();
   const paths = usePaths();
 
@@ -25,7 +27,7 @@ export function useFilePageOptions({ showDeleteModal }: Props): Page.Option[] {
       {
         type: "action",
         icon: IconDownload,
-        label: "Download",
+        label: t("Download"),
         onClick: downloadFile,
         hidden: !file.permissions?.canView || !file.blob?.url || !file.name,
         testId: "download-file-link",
@@ -33,7 +35,7 @@ export function useFilePageOptions({ showDeleteModal }: Props): Page.Option[] {
       {
         type: "link",
         icon: IconEdit,
-        label: "Edit",
+        label: t("Edit"),
         link: paths.resourceHubEditFilePath(file.id!),
         hidden: !file.permissions?.canEditFile,
         keepOutsideOnBigScreen: true,
@@ -42,13 +44,14 @@ export function useFilePageOptions({ showDeleteModal }: Props): Page.Option[] {
       {
         type: "action",
         icon: IconTrash,
-        label: "Delete",
+        label: t("Delete"),
         onClick: showDeleteModal,
         hidden: !file.permissions?.canDeleteFile,
         testId: "delete-resource-link",
       },
     ],
     [
+      t,
       downloadFile,
       file.blob?.url,
       file.id,

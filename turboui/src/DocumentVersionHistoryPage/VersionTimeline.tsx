@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { AvatarWithName } from "../Avatar";
 import type { DocumentVersion } from "../ApiTypes";
@@ -18,14 +19,15 @@ type Props = {
 };
 
 export function VersionTimeline(props: Props) {
+  const { t } = useTranslation();
   return (
-    <nav aria-label="Version history" className="relative" data-test-id="version-timeline">
+    <nav aria-label={t("Version history")} className="relative" data-test-id="version-timeline">
       <ol className="relative m-0 list-none space-y-0 p-0">
         {props.versions.map((version, index) => {
           const isLast = index === props.versions.length - 1;
           const previous = previousVersion(props.versions, version);
           const actionText = eventActionText(version, previous);
-          const person = version.editor ?? { fullName: "Former member" };
+          const person = version.editor ?? { fullName: t("Former member") };
           const canCompare = version.versionNumber > 1;
           const isSelected = version.versionNumber === props.selectedVersionNumber;
 
@@ -40,7 +42,10 @@ export function VersionTimeline(props: Props) {
                 type="button"
                 className="absolute inset-0 z-0 cursor-pointer rounded-md"
                 aria-pressed={isSelected}
-                aria-label={`Preview version ${version.versionNumber}: ${actionText}`}
+                aria-label={t("Preview version {{version}}: {{action}}", {
+                  version: version.versionNumber,
+                  action: actionText,
+                })}
                 onClick={() => props.onSelectVersion(version.versionNumber)}
                 data-test-id={`select-version-${version.versionNumber}`}
               />
@@ -56,13 +61,29 @@ export function VersionTimeline(props: Props) {
               <div className="relative z-10 min-w-0 flex-1 pointer-events-none">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="text-sm font-bold text-content-accent">
-                    <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="short-date" />
-                    {" at "}
-                    <FormattedTime {...props.formattedTimePreferences} time={version.insertedAt} format="time-only" />
+                    <Trans
+                      i18nKey="<date/> at <time/>"
+                      components={{
+                        date: (
+                          <FormattedTime
+                            {...props.formattedTimePreferences}
+                            time={version.insertedAt}
+                            format="short-date"
+                          />
+                        ),
+                        time: (
+                          <FormattedTime
+                            {...props.formattedTimePreferences}
+                            time={version.insertedAt}
+                            format="time-only"
+                          />
+                        ),
+                      }}
+                    />
                   </span>
                   {version.isCurrent && (
                     <span className="rounded-full border border-surface-outline bg-surface-base px-2 py-0.5 text-[11px] font-semibold text-content-dimmed">
-                      Latest
+                      {t("Latest")}
                     </span>
                   )}
                 </div>
@@ -87,7 +108,7 @@ export function VersionTimeline(props: Props) {
                       underline="hover"
                       className="inline-flex items-center gap-1 text-sm font-semibold"
                     >
-                      See what changed
+                      {t("See what changed")}
                       <IconArrowRight size={15} stroke={2} aria-hidden />
                     </Link>
                   </div>

@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconPlayerPause } from "../../icons";
 
 import * as sort from "../utils/sort";
@@ -17,6 +19,7 @@ interface Params {
 }
 
 export function useWorkMapTab({ rawItems, type, opts = {} }: Params) {
+  useTranslation();
   const allFilteredItems = useMemo(() => {
     const processedData = type === "personal" ? processPersonalItems(rawItems) : processItems(rawItems);
 
@@ -29,7 +32,7 @@ export function useWorkMapTab({ rawItems, type, opts = {} }: Params) {
     };
   }, [rawItems]);
 
-  const tabOptions = type === "personal" ? {...opts.tabOptions, hidePaused: true} : opts.tabOptions;
+  const tabOptions = type === "personal" ? { ...opts.tabOptions, hidePaused: true } : opts.tabOptions;
 
   const allowedTabs = getAllowedTabs(tabOptions);
   const defaultTab = getDefaultTab(allowedTabs, tabOptions);
@@ -56,31 +59,31 @@ function getTabOptions(tabOptions?: WorkMap.TabOptions, filteredItems?: Record<W
   return [
     {
       id: "all",
-      label: "All work",
+      label: i18n.t("All work"),
       icon: React.createElement(IconLayoutGrid, { size: 16 }),
       count: countAllItems(filteredItems?.all),
     },
     {
       id: "goals",
-      label: "Goals",
+      label: i18n.t("Goals"),
       icon: React.createElement(IconTarget, { size: 16 }),
       count: countAllItems(filteredItems?.goals),
     },
     {
       id: "projects",
-      label: "Projects",
+      label: i18n.t("Projects"),
       icon: React.createElement(IconChecklist, { size: 16 }),
       count: countAllItems(filteredItems?.projects),
     },
     {
       id: "paused",
-      label: "Paused",
+      label: i18n.t("Paused"),
       icon: React.createElement(IconPlayerPause, { size: 16 }),
       count: countAllItems(filteredItems?.paused),
     },
     {
       id: "completed",
-      label: "Completed",
+      label: i18n.t("Completed"),
       icon: React.createElement(IconCircleCheck, { size: 16 }),
       count: countAllItems(filteredItems?.completed),
     },
