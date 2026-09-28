@@ -27,7 +27,13 @@ defmodule OperatelyEmail.Emails.SpaceTaskCommentedEmail do
   end
 
   def buffered_item(_person, activity) do
-    task = Operately.Tasks.get_task!(activity.content["task_id"]) |> Operately.Repo.preload(:space)
+    case Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]]) do
+      {:ok, task} -> build_buffered_item(activity, task)
+      {:error, :not_found} -> :skip
+    end
+  end
+
+  defp build_buffered_item(activity, task) do
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
     content = comment.content
     author = Operately.Repo.preload(activity, :author).author
