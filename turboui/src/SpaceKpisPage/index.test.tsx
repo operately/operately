@@ -17,6 +17,7 @@ import {
   mockSpace,
 } from "./mockData";
 import { formatNumber, formatShortDate, formatValue } from "./utils";
+import { assertPresent } from "../utils/assertions";
 import { i18n, setupTestCatalog } from "../../test/i18n";
 
 setupTestCatalog();
@@ -674,9 +675,16 @@ describe("SpaceKpisPage create & log", () => {
 
 describe("SpaceKpisPage KPI update comments", () => {
   test("uses singular and plural catalog forms for the update comment accessibility label", () => {
-    const target = mockKpis[0]!;
-    const singular = { ...target.entries[0]!, commentsCount: 1 };
-    const plural = { ...target.entries[1]!, commentsCount: 3 };
+    const target = mockKpis[0];
+    assertPresent(target, "mock KPI must be present");
+
+    const singularEntry = target.entries[0];
+    const pluralEntry = target.entries[1];
+    assertPresent(singularEntry, "first mock KPI entry must be present");
+    assertPresent(pluralEntry, "second mock KPI entry must be present");
+
+    const singular = { ...singularEntry, commentsCount: 1 };
+    const plural = { ...pluralEntry, commentsCount: 3 };
 
     renderPage({
       selectedKpi: { ...target, entries: [singular, plural] },
