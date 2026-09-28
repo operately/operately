@@ -314,6 +314,29 @@ it("keeps a focused action's preview during a transaction that preserves the sel
   expect(preview()).toHaveAttribute("data-action", "deleteRow");
 });
 
+it.each([false, true])(
+  "uses wider mobile columns and recalculates on viewport resize (readonly: %s)",
+  async (readonly) => {
+    const originalViewport = window.innerWidth;
+    const width = jest.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(280);
+    try {
+      Object.defineProperty(window, "innerWidth", { configurable: true, value: 375 });
+      render(<Harness readonly={readonly} />);
+      const original = editor.getJSON();
+      await waitFor(() => expect(editor.view.dom.querySelector("col")).toHaveStyle({ width: "160px" }));
+      expect(editor.view.dom.querySelector("table")).toHaveStyle({ width: "320px" });
+
+      Object.defineProperty(window, "innerWidth", { configurable: true, value: 1024 });
+      fireEvent.resize(window);
+      await waitFor(() => expect(editor.view.dom.querySelector("col")).toHaveStyle({ width: "140px" }));
+      expect(editor.getJSON()).toEqual(original);
+    } finally {
+      Object.defineProperty(window, "innerWidth", { configurable: true, value: originalViewport });
+      width.mockRestore();
+    }
+  },
+);
+
 it("offers deletion Undo until another edit makes it stale", async () => {
   const user = userEvent.setup();
   render(

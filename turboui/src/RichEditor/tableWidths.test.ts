@@ -31,4 +31,9 @@ describe("table column widths", () => {
     expect(allocateColumnWidths([0, 800], 100)).toEqual([64, 64]);
     expect(allocateColumnWidths([], 600)).toEqual([]);
   });
+
+  it("respects a larger mobile minimum while distributing any remaining space", () => {
+    expect(allocateColumnWidths([0, 0, 800], 320, 160)).toEqual([160, 160, 160]);
+    expect(allocateColumnWidths([80, 800], 400, 160)).toEqual([160, 240]);
+  });
 });

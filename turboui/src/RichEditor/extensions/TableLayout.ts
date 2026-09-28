@@ -62,7 +62,10 @@ export class TableLayout {
     // Collapsed outer borders sit outside the column widths; reserve their pixel to avoid clipping.
     const cell = this.table.rows[0]?.cells[0];
     const border = cell ? parseFloat(getComputedStyle(cell).borderLeftWidth) || 0 : 0;
-    const widths = allocateColumnWidths(naturalWidths, available - border);
+    // On mobile, prefer horizontal scrolling over columns too narrow for readable text.
+    const viewportWidth = this.wrapper.ownerDocument.defaultView?.innerWidth ?? 768;
+    const minimumWidth = viewportWidth < 768 ? 160 : undefined;
+    const widths = allocateColumnWidths(naturalWidths, available - border, minimumWidth);
     const columns = this.table.querySelectorAll<HTMLElement>("colgroup > col");
     widths.forEach((width, index) => {
       const col = columns[index];

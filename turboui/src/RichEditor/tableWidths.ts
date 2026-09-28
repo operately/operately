@@ -1,10 +1,14 @@
 const MIN_COLUMN_WIDTH = 64;
 
 /** Keep equal shares where possible, giving wider content only the extra space it needs. */
-export function allocateColumnWidths(naturalWidths: number[], availableWidth: number): number[] {
+export function allocateColumnWidths(
+  naturalWidths: number[],
+  availableWidth: number,
+  minimumWidth = MIN_COLUMN_WIDTH,
+): number[] {
   const widths = naturalWidths.map(() => 0);
-  let remaining = naturalWidths.map((width, index) => ({ width: Math.max(MIN_COLUMN_WIDTH, width), index }));
-  let space = Math.max(availableWidth, remaining.length * MIN_COLUMN_WIDTH);
+  let remaining = naturalWidths.map((width, index) => ({ width: Math.max(minimumWidth, width), index }));
+  let space = Math.max(availableWidth, remaining.length * minimumWidth);
   const contentFits = remaining.reduce((sum, { width }) => sum + width, 0) <= space;
 
   while (remaining.length) {
