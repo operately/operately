@@ -52,6 +52,31 @@ describe("Work Map creation loading", () => {
     expect(screen.getByText("Translated 1 undated items")).toBeInTheDocument();
   });
 
+  it("keeps work-map tab test ids stable when labels are translated", () => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      {
+        "All work": "Todo o trabalho",
+        Goals: "Objetivos",
+        Projects: "Projetos",
+        Paused: "Pausados",
+        Completed: "Concluídos",
+      },
+      true,
+      true,
+    );
+    renderMap();
+
+    expect(document.querySelector('[data-test-id="tab-all"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="tab-goals"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="tab-projects"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="tab-paused"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="tab-completed"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="tab-all work"]')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-test-id="tab-objetivos"]')).not.toBeInTheDocument();
+  });
+
   it("keeps existing items visible without a loading indicator while creation data loads", () => {
     renderMap({ items: [mockSingleItem], creationLoading: true, addingEnabled: true });
     expect(screen.queryByRole("status")).not.toBeInTheDocument();

@@ -62,30 +62,35 @@ function getTabOptions(tabOptions?: WorkMap.TabOptions, filteredItems?: Record<W
       label: i18n.t("All work"),
       icon: React.createElement(IconLayoutGrid, { size: 16 }),
       count: countAllItems(filteredItems?.all),
+      testId: "all",
     },
     {
       id: "goals",
       label: i18n.t("Goals"),
       icon: React.createElement(IconTarget, { size: 16 }),
       count: countAllItems(filteredItems?.goals),
+      testId: "goals",
     },
     {
       id: "projects",
       label: i18n.t("Projects"),
       icon: React.createElement(IconChecklist, { size: 16 }),
       count: countAllItems(filteredItems?.projects),
+      testId: "projects",
     },
     {
       id: "paused",
       label: i18n.t("Paused"),
       icon: React.createElement(IconPlayerPause, { size: 16 }),
       count: countAllItems(filteredItems?.paused),
+      testId: "paused",
     },
     {
       id: "completed",
       label: i18n.t("Completed"),
       icon: React.createElement(IconCircleCheck, { size: 16 }),
       count: countAllItems(filteredItems?.completed),
+      testId: "completed",
     },
   ].filter((tab) => allowedTabs.includes(tab.id as WorkMap.Filter));
 }

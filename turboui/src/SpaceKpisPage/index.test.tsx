@@ -673,6 +673,27 @@ describe("SpaceKpisPage create & log", () => {
 });
 
 describe("SpaceKpisPage KPI update comments", () => {
+  test("uses singular and plural catalog forms for the update comment accessibility label", () => {
+    const target = mockKpis[0]!;
+    const singular = { ...target.entries[0]!, commentsCount: 1 };
+    const plural = { ...target.entries[1]!, commentsCount: 3 };
+
+    renderPage({
+      selectedKpi: { ...target, entries: [singular, plural] },
+      canComment: true,
+      renderEntryComments: () => null,
+    });
+
+    expect(screen.getByRole("button", { name: "1 comment" })).toHaveAttribute(
+      "data-test-id",
+      `entry-comments-toggle-${singular.id}`,
+    );
+    expect(screen.getByRole("button", { name: "3 comments" })).toHaveAttribute(
+      "data-test-id",
+      `entry-comments-toggle-${plural.id}`,
+    );
+  });
+
   test("opens comments on a recorded update in a slide-in", async () => {
     const user = userEvent.setup();
     const target = mockKpis[0]!;

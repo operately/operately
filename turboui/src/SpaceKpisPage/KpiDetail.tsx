@@ -13,6 +13,7 @@ import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
+import { tn } from "../i18n";
 import { IconDotsVertical, IconFlag, IconLink, IconMessage, IconPencil, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
@@ -463,7 +464,7 @@ function EntriesTable({
                         aria-expanded={isOpen}
                         aria-label={
                           commentsCount > 0
-                            ? t("{{count}} comments", { count: commentsCount })
+                            ? tn("1 comment", "{{count}} comments", commentsCount)
                             : t("Comment on this update")
                         }
                       >

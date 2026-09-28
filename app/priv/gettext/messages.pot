@@ -129,11 +129,6 @@ msgid "%{completed}/%{total} completed (%{percentage}%)"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:466
-msgid "%{count} comments"
-msgstr ""
-
-#.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:129
 msgid "%{count} hidden without dates"
 msgstr ""
@@ -379,6 +374,7 @@ msgid "+ Create organization"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:466
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:363
 msgid "1 comment"
 msgid_plural "%{count} comments"
