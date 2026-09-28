@@ -160,6 +160,22 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     assert item.parent_name == ctx.project.name
   end
 
+  test "skips sending when the task no longer exists", ctx do
+    activity = task_adding_activity(ctx)
+    Operately.Repo.delete!(ctx.task)
+
+    flush_emails()
+    assert :skip = TaskAddingEmail.send(ctx.recipient, activity)
+    refute_email_sent()
+  end
+
+  test "skips digest items when the task no longer exists", ctx do
+    activity = task_adding_activity(ctx)
+    Operately.Repo.delete!(ctx.task)
+
+    assert :skip = TaskAddingEmail.buffered_item(ctx.recipient, activity)
+  end
+
   defp task_adding_activity(ctx, extra \\ %{}) do
     activity_fixture(%{
       author_id: ctx.author.id,

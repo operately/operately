@@ -84,6 +84,38 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmailTest do
     end)
   end
 
+  test "skips sending when the task no longer exists", ctx do
+    activity = assignee_updating_activity(ctx)
+    Operately.Repo.delete!(ctx.task)
+
+    flush_emails()
+    assert :skip = TaskAssigneeUpdatingEmail.send(ctx.assignee, activity)
+    refute_email_sent()
+  end
+
+  test "skips digest items when the task no longer exists", ctx do
+    activity = assignee_updating_activity(ctx)
+    Operately.Repo.delete!(ctx.task)
+
+    assert :skip = TaskAssigneeUpdatingEmail.buffered_item(ctx.assignee, activity)
+  end
+
+  defp assignee_updating_activity(ctx) do
+    activity_fixture(%{
+      author_id: ctx.author.id,
+      action: "task_assignee_updating",
+      content: %{
+        "company_id" => ctx.company.id,
+        "space_id" => ctx.space.id,
+        "project_id" => ctx.project.id,
+        "milestone_id" => ctx.milestone.id,
+        "task_id" => ctx.task.id,
+        "old_assignee_id" => nil,
+        "new_assignee_id" => ctx.assignee.id
+      }
+    })
+  end
+
   defp flush_emails do
     receive do
       {:email, _email} -> flush_emails()

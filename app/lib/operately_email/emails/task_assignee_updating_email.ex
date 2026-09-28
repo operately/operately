@@ -9,9 +9,13 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
-    {:ok, task} = Task.get(:system, id: activity.content["task_id"], opts: [
-      preload: [:project, :space]
-    ])
+    case load_task(activity) do
+      {:ok, task} -> send_email(person, activity, company, author, task)
+      {:error, :not_found} -> :skip
+    end
+  end
+
+  defp send_email(person, activity, company, author, task) do
     old_assignee = get_person(activity.content["old_assignee_id"])
     new_assignee = get_person(activity.content["new_assignee_id"])
     added_assignee_ids = changed_assignee_ids(activity, "added_assignee_ids", "new_assignee_id")
@@ -57,7 +61,17 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
   end
 
   def buffered_item(_person, activity) do
-    task = Operately.Tasks.get_task!(activity.content["task_id"]) |> Operately.Repo.preload(:space)
+    case load_task(activity) do
+      {:ok, task} -> build_buffered_item(activity, task)
+      {:error, :not_found} -> :skip
+    end
+  end
+
+  defp load_task(activity) do
+    Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]])
+  end
+
+  defp build_buffered_item(activity, task) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_task(task)

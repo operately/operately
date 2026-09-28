@@ -10,12 +10,13 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
-    {:ok, task} =
-      Task.get(:system,
-        id: content_value(activity.content, :task_id),
-        opts: [preload: [:project, :space]]
-      )
+    case load_task(activity) do
+      {:ok, task} -> send_email(person, activity, company, author, task)
+      {:error, :not_found} -> :skip
+    end
+  end
 
+  defp send_email(person, activity, company, author, task) do
     who = Person.short_name(author)
     where = find_where_name(task)
     mentioned = mentioned?(person, activity)
@@ -36,7 +37,20 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
   end
 
   def buffered_item(_person, activity) do
-    task = Operately.Tasks.get_task!(activity.content["task_id"]) |> Operately.Repo.preload(:space)
+    case load_task(activity) do
+      {:ok, task} -> build_buffered_item(activity, task)
+      {:error, :not_found} -> :skip
+    end
+  end
+
+  defp load_task(activity) do
+    Task.get(:system,
+      id: content_value(activity.content, :task_id),
+      opts: [preload: [:project, :space]]
+    )
+  end
+
+  defp build_buffered_item(activity, task) do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_task(task)

@@ -340,8 +340,63 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     refute Notifications.get_notification!(skipped.id).email_sent
   end
 
+  test "sends valid digest items while skipping a deleted task", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+
+    skipped = task_adding_notification(ctx, ctx.task)
+    sent = project_created_notification(ctx)
+    Operately.Repo.delete!(ctx.task)
+
+    with_mock OperatelyEmail.Mailers.DigestMailer, [:passthrough],
+      send: fn _person, _batch, items ->
+        assert [item] = items
+        assert item.parent_type == :project
+        {:ok, :delivered}
+      end do
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+      assert_called(OperatelyEmail.Mailers.DigestMailer.send(:_, :_, :_))
+    end
+
+    assert Notifications.get_email_batch!(ctx.batch.id).status == :sent
+    assert Notifications.get_notification!(sent.id).email_sent
+    refute Notifications.get_notification!(skipped.id).email_sent
+  end
+
   defp check_in_notification(ctx, check_in) do
     activity = activity_fixture(author_id: check_in.author_id, action: "goal_check_in", content: %{"update_id" => check_in.id})
+
+    notification_fixture(
+      activity_id: activity.id,
+      person_id: ctx.creator.id,
+      email_batch_id: ctx.batch.id,
+      email_sent: false,
+      email_sent_at: nil
+    )
+  end
+
+  defp task_adding_notification(ctx, task) do
+    activity =
+      activity_fixture(
+        author_id: ctx.creator.id,
+        action: "task_adding",
+        content: %{"task_id" => task.id}
+      )
+
+    notification_fixture(
+      activity_id: activity.id,
+      person_id: ctx.creator.id,
+      email_batch_id: ctx.batch.id,
+      email_sent: false,
+      email_sent_at: nil
+    )
+  end
+
+  defp project_created_notification(ctx) do
+    activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
 
     notification_fixture(
       activity_id: activity.id,
