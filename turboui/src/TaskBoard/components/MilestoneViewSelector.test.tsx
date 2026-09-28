@@ -6,6 +6,9 @@ import { MemoryRouter } from "react-router";
 import { DateField } from "../../DateField";
 import type { Milestone } from "../types";
 import { MilestoneViewSelector } from "./MilestoneViewSelector";
+import { i18n, setupTestCatalog } from "../../../test/i18n";
+
+setupTestCatalog();
 
 jest.mock("../../icons", () => {
   const React = require("react");
@@ -73,6 +76,34 @@ function openSelector() {
 }
 
 describe("MilestoneViewSelector", () => {
+  it("uses expanded catalog copy for the accessible trigger, menu and creation dialog", async () => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      {
+        "Viewing tasks for {{milestone}}": "Expanded viewing label for {{milestone}}",
+        "All project tasks": "All of the tasks in this project",
+        "Create milestone": "Create a new milestone for this project",
+        "Create Milestone": "Expanded milestone creation dialog",
+        "Enter milestone name": "Enter a descriptive milestone name here",
+      },
+      true,
+      true,
+    );
+    const { onChange } = renderSelector();
+    fireEvent.keyDown(
+      screen.getByRole("button", { name: "Expanded viewing label for All of the tasks in this project" }),
+      { key: "Enter" },
+    );
+    fireEvent.click(screen.getByRole("menuitem", { name: "Create a new milestone for this project" }));
+    const dialog = screen.getByRole("dialog", { name: "Expanded milestone creation dialog" });
+    const input = within(dialog).getByPlaceholderText("Enter a descriptive milestone name here");
+    fireEvent.change(input, { target: { value: "Customer onboarding" } });
+    fireEvent.blur(input);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Create a new milestone for this project" }));
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith("customer-onboarding"));
+  });
+
   it("states what the board is viewing and offers milestone creation in the selector", () => {
     renderSelector();
 

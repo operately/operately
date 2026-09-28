@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -31,6 +32,7 @@ export function MilestoneItem({
   containerId,
   onUpdate,
 }: MilestoneItemProps) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(milestone.title);
   const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate);
@@ -99,7 +101,7 @@ export function MilestoneItem({
                 variant="form-field"
                 text={editTitle}
                 onChange={setEditTitle}
-                placeholder="Enter milestone title"
+                placeholder={t("Enter milestone title")}
                 autofocus
                 onChangeOnType
                 trimBeforeSave
@@ -109,7 +111,7 @@ export function MilestoneItem({
                 <DateField
                   date={editDueDate}
                   onDateSelect={setEditDueDate}
-                  placeholder="Due date (optional)"
+                  placeholder={t("Due date (optional)")}
                   testId={dueDateTestId}
                   calendarOnly
                 />
@@ -117,16 +119,16 @@ export function MilestoneItem({
                 <RelativeDayField
                   value={editDueOffsetDays}
                   onChange={setEditDueOffsetDays}
-                  placeholder="Set relative date"
+                  placeholder={t("Set relative date")}
                   testId={dueOffsetTestId}
                 />
               )}
               <div className="flex gap-2">
                 <PrimaryButton size="sm" onClick={handleSave} disabled={!editTitle.trim()}>
-                  Save
+                  {t("Save")}
                 </PrimaryButton>
                 <SecondaryButton size="sm" onClick={handleCancel}>
-                  Cancel
+                  {t("Cancel")}
                 </SecondaryButton>
               </div>
             </div>
@@ -171,7 +173,7 @@ export function MilestoneItem({
           {canEdit && (
             <div className="opacity-0 transition-opacity md:group-hover:opacity-100">
               <SecondaryButton testId={editBtnTestId} size="xxs" onClick={() => setIsEditing(true)}>
-                Edit
+                {t("Edit")}
               </SecondaryButton>
             </div>
           )}

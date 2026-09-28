@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useLayoutEffect, useMemo, useReducer, useRef } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { ProjectsUpdateKanbanInput } from "@/api";
@@ -68,7 +69,7 @@ export function useProjectKanbanState(options: Options | null) {
       (error) => {
         if (isCurrent()) {
           console.error("Failed to update Kanban state", error);
-          showErrorToast("Error", "Failed to update task position");
+          showErrorToast(i18n.t("Error"), i18n.t("Failed to update task position"));
         }
       },
       (error) => {

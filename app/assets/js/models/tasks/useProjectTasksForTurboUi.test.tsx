@@ -41,6 +41,7 @@ jest.mock("./index", () => ({
     type: "project",
   }),
   serializeTaskStatus: () => null,
+  serializeTaskReminders: (reminders: unknown) => reminders,
 }));
 
 jest.mock("../milestones", () => ({
@@ -51,24 +52,26 @@ jest.mock("../milestones", () => ({
 jest.mock("./taskLifecycle", () => {
   const createTaskMutateAsync = jest.fn();
   const updateTaskNameMutateAsync = jest.fn();
-  const unused = () => ({ mutateAsync: jest.fn() });
+  const updateTaskMutateAsync = jest.fn();
+  const update = () => ({ mutateAsync: updateTaskMutateAsync });
 
   return {
     createTaskMutateAsync,
     updateTaskNameMutateAsync,
+    updateTaskMutateAsync,
     useCreateTask: () => ({ mutateAsync: createTaskMutateAsync }),
-    useDeleteTask: unused,
-    useUpdateTaskAssignee: unused,
-    useUpdateTaskDescription: unused,
-    useUpdateTaskDueDate: unused,
-    useUpdateTaskMilestoneAndOrdering: unused,
+    useDeleteTask: update,
+    useUpdateTaskAssignee: update,
+    useUpdateTaskDescription: update,
+    useUpdateTaskDueDate: update,
+    useUpdateTaskMilestoneAndOrdering: update,
     useUpdateTaskName: () => ({ mutateAsync: updateTaskNameMutateAsync }),
-    useUpdateTaskReminders: unused,
-    useUpdateTaskStatus: unused,
+    useUpdateTaskReminders: update,
+    useUpdateTaskStatus: update,
   };
 });
 
-const { createTaskMutateAsync, updateTaskNameMutateAsync } = jest.requireMock("./taskLifecycle");
+const { createTaskMutateAsync, updateTaskNameMutateAsync, updateTaskMutateAsync } = jest.requireMock("./taskLifecycle");
 const englishTranslations = { ...i18n.getResourceBundle("en", "translation") };
 
 const richTextWithMention = {
@@ -105,11 +108,74 @@ describe("useProjectTasksForTurboUi", () => {
     jest.mocked(showErrorToast).mockReset();
     createTaskMutateAsync.mockReset();
     updateTaskNameMutateAsync.mockReset();
+    updateTaskMutateAsync.mockReset();
   });
 
   afterEach(() => {
     i18n.addResourceBundle("en", "translation", englishTranslations, true, true);
   });
+
+  it.each([
+    [
+      "due date",
+      "Failed to update task due date",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.updateTaskDueDate("task-1", null),
+    ],
+    [
+      "reminders",
+      "Failed to update task reminders",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.updateTaskReminders("task-1", []),
+    ],
+    [
+      "assignee",
+      "Failed to update task assignee",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.updateTaskAssignee("task-1", []),
+    ],
+    [
+      "description",
+      "Failed to update task description.",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.updateTaskDescription("task-1", null),
+    ],
+    [
+      "status",
+      "Failed to update task status",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.updateTaskStatus("task-1", null),
+    ],
+    [
+      "milestone",
+      "Failed to update task milestone",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.updateTaskMilestone("task-1", null, 0),
+    ],
+    [
+      "deletion",
+      "Failed to delete task",
+      (hook: ReturnType<typeof useProjectTasksForTurboUi>) => hook.deleteTask("task-1"),
+    ],
+  ] as const)(
+    "looks up the %s failure at operation time and preserves the task",
+    async (_operation, message, update) => {
+      const { result } = setupHook();
+      const originalTasks = result.current.tasks;
+      i18n.addResourceBundle(
+        "en",
+        "translation",
+        { Error: "Translated error", [message]: "Translated operation failure" },
+        true,
+        true,
+      );
+      updateTaskMutateAsync.mockRejectedValue(new Error("network"));
+      const log = jest.spyOn(console, "error").mockImplementation(() => {});
+      try {
+        await act(async () => {
+          await update(result.current);
+        });
+        expect(showErrorToast).toHaveBeenCalledWith("Translated error", "Translated operation failure");
+        expect(result.current.tasks).toEqual(originalTasks);
+      } finally {
+        log.mockRestore();
+      }
+    },
+  );
 
   it("passes rich-text task notes through the create task API input", () => {
     const input = buildProjectTaskCreateInput(

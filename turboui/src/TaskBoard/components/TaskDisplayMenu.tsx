@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Menu } from "../../Menu";
 import { IconAdjustmentsHorizontal, IconLayoutKanban, IconList } from "../../icons";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
+  const { t } = useTranslation();
   const hasLayoutOptions = Boolean(mode && onChange);
   const hasClosedStatusesOption = Boolean(closedStatuses && closedStatuses.count > 0);
 
@@ -25,12 +27,12 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
       customTrigger={
         <button
           className="inline-flex min-h-11 min-w-11 items-center justify-center gap-0 rounded-md px-2 py-1.5 text-sm font-medium text-content-dimmed transition hover:bg-surface-dimmed hover:text-content-base sm:min-h-0 sm:min-w-0 sm:gap-1"
-          aria-label="Display options"
+          aria-label={t("Display options")}
           data-test-id="display-menu-trigger"
           type="button"
         >
           <IconAdjustmentsHorizontal size={18} />
-          <span className="hidden sm:inline">Display</span>
+          <span className="hidden sm:inline">{t("Display")}</span>
         </button>
       }
       size="small"
@@ -39,7 +41,7 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
       <div className="p-2" data-test-id="display-menu">
         {hasLayoutOptions && onChange && (
           <div>
-            <div className="mb-2 px-1 text-xs font-medium text-content-subtle">Layout</div>
+            <div className="mb-2 px-1 text-xs font-medium text-content-subtle">{t("Layout")}</div>
             <div className="grid grid-cols-2 gap-2">
               <DropdownMenu.Item asChild>
                 <button
@@ -55,7 +57,7 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
                   data-test-id="display-menu-option-list"
                 >
                   <IconList size={20} />
-                  <span className="text-sm font-semibold">List</span>
+                  <span className="text-sm font-semibold">{t("List")}</span>
                 </button>
               </DropdownMenu.Item>
 
@@ -73,7 +75,7 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
                   data-test-id="display-menu-option-board"
                 >
                   <IconLayoutKanban size={20} />
-                  <span className="text-sm font-semibold">Board</span>
+                  <span className="text-sm font-semibold">{t("Board")}</span>
                 </button>
               </DropdownMenu.Item>
             </div>
@@ -88,13 +90,13 @@ export function TaskDisplayMenu({ mode, onChange, closedStatuses }: Props) {
             )}
           >
             <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-content-base">
-              <span>Show closed statuses</span>
+              <span>{t("Show closed statuses")}</span>
               <span className="rounded-full border border-surface-outline px-1.5 py-0.5 text-xs tabular-nums text-content-dimmed">
                 {closedStatuses.count}
               </span>
             </div>
             <SwitchToggle
-              label="Show closed statuses"
+              label={t("Show closed statuses")}
               labelHidden
               value={closedStatuses.visible}
               setValue={closedStatuses.onVisibilityChange}

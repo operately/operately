@@ -1,8 +1,17 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
-import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
+import {
+  IconCalendar,
+  IconCheck,
+  IconLink,
+  IconTrash,
+  IconFlagFilled,
+  IconFlag,
+  IconCircleCheckFilled,
+} from "../../icons";
 import { RelativeDayField } from "../../RelativeDayField";
 import FormattedTime, { type FormattedTimePreferences } from "../../FormattedTime";
 import type { MilestonePage } from "../types";
@@ -26,7 +35,10 @@ export function Sidebar(props: MilestonePage.State) {
           isProjectMilestoneState(props) &&
           props.milestone.completedAt &&
           props.milestone.status === "done" && (
-            <SidebarCompletedOn completedAt={props.milestone.completedAt} formattedTimePreferences={props.formattedTimePreferences} />
+            <SidebarCompletedOn
+              completedAt={props.milestone.completedAt}
+              formattedTimePreferences={props.formattedTimePreferences}
+            />
           )}
         {features.showCreatedBy && isProjectMilestoneState(props) && props.createdBy && (
           <SidebarCreatedBy
@@ -35,7 +47,9 @@ export function Sidebar(props: MilestonePage.State) {
             formattedTimePreferences={props.formattedTimePreferences}
           />
         )}
-        {features.showSubscriptions && isProjectMilestoneState(props) && <SidebarNotificationSection {...props.subscriptions} />}
+        {features.showSubscriptions && isProjectMilestoneState(props) && (
+          <SidebarNotificationSection {...props.subscriptions} />
+        )}
         <SidebarActions onDelete={props.openDeleteModal} canEdit={canEdit} />
       </div>
     </div>
@@ -43,17 +57,18 @@ export function Sidebar(props: MilestonePage.State) {
 }
 
 function DueDate(props: MilestonePage.State) {
+  const { t } = useTranslation();
   const features = variantFeatures(props.variant);
   const canEdit = props.permissions.canEdit || false;
 
   if (features.showRelativeDueDate && isTemplateMilestoneState(props)) {
     return (
-      <SidebarSection title="Relative due date">
+      <SidebarSection title={t("Relative due date")}>
         <RelativeDayField
           value={props.dueOffsetDays}
           onChange={props.onDueOffsetDaysChange}
           readonly={!canEdit}
-          placeholder="Set relative date"
+          placeholder={t("Set relative date")}
           testId="template-milestone-due-offset"
         />
       </SidebarSection>
@@ -67,13 +82,13 @@ function DueDate(props: MilestonePage.State) {
   const showOverdueWarning = props.milestone.status !== "done";
 
   return (
-    <SidebarSection title="Due Date">
+    <SidebarSection title={t("Due Date")}>
       <DateField
         date={props.milestone.dueDate || null}
         onDateSelect={props.onDueDateChange}
         readonly={!canEdit}
         showOverdueWarning={showOverdueWarning}
-        placeholder="Set due date"
+        placeholder={t("Set due date")}
         testId="milestone-due-date"
         calendarOnly
       />
@@ -90,6 +105,7 @@ function SidebarStatus({
   onStatusChange: (status: MilestonePage.Status) => void;
   canEdit: boolean;
 }) {
+  const { t } = useTranslation();
   const isCompleted = status === "done";
 
   const handleStatusToggle = () => {
@@ -100,17 +116,17 @@ function SidebarStatus({
 
   if (!canEdit) {
     return (
-      <SidebarSection title="Milestone status">
+      <SidebarSection title={t("Milestone status")}>
         <div className="flex items-center gap-2 text-sm">
           {isCompleted ? (
             <>
               <IconFlagFilled size={16} className="text-accent-1" />
-              <span className="text-accent-1 font-medium">Completed</span>
+              <span className="text-accent-1 font-medium">{t("Completed")}</span>
             </>
           ) : (
             <>
               <IconFlag size={16} className="text-content-dimmed" />
-              <span className="text-content-base">Active</span>
+              <span className="text-content-base">{t("Active")}</span>
             </>
           )}
         </div>
@@ -119,28 +135,28 @@ function SidebarStatus({
   }
 
   return (
-    <SidebarSection title="Milestone status" testId="sidebar-status">
+    <SidebarSection title={t("Milestone status")} testId="sidebar-status">
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-sm">
           {isCompleted ? (
             <>
               <IconFlagFilled size={16} className="text-accent-1" />
-              <span className="text-accent-1 font-medium">Completed</span>
+              <span className="text-accent-1 font-medium">{t("Completed")}</span>
             </>
           ) : (
             <>
               <IconFlag size={16} className="text-content-dimmed" />
-              <span className="text-content-base">Active</span>
+              <span className="text-content-base">{t("Active")}</span>
             </>
           )}
         </div>
         {isCompleted ? (
           <SecondaryButton size="xs" onClick={handleStatusToggle}>
-            Reopen
+            {t("Reopen")}
           </SecondaryButton>
         ) : (
           <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
-            Mark complete
+            {t("Mark complete")}
           </GhostButton>
         )}
       </div>
@@ -188,24 +204,25 @@ function SidebarCreatedBy({
 }
 
 function SidebarActions({ onDelete, canEdit }: { onDelete?: () => void; canEdit: boolean }) {
+  const { t } = useTranslation();
   const handleCopyURL = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      showSuccessToast("Success", "Milestone URL copied to clipboard");
+      showSuccessToast(t("Success"), t("Milestone URL copied to clipboard"));
     } catch {
-      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+      showErrorToast(t("Copy failed"), t("Unable to copy URL to clipboard"));
     }
   };
 
   const actions = [
     {
-      label: "Copy URL",
+      label: t("Copy URL"),
       onClick: handleCopyURL,
       icon: IconLink,
       show: true,
     },
     {
-      label: "Delete",
+      label: t("Delete"),
       onClick: onDelete,
       icon: IconTrash,
       show: canEdit && !!onDelete,
@@ -216,7 +233,7 @@ function SidebarActions({ onDelete, canEdit }: { onDelete?: () => void; canEdit:
   if (actions.length === 0) return null;
 
   return (
-    <SidebarSection title="Actions">
+    <SidebarSection title={t("Actions")}>
       <div className="space-y-1">
         {actions.map((action, index) => (
           <button

@@ -1,6 +1,15 @@
 import i18n, { applyLanguage, tn } from "./i18n";
+import { resolveEffectiveLanguage } from "./i18n/languages";
 
 describe("i18n", () => {
+  it("keeps work-management copy English with the flag off and a saved Portuguese preference", async () => {
+    await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+    expect(i18n.t("Create milestone")).toBe("Create milestone");
+    expect(i18n.t("Failed to update task due date")).toBe("Failed to update task due date");
+    expect(i18n.t("No discussions yet")).toBe("No discussions yet");
+    expect(i18n.t("Your drafts ({{count}})", { count: 3 })).toBe("Your drafts (3)");
+    expect(tn("1 completed milestone", "{{count}} completed milestones", 0)).toBe("0 completed milestones");
+  });
   it("falls back to the English message identifier", () => {
     expect(i18n.t("Not yet translated")).toEqual("Not yet translated");
   });

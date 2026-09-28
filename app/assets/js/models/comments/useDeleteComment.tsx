@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import React from "react";
 import Api, { CommentParentType } from "@/api";
 import { showErrorToast } from "turboui";
@@ -30,7 +31,7 @@ export function useDeleteComment<T extends { id?: string | null }>(
           // Rollback: restore the comment
           setComments((prev) => [...prev, comment]);
         }
-        showErrorToast("Error", "Failed to delete comment.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to delete comment."));
       }
     },
     [comments, parentType, invalidateCache, setComments],

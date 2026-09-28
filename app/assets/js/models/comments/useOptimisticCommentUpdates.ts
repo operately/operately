@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { type CommentQueryInvalidator } from "./commentLifecycle";
 import * as React from "react";
 import Api, { type Comment, type CommentParentType } from "@/api";
@@ -120,7 +121,7 @@ export function useOptimisticCommentUpdates({
         session.changed = true;
         saved = true;
       } catch {
-        if (isCurrent()) showErrorToast("Error", errorMessage);
+        if (isCurrent()) showErrorToast(i18n.t("Error"), errorMessage);
       }
       session.pending = session.pending.filter((pending) => pending !== update);
       publish();

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Space, SpaceTools } from "@/models/spaces";
@@ -15,11 +16,12 @@ interface ToolsSectionPros {
 }
 
 export function ToolsSection({ space, tools }: ToolsSectionPros) {
+  const { t } = useTranslation();
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-4">
         <GoalsAndProjects
-          title="Goals & Projects"
+          title={t("Goals & Projects")}
           space={space}
           goals={tools.goals ?? []}
           projects={tools.projects ?? []}

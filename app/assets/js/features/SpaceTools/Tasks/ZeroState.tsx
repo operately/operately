@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { GhostButton, IconSquareCheckFilled, IconCircleDashed } from "turboui";
@@ -13,25 +14,27 @@ export function ZeroState() {
 }
 
 function ExplanationAndButton() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center group">
-      <div className="text-base font-bold">Tasks</div>
+      <div className="text-base font-bold">{t("Tasks")}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-        Organize tasks on a Kanban board with status columns.
+        {t("Organize tasks on a Kanban board with status columns.")}
       </div>
 
-      <GhostButton size="sm">Add a new task</GhostButton>
+      <GhostButton size="sm">{t("Add a new task")}</GhostButton>
     </div>
   );
 }
 
 function Examples() {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full h-[170px] mt-10 opacity-75 px-[65px] flex flex-col gap-3">
-      <Example icon={IconCircleDashed} title="Draft the plan" body="Write down the next steps..." />
-      <Example icon={IconCircleDashed} title="Assign an owner" body="Pick who will do it..." />
-      <Example icon={IconSquareCheckFilled} title="Mark it done" body="Celebrate the win..." />
+      <Example icon={IconCircleDashed} title={t("Draft the plan")} body={t("Write down the next steps...")} />
+      <Example icon={IconCircleDashed} title={t("Assign an owner")} body={t("Pick who will do it...")} />
+      <Example icon={IconSquareCheckFilled} title={t("Mark it done")} body={t("Celebrate the win...")} />
     </div>
   );
 }

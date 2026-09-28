@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import * as Forms from "../../Forms";
@@ -15,11 +16,12 @@ interface CopyResourceMenuItemProps {
 }
 
 export function CopyResourceMenuItem({ resource, showModal }: CopyResourceMenuItemProps) {
+  const { t } = useTranslation();
   const testId = createTestId("copy-resource", resource.id);
 
   return (
     <MenuActionItem onClick={showModal} testId={testId}>
-      Copy
+      {t("Copy")}
     </MenuActionItem>
   );
 }
@@ -32,15 +34,20 @@ interface CopyResourceModalProps {
 }
 
 export function CopyResourceModal({ form, resource, isOpen, hideModal }: CopyResourceModalProps) {
+  const { t } = useTranslation();
   return (
-    <Modal title={`Create a copy of ${getResourceName(resource)}`} isOpen={isOpen} onClose={hideModal}>
+    <Modal
+      title={t("Create a copy of {{name}}", { name: getResourceName(resource) })}
+      isOpen={isOpen}
+      onClose={hideModal}
+    >
       <Forms.Form form={form} testId="copy-resource-modal">
         <Forms.FieldGroup>
-          <Forms.TextInput field="name" label="New document name" required />
-          <ResourceHubFolderSelectField field="location" label="Select destination" />
+          <Forms.TextInput field="name" label={t("New document name")} required />
+          <ResourceHubFolderSelectField field="location" label={t("Select destination")} />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Create Copy" cancelText="Cancel" />
+        <Forms.Submit saveText={t("Create Copy")} cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );

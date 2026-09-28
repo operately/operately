@@ -7,6 +7,13 @@ import en from "./generated/locales/en.json";
 import ptBR from "./generated/locales/pt-BR.json";
 import { DEFAULT_LANGUAGE, isSupportedLanguage, SUPPORTED_LANGUAGES } from "./i18n/languages";
 
+// The app and TurboUI install separate package types but share this runtime setting.
+declare module "i18next" {
+  interface CustomTypeOptions {
+    returnNull: false;
+  }
+}
+
 const FORMAT_MESSAGES = {
   intlDateTime: "{{val, datetime}}",
   intlRelativeDateTime: "{{val, relativetime}}",

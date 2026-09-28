@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { useNavigate } from "react-router";
 
@@ -12,6 +13,7 @@ import { SubscribersSelector } from "../Subscriptions";
 import type { DocumentEditPage as DocumentEditPageNS } from "./types";
 
 export function DocumentEditPage(props: DocumentEditPageNS.Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const form = Forms.useForm<DocumentEditPageNS.Values>({
@@ -35,16 +37,21 @@ export function DocumentEditPage(props: DocumentEditPageNS.Props) {
   });
 
   return (
-    <Page title={props.pageTitle} size="medium" navigation={props.navigation} testId={props.testId ?? "document-edit-page"}>
+    <Page
+      title={props.pageTitle}
+      size="medium"
+      navigation={props.navigation}
+      testId={props.testId ?? "document-edit-page"}
+    >
       <Forms.Form form={form}>
         <div className="px-12 py-10">
           <Forms.FieldGroup>
-            <Forms.TitleInput field="title" placeholder="Title..." />
+            <Forms.TitleInput field="title" placeholder={t("Title...")} />
 
             <Forms.RichTextArea
               field="content"
               richTextHandlers={props.richTextHandlers}
-              placeholder="Write here..."
+              placeholder={t("Write here...")}
               hideBorder
               showToolbarTopBorder
               fontSize="text-lg"

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { GhostButton, IconTargetArrow, IconHexagons } from "turboui";
@@ -13,27 +14,29 @@ export function ZeroState() {
 }
 
 function ExplanationAndButton() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col justify-center items-center">
-      <div className="text-base font-bold">Goals &amp; Projects</div>
+      <div className="text-base font-bold">{t("Goals & Projects")}</div>
 
       <div className="flex gap-2 mt-1 mb-4 text-center px-6 text-sm">
-        Set goals, track your progress, and collaborate with your team to achieve them.
+        {t("Set goals, track your progress, and collaborate with your team to achieve them.")}
       </div>
 
-      <GhostButton size="sm">Add goal or project</GhostButton>
+      <GhostButton size="sm">{t("Add goal or project")}</GhostButton>
     </div>
   );
 }
 
 function GoalTreeExample() {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full h-[170px] mt-10 opacity-75 px-[50px] flex flex-col gap-3">
       <div className="flex flex-col">
-        <WorkItem title="Yearly Goal" progress={20} />
-        <WorkItem title="Quarterly Goal 1" progress={60} indent={1} />
-        <WorkItem title="Project 1" progress={90} indent={2} type="project" />
-        <WorkItem title="Quarterly Goal 2" progress={60} indent={1} />
+        <WorkItem title={t("Yearly Goal")} progress={20} />
+        <WorkItem title={t("Quarterly Goal 1")} progress={60} indent={1} />
+        <WorkItem title={t("Project 1")} progress={90} indent={2} type="project" />
+        <WorkItem title={t("Quarterly Goal 2")} progress={60} indent={1} />
       </div>
     </div>
   );

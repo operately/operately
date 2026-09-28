@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { SecondaryButton } from "../../Button";
@@ -30,6 +31,7 @@ export function TemplateTasksSection({
   onTaskOpen,
   setIsTaskModalOpen,
 }: MilestonePage.TemplateState & Props) {
+  const { t } = useTranslation();
   const canEdit = permissions.canEdit || false;
   const {
     containerRef: keyboardNavigationRef,
@@ -102,7 +104,7 @@ export function TemplateTasksSection({
       headerActions={
         canEdit && onTaskCreate ? (
           <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="template-tasks-section-add-task">
-            <span className="sr-only">Add task</span>
+            <span className="sr-only">{t("Add task")}</span>
           </SecondaryButton>
         ) : null
       }
