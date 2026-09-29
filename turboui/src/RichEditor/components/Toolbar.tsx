@@ -6,8 +6,7 @@ import { AttachmentButton } from "./AttachmentButton";
 import { BlockquoteButton } from "./BlockquoteButton";
 import { BoldButton } from "./BoldButton";
 import { BulletListButton } from "./BulletListButton";
-import { H1Button } from "./H1Button";
-import { H2Button } from "./H2Button";
+import { HeadingButtons } from "./HeadingButtons";
 import { ItalicButton } from "./ItalicButton";
 import { LinkButton } from "./LinkButton";
 import { NumberListButton } from "./NumberListButton";
@@ -50,8 +49,7 @@ function DesktopToolbar() {
 
             <Separator />
 
-            <H1Button editor={editor} iconSize={20} />
-            <H2Button editor={editor} iconSize={20} />
+            <HeadingButtons editor={editor} iconSize={20} />
 
             <Separator />
             <ColorPicker editor={editor} iconSize={18} />
@@ -95,29 +93,30 @@ function MobileToolbar() {
   return (
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0">
       <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
-        <div className="flex justify-between items-center w-full">
-          <div className="flex items-center">
+        <div className="flex justify-between items-center w-full min-w-0">
+          <div className="flex items-center min-w-0 overflow-x-auto">
             <BoldButton editor={editor} iconSize={20} />
             <ItalicButton editor={editor} iconSize={20} />
             <StrikeButton editor={editor} iconSize={20} />
-            <H1Button editor={editor} iconSize={20} />
-            <H2Button editor={editor} iconSize={20} />
+            <HeadingButtons editor={editor} iconSize={20} />
             <ColorPicker editor={editor} iconSize={18} />
             <BulletListButton editor={editor} iconSize={20} />
             {uploadFile ? <AttachmentButton editor={editor} iconSize={20} /> : null}
           </div>
 
-          <MobilePopupTools>
-            <TableButton editor={editor} iconSize={20} />
-            <TaskListButton editor={editor} iconSize={20} />
-            <NumberListButton editor={editor} iconSize={20} />
-            <BlockquoteButton editor={editor} iconSize={20} />
-            <CodeBlockButton editor={editor} iconSize={20} />
-            <DividerButton editor={editor} iconSize={20} />
-            <LinkButton editor={editor} iconSize={20} />
-            <UndoButton editor={editor} iconSize={20} />
-            <RedoButton editor={editor} iconSize={20} />
-          </MobilePopupTools>
+          <div className="shrink-0">
+            <MobilePopupTools>
+              <TableButton editor={editor} iconSize={20} />
+              <TaskListButton editor={editor} iconSize={20} />
+              <NumberListButton editor={editor} iconSize={20} />
+              <BlockquoteButton editor={editor} iconSize={20} />
+              <CodeBlockButton editor={editor} iconSize={20} />
+              <DividerButton editor={editor} iconSize={20} />
+              <LinkButton editor={editor} iconSize={20} />
+              <UndoButton editor={editor} iconSize={20} />
+              <RedoButton editor={editor} iconSize={20} />
+            </MobilePopupTools>
+          </div>
         </div>
       </div>
 
