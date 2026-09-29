@@ -22,9 +22,11 @@ defmodule OperatelyWeb.Api.Spaces.List do
   end
 
   def call(conn, inputs) do
-    spaces = load_spaces(me(conn), inputs, company_read_only(conn))
+    with {:ok, me} <- find_me(conn) do
+      spaces = load_spaces(me, inputs, company_read_only(conn))
 
-    {:ok, %{spaces: Serializer.serialize(spaces, level: :full)}}
+      {:ok, %{spaces: Serializer.serialize(spaces, level: :full)}}
+    end
   end
 
   defp load_spaces(me, inputs, company_read_only) do
