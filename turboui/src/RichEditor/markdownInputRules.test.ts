@@ -60,32 +60,47 @@ describe("RichEditor markdown input rules", () => {
     expect(firstText(strike).marks).toEqual([{ type: "strike" }]);
   });
 
-  it("converts H1 and H2 while typing", () => {
-    const h1 = makeEditor();
-    type(h1, "#", " ");
-    expect(firstChild(h1)).toMatchObject({ type: "heading", attrs: { level: 1 } });
-
-    const h2 = makeEditor();
-    type(h2, "##", " ");
-    expect(firstChild(h2)).toMatchObject({ type: "heading", attrs: { level: 2 } });
+  it.each([1, 2, 3, 4])("converts H%i while typing", (level) => {
+    const editor = makeEditor();
+    type(editor, "#".repeat(level), " ");
+    expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level } });
+    expect(editor.state.doc.textContent).toBe("");
+    editor.destroy();
   });
 
-  it("does not convert H3+ since no toolbar button exists", () => {
-    const h3 = makeEditor();
-    type(h3, "###", " ");
-    expect(firstChild(h3).type).toBe("paragraph");
+  it.each([5, 6])("does not convert H%i while typing", (level) => {
+    const editor = makeEditor();
+    type(editor, "#".repeat(level), " ");
+    expect(firstChild(editor).type).toBe("paragraph");
+    expect(editor.state.doc.textContent).toBe("#".repeat(level));
+    editor.destroy();
   });
 
-  it("still renders existing H3+ content (schema keeps full heading levels)", () => {
+  it.each([1, 2, 3, 4, 5, 6])("preserves existing H%i content when rendering and serializing", (level) => {
     const editor = makeEditor();
     editor.commands.setContent({
       type: "doc",
-      content: [{ type: "heading", attrs: { level: 3 }, content: [{ type: "text", text: "deep" }] }],
+      content: [{ type: "heading", attrs: { level }, content: [{ type: "text", text: "Heading" }] }],
     });
-    // The H3+ input rule is disabled, but the schema must preserve existing
-    // headings so stored content is not downcast to H1 on render.
-    expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level: 3 } });
-    expect(editor.getHTML()).toContain("<h3>deep</h3>");
+    expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level } });
+    expect(editor.getHTML()).toContain(`<h${level}>Heading</h${level}>`);
+    editor.destroy();
+  });
+
+  it.each([2, 3, 4])("toggles H%i with its keyboard shortcut", (level) => {
+    const editor = makeEditor();
+    editor.commands.keyboardShortcut(`Mod-Alt-${level}`);
+    expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level } });
+    editor.commands.keyboardShortcut(`Mod-Alt-${level}`);
+    expect(firstChild(editor).type).toBe("paragraph");
+    editor.destroy();
+  });
+
+  it.each([1, 5, 6])("does not create H%i with a keyboard shortcut", (level) => {
+    const editor = makeEditor();
+    editor.commands.keyboardShortcut(`Mod-Alt-${level}`);
+    expect(firstChild(editor).type).toBe("paragraph");
+    editor.destroy();
   });
 
   it("converts lists, blockquote and code block while typing", () => {
