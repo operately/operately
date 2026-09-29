@@ -32,8 +32,10 @@ function restoreNode(value: unknown): unknown {
   let node = value;
   if (Array.isArray(node.content)) {
     const children = node.content;
-    const restored = children.map(restoreNode);
-    if (restored.some((child, i) => child !== children[i])) node = { ...node, content: restored };
+    const restored = joinGeneratedLabels(children).map(restoreNode);
+    if (restored.length !== children.length || restored.some((child, i) => child !== children[i])) {
+      node = { ...node, content: restored };
+    }
   }
   if (node.type !== "text" || !Array.isArray(node.marks)) return node;
 
@@ -58,13 +60,63 @@ function restoreNode(value: unknown): unknown {
   return changed ? { ...node, text, marks } : node;
 }
 
-function isUrlLabel(text: string, href: string): boolean {
+// Formatting can split a generated label into adjacent text nodes. Recognize
+// the complete unchanged title before deciding that its text was customized.
+function joinGeneratedLabels(children: unknown[]): unknown[] {
+  const result: unknown[] = [];
+  for (let index = 0; index < children.length; index++) {
+    const first = children[index];
+    const link = generatedLink(first);
+    if (!link || !isObject(first)) {
+      result.push(first);
+      continue;
+    }
+    let text = String(first.text);
+    let end = index;
+    while (text.length < link.resolvedText.length) {
+      const next = children[end + 1];
+      const nextLink = generatedLink(next);
+      if (!nextLink || !isObject(next) || JSON.stringify(nextLink) !== JSON.stringify(link)) break;
+      text += next.text;
+      end++;
+    }
+    if (end > index && text === link.resolvedText) {
+      // The URL has different character positions: retain the first span's marks.
+      result.push({ ...first, text });
+      index = end;
+    } else {
+      result.push(first);
+    }
+  }
+  return result;
+}
+
+function generatedLink(node: unknown): { href: string; originalText: string; resolvedText: string } | null {
+  if (!isObject(node) || node.type !== "text" || typeof node.text !== "string" || !Array.isArray(node.marks))
+    return null;
+  for (const mark of node.marks) {
+    if (!isObject(mark) || mark.type !== "link" || !isObject(mark.attrs)) continue;
+    const metadata = mark.attrs.operatelyResourceLink;
+    if (
+      typeof mark.attrs.href === "string" &&
+      isObject(metadata) &&
+      typeof metadata.originalText === "string" &&
+      typeof metadata.resolvedText === "string"
+    ) {
+      return { href: mark.attrs.href, originalText: metadata.originalText, resolvedText: metadata.resolvedText };
+    }
+  }
+  return null;
+}
+
+export function isUrlLabel(text: string, href: string): boolean {
   try {
     const label = new URL(text.trim(), "https://resource-link.invalid");
     const link = new URL(href.trim(), "https://resource-link.invalid");
     label.hash = "";
     link.hash = "";
     if (label.href.replace(/\/$/, "") === link.href.replace(/\/$/, "")) return true;
+    if (text.trim().replace(/\/$/, "") === link.pathname.replace(/\/$/, "")) return true;
     link.search = "";
     return label.href.replace(/\/$/, "") === link.href.replace(/\/$/, "");
   } catch {

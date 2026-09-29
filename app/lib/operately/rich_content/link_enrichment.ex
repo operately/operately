@@ -32,16 +32,6 @@ defmodule Operately.RichContent.LinkEnrichment do
     end
   end
 
-  @doc "Resolves URL labels for storage, without response-only metadata."
-  def prepare_for_save(payload, context) do
-    {result, _} =
-      payload
-      |> enrich(context)
-      |> map_documents(nil, fn document, acc -> {map_nodes(document, &remove_metadata/1), acc} end)
-
-    result
-  end
-
   @doc "Resolves titles for original URLs, omitting unknown or inaccessible resources."
   def resolve_urls(urls, %{person: person, company: company, origin: origin}) do
     links =
@@ -64,29 +54,62 @@ defmodule Operately.RichContent.LinkEnrichment do
     end)
   end
 
-  defp remove_metadata(%{"type" => "text", "marks" => marks} = node) when is_list(marks) do
-    marks =
-      Enum.map(marks, fn
-        %{"type" => "link", "attrs" => attrs} = mark when is_map(attrs) ->
-          Map.put(mark, "attrs", Map.delete(attrs, @metadata))
-
-        mark ->
-          mark
-      end)
-
-    Map.put(node, "marks", marks)
-  end
-
-  defp remove_metadata(node), do: node
-
   @doc """
   Restores original URL labels in nested rich-text documents and removes enrichment
   metadata, preserving client-edited labels and each field's JSON representation.
   """
   def restore_source(payload) do
-    {source, _} = map_documents(payload, nil, fn document, acc -> {map_nodes(document, &restore_node/1), acc} end)
+    {source, _} = map_documents(payload, nil, fn document, acc -> {restore_document(document), acc} end)
     source
   end
+
+  defp restore_document(%{"content" => children} = node) when is_list(children) do
+    Map.put(node, "content", children |> join_generated_labels() |> Enum.map(&restore_document/1))
+  end
+
+  defp restore_document(node), do: restore_node(node)
+
+  # Formatting can split a generated title. Restore it as one URL using the
+  # first span's marks; the title's character positions do not map to the URL.
+  defp join_generated_labels([]), do: []
+
+  defp join_generated_labels([first | rest]) do
+    case generated_link(first) do
+      {_href, _original, resolved} = link ->
+        {text, remaining} = collect_generated_label(rest, link, first["text"], resolved)
+
+        if text == resolved do
+          [Map.put(first, "text", text) | join_generated_labels(remaining)]
+        else
+          [first | join_generated_labels(rest)]
+        end
+
+      nil ->
+        [first | join_generated_labels(rest)]
+    end
+  end
+
+  defp collect_generated_label([next | rest] = remaining, link, text, resolved) when byte_size(text) < byte_size(resolved) do
+    if generated_link(next) == link do
+      collect_generated_label(rest, link, text <> next["text"], resolved)
+    else
+      {text, remaining}
+    end
+  end
+
+  defp collect_generated_label(remaining, _link, text, _resolved), do: {text, remaining}
+
+  defp generated_link(%{"type" => "text", "text" => text, "marks" => marks}) when is_binary(text) and is_list(marks) do
+    Enum.find_value(marks, fn
+      %{"type" => "link", "attrs" => %{"href" => href, @metadata => %{"originalText" => original, "resolvedText" => resolved}}}
+      when is_binary(href) and is_binary(original) and is_binary(resolved) ->
+        {href, original, resolved}
+
+      _ -> nil
+    end)
+  end
+
+  defp generated_link(_), do: nil
 
   defp load_titles(refs, person, company) do
     refs
