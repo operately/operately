@@ -7,6 +7,7 @@ import { createRichEditorExtensions } from "./createRichEditorExtensions";
 import { clearLocalDraft, isRichTextEmpty, LocalDraftOptions, readLocalDraft, writeLocalDraft } from "./localDrafts";
 import { SearchFn } from "./extensions/MentionPeople";
 import { restoreRichTextSource } from "../RichContent/restoreSource";
+import { createResourceLinkPlugin, type ResolveResourceLinks } from "./extensions/Link/resourceLinks";
 import { normalizeRichTextContent } from "./richTextContent";
 
 export interface Person {
@@ -31,6 +32,7 @@ export type UploadFileFn = (file: File, onProgress: (progress: number) => void) 
 export type MentionedPersonLookupFn = (id: string) => Promise<Person | null>;
 
 export interface RichEditorHandlers {
+  resolveResourceLinks: ResolveResourceLinks | null;
   mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
@@ -134,7 +136,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       if (!props.onBlur) return;
 
       props.onBlur({
-        json: editor.getJSON(),
+        json: props.editable ? restoreRichTextSource(editor.getJSON()) : editor.getJSON(),
         html: editor.getHTML(),
       });
     },
@@ -148,7 +150,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       setUploading(isUploading);
       setSubmittable(!isUploading);
 
-      const json = editor.getJSON();
+      const json = props.editable ? restoreRichTextSource(editor.getJSON()) : editor.getJSON();
 
       setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
 
@@ -164,6 +166,17 @@ export function useEditor(props: UseEditorProps): EditorState {
       }
     },
   });
+
+  React.useEffect(() => {
+    if (!editor || !props.editable || !props.handlers.resolveResourceLinks) return;
+
+    const plugin = createResourceLinkPlugin(props.handlers.resolveResourceLinks);
+    editor.registerPlugin(plugin);
+
+    return () => {
+      editor.unregisterPlugin("resourceLinkTitles");
+    };
+  }, [editor, props.editable, props.handlers.resolveResourceLinks]);
 
   const setContent = React.useCallback(
     (content: any) => {
@@ -185,8 +198,8 @@ export function useEditor(props: UseEditorProps): EditorState {
 
   const getJson = React.useCallback(() => {
     if (!editor) return null;
-    return editor.getJSON();
-  }, [editor]);
+    return props.editable ? restoreRichTextSource(editor.getJSON()) : editor.getJSON();
+  }, [editor, props.editable]);
 
   const clearDraft = React.useCallback(() => {
     clearLocalDraft(props.localDraft);

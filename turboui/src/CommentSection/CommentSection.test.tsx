@@ -58,6 +58,7 @@ describe("CommentSection", () => {
           onEditComment={jest.fn()}
           onDeleteComment={jest.fn()}
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,
@@ -84,6 +85,7 @@ describe("CommentSection", () => {
           onAddComment={jest.fn()}
           onEditComment={jest.fn()}
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,

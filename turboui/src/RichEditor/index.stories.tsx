@@ -129,3 +129,25 @@ export const TaskLists: Story = {
     return <Editor editor={editor} />;
   },
 };
+
+export const ResourceLinkTitles: Story = {
+  render: () => {
+    const handlers = React.useMemo(
+      () => ({
+        ...createMockRichEditorHandlers(),
+        resolveResourceLinks: async (urls: string[]) => {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          return urls
+            .filter((url) => url.endsWith("/projects/website"))
+            .map((url) => ({ url, title: "Website launch" }));
+        },
+      }),
+      [],
+    );
+    const editor = useEditor({
+      handlers,
+      content: `<p><a href="${window.location.origin}/acme/projects/website">${window.location.origin}/acme/projects/website</a></p>`,
+    });
+    return <Editor editor={editor} />;
+  },
+};

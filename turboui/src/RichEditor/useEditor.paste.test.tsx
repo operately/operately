@@ -5,6 +5,7 @@ import { useEditor } from "./useEditor";
 
 const handlers = {
   mentionedPersonLookup: async () => null,
+  resolveResourceLinks: null,
   uploadFile: async () => ({ id: "1", url: "https://example.com/file" }),
 };
 const resourceUrl = `${window.location.origin}/acme-0abc/projects/website-xyz`;

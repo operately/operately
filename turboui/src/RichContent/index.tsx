@@ -32,7 +32,7 @@ export default function RichContent({
     editable: false,
     thumbnailBlobs,
     transformContent,
-    handlers: { mentionedPersonLookup },
+    handlers: { mentionedPersonLookup, resolveResourceLinks: null },
   });
 
   return (
