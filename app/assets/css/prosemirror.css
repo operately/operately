@@ -30,6 +30,14 @@
   @apply text-xl;
 }
 
+.ProseMirror h3 {
+  @apply text-lg;
+}
+
+.ProseMirror h4 {
+  @apply text-base;
+}
+
 .ProseMirror hr {
   height: 0.5px;
   background-color: var(--color-stroke-dimmed);

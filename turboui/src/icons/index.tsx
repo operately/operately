@@ -80,6 +80,8 @@ import IconGripVertical from "@tabler/icons-react/dist/esm/icons/IconGripVertica
 import IconGrowth from "@tabler/icons-react/dist/esm/icons/IconGrowth.mjs";
 import IconH1 from "@tabler/icons-react/dist/esm/icons/IconH1.mjs";
 import IconH2 from "@tabler/icons-react/dist/esm/icons/IconH2.mjs";
+import IconH3 from "@tabler/icons-react/dist/esm/icons/IconH3.mjs";
+import IconH4 from "@tabler/icons-react/dist/esm/icons/IconH4.mjs";
 import IconHash from "@tabler/icons-react/dist/esm/icons/IconHash.mjs";
 import IconHeart from "@tabler/icons-react/dist/esm/icons/IconHeart.mjs";
 import IconHexagons from "@tabler/icons-react/dist/esm/icons/IconHexagons.mjs";
@@ -245,6 +247,8 @@ export {
   IconGrowth,
   IconH1,
   IconH2,
+  IconH3,
+  IconH4,
   IconHash,
   IconHeart,
   IconHexagons,

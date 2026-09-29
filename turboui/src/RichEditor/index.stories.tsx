@@ -55,6 +55,28 @@ export const WithContent: Story = {
   },
 };
 
+export const Headings: Story = {
+  render: () => {
+    const editor = useEditor({
+      content: "<h2>Heading 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><p></p>",
+      handlers: createMockRichEditorHandlers(),
+    });
+
+    return <Editor editor={editor} />;
+  },
+};
+
+export const CompactHeadings: Story = {
+  render: () => {
+    const editor = useEditor({
+      content: "<h2>Heading 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><p></p>",
+      handlers: createMockRichEditorHandlers(),
+    });
+
+    return <Editor editor={editor} compactToolbar />;
+  },
+};
+
 export const WithLocalDraft: Story = {
   parameters: {
     docs: {
