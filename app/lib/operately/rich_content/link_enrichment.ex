@@ -69,17 +69,18 @@ defmodule Operately.RichContent.LinkEnrichment do
 
   defp restore_document(node), do: restore_node(node)
 
-  # Formatting can split a generated title. Restore it as one URL using the
-  # first span's marks; the title's character positions do not map to the URL.
+  # Restore split generated titles as one URL, preserving their formatting
+  # across the whole link.
   defp join_generated_labels([]), do: []
 
   defp join_generated_labels([first | rest]) do
     case generated_link(first) do
-      {_href, _original, resolved} = link ->
-        {text, remaining} = collect_generated_label(rest, link, first["text"], resolved)
+      {href, original, resolved} = link ->
+        {text, marks, remaining} = collect_generated_label(rest, link, first["text"], first["marks"], resolved)
 
-        if text == resolved do
-          [Map.put(first, "text", text) | join_generated_labels(remaining)]
+        if text == resolved and ResourceLinks.url_label?(original, href) do
+          marks = Enum.uniq_by(marks, & &1["type"])
+          [%{first | "text" => text, "marks" => marks} | join_generated_labels(remaining)]
         else
           [first | join_generated_labels(rest)]
         end
@@ -89,15 +90,15 @@ defmodule Operately.RichContent.LinkEnrichment do
     end
   end
 
-  defp collect_generated_label([next | rest] = remaining, link, text, resolved) when byte_size(text) < byte_size(resolved) do
+  defp collect_generated_label([next | rest] = remaining, link, text, marks, resolved) when byte_size(text) < byte_size(resolved) do
     if generated_link(next) == link do
-      collect_generated_label(rest, link, text <> next["text"], resolved)
+      collect_generated_label(rest, link, text <> next["text"], marks ++ next["marks"], resolved)
     else
-      {text, remaining}
+      {text, marks, remaining}
     end
   end
 
-  defp collect_generated_label(remaining, _link, text, _resolved), do: {text, remaining}
+  defp collect_generated_label(remaining, _link, text, marks, _resolved), do: {text, marks, remaining}
 
   defp generated_link(%{"type" => "text", "text" => text, "marks" => marks}) when is_binary(text) and is_list(marks) do
     Enum.find_value(marks, fn

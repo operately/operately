@@ -36,3 +36,16 @@ it("handles JSON strings, null, malformed strings and untouched documents", () =
   const original = { type: "doc", content: [] };
   expect(restoreRichTextSource(original)).toBe(original);
 });
+
+it("does not discard formatting from the later part of a generated title", () => {
+  const first = node("Web").content[0]?.content[0];
+  const last = node("site").content[0]?.content[0];
+  if (!first || !last) throw new Error("Missing test link");
+  const content = {
+    type: "doc",
+    content: [{ type: "paragraph", content: [first, { ...last, marks: [...last.marks, { type: "bold" }] }] }],
+  };
+  const restored = restoreRichTextSource(content);
+  expect(restored.content[0]?.content.flatMap((span) => span.marks)).toContainEqual({ type: "bold" });
+  expect(JSON.stringify(restored)).not.toContain("Website");
+});

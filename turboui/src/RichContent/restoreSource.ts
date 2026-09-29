@@ -67,7 +67,7 @@ function joinGeneratedLabels(children: unknown[]): unknown[] {
   for (let index = 0; index < children.length; index++) {
     const first = children[index];
     const link = generatedLink(first);
-    if (!link || !isObject(first)) {
+    if (!link || !isObject(first) || !isUrlLabel(link.originalText, link.href)) {
       result.push(first);
       continue;
     }
@@ -81,8 +81,16 @@ function joinGeneratedLabels(children: unknown[]): unknown[] {
       end++;
     }
     if (end > index && text === link.resolvedText) {
-      // The URL has different character positions: retain the first span's marks.
-      result.push({ ...first, text });
+      // Combine formatting from split generated titles so it applies to the
+      // whole link when the original URL is restored.
+      const marks = new Map<string, unknown>();
+      for (const child of children.slice(index, end + 1)) {
+        if (!isObject(child) || !Array.isArray(child.marks)) continue;
+        for (const mark of child.marks) {
+          if (isObject(mark) && typeof mark.type === "string" && !marks.has(mark.type)) marks.set(mark.type, mark);
+        }
+      }
+      result.push({ ...first, text, marks: [...marks.values()] });
       index = end;
     } else {
       result.push(first);

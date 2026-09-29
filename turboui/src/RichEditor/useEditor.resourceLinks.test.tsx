@@ -123,14 +123,51 @@ it("preserves deliberately customized labels after resolution", async () => {
   expect(JSON.stringify(result.current.getJson())).not.toContain("operatelyResourceLink");
 });
 
-it("does not turn a generated title into saved text when formatting splits it", async () => {
+it.each([
+  { from: 1, to: 4 },
+  { from: 4, to: 8 },
+])("formats the whole generated link for selection %o and preserves it after reopening", async (selection) => {
   const resolveResourceLinks = jest.fn().mockResolvedValue([{ url: href, title: "Website" }]);
   const { result } = renderHook(() => useEditor({ content, handlers: { ...handlers, resolveResourceLinks } }));
   await waitFor(() => expect(result.current.editor.state.doc.textContent).toBe("Website"));
-  act(() => result.current.editor.chain().setTextSelection({ from: 1, to: 4 }).toggleBold().run());
+  act(() => result.current.editor.chain().setTextSelection(selection).toggleBold().run());
+  expect(result.current.editor.state.doc.firstChild.childCount).toBe(1);
+  expect(result.current.editor.getJSON().content[0].content[0]).toMatchObject({
+    text: "Website",
+    marks: expect.arrayContaining([{ type: "bold" }]),
+  });
+  expect(result.current.editor.state.selection.from).toBe(selection.from);
+  expect(result.current.editor.state.selection.to).toBe(selection.to);
   const saved = result.current.getJson();
-  expect(saved.content[0].content.map((node: { text: string }) => node.text).join("")).toBe(href);
+  expect(saved.content[0].content[0]).toMatchObject({ text: href, marks: expect.arrayContaining([{ type: "bold" }]) });
   expect(JSON.stringify(saved)).not.toContain("Website");
+
+  act(() => result.current.editor.commands.undo());
+  expect(result.current.editor.state.doc.firstChild.childCount).toBe(1);
+  expect(result.current.getJson().content[0].content[0].marks).not.toContainEqual({ type: "bold" });
+  act(() => result.current.editor.commands.redo());
+  expect(result.current.editor.state.doc.firstChild.childCount).toBe(1);
+  expect(result.current.getJson()).toEqual(saved);
+
+  act(() => result.current.setContent(saved));
+  await waitFor(() => expect(result.current.editor.state.doc.textContent).toBe("Website"));
+  expect(result.current.editor.getJSON().content[0].content[0].marks).toContainEqual({ type: "bold" });
+  act(() => result.current.editor.chain().setTextSelection(selection).toggleBold().run());
+  expect(result.current.editor.state.doc.firstChild.childCount).toBe(1);
+  expect(result.current.getJson().content[0].content[0].marks).not.toContainEqual({ type: "bold" });
+});
+
+it("keeps partial formatting on custom labels", async () => {
+  const resolveResourceLinks = jest.fn().mockResolvedValue([]);
+  const { result } = renderHook(() =>
+    useEditor({ content: sourceDocument([href], "Custom"), handlers: { ...handlers, resolveResourceLinks } }),
+  );
+  await waitFor(() => expect(result.current.editor).not.toBeNull());
+  act(() => result.current.editor.chain().setTextSelection({ from: 4, to: 7 }).toggleItalic().run());
+  expect(result.current.getJson().content[0].content).toMatchObject([
+    { text: "Cus", marks: expect.not.arrayContaining([{ type: "italic" }]) },
+    { text: "tom", marks: expect.arrayContaining([{ type: "italic" }]) },
+  ]);
 });
 
 function sourceDocument(urls: string[], label?: string) {
