@@ -6,7 +6,9 @@ import { IconArrowRight, isContentEmpty, RichContent } from "turboui";
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 
 import { Link } from "turboui";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n, { tn } from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 
 import { assertPresent } from "@/utils/assertions";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
@@ -15,7 +17,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
-    return `Goal timeframe change`;
+    return i18n.t("Goal timeframe change");
   },
 
   pagePath(paths, activity: Activity) {
@@ -23,11 +25,11 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   PageTitle({ activity }) {
-    return (
-      <>
-        Timeframe {extendedOrShortened(activity)} by {days(activity)} days
-      </>
-    );
+    // Preserve the existing English "days" wording even for a one-day change.
+    const title = isExtended(activity)
+      ? tn("Timeframe extended by {{count}} days", "Timeframe extended by {{count}} days", days(activity))
+      : tn("Timeframe shortened by {{count}} days", "Timeframe shortened by {{count}} days", days(activity));
+    return <>{title}</>;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -72,13 +74,23 @@ const GoalTimeframeEditing: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalActivityPath(activity.id!);
-    const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
-
-    if (page === "goal") {
-      return feedTitle(activity, activityLink);
-    } else {
-      return feedTitle(activity, activityLink, " on the", goalLink(paths, content(activity).goal!));
-    }
+    const goal = content(activity).goal;
+    assertPresent(goal, "Goal is required for a timeframe activity");
+    const sentence =
+      page === "goal"
+        ? isExtended(activity)
+          ? i18n.t("{{author}} <action>extended the timeframe</action>")
+          : i18n.t("{{author}} <action>shortened the timeframe</action>")
+        : isExtended(activity)
+          ? i18n.t("{{author}} <action>extended the timeframe</action> on the <goal>{{goalName}}</goal>")
+          : i18n.t("{{author}} <action>shortened the timeframe</action> on the <goal>{{goalName}}</goal>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(activity), goalName: goal.name }}
+        components={{ action: <Link to={path}>{null}</Link>, goal: goalLink(paths, goal) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -119,7 +131,7 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Edited the goal's timeframe";
+    return i18n.t("Edited the goal's timeframe");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
@@ -133,15 +145,11 @@ function content(activity: Activity): ActivityContentGoalTimeframeEditing {
   return activity.content as ActivityContentGoalTimeframeEditing;
 }
 
-function extendedOrShortened(activity: Activity) {
+function isExtended(activity: Activity) {
   const oldTimeframe = content(activity).oldTimeframe!;
   const newTimeframe = content(activity).newTimeframe!;
 
-  if (Timeframes.compareDuration(oldTimeframe, newTimeframe) === 1) {
-    return "extended";
-  } else {
-    return "shortened";
-  }
+  return Timeframes.compareDuration(oldTimeframe, newTimeframe) === 1;
 }
 
 function days(activity: Activity) {

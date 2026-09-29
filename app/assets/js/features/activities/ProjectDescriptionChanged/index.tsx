@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentProjectDescriptionChanged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -36,17 +38,30 @@ const ProjectDescriptionChanged: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, projectName, hasDescription } = content(activity);
-    const projectDisplay = project ? projectLink(paths, project) : `"${projectName}"`;
+    const projectDisplay = project ? projectLink(paths, project) : <React.Fragment />;
 
     if (page === "project") {
-      return hasDescription
-        ? feedTitle(activity, "updated the project description")
-        : feedTitle(activity, "removed the project description");
+      return hasDescription ? (
+        <Trans i18nKey="{{author}} updated the project description" values={{ author: activityAuthorName(activity) }} />
+      ) : (
+        <Trans i18nKey="{{author}} removed the project description" values={{ author: activityAuthorName(activity) }} />
+      );
     }
 
-    return hasDescription
-      ? feedTitle(activity, "updated the", projectDisplay, "project description")
-      : feedTitle(activity, "removed the", projectDisplay, "project description");
+    const sentence = project
+      ? hasDescription
+        ? i18n.t("{{author}} updated the <project>{{projectName}}</project> project description")
+        : i18n.t("{{author}} removed the <project>{{projectName}}</project> project description")
+      : hasDescription
+        ? i18n.t('{{author}} updated the "{{projectName}}" project description')
+        : i18n.t('{{author}} removed the "{{projectName}}" project description');
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(activity), projectName: project?.name ?? projectName }}
+        components={{ project: projectDisplay }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -75,7 +90,9 @@ const ProjectDescriptionChanged: ActivityHandler = {
     const { project, projectName, hasDescription } = content(activity);
     const name = project?.name ?? projectName;
 
-    return hasDescription ? `Project "${name}" description was updated` : `Project "${name}" description was removed`;
+    return hasDescription
+      ? i18n.t('Project "{{projectName}}" description was updated', { projectName: name })
+      : i18n.t('Project "{{projectName}}" description was removed', { projectName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectResuming } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -10,7 +12,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectResuming: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
-    return "Project resumed";
+    return i18n.t("Project resumed");
   },
 
   pagePath(paths, activity: Activity): string {
@@ -23,7 +25,7 @@ const ProjectResuming: ActivityHandler = {
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Project resumed</>;
+    return <Trans i18nKey="Project resumed" />;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -49,15 +51,33 @@ const ProjectResuming: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const activityPath = activity.id ? paths.projectActivityPath(activity.id) : null;
-    const link = activityPath ? <Link to={activityPath}>resumed</Link> : "resumed";
+    const link = activityPath ? <Link to={activityPath}>{null}</Link> : <React.Fragment />;
     const project = content(activity).project;
 
     if (page === "project") {
-      return feedTitle(activity, link, "the project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>resumed</action> the project"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ action: link }}
+        />
+      );
     } else if (project) {
-      return feedTitle(activity, link, "the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>resumed</action> the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ action: link, project: projectLink(paths, project) }}
+        />
+      );
     } else {
-      return feedTitle(activity, link, "a project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>resumed</action> a project"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ action: link }}
+        />
+      );
     }
   },
 
@@ -91,7 +111,7 @@ const ProjectResuming: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const projectName = content(activity).project?.name;
-    return projectName ? `Resumed the ${projectName} project` : "Resumed a project";
+    return projectName ? i18n.t("Resumed the {{projectName}} project", { projectName }) : i18n.t("Resumed a project");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

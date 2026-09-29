@@ -14,7 +14,9 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import * as Activities from "@/models/activities";
 import { match } from "ts-pattern";
 import { Link, Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, goalLink, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink, goalLink, projectLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -64,9 +66,10 @@ const CommentAdded: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { activity: commentedActivity, comment } = content(activity);
+    const author = activityAuthorName(activity);
 
     if (!commentedActivity) {
-      return feedTitle(activity, "commented");
+      return <Trans i18nKey="{{author}} commented" values={{ author }} />;
     }
 
     return match(commentedActivity.action)
@@ -75,12 +78,29 @@ const CommentAdded: ActivityHandler = {
         const goal = c.goal!;
         const path = paths.goalActivityPath(commentedActivity.id);
         const action = commentedLink(path, comment);
-        const activityLink = <Link to={path}>timeframe change</Link>;
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          activity: <Link to={path}>{null}</Link>,
+          goal: goalLink(paths, goal),
+        };
+        const values = { author, goalName: goal.name };
 
         if (page === "goal") {
-          return feedTitle(activity, action, "on the", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <activity>timeframe change</activity>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(paths, goal), "goal");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <activity>timeframe change</activity> in the <goal>{{goalName}}</goal> goal"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .with("goal_closing", () => {
@@ -88,28 +108,67 @@ const CommentAdded: ActivityHandler = {
         const goal = c.goal!;
         const path = paths.goalActivityPath(commentedActivity.id);
         const action = commentedLink(path, comment);
-        const activityLink = <Link to={path}>goal closing</Link>;
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          activity: <Link to={path}>{null}</Link>,
+          goal: goalLink(paths, goal),
+        };
+        const values = { author, goalName: goal.name };
 
         if (page === "goal") {
-          return feedTitle(activity, action, "on the", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <activity>goal closing</activity>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(paths, goal), "goal");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <activity>goal closing</activity> in the <goal>{{goalName}}</goal> goal"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .with("goal_discussion_creation", () => {
         const { goal } = commentedActivity.content as ActivityContentGoalDiscussionCreation;
         const path = paths.goalActivityPath(commentedActivity.id);
         const action = commentedLink(path, comment);
-        let activityLink: any = "a discussion";
+        let activityLink = <React.Fragment />;
 
         if (commentedActivity.commentThread) {
           activityLink = <Link to={path}>{commentedActivity.commentThread.title}</Link>;
         }
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          discussion: activityLink,
+          goal: goalLink(paths, goal),
+        };
+        const values = {
+          author,
+          title: commentedActivity.commentThread?.title ?? i18n.t("a discussion"),
+          goalName: goal.name,
+        };
 
         if (page === "goal") {
-          return feedTitle(activity, action, "on", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", goalLink(paths, goal), "goal");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion> in the <goal>{{goalName}}</goal> goal"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .with("goal_reopening", () => {
@@ -117,52 +176,125 @@ const CommentAdded: ActivityHandler = {
         const goal = c.goal!;
         const path = paths.goalActivityPath(commentedActivity.id);
         const action = commentedLink(path, comment);
-        const activityLink = <Link to={path}>goal reopening</Link>;
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          activity: <Link to={path}>{null}</Link>,
+          goal: goalLink(paths, goal),
+        };
+        const values = { author, goalName: goal.name };
 
         if (page === "goal") {
-          return feedTitle(activity, action, "on the", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <activity>goal reopening</activity>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on the", activityLink, "in the", goalLink(paths, goal), "goal");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <activity>goal reopening</activity> in the <goal>{{goalName}}</goal> goal"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .with("project_discussion_submitted", () => {
         const { discussion, title, project } = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
         const path = discussion?.id ? paths.projectDiscussionPath(discussion.id) : null;
         const action = path ? commentedLink(path, comment) : "commented";
-        let activityLink: any = "a discussion";
+        let activityLink = <React.Fragment />;
 
         if (path && (title || discussion?.title)) {
           activityLink = <Link to={path}>{title || discussion?.title}</Link>;
         }
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          discussion: activityLink,
+          project: projectLink(paths, project),
+        };
+        const values = {
+          author,
+          title: path && (title || discussion?.title) ? title || discussion?.title : i18n.t("a discussion"),
+          projectName: project.name,
+        };
 
         if (page === "project") {
-          return feedTitle(activity, action, "on", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(paths, project), "project");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion> in the <project>{{projectName}}</project> project"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .with("project_resuming", () => {
         const path = paths.projectActivityPath(commentedActivity.id);
         const action = commentedLink(path, comment);
-        const activityLink = <Link to={path}>project resuming</Link>;
         const project = Activities.getProject(commentedActivity);
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          activity: <Link to={path}>{null}</Link>,
+          project: projectLink(paths, project),
+        };
+        const values = { author, projectName: project.name };
 
         if (page === "project") {
-          return feedTitle(activity, action, "on", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <activity>project resuming</activity>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(paths, project), "project");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <activity>project resuming</activity> in the <project>{{projectName}}</project> project"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .with("project_pausing", () => {
         const path = paths.projectActivityPath(commentedActivity.id);
         const action = commentedLink(path, comment);
-        const activityLink = <Link to={path}>project pausing</Link>;
         const project = Activities.getProject(commentedActivity);
+        const components = {
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          activity: <Link to={path}>{null}</Link>,
+          project: projectLink(paths, project),
+        };
+        const values = { author, projectName: project.name };
 
         if (page === "project") {
-          return feedTitle(activity, action, "on", activityLink);
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <activity>project pausing</activity>"
+              values={values}
+              components={components}
+            />
+          );
         } else {
-          return feedTitle(activity, action, "on", activityLink, "in the", projectLink(paths, project), "project");
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on <activity>project pausing</activity> in the <project>{{projectName}}</project> project"
+              values={values}
+              components={components}
+            />
+          );
         }
       })
       .otherwise(() => {
@@ -196,19 +328,21 @@ const CommentAdded: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const commentedActivity = content(activity).activity!;
-    const action = match(commentedActivity.action)
-      .with("goal_timeframe_editing", () => "timeframe change")
-      .with("goal_closing", () => "goal closing")
-      .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
-      .with("goal_reopening", () => "goal reopening")
-      .with("project_discussion_submitted", () => commentedActivity.commentThread!.title)
-      .with("project_resuming", () => "project resuming")
-      .with("project_pausing", () => "project pausing")
+    return match(commentedActivity.action)
+      .with("goal_timeframe_editing", () => i18n.t("Re: timeframe change"))
+      .with("goal_closing", () => i18n.t("Re: goal closing"))
+      .with("goal_discussion_creation", () =>
+        i18n.t("Re: {{title}}", { title: commentedActivity.commentThread?.title }),
+      )
+      .with("goal_reopening", () => i18n.t("Re: goal reopening"))
+      .with("project_discussion_submitted", () =>
+        i18n.t("Re: {{title}}", { title: commentedActivity.commentThread?.title }),
+      )
+      .with("project_resuming", () => i18n.t("Re: project resuming"))
+      .with("project_pausing", () => i18n.t("Re: project pausing"))
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
-
-    return "Re: " + action;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

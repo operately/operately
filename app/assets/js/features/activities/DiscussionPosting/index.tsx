@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link, Summary } from "turboui";
-import { feedTitle, spaceLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, spaceLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const DiscussionPosting: ActivityHandler = {
@@ -36,9 +38,22 @@ const DiscussionPosting: ActivityHandler = {
     const link = <Link to={path}>{discussion.title!}</Link>;
 
     if (page === "space") {
-      return feedTitle(activity, "posted", link);
+      return (
+        <Trans
+          i18nKey="{{author}} posted <discussion>{{title}}</discussion>"
+          values={{ author: activityAuthorName(activity), title: discussion.title }}
+          components={{ discussion: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, "posted", link, "in the", spaceLink(paths, content(activity).space!));
+      const space = content(activity).space;
+      return (
+        <Trans
+          i18nKey="{{author}} posted <discussion>{{title}}</discussion> in the <space>{{spaceName}}</space>"
+          values={{ author: activityAuthorName(activity), title: discussion.title, spaceName: space?.name }}
+          components={{ discussion: link, space: space ? spaceLink(paths, space) : <span /> }}
+        />
+      );
     }
   },
 
@@ -62,7 +77,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Posted: " + content(activity).discussion!.title!;
+    return i18n.t("Posted: {{title}}", { title: content(activity).discussion?.title });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

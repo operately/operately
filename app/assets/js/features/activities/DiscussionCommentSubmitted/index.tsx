@@ -4,7 +4,9 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import React from "react";
 import { Link, Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -40,13 +42,30 @@ const DiscussionCommentSubmitted: ActivityHandler = {
 
     const discussionPath = discussion ? paths.discussionPath(discussion.id) : null;
     const action = discussionPath ? commentedLink(discussionPath, comment) : "commented";
-    const activityLink =
-      discussionPath && discussion ? <Link to={discussionPath}>{discussion.title}</Link> : "a message";
+    const activityLink = discussionPath && discussion ? <Link to={discussionPath}>{null}</Link> : <React.Fragment />;
+    const values = { author: activityAuthorName(activity), title: discussion?.title, spaceName: space.name };
+    const components = { action: typeof action === "string" ? <React.Fragment /> : action, discussion: activityLink };
 
     if (page === "space") {
-      return feedTitle(activity, action, "on", activityLink);
+      return discussion ? (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} commented on a message" values={values} />
+      );
     } else {
-      return feedTitle(activity, action, "on", activityLink, "in", space.name, "space");
+      return discussion ? (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <discussion>{{title}}</discussion> in {{spaceName}} space"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} commented on a message in {{spaceName}} space" values={values} />
+      );
     }
   },
 
@@ -77,7 +96,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const { discussion } = content(activity);
 
-    return "Re: " + discussion?.title || "a message";
+    return i18n.t("Re: {{title}}", { title: String(discussion?.title) });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

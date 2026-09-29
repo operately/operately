@@ -2,7 +2,10 @@ import type { ActivityContentProjectCheckInAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectCheckInLink, projectLink } from "./../feedItemLinks";
 
 const ProjectCheckInAcknowledged: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -34,11 +37,24 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const checkInLink = projectCheckInLink(paths, content(activity).checkIn);
+    const checkIn = typeof checkInLink === "string" ? <React.Fragment /> : checkInLink;
 
     if (page === "project") {
-      return feedTitle(activity, "acknowledged a", checkInLink);
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged a <checkIn>Check-In</checkIn>"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ checkIn }}
+        />
+      );
     } else {
-      return feedTitle(activity, "acknowledged a", checkInLink, " in the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged a <checkIn>Check-In</checkIn> in the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ checkIn, project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -59,7 +75,7 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Acknowledged check-in";
+    return i18n.t("Acknowledged check-in");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

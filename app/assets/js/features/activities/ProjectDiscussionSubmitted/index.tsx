@@ -3,7 +3,9 @@ import React from "react";
 import { Activity, ActivityContentProjectDiscussionSubmitted } from "@/api";
 import { isContentEmpty, Link, Summary } from "turboui";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectDiscussionSubmitted: ActivityHandler = {
@@ -48,15 +50,25 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "project") {
-      return feedTitle(activity, "posted ", link);
+      return (
+        <Trans
+          i18nKey="{{author}} posted <discussion>{{title}}</discussion>"
+          values={{ author: activityAuthorName(activity), title: activity.commentThread?.title }}
+          components={{ discussion: link }}
+        />
+      );
     } else {
-      return feedTitle(
-        activity,
-        "posted ",
-        link,
-        " on the ",
-        projectLink(paths, content(activity).project!),
-        " project",
+      const project = content(activity).project;
+      return (
+        <Trans
+          i18nKey="{{author}} posted <discussion>{{title}}</discussion> on the <project>{{projectName}}</project> project"
+          values={{
+            author: activityAuthorName(activity),
+            title: activity.commentThread?.title,
+            projectName: project?.name,
+          }}
+          components={{ discussion: link, project: project ? projectLink(paths, project) : <React.Fragment /> }}
+        />
       );
     }
   },
@@ -74,7 +86,7 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Posted: " + activity.commentThread!.title!;
+    return i18n.t("Posted: {{title}}", { title: activity.commentThread?.title });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

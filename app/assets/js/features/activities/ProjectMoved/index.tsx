@@ -5,7 +5,10 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link } from "turboui";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { assertPresent } from "@/utils/assertions";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectMoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,9 +33,17 @@ const ProjectMoved: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
-      return feedTitle(activity, "moved the project");
+      return <Trans i18nKey="{{author}} moved the project" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "moved the", projectLink(paths, content(activity).project!), "project");
+      const project = content(activity).project;
+      assertPresent(project, "Project is required for a moved activity");
+      return (
+        <Trans
+          i18nKey="{{author}} moved the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -47,9 +58,11 @@ const ProjectMoved: ActivityHandler = {
     const newLink = <Link to={newSpacePath}>{newSpace.name}</Link>;
 
     return (
-      <>
-        From {oldLink} to {newLink}
-      </>
+      <Trans
+        i18nKey="From <old>{{oldName}}</old> to <new>{{newName}}</new>"
+        values={{ oldName: oldSpace.name, newName: newSpace.name }}
+        components={{ old: oldLink, new: newLink }}
+      />
     );
   },
 
@@ -69,7 +82,7 @@ const ProjectMoved: ActivityHandler = {
     const oldSpace = content(activity).oldSpace!.name;
     const newSpace = content(activity).newSpace!.name;
 
-    return "Moved the project from " + oldSpace + " to " + newSpace;
+    return i18n.t("Moved the project from {{oldSpace}} to {{newSpace}}", { oldSpace, newSpace });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

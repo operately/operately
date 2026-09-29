@@ -2,7 +2,8 @@ import type { ActivityContentMilestoneDeleting } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const MilestoneDeleting: ActivityHandler = {
@@ -31,9 +32,20 @@ const MilestoneDeleting: ActivityHandler = {
     const { milestoneName, project } = content(props.activity);
 
     if (props.page === "project") {
-      return feedTitle(props.activity, `deleted the "${milestoneName}" milestone`);
+      return (
+        <Trans
+          i18nKey={'{{author}} deleted the "{{milestoneName}}" milestone'}
+          values={{ author: activityAuthorName(props.activity), milestoneName }}
+        />
+      );
     } else {
-      return feedTitle(props.activity, `deleted the "${milestoneName}" milestone in`, projectLink(paths, project));
+      return (
+        <Trans
+          i18nKey={'{{author}} deleted the "{{milestoneName}}" milestone in <project>{{projectName}}</project>'}
+          values={{ author: activityAuthorName(props.activity), milestoneName, projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -55,13 +67,13 @@ const MilestoneDeleting: ActivityHandler = {
 
   NotificationTitle(props: { activity: Activity }) {
     const { milestoneName } = content(props.activity);
-    return <>Milestone "{milestoneName}" was deleted</>;
+    return <Trans i18nKey={'Milestone "{{milestoneName}}" was deleted'} values={{ milestoneName }} />;
   },
 
   NotificationLocation(props: { activity: Activity }) {
     const { project } = content(props.activity);
 
-    return <>Project: {project?.name}</>;
+    return <Trans i18nKey="Project: {{projectName}}" values={{ projectName: project?.name }} />;
   },
 };
 

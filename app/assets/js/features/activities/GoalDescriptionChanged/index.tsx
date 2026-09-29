@@ -2,7 +2,9 @@ import React from "react";
 import type { ActivityContentGoalDescriptionChanged } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -34,19 +36,23 @@ const GoalDescriptionChanged: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity, page, paths }: FeedItemProps) {
+  FeedItemTitle({ activity, paths }: FeedItemProps) {
     const data = content(activity);
-    const title = data.goal ? goalLink(paths, data.goal) : `"${data.goalName}"`;
-
-    const message = data.hasDescription
-      ? ["updated goal", title, "description"]
-      : ["removed description from goal", title];
-
-    if (page === "goal") {
-      return feedTitle(activity, ...message);
-    } else {
-      return feedTitle(activity, ...message);
-    }
+    const goal = data.goal ? goalLink(paths, data.goal) : <React.Fragment />;
+    const sentence = data.goal
+      ? data.hasDescription
+        ? i18n.t("{{author}} updated goal <goal>{{goalName}}</goal> description")
+        : i18n.t("{{author}} removed description from goal <goal>{{goalName}}</goal>")
+      : data.hasDescription
+        ? i18n.t('{{author}} updated goal "{{goalName}}" description')
+        : i18n.t('{{author}} removed description from goal "{{goalName}}"');
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(activity), goalName: data.goal?.name ?? data.goalName }}
+        components={{ goal }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -79,9 +85,9 @@ const GoalDescriptionChanged: ActivityHandler = {
     const data = content(activity);
 
     if (data.hasDescription) {
-      return `Goal "${data.goal?.name || data.goalName}" description was updated`;
+      return i18n.t('Goal "{{goalName}}" description was updated', { goalName: data.goal?.name || data.goalName });
     } else {
-      return `Goal "${data.goal?.name || data.goalName}" description was removed`;
+      return i18n.t('Goal "{{goalName}}" description was removed', { goalName: data.goal?.name || data.goalName });
     }
   },
 

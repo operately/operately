@@ -2,7 +2,8 @@ import type { ActivityContentTaskDeleting } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { feedTitle, projectLink, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, projectLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskDeleting: ActivityHandler = {
@@ -36,13 +37,20 @@ const TaskDeleting: ActivityHandler = {
     const { paths } = props;
     const { taskName, project, space } = content(props.activity);
     const location = project ? projectLink(paths, project) : spaceLink(paths, space);
+    const values = { author: activityAuthorName(props.activity), taskName, locationName: project?.name ?? space.name };
 
     if (props.page === "project") {
-      return feedTitle(props.activity, `deleted task "${taskName}"`);
+      return <Trans i18nKey={'{{author}} deleted task "{{taskName}}"'} values={values} />;
     } else if (props.page === "space" && !project) {
-      return feedTitle(props.activity, `deleted task "${taskName}"`);
+      return <Trans i18nKey={'{{author}} deleted task "{{taskName}}"'} values={values} />;
     } else {
-      return feedTitle(props.activity, `deleted task "${taskName}"`, "in", location);
+      return (
+        <Trans
+          i18nKey={'{{author}} deleted task "{{taskName}}" in <location>{{locationName}}</location>'}
+          values={values}
+          components={{ location }}
+        />
+      );
     }
   },
 
@@ -64,16 +72,16 @@ const TaskDeleting: ActivityHandler = {
 
   NotificationTitle(props: { activity: Activity }) {
     const { taskName } = content(props.activity);
-    return <>Task "{taskName}" was deleted</>;
+    return <Trans i18nKey={'Task "{{taskName}}" was deleted'} values={{ taskName }} />;
   },
 
   NotificationLocation(props: { activity: Activity }) {
     const { project, space } = content(props.activity);
 
     if (project) {
-      return <>Project: {project.name}</>;
+      return <Trans i18nKey="Project: {{projectName}}" values={{ projectName: project.name }} />;
     }
-    return <>Space: {space.name}</>;
+    return <Trans i18nKey="Space: {{spaceName}}" values={{ spaceName: space.name }} />;
   },
 };
 

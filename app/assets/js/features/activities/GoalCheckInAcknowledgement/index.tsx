@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link } from "turboui";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 
 const GoalCheckInAcknowledgement: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -33,12 +35,24 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     const update = content(activity).update!;
 
     const path = paths.goalCheckInPath(update.id!);
-    const link = <Link to={path}>Check-In</Link>;
+    const link = <Link to={path}>{null}</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, "acknowledged the", link);
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged the <checkIn>Check-In</checkIn>"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ checkIn: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, "acknowledged the", link, "in the", goalLink(paths, goal), "goal");
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged the <checkIn>Check-In</checkIn> in the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ checkIn: link, goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -59,7 +73,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
   },
 
   NotificationTitle(_: { activity: Activity }) {
-    return "Acknowledged check-in";
+    return i18n.t("Acknowledged check-in");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

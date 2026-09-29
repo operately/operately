@@ -4,7 +4,9 @@ import type { ActivityContentResourceHubLinkCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { commentedLink, feedTitle, linkLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentedLink, linkLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -37,8 +39,8 @@ const ResourceHubLinkCommented: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
     const parent = visibleParentDescriptor(paths, page, data);
-    let action: any = "commented";
-    let link: any = "a link";
+    let action: string | JSX.Element = "commented";
+    let link = <React.Fragment />;
 
     if (data.link) {
       link = linkLink(paths, data.link);
@@ -48,11 +50,35 @@ const ResourceHubLinkCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubLinkPath(data.link.id), data.comment);
     }
 
-    if (!parent) {
-      return feedTitle(activity, action, "on", link);
-    }
-
-    return feedTitle(activity, action, "on", link, "in the", parent.link, parent.label);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t(
+            "{{author}} <action>commented</action> on <resource>{{linkName}}</resource> in the <parent>{{parentName}}</parent> project",
+          )
+        : parent?.page === "goal"
+          ? i18n.t(
+              "{{author}} <action>commented</action> on <resource>{{linkName}}</resource> in the <parent>{{parentName}}</parent> goal",
+            )
+          : parent
+            ? i18n.t(
+                "{{author}} <action>commented</action> on <resource>{{linkName}}</resource> in the <parent>{{parentName}}</parent> space",
+              )
+            : i18n.t("{{author}} <action>commented</action> on <resource>{{linkName}}</resource>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          linkName: data.link?.name ?? i18n.t("a link"),
+          parentName: parent?.name,
+        }}
+        components={{
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          resource: link,
+          parent: parent?.link ?? <React.Fragment />,
+        }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -82,11 +108,11 @@ const ResourceHubLinkCommented: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const data = content(activity);
 
-    return "Re: " + (data.link?.name || "a link");
+    return data.link?.name ? i18n.t("Re: {{title}}", { title: data.link.name }) : i18n.t("Re: a link");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).link?.name || "a link";
+    return content(activity).link?.name || i18n.t("a link");
   },
 };
 

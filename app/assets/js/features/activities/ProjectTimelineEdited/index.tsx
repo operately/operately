@@ -3,7 +3,9 @@ import { FormattedTime, IconFlag3Filled, Link } from "turboui";
 import * as React from "react";
 
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n, { tn } from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectTimelineEdited, ActivityMilestone } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -33,13 +35,15 @@ const ProjectTimelineEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
-      return feedTitle(activity, "edited the timeline");
+      return <Trans i18nKey="{{author}} edited the timeline" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(
-        activity,
-        "edited the timeline on the",
-        projectLink(paths, content(activity).project!),
-        "project",
+      const project = content(activity).project;
+      return (
+        <Trans
+          i18nKey="{{author}} edited the timeline on the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project?.name }}
+          components={{ project: project ? projectLink(paths, project) : <React.Fragment /> }}
+        />
       );
     }
   },
@@ -71,7 +75,7 @@ const ProjectTimelineEdited: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Changed the project timeline";
+    return i18n.t("Changed the project timeline");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
@@ -92,7 +96,11 @@ function NewStartDate({ content }: { content: Content }) {
 
   const date = <FormattedTime {...formattedTimePreferences} time={content.newStartDate} format="long-date" />;
 
-  return <div>The start date was set to {date}.</div>;
+  return (
+    <div>
+      <Trans i18nKey="The start date was set to <date/>." components={{ date }} />
+    </div>
+  );
 }
 
 function NewEndDate({ content }: { content: Content }) {
@@ -102,14 +110,26 @@ function NewEndDate({ content }: { content: Content }) {
 
   const date = <FormattedTime {...formattedTimePreferences} time={content.newDueDate} format="long-date" />;
 
-  return <div>The due date was set to {date}.</div>;
+  return (
+    <div>
+      <Trans i18nKey="The due date was set to <date/>." components={{ date }} />
+    </div>
+  );
 }
 
 function DurationChange({ content }: { content: Content }) {
   if (!content.durationChanged) return null;
 
   if (content.oldDuration === null && content.newDuration !== null) {
-    return <div>Total project duration is {content.newDuration} days.</div>;
+    return (
+      <div>
+        {tn(
+          "Total project duration is {{count}} days.",
+          "Total project duration is {{count}} days.",
+          content.newDuration,
+        )}
+      </div>
+    );
   }
 
   if (content.oldDuration !== null && content.newDuration !== null) {
@@ -121,7 +141,22 @@ function DurationChange({ content }: { content: Content }) {
 
     return (
       <div>
-        Total project duration {dir} by {percentage}% ({old} days -&gt; {now} days).
+        {dir === "increased" ? (
+          <Trans
+            i18nKey="Total project duration increased by {{percentage}}% ({{old}} days -> {{now}} days)."
+            values={{ percentage: percentage ?? "", old, now }}
+          />
+        ) : dir === "decreased" ? (
+          <Trans
+            i18nKey="Total project duration decreased by {{percentage}}% ({{old}} days -> {{now}} days)."
+            values={{ percentage: percentage ?? "", old, now }}
+          />
+        ) : (
+          <Trans
+            i18nKey="Total project duration by {{percentage}}% ({{old}} days -> {{now}} days)."
+            values={{ percentage: percentage ?? "", old, now }}
+          />
+        )}
       </div>
     );
   }
@@ -132,11 +167,11 @@ function DurationChange({ content }: { content: Content }) {
 function AddedMilestones({ content, paths }: { content: Content; paths: Paths }) {
   if (!content.hasNewMilestones) return null;
 
-  const title = content.newMilestones.length === 1 ? "Added a new milestone" : "Added new milestones";
+  const title = tn("Added a new milestone:", "Added new milestones:", content.newMilestones.length);
 
   return (
     <div className="mt-2">
-      {title}:
+      {title}
       <div className="flex flex-col gap-1">
         {content.newMilestones.map((m) => (
           <MilestoneLink key={m.id} milestone={m} paths={paths} />
@@ -149,11 +184,11 @@ function AddedMilestones({ content, paths }: { content: Content; paths: Paths })
 function UpdatedMilestones({ content, paths }: { content: Content; paths: Paths }) {
   if (!content.hasUpdatedMilestones) return null;
 
-  const title = content.updatedMilestones.length === 1 ? "Updated a milestone" : "Updated milestones";
+  const title = tn("Updated a milestone:", "Updated milestones:", content.updatedMilestones.length);
 
   return (
     <div className="mt-2">
-      {title}:
+      {title}
       <div className="flex flex-col gap-1">
         {content.updatedMilestones.map((m) => (
           <MilestoneLink key={m.id} milestone={m} paths={paths} />
@@ -171,8 +206,15 @@ function MilestoneLink({ milestone, paths }: { milestone: ActivityMilestone; pat
   return (
     <div className="font-medium">
       <IconFlag3Filled size={14} className="inline-block mr-1" />
-      <Link to={path}>{title}</Link> <span className="">&middot;</span> Due date on{" "}
-      <FormattedTime {...formattedTimePreferences} time={milestone.deadlineAt!} format="long-date" />
+      <Trans
+        i18nKey="<milestone>{{title}}</milestone> <separator>·</separator> Due date on <date/>"
+        values={{ title }}
+        components={{
+          milestone: <Link to={path}>{null}</Link>,
+          separator: <span className="" />,
+          date: <FormattedTime {...formattedTimePreferences} time={milestone.deadlineAt} format="long-date" />,
+        }}
+      />
     </div>
   );
 }
