@@ -38,6 +38,26 @@ describe("local rich text drafts", () => {
     expect(localStorage.getItem("operately:rich-text-draft:link-draft")).not.toContain("operatelyResourceLink");
   });
 
+  it("preserves custom link labels in saved drafts", () => {
+    const resolved = {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "Website",
+              marks: [{ type: "link", attrs: { href: "/acme/projects/website" } }],
+            },
+          ],
+        },
+      ],
+    };
+    writeLocalDraft({ key: "resolved-link" }, resolved, emptyDoc);
+    expect(readLocalDraft({ key: "resolved-link" }, emptyDoc)).toEqual(resolved);
+  });
+
   it("restores a draft when it was based on the current content", () => {
     writeLocalDraft({ key: "task:1:description" }, draftDoc, baseDoc);
 

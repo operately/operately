@@ -45,6 +45,18 @@ defmodule Operately.RichContent.LinkEnrichmentTest do
     assert LinkEnrichment.restore_source(forged) == document(ctx.href, "Website")
   end
 
+  test "restores generated titles split by formatting", ctx do
+    enriched = LinkEnrichment.enrich(document(ctx.href), context(ctx))
+    node = get_in(enriched, ["content", Access.at(0), "content", Access.at(0)])
+    first = %{node | "text" => "Web", "marks" => node["marks"] ++ [%{"type" => "bold"}]}
+    second = %{node | "text" => "site"}
+    split = put_in(enriched, ["content", Access.at(0), "content"], [first, second])
+    restored = LinkEnrichment.restore_source(split)
+    assert text(restored) == ctx.href
+    refute Jason.encode!(restored) =~ "Website"
+    refute Jason.encode!(restored) =~ "operatelyResourceLink"
+  end
+
   test "deduplicates across documents and performs no lookup without eligible links", ctx do
     track_queries()
     assert LinkEnrichment.enrich(%{description: document(ctx.href, "Custom")}, context(ctx)) == %{description: document(ctx.href, "Custom")}

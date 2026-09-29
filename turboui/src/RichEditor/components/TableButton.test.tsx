@@ -8,7 +8,7 @@ import { Editor, useEditor } from "..";
 
 let editor: TiptapEditor;
 function Harness({ compact = false, editable = true }) {
-  const state = useEditor({ handlers: { mentionedPersonLookup: async () => null }, editable });
+  const state = useEditor({ handlers: { mentionedPersonLookup: async () => null, resolveResourceLinks: null }, editable });
   React.useEffect(() => {
     editor = state.editor;
   }, [state.editor]);

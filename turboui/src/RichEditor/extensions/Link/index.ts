@@ -5,6 +5,16 @@ import { Plugin } from "@tiptap/pm/state";
 
 export const LinkExtension = Link.extend({
   inclusive: false,
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      operatelyResourceLink: {
+        default: null,
+        rendered: false,
+        parseHTML: () => null,
+      },
+    };
+  },
   addPasteRules() {
     // Detect URLs before insertion, including content copied from ProseMirror,
     // which Tiptap deliberately excludes from its post-insertion paste rules.

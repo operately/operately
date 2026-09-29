@@ -32,14 +32,84 @@ defmodule Operately.RichContent.LinkEnrichment do
     end
   end
 
+  @doc "Resolves titles for original URLs, omitting unknown or inaccessible resources."
+  def resolve_urls(urls, %{person: person, company: company, origin: origin}) do
+    links =
+      urls
+      |> Enum.uniq()
+      |> Enum.flat_map(fn url ->
+        case url_ref(url, company.short_id, origin) do
+          nil -> []
+          ref -> [{url, ref}]
+        end
+      end)
+
+    titles = load_titles(Enum.map(links, &elem(&1, 1)), person, company)
+
+    Enum.flat_map(links, fn {url, ref} ->
+      case Map.fetch(titles, {ref.type, ref.id}) do
+        {:ok, title} -> [%{url: url, title: title}]
+        :error -> []
+      end
+    end)
+  end
+
   @doc """
   Restores original URL labels in nested rich-text documents and removes enrichment
   metadata, preserving client-edited labels and each field's JSON representation.
   """
   def restore_source(payload) do
-    {source, _} = map_documents(payload, nil, fn document, acc -> {map_nodes(document, &restore_node/1), acc} end)
+    {source, _} = map_documents(payload, nil, fn document, acc -> {restore_document(document), acc} end)
     source
   end
+
+  defp restore_document(%{"content" => children} = node) when is_list(children) do
+    Map.put(node, "content", children |> join_generated_labels() |> Enum.map(&restore_document/1))
+  end
+
+  defp restore_document(node), do: restore_node(node)
+
+  # Formatting can split a generated title. Restore it as one URL using the
+  # first span's marks; the title's character positions do not map to the URL.
+  defp join_generated_labels([]), do: []
+
+  defp join_generated_labels([first | rest]) do
+    case generated_link(first) do
+      {_href, _original, resolved} = link ->
+        {text, remaining} = collect_generated_label(rest, link, first["text"], resolved)
+
+        if text == resolved do
+          [Map.put(first, "text", text) | join_generated_labels(remaining)]
+        else
+          [first | join_generated_labels(rest)]
+        end
+
+      nil ->
+        [first | join_generated_labels(rest)]
+    end
+  end
+
+  defp collect_generated_label([next | rest] = remaining, link, text, resolved) when byte_size(text) < byte_size(resolved) do
+    if generated_link(next) == link do
+      collect_generated_label(rest, link, text <> next["text"], resolved)
+    else
+      {text, remaining}
+    end
+  end
+
+  defp collect_generated_label(remaining, _link, text, _resolved), do: {text, remaining}
+
+  defp generated_link(%{"type" => "text", "text" => text, "marks" => marks}) when is_binary(text) and is_list(marks) do
+    Enum.find_value(marks, fn
+      %{"type" => "link", "attrs" => %{"href" => href, @metadata => %{"originalText" => original, "resolvedText" => resolved}}}
+      when is_binary(href) and is_binary(original) and is_binary(resolved) ->
+        {href, original, resolved}
+
+      _ -> nil
+    end)
+  end
+
+  defp generated_link(_), do: nil
 
   defp load_titles(refs, person, company) do
     refs
@@ -73,14 +143,7 @@ defmodule Operately.RichContent.LinkEnrichment do
   defp node_ref(%{"text" => text, "marks" => marks}, company_id, origin) when is_binary(text) and is_list(marks) do
     Enum.find_value(marks, fn
       %{"type" => "link", "attrs" => %{"href" => href}} when is_binary(href) ->
-        with true <- ResourceLinks.url_label?(text, href),
-             {:ok, ref} <- ResourceLinks.parse(href, origin),
-             {:ok, ^company_id} <- Helpers.decode_company_id(ref.company_id),
-             {:ok, id} <- decode_id(ref.id) do
-          %{type: ref.type, id: id}
-        else
-          _ -> nil
-        end
+        if ResourceLinks.url_label?(text, href), do: url_ref(href, company_id, origin)
 
       _ ->
         nil
@@ -88,6 +151,16 @@ defmodule Operately.RichContent.LinkEnrichment do
   end
 
   defp node_ref(_, _, _), do: nil
+
+  defp url_ref(url, company_id, origin) do
+    with {:ok, ref} <- ResourceLinks.parse(url, origin),
+         {:ok, ^company_id} <- Helpers.decode_company_id(ref.company_id),
+         {:ok, id} <- decode_id(ref.id) do
+      %{type: ref.type, id: id}
+    else
+      _ -> nil
+    end
+  end
 
   defp decode_id(id) do
     Helpers.decode_id(id)

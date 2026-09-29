@@ -45,6 +45,7 @@ function context(overrides: Partial<SlideInContext> = {}): SlideInContext {
     onTaskDelete: jest.fn(),
     richTextHandlers: {
       mentionedPersonLookup: async () => null,
+      resolveResourceLinks: null,
       taskList: { canEdit: false },
       onCommentTaskItemChange: null,
     },

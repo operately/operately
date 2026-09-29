@@ -357,6 +357,7 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       namespace :rich_content do
+        query :resolve_links, OperatelyWeb.Api.RichContent.ResolveLinks
         mutation :set_task_item_checked, OperatelyWeb.Api.RichContent.SetTaskItemChecked
       end
 
