@@ -117,14 +117,14 @@ When passing links to `Trans`, include their text as named placeholders inside t
 
 ### Discussions, Docs & Files, and space boards — cataloged
 
-This follow-up closes the discussion, Docs & Files, work-map, and KPI copy gaps from the initial PR 6 inventory. The [slice audit](i18n-discussions-files-space-audit.md) records the pre-extraction inventory, reused components, boundaries, and remaining gaps.
+This follow-up closes the discussion, Docs & Files, work-map, and KPI copy gaps from the initial PR 6 inventory.
 
 - Discussions: space/goal/project composers, edit/view/draft pages, validation, discard confirmation and success feedback, draft action accessibility, publication metadata, and shared scheduling/draft-sharing controls.
 - Docs & Files: add/upload menus and progress, editor validation and submit controls, file display, folder counts, copy-name defaults, draft metadata, document header/public-sharing actions, version history/comparison/restore states, accessible labels, and app-supplied error/toast text. Folder selectors display resource names and reuse existing field controls. Backend pass-through errors remain as returned.
 - Space work management: company and space work-map titles/tabs, row roles and progress summaries, timeline tooltips/undated/empty states, first-project onboarding, space-home completion/progress summaries, kanban page title, and discussion lists. `MiniWorkMap` needs no new entries: it displays user names and existing shared status/avatar presentation.
 - KPIs: detail/sidebar/update history, log/edit/delete-entry forms, note/comment presentation, clipboard feedback, cadence labels, examples, and existing chart states. Existing formatting helpers are retained.
 
-English wording, permissions, interactions, stored activity payloads, and the default-off language flag remain unchanged. New messages have no Portuguese drafts; untranslated PO entries use the existing generated English fallback. Reviewed translations remain in the catalog, including obsolete entries when a fragment becomes a complete sentence.
+English wording, permissions, interactions, stored activity payloads, and the default-off language flag remain unchanged. New messages have Brazilian Portuguese translations drafted from the glossary. Reviewed translations remain in the catalog, including obsolete entries when a fragment becomes a complete sentence. Native-speaker review remains PR 8 work.
 
 Focused tests verify real catalog substitution, success/empty/error states, resource-name preservation, saved Portuguese preferences with the flag disabled, and missing-Portuguese fallback. Folder counts and upload/progress states cover zero, singular, and plural cases. The expanded-catalog document-history Storybook interaction checks the heading and restore confirmation for overflow. This supplements, rather than replaces, exhaustive narrow-screen and end-to-end review.
 
