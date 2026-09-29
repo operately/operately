@@ -72,6 +72,7 @@ it.each([true, false])("uses the rich-text bundle with comment toggles enabled=%
         canComment
         currentUserId={comment.author.id}
         richTextHandlers={{
+          resolveResourceLinks: null,
           mentionedPersonLookup: async () => null,
           taskList: { canEdit: false },
           onCommentTaskItemChange: enabled ? onCommentTaskItemChange : null,
@@ -114,6 +115,7 @@ describe("CommentItem", () => {
           commentParentType="task"
           canComment={false}
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,
@@ -134,6 +136,7 @@ describe("CommentItem", () => {
           commentParentType="task"
           canComment={false}
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,
@@ -164,6 +167,7 @@ describe("CommentItem", () => {
           currentUserId="author-1"
           appearance="flat"
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,
@@ -194,6 +198,7 @@ describe("CommentItem", () => {
           currentUserId="someone-else"
           appearance="flat"
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,
@@ -223,6 +228,7 @@ describe("CommentItem", () => {
           currentUserId="author-1"
           appearance="flat"
           richTextHandlers={{
+            resolveResourceLinks: null,
             mentionedPersonLookup: async () => null,
             taskList: { canEdit: false },
             onCommentTaskItemChange: null,

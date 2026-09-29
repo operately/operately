@@ -12,6 +12,7 @@ function TestEditor({ compact }: { compact: boolean }) {
   const editor = useEditor({
     content: "<p>Section title</p>",
     handlers: {
+      resolveResourceLinks: null,
       mentionedPersonLookup: async () => null,
       uploadFile: async () => ({ id: "file", url: "https://example.com/file" }),
     },

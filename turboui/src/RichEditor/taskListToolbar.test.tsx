@@ -11,7 +11,7 @@ beforeAll(() => {
 });
 
 function TestEditor({ content }: { content: string }) {
-  const editor = useEditor({ content, handlers: { mentionedPersonLookup: async () => null } });
+  const editor = useEditor({ content, handlers: { mentionedPersonLookup: async () => null, resolveResourceLinks: null } });
   return <Editor editor={editor} />;
 }
 
@@ -27,7 +27,7 @@ it("creates a checkbox in the new document form", async () => {
       <NewDocumentPage
         pageTitle="New Document"
         navigation={[]}
-        richTextHandlers={{ mentionedPersonLookup: async () => null }}
+        richTextHandlers={{ mentionedPersonLookup: async () => null, resolveResourceLinks: null }}
         cancelLink="/"
         hideSubscriptions
         onSubmit={jest.fn().mockResolvedValue(true)}

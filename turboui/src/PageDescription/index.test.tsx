@@ -37,6 +37,7 @@ const richTextHandlers = {
   taskList: { canEdit: false as const },
   onCommentTaskItemChange: null,
   mentionedPersonLookup: jest.fn(),
+  resolveResourceLinks: null,
   mentionSearchScope: { type: "none" as const },
   onUpload: jest.fn(),
 };

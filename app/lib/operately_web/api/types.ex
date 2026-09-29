@@ -9,6 +9,11 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :email_change_stage, values: Ecto.Enum.values(Operately.People.EmailChangeRequest, :stage)
 
+  object :resolved_resource_link do
+    field :url, :string
+    field :title, :string
+  end
+
   object :email_change_request, for: Operately.People.EmailChangeRequest do
     field :id, :string, null: false
     field :email, :string, null: false

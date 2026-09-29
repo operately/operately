@@ -22,12 +22,48 @@ defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
 
     source = RichText.resource_link(Paths.project_path(ctx.company, ctx.project))
     enriched = Operately.RichContent.LinkEnrichment.enrich(source, %{person: ctx.creator, company: ctx.company, origin: OperatelyWeb.Endpoint.url()})
-    inputs = %{project_id: Paths.project_id(ctx.project), description: Jason.encode!(enriched)}
+    for content <- [source, enriched] do
+      inputs = %{project_id: Paths.project_id(ctx.project), description: Jason.encode!(content)}
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_description], inputs)
+      assert Repo.reload!(ctx.project).description == source
+      assert {200, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "projects/update_description", inputs)
+      assert Repo.reload!(ctx.project).description == source
+    end
+  end
 
-    assert {200, _} = mutation(ctx.conn, [:projects, :update_description], inputs)
-    assert Repo.reload!(ctx.project).description == source
-    assert {200, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "projects/update_description", inputs)
-    assert Repo.reload!(ctx.project).description == source
+  test "saving an editor-resolved private link never shares its title with other readers", ctx do
+    ctx =
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project(:private, :space, name: "Confidential acquisition", company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+      |> Factory.add_company_member(:viewer)
+      |> Factory.add_api_token(:writer_token, :creator, read_only: false)
+      |> Factory.add_api_token(:reader_token, :viewer)
+      |> Factory.log_in_person(:creator)
+
+    source = RichText.resource_link(Paths.project_path(ctx.company, ctx.private))
+    context = %{person: ctx.creator, company: ctx.company, origin: OperatelyWeb.Endpoint.url()}
+    enriched = Operately.RichContent.LinkEnrichment.enrich(source, context)
+    assert Jason.encode!(enriched) =~ ctx.private.name
+    inputs = %{project_id: Paths.project_id(ctx.project), description: Jason.encode!(enriched)}
+    viewer = Factory.log_in_person(ctx, :viewer)
+
+    for transport <- [:internal, :external] do
+      case transport do
+        :internal -> assert {200, _} = mutation(ctx.conn, [:projects, :update_description], inputs)
+        :external -> assert {200, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.writer_token, "projects/update_description", inputs)
+      end
+
+      assert Repo.reload!(ctx.project).description == source
+      assert {200, %{project: author_view}} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+      assert Jason.decode!(author_view.description) == enriched
+      assert {200, %{project: reader_view}} = query(viewer.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+      assert Jason.decode!(reader_view.description) == source
+      assert {200, %{project: external_view}} = external_query(Phoenix.ConnTest.build_conn(), ctx.reader_token, "projects/get", %{id: Paths.project_id(ctx.project)})
+      assert Jason.decode!(external_view.description) == source
+    end
   end
 
   describe "security" do
