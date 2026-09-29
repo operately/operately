@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link } from "turboui";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectClosed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,13 +33,25 @@ const ProjectClosed: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const retroId = content(activity).project!.id!;
     const retroPath = paths.projectRetrospectivePath(retroId!);
-    const retroLink = <Link to={retroPath}>retrospective</Link>;
+    const retroLink = <Link to={retroPath}>{null}</Link>;
     const project = projectLink(paths, content(activity).project!);
 
     if (page === "project") {
-      return feedTitle(activity, "closed the project and submitted a", retroLink);
+      return (
+        <Trans
+          i18nKey="{{author}} closed the project and submitted a <retrospective>retrospective</retrospective>"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ retrospective: retroLink }}
+        />
+      );
     } else {
-      return feedTitle(activity, "closed the", project, "project and submitted a", retroLink);
+      return (
+        <Trans
+          i18nKey="{{author}} closed the <project>{{projectName}}</project> project and submitted a <retrospective>retrospective</retrospective>"
+          values={{ author: activityAuthorName(activity), projectName: content(activity).project?.name }}
+          components={{ retrospective: retroLink, project }}
+        />
+      );
     }
   },
 
@@ -58,7 +72,7 @@ const ProjectClosed: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Closed this project and submitted a retrospective";
+    return i18n.t("Closed this project and submitted a retrospective");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

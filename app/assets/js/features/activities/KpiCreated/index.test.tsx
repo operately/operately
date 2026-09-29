@@ -1,6 +1,8 @@
 import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import i18n, { applyLanguage } from "@/i18n";
+import { resolveEffectiveLanguage } from "@/i18n/languages";
 
 import ActivityHandler, { DISPLAYED_IN_FEED } from "..";
 
@@ -23,6 +25,12 @@ const paths: any = {
 };
 
 describe("kpi_created activities", () => {
+  const portuguese = { ...i18n.getResourceBundle("pt-BR", "translation") };
+  afterEach(async () => {
+    i18n.removeResourceBundle("pt-BR", "translation");
+    i18n.addResourceBundle("pt-BR", "translation", portuguese);
+    await applyLanguage("en");
+  });
   const activity: any = {
     action: "kpi_created",
     author: { fullName: "Jo Smith" },
@@ -53,6 +61,34 @@ describe("kpi_created activities", () => {
 
   it("links to the KPI's own page", () => {
     expect(ActivityHandler.pagePath(paths, activity)).toBe("/spaces/space-1/kpis/kpi-1");
+  });
+
+  it.each([false, true])("keeps English body and notification fallback (flag: %s)", async (enabled) => {
+    i18n.removeResourceBundle("pt-BR", "translation");
+    await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+    expect(
+      renderToStaticMarkup(<>{ActivityHandler.FeedItemContent({ paths: usePaths(), activity, page: "feed" })}</>),
+    ).toBe("KPI: Weekly active users");
+    expect(renderToStaticMarkup(<>{ActivityHandler.NotificationTitle({ activity })}</>)).toBe(
+      "Created KPI: Weekly active users",
+    );
+  });
+
+  it("substitutes catalog copy in the body and notification without translating the KPI name", async () => {
+    i18n.addResourceBundle(
+      "pt-BR",
+      "translation",
+      { "KPI: {{kpiName}}": "METRIC {{kpiName}}", "Created KPI: {{kpiName}}": "CREATED {{kpiName}}" },
+      true,
+      true,
+    );
+    await applyLanguage("pt-BR");
+    expect(
+      renderToStaticMarkup(<>{ActivityHandler.FeedItemContent({ paths: usePaths(), activity, page: "feed" })}</>),
+    ).toBe("METRIC Weekly active users");
+    expect(renderToStaticMarkup(<>{ActivityHandler.NotificationTitle({ activity })}</>)).toBe(
+      "CREATED Weekly active users",
+    );
   });
 
   it("falls back to the space's KPI list when the activity carries no KPI", () => {

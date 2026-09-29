@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, goalCheckInLink, goalLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink, goalCheckInLink, goalLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -40,11 +42,29 @@ const GoalUpdateCommented: ActivityHandler = {
     const { comment, update, goal } = content(activity);
     const action = update?.id ? commentedLink(paths.goalCheckInPath(update.id), comment) : "commented";
     const checkInLink = goalCheckInLink(paths, update);
+    const components = {
+      action: typeof action === "string" ? <React.Fragment /> : action,
+      checkIn: typeof checkInLink === "string" ? <React.Fragment /> : checkInLink,
+      goal: goalLink(paths, goal),
+    };
+    const values = { author: activityAuthorName(activity), goalName: goal.name };
 
     if (page === "goal") {
-      return feedTitle(activity, action, "on a", checkInLink);
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on a <checkIn>Check-In</checkIn>"
+          values={values}
+          components={components}
+        />
+      );
     } else {
-      return feedTitle(activity, action, "on a", checkInLink, "in the", goalLink(paths, goal), "goal");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on a <checkIn>Check-In</checkIn> in the <goal>{{goalName}}</goal> goal"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 
@@ -73,7 +93,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   NotificationTitle(_activity: { activity: Activity }) {
-    return "Re: goal check-in";
+    return i18n.t("Re: goal check-in");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

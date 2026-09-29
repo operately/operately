@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentTaskAssigneeUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n, { tn } from "@/i18n";
+import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 import { AvatarWithName } from "turboui";
@@ -46,29 +48,36 @@ const TaskAssigneeUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, space, task } = content(activity);
     const location = project ? projectLink(paths, project) : spaceLink(paths, space);
+    const showLocation = page !== "project" && !(page === "space" && !project);
+    const values = {
+      author: activityAuthorName(activity),
+      taskName: task?.name ?? i18n.t("a task"),
+      locationName: project?.name ?? space.name,
+    };
 
     if (hasAggregatedTasks(activity)) {
       const tasks = <UpdatedTaskList activity={activity} paths={paths} />;
 
-      if (page === "project") {
-        return feedTitle(activity, "updated assignees on", tasks);
-      } else if (page === "space" && !project) {
-        return feedTitle(activity, "updated assignees on", tasks);
-      } else {
-        return feedTitle(activity, "updated assignees on", tasks, "in", location);
-      }
+      return showLocation ? (
+        <Trans
+          i18nKey="{{author}} updated assignees on <tasks/> in <location>{{locationName}}</location>"
+          values={values}
+          components={{ tasks, location }}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} updated assignees on <tasks/>" values={values} components={{ tasks }} />
+      );
     }
 
-    const message = feedMessage(content(activity));
-    const taskName = task ? taskLink(paths, task, { spaceId: !project ? space.id : undefined }) : "a task";
-
-    if (page === "project") {
-      return feedTitle(activity, message, taskName);
-    } else if (page === "space" && !project) {
-      return feedTitle(activity, message, taskName);
-    } else {
-      return feedTitle(activity, message, taskName, "in", location);
-    }
+    const change = assignmentChange(content(activity));
+    const taskAnchor = task ? taskLink(paths, task, { spaceId: !project ? space.id : undefined }) : <React.Fragment />;
+    return (
+      <Trans
+        defaults={feedMessage(change, showLocation)}
+        values={{ ...values, ...change }}
+        components={{ task: taskAnchor, location }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -83,16 +92,22 @@ const TaskAssigneeUpdating: ActivityHandler = {
     return (
       <div className="flex items-center gap-2">
         {removed.length > 1 ? (
-          <span>Previously assigned to {removed.length} people</span>
+          <span>
+            {tn("Previously assigned to {{count}} person", "Previously assigned to {{count}} people", removed.length)}
+          </span>
         ) : oldAssignee ? (
           <>
-            <span>Previously assigned to:</span>
+            <span>
+              <Trans i18nKey="Previously assigned to:" />
+            </span>
             <div className="flex items-center gap-1">
               <AvatarWithName person={oldAssignee} size="tiny" />
             </div>
           </>
         ) : (
-          <span>Previously it was unassigned</span>
+          <span>
+            <Trans i18nKey="Previously it was unassigned" />
+          </span>
         )}
       </div>
     );
@@ -111,10 +126,7 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    const { task } = content(props.activity);
-    const taskName = task ? `Task "${task.name}"` : "A task";
-
-    return `${taskName} was ${notificationMessage(content(props.activity))}`;
+    return notificationMessage(content(props.activity));
   },
 
   NotificationLocation(props: { activity: Activity }) {
@@ -132,24 +144,80 @@ function content(activity: Activity): ActivityContentTaskAssigneeUpdating {
   return activity.content as ActivityContentTaskAssigneeUpdating;
 }
 
-function feedMessage(content: ActivityContentTaskAssigneeUpdating): string {
+type AssignmentChange =
+  | { kind: "assigned" | "unassigned"; personName: string }
+  | { kind: "addedMany" | "removedMany"; count: number }
+  | { kind: "changed" | "updated" };
+
+function assignmentChange(content: ActivityContentTaskAssigneeUpdating): AssignmentChange {
   const added = content.addedAssignees || [];
   const removed = content.removedAssignees || [];
   const [addedAssignee] = added;
   const [removedAssignee] = removed;
 
   if (addedAssignee && added.length === 1 && removed.length === 0)
-    return `assigned to ${addedAssignee.fullName} the task`;
+    return { kind: "assigned", personName: addedAssignee.fullName };
   if (removedAssignee && removed.length === 1 && added.length === 0)
-    return `unassigned ${removedAssignee.fullName} from the task`;
-  if (added.length > 0 && removed.length > 0) return "changed assignees on the task";
-  if (added.length > 1) return `assigned ${added.length} people to the task`;
-  if (removed.length > 1) return `unassigned ${removed.length} people from the task`;
+    return { kind: "unassigned", personName: removedAssignee.fullName };
+  if (added.length > 0 && removed.length > 0) return { kind: "changed" };
+  if (added.length > 1) return { kind: "addedMany", count: added.length };
+  if (removed.length > 1) return { kind: "removedMany", count: removed.length };
+  if (content.newAssignee) return { kind: "assigned", personName: content.newAssignee.fullName };
+  if (content.oldAssignee) return { kind: "unassigned", personName: content.oldAssignee.fullName };
+  return { kind: "updated" };
+}
 
-  if (content.newAssignee) return `assigned to ${content.newAssignee.fullName} the task`;
-  if (content.oldAssignee) return `unassigned ${content.oldAssignee.fullName} from the task`;
-
-  return "updated assignees on the task";
+function feedMessage(change: AssignmentChange, showLocation: boolean): string {
+  switch (change.kind) {
+    case "assigned":
+      return showLocation
+        ? i18n.t(
+            "{{author}} assigned to {{personName}} the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+          )
+        : i18n.t("{{author}} assigned to {{personName}} the task <task>{{taskName}}</task>");
+    case "unassigned":
+      return showLocation
+        ? i18n.t(
+            "{{author}} unassigned {{personName}} from the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+          )
+        : i18n.t("{{author}} unassigned {{personName}} from the task <task>{{taskName}}</task>");
+    case "changed":
+      return showLocation
+        ? i18n.t(
+            "{{author}} changed assignees on the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+          )
+        : i18n.t("{{author}} changed assignees on the task <task>{{taskName}}</task>");
+    case "addedMany":
+      return showLocation
+        ? tn(
+            "{{author}} assigned {{count}} person to the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+            "{{author}} assigned {{count}} people to the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+            change.count,
+          )
+        : tn(
+            "{{author}} assigned {{count}} person to the task <task>{{taskName}}</task>",
+            "{{author}} assigned {{count}} people to the task <task>{{taskName}}</task>",
+            change.count,
+          );
+    case "removedMany":
+      return showLocation
+        ? tn(
+            "{{author}} unassigned {{count}} person from the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+            "{{author}} unassigned {{count}} people from the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+            change.count,
+          )
+        : tn(
+            "{{author}} unassigned {{count}} person from the task <task>{{taskName}}</task>",
+            "{{author}} unassigned {{count}} people from the task <task>{{taskName}}</task>",
+            change.count,
+          );
+    case "updated":
+      return showLocation
+        ? i18n.t(
+            "{{author}} updated assignees on the task <task>{{taskName}}</task> in <location>{{locationName}}</location>",
+          )
+        : i18n.t("{{author}} updated assignees on the task <task>{{taskName}}</task>");
+  }
 }
 
 function notificationMessage(content: ActivityContentTaskAssigneeUpdating): string {
@@ -157,15 +225,32 @@ function notificationMessage(content: ActivityContentTaskAssigneeUpdating): stri
   const removed = content.removedAssignees || [];
   const [addedAssignee] = added;
   const [removedAssignee] = removed;
+  const taskName = content.task?.name;
 
-  if (addedAssignee && added.length === 1 && removed.length === 0) return `assigned to ${addedAssignee.fullName}`;
-  if (removedAssignee && removed.length === 1 && added.length === 0)
-    return `no longer assigned to ${removedAssignee.fullName}`;
-  if (added.length > 0 || removed.length > 0) return "updated with new assignees";
-
-  if (content.newAssignee) return `assigned to ${content.newAssignee.fullName}`;
-
-  return "unassigned";
+  if (addedAssignee && added.length === 1 && removed.length === 0) {
+    const values = { taskName, personName: addedAssignee.fullName };
+    return content.task
+      ? i18n.t('Task "{{taskName}}" was assigned to {{personName}}', values)
+      : i18n.t("A task was assigned to {{personName}}", values);
+  }
+  if (removedAssignee && removed.length === 1 && added.length === 0) {
+    const values = { taskName, personName: removedAssignee.fullName };
+    return content.task
+      ? i18n.t('Task "{{taskName}}" was no longer assigned to {{personName}}', values)
+      : i18n.t("A task was no longer assigned to {{personName}}", values);
+  }
+  if (added.length > 0 || removed.length > 0) {
+    return content.task
+      ? i18n.t('Task "{{taskName}}" was updated with new assignees', { taskName })
+      : i18n.t("A task was updated with new assignees");
+  }
+  if (content.newAssignee) {
+    const values = { taskName, personName: content.newAssignee.fullName };
+    return content.task
+      ? i18n.t('Task "{{taskName}}" was assigned to {{personName}}', values)
+      : i18n.t("A task was assigned to {{personName}}", values);
+  }
+  return content.task ? i18n.t('Task "{{taskName}}" was unassigned', { taskName }) : i18n.t("A task was unassigned");
 }
 
 export default TaskAssigneeUpdating;

@@ -3,7 +3,8 @@ import type { Activity } from "@/models/activities";
 
 import React from "react";
 import { Link } from "react-router";
-import { feedTitle } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const MessageArchiving: ActivityHandler = {
@@ -33,9 +34,15 @@ const MessageArchiving: ActivityHandler = {
     const spaceLink = <Link to={paths.spacePath(space.id!)}>{space.name!}</Link>;
 
     if (page === "space") {
-      return feedTitle(activity, "deleted:", title);
+      return <Trans i18nKey="{{author}} deleted: {{title}}" values={{ author: activityAuthorName(activity), title }} />;
     } else {
-      return feedTitle(activity, "deleted:", title, "from", spaceLink);
+      return (
+        <Trans
+          i18nKey="{{author}} deleted: {{title}} from <space>{{spaceName}}</space>"
+          values={{ author: activityAuthorName(activity), title, spaceName: space.name }}
+          components={{ space: spaceLink }}
+        />
+      );
     }
   },
 

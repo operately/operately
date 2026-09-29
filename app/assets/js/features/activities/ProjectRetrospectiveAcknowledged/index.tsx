@@ -2,7 +2,10 @@ import type { ActivityContentProjectRetrospectiveAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "./../feedItemLinks";
 import { Paths } from "@/routes/paths";
 
 const ProjectRetrospectiveAcknowledged: ActivityHandler = {
@@ -30,9 +33,17 @@ const ProjectRetrospectiveAcknowledged: ActivityHandler = {
     const project = content(activity).project!;
 
     if (page === "project") {
-      return feedTitle(activity, "acknowledged the retrospective");
+      return (
+        <Trans i18nKey="{{author}} acknowledged the retrospective" values={{ author: activityAuthorName(activity) }} />
+      );
     } else {
-      return feedTitle(activity, "acknowledged the retrospective in the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged the retrospective in the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -53,7 +64,7 @@ const ProjectRetrospectiveAcknowledged: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Acknowledged retrospective";
+    return i18n.t("Acknowledged retrospective");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

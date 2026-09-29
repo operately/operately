@@ -1,4 +1,6 @@
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import { activityAuthorName } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -25,7 +27,7 @@ const CompanyAdding: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity }) {
-    return feedTitle(activity, "created this company");
+    return <Trans i18nKey="{{author}} created this company" values={{ author: activityAuthorName(activity) }} />;
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

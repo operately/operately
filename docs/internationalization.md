@@ -109,7 +109,6 @@ Remaining client-authored PR 6 work, not PR 7 deferrals:
 - Project add/check-in/closing/pause/resume/retrospective forms and check-in presentation (`ProjectPageLayout/StatusBanner`, `CheckInHeader`, `CheckInCard`, `LastCheckIn`)
 - Remaining shared work-management fields, status customization/display, subscription/comment/timeline presentation, and milestone-completion copy
 - Remaining task-board sentences and accessibility text, including selected filter descriptions, milestone/task count summaries outside the converted completed sections, and Kanban add-status presentation
-- Most activity handlers beyond `GoalCreated`, `ProjectCreated`, `TaskNameUpdating`, and `TaskDescriptionChange`; keep translations out of stored activity data
 - Project-template selection, creation, lifecycle, and template project/task/discussion/Docs & Files flows
 - Exhaustive narrow-screen/expanded-translation visual review and app-level end-to-end workflow verification
 
@@ -129,6 +128,32 @@ English wording, permissions, interactions, stored activity payloads, and the de
 Focused tests verify real catalog substitution, success/empty/error states, resource-name preservation, saved Portuguese preferences with the flag disabled, and missing-Portuguese fallback. Folder counts and upload/progress states cover zero, singular, and plural cases. The expanded-catalog document-history Storybook interaction checks the heading and restore confirmation for overflow. This supplements, rather than replaces, exhaustive narrow-screen and end-to-end review.
 
 Remaining work stays explicit: the other PR 6 gaps above, people directory and org-chart extraction, backend/email/digest/server-rendered copy (PR 7), full Portuguese translation and native-speaker review (PR 8), formatting follow-ups, and default language-selection rollout. Earlier completed extraction is unchanged.
+
+### Remaining activity-feed presentation — cataloged
+
+The render-time audit covers all 117 handlers under `app/assets/js/features/activities/`, including registered handlers that are not currently in `DISPLAYED_IN_FEED`. The 112 remaining handlers are cataloged; the five existing cataloged handlers (`TaskAdding`, `GoalCreated`, `ProjectCreated`, `TaskNameUpdating`, and `TaskDescriptionChange`) retain their earlier extraction.
+
+| Handler family | Extracted presentation |
+| --- | --- |
+| Company, membership, guests, and spaces | Feed sentences, member/access counts, name lists, space-name/purpose changes, and in-app notification titles |
+| Goals, projects, milestones, and tasks | Lifecycle, assignment, dates, status, parent/location changes, targets/checklists, key resources, aggregate task sentences, and previous-value bodies |
+| Discussions and comments | Posting, archiving, replies, acknowledgements, and comment links, including context-specific goal/project/space sentences |
+| Docs & Files | Document/file/folder/link creation, edits, copies, deletion, comments, public sharing, version restoration, and aggregate resource sentences |
+| KPIs | Creation, entry/annotation changes, comments, feed bodies, and in-app notification titles |
+| Handler-owned detail labels | Goal closing/reopening/check-in/timeframe titles, timeframe day counts, discussion Edit, and document public-sharing titles |
+
+Sentences use named `Trans` placeholders rather than the old `feedTitle` fragment assembly. Parent resource types are part of complete sentences. Rich links retain their text and destinations; existing TurboUI `Link`, date displays, avatars, rich content, and status presentation are reused. `activities/i18n.tsx` provides an activity-scoped `Trans` adapter that escapes interpolation before rich-text parsing and unescapes only the resulting text nodes. This preserves user names containing angle brackets, ampersands, or quotes. Imports ending in `/i18n` are already supported by the shared extractor. Avoid HTML void-element names such as `<link>` for named translation tags; use `<resource>` instead.
+
+English wording is retained, including legacy fallback labels and the existing “1 days” duration wording. User-authored names/content, stored payloads, permissions, links/actions, formatting choices, and language-flag/selector behavior are unchanged. New PO entries are left untranslated; generated resources use English fallback. No Portuguese translation or review is included in this slice.
+
+Focused handler tests cover saved Portuguese preferences with the flag off, substituted catalog sentences, missing-Portuguese fallback, reordered links and literal resource names, KPI bodies/notifications, and handler-owned detail labels. Company access counts and timeframe day counts exercise zero, singular, and plural; task-assignee tests exercise the existing zero/one/many branches. Existing handler/link/path tests remain part of the targeted Jest run. Catalog generation is checked for determinism and preservation of existing PO translations and locale resources; `make test.tsc.lint` checks the changed surfaces.
+
+Remaining gaps are explicit:
+
+- Shared feed/timeline/comment/subscription chrome and shared status/permission presentation outside the handlers remain in the work-management inventory. Stored status/access labels and unknown legacy role labels remain as supplied; this extraction does not translate backend-originated payload text.
+- The older cataloged handlers keep their existing rendering implementation. Extending rich-text name escaping to those and other cataloged surfaces is a separate follow-up.
+- Goal/project/task page chrome, forms, boards, operation toasts, project-template flows, and any other unfinished PR 6 items above are not completed by this handler extraction. Earlier completed discussion, Docs & Files, space-board, and KPI page extraction is preserved.
+- Backend messages, emails, digests, and server-rendered pages remain PR 7 work. People directory/org-chart copy, full Portuguese coverage/native-speaker review, automated coverage checks, and exhaustive expanded-text/narrow-screen/end-to-end review remain open.
 
 ## Catalog files
 
