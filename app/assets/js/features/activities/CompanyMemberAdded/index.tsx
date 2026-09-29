@@ -1,4 +1,7 @@
-import { feedTitle, personLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, personLink } from "../feedItemLinks";
 
 import type { ActivityContentCompanyMemberAdded } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -30,9 +33,20 @@ const CompanyMemberAdded: ActivityHandler = {
     const { person, name } = content(activity);
 
     if (person) {
-      return feedTitle(activity, "added", personLink(paths, person), "as a company member");
+      return (
+        <Trans
+          i18nKey="{{author}} added <person>{{personName}}</person> as a company member"
+          values={{ author: activityAuthorName(activity), personName: person.fullName }}
+          components={{ person: personLink(paths, person) }}
+        />
+      );
     } else {
-      return feedTitle(activity, "added", name, "as a company member");
+      return (
+        <Trans
+          i18nKey="{{author}} added {{personName}} as a company member"
+          values={{ author: activityAuthorName(activity), personName: name }}
+        />
+      );
     }
   },
 
@@ -53,7 +67,7 @@ const CompanyMemberAdded: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Added you as a company member";
+    return i18n.t("Added you as a company member");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

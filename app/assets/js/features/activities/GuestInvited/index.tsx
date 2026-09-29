@@ -1,5 +1,8 @@
 import * as People from "@/models/people";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 
 import type { ActivityContentGuestInvited } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -31,9 +34,16 @@ const GuestInvited: ActivityHandler = {
     const guest = content(activity).person;
 
     if (guest) {
-      return feedTitle(activity, "invited", People.firstName(guest), "as an outside collaborator");
+      return (
+        <Trans
+          i18nKey="{{author}} invited {{personName}} as an outside collaborator"
+          values={{ author: activityAuthorName(activity), personName: People.firstName(guest) }}
+        />
+      );
     } else {
-      return feedTitle(activity, "invited an outside collaborator");
+      return (
+        <Trans i18nKey="{{author}} invited an outside collaborator" values={{ author: activityAuthorName(activity) }} />
+      );
     }
   },
 
@@ -54,7 +64,7 @@ const GuestInvited: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Invited you as an outside collaborator";
+    return i18n.t("Invited you as an outside collaborator");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

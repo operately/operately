@@ -3,7 +3,8 @@ import React from "react";
 import type { ActivityContentGoalTargetAdding } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalTargetAdding: ActivityHandler = {
@@ -31,12 +32,22 @@ const GoalTargetAdding: ActivityHandler = {
     const { paths } = props;
     const goal = content(props.activity).goal!;
     const targetName = content(props.activity).targetName!;
-    const message = `added the ${targetName} target`;
 
     if (props.page === "goal") {
-      return feedTitle(props.activity, message);
+      return (
+        <Trans
+          i18nKey="{{author}} added the {{targetName}} target"
+          values={{ author: activityAuthorName(props.activity), targetName }}
+        />
+      );
     } else {
-      return feedTitle(props.activity, message, "to", goalLink(paths, goal));
+      return (
+        <Trans
+          i18nKey="{{author}} added the {{targetName}} target to <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(props.activity), targetName, goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 

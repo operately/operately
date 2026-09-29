@@ -2,7 +2,11 @@ import type { ActivityContentProjectArchived } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { assertPresent } from "@/utils/assertions";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectArchived: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,9 +31,17 @@ const ProjectArchived: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
-      return feedTitle(activity, "archived the project");
+      return <Trans i18nKey="{{author}} archived the project" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "archived the", projectLink(paths, content(activity).project!), "project");
+      const project = content(activity).project;
+      assertPresent(project, "Project is required for an archived activity");
+      return (
+        <Trans
+          i18nKey="{{author}} archived the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -50,7 +62,7 @@ const ProjectArchived: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Archived the " + content(activity).project!.name! + " project";
+    return i18n.t("Archived the {{projectName}} project", { projectName: content(activity).project?.name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentMilestoneTitleUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, milestoneLink, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const MilestoneTitleUpdating: ActivityHandler = {
@@ -29,13 +31,29 @@ const MilestoneTitleUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, milestone, newTitle } = content(activity);
-    const title = milestone ? milestoneLink(paths, milestone, newTitle) : `"${newTitle}"`;
-    const message = `renamed milestone to`;
+    const title = milestone ? milestoneLink(paths, milestone, newTitle) : <React.Fragment />;
+    const values = {
+      author: activityAuthorName(activity),
+      title: milestone ? newTitle || milestone.title : `"${newTitle}"`,
+      projectName: project.name,
+    };
 
     if (page === "project") {
-      return feedTitle(activity, message, title);
+      return (
+        <Trans
+          i18nKey="{{author}} renamed milestone to <milestone>{{title}}</milestone>"
+          values={values}
+          components={{ milestone: title }}
+        />
+      );
     } else {
-      return feedTitle(activity, message, title, "in", projectLink(paths, project));
+      return (
+        <Trans
+          i18nKey="{{author}} renamed milestone to <milestone>{{title}}</milestone> in <project>{{projectName}}</project>"
+          values={values}
+          components={{ milestone: title, project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -43,9 +61,11 @@ const MilestoneTitleUpdating: ActivityHandler = {
     const { oldTitle } = content(activity);
 
     return (
-      <>
-        Previously, the milestone was called <strong>"{oldTitle}"</strong>.
-      </>
+      <Trans
+        i18nKey={'Previously, the milestone was called <name>"{{oldTitle}}"</name>.'}
+        values={{ oldTitle }}
+        components={{ name: <strong /> }}
+      />
     );
   },
 
@@ -64,7 +84,7 @@ const MilestoneTitleUpdating: ActivityHandler = {
   NotificationTitle(props: { activity: Activity }) {
     const { newTitle } = content(props.activity);
 
-    return `Milestone was renamed to "${newTitle}"`;
+    return i18n.t('Milestone was renamed to "{{newTitle}}"', { newTitle });
   },
 
   NotificationLocation(props: { activity: Activity }) {

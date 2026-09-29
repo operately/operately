@@ -1,6 +1,9 @@
 import { Activity, ActivityContentCompanyAdminRemoved } from "@/api";
 import { firstName } from "@/models/people";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
 const CompanyAdminRemoved: ActivityHandler = {
@@ -28,10 +31,20 @@ const CompanyAdminRemoved: ActivityHandler = {
     const person = content(activity).person;
 
     if (person) {
-      return feedTitle(activity, `has revoked ${firstName(person)}'s admin privileges`);
+      return (
+        <Trans
+          i18nKey="{{author}} has revoked {{personName}}'s admin privileges"
+          values={{ author: activityAuthorName(activity), personName: firstName(person) }}
+        />
+      );
     }
 
-    return feedTitle(activity, "has revoked a member's admin privileges");
+    return (
+      <Trans
+        i18nKey="{{author}} has revoked a member's admin privileges"
+        values={{ author: activityAuthorName(activity) }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -51,7 +64,7 @@ const CompanyAdminRemoved: ActivityHandler = {
   },
 
   NotificationTitle(_activity: { activity: Activity }) {
-    return "Revoked your admin privileges";
+    return i18n.t("Revoked your admin privileges");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -2,7 +2,10 @@ import type { ActivityContentProjectGoalConnection } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink, projectLink } from "../feedItemLinks";
 
 const ProjectGoalConnection: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -33,49 +36,48 @@ const ProjectGoalConnection: ActivityHandler = {
 
     const project = projectLink(paths, p);
 
-    if (g) {
-      const goal = goalLink(paths, g);
-
-      if (page === "project") {
-        return feedTitle(activity, "connected the project to the", goal, "goal");
-      } else if (page === "goal") {
-        return feedTitle(activity, "connected the", project, "project to the goal");
-      } else {
-        return feedTitle(activity, "connected the", project, "project to the", goal, "goal");
-      }
+    const values = { author: activityAuthorName(activity), projectName: p.name };
+    if (g || connectedGoalName) {
+      const sentence =
+        page === "project"
+          ? i18n.t("{{author}} connected the project to the <goal>{{goalName}}</goal> goal")
+          : page === "goal" && g
+            ? i18n.t("{{author}} connected the <project>{{projectName}}</project> project to the goal")
+            : i18n.t(
+                "{{author}} connected the <project>{{projectName}}</project> project to the <goal>{{goalName}}</goal> goal",
+              );
+      return (
+        <Trans
+          defaults={sentence}
+          values={{ ...values, goalName: connectedGoalName }}
+          components={{ project, goal: g ? goalLink(paths, g) : <React.Fragment /> }}
+        />
+      );
     }
-
-    if (connectedGoalName) {
-      if (page === "project") {
-        return feedTitle(activity, "connected the project to the", connectedGoalName, "goal");
-      } else {
-        return feedTitle(activity, "connected the", project, "project to the", connectedGoalName, "goal");
-      }
+    if (previousGoal || disconnectedGoalName) {
+      const sentence =
+        page === "project"
+          ? i18n.t("{{author}} disconnected the project from the <goal>{{goalName}}</goal> goal")
+          : i18n.t(
+              "{{author}} disconnected the <project>{{projectName}}</project> project from the <goal>{{goalName}}</goal> goal",
+            );
+      return (
+        <Trans
+          defaults={sentence}
+          values={{ ...values, goalName: disconnectedGoalName }}
+          components={{ project, goal: previousGoal ? goalLink(paths, previousGoal) : <React.Fragment /> }}
+        />
+      );
     }
-
-    // Handle cases where a project was disconnected from a goal
-    if (previousGoal) {
-      const prevGoal = goalLink(paths, previousGoal);
-
-      if (page === "project") {
-        return feedTitle(activity, "disconnected the project from the", prevGoal, "goal");
-      } else {
-        return feedTitle(activity, "disconnected the", project, "project from the", prevGoal, "goal");
-      }
-    } else if (disconnectedGoalName) {
-      if (page === "project") {
-        return feedTitle(activity, "disconnected the project from the", disconnectedGoalName, "goal");
-      } else {
-        return feedTitle(activity, "disconnected the", project, "project from the", disconnectedGoalName, "goal");
-      }
-    }
-
-    // Fallback if no previous goal information is available
-    if (page === "project") {
-      return feedTitle(activity, "disconnected the project from its parent goal");
-    } else {
-      return feedTitle(activity, "disconnected the", project, "project from its parent goal");
-    }
+    return page === "project" ? (
+      <Trans i18nKey="{{author}} disconnected the project from its parent goal" values={values} />
+    ) : (
+      <Trans
+        i18nKey="{{author}} disconnected the <project>{{projectName}}</project> project from its parent goal"
+        values={values}
+        components={{ project }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -102,17 +104,25 @@ const ProjectGoalConnection: ActivityHandler = {
 
     if (connectedGoalName) {
       return projectName
-        ? `Connected ${projectName} project to the ${connectedGoalName} goal`
-        : `Connected a project to the ${connectedGoalName} goal`;
+        ? i18n.t("Connected {{projectName}} project to the {{goalName}} goal", {
+            projectName,
+            goalName: connectedGoalName,
+          })
+        : i18n.t("Connected a project to the {{goalName}} goal", { goalName: connectedGoalName });
     }
 
     if (disconnectedGoalName) {
       return projectName
-        ? `Disconnected ${projectName} project from the ${disconnectedGoalName} goal`
-        : `Disconnected a project from the ${disconnectedGoalName} goal`;
+        ? i18n.t("Disconnected {{projectName}} project from the {{goalName}} goal", {
+            projectName,
+            goalName: disconnectedGoalName,
+          })
+        : i18n.t("Disconnected a project from the {{goalName}} goal", { goalName: disconnectedGoalName });
     }
 
-    return projectName ? `Updated the parent goal of ${projectName} project` : "Updated a project's parent goal";
+    return projectName
+      ? i18n.t("Updated the parent goal of {{projectName}} project", { projectName })
+      : i18n.t("Updated a project's parent goal");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

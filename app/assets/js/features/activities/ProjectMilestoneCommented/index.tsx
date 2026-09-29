@@ -1,11 +1,12 @@
-import type { Paths } from "@/routes/paths";
 import * as React from "react";
 
 import type { ActivityContentProjectMilestoneCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { commentPath, feedTitle, milestoneCommentLink, milestoneLink, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, milestoneCommentLink, milestoneLink, projectLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -39,22 +40,50 @@ const ProjectMilestoneCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, commentAction, milestone, project } = content(activity);
-    const milestoneName = milestone ? milestoneLink(paths, milestone) : "a milestone";
-    const action = activityAction(paths, commentAction, milestone, comment);
-
-    if (page === "project") {
-      return feedTitle(activity, action.verb, action.objectPrefix, milestoneName, "milestone");
-    } else {
-      return feedTitle(
-        activity,
-        action.verb,
-        action.objectPrefix,
-        milestoneName,
-        "milestone in the",
-        projectLink(paths, project),
-        "project",
-      );
+    let sentence: string;
+    switch (commentAction) {
+      case "none":
+        sentence =
+          page === "project"
+            ? i18n.t("{{author}} <action>commented</action> on the <milestone>{{milestoneName}}</milestone> milestone")
+            : i18n.t(
+                "{{author}} <action>commented</action> on the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project",
+              );
+        break;
+      case "complete":
+        sentence =
+          page === "project"
+            ? i18n.t("{{author}} completed the <milestone>{{milestoneName}}</milestone> milestone")
+            : i18n.t(
+                "{{author}} completed the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project",
+              );
+        break;
+      case "reopen":
+        sentence =
+          page === "project"
+            ? i18n.t("{{author}} re-opened the <milestone>{{milestoneName}}</milestone> milestone")
+            : i18n.t(
+                "{{author}} re-opened the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project",
+              );
+        break;
+      default:
+        throw new Error("Unknown action: " + commentAction);
     }
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          milestoneName: milestone?.title ?? i18n.t("a milestone"),
+          projectName: project.name,
+        }}
+        components={{
+          action: milestoneCommentLink(paths, milestone, comment),
+          milestone: milestone ? milestoneLink(paths, milestone) : <React.Fragment />,
+          project: projectLink(paths, project),
+        }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -88,22 +117,22 @@ const ProjectMilestoneCommented: ActivityHandler = {
     if (title) {
       switch (commentAction) {
         case "none":
-          return "Re: " + title;
+          return i18n.t("Re: {{title}}", { title });
         case "complete":
-          return "Closed milestone: " + title;
+          return i18n.t("Closed milestone: {{title}}", { title });
         case "reopen":
-          return "Re-opened milestone: " + title;
+          return i18n.t("Re-opened milestone: {{title}}", { title });
         default:
           throw new Error("Unknown action: " + commentAction);
       }
     } else {
       switch (commentAction) {
         case "none":
-          return "Commented on a milestone";
+          return i18n.t("Commented on a milestone");
         case "complete":
-          return "Closed a milestone";
+          return i18n.t("Closed a milestone");
         case "reopen":
-          return "Re-opened a milestone";
+          return i18n.t("Re-opened a milestone");
         default:
           throw new Error("Unknown action: " + commentAction);
       }
@@ -120,21 +149,3 @@ function content(activity: Activity): ActivityContentProjectMilestoneCommented {
 }
 
 export default ProjectMilestoneCommented;
-
-function activityAction(
-  paths: Paths,
-  action: string,
-  milestone: ActivityContentProjectMilestoneCommented["milestone"],
-  comment: ActivityContentProjectMilestoneCommented["comment"],
-): { verb: string | JSX.Element; objectPrefix: string } {
-  switch (action) {
-    case "none":
-      return { verb: milestoneCommentLink(paths, milestone, comment), objectPrefix: "on the" };
-    case "complete":
-      return { verb: "completed", objectPrefix: "the" };
-    case "reopen":
-      return { verb: "re-opened", objectPrefix: "the" };
-    default:
-      throw new Error("Unknown action: " + action);
-  }
-}

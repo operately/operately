@@ -2,7 +2,11 @@ import type { ActivityContentGoalArchived } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, goalLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { assertPresent } from "@/utils/assertions";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 
 const GoalArchived: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -27,9 +31,17 @@ const GoalArchived: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "goal") {
-      return feedTitle(activity, "archived this goal");
+      return <Trans i18nKey="{{author}} archived this goal" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "archived the", goalLink(paths, content(activity).goal!), "goal");
+      const goal = content(activity).goal;
+      assertPresent(goal, "Goal is required for an archived activity");
+      return (
+        <Trans
+          i18nKey="{{author}} archived the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -50,7 +62,7 @@ const GoalArchived: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Archived the " + content(activity).goal!.name! + " goal";
+    return i18n.t("Archived the {{goalName}} goal", { goalName: content(activity).goal?.name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

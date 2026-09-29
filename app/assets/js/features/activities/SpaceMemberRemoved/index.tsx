@@ -1,7 +1,9 @@
 import { Activity, ActivityContentSpaceMemberRemoved } from "@/api";
 import { shortName } from "@/models/people";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceMemberRemoved: ActivityHandler = {
@@ -30,9 +32,24 @@ const SpaceMemberRemoved: ActivityHandler = {
     const space = spaceLink(paths, content(activity).space!);
 
     if (page === "space") {
-      return feedTitle(activity, "removed", person, "from the space");
+      return (
+        <Trans
+          i18nKey="{{author}} removed {{personName}} from the space"
+          values={{ author: activityAuthorName(activity), personName: person }}
+        />
+      );
     } else {
-      return feedTitle(activity, "removed", person, "from the", space, "space");
+      return (
+        <Trans
+          i18nKey="{{author}} removed {{personName}} from the <space>{{spaceName}}</space> space"
+          values={{
+            author: activityAuthorName(activity),
+            personName: person,
+            spaceName: content(activity).space?.name,
+          }}
+          components={{ space }}
+        />
+      );
     }
   },
 

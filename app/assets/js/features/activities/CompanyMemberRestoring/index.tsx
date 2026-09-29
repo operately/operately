@@ -1,5 +1,8 @@
 import * as People from "@/models/people";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 
 import type { ActivityContentCompanyMemberRestoring } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -31,10 +34,15 @@ const CompanyMemberRestoring: ActivityHandler = {
     const person = content(activity).person;
 
     if (person) {
-      return feedTitle(activity, "restored", People.firstName(person) + "'s", "account");
+      return (
+        <Trans
+          i18nKey="{{author}} restored {{personName}}'s account"
+          values={{ author: activityAuthorName(activity), personName: People.firstName(person) }}
+        />
+      );
     }
 
-    return feedTitle(activity, "restored a member's account");
+    return <Trans i18nKey="{{author}} restored a member's account" values={{ author: activityAuthorName(activity) }} />;
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -54,7 +62,7 @@ const CompanyMemberRestoring: ActivityHandler = {
   },
 
   NotificationTitle(_activity: { activity: Activity }) {
-    return "Restored your account";
+    return i18n.t("Restored your account");
   },
 
   NotificationLocation(_props: { activity: Activity }) {
