@@ -3,6 +3,21 @@ defmodule TurboConnect.Plugs.ParseInputsTest do
 
   alias TurboConnect.Plugs.ParseInputs
 
+  test "rejects malformed lists in queries and mutations" do
+    for strict <- [false, true], value <- ["not-a-list", %{"url" => "/bad"}, 123, false] do
+      assert {:error, 400, _} = ParseInputs.parse_input({:list, :string}, %{}, value, strict)
+    end
+  end
+
+  test "preserves supported empty list representations" do
+    for strict <- [false, true], value <- [[], nil] do
+      assert {:ok, []} = ParseInputs.parse_input({:list, :string}, %{}, value, strict)
+    end
+
+    assert {:ok, []} = ParseInputs.parse_input({:list, :string}, %{}, "", false)
+    assert {:error, 400, _} = ParseInputs.parse_input({:list, :string}, %{}, "", true)
+  end
+
   test "atomizes keys that already exist as atoms" do
     assert ParseInputs.atomize_keys(%{"id" => "1"}) == %{id: "1"}
   end

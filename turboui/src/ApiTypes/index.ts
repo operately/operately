@@ -2244,6 +2244,11 @@ export interface Reaction {
   person: Person | null;
 }
 
+export interface ResolvedResourceLink {
+  url: string;
+  title: string;
+}
+
 export interface ResourceAccessInput {
   resourceType: ResourceAccessTypes;
   resourceId: Id;
@@ -3102,23 +3107,23 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
-  | "project_retrospective"
   | "goal_discussion"
   | "project_discussion"
+  | "kpi"
+  | "project_retrospective"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
   | "project_template"
-  | "template_task"
-  | "template_milestone"
   | "template_discussion"
-  | "template_comment"
   | "template_document"
   | "template_file"
-  | "template_link";
+  | "template_link"
+  | "template_comment"
+  | "template_milestone"
+  | "template_task";
 
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 

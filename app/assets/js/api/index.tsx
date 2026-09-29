@@ -2340,6 +2340,11 @@ export interface Reaction {
   person: Person | null;
 }
 
+export interface ResolvedResourceLink {
+  url: string;
+  title: string;
+}
+
 export interface ResourceAccessInput {
   resourceType: ResourceAccessTypes;
   resourceId: Id;
@@ -3198,23 +3203,23 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
-  | "kpi"
   | "project_check_in"
-  | "project_retrospective"
   | "goal_discussion"
   | "project_discussion"
+  | "kpi"
+  | "project_retrospective"
   | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
   | "project_template"
-  | "template_task"
-  | "template_milestone"
   | "template_discussion"
-  | "template_comment"
   | "template_document"
   | "template_file"
-  | "template_link";
+  | "template_link"
+  | "template_comment"
+  | "template_milestone"
+  | "template_task";
 
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 
@@ -4144,6 +4149,14 @@ export interface ResourceHubsSearchInput {
 
 export interface ResourceHubsSearchResult {
   nodes: ResourceHubNode[];
+}
+
+export interface RichContentResolveLinksInput {
+  urls: string[];
+}
+
+export interface RichContentResolveLinksResult {
+  links: ResolvedResourceLink[];
 }
 
 export interface SiteMessagesListActiveInput {}
@@ -7747,6 +7760,14 @@ class ApiNamespaceGoals {
   }
 }
 
+class ApiNamespaceRichContent {
+  constructor(private client: ApiClient) {}
+
+  async setTaskItemChecked(input: RichContentSetTaskItemCheckedInput): Promise<RichContentSetTaskItemCheckedResult> {
+    return this.client.post("/rich_content/set_task_item_checked", input);
+  }
+}
+
 class ApiNamespaceReactions {
   constructor(private client: ApiClient) {}
 
@@ -7756,14 +7777,6 @@ class ApiNamespaceReactions {
 
   async delete(input: ReactionsDeleteInput): Promise<ReactionsDeleteResult> {
     return this.client.post("/reactions/delete", input);
-  }
-}
-
-class ApiNamespaceRichContent {
-  constructor(private client: ApiClient) {}
-
-  async setTaskItemChecked(input: RichContentSetTaskItemCheckedInput): Promise<RichContentSetTaskItemCheckedResult> {
-    return this.client.post("/rich_content/set_task_item_checked", input);
   }
 }
 
@@ -7793,8 +7806,8 @@ export class ApiClient {
   public apiNamespaceProjectTemplates: ApiNamespaceProjectTemplates;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
-  public apiNamespaceReactions: ApiNamespaceReactions;
   public apiNamespaceRichContent: ApiNamespaceRichContent;
+  public apiNamespaceReactions: ApiNamespaceReactions;
 
   constructor() {
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
@@ -7820,8 +7833,8 @@ export class ApiClient {
     this.apiNamespaceProjectTemplates = new ApiNamespaceProjectTemplates(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
-    this.apiNamespaceReactions = new ApiNamespaceReactions(this);
     this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
+    this.apiNamespaceReactions = new ApiNamespaceReactions(this);
   }
 
   setBasePath(basePath: string) {
@@ -12197,6 +12210,39 @@ export default {
       }),
   },
 
+  rich_content: {
+    resolveLinksQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/rich_content/resolve_links"),
+    resolveLinksQueryKey: (input: RichContentResolveLinksInput) =>
+      buildApiQueryKey(defaultApiClient, "/rich_content/resolve_links", input),
+    resolveLinksQueryOptions: (input: RichContentResolveLinksInput) =>
+      buildApiQueryOptions<RichContentResolveLinksInput, RichContentResolveLinksResult>(
+        defaultApiClient,
+        "/rich_content/resolve_links",
+        input,
+      ),
+    resolveLinksQuery: (input: RichContentResolveLinksInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<RichContentResolveLinksInput, RichContentResolveLinksResult>(
+          defaultApiClient,
+          "/rich_content/resolve_links",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    setTaskItemChecked: (input: RichContentSetTaskItemCheckedInput) =>
+      defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+    useSetTaskItemChecked: () =>
+      useMutation<RichContentSetTaskItemCheckedInput, RichContentSetTaskItemCheckedResult>((input) =>
+        defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+      ),
+    setTaskItemCheckedMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: RichContentSetTaskItemCheckedInput) =>
+          defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
+      }),
+  },
+
   reactions: {
     delete: (input: ReactionsDeleteInput) => defaultApiClient.apiNamespaceReactions.delete(input),
     useDelete: () =>
@@ -12216,20 +12262,6 @@ export default {
     createMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: ReactionsCreateInput) => defaultApiClient.apiNamespaceReactions.create(input),
-      }),
-  },
-
-  rich_content: {
-    setTaskItemChecked: (input: RichContentSetTaskItemCheckedInput) =>
-      defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
-    useSetTaskItemChecked: () =>
-      useMutation<RichContentSetTaskItemCheckedInput, RichContentSetTaskItemCheckedResult>((input) =>
-        defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
-      ),
-    setTaskItemCheckedMutationOptions: () =>
-      mutationOptions({
-        mutationFn: (input: RichContentSetTaskItemCheckedInput) =>
-          defaultApiClient.apiNamespaceRichContent.setTaskItemChecked(input),
       }),
   },
 };

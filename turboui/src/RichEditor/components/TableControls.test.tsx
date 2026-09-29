@@ -24,7 +24,11 @@ const table = (prefix: string) => ({
 });
 const content = { type: "doc", content: [table("A"), { type: "paragraph" }, table("B")] };
 function Harness({ readonly = false, display = false }) {
-  const state = useEditor({ content, editable: !readonly, handlers: { mentionedPersonLookup: async () => null } });
+  const state = useEditor({
+    content,
+    editable: !readonly,
+    handlers: { mentionedPersonLookup: async () => null, resolveResourceLinks: null },
+  });
   React.useEffect(() => {
     editor = state.editor;
   }, [state.editor]);

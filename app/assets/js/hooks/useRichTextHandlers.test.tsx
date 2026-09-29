@@ -7,7 +7,12 @@ import { useSetTaskItemChecked } from "@/models/richContent/taskListLifecycle";
 jest.mock("./useRichEditorHandlers", () => ({ useRichEditorHandlers: jest.fn() }));
 jest.mock("@/models/richContent/taskListLifecycle", () => ({ useSetTaskItemChecked: jest.fn() }));
 
-const editorHandlers = { mentionedPersonLookup: jest.fn(), uploadFile: jest.fn(), peopleSearch: jest.fn() };
+const editorHandlers = {
+  mentionedPersonLookup: jest.fn(),
+  uploadFile: jest.fn(),
+  peopleSearch: jest.fn(),
+  resolveResourceLinks: null,
+};
 const setTaskItemChecked = jest.fn().mockResolvedValue(undefined);
 const change = { itemPath: [0, 0], checked: true, expectedContent: { type: "doc", content: [] } };
 

@@ -45,6 +45,30 @@ defmodule Operately.RichContent.LinkEnrichmentTest do
     assert LinkEnrichment.restore_source(forged) == document(ctx.href, "Website")
   end
 
+  test "restores generated titles split by formatting", ctx do
+    enriched = LinkEnrichment.enrich(document(ctx.href), context(ctx))
+    node = get_in(enriched, ["content", Access.at(0), "content", Access.at(0)])
+    first = %{node | "text" => "Web", "marks" => node["marks"] ++ [%{"type" => "bold"}]}
+    second = %{node | "text" => "site"}
+    split = put_in(enriched, ["content", Access.at(0), "content"], [first, second])
+    restored = LinkEnrichment.restore_source(split)
+    assert text(restored) == ctx.href
+    refute Jason.encode!(restored) =~ "Website"
+    refute Jason.encode!(restored) =~ "operatelyResourceLink"
+  end
+
+  test "keeps formatting from later parts of a generated title", ctx do
+    enriched = LinkEnrichment.enrich(document(ctx.href), context(ctx))
+    node = get_in(enriched, ["content", Access.at(0), "content", Access.at(0)])
+    first = %{node | "text" => "Web"}
+    second = %{node | "text" => "site", "marks" => node["marks"] ++ [%{"type" => "bold"}]}
+    split = put_in(enriched, ["content", Access.at(0), "content"], [first, second])
+    restored = LinkEnrichment.restore_source(split)
+    spans = get_in(restored, ["content", Access.at(0), "content"])
+    assert %{"type" => "bold"} in Enum.flat_map(spans, & &1["marks"])
+    refute Jason.encode!(restored) =~ "Website"
+  end
+
   test "deduplicates across documents and performs no lookup without eligible links", ctx do
     track_queries()
     assert LinkEnrichment.enrich(%{description: document(ctx.href, "Custom")}, context(ctx)) == %{description: document(ctx.href, "Custom")}
