@@ -1,5 +1,5 @@
 defmodule Operately.Support.RichText do
-  def resource_link(href) do
+  def resource_link(href, label \\ nil) do
     %{
       "type" => "doc",
       "content" => [
@@ -8,7 +8,7 @@ defmodule Operately.Support.RichText do
           "content" => [
             %{
               "type" => "text",
-              "text" => href,
+              "text" => label || href,
               "marks" => [%{"type" => "link", "attrs" => %{"href" => href}}]
             }
           ]

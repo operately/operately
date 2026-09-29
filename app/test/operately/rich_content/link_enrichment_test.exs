@@ -24,6 +24,45 @@ defmodule Operately.RichContent.LinkEnrichmentTest do
     assert LinkEnrichment.enrich(result, context(ctx)) == result
   end
 
+  test "persists titles without metadata and keeps them after a rename", ctx do
+    source = document(ctx.href)
+    saved = LinkEnrichment.prepare_for_save(source, context(ctx))
+    assert saved == document(ctx.href, "Website")
+    assert LinkEnrichment.restore_source(saved) == saved
+    assert LinkEnrichment.prepare_for_save(saved, context(ctx)) == saved
+
+    ctx.project |> Ecto.Changeset.change(name: "Renamed") |> Operately.Repo.update!()
+    assert LinkEnrichment.enrich(saved, context(ctx)) == saved
+    assert text(LinkEnrichment.enrich(source, context(ctx))) == "Renamed"
+  end
+
+  test "save conversion restores legacy metadata and preserves nested representations", ctx do
+    source = document(ctx.href)
+    enriched = LinkEnrichment.enrich(source, context(ctx))
+    saved = document(ctx.href, "Website")
+    payload = %{description: Jason.encode!(enriched), comments: [%{content: source}], custom: document(ctx.href, "My label")}
+    result = LinkEnrichment.prepare_for_save(payload, context(ctx))
+    assert Jason.decode!(result.description) == saved
+    assert result.comments == [%{content: saved}]
+    assert result.custom == payload.custom
+    refute Jason.encode!(result) =~ "operatelyResourceLink"
+  end
+
+  test "lookup connection failures preserve source and do not expose legacy titles", ctx do
+    import Mock
+    source = document(ctx.href)
+    enriched = LinkEnrichment.enrich(source, context(ctx))
+    with_mock Operately.RichContent.ResourceLinkResolver, [:passthrough], resolve: fn _, _, _ -> raise DBConnection.ConnectionError, message: "offline" end do
+      assert LinkEnrichment.prepare_for_save(enriched, context(ctx)) == source
+      assert LinkEnrichment.resolve_urls([ctx.href], context(ctx)) == []
+    end
+  end
+
+  test "resolves original URLs once and omits unsupported links", ctx do
+    urls = [ctx.href, ctx.href, "https://example.org" <> ctx.href, "/bad"]
+    assert LinkEnrichment.resolve_urls(urls, context(ctx)) == [%{url: ctx.href, title: "Website"}]
+  end
+
   test "keeps custom, external, cross-company, malformed and missing links", ctx do
     links = [
       document(ctx.href, "Custom"),
@@ -90,6 +129,9 @@ defmodule Operately.RichContent.LinkEnrichmentTest do
     Repo.soft_delete!(ctx.deleted)
     docs = Enum.map([Paths.project_path(ctx.company, ctx.secret), Paths.goal_path(ctx.company, ctx.deleted), Paths.message_path(ctx.company, ctx.draft)], &document/1)
     assert LinkEnrichment.enrich(docs, %{context(ctx) | person: ctx.member}) == docs
+    assert LinkEnrichment.prepare_for_save(docs, %{context(ctx) | person: ctx.member}) == docs
+    legacy = LinkEnrichment.enrich(docs, context(ctx))
+    assert LinkEnrichment.prepare_for_save(legacy, %{context(ctx) | person: ctx.member}) == docs
   end
 
   test "handles nested sections, malformed nodes, and whitespace without touching unrelated values", ctx do

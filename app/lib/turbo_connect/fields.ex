@@ -4,6 +4,9 @@ defmodule TurboConnect.Fields do
   defining fields in objects, queries, and mutations.
 
   The `field/2` macro expects the field_scope to be set before calling it.
+
+  Input fields can set `skip_link_enrichment: true` to opt out of rich-text
+  link title conversion. When omitted, the option is treated as false.
   """
 
   defmacro __using__(_) do
@@ -105,7 +108,7 @@ defmodule TurboConnect.Fields do
   def validate_field_opts(scope, opts) do
     valid_opts =
       if scope == :inputs do
-        [:null, :default, :external_default]
+        [:null, :default, :external_default, :skip_link_enrichment]
       else
         [:null]
       end
@@ -115,6 +118,12 @@ defmodule TurboConnect.Fields do
     if invalid_opts != [] do
       raise "Invalid options for field: #{inspect(opts)}. Valid options are: #{inspect(valid_opts)}"
     end
+
+    if not is_boolean(Keyword.get(opts, :skip_link_enrichment, false)) do
+      raise ArgumentError, "skip_link_enrichment must be a boolean"
+    end
+
+    :ok
   end
 
   def default_field_opts, do: [null: false, optional: false]

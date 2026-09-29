@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
     field :resource_id, :id, null: false
     field :field, :rich_text_field, null: false
     field :item_path, list_of(:integer), null: false
-    field :expected_content, :json, null: false
+    field :expected_content, :json, null: false, skip_link_enrichment: true
     field :checked, :boolean, null: false
   end
 
