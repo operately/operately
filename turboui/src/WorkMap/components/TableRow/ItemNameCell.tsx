@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { match } from "ts-pattern";
 import WorkMap from "..";
 import { SecondaryButton } from "../../../Button";
@@ -192,6 +193,7 @@ function AddButton({
   projectTemplates?: ProjectTemplateSelection.Template[];
   onCreateProjectTemplate?: (spaceId: string) => void;
 }) {
+  const { t } = useTranslation();
   if (item.type !== "goal") return null;
   if (!item.space) return null;
 
@@ -202,7 +204,7 @@ function AddButton({
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
       <SecondaryButton size="xxs" onClick={open} testId="add-subitem">
-        Add
+        {t("Add")}
       </SecondaryButton>
 
       <AddItemModal

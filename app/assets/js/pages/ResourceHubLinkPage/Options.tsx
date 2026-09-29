@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import type { Page } from "turboui";
 import { IconEdit, IconTrash } from "turboui";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function useLinkPageOptions({ showDeleteModal }: Props): Page.Option[] {
+  const { t } = useTranslation();
   const { link } = useLoadedData();
   const paths = usePaths();
 
@@ -22,7 +24,7 @@ export function useLinkPageOptions({ showDeleteModal }: Props): Page.Option[] {
       {
         type: "link",
         icon: IconEdit,
-        label: "Edit",
+        label: t("Edit"),
         link: paths.resourceHubEditLinkPath(link.id!),
         hidden: !link.permissions?.canEditLink,
         keepOutsideOnBigScreen: true,
@@ -31,12 +33,12 @@ export function useLinkPageOptions({ showDeleteModal }: Props): Page.Option[] {
       {
         type: "action",
         icon: IconTrash,
-        label: "Delete",
+        label: t("Delete"),
         onClick: showDeleteModal,
         hidden: !link.permissions?.canDeleteLink,
         testId: "delete-resource-link",
       },
     ],
-    [link.id, link.permissions?.canDeleteLink, link.permissions?.canEditLink, paths, showDeleteModal],
+    [t, link.id, link.permissions?.canDeleteLink, link.permissions?.canEditLink, paths, showDeleteModal],
   );
 }

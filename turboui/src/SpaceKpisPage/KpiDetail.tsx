@@ -1,5 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
@@ -12,6 +13,7 @@ import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { TextField } from "../TextField";
 import { SlideIn } from "../SlideIn";
 import { showErrorToast, showSuccessToast } from "../Toasts";
+import { tn } from "../i18n";
 import { IconDotsVertical, IconFlag, IconLink, IconMessage, IconPencil, IconTrash } from "../icons";
 import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
@@ -58,6 +60,7 @@ export function KpiDetail({
   renderEntryComments,
   subscriptions,
 }: KpiDetailProps) {
+  const { t } = useTranslation();
   const [description, setDescription] = React.useState(kpi.description);
 
   React.useEffect(() => {
@@ -80,9 +83,9 @@ export function KpiDetail({
             description={description}
             onDescriptionChange={saveDescription}
             richTextHandlers={richTextHandlers}
-            label="Description"
-            placeholder="Describe this KPI..."
-            zeroStatePlaceholder="Add a description..."
+            label={t("Description")}
+            placeholder={t("Describe this KPI...")}
+            zeroStatePlaceholder={t("Add a description...")}
             testId="kpi-description"
             emptyTestId="kpi-description-empty"
             localDraftKey={`kpi:${kpi.id}:description`}
@@ -102,11 +105,11 @@ export function KpiDetail({
               // no reading yet to sit opposite them.
               <div className="ml-auto flex shrink-0 items-center gap-2">
                 <SecondaryButton size="xxs" icon={IconFlag} onClick={onOpenNewAnnotation} testId="add-kpi-annotation">
-                  Add annotation
+                  {t("Add annotation")}
                 </SecondaryButton>
 
                 <PrimaryButton size="xxs" onClick={onLogUpdate} testId="chart-log-update">
-                  Log update
+                  {t("Log update")}
                 </PrimaryButton>
               </div>
             )}
@@ -176,6 +179,7 @@ function Heading({ fields, canManage }: { fields: KpiFields; canManage: boolean 
 // recorded it is in the recorded-updates log. With no entries there is no
 // reading to show and the chart says so instead.
 function CurrentValue({ kpi, unit }: { kpi: SpaceKpisPage.Kpi; unit: string }) {
+  const { t } = useTranslation();
   const latest = latestEntry(kpi);
   if (!latest) return null;
 
@@ -186,7 +190,9 @@ function CurrentValue({ kpi, unit }: { kpi: SpaceKpisPage.Kpi; unit: string }) {
         <TrendIndicator delta={latestTrend(kpi)} variant="badge" />
       </div>
 
-      <div className="mt-1.5 text-xs leading-none text-content-dimmed">as of {formatShortDate(latest.recordedAt)}</div>
+      <div className="mt-1.5 text-xs leading-none text-content-dimmed">
+        {t("as of {{date}}", { date: formatShortDate(latest.recordedAt) })}
+      </div>
     </div>
   );
 }
@@ -204,31 +210,32 @@ function KpiSidebar({
   onDelete: () => void;
   subscriptions?: SpaceKpisPage.Props["subscriptions"];
 }) {
+  const { t } = useTranslation();
   const searchData = useChampionSearch(championSearch);
 
   return (
     <aside className="mt-8 space-y-6 sm:col-span-4 sm:mt-0 sm:pl-8" data-test-id="kpi-sidebar">
-      <SidebarSection title="Champion">
+      <SidebarSection title={t("Champion")}>
         {canManage ? (
           <PersonField
             person={fields.champion}
             setPerson={(champion) => fields.update({ champion })}
             searchData={searchData}
-            emptyStateMessage="Set champion"
-            emptyStateReadOnlyMessage="No champion"
+            emptyStateMessage={t("Set champion")}
+            emptyStateReadOnlyMessage={t("No champion")}
             testId="kpi-champion"
           />
         ) : (
           <PersonField
             person={fields.champion}
             readonly
-            emptyStateReadOnlyMessage="No champion"
+            emptyStateReadOnlyMessage={t("No champion")}
             testId="kpi-champion"
           />
         )}
       </SidebarSection>
 
-      <SidebarSection title="Cadence">
+      <SidebarSection title={t("Cadence")}>
         <CadenceField
           cadence={fields.cadence}
           readonly={!canManage}
@@ -236,7 +243,7 @@ function KpiSidebar({
         />
       </SidebarSection>
 
-      <SidebarSection title="Unit">
+      <SidebarSection title={t("Unit")}>
         <TextField
           className="text-sm text-content-base"
           text={fields.unit}
@@ -257,26 +264,27 @@ function KpiSidebar({
 // The KPI's whole-page actions, listed in the sidebar the way a task page lists
 // its own, rather than hidden behind an overflow menu.
 function Actions({ canManage, onDelete }: { canManage: boolean; onDelete: () => void }) {
+  const { t } = useTranslation();
   const copyUrl = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      showSuccessToast("Success", "KPI URL copied to clipboard");
+      showSuccessToast(t("Success"), t("KPI URL copied to clipboard"));
     } catch {
-      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+      showErrorToast(t("Copy failed"), t("Unable to copy URL to clipboard"));
     }
   };
 
   const actions = [
     {
       type: "action" as const,
-      label: "Copy URL",
+      label: t("Copy URL"),
       onClick: copyUrl,
       icon: IconLink,
       testId: "copy-kpi-url",
     },
     {
       type: "action" as const,
-      label: "Delete",
+      label: t("Delete"),
       onClick: onDelete,
       icon: IconTrash,
       hidden: !canManage,
@@ -286,7 +294,7 @@ function Actions({ canManage, onDelete }: { canManage: boolean; onDelete: () => 
   ];
 
   return (
-    <SidebarSection title="Actions">
+    <SidebarSection title={t("Actions")}>
       <ActionList actions={actions} />
     </SidebarSection>
   );
@@ -328,6 +336,7 @@ function CadenceField({
   readonly: boolean;
   onChange: (cadence: SpaceKpisPage.Cadence) => void;
 }) {
+  useTranslation();
   const label = formatCadence(cadence);
 
   if (readonly) {
@@ -359,7 +368,7 @@ function CadenceField({
           }}
           testId={`kpi-cadence-${option.value}`}
         >
-          {option.label}
+          {formatCadence(option.value)}
         </MenuActionItem>
       ))}
     </Menu>
@@ -390,6 +399,7 @@ function EntriesTable({
   onDeleteEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
 }) {
+  const { t } = useTranslation();
   const [openEntryId, setOpenEntryId] = React.useState<string | null>(null);
   const openEntry = entries.find((entry) => entry.id === openEntryId) ?? null;
 
@@ -399,17 +409,17 @@ function EntriesTable({
   const rows = [...entries].reverse();
 
   return (
-    <Section title="Recorded updates">
+    <Section title={t("Recorded updates")}>
       <div className="overflow-hidden rounded-lg border border-stroke-base">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-stroke-base bg-surface-dimmed text-left text-xs uppercase tracking-wide text-content-dimmed">
-              <th className="px-4 py-2 font-medium">Date</th>
-              <th className="px-4 py-2 font-medium">Recorded by</th>
-              <th className="px-4 py-2 text-right font-medium">Value</th>
-              <th className="px-4 py-2 text-right font-medium">Comments</th>
+              <th className="px-4 py-2 font-medium">{t("Date")}</th>
+              <th className="px-4 py-2 font-medium">{t("Recorded by")}</th>
+              <th className="px-4 py-2 text-right font-medium">{t("Value")}</th>
+              <th className="px-4 py-2 text-right font-medium">{t("Comments")}</th>
               <th className="w-10 px-2 py-2">
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">{t("Actions")}</span>
               </th>
             </tr>
           </thead>
@@ -438,7 +448,7 @@ function EntriesTable({
                         <span className="text-content-base">{entry.recordedBy.fullName}</span>
                       </div>
                     ) : (
-                      <span className="text-content-subtle">Unknown</span>
+                      <span className="text-content-subtle">{t("Unknown")}</span>
                     )}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-right font-medium text-content-accent">
@@ -452,7 +462,11 @@ function EntriesTable({
                         onClick={() => setOpenEntryId(isOpen ? null : entry.id)}
                         data-test-id={`entry-comments-toggle-${entry.id}`}
                         aria-expanded={isOpen}
-                        aria-label={commentsCount > 0 ? `${commentsCount} comments` : "Comment on this update"}
+                        aria-label={
+                          commentsCount > 0
+                            ? tn("1 comment", "{{count}} comments", commentsCount)
+                            : t("Comment on this update")
+                        }
                       >
                         <IconMessage size={14} />
                         {commentsCount > 0 ? commentsCount : null}
@@ -474,7 +488,7 @@ function EntriesTable({
                           <button
                             type="button"
                             className="rounded p-1 text-content-dimmed hover:bg-surface-dimmed hover:text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
-                            aria-label="Update options"
+                            aria-label={t("Update options")}
                           >
                             <IconDotsVertical size={16} />
                           </button>
@@ -485,7 +499,7 @@ function EntriesTable({
                           onClick={() => onEditEntry(entry)}
                           testId={`edit-entry-${entry.id}`}
                         >
-                          Edit
+                          {t("Edit")}
                         </MenuActionItem>
                         <MenuActionItem
                           icon={IconTrash}
@@ -493,7 +507,7 @@ function EntriesTable({
                           testId={`delete-entry-${entry.id}`}
                           danger
                         >
-                          Delete
+                          {t("Delete")}
                         </MenuActionItem>
                       </Menu>
                     )}
@@ -523,6 +537,7 @@ function EntriesTable({
 }
 
 function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; unit: string }) {
+  const { t } = useTranslation();
   if (entry.edits.length === 0) return null;
 
   return (
@@ -533,7 +548,7 @@ function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; un
           className="rounded px-1 py-0.5 text-xs font-medium text-content-dimmed hover:bg-surface-dimmed hover:text-content-base"
           data-test-id={`entry-edited-${entry.id}`}
         >
-          Edited
+          {t("Edited")}
         </button>
       </Popover.Trigger>
       <Popover.Portal>
@@ -542,7 +557,7 @@ function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; un
           sideOffset={6}
           className="z-[100] w-80 rounded-lg border border-stroke-base bg-surface-base p-3 shadow-xl"
         >
-          <div className="text-xs font-medium uppercase tracking-wide text-content-dimmed">Previous values</div>
+          <div className="text-xs font-medium uppercase tracking-wide text-content-dimmed">{t("Previous values")}</div>
           <ol className="mt-2 space-y-2" data-test-id={`entry-edit-history-${entry.id}`}>
             {entry.edits.map((edit) => (
               <li key={edit.id} className="text-sm text-content-base" data-test-id={`entry-edit-${edit.id}`}>
@@ -553,8 +568,19 @@ function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; un
                   </span>
                 </div>
                 <div className="mt-0.5 text-xs text-content-dimmed">
-                  {edit.editedBy ? `Replaced by ${edit.editedBy.fullName} on ` : "Replaced on "}
-                  <span className="whitespace-nowrap">{formatShortDate(edit.editedAt)}</span>
+                  {edit.editedBy ? (
+                    <Trans
+                      i18nKey="Replaced by {{name}} on <date>{{date}}</date>"
+                      values={{ name: edit.editedBy.fullName, date: formatShortDate(edit.editedAt) }}
+                      components={{ date: <span className="whitespace-nowrap" /> }}
+                    />
+                  ) : (
+                    <Trans
+                      i18nKey="Replaced on <date>{{date}}</date>"
+                      values={{ date: formatShortDate(edit.editedAt) }}
+                      components={{ date: <span className="whitespace-nowrap" /> }}
+                    />
+                  )}
                 </div>
               </li>
             ))}
@@ -578,6 +604,7 @@ function EntryCommentsHeader({
   unit: string;
   kpiName: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="border-b border-stroke-base px-6 py-4 pr-12" data-test-id="entry-comments-header">
       <div className="text-xs text-content-dimmed">{kpiName}</div>
@@ -586,16 +613,18 @@ function EntryCommentsHeader({
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-content-dimmed">
         {entry.recordedBy ? (
-          <>
-            <span>Logged by</span>
-            <Avatar person={entry.recordedBy} size={16} />
-            <span>
-              <span className="font-medium text-content-base">{entry.recordedBy.fullName}</span> on{" "}
-              {formatShortDate(entry.recordedAt)}
-            </span>
-          </>
+          <Trans
+            i18nKey="<label>Logged by</label> <avatar/> <details><name>{{name}}</name> on {{date}}</details>"
+            values={{ name: entry.recordedBy.fullName, date: formatShortDate(entry.recordedAt) }}
+            components={{
+              label: <span />,
+              avatar: <Avatar person={entry.recordedBy} size={16} />,
+              details: <span />,
+              name: <span className="font-medium text-content-base" />,
+            }}
+          />
         ) : (
-          <span>Logged on {formatShortDate(entry.recordedAt)}</span>
+          <span>{t("Logged on {{date}}", { date: formatShortDate(entry.recordedAt) })}</span>
         )}
       </div>
     </div>

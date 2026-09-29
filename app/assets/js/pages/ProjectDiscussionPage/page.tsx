@@ -5,6 +5,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { DiscussionReactions } from "./DiscussionReactions";
 import * as React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Comments } from "./Comments";
 
@@ -19,6 +20,7 @@ import { useCurrentSubscriptionsQueryAdapter } from "@/models/subscriptions/useC
 import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { discussion } = useLoadedData();
 
   const project = discussion.project;
@@ -40,7 +42,7 @@ export function Page() {
   );
 
   return (
-    <Pages.Page title={[discussion.title || "Discussion", discussion.project?.name || ""]}>
+    <Pages.Page title={[discussion.title || t("Discussion"), discussion.project?.name || ""]}>
       <Paper.Root>
         <Nav />
 
@@ -58,6 +60,7 @@ export function Page() {
 }
 
 function Options() {
+  const { t } = useTranslation();
   const { discussion } = useLoadedData();
   const paths = usePaths();
 
@@ -66,7 +69,7 @@ function Options() {
       {canEditDiscussion(discussion) && (
         <PageOptions.Link
           icon={IconEdit}
-          title="Edit"
+          title={t("Edit")}
           to={paths.projectDiscussionEditPath(discussion.id)}
           testId="edit"
           keepOutsideOnBigScreen
@@ -95,6 +98,7 @@ function Content() {
 }
 
 function Nav() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { discussion } = useLoadedData();
 
@@ -102,14 +106,14 @@ function Nav() {
 
   if (discussion.space) {
     items.push({ to: paths.spacePath(discussion.space.id), label: discussion.space.name });
-    items.push({ to: paths.spaceWorkMapPath(discussion.space.id, "projects"), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(discussion.space.id, "projects"), label: t("Work Map") });
   } else {
-    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+    items.push({ to: paths.workMapPath("projects"), label: t("Work Map") });
   }
 
   if (discussion.project) {
     items.push({ to: paths.projectPath(discussion.project.id, { tab: "overview" }), label: discussion.project.name });
-    items.push({ to: paths.projectPath(discussion.project.id, { tab: "discussions" }), label: "Discussions" });
+    items.push({ to: paths.projectPath(discussion.project.id, { tab: "discussions" }), label: t("Discussions") });
   }
 
   return <Paper.Navigation items={items} />;
@@ -125,8 +129,14 @@ function Title() {
       <div>
         <div className="text-content-accent text-2xl font-bold leading-tight">{discussion.title}</div>
         <div className="inline-flex items-center gap-1">
-          <span>{discussion.author?.fullName}</span>
-          on <FormattedTime {...formattedTimePreferences} time={discussion.insertedAt} format="long-date" />
+          <Trans
+            i18nKey="<author>{{name}}</author> on <date/>"
+            values={{ name: discussion.author?.fullName ?? "" }}
+            components={{
+              author: <span />,
+              date: <FormattedTime {...formattedTimePreferences} time={discussion.insertedAt} format="long-date" />,
+            }}
+          />
         </div>
       </div>
     </div>

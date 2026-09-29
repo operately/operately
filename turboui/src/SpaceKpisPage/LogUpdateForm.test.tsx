@@ -1,11 +1,14 @@
 import * as React from "react";
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { LogUpdateForm } from "./LogUpdateForm";
 import type { SpaceKpisPage } from "./types";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
 
 // The note field wraps the rich editor, which needs a real DOM to run. Stand it
 // in with a stub that lets a test push content the way typing would.
@@ -78,6 +81,43 @@ function renderForm(overrides: Partial<React.ComponentProps<typeof LogUpdateForm
 }
 
 describe("LogUpdateForm date affordance", () => {
+  test("looks up form errors and full resource sentences while preserving API errors", async () => {
+    i18n.addResourceBundle(
+      "en",
+      "translation",
+      {
+        "Log update — {{name}}": "{{name}} — expanded translated log update heading",
+        "Value ({{unit}})": "Translated value ({{unit}})",
+        "Enter a value": "Translated value required",
+        "Something went wrong. Please try again.": "Translated fallback error",
+        "Record update": "Translated record update",
+      },
+      true,
+      true,
+    );
+    const onRecord = jest
+      .fn()
+      .mockResolvedValueOnce({ success: false })
+      .mockResolvedValueOnce({ success: false, error: "Backend pass-through error" })
+      .mockResolvedValue({ success: true });
+    const onClose = jest.fn();
+    renderForm({ onRecord, onClose });
+    expect(
+      screen.getByRole("heading", { name: "Weekly Sign-ups — expanded translated log update heading" }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Translated record update" }));
+    expect(await screen.findByText("Translated value required")).toBeInTheDocument();
+    expect(screen.getByText("Translated value (users)")).toBeInTheDocument();
+    fireEvent.change(getByTestId("value"), { target: { value: "42" } });
+    fireEvent.click(screen.getByRole("button", { name: "Translated record update" }));
+    expect(await screen.findByText("Translated fallback error")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Translated record update" }));
+    expect(await screen.findByText("Backend pass-through error")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Translated record update" }));
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    expect(onRecord).toHaveBeenLastCalledWith({ kpiId: kpi.id, value: 42, period: today() });
+  });
+
   test("defaults to today in a low-prominence summary and submits without touching the date", async () => {
     const user = userEvent.setup();
     const { onRecord } = renderForm();

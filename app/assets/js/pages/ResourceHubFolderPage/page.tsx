@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
@@ -16,6 +17,7 @@ import { usePaths } from "@/routes/paths";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
+  const { t } = useTranslation();
   const { folder, nodes, draftNodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
@@ -33,14 +35,18 @@ export function Page() {
     folder,
     onUploaded: refresh,
   });
-  const mutationScope = { spaceId: folder.resourceHub.space?.id, resourceHubId: folder.resourceHub.id, parentFolderId: folder.parentFolderId };
+  const mutationScope = {
+    spaceId: folder.resourceHub.space?.id,
+    resourceHubId: folder.resourceHub.id,
+    parentFolderId: folder.parentFolderId,
+  };
 
   const { mutateAsync: createFolder } = useCreateFolder(mutationScope);
   const { mutateAsync: renameFolder } = useRenameFolder(mutationScope);
   const nodesListProps = useResourceHubNodesListProps({ folder, nodes, type: "folder", refetch: refresh });
 
   const props: ResourceHubFolderPage.Props = {
-    title: folder.name || "Folder",
+    title: folder.name || t("Folder"),
     navigation: buildFolderPageNavigation(folder, paths),
     folder,
     drafts: { nodes: draftNodes, draftsPath: paths.resourceHubDraftsPath(folder.resourceHub.id) },

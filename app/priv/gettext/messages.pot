@@ -118,6 +118,27 @@ msgid "%{championName} needs to post the update."
 msgstr ""
 
 #.frontend
+#: assets/js/pages/CompanyWorkMapPage/page.tsx:55
+msgid "%{company} Work Map"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:86
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:37
+msgid "%{completed}/%{total} completed (%{percentage}%)"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:129
+msgid "%{count} hidden without dates"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:554
+msgid "%{count} items are hidden because they do not have dates."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:248
 msgid "%{count} member limit"
 msgstr ""
@@ -127,6 +148,44 @@ msgstr ""
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:93
 msgid "%{current} / Unlimited"
 msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/utils/timeline.ts:100
+msgid "%{date} - no deadline"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:46
+msgid "%{delta} vs previous"
+msgstr ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:103
+msgid "%{goals} goals and 1 project completed last quarter."
+msgid_plural "%{goals} goals and %{count} projects completed last quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:133
+msgid "%{goals} goals and 1 project completed last year."
+msgid_plural "%{goals} goals and %{count} projects completed last year."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:87
+msgid "%{goals} goals and 1 project completed this quarter."
+msgid_plural "%{goals} goals and %{count} projects completed this quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:118
+msgid "%{goals} goals and 1 project completed this year."
+msgid_plural "%{goals} goals and %{count} projects completed this year."
+msgstr[0] ""
+msgstr[1] ""
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:166
@@ -151,6 +210,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
+#: ../turboui/src/ResourceHub/nodeMenus/CopyDocumentModal.tsx:26
+#: ../turboui/src/ResourceHub/nodeMenus/CopyFolder.tsx:22
+msgid "%{name} - Copy"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/AddedContent.tsx:16
 msgid "%{name} has been added"
 msgstr ""
@@ -169,6 +234,21 @@ msgstr ""
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:69
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:95
 msgid "%{name} invited you to join"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:420
+msgid "%{name} · %{date} · Done"
+msgstr ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/RegularState.tsx:181
+msgid "%{onTrack}/%{total} goals on track"
+msgstr ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/RegularState.tsx:182
+msgid "%{onTrack}/%{total} projects on track"
 msgstr ""
 
 #.frontend
@@ -244,27 +324,42 @@ msgid "%{price} / month"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKanbanPage/index.tsx:64
+msgid "%{space} Tasks"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:256
 msgid "%{storage} storage"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:46
+msgid "%{value} recorded on %{date} will be permanently removed."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:258
+msgid "%{version} content"
+msgstr ""
+
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:69
+#: lib/operately_email/emails/task_adding_email.ex:83
 msgid "%{who} added the task \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:61
+#: lib/operately_email/emails/task_adding_email.ex:75
 msgid "%{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:68
+#: lib/operately_email/emails/task_adding_email.ex:82
 msgid "(%{where}) %{who} added the task \"%{task_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:60
+#: lib/operately_email/emails/task_adding_email.ex:74
 msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
@@ -279,6 +374,7 @@ msgid "+ Create organization"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:467
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:363
 msgid "1 comment"
 msgid_plural "%{count} comments"
@@ -314,9 +410,73 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:98
+msgid "1 goal and 1 project completed last quarter."
+msgid_plural "1 goal and %{count} projects completed last quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:128
+msgid "1 goal and 1 project completed last year."
+msgid_plural "1 goal and %{count} projects completed last year."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:82
+msgid "1 goal and 1 project completed this quarter."
+msgid_plural "1 goal and %{count} projects completed this quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:113
+msgid "1 goal and 1 project completed this year."
+msgid_plural "1 goal and %{count} projects completed this year."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:96
+msgid "1 goal completed last quarter."
+msgid_plural "%{count} goals completed last quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:126
+msgid "1 goal completed last year."
+msgid_plural "%{count} goals completed last year."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:80
+msgid "1 goal completed this quarter."
+msgid_plural "%{count} goals completed this quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:111
+msgid "1 goal completed this year."
+msgid_plural "%{count} goals completed this year."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:133
 msgid "1 hour"
 msgid_plural "%{count} hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:173
+#: ../turboui/src/ResourceHub/NodeDescription.tsx:62
+msgid "1 item"
+msgid_plural "%{count} items"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -346,6 +506,34 @@ msgstr[1] ""
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:46
 msgid "1 other person has access to this space"
 msgid_plural "%{count} other people have access to this space"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:95
+msgid "1 project completed last quarter."
+msgid_plural "%{count} projects completed last quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:125
+msgid "1 project completed last year."
+msgid_plural "%{count} projects completed last year."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:79
+msgid "1 project completed this quarter."
+msgid_plural "%{count} projects completed this quarter."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:110
+msgid "1 project completed this year."
+msgid_plural "%{count} projects completed this year."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -416,6 +604,11 @@ msgid "60 minutes"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/ProjectDiscussionPage/page.tsx:132
+msgid "<author>%{name}</author> on <date/>"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:186
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr ""
@@ -431,6 +624,27 @@ msgid "<company>%{companyName}</company> has reached its member limit, so this i
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:113
+#: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:64
+msgid "<date/> at <time/>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentTitle/index.tsx:76
+msgid "<label>Edited</label> <date/>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:616
+msgid "<label>Logged by</label> <avatar/> <details><name>%{name}</name> on %{date}</details>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentTitle/index.tsx:54
+msgid "<label>Posted</label> <date/>"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyNavigation/UpdateBadge.tsx:45
 msgid "<version>%{version}</version> available"
 msgstr ""
@@ -441,8 +655,13 @@ msgid "A new invitation URL will be generated for %{name}."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:70
+#: lib/operately_email/emails/task_adding_email.ex:84
 msgid "A new task named %{task_name} was created in this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:153
+msgid "A newer version was saved. Reload the latest version and try again."
 msgstr ""
 
 #.frontend
@@ -542,6 +761,8 @@ msgstr ""
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:236
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:402
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:297
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:422
 #: ../turboui/src/TaskPage/Sidebar.tsx:454
 msgid "Actions"
 msgstr ""
@@ -583,8 +804,11 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:19
+#: ../turboui/src/ResourceHub/AddFilesButton.tsx:38
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:253
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:90
+#: ../turboui/src/WorkMap/components/TableRow/ActionButtons.tsx:31
+#: ../turboui/src/WorkMap/components/TableRow/ItemNameCell.tsx:207
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:102
 msgid "Add"
 msgstr ""
@@ -631,8 +855,18 @@ msgid "Add Trusted Email Domain"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:88
+msgid "Add a description..."
+msgstr ""
+
+#.frontend
 #: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:26
 msgid "Add a document or file"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:79
+msgid "Add a goal"
 msgstr ""
 
 #.frontend
@@ -644,6 +878,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:26
 msgid "Add a new task"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:86
+msgid "Add a project"
 msgstr ""
 
 #.frontend
@@ -666,6 +905,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:96
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:108
 msgid "Add annotation"
 msgstr ""
 
@@ -704,6 +944,12 @@ msgstr ""
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:26
 msgid "Add goals"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/LinkNewPage/index.tsx:76
+#: ../turboui/src/ResourceHub/AddFilesButton.tsx:90
+msgid "Add link"
 msgstr ""
 
 #.frontend
@@ -808,6 +1054,11 @@ msgid "Add your first milestone"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:154
+msgid "Add your first project"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:181
 msgid "Add your profile picture"
 msgstr ""
@@ -825,6 +1076,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:34
 msgid "Add/Remove people who are in charge of the company and its operations"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:330
+msgid "Added"
 msgstr ""
 
 #.frontend
@@ -862,6 +1118,12 @@ msgstr ""
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:49
 msgid "Admins"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:146
+#: ../turboui/src/RichContentDiff/index.tsx:148
+msgid "After"
 msgstr ""
 
 #.frontend
@@ -913,6 +1175,11 @@ msgstr ""
 #.frontend
 #: assets/js/models/search/useCompanySearch.ts:187
 msgid "All types"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:62
+msgid "All work"
 msgstr ""
 
 #.frontend
@@ -1045,6 +1312,11 @@ msgid "Are you sure you want to delete this task? This action cannot be undone."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:35
+msgid "Are you sure you want to discard this draft?"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:110
 msgid "As an admin or owner, you can:"
 msgstr ""
@@ -1086,7 +1358,13 @@ msgid "Assigned On"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:40
+msgid "Assigned goals and projects will appear here."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:74
+#: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:26
 msgid "Assignee"
 msgstr ""
 
@@ -1212,6 +1490,12 @@ msgid "Batched notifications"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:145
+#: ../turboui/src/RichContentDiff/index.tsx:147
+msgid "Before"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:255
 msgid "Before due date"
 msgstr ""
@@ -1289,6 +1573,19 @@ msgid "Board"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:88
+#: assets/js/pages/GoalDiscussionNewPage/useForm.tsx:28
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:148
+#: assets/js/pages/ProjectDiscussionNewPage/useForm.tsx:30
+msgid "Body is required"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/index.tsx:210
+msgid "Breadcrumb"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalPage/RelatedWork.tsx:62
 msgid "Break down the work on this goal into subgoals and projects."
 msgstr ""
@@ -1309,6 +1606,7 @@ msgid "By continuing, you agree to the <tos>Terms of Service</tos> and <pp>Priva
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:238
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:80
 msgid "Cadence"
 msgstr ""
@@ -1374,6 +1672,10 @@ msgstr ""
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
 #: ../turboui/src/ConfirmDialog/index.tsx:48
+#: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
+#: ../turboui/src/DocumentEditPage/index.tsx:96
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:143
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:155
 #: ../turboui/src/Forms/Submit.tsx:24
 #: ../turboui/src/GoalPage/DeleteModal.tsx:40
 #: ../turboui/src/GoalPage/DeleteModal.tsx:78
@@ -1384,12 +1686,17 @@ msgstr ""
 #: ../turboui/src/MilestonePage/components/DeleteModal.tsx:51
 #: ../turboui/src/ProfileEditPage/index.tsx:200
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:50
+#: ../turboui/src/ResourceHub/AddFileWidget.tsx:101
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:54
 #: ../turboui/src/ResourceHub/DeleteResourceConfirmModal.tsx:42
 #: ../turboui/src/ResourceHub/nodeMenus/CopyResource.tsx:50
+#: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:179
 #: ../turboui/src/ResourceHub/nodeMenus/MoveResource.tsx:95
+#: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:76
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:113
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:195
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:98
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:135
@@ -1402,6 +1709,10 @@ msgstr ""
 #: ../turboui/src/TaskPage/MoveModal.tsx:109
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:172
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:83
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:60
+#: assets/js/pages/GoalDiscussionNewPage/Form.tsx:68
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:101
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:100
 #: assets/js/pages/SpacePage/page.tsx:263
 msgid "Cancel"
 msgstr ""
@@ -1479,8 +1790,10 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:166
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:218
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:89
+#: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:205
 msgid "Champion"
 msgstr ""
@@ -1506,6 +1819,11 @@ msgstr ""
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:54
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:244
 msgid "Change access level"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:171
+msgid "Change date"
 msgstr ""
 
 #.frontend
@@ -1554,6 +1872,15 @@ msgid "Check in"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/ResourceHubEditDocumentPage/page.tsx:102
+#: assets/js/pages/ResourceHubEditFilePage/page.tsx:48
+#: assets/js/pages/ResourceHubEditLinkPage/page.tsx:50
+#: assets/js/pages/ResourceHubNewDocumentPage/page.tsx:50
+#: assets/js/pages/ResourceHubNewLinkPage/page.tsx:48
+msgid "Check the form and try again."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerifyCurrentEmailStep.tsx:14
 msgid "Check your current inbox"
 msgstr ""
@@ -1583,6 +1910,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:40
 msgid "Check-ins"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:82
+msgid "Checklist"
 msgstr ""
 
 #.frontend
@@ -1628,6 +1960,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:32
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:31
 msgid "Choose a date"
 msgstr ""
 
@@ -1649,6 +1982,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:113
 msgid "Choose a password (minimum 12 characters)"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:56
+msgid "Choose a period"
 msgstr ""
 
 #.frontend
@@ -1784,6 +2122,16 @@ msgid "Comment access"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:468
+msgid "Comment on this update"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:420
+msgid "Comments"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/MilestonePage/index.tsx:405
 #: ../turboui/src/TaskPage/Overview.tsx:34
 #: ../turboui/src/TaskPage/Overview.tsx:64
@@ -1901,6 +2249,7 @@ msgstr ""
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:361
 #: ../turboui/src/SearchPage/index.tsx:340
+#: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:90
 msgid "Completed"
 msgstr ""
 
@@ -1927,6 +2276,11 @@ msgid "Completed:"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:87
+msgid "Concrete steps and tasks with specific deliverables. Get things done."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountSettingsPage/index.tsx:37
 msgid "Configure how activity and summary emails are delivered"
 msgstr ""
@@ -1945,6 +2299,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:42
 #: ../turboui/src/ConfirmDialog/index.tsx:47
+#: ../turboui/src/SchedulePosting/useScheduleFlowState.ts:46
+#: assets/js/hooks/useScheduleFlow.ts:64
 msgid "Confirm"
 msgstr ""
 
@@ -2010,9 +2366,20 @@ msgid "Content contains \"%{query}\""
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentEditPage/index.tsx:29
+#: ../turboui/src/NewDocumentPage/index.tsx:64
+msgid "Content is required"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:168
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:221
 msgid "Continue ->"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:85
+msgid "Continue editing"
 msgstr ""
 
 #.frontend
@@ -2021,12 +2388,17 @@ msgid "Continue to checkout"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceDiscussionsPage/page.tsx:87
-#: assets/js/pages/SpaceDiscussionsPage/page.tsx:97
+#: assets/js/pages/SpaceDiscussionsPage/page.tsx:88
+#: assets/js/pages/SpaceDiscussionsPage/page.tsx:98
 msgid "Continue writing your draft…"
 msgid_plural "Continue writing your %{count} drafts…"
 msgstr[0] ""
 msgstr[1] ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:29
+msgid "Contributor"
+msgstr ""
 
 #.frontend
 #: assets/js/models/projects/useProjectContributorActions.tsx:91
@@ -2077,12 +2449,14 @@ msgstr ""
 #.frontend
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:100
 #: ../turboui/src/ResourceHub/nodeMenus/CopyResource.tsx:24
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:52
 msgid "Copy"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:219
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:335
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:280
 #: ../turboui/src/TaskPage/PageOptions.tsx:9
 #: ../turboui/src/TaskPage/Sidebar.tsx:421
 msgid "Copy URL"
@@ -2093,8 +2467,14 @@ msgstr ""
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:273
 #: ../turboui/src/TaskPage/Sidebar.tsx:415
 msgid "Copy failed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentPublicSharingModal/index.tsx:57
+msgid "Copy public link"
 msgstr ""
 
 #.frontend
@@ -2113,6 +2493,11 @@ msgid "Copy to clipboard"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:75
+msgid "Correct the value recorded on <date>%{date}</date>. The previous number stays visible on this update."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
 msgid "Could not save tool settings"
 msgstr ""
@@ -2123,12 +2508,12 @@ msgid "Could not update public sharing. Please try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ResourceHub/DraftNodesList.tsx:74
+#: ../turboui/src/ResourceHub/DraftNodesList.tsx:78
 msgid "Couldn't delete the draft. Please try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/index.tsx:272
+#: ../turboui/src/SpaceKpisPage/index.tsx:273
 msgid "Couldn't load KPIs"
 msgstr ""
 
@@ -2207,6 +2592,11 @@ msgid "Create and manage tokens for programmatic access"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/NewDocumentPage/index.tsx:102
+msgid "Create document"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:151
 msgid "Create invite"
 msgstr ""
@@ -2223,6 +2613,11 @@ msgstr ""
 #: ../turboui/src/TaskCreationModal/index.tsx:382
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:166
 msgid "Create more"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:173
+msgid "Create project"
 msgstr ""
 
 #.frontend
@@ -2314,6 +2709,9 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:108
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:93
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:417
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:133
 msgid "Date"
 msgstr ""
 
@@ -2343,9 +2741,15 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:92
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:88
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:287
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:510
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:326
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:442
+#: assets/js/pages/DiscussionPage/page.tsx:217
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:80
+#: assets/js/pages/ResourceHubFilePage/Options.tsx:47
+#: assets/js/pages/ResourceHubLinkPage/Options.tsx:36
 #: assets/js/pages/SpacePage/page.tsx:241
 msgid "Delete"
 msgstr ""
@@ -2403,7 +2807,7 @@ msgid "Delete annotation"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ResourceHub/DraftNodesList.tsx:78
+#: ../turboui/src/ResourceHub/DraftNodesList.tsx:82
 msgid "Delete draft"
 msgstr ""
 
@@ -2428,8 +2832,18 @@ msgid "Delete this company"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:43
+msgid "Delete this update?"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:506
 msgid "Delete token"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:52
+msgid "Delete update"
 msgstr ""
 
 #.frontend
@@ -2493,7 +2907,13 @@ msgid "Describe the task..."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:87
+msgid "Describe this KPI..."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectPage/Overview.tsx:52
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:86
 msgid "Description"
 msgstr ""
 
@@ -2505,6 +2925,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskPage/MoveModal.tsx:62
 msgid "Destination type"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:327
+msgid "Diff legend"
 msgstr ""
 
 #.frontend
@@ -2523,8 +2948,11 @@ msgid "Disabling sharing stops this link from working. Enabling it again creates
 msgstr ""
 
 #.frontend
-#: ../turboui/src/NewDocumentPage/index.tsx:147
-msgid "Discard this document"
+#: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:205
+#: assets/js/pages/DiscussionEditPage/index.tsx:153
+#: assets/js/pages/DiscussionPage/page.tsx:210
+msgid "Discard draft"
 msgstr ""
 
 #.frontend
@@ -2539,6 +2967,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:325
+#: assets/js/pages/ProjectDiscussionPage/page.tsx:45
 msgid "Discussion"
 msgstr ""
 
@@ -2552,7 +2981,14 @@ msgstr ""
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:53
 #: assets/js/features/SpaceTools/Discussions/RegularState.tsx:21
 #: assets/js/features/SpaceTools/Discussions/ZeroState.tsx:21
-#: assets/js/pages/SpaceDiscussionsPage/page.tsx:52
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:38
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:60
+#: assets/js/pages/DiscussionEditPage/index.tsx:174
+#: assets/js/pages/DiscussionPage/page.tsx:163
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:43
+#: assets/js/pages/ProjectDiscussionPage/page.tsx:116
+#: assets/js/pages/SpaceDiscussionsPage/page.tsx:35
+#: assets/js/pages/SpaceDiscussionsPage/page.tsx:53
 msgid "Discussions"
 msgstr ""
 
@@ -2572,19 +3008,45 @@ msgid "Do you have an existing company? <actionLink>Import it here</actionLink>"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/LinkNewPage/index.tsx:98
+msgid "Doc"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:75
 #: ../turboui/src/DocsAndFiles/index.tsx:121
 #: ../turboui/src/GoalPage/index.tsx:249
 #: ../turboui/src/MilestonePage/index.tsx:217
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:52
+#: ../turboui/src/ResourceHub/DraftNodesList.tsx:39
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:100
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:114
+#: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 msgid "Docs & Files"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:309
+#: assets/js/pages/ResourceHubDocumentVersionComparisonPage/page.tsx:26
+#: assets/js/pages/ResourceHubDocumentVersionsPage/navigation.tsx:33
+#: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:34
+#: assets/js/pages/ResourceHubEditDocumentPage/navigation.tsx:22
 msgid "Document"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:152
+msgid "Document changed since you opened it"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubNewDocumentPage/page.tsx:50
+msgid "Document not created"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubEditDocumentPage/page.tsx:102
+msgid "Document not updated"
 msgstr ""
 
 #.frontend
@@ -2593,6 +3055,7 @@ msgid "Documents"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocsAndFiles/PageDocsAndFiles.tsx:112
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:61
 #: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:20
 msgid "Documents & Files"
@@ -2615,7 +3078,9 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:137
+#: ../turboui/src/FilePage/index.tsx:166
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:67
+#: assets/js/pages/ResourceHubFilePage/Options.tsx:30
 msgid "Download"
 msgstr ""
 
@@ -2625,8 +3090,40 @@ msgid "Download failed"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DiscussionCard/index.tsx:58
+msgid "Draft"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:191
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:192
+msgid "Draft actions"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:27
+msgid "Draft discarded"
+msgstr ""
+
+#.frontend
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:35
 msgid "Draft the plan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:38
+#: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
+msgid "Drafts"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ResourceHub/FileDragAndDropArea.tsx:34
+msgid "Drop files here to upload them"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/utils/timeline.ts:104
+msgid "Due %{date}"
 msgstr ""
 
 #.frontend
@@ -2659,12 +3156,25 @@ msgid "Duplicate"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:90
+msgid "Earlier version"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/ProfileEditPage/index.tsx:328
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
+#: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:33
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:502
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:318
+#: assets/js/pages/DiscussionPage/page.tsx:201
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:25
+#: assets/js/pages/ProjectDiscussionPage/page.tsx:72
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:43
+#: assets/js/pages/ResourceHubFilePage/Options.tsx:38
+#: assets/js/pages/ResourceHubLinkPage/Options.tsx:27
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:97
 #: assets/js/pages/SpaceAddPage/index.tsx:157
 #: assets/js/pages/SpacePage/page.tsx:228
@@ -2682,9 +3192,29 @@ msgid "Edit Access"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/DiscussionEditPage/index.tsx:38
+msgid "Edit Discussion"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubEditDocumentPage/page.tsx:108
+msgid "Edit Document"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubEditFilePage/page.tsx:55
+msgid "Edit File"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SpaceEditGeneralAccessPage/index.tsx:41
 #: assets/js/pages/SpaceEditGeneralAccessPage/index.tsx:44
 msgid "Edit General Access"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubEditLinkPage/page.tsx:57
+msgid "Edit Link"
 msgstr ""
 
 #.frontend
@@ -2722,6 +3252,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:111
 msgid "Edit status"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:69
+msgid "Edit update — %{name}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:551
+msgid "Edited"
 msgstr ""
 
 #.frontend
@@ -2794,6 +3334,11 @@ msgid "Enable public sharing"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:124
+msgid "Enter a project name."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:33
 msgid "Enter a title"
 msgstr ""
@@ -2807,6 +3352,12 @@ msgstr ""
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:24
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:84
 msgid "Enter a valid email address."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:28
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:53
+msgid "Enter a value"
 msgstr ""
 
 #.frontend
@@ -3129,6 +3680,7 @@ msgstr ""
 #: ../turboui/src/GoalPage/Sidebar.tsx:398
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:372
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:140
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:68
 msgid "Export as Markdown"
 msgstr ""
 
@@ -3530,7 +4082,18 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:311
+#: assets/js/pages/ResourceHubEditFilePage/navigation.tsx:22
 msgid "File"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubEditFilePage/page.tsx:48
+msgid "File not updated"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ResourceHub/AddFileWidget.tsx:191
+msgid "File:"
 msgstr ""
 
 #.frontend
@@ -3541,6 +4104,14 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:21
 msgid "Files"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:56
+#: assets/js/pages/GoalDiscussionNewPage/Form.tsx:59
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:97
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:91
+msgid "Fill out all the required fields"
 msgstr ""
 
 #.frontend
@@ -3570,6 +4141,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:307
+#: assets/js/pages/ResourceHubFolderPage/page.tsx:49
 msgid "Folder"
 msgstr ""
 
@@ -3611,6 +4183,13 @@ msgstr ""
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:149
 msgid "Forgot password?"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:30
+#: ../turboui/src/DocumentVersionHistoryPage/types.ts:86
+#: ../turboui/src/DocumentVersionHistoryPage/types.ts:87
+msgid "Former member"
 msgstr ""
 
 #.frontend
@@ -3753,6 +4332,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/PageHeader.tsx:17
 #: ../turboui/src/SearchPage/filterOptions.ts:11
+#: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:69
 msgid "Goals"
 msgstr ""
 
@@ -3817,6 +4397,14 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:36
 msgid "History"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:93
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:60
+#: assets/js/pages/ResourceHubDocumentVersionComparisonPage/navigation.tsx:18
+#: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:34
+msgid "History of changes"
 msgstr ""
 
 #.frontend
@@ -3906,6 +4494,12 @@ msgstr ""
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:41
 msgid "Invalid email or password"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/LinkEditPage/index.tsx:30
+#: ../turboui/src/LinkNewPage/index.tsx:31
+msgid "Invalid link"
 msgstr ""
 
 #.frontend
@@ -4010,6 +4604,11 @@ msgid "Is this a demo company?"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:59
+msgid "It will be posted on <date/> at <time/>."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:23
 msgid "It’s updated across all your companies. You’re still signed in. We’ll notify your previous address about this change."
 msgstr ""
@@ -4035,6 +4634,11 @@ msgid "KPI"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:271
+msgid "KPI URL copied to clipboard"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:164
 msgid "KPI history line chart"
 msgstr ""
@@ -4042,7 +4646,10 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:64
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:109
+#: ../turboui/src/SpaceKpisPage/index.tsx:74
 #: ../turboui/src/SpaceKpisPage/index.tsx:190
+#: ../turboui/src/SpaceKpisPage/index.tsx:227
+#: ../turboui/src/SpaceKpisPage/index.tsx:230
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:85
 msgid "KPIs"
 msgstr ""
@@ -4057,6 +4664,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:112
 msgid "Keep milestone active"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:53
+msgid "Keep update"
 msgstr ""
 
 #.frontend
@@ -4106,9 +4718,39 @@ msgid "Last Used"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:73
+msgid "Last edit was made <date/>."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:149
+msgid "Last edited on <date/>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:110
+msgid "Last recorded value was <value>%{value}</value>."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ResourceHub/DraftNodesList.tsx:47
+msgid "Last saved <date/>"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:255
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:78
 msgid "Last update"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:91
+msgid "Later version"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:86
+msgid "Latest"
 msgstr ""
 
 #.frontend
@@ -4124,6 +4766,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:469
 msgid "Leave empty to clear the name and use the default token label."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ResourceHub/AddFileWidget.tsx:170
+msgid "Leave notes here..."
 msgstr ""
 
 #.frontend
@@ -4153,6 +4800,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:313
+#: assets/js/pages/ResourceHubEditLinkPage/navigation.tsx:22
 msgid "Link"
 msgstr ""
 
@@ -4166,8 +4814,23 @@ msgstr ""
 msgid "Link copied"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/LinkEditPage/index.tsx:27
+msgid "Link is required"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubNewLinkPage/page.tsx:48
+msgid "Link not created"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubEditLinkPage/page.tsx:50
+msgid "Link not updated"
+msgstr ""
+
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:34
+#: lib/operately_email/emails/task_adding_email.ex:35
 msgid "Link: %{url}"
 msgstr ""
 
@@ -4189,6 +4852,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:19
 msgid "Loading check-ins"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:25
+msgid "Loading comparison"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:27
+msgid "Loading comparison…"
 msgstr ""
 
 #.frontend
@@ -4233,8 +4906,34 @@ msgid "Log in with your account"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:112
 #: ../turboui/src/SpaceKpisPage/index.tsx:64
 msgid "Log update"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:96
+msgid "Log update — %{name}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:627
+msgid "Logged on %{date}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:158
+msgid "Logging for <date>%{date}</date>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:153
+msgid "Logging for <date>today</date>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:80
+msgid "Long-term outcomes you're working toward. Track overall progress and impact."
 msgstr ""
 
 #.frontend
@@ -4299,6 +4998,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:122
 msgid "Manage plan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:35
+msgid "Manage public sharing"
 msgstr ""
 
 #.frontend
@@ -4435,6 +5139,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestoneList/index.tsx:119
 #: ../turboui/src/SearchPage/filterOptions.ts:12
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:33
 msgid "Milestones"
 msgstr ""
 
@@ -4453,6 +5158,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:241
 msgid "Monthly check-ins keep everyone in the loop. Updates will appear here."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:124
+msgid "Monthly revenue"
 msgstr ""
 
 #.frontend
@@ -4536,6 +5246,16 @@ msgid "My work"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/TableRow/AssignedDateCell.tsx:24
+msgid "N/A"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:125
+msgid "NPS score"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:93
 #: ../turboui/src/ProfileEditPage/index.tsx:116
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
@@ -4549,7 +5269,9 @@ msgid "Name"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ResourceHub/AddFileWidget.tsx:68
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:25
+#: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:154
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:39
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 msgid "Name is required"
@@ -4610,9 +5332,28 @@ msgid "New Company"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:85
+#: assets/js/pages/DiscussionNewPage/index.tsx:22
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:26
+#: assets/js/pages/GoalDiscussionNewPage/index.tsx:18
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:18
+msgid "New Discussion"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubNewDocumentPage/page.tsx:57
+msgid "New Document"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:66
 #: ../turboui/src/SpaceKpisPage/index.tsx:69
 msgid "New KPI"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubNewLinkPage/page.tsx:55
+msgid "New Link"
 msgstr ""
 
 #.frontend
@@ -4626,8 +5367,13 @@ msgid "New code sent to %{email}."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceDiscussionsPage/page.tsx:69
+#: assets/js/pages/SpaceDiscussionsPage/page.tsx:70
 msgid "New discussion"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ResourceHub/AddFilesButton.tsx:63
+msgid "New document"
 msgstr ""
 
 #.frontend
@@ -4641,6 +5387,7 @@ msgid "New email"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ResourceHub/AddFilesButton.tsx:71
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:42
 msgid "New folder"
 msgstr ""
@@ -4738,8 +5485,30 @@ msgstr ""
 #: ../turboui/src/GoalPage/Sidebar.tsx:168
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:190
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:199
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:225
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:232
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:92
 msgid "No champion"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:25
+msgid "No change"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:568
+msgid "No completed work to show."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:171
+msgid "No content changes"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:13
+msgid "No content changes between these versions."
 msgstr ""
 
 #.frontend
@@ -4787,6 +5556,11 @@ msgid "No file selected"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:564
+msgid "No goals to show."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr ""
@@ -4801,6 +5575,11 @@ msgstr ""
 #: ../turboui/src/TaskCreationModal/index.tsx:326
 #: ../turboui/src/TaskPage/Sidebar.tsx:376
 msgid "No milestone"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:18
+msgid "No milestones"
 msgstr ""
 
 #.frontend
@@ -4825,6 +5604,11 @@ msgid "No parent goal"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:570
+msgid "No paused work to show."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:159
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:79
 msgid "No pending billing changes."
@@ -4833,6 +5617,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:546
 msgid "No people found"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:566
+msgid "No projects to show."
 msgstr ""
 
 #.frontend
@@ -4845,6 +5634,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocsAndFiles/index.tsx:141
 msgid "No support materials yet."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:23
+msgid "No targets or checklist"
 msgstr ""
 
 #.frontend
@@ -4863,9 +5657,24 @@ msgid "No trusted email domains. Only manually added members can sign up."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:572
+msgid "No work to show."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:356
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:216
 msgid "Not available"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:94
+msgid "Not sure? Start with a project - you can always set goals later."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:180
+msgid "Note (optional)"
 msgstr ""
 
 #.frontend
@@ -4889,6 +5698,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/LinkPage/index.tsx:55
 msgid "Notes:"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:39
+msgid "Nothing here yet."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:121
+msgid "Nothing in this view has dates yet."
 msgstr ""
 
 #.frontend
@@ -4923,6 +5742,16 @@ msgstr ""
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:38
 msgid "Once the upgrade is done, come back to this link and try again."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:64
+msgid "One of the selected versions could not be loaded. Try again or choose another version from the history."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:160
+msgid "One of the snapshots could not be parsed with the current editor schema."
 msgstr ""
 
 #.frontend
@@ -5053,6 +5882,26 @@ msgid "Options"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/DiscussionEditPage/index.tsx:112
+msgid "Or, <cancel>Cancel</cancel>"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/DiscussionEditPage/index.tsx:104
+msgid "Or, <cancel>Cancel</cancel> or <discard>Discard draft</discard>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NewDocumentPage/index.tsx:145
+msgid "Or, <discard>Discard this document</discard>"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/DiscussionNewPage/index.tsx:70
+msgid "Or, <discard>Discard this message</discard>"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:106
 msgid "Or, if you've used Operately before"
 msgstr ""
@@ -5070,6 +5919,12 @@ msgstr ""
 #.frontend
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:23
 msgid "Organize tasks on a Kanban board with status columns."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/LinkNewPage/index.tsx:101
+#: ../turboui/src/ResourceHub/AddFilesButton.tsx:110
+msgid "Other"
 msgstr ""
 
 #.frontend
@@ -5234,6 +6089,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:344
+#: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:83
 msgid "Paused"
 msgstr ""
 
@@ -5340,6 +6196,15 @@ msgid "Plan updated"
 msgstr ""
 
 #.frontend
+#: assets/js/features/DiscussionForm/Form.tsx:21
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:39
+#: assets/js/pages/GoalDiscussionNewPage/Form.tsx:38
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:78
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:70
+msgid "Please add a title"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:134
 msgid "Please choose an image file."
 msgstr ""
@@ -5417,8 +6282,19 @@ msgid "Please wait…"
 msgstr ""
 
 #.frontend
+#: assets/js/pages/DiscussionNewPage/index.tsx:56
+msgid "Post"
+msgstr ""
+
+#.frontend
 #: assets/js/features/SpaceTools/Discussions/ZeroState.tsx:36
 msgid "Post Announcements"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/GoalDiscussionNewPage/Form.tsx:63
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:95
+msgid "Post Discussion"
 msgstr ""
 
 #.frontend
@@ -5433,7 +6309,7 @@ msgid "Post announcements, pitch ideas, and discuss ideas with your team."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceDiscussionsPage/page.tsx:108
+#: assets/js/pages/SpaceDiscussionsPage/page.tsx:109
 msgid "Post announcements, pitch ideas, and start discussions."
 msgstr ""
 
@@ -5454,6 +6330,11 @@ msgid "Posted"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:186
+msgid "Posted as the first comment on this update."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:236
 msgid "Preparing Workspace"
 msgstr ""
@@ -5465,8 +6346,18 @@ msgid "Press Enter to add. You can also drag tasks here."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:45
+msgid "Preview version %{version}: %{action}"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/NotificationsPage/index.tsx:104
 msgid "Previous Notifications"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:560
+msgid "Previous values"
 msgstr ""
 
 #.frontend
@@ -5550,6 +6441,11 @@ msgid "Project check-ins"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:166
+msgid "Project name"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/MilestonePage/index.tsx:65
 #: assets/js/pages/ProjectPage/index.tsx:89
 #: assets/js/pages/TaskPage/index.tsx:65
@@ -5574,6 +6470,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 #: ../turboui/src/SearchPage/filterOptions.ts:10
+#: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:76
 msgid "Projects"
 msgstr ""
 
@@ -5600,6 +6497,18 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:66
 msgid "Public sharing is off. Enable it to create a link."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentEditPage/index.tsx:91
+#: assets/js/pages/DiscussionEditPage/index.tsx:68
+msgid "Publish Now"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:89
+#: assets/js/pages/DiscussionEditPage/index.tsx:88
+msgid "Publish now"
 msgstr ""
 
 #.frontend
@@ -5707,6 +6616,26 @@ msgid "Recommended plan"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:102
+msgid "Record the current value in <unit>%{unit}</unit>."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:195
+msgid "Record update"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:418
+msgid "Recorded by"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:412
+msgid "Recorded updates"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SearchPage/RefineControls.tsx:39
 msgid "Refine results"
 msgstr ""
@@ -5728,6 +6657,11 @@ msgstr ""
 #: ../turboui/src/TaskPage/Sidebar.tsx:60
 #: ../turboui/src/TaskPage/Sidebar.tsx:319
 msgid "Relative due date"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:154
+msgid "Reload"
 msgstr ""
 
 #.frontend
@@ -5787,6 +6721,11 @@ msgid "Remove the scheduled cancellation and keep this paid plan active."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:329
+msgid "Removed"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
 msgid "Rename"
@@ -5835,6 +6774,16 @@ msgid "Replace photo"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:572
+msgid "Replaced by %{name} on <date>%{date}</date>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:578
+msgid "Replaced on <date>%{date}</date>"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:109
 msgid "Requested plan"
 msgstr ""
@@ -5868,14 +6817,39 @@ msgid "Resource"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
+msgid "Restore"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:38
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:46
 msgid "Restore Deactivated Team Members"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:108
+msgid "Restore This Version"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:116
 msgid "Restore access for deactivated team members"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:59
+msgid "Restore failed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:138
+msgid "Restore this version?"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
+msgid "Restoring…"
 msgstr ""
 
 #.frontend
@@ -5885,6 +6859,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
 msgid "Retry"
 msgstr ""
 
@@ -5991,6 +6966,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:213
+#: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:28
 msgid "Reviewer"
 msgstr ""
 
@@ -6054,18 +7030,27 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:478
+#: ../turboui/src/FileEditPage/index.tsx:52
 #: ../turboui/src/Forms/Submit.tsx:23
+#: ../turboui/src/LinkEditPage/index.tsx:71
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:128
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:95
 #: assets/js/pages/CompanyRenamePage/index.tsx:48
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:59
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:100
 #: assets/js/pages/SpaceEditPage/index.tsx:54
 msgid "Save"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
+#: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:195
 #: assets/js/pages/AccountAppearancePage/index.tsx:74
+#: assets/js/pages/DiscussionEditPage/index.tsx:68
+#: assets/js/pages/DiscussionEditPage/index.tsx:76
+#: assets/js/pages/DiscussionEditPage/index.tsx:81
+#: assets/js/pages/DiscussionEditPage/index.tsx:97
 msgid "Save Changes"
 msgstr ""
 
@@ -6076,6 +7061,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/NewDocumentPage/index.tsx:137
+#: assets/js/pages/DiscussionEditPage/index.tsx:89
+#: assets/js/pages/DiscussionNewPage/index.tsx:64
 msgid "Save as draft"
 msgstr ""
 
@@ -6085,6 +7072,7 @@ msgid "Save as template"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:113
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:143
 msgid "Save changes"
 msgstr ""
@@ -6100,8 +7088,29 @@ msgid "Saving..."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SchedulePosting/ScheduleModal.tsx:99
+msgid "Schedule"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/DiscussionEditPage/index.tsx:75
+#: assets/js/pages/DiscussionNewPage/index.tsx:61
+msgid "Schedule Discussion"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:21
 msgid "Schedule cancellation"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SchedulePosting/ScheduleFlowControls.tsx:61
+msgid "Schedule for later"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SchedulePosting/ScheduledPostLabel.tsx:9
+msgid "Scheduled"
 msgstr ""
 
 #.frontend
@@ -6190,9 +7199,21 @@ msgid "Searching…"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/index.tsx:35
+#: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:111
+#: assets/js/pages/ResourceHubDocumentVersionComparisonPage/page.tsx:26
+msgid "See what changed"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:17
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:282
 msgid "See what will change before this company moves to the Free plan."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:73
+msgid "See what you and your team are working on, with progress and deadlines."
 msgstr ""
 
 #.frontend
@@ -6274,6 +7295,11 @@ msgid "Selected"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:99
+msgid "Selected version"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/ForgotPasswordPage/index.tsx:88
 msgid "Send Reset Instructions"
 msgstr ""
@@ -6318,6 +7344,7 @@ msgstr ""
 #: ../turboui/src/GoalPage/Sidebar.tsx:167
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:189
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:198
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:224
 msgid "Set champion"
 msgstr ""
 
@@ -6404,6 +7431,11 @@ msgid "Settings"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:96
+msgid "Share a link"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:258
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr ""
@@ -6415,6 +7447,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:38
+#: assets/js/pages/ResourceHubDocumentPage/Options.tsx:35
 msgid "Share publicly"
 msgstr ""
 
@@ -6431,6 +7464,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/InvitationUrl.tsx:11
 msgid "Share this URL with %{name} to invite them to the company:"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:115
+msgid "Share this link to this draft with anyone who has access to this space:"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/LinkNewPage/index.tsx:99
+msgid "Sheet"
 msgstr ""
 
 #.frontend
@@ -6513,6 +7556,16 @@ msgid "Signing in after the change"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ResourceHub/AddFileWidget.tsx:195
+msgid "Size:"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/LinkNewPage/index.tsx:100
+msgid "Slide"
+msgstr ""
+
+#.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:395
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:463
 #: assets/js/pages/GoalPage/index.tsx:195
@@ -6530,7 +7583,10 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:55
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:83
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:34
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:36
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:47
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:76
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:59
 #: assets/js/models/projects/useProjectContributorActions.tsx:91
 #: assets/js/models/projects/useProjectContributorActions.tsx:102
@@ -6628,8 +7684,20 @@ msgid "Start a discussion to share updates, ask questions, or get feedback from 
 msgstr ""
 
 #.frontend
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:45
+#: assets/js/pages/GoalDiscussionNewPage/Form.tsx:44
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:76
+msgid "Start a new discussion..."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:120
 msgid "Start again"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:70
+msgid "Start by adding a goal or project"
 msgstr ""
 
 #.frontend
@@ -6661,6 +7729,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:86
 msgid "Start import"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:156
+msgid "Start with something already in motion. You can add tasks, milestones, and teammates next."
 msgstr ""
 
 #.frontend
@@ -6723,6 +7796,11 @@ msgid "Step: %{step}"
 msgstr ""
 
 #.frontend
+#: assets/js/models/blobs/uploadFile.ts:56
+msgid "Storage limit reached"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:53
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:75
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:214
@@ -6752,6 +7830,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:211
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:326
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:271
 #: ../turboui/src/TaskPage/Sidebar.tsx:413
 msgid "Success"
 msgstr ""
@@ -6788,6 +7867,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:16
+#: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:45
 msgid "Targets"
 msgstr ""
 
@@ -6838,7 +7918,7 @@ msgstr ""
 #: ../turboui/src/MilestonePage/index.tsx:208
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceKanbanPage/index.tsx:109
+#: ../turboui/src/SpaceKanbanPage/index.tsx:110
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
 #: assets/js/features/SpaceTools/Tasks/RegularState.tsx:24
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:20
@@ -6886,6 +7966,11 @@ msgid "That plan is no longer available. Choose another plan."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:81
+msgid "That version could not be found. Choose another version from the history list."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:106
 msgid "The API token was removed."
 msgstr ""
@@ -6918,6 +8003,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:165
 msgid "The current subscription will end at the close of the current billing period."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:27
+msgid "The draft has been discarded."
 msgstr ""
 
 #.frontend
@@ -6958,6 +8048,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectPage/CheckInOverdueCallout.tsx:28
 msgid "The project champion needs to post a check-in to keep the team updated on the project's latest progress."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:144
+msgid "The project could not be created. Try again."
 msgstr ""
 
 #.frontend
@@ -7055,6 +8150,11 @@ msgid "This company has reached its member limit, so this invite can't be used y
 msgstr ""
 
 #.frontend
+#: assets/js/models/blobs/uploadFile.ts:58
+msgid "This company has reached its storage limit: %{used} of %{limit} used. Uploading files is blocked until this company is back within its plan limits."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:85
 msgid "This company is above the Free plan limits"
 msgstr ""
@@ -7134,6 +8234,11 @@ msgid "This is already your current email. Enter a different address."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:71
+msgid "This is an unpublished draft."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:68
 msgid "This is the company administration page where owners and admins can manage the company's settings. They have special permissions to add or remove team members, change who can access the application, and more. If you need something done, contact one of them."
 msgstr ""
@@ -7164,13 +8269,33 @@ msgid "This person is part of the company. They are added to the general space a
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OngoingDraftActions/index.tsx:56
+msgid "This post is scheduled."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:67
 msgid "This project is closed. Earlier check-ins stay available for reference."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:139
+msgid "This replaces the current title and content with the selected version. Later versions will stay in the history."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:96
 msgid "This request is no longer active. Review your current email or request a new code."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SchedulePosting/ScheduleModal.tsx:90
+msgid "This time does not exist in your timezone"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:117
+msgid "This will be the first recorded value."
 msgstr ""
 
 #.frontend
@@ -7194,8 +8319,23 @@ msgid "This will revoke %{name}'s invitation. You can create a new invitation la
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SchedulePosting/ScheduleModal.tsx:76
+msgid "Time"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:160
 msgid "Time format"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SchedulePosting/ScheduleModal.tsx:90
+msgid "Time must be in the future"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:121
+msgid "Time unavailable"
 msgstr ""
 
 #.frontend
@@ -7230,6 +8370,11 @@ msgid "Title in the company"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentEditPage/index.tsx:26
+#: ../turboui/src/FileEditPage/index.tsx:24
+#: ../turboui/src/LinkEditPage/index.tsx:24
+#: ../turboui/src/LinkNewPage/index.tsx:28
+#: ../turboui/src/NewDocumentPage/index.tsx:61
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:238
 msgid "Title is required"
 msgstr ""
@@ -7238,6 +8383,11 @@ msgstr ""
 #: ../turboui/src/DocumentEditPage/index.tsx:49
 #: ../turboui/src/FileEditPage/index.tsx:43
 #: ../turboui/src/NewDocumentPage/index.tsx:82
+#: assets/js/features/DiscussionForm/Form.tsx:18
+#: assets/js/pages/GoalDiscussionEditPage/index.tsx:36
+#: assets/js/pages/GoalDiscussionNewPage/Form.tsx:35
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:75
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:67
 msgid "Title..."
 msgstr ""
 
@@ -7250,6 +8400,11 @@ msgstr ""
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
 #: ../turboui/src/FormattedTime/ShortDate.tsx:31
 msgid "Today"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:360
+msgid "Today · %{date}"
 msgstr ""
 
 #.frontend
@@ -7316,6 +8471,11 @@ msgid "Track the numbers this space cares about and log updates on a weekly or m
 msgstr ""
 
 #.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:179
+msgid "Tracking an outcome instead? <goal>Add a goal</goal>."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:19
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:24
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:33
@@ -7372,8 +8532,14 @@ msgid "Unable to add team member"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/RichContentDiff/index.tsx:158
+msgid "Unable to compare these versions"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:273
 #: ../turboui/src/TaskPage/Sidebar.tsx:415
 msgid "Unable to copy URL to clipboard"
 msgstr ""
@@ -7414,6 +8580,11 @@ msgid "Unable to load tasks."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:62
+msgid "Unable to load this comparison"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:185
 msgid "Unable to restore member"
 msgstr ""
@@ -7435,6 +8606,7 @@ msgid "Unavailable for this billing interval"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:246
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:77
 msgid "Unit"
 msgstr ""
@@ -7445,7 +8617,9 @@ msgid "Unit is required"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:95
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:451
+#: lib/operately_email/emails/task_adding_email.ex:109
 msgid "Unknown"
 msgstr ""
 
@@ -7473,6 +8647,13 @@ msgid "Unlimited storage"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:180
+#: ../turboui/src/DocumentVersionHistoryPage/index.tsx:104
+#: ../turboui/src/RichContentDiff/index.tsx:307
+msgid "Untitled"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/ProjectPage/index.tsx:632
 #: assets/js/pages/TaskPage/index.tsx:329
 msgid "Update failed"
@@ -7481,6 +8662,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:377
 msgid "Update name"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:34
+msgid "Update not deleted"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:491
+msgid "Update options"
 msgstr ""
 
 #.frontend
@@ -7550,6 +8741,11 @@ msgid "Upload failed"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ResourceHub/AddFilesButton.tsx:79
+msgid "Upload files"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:201
 msgid "Upload photo"
 msgstr ""
@@ -7581,6 +8777,13 @@ msgid "Uploading %{progress}%"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ResourceHub/AddFileWidget.tsx:204
+msgid "Uploading file"
+msgid_plural "Uploading files"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:340
 msgid "Uploading file..."
 msgstr ""
@@ -7598,6 +8801,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:91
 msgid "Uploads are unavailable for this account."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:126
+msgid "Uptime"
 msgstr ""
 
 #.frontend
@@ -7641,6 +8849,17 @@ msgid "Validating Package"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:419
+msgid "Value"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:85
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:124
+msgid "Value (%{unit})"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:31
 msgid "Values appear here once they are logged."
 msgstr ""
@@ -7658,6 +8877,37 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerifyCurrentEmailStep.tsx:18
 msgid "Verify this inbox first. Then we’ll send a separate code to <email>%{email}</email>."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:51
+msgid "Version %{version} restored as the current document."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:90
+#: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:91
+msgid "Version from %{time}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:24
+msgid "Version history"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:50
+msgid "Version restored"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionComparisonPage/states.tsx:79
+msgid "Version unavailable"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FilePage/index.tsx:170
+msgid "View"
 msgstr ""
 
 #.frontend
@@ -7686,7 +8936,7 @@ msgid "View Profile"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:32
+#: lib/operately_email/emails/task_adding_email.ex:33
 msgid "View Task"
 msgstr ""
 
@@ -7788,6 +9038,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:128
 msgid "We couldn't refresh billing details the last time we checked. Reload the page to try again."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:59
+msgid "We couldn't restore that version. Please try again."
 msgstr ""
 
 #.frontend
@@ -7913,6 +9168,11 @@ msgid "What you can do"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:181
+msgid "What's behind this number?"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:39
 msgid "What's new"
 msgstr ""
@@ -7964,6 +9224,12 @@ msgid "Who is your manager?"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:23
+#: ../turboui/src/SchedulePosting/ScheduledPostDate.tsx:14
+msgid "Will be posted on <date/> at <time/>"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:129
 msgid "Work Email"
 msgstr ""
@@ -7972,6 +9238,10 @@ msgstr ""
 #: ../turboui/src/GoalPage/PageHeader.tsx:19
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:98
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:112
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:37
+#: assets/js/pages/ProjectDiscussionNewPage/page.tsx:39
+#: assets/js/pages/ProjectDiscussionPage/page.tsx:109
+#: assets/js/pages/ProjectDiscussionPage/page.tsx:111
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:69
 msgid "Work Map"
 msgstr ""
@@ -8000,6 +9270,8 @@ msgstr ""
 #: ../turboui/src/DocumentEditPage/index.tsx:54
 #: ../turboui/src/FileEditPage/index.tsx:47
 #: ../turboui/src/NewDocumentPage/index.tsx:87
+#: assets/js/features/DiscussionForm/Form.tsx:26
+#: assets/js/pages/ProjectDiscussionEditPage/page.tsx:84
 msgid "Write here..."
 msgstr ""
 
@@ -8053,6 +9325,11 @@ msgid "You can start checkout again for %{plan}."
 msgstr ""
 
 #.frontend
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:92
+msgid "You don't have any drafts."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ResourceHubDraftsPage/index.tsx:26
 msgid "You don’t have any drafts in these Docs & Files."
 msgstr ""
@@ -8075,7 +9352,7 @@ msgid "You were invited by %{author} to join %{company}."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:62
+#: lib/operately_email/emails/task_adding_email.ex:76
 msgid "You were mentioned in the description for %{task_name}."
 msgstr ""
 
@@ -8096,12 +9373,18 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ResourceHubDraftsPage/index.tsx:45
+#: assets/js/pages/DiscussionDraftsPage/index.tsx:70
 msgid "Your Drafts"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:16
 msgid "Your account email is now <email>%{email}</email>."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FilePage/index.tsx:130
+msgid "Your browser does not support videos."
 msgstr ""
 
 #.frontend
@@ -8142,6 +9425,11 @@ msgid "You’ll need access to both inboxes. Your email won’t change until bot
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:194
+msgid "as of %{date}"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:97
 msgid "big-picture outcome"
 msgstr ""
@@ -8150,6 +9438,11 @@ msgstr ""
 #: ../turboui/src/CompanyExportPage/index.tsx:223
 #: ../turboui/src/CompanyImportPage/index.tsx:403
 msgid "cancelled"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/types.ts:109
+msgid "changed the title of this document from “%{previousTitle}” to “%{title}”"
 msgstr ""
 
 #.frontend
@@ -8164,8 +9457,13 @@ msgid "concrete actions or deliverables"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/task_adding_email.ex:48
+#: lib/operately_email/emails/task_adding_email.ex:62
 msgid "created the task \"%{task_name}\""
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/types.ts:101
+msgid "created this document"
 msgstr ""
 
 #.frontend
@@ -8215,6 +9513,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:125
 msgid "e.g. John Johnson"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/WorkMap/components/ZeroState.tsx:167
+msgid "e.g. Launch the new website"
 msgstr ""
 
 #.frontend
@@ -8334,6 +9637,11 @@ msgid "pending"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/types.ts:105
+msgid "restored this document from Version %{version}"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:221
 #: ../turboui/src/CompanyImportPage/index.tsx:401
 msgid "running"
@@ -8358,6 +9666,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:536
 msgid "token %{number}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DocumentVersionHistoryPage/types.ts:115
+msgid "updated this document"
 msgstr ""
 
 #.frontend

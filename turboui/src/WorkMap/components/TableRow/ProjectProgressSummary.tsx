@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconFlag, IconFlagFilled } from "../../../icons";
 import { PieChart } from "../../../PieChart";
@@ -10,10 +11,11 @@ interface ProjectProgressSummaryProps {
 }
 
 export function ProjectProgressSummary({ milestones }: ProjectProgressSummaryProps) {
+  const { t } = useTranslation();
   if (milestones.length === 0) {
     return (
       <div className="text-content-dimmed text-xs font-normal" data-testid="project-progress-summary-content">
-        No milestones
+        {t("No milestones")}
       </div>
     );
   }
@@ -28,11 +30,15 @@ export function ProjectProgressSummary({ milestones }: ProjectProgressSummaryPro
       data-testid="project-progress-summary-content"
     >
       <div className="flex items-center gap-2 mb-0.5">
-        <div className="text-xs font-semibold text-content-dimmed uppercase tracking-wide">Milestones</div>
+        <div className="text-xs font-semibold text-content-dimmed uppercase tracking-wide">{t("Milestones")}</div>
         <div className="flex items-center gap-1.5 text-xs text-content-subtle">
           <PieChart size={12} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
           <span>
-            {completedCount}/{totalCount} completed ({completionPercentage}%)
+            {t("{{completed}}/{{total}} completed ({{percentage}}%)", {
+              completed: completedCount,
+              total: totalCount,
+              percentage: completionPercentage,
+            })}
           </span>
         </div>
       </div>

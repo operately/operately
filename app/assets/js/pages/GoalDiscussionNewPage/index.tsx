@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { loader, useLoadedData } from "./loader";
@@ -10,10 +11,11 @@ import { Form } from "./Form";
 export default { name: "GoalDiscussionNewPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={["New Discussion", goal.name]}>
+    <Pages.Page title={[t("New Discussion"), goal.name]}>
       <Paper.Root>
         <GoalSubpageNavigation goal={goal} />
 

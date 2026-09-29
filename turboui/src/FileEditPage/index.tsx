@@ -21,7 +21,7 @@ export function FileEditPage(props: FileEditPageNS.Props) {
     },
     validate: (addError) => {
       if (!form.values.title.trim()) {
-        addError("title", "Title is required");
+        addError("title", t("Title is required"));
       }
     },
     cancel: () => navigate(props.cancelLink),
@@ -49,7 +49,7 @@ export function FileEditPage(props: FileEditPageNS.Props) {
             />
           </Forms.FieldGroup>
 
-          <Forms.Submit saveText={props.submitLabel ?? "Save"} buttonSize="base" />
+          <Forms.Submit saveText={props.submitLabel ?? t("Save")} buttonSize="base" />
         </div>
       </Forms.Form>
     </Page>

@@ -118,11 +118,12 @@ function ExplanationAndButton({ canManage }: { canManage: boolean }) {
 }
 
 function Examples() {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full h-[170px] mt-10 opacity-75 px-[50px] flex flex-col gap-3">
-      <Example name="Monthly revenue" value="$42k" trend="up" />
-      <Example name="NPS score" value="68" trend="flat" />
-      <Example name="Uptime" value="99.9%" trend="up" />
+      <Example name={t("Monthly revenue")} value="$42k" trend="up" />
+      <Example name={t("NPS score")} value="68" trend="flat" />
+      <Example name={t("Uptime")} value="99.9%" trend="up" />
     </div>
   );
 }

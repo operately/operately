@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { IconPlus, IconTrash } from "../../../icons";
 import { SecondaryButton } from "../../../Button";
 
@@ -23,14 +24,11 @@ interface ButtonProps {
 }
 
 function AddButton({ onClick }: ButtonProps) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl overflow-hidden">
-      <SecondaryButton
-        size="xxs"
-        onClick={onClick}
-        icon={IconPlus}
-      >
-        Add
+      <SecondaryButton size="xxs" onClick={onClick} icon={IconPlus}>
+        {t("Add")}
       </SecondaryButton>
     </div>
   );
@@ -39,10 +37,7 @@ function AddButton({ onClick }: ButtonProps) {
 function DeleteButton({ onClick }: ButtonProps) {
   return (
     <div className="rounded-full overflow-hidden text-red-500 hover:text-red-600">
-      <SecondaryButton
-        size="xxs"
-        onClick={onClick}
-      >
+      <SecondaryButton size="xxs" onClick={onClick}>
         <IconTrash size={14} />
       </SecondaryButton>
     </div>

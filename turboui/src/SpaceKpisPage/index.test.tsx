@@ -17,6 +17,7 @@ import {
   mockSpace,
 } from "./mockData";
 import { formatNumber, formatShortDate, formatValue } from "./utils";
+import { assertPresent } from "../utils/assertions";
 import { i18n, setupTestCatalog } from "../../test/i18n";
 
 setupTestCatalog();
@@ -673,6 +674,34 @@ describe("SpaceKpisPage create & log", () => {
 });
 
 describe("SpaceKpisPage KPI update comments", () => {
+  test("uses singular and plural catalog forms for the update comment accessibility label", () => {
+    const target = mockKpis[0];
+    assertPresent(target, "mock KPI must be present");
+
+    const singularEntry = target.entries[0];
+    const pluralEntry = target.entries[1];
+    assertPresent(singularEntry, "first mock KPI entry must be present");
+    assertPresent(pluralEntry, "second mock KPI entry must be present");
+
+    const singular = { ...singularEntry, commentsCount: 1 };
+    const plural = { ...pluralEntry, commentsCount: 3 };
+
+    renderPage({
+      selectedKpi: { ...target, entries: [singular, plural] },
+      canComment: true,
+      renderEntryComments: () => null,
+    });
+
+    expect(screen.getByRole("button", { name: "1 comment" })).toHaveAttribute(
+      "data-test-id",
+      `entry-comments-toggle-${singular.id}`,
+    );
+    expect(screen.getByRole("button", { name: "3 comments" })).toHaveAttribute(
+      "data-test-id",
+      `entry-comments-toggle-${plural.id}`,
+    );
+  });
+
   test("opens comments on a recorded update in a slide-in", async () => {
     const user = userEvent.setup();
     const target = mockKpis[0]!;

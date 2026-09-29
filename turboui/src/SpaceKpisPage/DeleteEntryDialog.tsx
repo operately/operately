@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { ConfirmDialog } from "../ConfirmDialog";
 import { showErrorToast } from "../Toasts";
@@ -13,6 +14,7 @@ interface DeleteEntryDialogProps {
 }
 
 export function DeleteEntryDialog({ entry, unit, onClose, onDelete }: DeleteEntryDialogProps) {
+  const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   React.useEffect(() => {
@@ -29,7 +31,7 @@ export function DeleteEntryDialog({ entry, unit, onClose, onDelete }: DeleteEntr
     if (result.success) {
       onClose();
     } else {
-      showErrorToast("Update not deleted", result.error ?? "Something went wrong. Please try again.");
+      showErrorToast(t("Update not deleted"), result.error ?? t("Something went wrong. Please try again."));
     }
   };
 
@@ -38,14 +40,17 @@ export function DeleteEntryDialog({ entry, unit, onClose, onDelete }: DeleteEntr
       isOpen={entry !== null}
       onConfirm={() => void confirmDelete()}
       onCancel={onClose}
-      title="Delete this update?"
+      title={t("Delete this update?")}
       message={
         entry
-          ? `${formatValue(entry.value, unit)} recorded on ${formatShortDate(entry.recordedAt)} will be permanently removed.`
+          ? t("{{value}} recorded on {{date}} will be permanently removed.", {
+              value: formatValue(entry.value, unit),
+              date: formatShortDate(entry.recordedAt),
+            })
           : ""
       }
-      confirmText="Delete update"
-      cancelText="Keep update"
+      confirmText={t("Delete update")}
+      cancelText={t("Keep update")}
       variant="danger"
       size="x-small"
       testId="delete-entry-dialog"

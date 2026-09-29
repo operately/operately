@@ -23,10 +23,10 @@ export function DocumentEditPage(props: DocumentEditPageNS.Props) {
     },
     validate: (addError) => {
       if (!form.values.title.trim()) {
-        addError("title", "Title is required");
+        addError("title", t("Title is required"));
       }
       if (isContentEmpty(form.values.content)) {
-        addError("content", "Content is required");
+        addError("content", t("Content is required"));
       }
     },
     cancel: () => navigate(props.cancelLink),
@@ -73,13 +73,14 @@ export function DocumentEditPage(props: DocumentEditPageNS.Props) {
 }
 
 function FormActions({ hidePublishAction }: { hidePublishAction: boolean }) {
+  const { t } = useTranslation();
   const form = Forms.useFormContext();
 
   return (
     <div className="flex items-center justify-start gap-4 mt-8">
       <Forms.SubmitButton
         name="submit"
-        text="Save Changes"
+        text={t("Save Changes")}
         buttonSize="base"
         primary
         onClick={() => form.actions.submit("save")}
@@ -87,12 +88,12 @@ function FormActions({ hidePublishAction }: { hidePublishAction: boolean }) {
       {!hidePublishAction && (
         <Forms.SubmitButton
           name="publish-draft"
-          text="Publish Now"
+          text={t("Publish Now")}
           buttonSize="base"
           onClick={() => form.actions.submit("publish-draft")}
         />
       )}
-      <Forms.SubmitButton name="cancel" text="Cancel" buttonSize="base" onClick={() => form.actions.cancel()} />
+      <Forms.SubmitButton name="cancel" text={t("Cancel")} buttonSize="base" onClick={() => form.actions.cancel()} />
     </div>
   );
 }
