@@ -32,6 +32,53 @@ defmodule Operately.RichContent.LinkEnrichment do
     end
   end
 
+  @doc "Resolves URL labels for storage, without response-only metadata."
+  def prepare_for_save(payload, context) do
+    {result, _} =
+      payload
+      |> enrich(context)
+      |> map_documents(nil, fn document, acc -> {map_nodes(document, &remove_metadata/1), acc} end)
+
+    result
+  end
+
+  @doc "Resolves titles for original URLs, omitting unknown or inaccessible resources."
+  def resolve_urls(urls, %{person: person, company: company, origin: origin}) do
+    links =
+      urls
+      |> Enum.uniq()
+      |> Enum.flat_map(fn url ->
+        case url_ref(url, company.short_id, origin) do
+          nil -> []
+          ref -> [{url, ref}]
+        end
+      end)
+
+    titles = load_titles(Enum.map(links, &elem(&1, 1)), person, company)
+
+    Enum.flat_map(links, fn {url, ref} ->
+      case Map.fetch(titles, {ref.type, ref.id}) do
+        {:ok, title} -> [%{url: url, title: title}]
+        :error -> []
+      end
+    end)
+  end
+
+  defp remove_metadata(%{"type" => "text", "marks" => marks} = node) when is_list(marks) do
+    marks =
+      Enum.map(marks, fn
+        %{"type" => "link", "attrs" => attrs} = mark when is_map(attrs) ->
+          Map.put(mark, "attrs", Map.delete(attrs, @metadata))
+
+        mark ->
+          mark
+      end)
+
+    Map.put(node, "marks", marks)
+  end
+
+  defp remove_metadata(node), do: node
+
   @doc """
   Restores original URL labels in nested rich-text documents and removes enrichment
   metadata, preserving client-edited labels and each field's JSON representation.
@@ -73,14 +120,7 @@ defmodule Operately.RichContent.LinkEnrichment do
   defp node_ref(%{"text" => text, "marks" => marks}, company_id, origin) when is_binary(text) and is_list(marks) do
     Enum.find_value(marks, fn
       %{"type" => "link", "attrs" => %{"href" => href}} when is_binary(href) ->
-        with true <- ResourceLinks.url_label?(text, href),
-             {:ok, ref} <- ResourceLinks.parse(href, origin),
-             {:ok, ^company_id} <- Helpers.decode_company_id(ref.company_id),
-             {:ok, id} <- decode_id(ref.id) do
-          %{type: ref.type, id: id}
-        else
-          _ -> nil
-        end
+        if ResourceLinks.url_label?(text, href), do: url_ref(href, company_id, origin)
 
       _ ->
         nil
@@ -88,6 +128,16 @@ defmodule Operately.RichContent.LinkEnrichment do
   end
 
   defp node_ref(_, _, _), do: nil
+
+  defp url_ref(url, company_id, origin) do
+    with {:ok, ref} <- ResourceLinks.parse(url, origin),
+         {:ok, ^company_id} <- Helpers.decode_company_id(ref.company_id),
+         {:ok, id} <- decode_id(ref.id) do
+      %{type: ref.type, id: id}
+    else
+      _ -> nil
+    end
+  end
 
   defp decode_id(id) do
     Helpers.decode_id(id)
