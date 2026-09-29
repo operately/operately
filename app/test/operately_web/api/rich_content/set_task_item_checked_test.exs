@@ -14,6 +14,20 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemCheckedTest do
     |> Factory.log_in_person(:creator)
   end
 
+  test "checkbox snapshots keep URL labels while conflict detection remains active", ctx do
+    source = content()
+    url = Paths.project_path(ctx.company, ctx.project)
+    link = hd(hd(Operately.Support.RichText.resource_link(url)["content"])["content"])
+    source = put_in(source, ["content", Access.at(0), "content", Access.at(0), "content", Access.at(0), "content"], [link])
+    project = ctx.project |> Ecto.Changeset.change(description: source) |> Repo.update!()
+    expected = OperatelyWeb.Api.RichContent.Preparation.prepare_response(ctx.conn, source)
+
+    assert {200, %{success: true}} = mutation(ctx.conn, [:rich_content, :set_task_item_checked], inputs(project, :project, :description, expected))
+    saved = Repo.reload!(project).description
+    assert checked(saved)
+    assert get_in(saved, ["content", Access.at(0), "content", Access.at(0), "content", Access.at(0), "content"]) == [link]
+  end
+
   @fields %{
     project: :description,
     goal: :description,

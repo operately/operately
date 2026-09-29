@@ -156,6 +156,8 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
+  def parse_input({:list, _type}, _types, _value, _strict), do: {:error, 400, "Expected a list"}
+
   def parse_input(_field, _types, nil, _strict) do
     # This simply returns nil, the null constraint is checked in validate_null_constraint
     {:ok, nil}
