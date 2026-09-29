@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { formatValue } from "turboui/SpaceKpisPage/utils";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 
 const KpiEntryDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -37,15 +39,23 @@ const KpiEntryDeleted: ActivityHandler = {
     const data = content(activity);
 
     if (page === "space") {
-      return feedTitle(activity, "deleted a KPI update");
+      return <Trans i18nKey="{{author}} deleted a KPI update" values={{ author: activityAuthorName(activity) }} />;
     }
 
-    return feedTitle(activity, "deleted a KPI update in the", spaceLink(paths, data.space), "space");
+    return (
+      <Trans
+        i18nKey="{{author}} deleted a KPI update in the <space>{{spaceName}}</space> space"
+        values={{ author: activityAuthorName(activity), spaceName: data.space.name }}
+        components={{ space: spaceLink(paths, data.space) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
-    const kpiName = data.kpi?.name ?? "KPI";
+    const kpiName = data.kpi?.name;
+    if (kpiName == null)
+      return <Trans i18nKey="KPI: {{value}}" values={{ value: formatValue(data.value, data.kpi?.unit) }} />;
 
     return (
       <>
@@ -68,8 +78,11 @@ const KpiEntryDeleted: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const data = content(activity);
-    const kpiName = data.kpi?.name ?? "KPI";
-    return `Deleted an update from ${kpiName}: ${formatValue(data.value, data.kpi?.unit)}`;
+    const kpiName = data.kpi?.name;
+    const values = { kpiName, value: formatValue(data.value, data.kpi?.unit) };
+    return kpiName == null
+      ? i18n.t("Deleted an update from KPI: {{value}}", values)
+      : i18n.t("Deleted an update from {{kpiName}}: {{value}}", values);
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

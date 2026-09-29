@@ -1,5 +1,8 @@
 import { Activity, ActivityContentCompanyMembersPermissionsEdited } from "@/api";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n, { tn } from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
 const CompanyMembersPermissionsEdited: ActivityHandler = {
@@ -25,9 +28,16 @@ const CompanyMembersPermissionsEdited: ActivityHandler = {
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
     const memberCount = content(activity).members?.length ?? 0;
-    const memberText = memberCount === 1 ? "member's" : "members'";
-
-    return feedTitle(activity, `has updated ${memberCount} ${memberText} access level`);
+    return (
+      <Trans
+        defaults={tn(
+          "{{author}} has updated {{count}} member's access level",
+          "{{author}} has updated {{count}} members' access level",
+          memberCount,
+        )}
+        values={{ author: activityAuthorName(activity), count: memberCount }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -48,12 +58,14 @@ const CompanyMembersPermissionsEdited: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const members = content(activity).members ?? [];
-    if (members.length === 0) return "Updated your company access level";
+    if (members.length === 0) return i18n.t("Updated your company access level");
 
     const member = members[0];
-    if (!member) return "Updated your company access level";
+    if (!member) return i18n.t("Updated your company access level");
 
-    return `Updated your company access level to ${member.updatedAccessLevelLabel}`;
+    return i18n.t("Updated your company access level to {{accessLevel}}", {
+      accessLevel: member.updatedAccessLevelLabel,
+    });
   },
 
   NotificationLocation(_props: { activity: Activity }) {

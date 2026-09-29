@@ -3,7 +3,8 @@ import React from "react";
 import type { ActivityContentGoalNameUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalNameUpdating: ActivityHandler = {
@@ -32,20 +33,22 @@ const GoalNameUpdating: ActivityHandler = {
     const { goal } = content(props.activity);
 
     if (props.page === "goal") {
-      return feedTitle(props.activity, "renamed the goal");
+      return <Trans i18nKey="{{author}} renamed the goal" values={{ author: activityAuthorName(props.activity) }} />;
     } else {
-      return feedTitle(props.activity, "renamed", goalLink(paths, goal!));
+      return (
+        <Trans
+          i18nKey="{{author}} renamed <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(props.activity), goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
     const { newName, oldName } = content(props.activity);
 
-    return (
-      <>
-        Previously it was {oldName}, now it is {newName}.
-      </>
-    );
+    return <Trans i18nKey="Previously it was {{oldName}}, now it is {{newName}}." values={{ oldName, newName }} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

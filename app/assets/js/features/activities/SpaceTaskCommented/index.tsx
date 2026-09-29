@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link, Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, spaceLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink, spaceLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -40,12 +42,38 @@ const SpaceTaskCommented: ActivityHandler = {
 
     const taskPath = task ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.spaceKanbanPath(space.id);
     const action = task ? commentedLink(taskPath, comment) : "commented";
-    const taskLink = task ? <Link to={taskPath}>{task.name}</Link> : "a task";
+    const taskLink = task ? <Link to={taskPath}>{null}</Link> : <React.Fragment />;
+    const components = {
+      action: typeof action === "string" ? <React.Fragment /> : action,
+      task: taskLink,
+      space: spaceLink(paths, space),
+    };
+    const values = { author: activityAuthorName(activity), taskName: task?.name, spaceName: space.name };
 
     if (page === "space") {
-      return feedTitle(activity, action, "on", taskLink);
+      return task ? (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <task>{{taskName}}</task>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} commented on a task" values={values} />
+      );
     } else {
-      return feedTitle(activity, action, "on", taskLink, "in the", spaceLink(paths, space), "space");
+      return task ? (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <task>{{taskName}}</task> in the <space>{{spaceName}}</space> space"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} commented on a task in the <space>{{spaceName}}</space> space"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 
@@ -80,8 +108,7 @@ const SpaceTaskCommented: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const { task } = content(activity);
-    const taskName = task ? task.name : "a task";
-    return "Re: " + taskName;
+    return task ? i18n.t("Re: {{title}}", { title: task.name }) : i18n.t("Re: a task");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

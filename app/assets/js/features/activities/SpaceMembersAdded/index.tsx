@@ -1,7 +1,9 @@
 import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
-import { namesListToString } from "@/models/people";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, activityPeopleNames, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceMembersAdded: ActivityHandler = {
@@ -26,13 +28,24 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
-    const names = namesListToString(content(activity).members!);
+    const names = activityPeopleNames(content(activity).members ?? []);
     const space = spaceLink(paths, content(activity).space!);
 
     if (page === "space") {
-      return feedTitle(activity, "added", names, "to the space");
+      return (
+        <Trans
+          i18nKey="{{author}} added {{names}} to the space"
+          values={{ author: activityAuthorName(activity), names }}
+        />
+      );
     } else {
-      return feedTitle(activity, "added", names, "to the", space, "space");
+      return (
+        <Trans
+          i18nKey="{{author}} added {{names}} to the <space>{{spaceName}}</space> space"
+          values={{ author: activityAuthorName(activity), names, spaceName: content(activity).space?.name }}
+          components={{ space }}
+        />
+      );
     }
   },
 
@@ -53,7 +66,7 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Added you to the " + content(activity).space?.name + " space";
+    return i18n.t("Added you to the {{spaceName}} space", { spaceName: content(activity).space?.name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

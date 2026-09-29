@@ -5,7 +5,9 @@ import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 
-import { documentLink, feedTitle } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, documentLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -70,12 +72,15 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const document = content(activity).document;
     const copiedDocument = content(activity).copiedDocument;
-    const documentName = document?.name ?? "a document";
+    const documentName = document?.name ?? i18n.t("a document");
 
     if (copiedDocument) {
-      return "Created a copy of " + copiedDocument.name + " and named it " + documentName;
+      return i18n.t("Created a copy of {{originalName}} and named it {{documentName}}", {
+        originalName: copiedDocument.name,
+        documentName,
+      });
     } else {
-      return "Added: " + documentName;
+      return i18n.t("Added: {{documentName}}", { documentName });
     }
   },
 
@@ -93,35 +98,69 @@ export default ResourceHubDocumentCreating;
 function ItemCopiedTitle(paths: Paths, activity: Activity, page: string) {
   const data = content(activity);
 
-  const document = data.document ? documentLink(paths, data.document) : "a document";
-  const copiedDocument = data.copiedDocument ? documentLink(paths, data.copiedDocument) : "a document";
+  const document = data.document ? documentLink(paths, data.document) : <React.Fragment />;
+  const copiedDocument = data.copiedDocument ? documentLink(paths, data.copiedDocument) : <React.Fragment />;
   const parent = visibleParentDescriptor(paths, page, data);
 
-  if (!parent) {
-    return feedTitle(activity, "created a copy of", copiedDocument, "and named it", document);
-  }
-
-  return feedTitle(
-    activity,
-    "created a copy of",
-    copiedDocument,
-    "and named it",
-    document,
-    "in the",
-    parent.link,
-    parent.label,
+  const sentence =
+    parent?.page === "project"
+      ? i18n.t(
+          "{{author}} created a copy of <original>{{originalName}}</original> and named it <document>{{documentName}}</document> in the <parent>{{parentName}}</parent> project",
+        )
+      : parent?.page === "goal"
+        ? i18n.t(
+            "{{author}} created a copy of <original>{{originalName}}</original> and named it <document>{{documentName}}</document> in the <parent>{{parentName}}</parent> goal",
+          )
+        : parent
+          ? i18n.t(
+              "{{author}} created a copy of <original>{{originalName}}</original> and named it <document>{{documentName}}</document> in the <parent>{{parentName}}</parent> space",
+            )
+          : i18n.t(
+              "{{author}} created a copy of <original>{{originalName}}</original> and named it <document>{{documentName}}</document>",
+            );
+  return (
+    <Trans
+      defaults={sentence}
+      values={{
+        author: activityAuthorName(activity),
+        documentName: data.document?.name ?? i18n.t("a document"),
+        originalName: data.copiedDocument?.name ?? i18n.t("a document"),
+        parentName: parent?.name,
+      }}
+      components={{ document, original: copiedDocument, parent: parent?.link ?? <React.Fragment /> }}
+    />
   );
 }
 
 function ItemCreatedTitle(paths: Paths, activity: Activity, page: string) {
   const data = content(activity);
 
-  const document = data.document ? documentLink(paths, data.document) : "a document";
+  const document = data.document ? documentLink(paths, data.document) : <React.Fragment />;
   const parent = visibleParentDescriptor(paths, page, data);
 
-  if (!parent) {
-    return feedTitle(activity, "created a document:", document);
-  }
-
-  return feedTitle(activity, "created a document in the", parent.link, `${parent.label}:`, document);
+  const sentence =
+    parent?.page === "project"
+      ? i18n.t(
+          "{{author}} created a document in the <parent>{{parentName}}</parent> project: <document>{{documentName}}</document>",
+        )
+      : parent?.page === "goal"
+        ? i18n.t(
+            "{{author}} created a document in the <parent>{{parentName}}</parent> goal: <document>{{documentName}}</document>",
+          )
+        : parent
+          ? i18n.t(
+              "{{author}} created a document in the <parent>{{parentName}}</parent> space: <document>{{documentName}}</document>",
+            )
+          : i18n.t("{{author}} created a document: <document>{{documentName}}</document>");
+  return (
+    <Trans
+      defaults={sentence}
+      values={{
+        author: activityAuthorName(activity),
+        documentName: data.document?.name ?? i18n.t("a document"),
+        parentName: parent?.name,
+      }}
+      components={{ document, parent: parent?.link ?? <React.Fragment /> }}
+    />
+  );
 }

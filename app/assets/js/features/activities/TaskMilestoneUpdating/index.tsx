@@ -1,7 +1,10 @@
 import type { ActivityContentTaskMilestoneUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, milestoneLink, projectLink, taskLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, milestoneLink, projectLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskMilestoneUpdating: ActivityHandler = {
@@ -28,31 +31,54 @@ const TaskMilestoneUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, task, oldMilestone, newMilestone } = content(activity);
 
-    let message: any[];
-    const taskName = task ? taskLink(paths, task) : "task";
-
+    let sentence: string;
     if (!oldMilestone && newMilestone) {
-      message = ["assigned", taskName, "to milestone", milestoneLink(paths, newMilestone)];
+      sentence =
+        page === "project"
+          ? i18n.t("{{author}} assigned <task>{{taskName}}</task> to milestone <new>{{newName}}</new>")
+          : i18n.t(
+              "{{author}} assigned <task>{{taskName}}</task> to milestone <new>{{newName}}</new> in <project>{{projectName}}</project>",
+            );
     } else if (oldMilestone && !newMilestone) {
-      message = ["removed", taskName, "from milestone", milestoneLink(paths, oldMilestone)];
+      sentence =
+        page === "project"
+          ? i18n.t("{{author}} removed <task>{{taskName}}</task> from milestone <old>{{oldName}}</old>")
+          : i18n.t(
+              "{{author}} removed <task>{{taskName}}</task> from milestone <old>{{oldName}}</old> in <project>{{projectName}}</project>",
+            );
     } else if (oldMilestone && newMilestone) {
-      message = [
-        "moved",
-        taskName,
-        "from milestone",
-        milestoneLink(paths, oldMilestone),
-        "to",
-        milestoneLink(paths, newMilestone),
-      ];
+      sentence =
+        page === "project"
+          ? i18n.t(
+              "{{author}} moved <task>{{taskName}}</task> from milestone <old>{{oldName}}</old> to <new>{{newName}}</new>",
+            )
+          : i18n.t(
+              "{{author}} moved <task>{{taskName}}</task> from milestone <old>{{oldName}}</old> to <new>{{newName}}</new> in <project>{{projectName}}</project>",
+            );
     } else {
-      message = ["updated", taskName, "milestone"];
+      sentence =
+        page === "project"
+          ? i18n.t("{{author}} updated <task>{{taskName}}</task> milestone")
+          : i18n.t("{{author}} updated <task>{{taskName}}</task> milestone in <project>{{projectName}}</project>");
     }
-
-    if (page === "project") {
-      return feedTitle(activity, ...message);
-    } else {
-      return feedTitle(activity, ...message, "in", projectLink(paths, project));
-    }
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          taskName: task?.name ?? i18n.t("task"),
+          oldName: oldMilestone?.title,
+          newName: newMilestone?.title,
+          projectName: project.name,
+        }}
+        components={{
+          task: task ? taskLink(paths, task) : <React.Fragment />,
+          old: oldMilestone ? milestoneLink(paths, oldMilestone) : <React.Fragment />,
+          new: newMilestone ? milestoneLink(paths, newMilestone) : <React.Fragment />,
+          project: projectLink(paths, project),
+        }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -75,13 +101,16 @@ const TaskMilestoneUpdating: ActivityHandler = {
     const { oldMilestone, newMilestone } = content(props.activity);
 
     if (!oldMilestone && newMilestone) {
-      return `Task was assigned to milestone "${newMilestone.title}"`;
+      return i18n.t('Task was assigned to milestone "{{title}}"', { title: newMilestone.title });
     } else if (oldMilestone && !newMilestone) {
-      return `Task was removed from milestone "${oldMilestone.title}"`;
+      return i18n.t('Task was removed from milestone "{{title}}"', { title: oldMilestone.title });
     } else if (oldMilestone && newMilestone) {
-      return `Task was moved from milestone "${oldMilestone.title}" to "${newMilestone.title}"`;
+      return i18n.t('Task was moved from milestone "{{oldTitle}}" to "{{newTitle}}"', {
+        oldTitle: oldMilestone.title,
+        newTitle: newMilestone.title,
+      });
     } else {
-      return "Task milestone was updated";
+      return i18n.t("Task milestone was updated");
     }
   },
 

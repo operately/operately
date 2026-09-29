@@ -4,7 +4,9 @@ import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
 import { Link } from "turboui";
-import { feedTitle, fileLink, resourceHubLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, fileLink, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
@@ -42,30 +44,71 @@ const ResourceHubFileCreated: ActivityHandler = {
       ? resourceHubLink(paths, data.resourceHub, { project: data.project, goal: data.goal })
       : null;
     const files = data.files ?? [];
+    const values = {
+      author: activityAuthorName(activity),
+      fileName: files[0]?.name ?? i18n.t("a file"),
+      hubName: data.resourceHub?.name,
+      parentName: parent?.name,
+    };
+    const components = {
+      file: files[0]?.id ? fileLink(paths, files[0]) : <React.Fragment />,
+      hub: resourceHub ?? <React.Fragment />,
+      parent: parent?.link ?? <React.Fragment />,
+    };
 
     if (files.length === 1 && files[0]) {
-      const file = files[0].id ? fileLink(paths, files[0]) : (files[0].name ?? "a file");
-
       if (!parent) {
-        return feedTitle(activity, "added a file:", file);
+        return (
+          <Trans i18nKey="{{author}} added a file: <file>{{fileName}}</file>" values={values} components={components} />
+        );
       }
 
       if (resourceHub) {
-        return feedTitle(activity, "added a file to", resourceHub, "in the", parent.link, `${parent.label}:`, file);
+        const sentence =
+          parent.page === "project"
+            ? i18n.t(
+                "{{author}} added a file to <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> project: <file>{{fileName}}</file>",
+              )
+            : parent.page === "goal"
+              ? i18n.t(
+                  "{{author}} added a file to <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> goal: <file>{{fileName}}</file>",
+                )
+              : i18n.t(
+                  "{{author}} added a file to <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> space: <file>{{fileName}}</file>",
+                );
+        return <Trans defaults={sentence} values={values} components={components} />;
       }
 
-      return feedTitle(activity, "added a file in the", parent.link, `${parent.label}:`, file);
+      const sentence =
+        parent.page === "project"
+          ? i18n.t("{{author}} added a file in the <parent>{{parentName}}</parent> project: <file>{{fileName}}</file>")
+          : parent.page === "goal"
+            ? i18n.t("{{author}} added a file in the <parent>{{parentName}}</parent> goal: <file>{{fileName}}</file>")
+            : i18n.t("{{author}} added a file in the <parent>{{parentName}}</parent> space: <file>{{fileName}}</file>");
+      return <Trans defaults={sentence} values={values} components={components} />;
     }
 
     if (!parent) {
-      return feedTitle(activity, "added files:");
+      return <Trans i18nKey="{{author}} added files:" values={values} />;
     }
 
     if (resourceHub) {
-      return feedTitle(activity, "added files to", resourceHub, "in the", parent.link, `${parent.label}:`);
+      const sentence =
+        parent.page === "project"
+          ? i18n.t("{{author}} added files to <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> project:")
+          : parent.page === "goal"
+            ? i18n.t("{{author}} added files to <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> goal:")
+            : i18n.t("{{author}} added files to <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> space:");
+      return <Trans defaults={sentence} values={values} components={components} />;
     }
 
-    return feedTitle(activity, "added files in the", parent.link, `${parent.label}:`);
+    const sentence =
+      parent.page === "project"
+        ? i18n.t("{{author}} added files in the <parent>{{parentName}}</parent> project:")
+        : parent.page === "goal"
+          ? i18n.t("{{author}} added files in the <parent>{{parentName}}</parent> goal:")
+          : i18n.t("{{author}} added files in the <parent>{{parentName}}</parent> space:");
+    return <Trans defaults={sentence} values={values} components={components} />;
   },
 
   FeedItemContent({ activity, paths }: FeedItemProps) {
@@ -75,7 +118,7 @@ const ResourceHubFileCreated: ActivityHandler = {
       return (
         <ul className="list-disc ml-4">
           {data.files.map((file, idx) => {
-            const name = file.name ?? "a file";
+            const name = file.name ?? i18n.t("a file");
 
             if (!file.id) {
               return <li key={idx}>{name}</li>;
@@ -112,9 +155,10 @@ const ResourceHubFileCreated: ActivityHandler = {
     const data = content(activity);
 
     if (data.files?.length === 1) {
-      return "Added a file: " + (data.files[0]?.name ?? "a file");
+      const name = data.files[0]?.name;
+      return name == null ? i18n.t("Added a file: a file") : i18n.t("Added a file: {{fileName}}", { fileName: name });
     } else {
-      return "Added files";
+      return i18n.t("Added files");
     }
   },
 

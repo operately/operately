@@ -4,7 +4,9 @@ import React from "react";
 import type { ActivityContentProjectChampionUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectChampionUpdating: ActivityHandler = {
@@ -31,22 +33,39 @@ const ProjectChampionUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const newChampion = content(activity).newChampion;
-    const message = newChampion ? `assigned ${People.shortName(newChampion)} as the champion` : "removed the champion";
-
-    if (page === "project") {
-      return feedTitle(activity, message);
-    } else {
-      return feedTitle(activity, message, "on", projectLink(paths, project));
-    }
+    const sentence =
+      page === "project"
+        ? newChampion
+          ? i18n.t("{{author}} assigned {{personName}} as the champion")
+          : i18n.t("{{author}} removed the champion")
+        : newChampion
+          ? i18n.t("{{author}} assigned {{personName}} as the champion on <project>{{projectName}}</project>")
+          : i18n.t("{{author}} removed the champion on <project>{{projectName}}</project>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          personName: newChampion ? People.shortName(newChampion) : "",
+          projectName: project.name,
+        }}
+        components={{ project: projectLink(paths, project) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const oldChampion = content(activity).oldChampion;
 
     if (oldChampion) {
-      return <>Previously, {People.shortName(oldChampion)} was the champion.</>;
+      return (
+        <Trans
+          i18nKey="Previously, {{personName}} was the champion."
+          values={{ personName: People.shortName(oldChampion) }}
+        />
+      );
     } else {
-      return <>There was no previous champion.</>;
+      return <Trans i18nKey="There was no previous champion." />;
     }
   },
 
@@ -70,9 +89,9 @@ const ProjectChampionUpdating: ActivityHandler = {
     }
 
     if (newChampion) {
-      return `Changed the champion for ${project.name}`;
+      return i18n.t("Changed the champion for {{projectName}}", { projectName: project.name });
     } else {
-      return `Removed the champion for ${project.name}`;
+      return i18n.t("Removed the champion for {{projectName}}", { projectName: project.name });
     }
   },
 

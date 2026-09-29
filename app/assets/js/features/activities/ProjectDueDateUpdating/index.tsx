@@ -3,7 +3,9 @@ import type { Activity } from "@/models/activities";
 import React from "react";
 import { FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectDueDateUpdating: ActivityHandler = {
@@ -32,19 +34,28 @@ const ProjectDueDateUpdating: ActivityHandler = {
     const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newDueDate } = content(props.activity);
 
-    const message = newDueDate ? (
-      <>
-        changed the due date to <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
-      </>
-    ) : (
-      "cleared the due date"
+    const sentence =
+      props.page === "project"
+        ? newDueDate
+          ? i18n.t("{{author}} changed the due date to <date/>")
+          : i18n.t("{{author}} cleared the due date")
+        : newDueDate
+          ? i18n.t("{{author}} changed the due date to <date/> on the <project>{{projectName}}</project>")
+          : i18n.t("{{author}} cleared the due date on the <project>{{projectName}}</project>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(props.activity), projectName: project?.name }}
+        components={{
+          project: project ? projectLink(paths, project) : <React.Fragment />,
+          date: newDueDate ? (
+            <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
+          ) : (
+            <React.Fragment />
+          ),
+        }}
+      />
     );
-
-    if (props.page === "project") {
-      return feedTitle(props.activity, message);
-    } else {
-      return feedTitle(props.activity, message, " on the", projectLink(paths, project!));
-    }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
@@ -54,9 +65,9 @@ const ProjectDueDateUpdating: ActivityHandler = {
     if (oldDueDate) {
       const time = <FormattedTime {...formattedTimePreferences} time={oldDueDate} format="short-date" />;
 
-      return <>Previously the due date was {time}</>;
+      return <Trans i18nKey="Previously the due date was <date/>" components={{ date: time }} />;
     } else {
-      return <>Previously had no due date</>;
+      return <Trans i18nKey="Previously had no due date" />;
     }
   },
 
@@ -75,17 +86,18 @@ const ProjectDueDateUpdating: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newDueDate } = content(activity);
-    const projectName = project?.name ?? "the project";
+    const projectName = project?.name ?? i18n.t("the project");
 
     if (newDueDate) {
       return (
-        <>
-          Updated due date for {projectName} to{" "}
-          <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
-        </>
+        <Trans
+          i18nKey="Updated due date for {{projectName}} to <date/>"
+          values={{ projectName }}
+          components={{ date: <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" /> }}
+        />
       );
     } else {
-      return <>Cleared due date for {projectName}</>;
+      return <Trans i18nKey="Cleared due date for {{projectName}}" values={{ projectName }} />;
     }
   },
 

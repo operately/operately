@@ -2,7 +2,9 @@ import React from "react";
 import type { ActivityContentMilestoneDescriptionUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, milestoneLink, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -36,17 +38,30 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, milestone, milestoneName, hasDescription } = content(activity);
-    const title = milestone ? milestoneLink(paths, milestone, milestoneName) : `"${milestoneName}"`;
-
-    const message = hasDescription
-      ? ["updated milestone", title, "description"]
-      : ["removed description from milestone", title];
-
-    if (page === "project") {
-      return feedTitle(activity, ...message);
-    } else {
-      return feedTitle(activity, ...message, "in", projectLink(paths, project));
-    }
+    const title = milestone ? milestoneLink(paths, milestone, milestoneName) : <React.Fragment />;
+    const sentence =
+      page === "project"
+        ? hasDescription
+          ? i18n.t("{{author}} updated milestone <milestone>{{title}}</milestone> description")
+          : i18n.t("{{author}} removed description from milestone <milestone>{{title}}</milestone>")
+        : hasDescription
+          ? i18n.t(
+              "{{author}} updated milestone <milestone>{{title}}</milestone> description in <project>{{projectName}}</project>",
+            )
+          : i18n.t(
+              "{{author}} removed description from milestone <milestone>{{title}}</milestone> in <project>{{projectName}}</project>",
+            );
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          title: milestone ? milestoneName || milestone.title : `"${milestoneName}"`,
+          projectName: project.name,
+        }}
+        components={{ milestone: title, project: projectLink(paths, project) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -79,9 +94,9 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     const { milestone, hasDescription } = content(props.activity);
 
     if (hasDescription) {
-      return `Milestone "${milestone?.title}" description was updated`;
+      return i18n.t('Milestone "{{title}}" description was updated', { title: String(milestone?.title) });
     } else {
-      return `Milestone "${milestone?.title}" description was removed`;
+      return i18n.t('Milestone "{{title}}" description was removed', { title: String(milestone?.title) });
     }
   },
 

@@ -4,7 +4,9 @@ import React from "react";
 import type { ActivityContentProjectReviewerUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectReviewerUpdating: ActivityHandler = {
@@ -31,22 +33,39 @@ const ProjectReviewerUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const newReviewer = content(activity).newReviewer;
-    const message = newReviewer ? `assigned ${People.shortName(newReviewer)} as the reviewer` : "removed the reviewer";
-
-    if (page === "project") {
-      return feedTitle(activity, message);
-    } else {
-      return feedTitle(activity, message, "on", projectLink(paths, project));
-    }
+    const sentence =
+      page === "project"
+        ? newReviewer
+          ? i18n.t("{{author}} assigned {{personName}} as the reviewer")
+          : i18n.t("{{author}} removed the reviewer")
+        : newReviewer
+          ? i18n.t("{{author}} assigned {{personName}} as the reviewer on <project>{{projectName}}</project>")
+          : i18n.t("{{author}} removed the reviewer on <project>{{projectName}}</project>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          personName: newReviewer ? People.shortName(newReviewer) : "",
+          projectName: project.name,
+        }}
+        components={{ project: projectLink(paths, project) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const oldReviewer = content(activity).oldReviewer;
 
     if (oldReviewer) {
-      return <>Previously, {People.shortName(oldReviewer)} was the reviewer.</>;
+      return (
+        <Trans
+          i18nKey="Previously, {{personName}} was the reviewer."
+          values={{ personName: People.shortName(oldReviewer) }}
+        />
+      );
     } else {
-      return <>There was no previous reviewer.</>;
+      return <Trans i18nKey="There was no previous reviewer." />;
     }
   },
 
@@ -69,7 +88,10 @@ const ProjectReviewerUpdating: ActivityHandler = {
       return "";
     }
 
-    return People.firstName(props.activity.author!) + " changed the reviewer for " + project.name;
+    return i18n.t("{{author}} changed the reviewer for {{projectName}}", {
+      author: activityAuthorName(props.activity),
+      projectName: project.name,
+    });
   },
 
   NotificationLocation(props: { activity: Activity }) {

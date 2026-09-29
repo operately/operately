@@ -3,7 +3,9 @@ import type { Activity } from "@/models/activities";
 import React from "react";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectKeyResourceAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,13 +30,20 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
-      return feedTitle(activity, "deleted a key resource from the project");
+      return (
+        <Trans
+          i18nKey="{{author}} deleted a key resource from the project"
+          values={{ author: activityAuthorName(activity) }}
+        />
+      );
     } else {
-      return feedTitle(
-        activity,
-        "deleted a key resource from the",
-        projectLink(paths, content(activity).project!),
-        "project",
+      const project = content(activity).project;
+      return (
+        <Trans
+          i18nKey="{{author}} deleted a key resource from the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project?.name }}
+          components={{ project: project ? projectLink(paths, project) : <React.Fragment /> }}
+        />
       );
     }
   },
@@ -46,7 +55,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
     return (
       <div>
-        Resource:
+        <Trans i18nKey="Resource:" />
         <ul className="ml-4 list-disc">
           <li>{content(activity).title}</li>
         </ul>
@@ -67,7 +76,9 @@ const ProjectKeyResourceAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Deleted a key resource from the " + content(activity).project!.name! + " project";
+    return i18n.t("Deleted a key resource from the {{projectName}} project", {
+      projectName: content(activity).project?.name,
+    });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

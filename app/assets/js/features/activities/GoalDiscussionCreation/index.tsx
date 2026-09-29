@@ -8,7 +8,9 @@ import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import { usePaths } from "@/routes/paths";
 import { Link, IconEdit, isContentEmpty, RichContent, Summary } from "turboui";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { feedTitle, goalLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalDiscussionCreation: ActivityHandler = {
@@ -57,7 +59,7 @@ const GoalDiscussionCreation: ActivityHandler = {
         {canEdit && (
           <PageOptions.Link
             icon={IconEdit}
-            title="Edit"
+            title={i18n.t("Edit")}
             to={paths.goalDiscussionEditPath(activity.id!)}
             testId="edit"
             keepOutsideOnBigScreen
@@ -88,9 +90,22 @@ const GoalDiscussionCreation: ActivityHandler = {
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, "posted ", link);
+      return (
+        <Trans
+          i18nKey="{{author}} posted <discussion>{{title}}</discussion>"
+          values={{ author: activityAuthorName(activity), title: activity.commentThread?.title }}
+          components={{ discussion: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, "posted ", link, " on the ", goalLink(paths, content(activity).goal!), " goal");
+      const goal = content(activity).goal;
+      return (
+        <Trans
+          i18nKey="{{author}} posted <discussion>{{title}}</discussion> on the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), title: activity.commentThread?.title, goalName: goal.name }}
+          components={{ discussion: link, goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -107,7 +122,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Posted: " + activity.commentThread!.title!;
+    return i18n.t("Posted: {{title}}", { title: activity.commentThread?.title });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

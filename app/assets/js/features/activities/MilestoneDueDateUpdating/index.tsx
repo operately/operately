@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentMilestoneDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, milestoneLink, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { DateField } from "turboui";
 import { parseContextualDate } from "@/models/contextualDates";
@@ -31,17 +33,30 @@ const MilestoneDueDateUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, milestone, milestoneName, newDueDate } = content(activity);
-    const title = milestone ? milestoneLink(paths, milestone, milestoneName) : `"${milestoneName}"`;
-
-    const message = newDueDate
-      ? ["updated the due date for the", title, "milestone"]
-      : ["removed due date from the", title, "milestone"];
-
-    if (page === "project") {
-      return feedTitle(activity, ...message);
-    } else {
-      return feedTitle(activity, ...message, "in", projectLink(paths, project));
-    }
+    const title = milestone ? milestoneLink(paths, milestone, milestoneName) : <React.Fragment />;
+    const sentence =
+      page === "project"
+        ? newDueDate
+          ? i18n.t("{{author}} updated the due date for the <milestone>{{title}}</milestone> milestone")
+          : i18n.t("{{author}} removed due date from the <milestone>{{title}}</milestone> milestone")
+        : newDueDate
+          ? i18n.t(
+              "{{author}} updated the due date for the <milestone>{{title}}</milestone> milestone in <project>{{projectName}}</project>",
+            )
+          : i18n.t(
+              "{{author}} removed due date from the <milestone>{{title}}</milestone> milestone in <project>{{projectName}}</project>",
+            );
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          title: milestone ? milestoneName || milestone.title : `"${milestoneName}"`,
+          projectName: project.name,
+        }}
+        components={{ milestone: title, project: projectLink(paths, project) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -50,11 +65,13 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     if (!oldDueDate && newDueDate) {
       return (
         <span>
-          Due date was set to{" "}
-          <span className="inline-block">
-            <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />
-          </span>
-          .
+          <Trans
+            i18nKey="Due date was set to <date><value/></date>."
+            components={{
+              date: <span className="inline-block" />,
+              value: <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />,
+            }}
+          />
         </span>
       );
     }
@@ -62,11 +79,13 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     if (oldDueDate && !newDueDate) {
       return (
         <span>
-          Due date{" "}
-          <span className="inline-block">
-            <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />
-          </span>{" "}
-          was removed.
+          <Trans
+            i18nKey="Due date <date><value/></date> was removed."
+            components={{
+              date: <span className="inline-block" />,
+              value: <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />,
+            }}
+          />
         </span>
       );
     }
@@ -74,20 +93,20 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     if (oldDueDate && newDueDate) {
       return (
         <span>
-          Due date was changed from{" "}
-          <span className="inline-block">
-            <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />
-          </span>{" "}
-          to{" "}
-          <span className="inline-block">
-            <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />
-          </span>
-          .
+          <Trans
+            i18nKey="Due date was changed from <old><oldDate/></old> to <new><newDate/></new>."
+            components={{
+              old: <span className="inline-block" />,
+              new: <span className="inline-block" />,
+              oldDate: <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />,
+              newDate: <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />,
+            }}
+          />
         </span>
       );
     }
 
-    return <>Due date was updated.</>;
+    return <Trans i18nKey="Due date was updated." />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -106,9 +125,9 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     const { milestone, newDueDate } = content(props.activity);
 
     if (newDueDate) {
-      return `The "${milestone?.title}" milestone due date was updated`;
+      return i18n.t('The "{{title}}" milestone due date was updated', { title: String(milestone?.title) });
     } else {
-      return `The "${milestone?.title}" milestone due date was removed`;
+      return i18n.t('The "{{title}}" milestone due date was removed', { title: String(milestone?.title) });
     }
   },
 

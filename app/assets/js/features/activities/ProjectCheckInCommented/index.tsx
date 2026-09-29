@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink, projectCheckInLink, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -40,11 +42,29 @@ const ProjectCheckInCommented: ActivityHandler = {
     const { checkIn, comment, project } = content(activity);
     const action = checkIn?.id ? commentedLink(paths.projectCheckInPath(checkIn.id), comment) : "commented";
     const checkInLink = projectCheckInLink(paths, checkIn);
+    const components = {
+      action: typeof action === "string" ? <React.Fragment /> : action,
+      checkIn: typeof checkInLink === "string" ? <React.Fragment /> : checkInLink,
+      project: projectLink(paths, project),
+    };
+    const values = { author: activityAuthorName(activity), projectName: project.name };
 
     if (page === "project") {
-      return feedTitle(activity, action, "on", checkInLink);
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <checkIn>Check-In</checkIn>"
+          values={values}
+          components={components}
+        />
+      );
     } else {
-      return feedTitle(activity, action, "on", checkInLink, "in the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <checkIn>Check-In</checkIn> in the <project>{{projectName}}</project> project"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 
@@ -73,7 +93,7 @@ const ProjectCheckInCommented: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Re: project check-in";
+    return i18n.t("Re: project check-in");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

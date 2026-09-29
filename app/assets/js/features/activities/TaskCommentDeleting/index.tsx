@@ -3,7 +3,8 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
-import { feedTitle, projectLink, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, projectLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const TaskCommentDeleting: ActivityHandler = {
@@ -43,21 +44,51 @@ const TaskCommentDeleting: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, space, task, taskName } = content(activity);
-    const taskLink = task ? <Link to={taskPath(paths, activity)}>{task.name}</Link> : `"${taskName}"`;
+    const taskLink = task ? <Link to={taskPath(paths, activity)}>{null}</Link> : <React.Fragment />;
+    const values = {
+      author: activityAuthorName(activity),
+      taskName: task ? task.name : `"${taskName}"`,
+      projectName: project?.name,
+      spaceName: space.name,
+    };
 
     if (page === "project") {
-      return feedTitle(activity, "deleted a comment on", taskLink);
+      return (
+        <Trans
+          i18nKey="{{author}} deleted a comment on <task>{{taskName}}</task>"
+          values={values}
+          components={{ task: taskLink }}
+        />
+      );
     }
 
     if (page === "space" && !project) {
-      return feedTitle(activity, "deleted a comment on", taskLink);
+      return (
+        <Trans
+          i18nKey="{{author}} deleted a comment on <task>{{taskName}}</task>"
+          values={values}
+          components={{ task: taskLink }}
+        />
+      );
     }
 
     if (project) {
-      return feedTitle(activity, "deleted a comment on", taskLink, "in the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} deleted a comment on <task>{{taskName}}</task> in the <project>{{projectName}}</project> project"
+          values={values}
+          components={{ task: taskLink, project: projectLink(paths, project) }}
+        />
+      );
     }
 
-    return feedTitle(activity, "deleted a comment on", taskLink, "in the", spaceLink(paths, space), "space");
+    return (
+      <Trans
+        i18nKey="{{author}} deleted a comment on <task>{{taskName}}</task> in the <space>{{spaceName}}</space> space"
+        values={values}
+        components={{ task: taskLink, space: spaceLink(paths, space) }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -78,7 +109,7 @@ const TaskCommentDeleting: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const { task, taskName } = content(activity);
-    return <>Re: {task?.name ?? taskName}</>;
+    return <Trans i18nKey="Re: {{title}}" values={{ title: task?.name ?? taskName }} />;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
