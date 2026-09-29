@@ -30,29 +30,7 @@ export const resetWorkMapExpandedState = async (_canvasElement: StoryCanvas, ste
 
 export const selectTab = async (canvasElement: StoryCanvas, step: StoryStep, tab: WorkMapTab) => {
   await step("Select the " + tab + " tab", async () => {
-    let tabLabel: string;
-
-    switch (tab) {
-      case "all":
-        tabLabel = "All work";
-        break;
-      case "goals":
-        tabLabel = "Goals";
-        break;
-      case "projects":
-        tabLabel = "Projects";
-        break;
-      case "completed":
-        tabLabel = "Completed";
-        break;
-      case "paused":
-        tabLabel = "Paused";
-        break;
-      default:
-        tabLabel = tab;
-    }
-
-    const tabTestId = `tab-${tabLabel.toLowerCase()}`;
+    const tabTestId = `tab-${tab}`;
     const tabElement = canvasElement.querySelector(`[data-test-id="${tabTestId}"]`);
     expect(tabElement).not.toBeNull();
     await userEvent.click(tabElement!);

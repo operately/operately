@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import classNames from "../utils/classnames";
 import { useFileDragAndDrop } from "./useFileDragAndDrop";
@@ -9,11 +10,8 @@ interface FileDragAndDropAreaProps {
   label?: string;
 }
 
-export function FileDragAndDropArea({
-  children,
-  onFilesDropped,
-  label = "Drop files here to upload them",
-}: FileDragAndDropAreaProps) {
+export function FileDragAndDropArea({ children, onFilesDropped, label }: FileDragAndDropAreaProps) {
+  const { t } = useTranslation();
   const { isFileDragging } = useFileDragAndDrop(onFilesDropped);
 
   const overlayClassName = classNames(
@@ -33,7 +31,7 @@ export function FileDragAndDropArea({
 
       <div className={overlayClassName}>
         <div className="flex items-center justify-center h-full">
-          <div className={messageClassName}>{label}</div>
+          <div className={messageClassName}>{label ?? t("Drop files here to upload them")}</div>
         </div>
       </div>
     </>

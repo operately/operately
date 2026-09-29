@@ -52,7 +52,7 @@ export function Page() {
     return () => dismissToast(id);
   }, [company.id, creationFailed]);
 
-  const title = `${company.name} Work Map`;
+  const title = t("{{company}} Work Map", { company: company.name });
 
   const canAddItem = !creationData.isLoading && !creationData.error && (spacesCount ?? 0) > 0;
   const ownerIds = companyLoaderData.company.owners?.map((owner) => owner.id) ?? [];

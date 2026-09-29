@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
@@ -154,6 +155,7 @@ interface ResourceStatus {
 }
 
 function Header(props: GoalsHeader | ProjectsHeader) {
+  const { t } = useTranslation();
   const status: ResourceStatus =
     props.type === "goals" ? calculateGoalStatuses(props.goals) : calculateProjectStatuses(props.projects);
 
@@ -175,7 +177,9 @@ function Header(props: GoalsHeader | ProjectsHeader) {
           { percentage: pausedPercentage, color: "rgb(156, 163, 175)" },
         ]}
       />
-      {status.on_track}/{status.total} {props.type} on track
+      {props.type === "goals"
+        ? t("{{onTrack}}/{{total}} goals on track", { onTrack: status.on_track, total: status.total })
+        : t("{{onTrack}}/{{total}} projects on track", { onTrack: status.on_track, total: status.total })}
     </div>
   );
 }

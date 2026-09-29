@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import type { Page } from "turboui";
 import { IconCopy, IconEdit, IconFileExport, IconHistory, IconTrash, IconLink } from "turboui";
@@ -20,6 +21,7 @@ export function useDocumentPageOptions({
   showDeleteModal,
   showPublicSharingModal,
 }: Props): Page.Option[] {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { document } = useLoadedData();
 
@@ -30,7 +32,7 @@ export function useDocumentPageOptions({
       {
         type: "action",
         icon: IconLink,
-        label: document.publicUrl ? "Manage public sharing" : "Share publicly",
+        label: document.publicUrl ? t("Manage public sharing") : t("Share publicly"),
         onClick: showPublicSharingModal,
         hidden: document.state !== "published" || !document.permissions?.canEditDocument,
         testId: "share-document-publicly",
@@ -38,7 +40,7 @@ export function useDocumentPageOptions({
       {
         type: "link",
         icon: IconEdit,
-        label: "Edit",
+        label: t("Edit"),
         link: paths.resourceHubEditDocumentPath(document.id!),
         hidden: !document.permissions?.canEditDocument,
         keepOutsideOnBigScreen: true,
@@ -47,7 +49,7 @@ export function useDocumentPageOptions({
       {
         type: "action",
         icon: IconCopy,
-        label: "Copy",
+        label: t("Copy"),
         onClick: showCopyModal,
         hidden: !document.permissions?.canCreateDocument,
         testId: "copy-document-link",
@@ -55,7 +57,7 @@ export function useDocumentPageOptions({
       {
         type: "link",
         icon: IconHistory,
-        label: "History of changes",
+        label: t("History of changes"),
         link: paths.resourceHubDocumentVersionsPath(document.id!),
         hidden: !document.permissions?.canView,
         testId: "version-history-link",
@@ -63,7 +65,7 @@ export function useDocumentPageOptions({
       {
         type: "action",
         icon: IconFileExport,
-        label: "Export as Markdown",
+        label: t("Export as Markdown"),
         onClick: () => {
           const content = JSON.parse(document.content!);
           const markdown = exportToMarkdown(content, { removeEmbeds: true });
@@ -75,7 +77,7 @@ export function useDocumentPageOptions({
       {
         type: "action",
         icon: IconTrash,
-        label: "Delete",
+        label: t("Delete"),
         onClick: showDeleteModal,
         hidden: !document.permissions?.canDeleteDocument,
         testId: "delete-resource-link",
@@ -84,6 +86,7 @@ export function useDocumentPageOptions({
 
     return options;
   }, [
+    t,
     document.content,
     document.state,
     document.publicUrl,

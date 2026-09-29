@@ -7,7 +7,7 @@ import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 
 import { Title } from "../components";
-import plurarize from "@/utils/plurarize";
+import { tn } from "@/i18n";
 import { IconTrophy } from "turboui";
 
 interface Props {
@@ -35,33 +35,20 @@ export function AllDoneState(props: Props) {
 function message(props: Props) {
   const stats = calcStats(props);
 
-  const constructMessage = (goals: number, projects: number, when: string) => {
-    const goalsMsg = plurarize(goals, "goal", "goals");
-    const projectsMsg = plurarize(projects, "project", "projects");
-
-    if (goals > 0 && projects > 0) {
-      return `${goalsMsg} and ${projectsMsg} completed ${when}.`;
-    } else if (goals > 0) {
-      return `${goalsMsg} completed ${when}.`;
-    } else {
-      return `${projectsMsg} completed ${when}.`;
-    }
-  };
-
   if (stats.completedGoals.thisQuarter > 0 || stats.completedProjects.thisQuarter > 0) {
-    return constructMessage(stats.completedGoals.thisQuarter, stats.completedProjects.thisQuarter, "this quarter");
+    return completedWorkMessage(stats.completedGoals.thisQuarter, stats.completedProjects.thisQuarter, "thisQuarter");
   }
 
   if (stats.completedGoals.lastQuarter > 0 || stats.completedProjects.lastQuarter > 0) {
-    return constructMessage(stats.completedGoals.lastQuarter, stats.completedProjects.lastQuarter, "last quarter");
+    return completedWorkMessage(stats.completedGoals.lastQuarter, stats.completedProjects.lastQuarter, "lastQuarter");
   }
 
   if (stats.completedGoals.thisYear > 0 || stats.completedProjects.thisYear > 0) {
-    return constructMessage(stats.completedGoals.thisYear, stats.completedProjects.thisYear, "this year");
+    return completedWorkMessage(stats.completedGoals.thisYear, stats.completedProjects.thisYear, "thisYear");
   }
 
   if (stats.completedGoals.lastYear > 0 || stats.completedProjects.lastYear > 0) {
-    return constructMessage(stats.completedGoals.lastYear, stats.completedProjects.lastYear, "last year");
+    return completedWorkMessage(stats.completedGoals.lastYear, stats.completedProjects.lastYear, "lastYear");
   }
 
   // Leave it empty if no goals or projects were completed in the last two years
@@ -81,6 +68,75 @@ interface Stats {
     thisYear: number;
     lastYear: number;
   };
+}
+
+function completedWorkMessage(goals: number, projects: number, period: keyof Stats["completedGoals"]) {
+  // Keep both resource nouns and the time period in the sentence. The project
+  // count selects the plural form when both kinds of work are present.
+  switch (period) {
+    case "thisQuarter":
+      if (goals === 0)
+        return tn("1 project completed this quarter.", "{{count}} projects completed this quarter.", projects);
+      if (projects === 0) return tn("1 goal completed this quarter.", "{{count}} goals completed this quarter.", goals);
+      if (goals === 1)
+        return tn(
+          "1 goal and 1 project completed this quarter.",
+          "1 goal and {{count}} projects completed this quarter.",
+          projects,
+        );
+      return tn(
+        "{{goals}} goals and 1 project completed this quarter.",
+        "{{goals}} goals and {{count}} projects completed this quarter.",
+        projects,
+        { goals },
+      );
+    case "lastQuarter":
+      if (goals === 0)
+        return tn("1 project completed last quarter.", "{{count}} projects completed last quarter.", projects);
+      if (projects === 0) return tn("1 goal completed last quarter.", "{{count}} goals completed last quarter.", goals);
+      if (goals === 1)
+        return tn(
+          "1 goal and 1 project completed last quarter.",
+          "1 goal and {{count}} projects completed last quarter.",
+          projects,
+        );
+      return tn(
+        "{{goals}} goals and 1 project completed last quarter.",
+        "{{goals}} goals and {{count}} projects completed last quarter.",
+        projects,
+        { goals },
+      );
+    case "thisYear":
+      if (goals === 0) return tn("1 project completed this year.", "{{count}} projects completed this year.", projects);
+      if (projects === 0) return tn("1 goal completed this year.", "{{count}} goals completed this year.", goals);
+      if (goals === 1)
+        return tn(
+          "1 goal and 1 project completed this year.",
+          "1 goal and {{count}} projects completed this year.",
+          projects,
+        );
+      return tn(
+        "{{goals}} goals and 1 project completed this year.",
+        "{{goals}} goals and {{count}} projects completed this year.",
+        projects,
+        { goals },
+      );
+    case "lastYear":
+      if (goals === 0) return tn("1 project completed last year.", "{{count}} projects completed last year.", projects);
+      if (projects === 0) return tn("1 goal completed last year.", "{{count}} goals completed last year.", goals);
+      if (goals === 1)
+        return tn(
+          "1 goal and 1 project completed last year.",
+          "1 goal and {{count}} projects completed last year.",
+          projects,
+        );
+      return tn(
+        "{{goals}} goals and 1 project completed last year.",
+        "{{goals}} goals and {{count}} projects completed last year.",
+        projects,
+        { goals },
+      );
+  }
 }
 
 function calcStats(props: Props): Stats {

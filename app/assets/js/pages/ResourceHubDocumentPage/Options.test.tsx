@@ -1,5 +1,6 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import { renderHook } from "@/__tests__/renderHook";
+import "@/i18n";
 import { useDocumentPageOptions } from "./Options";
 import { useLoadedData } from "./loader";
 

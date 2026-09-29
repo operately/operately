@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { WorkMap } from "..";
 import FormattedTime, { type FormattedTimePreferences } from "../../../FormattedTime";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function AssignedDateCell({ assignedAt, hide, formattedTimePreferences }: Props) {
+  const { t } = useTranslation();
   if (hide) return null;
 
   return (
@@ -19,7 +21,7 @@ export function AssignedDateCell({ assignedAt, hide, formattedTimePreferences }:
           <FormattedTime {...formattedTimePreferences} time={assignedAt} format="short-date" />
         </span>
       ) : (
-        <span className="text-sm text-content-dimmed">N/A</span>
+        <span className="text-sm text-content-dimmed">{t("N/A")}</span>
       )}
     </td>
   );

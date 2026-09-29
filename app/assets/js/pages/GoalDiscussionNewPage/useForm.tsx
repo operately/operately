@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import { Forms } from "turboui";
 import { SubscriptionsState } from "@/models/subscriptions";
@@ -13,6 +14,7 @@ type FormValues = {
 };
 
 export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
   const create = Goals.useCreateGoalDiscussion();
@@ -23,7 +25,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
     },
     validate: (addError) => {
       if (isContentEmpty(form.values.message)) {
-        addError("message", "Body is required");
+        addError("message", t("Body is required"));
       }
     },
     submit: async () => {

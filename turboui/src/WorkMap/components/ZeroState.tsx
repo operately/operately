@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import type { WorkMap } from "..";
 import { PrimaryButton } from "../../Button";
@@ -30,12 +31,13 @@ export function ZeroState(props: ZeroStateProps) {
 }
 
 function ZeroStateCannotAdd({ message }: { message?: string }) {
+  const { t } = useTranslation();
   return (
     <div className="py-12 relative">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center relative z-10">
         <IconGrowth size={60} className="text-lime-500 my-4" stroke={1} />
-        Nothing here yet. <br />
-        {message || "Assigned goals and projects will appear here."}
+        {t("Nothing here yet.")} <br />
+        {message || t("Assigned goals and projects will appear here.")}
       </div>
     </div>
   );
@@ -49,6 +51,7 @@ export function ZeroStateCanAdd({
   projectTemplates,
   onCreateProjectTemplate,
 }: ZeroStateProps) {
+  const { t } = useTranslation();
   const [modalState, setModalState] = React.useState<{
     isOpen: boolean;
     type: AddItemModal.ItemType;
@@ -63,30 +66,32 @@ export function ZeroStateCanAdd({
   return (
     <div className="py-12 relative">
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center relative z-10">
-        <h2 className="text-base font-semibold text-content-strong sm:text-xl">Start by adding a goal or project</h2>
+        <h2 className="text-base font-semibold text-content-strong sm:text-xl">
+          {t("Start by adding a goal or project")}
+        </h2>
         <p className="mt-2 text-content-dimmed">
-          See what you and your team are working on, with progress and deadlines.
+          {t("See what you and your team are working on, with progress and deadlines.")}
         </p>
 
         <div className="mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-6">
           <ZeroStateCard
             icon={<IconGoal size={40} className="p-2 rounded-lg bg-red-50 dark:bg-red-900" />}
-            title="Add a goal"
-            description="Long-term outcomes you're working toward. Track overall progress and impact."
+            title={t("Add a goal")}
+            description={t("Long-term outcomes you're working toward. Track overall progress and impact.")}
             onClick={open("goal")}
             testId="add-goal"
           />
           <ZeroStateCard
             icon={<IconProject size={40} className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900" />}
-            title="Add a project"
-            description="Concrete steps and tasks with specific deliverables. Get things done."
+            title={t("Add a project")}
+            description={t("Concrete steps and tasks with specific deliverables. Get things done.")}
             onClick={open("project")}
             testId="add-project"
           />
         </div>
 
         <p className="mt-8 text-xs text-content-dimmed sm:text-sm">
-          Not sure? Start with a project - you can always set goals later.
+          {t("Not sure? Start with a project - you can always set goals later.")}
         </p>
       </div>
 
@@ -108,6 +113,7 @@ export function ZeroStateCanAdd({
 }
 
 function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onItemCreated }: ZeroStateProps) {
+  const { t } = useTranslation();
   const [navigationPending, setNavigationPending] = React.useState(false);
   const [goalModalOpen, setGoalModalOpen] = React.useState(false);
 
@@ -115,7 +121,7 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
     fields: { name: "" },
     validate: (addError) => {
       if (!form.values.name.trim()) {
-        addError("name", "Enter a project name.");
+        addError("name", t("Enter a project name."));
       }
     },
     submit: async () => {
@@ -135,7 +141,7 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
     onError: (error) => {
       console.error("Failed to create project:", error);
       setNavigationPending(false);
-      form.actions.addErrors({ name: "The project could not be created. Try again." });
+      form.actions.addErrors({ name: t("The project could not be created. Try again.") });
     },
   });
 
@@ -145,9 +151,9 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
     <div className="px-4 py-12 sm:py-16" data-test-id="first-project-zero-state">
       <div className="mx-auto flex max-w-sm flex-col items-center gap-6 text-center">
         <div className="flex flex-col items-center gap-2">
-          <h2 className="text-balance text-xl font-semibold text-content-strong">Add your first project</h2>
+          <h2 className="text-balance text-xl font-semibold text-content-strong">{t("Add your first project")}</h2>
           <p className="max-w-[42ch] text-pretty text-base text-content-dimmed sm:text-sm">
-            Start with something already in motion. You can add tasks, milestones, and teammates next.
+            {t("Start with something already in motion. You can add tasks, milestones, and teammates next.")}
           </p>
         </div>
 
@@ -157,29 +163,32 @@ function FirstProjectZeroState({ spaceSearch, addItem, addItemDefaultSpace, onIt
               <Forms.TextInput
                 autoFocus
                 field="name"
-                label="Project name"
-                placeholder="e.g. Launch the new website"
+                label={t("Project name")}
+                placeholder={t("e.g. Launch the new website")}
                 testId="first-project-name"
               />
             </Forms.FieldGroup>
 
             <PrimaryButton className="w-full" type="submit" loading={submitting} testId="create-first-project">
-              Create project
+              {t("Create project")}
             </PrimaryButton>
           </div>
         </Forms.Form>
 
         <p className="text-pretty text-base text-content-dimmed sm:text-sm">
-          Tracking an outcome instead?{" "}
-          <ActionLink
-            underline="hover"
-            className="font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
-            onClick={() => setGoalModalOpen(true)}
-            testId="add-first-goal"
-          >
-            Add a goal
-          </ActionLink>
-          .
+          <Trans
+            i18nKey="Tracking an outcome instead? <goal>Add a goal</goal>."
+            components={{
+              goal: (
+                <ActionLink
+                  underline="hover"
+                  className="font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
+                  onClick={() => setGoalModalOpen(true)}
+                  testId="add-first-goal"
+                />
+              ),
+            }}
+          />
         </p>
       </div>
 

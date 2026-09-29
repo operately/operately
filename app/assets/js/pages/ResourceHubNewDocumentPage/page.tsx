@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { resourceHubLandingPath, useCreateDocument } from "@/models/resourceHubs";
@@ -12,6 +13,7 @@ import { useLoadedData } from "./loader";
 import { buildNewDocumentPageNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { resourceHub, folder } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -45,14 +47,14 @@ export function Page() {
       navigate(paths.resourceHubDocumentPath(document.id));
       return true;
     } catch {
-      showErrorToast("Document not created", "Check the form and try again.");
+      showErrorToast(t("Document not created"), t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <NewDocumentPage
-      pageTitle="New Document"
+      pageTitle={t("New Document")}
       navigation={buildNewDocumentPageNavigation(resourceHub, folder, paths)}
       testId="resource-hub-new-document-page"
       richTextHandlers={richTextHandlers}

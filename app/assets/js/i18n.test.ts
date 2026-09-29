@@ -123,6 +123,10 @@ describe("i18n", () => {
       expect(i18n.t("Your drafts ({{count}})", { count: 3 })).toBe("Seus rascunhos (3)");
       expect(i18n.t("Save as draft")).toBe("Salvar como rascunho");
       expect(i18n.t("Work map view")).toBe("Visualização do mapa de trabalho");
+      expect(i18n.t("Discard draft")).toBe("Descartar rascunho");
+      expect(i18n.t("Upload files")).toBe("Enviar arquivos");
+      expect(i18n.t("{{company}} Work Map", { company: "Acme" })).toBe("Mapa de trabalho de Acme");
+      expect(tn("1 item", "{{count}} items", 3)).toBe("3 itens");
       expect(tn("1 completed milestone", "{{count}} completed milestones", 0)).toBe("0 marcos concluídos");
       expect(tn("1 completed milestone", "{{count}} completed milestones", 1)).toBe("1 marco concluído");
       expect(tn("1 completed milestone", "{{count}} completed milestones", 3)).toBe("3 marcos concluídos");

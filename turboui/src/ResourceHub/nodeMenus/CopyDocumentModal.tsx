@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import * as Forms from "../../Forms";
 import {
@@ -17,11 +18,12 @@ interface CopyDocumentModalProps {
 }
 
 export function CopyDocumentModal({ resource, isOpen, hideModal }: CopyDocumentModalProps) {
+  const { t } = useTranslation();
   const { parent, actions } = useResourceHubNodesListContext();
 
   const form = Forms.useForm({
     fields: {
-      name: `${getResourceName(resource)} - Copy`,
+      name: t("{{name}} - Copy", { name: getResourceName(resource) }),
       location: {
         id: parent.id,
         type: parent.type === "folder" ? "folder" : "resourceHub",
@@ -56,12 +58,7 @@ interface CopyDocumentModalWrapperProps {
   hideModal: () => void;
 }
 
-export function CopyDocumentModalWrapper({
-  listContext,
-  document,
-  isOpen,
-  hideModal,
-}: CopyDocumentModalWrapperProps) {
+export function CopyDocumentModalWrapper({ listContext, document, isOpen, hideModal }: CopyDocumentModalWrapperProps) {
   return (
     <ResourceHubNodesListProvider value={listContext}>
       <CopyDocumentModal resource={document} isOpen={isOpen} hideModal={hideModal} />
