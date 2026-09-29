@@ -2,12 +2,13 @@ import { textblockTypeInputRule } from "@tiptap/core";
 import Heading from "@tiptap/extension-heading";
 
 export const EDITOR_HEADING_LEVELS = [2, 3, 4] as const;
+const MARKDOWN_HEADING_LEVELS = [1, ...EDITOR_HEADING_LEVELS] as const;
 
-// Preserve all heading levels in stored content; limit only authoring shortcuts
-// and toolbar controls so existing headings still render and round-trip correctly.
+// Preserve all heading levels in stored content; limit only toolbar controls
+// and keyboard shortcuts so existing headings still render and round-trip correctly.
 export const HeadingExtension = Heading.extend({
   addInputRules() {
-    return EDITOR_HEADING_LEVELS.map((level) =>
+    return MARKDOWN_HEADING_LEVELS.map((level) =>
       textblockTypeInputRule({
         find: new RegExp(`^(#{${level}})\\s$`),
         type: this.type,

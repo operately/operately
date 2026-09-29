@@ -60,7 +60,7 @@ describe("RichEditor markdown input rules", () => {
     expect(firstText(strike).marks).toEqual([{ type: "strike" }]);
   });
 
-  it.each([2, 3, 4])("converts H%i while typing", (level) => {
+  it.each([1, 2, 3, 4])("converts H%i while typing", (level) => {
     const editor = makeEditor();
     type(editor, "#".repeat(level), " ");
     expect(firstChild(editor)).toMatchObject({ type: "heading", attrs: { level } });
@@ -68,7 +68,7 @@ describe("RichEditor markdown input rules", () => {
     editor.destroy();
   });
 
-  it.each([1, 5, 6])("does not convert H%i while typing", (level) => {
+  it.each([5, 6])("does not convert H%i while typing", (level) => {
     const editor = makeEditor();
     type(editor, "#".repeat(level), " ");
     expect(firstChild(editor).type).toBe("paragraph");
