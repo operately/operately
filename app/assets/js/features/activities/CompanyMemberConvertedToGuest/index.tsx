@@ -1,5 +1,8 @@
 import { ActivityContentCompanyMemberConvertedToGuest } from "@/api";
-import { feedTitle, personLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, personLink } from "../feedItemLinks";
 
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
@@ -29,9 +32,20 @@ const CompanyMemberConvertedToGuest: ActivityHandler = {
     const { person } = content(activity);
 
     if (person) {
-      return feedTitle(activity, "converted", personLink(paths, person), "to an outside collaborator");
+      return (
+        <Trans
+          i18nKey="{{author}} converted <person>{{personName}}</person> to an outside collaborator"
+          values={{ author: activityAuthorName(activity), personName: person.fullName }}
+          components={{ person: personLink(paths, person) }}
+        />
+      );
     } else {
-      return feedTitle(activity, "converted a team member to an outside collaborator");
+      return (
+        <Trans
+          i18nKey="{{author}} converted a team member to an outside collaborator"
+          values={{ author: activityAuthorName(activity) }}
+        />
+      );
     }
   },
 
@@ -52,7 +66,7 @@ const CompanyMemberConvertedToGuest: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Converted your account to an outside collaborator";
+    return i18n.t("Converted your account to an outside collaborator");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

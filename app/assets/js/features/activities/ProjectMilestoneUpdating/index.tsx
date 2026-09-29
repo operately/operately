@@ -3,7 +3,9 @@ import React from "react";
 import { ActivityContentProjectMilestoneUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { DateField } from "turboui";
 import { parseContextualDate } from "@/models/contextualDates";
@@ -35,18 +37,21 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     const oldName = content(props.activity).oldMilestoneName!;
     const newName = content(props.activity).newMilestoneName!;
 
-    let message;
-    if (oldName !== newName) {
-      message = `updated the milestone ${oldName} to ${newName}`;
-    } else {
-      message = `updated the milestone ${oldName}`;
-    }
-
-    if (props.page === "project") {
-      return feedTitle(props.activity, message);
-    } else {
-      return feedTitle(props.activity, message, "in", projectLink(paths, project));
-    }
+    const sentence =
+      props.page === "project"
+        ? oldName !== newName
+          ? i18n.t("{{author}} updated the milestone {{oldName}} to {{newName}}")
+          : i18n.t("{{author}} updated the milestone {{oldName}}")
+        : oldName !== newName
+          ? i18n.t("{{author}} updated the milestone {{oldName}} to {{newName}} in <project>{{projectName}}</project>")
+          : i18n.t("{{author}} updated the milestone {{oldName}} in <project>{{projectName}}</project>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(props.activity), oldName, newName, projectName: project.name }}
+        components={{ project: projectLink(paths, project) }}
+      />
+    );
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
@@ -62,14 +67,23 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     if (!oldTimeframe?.contextualEndDate && newTimeframe?.contextualEndDate) {
       return (
         <div className="text-sm text-gray-600 flex gap-1">
-          Date added: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />
+          <Trans
+            i18nKey="Date added: <date/>"
+            components={{
+              date: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
+            }}
+          />
         </div>
       );
     }
 
     // Removed timeframe/date
     if (oldTimeframe?.contextualEndDate && !newTimeframe?.contextualEndDate) {
-      return <div className="text-sm text-gray-600">Date removed</div>;
+      return (
+        <div className="text-sm text-gray-600">
+          <Trans i18nKey="Date removed" />
+        </div>
+      );
     }
 
     if (oldTimeframe?.contextualEndDate && newTimeframe?.contextualEndDate) {
@@ -80,10 +94,13 @@ const ProjectMilestoneUpdating: ActivityHandler = {
       if (oldDateValue !== newDateValue) {
         return (
           <div className="text-sm text-gray-600 flex gap-1">
-            Date changed from
-            <DateField date={parseContextualDate(oldTimeframe.contextualEndDate)} readonly hideCalendarIcon />
-            to
-            <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />
+            <Trans
+              i18nKey="Date changed from <old/> to <new/>"
+              components={{
+                old: <DateField date={parseContextualDate(oldTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
+                new: <DateField date={parseContextualDate(newTimeframe.contextualEndDate)} readonly hideCalendarIcon />,
+              }}
+            />
           </div>
         );
       }

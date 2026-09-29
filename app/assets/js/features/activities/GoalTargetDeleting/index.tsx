@@ -3,7 +3,8 @@ import React from "react";
 import type { ActivityContentGoalTargetDeleting } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalTargetDeleting: ActivityHandler = {
@@ -31,12 +32,22 @@ const GoalTargetDeleting: ActivityHandler = {
     const { paths } = props;
     const goal = content(props.activity).goal!;
     const targetName = content(props.activity).targetName!;
-    const message = `deleted the ${targetName} target`;
 
     if (props.page === "goal") {
-      return feedTitle(props.activity, message);
+      return (
+        <Trans
+          i18nKey="{{author}} deleted the {{targetName}} target"
+          values={{ author: activityAuthorName(props.activity), targetName }}
+        />
+      );
     } else {
-      return feedTitle(props.activity, message, "to", goalLink(paths, goal));
+      return (
+        <Trans
+          i18nKey="{{author}} deleted the {{targetName}} target to <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(props.activity), targetName, goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 

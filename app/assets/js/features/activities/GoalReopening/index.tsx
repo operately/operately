@@ -5,12 +5,14 @@ import { Activity, ActivityContentGoalClosing } from "@/api";
 import { isContentEmpty, Link, RichContent, Summary } from "turboui";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
-    return `Goal reopened`;
+    return i18n.t("Goal reopened");
   },
 
   pagePath(paths, activity: Activity): string {
@@ -18,7 +20,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Goal reopened</>;
+    return <Trans i18nKey="Goal reopened" />;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -44,12 +46,25 @@ const GoalClosing: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalActivityPath(activity.id!);
-    const link = <Link to={path}>reopened</Link>;
+    const link = <Link to={path}>{null}</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, link, "the goal");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>reopened</action> the goal"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ action: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, link, "the", goalLink(paths, content(activity).goal!), "goal");
+      const goal = content(activity).goal;
+      return (
+        <Trans
+          i18nKey="{{author}} <action>reopened</action> the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ action: link, goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -82,7 +97,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Reopened the " + content(activity).goal!.name! + " goal";
+    return i18n.t("Reopened the {{goalName}} goal", { goalName: content(activity).goal.name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

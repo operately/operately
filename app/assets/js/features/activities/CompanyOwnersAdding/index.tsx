@@ -1,5 +1,7 @@
-import { namesListToString } from "@/models/people";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, activityPeopleNames } from "../feedItemLinks";
 
 import type { ActivityContentCompanyOwnersAdding } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -29,9 +31,14 @@ const CompanyOwnersAdding: ActivityHandler = {
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
     const people = content(activity).people!.map((p) => p.person!);
-    const names = namesListToString(people);
+    const names = activityPeopleNames(people);
 
-    return feedTitle(activity, "promoted", names, "to account owner");
+    return (
+      <Trans
+        i18nKey="{{author}} promoted {{names}} to account owner"
+        values={{ author: activityAuthorName(activity), names }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -51,7 +58,7 @@ const CompanyOwnersAdding: ActivityHandler = {
   },
 
   NotificationTitle(_activity: { activity: Activity }) {
-    return "Promoted you to an account owner";
+    return i18n.t("Promoted you to an account owner");
   },
 
   NotificationLocation(_props: { activity: Activity }) {

@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link } from "turboui";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 
 const GoalRetrospectiveAcknowledged: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,12 +33,24 @@ const GoalRetrospectiveAcknowledged: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const goal = content(activity).goal!;
     const path = paths.goalActivityPath(content(activity).retrospectiveId!);
-    const link = <Link to={path}>Retrospective</Link>;
+    const link = <Link to={path}>{null}</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, "acknowledged the", link);
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged the <retrospective>Retrospective</retrospective>"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ retrospective: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, "acknowledged the", link, "in the", goalLink(paths, goal), "goal");
+      return (
+        <Trans
+          i18nKey="{{author}} acknowledged the <retrospective>Retrospective</retrospective> in the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ retrospective: link, goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -57,7 +71,7 @@ const GoalRetrospectiveAcknowledged: ActivityHandler = {
   },
 
   NotificationTitle(_: { activity: Activity }) {
-    return "Acknowledged retrospective";
+    return i18n.t("Acknowledged retrospective");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

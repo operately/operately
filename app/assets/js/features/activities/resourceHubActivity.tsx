@@ -15,23 +15,15 @@ type ScopeData = ParentData & {
 
 type ParentDescriptor = {
   link: JSX.Element;
-  label: "goal" | "project" | "space";
+  name: string;
   page: "goal" | "project" | "space";
 };
-
-export function resourceHubParentParts(paths: Paths, page: string, data: ParentData): Array<string | JSX.Element> {
-  const parent = visibleParentDescriptor(paths, page, data);
-
-  if (!parent) return [];
-
-  return ["in the", parent.link, parent.label];
-}
 
 function resourceHubParentDescriptor(paths: Paths, data: ParentData): ParentDescriptor | null {
   if (data.project) {
     return {
       link: projectLink(paths, data.project),
-      label: "project",
+      name: data.project.name,
       page: "project",
     };
   }
@@ -39,7 +31,7 @@ function resourceHubParentDescriptor(paths: Paths, data: ParentData): ParentDesc
   if (data.goal) {
     return {
       link: goalDocsAndFilesLink(paths, data.goal),
-      label: "goal",
+      name: data.goal.name,
       page: "goal",
     };
   }
@@ -47,7 +39,7 @@ function resourceHubParentDescriptor(paths: Paths, data: ParentData): ParentDesc
   if (data.space) {
     return {
       link: spaceLink(paths, data.space),
-      label: "space",
+      name: data.space.name,
       page: "space",
     };
   }

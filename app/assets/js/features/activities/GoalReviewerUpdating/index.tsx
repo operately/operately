@@ -4,7 +4,9 @@ import React from "react";
 import type { ActivityContentGoalReviewerUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalReviewerUpdating: ActivityHandler = {
@@ -31,22 +33,39 @@ const GoalReviewerUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const goal = content(activity).goal!;
     const newReviewer = content(activity).newReviewer;
-    const message = newReviewer ? `assigned ${People.shortName(newReviewer)} as the reviewer` : "removed the reviewer";
-
-    if (page === "goal") {
-      return feedTitle(activity, message);
-    } else {
-      return feedTitle(activity, message, "on", goalLink(paths, goal));
-    }
+    const sentence =
+      page === "goal"
+        ? newReviewer
+          ? i18n.t("{{author}} assigned {{personName}} as the reviewer")
+          : i18n.t("{{author}} removed the reviewer")
+        : newReviewer
+          ? i18n.t("{{author}} assigned {{personName}} as the reviewer on <goal>{{goalName}}</goal>")
+          : i18n.t("{{author}} removed the reviewer on <goal>{{goalName}}</goal>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          personName: newReviewer ? People.shortName(newReviewer) : "",
+          goalName: goal.name,
+        }}
+        components={{ goal: goalLink(paths, goal) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const oldReviewer = content(activity).oldReviewer;
 
     if (oldReviewer) {
-      return <>Previously, {People.shortName(oldReviewer)} was the reviewer.</>;
+      return (
+        <Trans
+          i18nKey="Previously, {{personName}} was the reviewer."
+          values={{ personName: People.shortName(oldReviewer) }}
+        />
+      );
     } else {
-      return <>There was no previous reviewer.</>;
+      return <Trans i18nKey="There was no previous reviewer." />;
     }
   },
 
@@ -63,7 +82,7 @@ const GoalReviewerUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    return People.firstName(props.activity.author!) + " assigned you as the reviewer";
+    return i18n.t("{{author}} assigned you as the reviewer", { author: activityAuthorName(props.activity) });
   },
 
   NotificationLocation(props: { activity: Activity }) {

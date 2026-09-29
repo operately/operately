@@ -2,7 +2,9 @@ import React from "react";
 
 import { Activity, ActivityContentGoalReparent } from "@/api";
 
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalReparent: ActivityHandler = {
@@ -33,9 +35,15 @@ const GoalReparent: ActivityHandler = {
     const goal = data.goal ? goalLink(paths, data.goal) : null;
 
     if (page === "goal" || !goal) {
-      return feedTitle(activity, "changed the parent goal");
+      return <Trans i18nKey="{{author}} changed the parent goal" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "changed the parent goal of", goal);
+      return (
+        <Trans
+          i18nKey="{{author}} changed the parent goal of <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(activity), goalName: data.goal?.name }}
+          components={{ goal }}
+        />
+      );
     }
   },
 
@@ -43,26 +51,40 @@ const GoalReparent: ActivityHandler = {
     const { paths } = props;
     const { newParentGoal, oldParentGoal } = content(props.activity);
 
-    const oldParentLink = oldParentGoal ? goalLink(paths, oldParentGoal) : null;
-    const newParentLink = newParentGoal ? goalLink(paths, newParentGoal) : null;
+    const oldParentLink = oldParentGoal ? goalLink(paths, oldParentGoal) : <React.Fragment />;
+    const newParentLink = newParentGoal ? goalLink(paths, newParentGoal) : <React.Fragment />;
 
     if (newParentGoal && oldParentGoal) {
       return (
-        <>
-          Changed the parent goal from {oldParentLink} to {newParentLink}.
-        </>
+        <Trans
+          i18nKey="Changed the parent goal from <old>{{oldName}}</old> to <new>{{newName}}</new>."
+          values={{ oldName: oldParentGoal.name, newName: newParentGoal.name }}
+          components={{ old: oldParentLink, new: newParentLink }}
+        />
       );
     }
 
     if (newParentGoal) {
-      return <>Changed the parent goal to {newParentLink}.</>;
+      return (
+        <Trans
+          i18nKey="Changed the parent goal to <goal>{{goalName}}</goal>."
+          values={{ goalName: newParentGoal.name }}
+          components={{ goal: newParentLink }}
+        />
+      );
     }
 
     if (oldParentGoal) {
-      return <>Removed the parent goal {oldParentLink}.</>;
+      return (
+        <Trans
+          i18nKey="Removed the parent goal <goal>{{goalName}}</goal>."
+          values={{ goalName: oldParentGoal.name }}
+          components={{ goal: oldParentLink }}
+        />
+      );
     }
 
-    return <>No parent goal was set.</>;
+    return <Trans i18nKey="No parent goal was set." />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -80,7 +102,9 @@ const GoalReparent: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const goalName = content(activity).goal?.name;
 
-    return goalName ? "Changed the parent goal of " + goalName : "Changed a goal's parent goal";
+    return goalName
+      ? i18n.t("Changed the parent goal of {{goalName}}", { goalName })
+      : i18n.t("Changed a goal's parent goal");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -4,7 +4,10 @@ import type { ActivityContentProjectRenamed } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { assertPresent } from "@/utils/assertions";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectRenamed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,9 +32,17 @@ const ProjectRenamed: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "project") {
-      return feedTitle(activity, "renamed the project");
+      return <Trans i18nKey="{{author}} renamed the project" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "renamed the", projectLink(paths, content(activity).project!), "project");
+      const project = content(activity).project;
+      assertPresent(project, "Project is required for a renamed activity");
+      return (
+        <Trans
+          i18nKey="{{author}} renamed the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -59,7 +70,7 @@ const ProjectRenamed: ActivityHandler = {
     const oldName = content(activity).oldName;
     const newName = content(activity).newName;
 
-    return "Renamed " + oldName + " to " + newName;
+    return i18n.t("Renamed {{oldName}} to {{newName}}", { oldName, newName });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

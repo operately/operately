@@ -4,7 +4,9 @@ import { Paths } from "@/routes/paths";
 import React from "react";
 import { FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalStartDateUpdating: ActivityHandler = {
@@ -33,20 +35,28 @@ const GoalStartDateUpdating: ActivityHandler = {
     const formattedTimePreferences = useFormattedTimePreferences();
     const { goal, newStartDate } = content(props.activity);
 
-    const message = newStartDate ? (
-      <>
-        changed the start date to{" "}
-        <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
-      </>
-    ) : (
-      "cleared the start date"
+    const sentence =
+      props.page === "goal"
+        ? newStartDate
+          ? i18n.t("{{author}} changed the start date to <date/>")
+          : i18n.t("{{author}} cleared the start date")
+        : newStartDate
+          ? i18n.t("{{author}} changed the start date to <date/> on the <goal>{{goalName}}</goal>")
+          : i18n.t("{{author}} cleared the start date on the <goal>{{goalName}}</goal>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(props.activity), goalName: goal.name }}
+        components={{
+          goal: goalLink(paths, goal),
+          date: newStartDate ? (
+            <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
+          ) : (
+            <React.Fragment />
+          ),
+        }}
+      />
     );
-
-    if (props.page === "goal") {
-      return feedTitle(props.activity, message);
-    } else {
-      return feedTitle(props.activity, message, " on the", goalLink(paths, goal!));
-    }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
@@ -56,9 +66,9 @@ const GoalStartDateUpdating: ActivityHandler = {
     if (oldStartDate) {
       const time = <FormattedTime {...formattedTimePreferences} time={oldStartDate} format="short-date" />;
 
-      return <>Previously the start date was {time}</>;
+      return <Trans i18nKey="Previously the start date was <date/>" components={{ date: time }} />;
     } else {
-      return <>Previously had no start date</>;
+      return <Trans i18nKey="Previously had no start date" />;
     }
   },
 

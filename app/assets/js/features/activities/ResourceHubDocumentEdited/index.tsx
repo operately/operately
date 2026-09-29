@@ -2,7 +2,9 @@ import type { ActivityContentResourceHubDocumentEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 import React from "react";
 
-import { feedTitle } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
@@ -39,11 +41,21 @@ const ResourceHubDocumentEdited: ActivityHandler = {
     const resources = <EditedResourceList activity={activity} paths={paths} />;
     const parent = visibleParentDescriptor(paths, page, data);
 
-    if (!parent) {
-      return feedTitle(activity, "edited", resources);
-    }
-
-    return feedTitle(activity, "edited", resources, "in the", parent.link, parent.label);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t("{{author}} edited <resources/> in the <parent>{{parentName}}</parent> project")
+        : parent?.page === "goal"
+          ? i18n.t("{{author}} edited <resources/> in the <parent>{{parentName}}</parent> goal")
+          : parent
+            ? i18n.t("{{author}} edited <resources/> in the <parent>{{parentName}}</parent> space")
+            : i18n.t("{{author}} edited <resources/>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(activity), parentName: parent?.name }}
+        components={{ resources, parent: parent?.link ?? <React.Fragment /> }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -63,7 +75,7 @@ const ResourceHubDocumentEdited: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Edited the document";
+    return i18n.t("Edited the document");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -4,7 +4,9 @@ import { Paths } from "@/routes/paths";
 import React from "react";
 import { FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalDueDateUpdating: ActivityHandler = {
@@ -33,19 +35,28 @@ const GoalDueDateUpdating: ActivityHandler = {
     const formattedTimePreferences = useFormattedTimePreferences();
     const { goal, newDueDate } = content(props.activity);
 
-    const message = newDueDate ? (
-      <>
-        changed the due date to <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
-      </>
-    ) : (
-      "cleared the due date"
+    const sentence =
+      props.page === "goal"
+        ? newDueDate
+          ? i18n.t("{{author}} changed the due date to <date/>")
+          : i18n.t("{{author}} cleared the due date")
+        : newDueDate
+          ? i18n.t("{{author}} changed the due date to <date/> on the <goal>{{goalName}}</goal>")
+          : i18n.t("{{author}} cleared the due date on the <goal>{{goalName}}</goal>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(props.activity), goalName: goal.name }}
+        components={{
+          goal: goalLink(paths, goal),
+          date: newDueDate ? (
+            <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
+          ) : (
+            <React.Fragment />
+          ),
+        }}
+      />
     );
-
-    if (props.page === "goal") {
-      return feedTitle(props.activity, message);
-    } else {
-      return feedTitle(props.activity, message, " on the", goalLink(paths, goal!));
-    }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
@@ -55,9 +66,9 @@ const GoalDueDateUpdating: ActivityHandler = {
     if (oldDueDate) {
       const time = <FormattedTime {...formattedTimePreferences} time={oldDueDate} format="short-date" />;
 
-      return <>Previously the due date was {time}</>;
+      return <Trans i18nKey="Previously the due date was <date/>" components={{ date: time }} />;
     } else {
-      return <>Previously had no due date</>;
+      return <Trans i18nKey="Previously had no due date" />;
     }
   },
 

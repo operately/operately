@@ -4,13 +4,15 @@ import { ActivityContentGoalClosing } from "@/api";
 import { Activity } from "@/models/activities";
 
 import { isContentEmpty, Link, RichContent, StatusBadge, Summary } from "turboui";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
-    return `Goal closed`;
+    return i18n.t("Goal closed");
   },
 
   pagePath(paths, activity: Activity): string {
@@ -18,7 +20,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Goal closed</>;
+    return <Trans i18nKey="Goal closed" />;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -74,12 +76,25 @@ const GoalClosing: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalActivityPath(activity.id!);
-    const link = <Link to={path}>closed</Link>;
+    const link = <Link to={path}>{null}</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, link, "the goal");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>closed</action> the goal"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ action: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, link, "the", goalLink(paths, content(activity).goal!), "goal");
+      const goal = content(activity).goal;
+      return (
+        <Trans
+          i18nKey="{{author}} <action>closed</action> the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ action: link, goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -96,7 +111,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   NotificationTitle(_: { activity: Activity }) {
-    return "Closed the goal";
+    return i18n.t("Closed the goal");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

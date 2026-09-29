@@ -1,7 +1,10 @@
 import type { ActivityContentResourceHubDocumentVersionRestored } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, documentLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, documentLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
@@ -38,16 +41,37 @@ const ResourceHubDocumentVersionRestored: ActivityHandler = {
     const parent = visibleParentDescriptor(paths, page, data);
 
     if (!document) {
-      return feedTitle(activity, "restored a document to a previous version");
+      return (
+        <Trans
+          i18nKey="{{author}} restored a document to a previous version"
+          values={{ author: activityAuthorName(activity) }}
+        />
+      );
     }
 
     const doc = documentLink(paths, document);
 
-    if (!parent) {
-      return feedTitle(activity, "restored", doc, "to a previous version");
-    }
-
-    return feedTitle(activity, "restored", doc, "to a previous version", "in the", parent.link, parent.label);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t(
+            "{{author}} restored <document>{{documentName}}</document> to a previous version in the <parent>{{parentName}}</parent> project",
+          )
+        : parent?.page === "goal"
+          ? i18n.t(
+              "{{author}} restored <document>{{documentName}}</document> to a previous version in the <parent>{{parentName}}</parent> goal",
+            )
+          : parent
+            ? i18n.t(
+                "{{author}} restored <document>{{documentName}}</document> to a previous version in the <parent>{{parentName}}</parent> space",
+              )
+            : i18n.t("{{author}} restored <document>{{documentName}}</document> to a previous version");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(activity), documentName: document.name, parentName: parent?.name }}
+        components={{ document: doc, parent: parent?.link ?? <React.Fragment /> }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -67,7 +91,7 @@ const ResourceHubDocumentVersionRestored: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Restored a document version";
+    return i18n.t("Restored a document version");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
