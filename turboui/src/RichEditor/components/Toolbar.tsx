@@ -93,8 +93,8 @@ function MobileToolbar() {
   return (
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0">
       <div className={"flex items-center gap-3 border-stroke-base" + " " + border}>
-        <div className="flex justify-between items-center w-full">
-          <div className="flex items-center">
+        <div className="flex justify-between items-center w-full min-w-0">
+          <div className="flex items-center min-w-0 overflow-x-auto">
             <BoldButton editor={editor} iconSize={20} />
             <ItalicButton editor={editor} iconSize={20} />
             <StrikeButton editor={editor} iconSize={20} />
@@ -104,17 +104,19 @@ function MobileToolbar() {
             {uploadFile ? <AttachmentButton editor={editor} iconSize={20} /> : null}
           </div>
 
-          <MobilePopupTools>
-            <TableButton editor={editor} iconSize={20} />
-            <TaskListButton editor={editor} iconSize={20} />
-            <NumberListButton editor={editor} iconSize={20} />
-            <BlockquoteButton editor={editor} iconSize={20} />
-            <CodeBlockButton editor={editor} iconSize={20} />
-            <DividerButton editor={editor} iconSize={20} />
-            <LinkButton editor={editor} iconSize={20} />
-            <UndoButton editor={editor} iconSize={20} />
-            <RedoButton editor={editor} iconSize={20} />
-          </MobilePopupTools>
+          <div className="shrink-0">
+            <MobilePopupTools>
+              <TableButton editor={editor} iconSize={20} />
+              <TaskListButton editor={editor} iconSize={20} />
+              <NumberListButton editor={editor} iconSize={20} />
+              <BlockquoteButton editor={editor} iconSize={20} />
+              <CodeBlockButton editor={editor} iconSize={20} />
+              <DividerButton editor={editor} iconSize={20} />
+              <LinkButton editor={editor} iconSize={20} />
+              <UndoButton editor={editor} iconSize={20} />
+              <RedoButton editor={editor} iconSize={20} />
+            </MobilePopupTools>
+          </div>
         </div>
       </div>
 
