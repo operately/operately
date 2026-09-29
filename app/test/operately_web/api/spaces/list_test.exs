@@ -14,6 +14,21 @@ defmodule OperatelyWeb.Api.Spaces.ListTest do
       assert {401, _} = query(ctx.conn, [:spaces, :list], %{})
     end
 
+    test "it returns not found when the company header is missing", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      conn = delete_req_header(ctx.conn, "x-company-id")
+
+      assert query(conn, [:spaces, :list], %{include_access_levels: true}) == not_found_response()
+    end
+
+    test "it returns not found when the account is not a company member", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+      other_company = company_fixture()
+      conn = put_req_header(ctx.conn, "x-company-id", Paths.company_id(other_company))
+
+      assert {404, _} = query(conn, [:spaces, :list], %{})
+    end
+
     test "it returns only spaces from the user's company", ctx do
       ctx = register_and_log_in_account(ctx)
 
