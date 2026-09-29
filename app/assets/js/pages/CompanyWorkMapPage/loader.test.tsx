@@ -5,17 +5,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import axios from "axios";
 import Api from "@/api";
 import { queryClient } from "@/api/queryClient";
+import * as Pages from "@/components/Pages";
 import { loader, useLoadedData } from "./loader";
 
 jest.mock("axios");
 jest.mock("turboui", () => ({}));
 jest.mock("@/components/Pages", () => ({
-  useLoadedData: () => ({
-    companyInput: { includeGeneralSpace: true },
-    workMapInput: {},
-    spacesCountInput: { accessLevel: "edit_access" },
-    templatesInput: { archiveStatus: "active" },
-  }),
+  useLoadedData: jest.fn(),
 }));
 
 function deferred() {
@@ -51,10 +47,16 @@ describe("CompanyWorkMapPage loading", () => {
 
   async function mount() {
     queryClient.setQueryData(Api.companies.getWorkMapQueryKey({}), { workMap: [{ id: "project-1" }] });
-    function Harness() {
-      loaded = useLoadedData();
-      return null;
-    }
+    jest.mocked(Pages.useLoadedData).mockReturnValue(await loader());
+    await render();
+  }
+
+  function Harness() {
+    loaded = useLoadedData();
+    return null;
+  }
+
+  async function render() {
     await act(async () =>
       root.render(
         <QueryClientProvider client={queryClient}>
@@ -113,6 +115,64 @@ describe("CompanyWorkMapPage loading", () => {
     expect(loaded.creationData.error).toBeNull();
     expect(loaded.data.spacesCount).toBe(0);
     expect(loaded.data.templates).toEqual([]);
+  });
+
+  it("keeps the outgoing work map until the destination loader data is committed", async () => {
+    jest
+      .mocked(axios.get)
+      .mockResolvedValueOnce({ data: { company } })
+      .mockResolvedValueOnce({ data: { count: 1 } })
+      .mockResolvedValueOnce({ data: { templates: [] } });
+    await mount();
+    await flush();
+
+    // Company navigation changes global headers before the outgoing page unmounts.
+    Api.default.setHeaders({ "x-company-id": "company-2" });
+    await render();
+    expect(loaded.data.workMap).toEqual([{ id: "project-1" }]);
+    expect(loaded.data.company?.id).toBe("company-1");
+    expect(axios.get).toHaveBeenCalledTimes(3);
+
+    const responses = {
+      "/api/v2/companies/get_work_map": { work_map: [{ id: "project-2" }] },
+      "/api/v2/companies/get": { company: { id: "company-2" } },
+      "/api/v2/spaces/count_by_access_level": { count: 0 },
+      "/api/v2/project_templates/list": { templates: [] },
+    };
+    jest.mocked(axios.get).mockImplementation(async (url) => ({ data: responses[url] }));
+    jest.mocked(Pages.useLoadedData).mockReturnValue(await loader());
+    await render();
+    await flush();
+    expect(loaded.data.workMap).toEqual([{ id: "project-2" }]);
+    expect(loaded.data.company?.id).toBe("company-2");
+    expect(loaded.data.spacesCount).toBe(0);
+    expect(loaded.creationData).toMatchObject({ isLoading: false, error: null });
+    for (const [, config] of jest.mocked(axios.get).mock.calls.slice(3)) {
+      expect(config?.headers).toEqual({ "x-company-id": "company-2" });
+    }
+  });
+
+  it("uses the loader's company even when headers change before the first render", async () => {
+    jest.mocked(axios.get).mockResolvedValueOnce({ data: { work_map: [{ id: "project-1" }] } });
+    jest.mocked(Pages.useLoadedData).mockReturnValue(await loader());
+    Api.default.setHeaders({ "x-company-id": "company-2" });
+
+    jest
+      .mocked(axios.get)
+      .mockResolvedValueOnce({ data: { company } })
+      .mockResolvedValueOnce({ data: { count: 1 } })
+      .mockResolvedValueOnce({ data: { templates: [] } });
+    await render();
+    await flush();
+
+    expect(loaded.data.workMap).toEqual([{ id: "project-1" }]);
+    expect(loaded.data.company?.id).toBe("company-1");
+    expect(axios.get).toHaveBeenCalledTimes(4);
+    for (const [, config] of jest.mocked(axios.get).mock.calls) {
+      expect(config?.headers).toEqual({ "x-company-id": "company-1" });
+    }
+    expect(queryClient.getQueryData(Api.companies.getWorkMapQueryKey({}))).toBeUndefined();
+    expect(queryClient.getQueryData(Api.companies.getQueryKey({ includeGeneralSpace: true }))).toBeUndefined();
   });
 
   it("reports an error only after the third failed attempt and allows manual retry", async () => {

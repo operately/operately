@@ -1,6 +1,7 @@
 import Api, { type Company, type ProjectTemplate, type WorkMapItem } from "@/api";
 import { useLoadedQuery } from "@/api/queryClient";
 import * as Pages from "@/components/Pages";
+import { assertPresent } from "@/utils/assertions";
 import { useQuery } from "@tanstack/react-query";
 
 interface LoadedData {
@@ -22,25 +23,47 @@ export async function loader() {
   const workMapInput = {};
   const spacesCountInput = { accessLevel: "edit_access" as const };
   const templatesInput = { archiveStatus: "active" as const };
+  // Capture the company scope before navigation can change the global API headers.
+  const queryKeys = {
+    workMap: Api.companies.getWorkMapQueryKey(workMapInput),
+    company: Api.companies.getQueryKey(companyInput),
+    spacesCount: Api.spaces.countByAccessLevelQueryKey(spacesCountInput),
+    templates: Api.project_templates.listQueryKey(templatesInput),
+  };
 
   await Api.companies.getWorkMapQuery(workMapInput);
 
-  return { companyInput, workMapInput, spacesCountInput, templatesInput };
+  return { companyInput, workMapInput, spacesCountInput, templatesInput, queryKeys };
 }
 
 type LoaderResult = Awaited<ReturnType<typeof loader>>;
 
 export function useLoadedData(): LoadedData {
-  const { companyInput, workMapInput, spacesCountInput, templatesInput } = Pages.useLoadedData<LoaderResult>();
-  const { data: workMapData } = useLoadedQuery(Api.companies.getWorkMapQueryOptions(workMapInput));
+  const { companyInput, workMapInput, spacesCountInput, templatesInput, queryKeys } =
+    Pages.useLoadedData<LoaderResult>();
+  const { data: workMapData } = useLoadedQuery({
+    ...Api.companies.getWorkMapQueryOptions(workMapInput),
+    queryKey: queryKeys.workMap,
+  });
 
-  const companyQuery = useQuery({ ...Api.companies.getQueryOptions(companyInput), retry: 2 });
-  const spacesCountQuery = useQuery({ ...Api.spaces.countByAccessLevelQueryOptions(spacesCountInput), retry: 2 });
-  const templatesQuery = useQuery({ ...Api.project_templates.listQueryOptions(templatesInput), retry: 2 });
+  // Generated query functions use these captured keys for request headers as well.
+  const companyQuery = useQuery({
+    ...Api.companies.getQueryOptions(companyInput),
+    queryKey: queryKeys.company,
+    retry: 2,
+  });
+  const spacesCountQuery = useQuery({
+    ...Api.spaces.countByAccessLevelQueryOptions(spacesCountInput),
+    queryKey: queryKeys.spacesCount,
+    retry: 2,
+  });
+  const templatesQuery = useQuery({
+    ...Api.project_templates.listQueryOptions(templatesInput),
+    queryKey: queryKeys.templates,
+    retry: 2,
+  });
 
-  if (!workMapData) {
-    throw new Error("Company Work Map data is unavailable");
-  }
+  assertPresent(workMapData, "Company Work Map data is unavailable");
 
   const missingQueries = [
     ...(!companyQuery.data?.company ? [companyQuery] : []),
