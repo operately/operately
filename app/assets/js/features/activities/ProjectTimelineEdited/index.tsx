@@ -212,7 +212,7 @@ function MilestoneLink({ milestone, paths }: { milestone: ActivityMilestone; pat
         components={{
           milestone: <Link to={path}>{null}</Link>,
           separator: <span className="" />,
-          date: <FormattedTime {...formattedTimePreferences} time={milestone.deadlineAt!} format="long-date" />,
+          date: <FormattedTime {...formattedTimePreferences} time={milestone.deadlineAt} format="long-date" />,
         }}
       />
     </div>
