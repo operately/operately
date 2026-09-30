@@ -5,7 +5,6 @@ import React from "react";
 import { FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { Trans } from "../i18n";
-import i18n from "@/i18n";
 import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
@@ -35,28 +34,25 @@ const ProjectStartDateUpdating: ActivityHandler = {
     const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newStartDate } = content(props.activity);
 
-    const sentence =
-      props.page === "project"
-        ? newStartDate
-          ? i18n.t("{{author}} changed the start date to <date/>")
-          : i18n.t("{{author}} cleared the start date")
-        : newStartDate
-          ? i18n.t("{{author}} changed the start date to <date/> on the <project>{{projectName}}</project>")
-          : i18n.t("{{author}} cleared the start date on the <project>{{projectName}}</project>");
-    return (
-      <Trans
-        defaults={sentence}
-        values={{ author: activityAuthorName(props.activity), projectName: project?.name }}
-        components={{
-          project: project ? projectLink(paths, project) : <React.Fragment />,
-          date: newStartDate ? (
-            <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
-          ) : (
-            <React.Fragment />
-          ),
-        }}
-      />
-    );
+    const values = { author: activityAuthorName(props.activity), projectName: project?.name };
+    const components = {
+      project: project ? projectLink(paths, project) : <React.Fragment />,
+      date: newStartDate ? (
+        <FormattedTime {...formattedTimePreferences} time={newStartDate} format="short-date" />
+      ) : (
+        <React.Fragment />
+      ),
+    };
+
+    if (props.page === "project") {
+      return newStartDate
+        ? <Trans i18nKey="{{author}} changed the start date to <date/>" values={values} components={{ date: components.date }} />
+        : <Trans i18nKey="{{author}} cleared the start date" values={values} />;
+    } else {
+      return newStartDate
+        ? <Trans i18nKey="{{author}} changed the start date to <date/> on the <project>{{projectName}}</project>" values={values} components={components} />
+        : <Trans i18nKey="{{author}} cleared the start date on the <project>{{projectName}}</project>" values={values} components={components} />;
+    }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {

@@ -4,7 +4,6 @@ import { ActivityContentProjectMilestoneUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { Trans } from "../i18n";
-import i18n from "@/i18n";
 import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { DateField } from "turboui";
@@ -37,21 +36,23 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     const oldName = content(props.activity).oldMilestoneName!;
     const newName = content(props.activity).newMilestoneName!;
 
-    const sentence =
-      props.page === "project"
-        ? oldName !== newName
-          ? i18n.t("{{author}} updated the milestone {{oldName}} to {{newName}}")
-          : i18n.t("{{author}} updated the milestone {{oldName}}")
-        : oldName !== newName
-          ? i18n.t("{{author}} updated the milestone {{oldName}} to {{newName}} in <project>{{projectName}}</project>")
-          : i18n.t("{{author}} updated the milestone {{oldName}} in <project>{{projectName}}</project>");
-    return (
-      <Trans
-        defaults={sentence}
-        values={{ author: activityAuthorName(props.activity), oldName, newName, projectName: project.name }}
-        components={{ project: projectLink(paths, project) }}
-      />
-    );
+    const values = {
+      author: activityAuthorName(props.activity),
+      oldName,
+      newName,
+      projectName: project.name,
+    };
+
+    if (props.page === "project") {
+      return oldName !== newName
+        ? <Trans i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}}" values={values} />
+        : <Trans i18nKey="{{author}} updated the milestone {{oldName}}" values={values} />;
+    } else {
+      const components = { project: projectLink(paths, project) };
+      return oldName !== newName
+        ? <Trans i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}} in <project>{{projectName}}</project>" values={values} components={components} />
+        : <Trans i18nKey="{{author}} updated the milestone {{oldName}} in <project>{{projectName}}</project>" values={values} components={components} />;
+    }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
