@@ -8,6 +8,7 @@ import type { Activity } from "@/models/activities";
 import ResourceHubDocumentCommented from ".";
 
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
   Summary: () => null,
 }));

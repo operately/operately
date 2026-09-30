@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import ActivityHandler, { DISPLAYED_IN_FEED } from "..";
 
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
 }));
 

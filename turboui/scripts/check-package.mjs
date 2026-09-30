@@ -18,8 +18,9 @@ async function main() {
     console.log(`Checking package outside the repository: ${workspace}`);
     const archivePath = await buildPackage(workspace);
     await checkPackedArtifact(archivePath, workspace);
+    await checkInstalledConsumer(archivePath, workspace);
 
-    console.log("Package passed isolated build, pack, and artifact checks.");
+    console.log("Package passed isolated build, pack, artifact, and installed-consumer checks.");
   } finally {
     if (!retainedDirectory) await rm(workspace, { recursive: true, force: true });
   }
@@ -76,9 +77,23 @@ async function checkPackedArtifact(archivePath, workspace) {
 }
 
 function runNpm(args, directory) {
-  execFileSync("npm", [...args, "--no-audit", "--no-fund"], {
+  execFileSync("npm", ["--no-audit", "--no-fund", ...args], {
     cwd: directory,
     stdio: "inherit",
     env: { ...process.env, npm_config_fetch_retries: "0", npm_config_fetch_timeout: "30000" },
   });
+}
+
+async function checkInstalledConsumer(archivePath, workspace) {
+  const consumerDirectory = path.join(workspace, "consumer");
+  await cp(path.join(packageRoot, "scripts/package-consumer"), consumerDirectory, { recursive: true });
+
+  // Install the actual archive with its declared dependencies, without source aliases
+  // or access to the package builder's development dependencies.
+  runNpm(["install", "--ignore-scripts", archivePath], consumerDirectory);
+  runNpm(["run", "build"], consumerDirectory);
+  if (!process.env.CHROMIUM_EXECUTABLE_PATH) {
+    runNpm(["exec", "--", "playwright", "install", "chromium"], consumerDirectory);
+  }
+  runNpm(["test"], consumerDirectory);
 }

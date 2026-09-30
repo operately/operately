@@ -101,7 +101,7 @@ From this directory:
 npm ci
 npm run build
 npm run dev                 # Watch JavaScript, declarations, and styles
-npm run test:package        # Isolated build, pack, and artifact checks
+npm run test:package        # Isolated build, pack, artifact, and consumer checks
 npm pack                   # Builds before creating the publishable tarball
 ```
 
@@ -116,9 +116,14 @@ make turboui.pack
 file in `turboui/`. It does not publish to npm.
 
 Package checks build TurboUI outside the repository, create a tarball, and
-validate its extracted contents. They require `tar`, but no browser or consumer
-app. Set `TURBOUI_PACKAGE_CHECK_DIR` to an empty directory to retain the isolated
-source, tarball, and extracted package for inspection.
+validate its extracted contents. They also install the tarball in an isolated
+consumer, type-check and bundle its public imports, and verify rendering, styles,
+and interaction in Chromium. They require `tar` and Chromium's system
+dependencies. The Docker/CI command uses the container's system Chromium.
+For direct npm runs, set `CHROMIUM_EXECUTABLE_PATH` to use an installed browser;
+otherwise, the check downloads Playwright's Chromium automatically. Set
+`TURBOUI_PACKAGE_CHECK_DIR` to an empty directory to retain the isolated source,
+tarball, extracted package, and consumer for inspection.
 
 `npm pack` includes compiled output, this README, and the Apache-2.0 license.
 It excludes tests, fixtures, Storybook, and build tools. Installing the tarball

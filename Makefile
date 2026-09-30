@@ -104,7 +104,7 @@ turboui.test:
 
 turboui.test.package:
 	$(MAKE) turboui.node_modules
-	./devenv bash -c "cd turboui && npm run test:package"
+	./devenv bash -c "cd turboui && CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser npm run test:package"
 
 turboui.test.storybook:
 	$(MAKE) turboui.node_modules
