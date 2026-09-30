@@ -105,6 +105,16 @@ npm run test:package        # Isolated build, pack, and artifact checks
 npm pack                   # Builds before creating the publishable tarball
 ```
 
+With the development container running, use these commands from the repository root:
+
+```sh
+make turboui.test.package
+make turboui.pack
+```
+
+`make turboui.pack` ensures dependencies are installed and creates the `.tgz`
+file in `turboui/`. It does not publish to npm.
+
 Package checks build TurboUI outside the repository, create a tarball, and
 validate its extracted contents. They require `tar`, but no browser or consumer
 app. Set `TURBOUI_PACKAGE_CHECK_DIR` to an empty directory to retain the isolated

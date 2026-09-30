@@ -1,7 +1,7 @@
 SHELL := /bin/bash  # Use bash syntax
 MAKEFLAGS += -s     # Silent mode
 
-.PHONY: test test.manifests test.manifests.prepare test.timings test.timings.extract test.timings.merge cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules turboui.test.storybook turboui.test.package
+.PHONY: test test.manifests test.manifests.prepare test.timings test.timings.extract test.timings.merge cli.build cli.test cli.test.unit cli.test.e2e mcp.test.e2e app.node_modules turboui.node_modules cli.node_modules turboui.test.storybook turboui.test.package turboui.pack
 
 REPORTS_DIR ?= $(PWD)/app/testreports
 SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
@@ -93,6 +93,10 @@ turboui.build:
 	@rm -rf turboui/dist
 	$(MAKE) turboui.node_modules
 	./devenv bash -c "cd turboui && npm run build"
+
+turboui.pack:
+	$(MAKE) turboui.node_modules
+	./devenv bash -c "cd turboui && npm pack"
 
 turboui.test:
 	$(MAKE) turboui.node_modules
