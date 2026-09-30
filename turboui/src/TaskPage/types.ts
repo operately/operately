@@ -1,3 +1,4 @@
+import type { TaskTimeSectionProps } from "../TimeTracking";
 import { Status } from "../TaskBoard/types";
 import { RichTextHandlers } from "../RichContent/types";
 import { PersonField } from "../PersonField";
@@ -52,6 +53,7 @@ export namespace TaskPage {
   export type TimelineItemType = TimelineItem;
 
   type PropsBase = SpaceProps & {
+    timeTracking?: TaskTimeSectionProps;
     // Navigation/Hierarchy
     projectName: string;
     projectLink: string;
@@ -136,6 +138,7 @@ export namespace TaskPage {
 
   type ContentPropsBase = Pick<
     PropsBase,
+    | "timeTracking"
     | "milestone"
     | "onMilestoneChange"
     | "milestones"
