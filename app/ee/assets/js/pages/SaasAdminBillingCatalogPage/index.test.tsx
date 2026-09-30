@@ -102,7 +102,7 @@ jest.mock("./ProductModal", () => ({
 }));
 
 jest.mock("turboui", () => {
-  const { formatStorageBytes } = jest.requireActual("turboui/CompanyBilling");
+  const { formatStorageBytes } = jest.requireActual("turboui");
 
   return {
     ConfirmDialog: ({ isOpen, title, message, confirmText }: any) =>

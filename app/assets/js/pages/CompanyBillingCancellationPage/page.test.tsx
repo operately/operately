@@ -1,9 +1,6 @@
 import * as Billing from "@/models/billing";
 
-import {
-  buildCompanyBillingCancellationPageViewModel,
-  buildCompanyBillingCancellationSummary,
-} from "turboui/CompanyBillingCancellationPage";
+import { buildCompanyBillingCancellationPageViewModel, buildCompanyBillingCancellationSummary } from "turboui";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;

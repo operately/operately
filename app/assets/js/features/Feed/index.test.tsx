@@ -15,8 +15,8 @@ jest.mock("./FeedZeroState", () => ({ FeedZeroState: () => null }));
 jest.mock("turboui", () => {
   globalThis.TextEncoder = require("util").TextEncoder;
   return {
-    InfiniteScroll: jest.requireActual("turboui/InfiniteScroll").InfiniteScroll,
-    ContentListSkeleton: jest.requireActual("turboui/ContentListSkeleton").ContentListSkeleton,
+    InfiniteScroll: jest.requireActual("turboui").InfiniteScroll,
+    ContentListSkeleton: jest.requireActual("turboui").ContentListSkeleton,
     ConfirmDialog: () => null,
     DivLink: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     Avatar: () => null,

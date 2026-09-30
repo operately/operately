@@ -11,8 +11,8 @@ import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { validatePassword } from "@/features/auth/validatePassword";
 import { validateEmail } from "@/features/auth/validateEmail";
 import { translationText } from "@/i18n";
-import { Forms, Spacer } from "turboui";
-import { OperatelyLogo } from "turboui/Logo";
+import { Forms, Spacer, OperatelyLogo } from "turboui";
+
 import { Paths } from "@/routes/paths";
 
 export function Page() {

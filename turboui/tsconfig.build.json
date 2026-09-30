@@ -2,19 +2,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "./dist", // .js (as well as .d.ts, .js.map, etc.) files will be emitted into this directory
-    "declaration": true, // Generate .d.ts files (needed for library)
-    "rootDir": "./src"
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "sourceMap": false,
+    "sourceRoot": ""
   },
-  "include": ["src/**/*", "src/types/**/*.d.ts"],
-  "exclude": [
-    "node_modules/**/*",
-    "dist",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.stories.tsx",
-    "src/WorkMap/tests/**"
-  ]
+  "files": ["src/index.tsx", "src/global.d.ts", "src/types/react-datepicker.d.ts"],
+  "include": [],
+  "exclude": ["node_modules", "dist"]
 }

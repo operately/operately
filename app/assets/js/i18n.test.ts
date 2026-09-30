@@ -158,11 +158,11 @@ describe.each([true, false])("initialization with TurboUI first: %s", (turboFirs
       const runtime = jest.requireActual<typeof i18n>("i18next");
       jest.doMock("../../../turboui/node_modules/i18next", () => runtime);
 
-      if (turboFirst) jest.requireActual("turboui/i18n");
+      if (turboFirst) jest.requireActual("turboui");
       const app = jest.requireActual<typeof import("./i18n")>("./i18n");
-      const turbo = jest.requireActual<typeof import("turboui/i18n")>("turboui/i18n");
+      const turbo = jest.requireActual<typeof import("turboui")>("turboui");
 
-      expect(app.default).toBe(turbo.default);
+      expect(app.default).toBe(turbo.i18n);
       runtime.addResourceBundle("en", "translation", { "Close|button": "Close dialog" }, true, true);
       expect(runtime.t("Close", { context: "button" })).toBe("Close dialog");
       expect(runtime.language).toBe("en");

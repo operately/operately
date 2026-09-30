@@ -1,4 +1,4 @@
-import { formatCompanyBillingPlanLabel } from "turboui/CompanyBilling";
+import { formatCompanyBillingPlanLabel } from "turboui";
 import type { BillingLimitError } from "./limitError";
 import i18n from "@/i18n";
 

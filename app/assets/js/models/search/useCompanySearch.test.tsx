@@ -12,7 +12,10 @@ jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("react-router", () => ({
   useSearchParams: () => jest.requireActual("react").useState(new URLSearchParams("q=roadmap")),
 }));
-jest.mock("turboui", () => jest.requireActual("turboui/SearchPage/filterOptions"));
+jest.mock("turboui", () => {
+  globalThis.TextEncoder = require("util").TextEncoder;
+  return jest.requireActual("turboui");
+});
 
 let client: QueryClient;
 

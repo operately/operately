@@ -1,23 +1,32 @@
 {
-  "name": "turboui",
+  "name": "@operately/turboui",
   "license": "Apache-2.0",
-  "main": "./dist/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist/**"
+    "dist/**",
+    "LICENSE",
+    "README.md"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css",
+    "./dist/index.mjs",
+    "./dist/chunks/*.mjs",
+    "./src/i18n.ts"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "dev": "tsc -p tsconfig.build.json --watch",
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
     "lint": "tsc --noEmit -p tsconfig.json",
     "clean": "rm -rf node_modules && rm -rf dist",
     "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER",
     "build-storybook": "storybook build",
     "test": "jest",
     "test-storybook": "test-storybook",
-    "test-storybook:ci": "npm run build-storybook -- --quiet && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && JEST_JUNIT_OUTPUT_NAME=junit-storybook.xml test-storybook --ci --junit\""
+    "test-storybook:ci": "npm run build-storybook -- --quiet && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && JEST_JUNIT_OUTPUT_NAME=junit-storybook.xml test-storybook --ci --junit\"",
+    "prepack": "npm run build",
+    "test:package": "node scripts/check-package.mjs"
   },
   "devDependencies": {
     "@storybook/addon-docs": "10.5.0",
@@ -58,7 +67,8 @@
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.3",
     "vite": "6.4.3",
-    "wait-on": "^8.0.3"
+    "wait-on": "^8.0.3",
+    "postcss-import": "^15.1.0"
   },
   "overrides": {
     "@types/react": "18.3.5",
@@ -71,21 +81,12 @@
     "outputName": "junit.xml"
   },
   "peerDependencies": {
-    "@radix-ui/react-dropdown-menu": "^2.1.1",
-    "@radix-ui/react-popover": "^1.0.5",
-    "@radix-ui/react-tooltip": "^1.0.6",
     "@types/react": "^18.3.5",
-    "@types/react-datepicker": "^4.19.6",
-    "date-fns": "^2.30.0",
     "react": "^18.3.0",
-    "react-datepicker": "^4.14.0",
     "react-dom": "^18.3.0",
     "react-i18next": "^12.2.0",
     "react-router": "^7.6.3",
-    "react-select": "^5.8.0",
-    "react-spinners": "^0.13.8",
-    "react-textarea-autosize": "^8.5.9",
-    "ts-pattern": "^5.0.8"
+    "i18next": "^22.5.1"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
@@ -107,6 +108,41 @@
     "hotkeys-js": "^3.13.15",
     "react-hook-form": "^7.56.1",
     "react-hot-toast": "^2.5.2",
-    "@tiptap/extension-list": "^3.30.5"
+    "@tiptap/extension-list": "^3.30.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-popover": "^1.0.5",
+    "@radix-ui/react-tooltip": "^1.0.6",
+    "@types/react-datepicker": "^4.19.6",
+    "date-fns": "^2.30.0",
+    "react-datepicker": "^4.14.0",
+    "react-select": "^5.8.0",
+    "react-spinners": "^0.13.8",
+    "react-textarea-autosize": "^8.5.9",
+    "ts-pattern": "^5.0.8",
+    "classnames": "^2.5.1",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0"
+  },
+  "version": "0.1.0",
+  "description": "React components and pages for Operately",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/operately/operately.git",
+    "directory": "turboui"
+  },
+  "homepage": "https://github.com/operately/operately/tree/main/turboui",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

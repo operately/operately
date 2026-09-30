@@ -8,6 +8,7 @@ import Handler from ".";
 import { usePaths } from "@/routes/paths";
 
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
 }));
 jest.mock("@/contexts/TimezoneContext", () => ({ useLocale: () => "en" }));
