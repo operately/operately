@@ -124,9 +124,9 @@ export const Project: Story = {
 };
 
 export const ProjectTemplate: Story = {
-  render: () => {
+  render: (args) => {
     const personSearch = usePersonFieldSearch(samplePeople);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(args.isOpen ?? false);
     const [taskCount, setTaskCount] = useState(0);
     const [lastTaskTitle, setLastTaskTitle] = useState("");
 
@@ -166,4 +166,9 @@ export const ProjectTemplate: Story = {
       </div>
     );
   },
+};
+
+export const ProjectTemplateFocused: Story = {
+  ...ProjectTemplate,
+  args: { isOpen: true },
 };
