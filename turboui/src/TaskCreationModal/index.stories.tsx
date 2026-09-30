@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
+import { expect, within } from "storybook/test";
 import { TaskCreationModal } from ".";
 import { PrimaryButton } from "../Button";
 import { createContextualDate } from "../DateField/mockData";
@@ -124,9 +125,9 @@ export const Project: Story = {
 };
 
 export const ProjectTemplate: Story = {
-  render: () => {
+  render: (args) => {
     const personSearch = usePersonFieldSearch(samplePeople);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(args.isOpen ?? false);
     const [taskCount, setTaskCount] = useState(0);
     const [lastTaskTitle, setLastTaskTitle] = useState("");
 
@@ -167,3 +168,100 @@ export const ProjectTemplate: Story = {
     );
   },
 };
+
+export const ProjectTemplateFocused: Story = {
+  ...ProjectTemplate,
+  args: { isOpen: true },
+  globals: {
+    viewport: { value: "mobile1", isRotated: false },
+  },
+  play: async ({ canvasElement }) => {
+    const view = canvasElement.ownerDocument.defaultView;
+    expect(view?.innerWidth).toBeLessThanOrEqual(360);
+
+    const page = within(canvasElement.ownerDocument.body);
+    const dialog = await page.findByRole("dialog", { name: "Create Task" });
+    const panel = dialog.firstElementChild;
+    if (!(panel instanceof HTMLElement)) throw new Error("Task creation dialog is missing its panel");
+
+    const titleInput = dialog.querySelector<HTMLInputElement>('[data-test-id="template-task-title-input"]');
+    const titleField = dialog.querySelector<HTMLElement>('[data-test-id="template-task-title"]');
+    if (!titleInput || !titleField) throw new Error("Template task title field is missing");
+
+    titleInput.focus();
+    expect(titleInput.ownerDocument.activeElement).toBe(titleInput);
+    assertOutlineIsVisible(titleField);
+
+    const footer = dialog.querySelector<HTMLElement>('[data-test-id="create-more-footer"]');
+    if (!footer) throw new Error("Template task footer is missing");
+    expect(footer.scrollWidth).toBeLessThanOrEqual(footer.clientWidth + 1);
+
+    for (const control of [
+      within(dialog).getByRole("switch", { name: "Create more" }),
+      within(dialog).getByRole("button", { name: "Cancel" }),
+      within(dialog).getByRole("button", { name: "Create task" }),
+    ]) {
+      assertInside(control, panel);
+    }
+  },
+};
+
+function assertOutlineIsVisible(element: HTMLElement) {
+  const style = getComputedStyle(element);
+  const outlineWidth = cssPx(style.outlineWidth);
+  const outlineOffset = cssPx(style.outlineOffset);
+  expect(style.outlineStyle).not.toBe("none");
+  expect(outlineWidth).toBeGreaterThan(0);
+
+  const rect = element.getBoundingClientRect();
+  const inset = outlineWidth + outlineOffset;
+  const bounds = clippingBounds(element);
+  expect(rect.left - inset).toBeGreaterThanOrEqual(bounds.left - 1);
+  expect(rect.right + inset).toBeLessThanOrEqual(bounds.right + 1);
+  expect(rect.top - inset).toBeGreaterThanOrEqual(bounds.top - 1);
+  expect(rect.bottom + inset).toBeLessThanOrEqual(bounds.bottom + 1);
+}
+
+function assertInside(element: HTMLElement, container: HTMLElement) {
+  const rect = element.getBoundingClientRect();
+  const bounds = container.getBoundingClientRect();
+  expect(rect.width).toBeGreaterThan(0);
+  expect(rect.left).toBeGreaterThanOrEqual(bounds.left - 1);
+  expect(rect.right).toBeLessThanOrEqual(bounds.right + 1);
+}
+
+function clippingBounds(element: Element) {
+  let left = Number.NEGATIVE_INFINITY;
+  let right = Number.POSITIVE_INFINITY;
+  let top = Number.NEGATIVE_INFINITY;
+  let bottom = Number.POSITIVE_INFINITY;
+  let current = element.parentElement;
+
+  while (current) {
+    const style = getComputedStyle(current);
+    const rect = current.getBoundingClientRect();
+    if (clips(style.overflowX)) {
+      left = Math.max(left, rect.left + current.clientLeft);
+      right = Math.min(right, rect.left + current.clientLeft + current.clientWidth);
+    }
+    if (clips(style.overflowY)) {
+      top = Math.max(top, rect.top + current.clientTop);
+      bottom = Math.min(bottom, rect.top + current.clientTop + current.clientHeight);
+    }
+    current = current.parentElement;
+  }
+
+  return { left, right, top, bottom };
+}
+
+function clips(overflow: string) {
+  return overflow === "hidden" || overflow === "clip" || overflow === "auto" || overflow === "scroll";
+}
+
+function cssPx(value: string) {
+  if (value === "thin") return 1;
+  if (value === "medium") return 3;
+  if (value === "thick") return 5;
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
