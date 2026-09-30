@@ -113,7 +113,7 @@ const ResourceHubLinkCreated: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).link?.name;
-    return name == null ? i18n.t("Added a link: a link") : i18n.t("Added a link: {{linkName}}", { linkName: name });
+    return name == null ? i18n.t("Added a link") : i18n.t("Added a link: {{linkName}}", { linkName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

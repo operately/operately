@@ -3071,13 +3071,18 @@ msgstr "Adicionado"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
-msgid "Added a file: %{fileName}"
-msgstr "Adicionou um arquivo: %{fileName}"
+msgid "Added a file"
+msgstr "Adicionou um arquivo"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
-msgid "Added a file: a file"
-msgstr "Adicionou um arquivo: um arquivo"
+msgid "Added a file: %{fileName}"
+msgstr "Adicionou um arquivo: %{fileName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
+#~ msgid "Added a file: a file"
+#~ msgstr "Adicionou um arquivo: um arquivo"
 
 #.frontend
 #: assets/js/features/activities/ProjectKeyResourceAdded/index.tsx:79
@@ -3086,13 +3091,18 @@ msgstr "Adicionou um recurso principal ao projeto %{projectName}"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
-msgid "Added a link: %{linkName}"
-msgstr "Adicionou um link: %{linkName}"
+msgid "Added a link"
+msgstr "Adicionou um link"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
-msgid "Added a link: a link"
-msgstr "Adicionou um link: um link"
+msgid "Added a link: %{linkName}"
+msgstr "Adicionou um link: %{linkName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
+#~ msgid "Added a link: a link"
+#~ msgstr "Adicionou um link: um link"
 
 #.frontend
 #: assets/js/features/activities/ProjectTimelineEdited/index.tsx:170
@@ -4612,7 +4622,7 @@ msgstr "Converter em colaborador externo"
 #.frontend
 #: assets/js/features/activities/CompanyMemberConvertedToGuest/index.tsx:69
 msgid "Converted your account to an outside collaborator"
-msgstr "Converteu sua conta em colaborador externo"
+msgstr "Converteu sua conta para colaborador externo"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:75
@@ -4815,6 +4825,16 @@ msgid "Created a copy of %{originalName} and named it %{documentName}"
 msgstr "Criou uma cópia de %{originalName} e a nomeou %{documentName}"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
+msgid "Created a folder"
+msgstr "Criou uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
+msgid "Created a folder: %{folderName}"
+msgstr "Criou uma pasta: %{folderName}"
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:283
 msgid "Created and last-used timestamps will appear here once available."
 msgstr "As datas de criação e de último uso aparecerão aqui quando estiverem disponíveis."
@@ -4824,15 +4844,15 @@ msgstr "As datas de criação e de último uso aparecerão aqui quando estiverem
 msgid "Created date"
 msgstr "Data de criação"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
-msgid "Created folder: %{folderName}"
-msgstr "Criou a pasta: %{folderName}"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
+#~ msgid "Created folder: %{folderName}"
+#~ msgstr "Criou a pasta: %{folderName}"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
-msgid "Created folder: a folder"
-msgstr "Criou a pasta: uma pasta"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
+#~ msgid "Created folder: a folder"
+#~ msgstr "Criou a pasta: uma pasta"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:81
@@ -5055,34 +5075,49 @@ msgid "Delete update"
 msgstr "Excluir atualização"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
+msgid "Deleted a document"
+msgstr "Excluiu um documento"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:90
 msgid "Deleted a document: %{documentName}"
 msgstr "Excluiu um documento: %{documentName}"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
+#~ msgid "Deleted a document: a document"
+#~ msgstr "Excluiu um documento: um documento"
+
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
-msgid "Deleted a document: a document"
-msgstr "Excluiu um documento: um documento"
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
+msgid "Deleted a file"
+msgstr "Excluiu um arquivo"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
 msgid "Deleted a file: %{fileName}"
 msgstr "Excluiu um arquivo: %{fileName}"
 
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
+#~ msgid "Deleted a file: a file"
+#~ msgstr "Excluiu um arquivo: um arquivo"
+
 #.frontend
-#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
-msgid "Deleted a file: a file"
-msgstr "Excluiu um arquivo: um arquivo"
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
+msgid "Deleted a folder"
+msgstr "Excluiu uma pasta"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:90
 msgid "Deleted a folder: %{folderName}"
 msgstr "Excluiu uma pasta: %{folderName}"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
-msgid "Deleted a folder: a folder"
-msgstr "Excluiu uma pasta: uma pasta"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
+#~ msgid "Deleted a folder: a folder"
+#~ msgstr "Excluiu uma pasta: uma pasta"
 
 #.frontend
 #: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:79
@@ -5091,13 +5126,18 @@ msgstr "Excluiu um recurso principal do projeto %{projectName}"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
-msgid "Deleted a link: %{linkName}"
-msgstr "Excluiu um link: %{linkName}"
+msgid "Deleted a link"
+msgstr "Excluiu um link"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
-msgid "Deleted a link: a link"
-msgstr "Excluiu um link: um link"
+msgid "Deleted a link: %{linkName}"
+msgstr "Excluiu um link: %{linkName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
+#~ msgid "Deleted a link: a link"
+#~ msgstr "Excluiu um link: um link"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryDeleted/index.tsx:85
@@ -5314,6 +5354,10 @@ msgstr "Documento"
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:39
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:100
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:114
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 msgid "Docs & Files"
 msgstr "Docs & Arquivos"
@@ -5591,23 +5635,33 @@ msgstr "Editado"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
-msgid "Edited a file: %{fileName}"
-msgstr "Editou um arquivo: %{fileName}"
+msgid "Edited a file"
+msgstr "Editou um arquivo"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
-msgid "Edited a file: a file"
-msgstr "Editou um arquivo: um arquivo"
+msgid "Edited a file: %{fileName}"
+msgstr "Editou um arquivo: %{fileName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
+#~ msgid "Edited a file: a file"
+#~ msgstr "Editou um arquivo: um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
+msgid "Edited a link"
+msgstr "Editou um link"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
 msgid "Edited a link: %{linkName}"
 msgstr "Editou um link: %{linkName}"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
-msgid "Edited a link: a link"
-msgstr "Editou um link: um link"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
+#~ msgid "Edited a link: a link"
+#~ msgstr "Editou um link: um link"
 
 #.frontend
 #: assets/js/features/activities/ResourceHubDocumentEdited/index.tsx:78
@@ -7460,14 +7514,19 @@ msgid "MILESTONES"
 msgstr "MARCOS"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
+msgid "Made a copy of a folder"
+msgstr "Fez uma cópia de uma pasta"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:91
 msgid "Made a copy of a folder: %{folderName}"
 msgstr "Fez uma cópia de uma pasta: %{folderName}"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
-msgid "Made a copy of a folder: a folder"
-msgstr "Fez uma cópia de uma pasta: uma pasta"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
+#~ msgid "Made a copy of a folder: a folder"
+#~ msgstr "Fez uma cópia de uma pasta: uma pasta"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:36
@@ -9580,14 +9639,19 @@ msgid "Renamed %{oldName} to %{newName}"
 msgstr "Renomeou %{oldName} para %{newName}"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
+msgid "Renamed a folder"
+msgstr "Renomeou uma pasta"
+
+#.frontend
 #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:91
 msgid "Renamed a folder: %{folderName}"
 msgstr "Renomeou a pasta: %{folderName}"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
-msgid "Renamed a folder: a folder"
-msgstr "Renomeou a pasta: uma pasta"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
+#~ msgid "Renamed a folder: a folder"
+#~ msgstr "Renomeou a pasta: uma pasta"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:92
@@ -12944,13 +13008,13 @@ msgstr "o plano pendente"
 msgid "the project"
 msgstr "o projeto"
 
-#.frontend
-#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
-#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
-#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
-#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
-msgid "the resource hub"
-msgstr "o hub de recursos"
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
+#~ #: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
+#~ #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
+#~ #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
+#~ msgid "the resource hub"
+#~ msgstr "o hub de recursos"
 
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:207

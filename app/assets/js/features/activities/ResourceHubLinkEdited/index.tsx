@@ -113,7 +113,7 @@ const ResourceHubLinkEdited: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).link?.name;
-    return name == null ? i18n.t("Edited a link: a link") : i18n.t("Edited a link: {{linkName}}", { linkName: name });
+    return name == null ? i18n.t("Edited a link") : i18n.t("Edited a link: {{linkName}}", { linkName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

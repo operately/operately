@@ -3020,12 +3020,12 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
-msgid "Added a file: %{fileName}"
+msgid "Added a file"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
-msgid "Added a file: a file"
+msgid "Added a file: %{fileName}"
 msgstr ""
 
 #.frontend
@@ -3035,12 +3035,12 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
-msgid "Added a link: %{linkName}"
+msgid "Added a link"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
-msgid "Added a link: a link"
+msgid "Added a link: %{linkName}"
 msgstr ""
 
 #.frontend
@@ -4744,6 +4744,16 @@ msgid "Created a copy of %{originalName} and named it %{documentName}"
 msgstr ""
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
+msgid "Created a folder"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
+msgid "Created a folder: %{folderName}"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:283
 msgid "Created and last-used timestamps will appear here once available."
 msgstr ""
@@ -4751,16 +4761,6 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:107
 msgid "Created date"
-msgstr ""
-
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
-msgid "Created folder: %{folderName}"
-msgstr ""
-
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
-msgid "Created folder: a folder"
 msgstr ""
 
 #.frontend
@@ -4984,13 +4984,18 @@ msgid "Delete update"
 msgstr ""
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
+msgid "Deleted a document"
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:90
 msgid "Deleted a document: %{documentName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
-msgid "Deleted a document: a document"
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
+msgid "Deleted a file"
 msgstr ""
 
 #.frontend
@@ -4999,18 +5004,13 @@ msgid "Deleted a file: %{fileName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
-msgid "Deleted a file: a file"
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
+msgid "Deleted a folder"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:90
 msgid "Deleted a folder: %{folderName}"
-msgstr ""
-
-#.frontend
-#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
-msgid "Deleted a folder: a folder"
 msgstr ""
 
 #.frontend
@@ -5020,12 +5020,12 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
-msgid "Deleted a link: %{linkName}"
+msgid "Deleted a link"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
-msgid "Deleted a link: a link"
+msgid "Deleted a link: %{linkName}"
 msgstr ""
 
 #.frontend
@@ -5233,6 +5233,10 @@ msgstr ""
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:39
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:100
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:114
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 msgid "Docs & Files"
 msgstr ""
@@ -5505,22 +5509,22 @@ msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
-msgid "Edited a file: %{fileName}"
+msgid "Edited a file"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
-msgid "Edited a file: a file"
+msgid "Edited a file: %{fileName}"
+msgstr ""
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
+msgid "Edited a link"
 msgstr ""
 
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
 msgid "Edited a link: %{linkName}"
-msgstr ""
-
-#.frontend
-#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
-msgid "Edited a link: a link"
 msgstr ""
 
 #.frontend
@@ -7297,13 +7301,13 @@ msgid "MILESTONES"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:91
-msgid "Made a copy of a folder: %{folderName}"
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
+msgid "Made a copy of a folder"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
-msgid "Made a copy of a folder: a folder"
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:91
+msgid "Made a copy of a folder: %{folderName}"
 msgstr ""
 
 #.frontend
@@ -9397,13 +9401,13 @@ msgid "Renamed %{oldName} to %{newName}"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:91
-msgid "Renamed a folder: %{folderName}"
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
+msgid "Renamed a folder"
 msgstr ""
 
 #.frontend
-#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
-msgid "Renamed a folder: a folder"
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:91
+msgid "Renamed a folder: %{folderName}"
 msgstr ""
 
 #.frontend
@@ -12742,14 +12746,6 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:89
 msgid "the project"
-msgstr ""
-
-#.frontend
-#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
-#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
-#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
-#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
-msgid "the resource hub"
 msgstr ""
 
 #.frontend

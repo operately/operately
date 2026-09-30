@@ -87,7 +87,7 @@ const ResourceHubFolderRenamed: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).folder?.name;
     return name == null
-      ? i18n.t("Renamed a folder: a folder")
+      ? i18n.t("Renamed a folder")
       : i18n.t("Renamed a folder: {{folderName}}", { folderName: name });
   },
 

@@ -83,8 +83,8 @@ const ResourceHubFolderCreated: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).folder?.name;
     return name == null
-      ? i18n.t("Created folder: a folder")
-      : i18n.t("Created folder: {{folderName}}", { folderName: name });
+      ? i18n.t("Created a folder")
+      : i18n.t("Created a folder: {{folderName}}", { folderName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

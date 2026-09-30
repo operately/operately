@@ -156,7 +156,7 @@ const ResourceHubFileCreated: ActivityHandler = {
 
     if (data.files?.length === 1) {
       const name = data.files[0]?.name;
-      return name == null ? i18n.t("Added a file: a file") : i18n.t("Added a file: {{fileName}}", { fileName: name });
+      return name == null ? i18n.t("Added a file") : i18n.t("Added a file: {{fileName}}", { fileName: name });
     } else {
       return i18n.t("Added files");
     }

@@ -87,7 +87,7 @@ const ResourceHubFolderCopied: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).folder?.name;
     return name == null
-      ? i18n.t("Made a copy of a folder: a folder")
+      ? i18n.t("Made a copy of a folder")
       : i18n.t("Made a copy of a folder: {{folderName}}", { folderName: name });
   },
 

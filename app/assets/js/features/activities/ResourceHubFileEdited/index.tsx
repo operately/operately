@@ -85,7 +85,7 @@ const ResourceHubFileEdited: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).file?.name;
-    return name == null ? i18n.t("Edited a file: a file") : i18n.t("Edited a file: {{fileName}}", { fileName: name });
+    return name == null ? i18n.t("Edited a file") : i18n.t("Edited a file: {{fileName}}", { fileName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

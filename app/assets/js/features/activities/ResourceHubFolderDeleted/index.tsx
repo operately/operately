@@ -59,7 +59,7 @@ const ResourceHubFolderDeleted: ActivityHandler = {
         values={{
           author: activityAuthorName(activity),
           folderName,
-          hubName: data.resourceHub?.name ?? i18n.t("the resource hub"),
+          hubName: data.resourceHub?.name ?? i18n.t("Docs & Files"),
           parentName: parent?.name,
         }}
         components={{ hub: resourceHub, parent: parent?.link ?? <React.Fragment /> }}
@@ -86,7 +86,7 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).folder?.name;
     return name == null
-      ? i18n.t("Deleted a folder: a folder")
+      ? i18n.t("Deleted a folder")
       : i18n.t("Deleted a folder: {{folderName}}", { folderName: name });
   },
 

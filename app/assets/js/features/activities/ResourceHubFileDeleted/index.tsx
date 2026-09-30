@@ -59,7 +59,7 @@ const ResourceHubFileDeleted: ActivityHandler = {
         values={{
           author: activityAuthorName(activity),
           fileName,
-          hubName: data.resourceHub?.name ?? i18n.t("the resource hub"),
+          hubName: data.resourceHub?.name ?? i18n.t("Docs & Files"),
           parentName: parent?.name,
         }}
         components={{ hub: resourceHub, parent: parent?.link ?? <React.Fragment /> }}
@@ -85,7 +85,7 @@ const ResourceHubFileDeleted: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).file?.name;
-    return name == null ? i18n.t("Deleted a file: a file") : i18n.t("Deleted a file: {{fileName}}", { fileName: name });
+    return name == null ? i18n.t("Deleted a file") : i18n.t("Deleted a file: {{fileName}}", { fileName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -59,7 +59,7 @@ const ResourceHubLinkDeleted: ActivityHandler = {
         values={{
           author: activityAuthorName(activity),
           linkName,
-          hubName: data.resourceHub?.name ?? i18n.t("the resource hub"),
+          hubName: data.resourceHub?.name ?? i18n.t("Docs & Files"),
           parentName: parent?.name,
         }}
         components={{ hub: resourceHub, parent: parent?.link ?? <React.Fragment /> }}
@@ -85,7 +85,7 @@ const ResourceHubLinkDeleted: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).link?.name;
-    return name == null ? i18n.t("Deleted a link: a link") : i18n.t("Deleted a link: {{linkName}}", { linkName: name });
+    return name == null ? i18n.t("Deleted a link") : i18n.t("Deleted a link: {{linkName}}", { linkName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

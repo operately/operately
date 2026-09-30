@@ -59,7 +59,7 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
         values={{
           author: activityAuthorName(activity),
           documentName,
-          hubName: data.resourceHub?.name ?? i18n.t("the resource hub"),
+          hubName: data.resourceHub?.name ?? i18n.t("Docs & Files"),
           parentName: parent?.name,
         }}
         components={{ hub: resourceHub, parent: parent?.link ?? <React.Fragment /> }}
@@ -86,7 +86,7 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const name = content(activity).document?.name;
     return name == null
-      ? i18n.t("Deleted a document: a document")
+      ? i18n.t("Deleted a document")
       : i18n.t("Deleted a document: {{documentName}}", { documentName: name });
   },
 
