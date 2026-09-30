@@ -34,28 +34,41 @@ const ProjectDueDateUpdating: ActivityHandler = {
     const formattedTimePreferences = useFormattedTimePreferences();
     const { project, newDueDate } = content(props.activity);
 
-    const sentence =
-      props.page === "project"
-        ? newDueDate
-          ? i18n.t("{{author}} changed the due date to <date/>")
-          : i18n.t("{{author}} cleared the due date")
-        : newDueDate
-          ? i18n.t("{{author}} changed the due date to <date/> on the <project>{{projectName}}</project>")
-          : i18n.t("{{author}} cleared the due date on the <project>{{projectName}}</project>");
-    return (
-      <Trans
-        defaults={sentence}
-        values={{ author: activityAuthorName(props.activity), projectName: project?.name }}
-        components={{
-          project: project ? projectLink(paths, project) : <React.Fragment />,
-          date: newDueDate ? (
-            <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
-          ) : (
-            <React.Fragment />
-          ),
-        }}
-      />
-    );
+    const values = { author: activityAuthorName(props.activity), projectName: project?.name };
+    const components = {
+      project: project ? projectLink(paths, project) : <React.Fragment />,
+      date: newDueDate ? (
+        <FormattedTime {...formattedTimePreferences} time={newDueDate} format="short-date" />
+      ) : (
+        <React.Fragment />
+      ),
+    };
+
+    if (props.page === "project") {
+      return newDueDate ? (
+        <Trans
+          i18nKey="{{author}} changed the due date to <date/>"
+          values={values}
+          components={{ date: components.date }}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} cleared the due date" values={values} />
+      );
+    } else {
+      return newDueDate ? (
+        <Trans
+          i18nKey="{{author}} changed the due date to <date/> on the <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} cleared the due date on the <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
+    }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {

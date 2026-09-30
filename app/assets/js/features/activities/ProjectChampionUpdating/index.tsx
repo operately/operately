@@ -33,25 +33,38 @@ const ProjectChampionUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const newChampion = content(activity).newChampion;
-    const sentence =
-      page === "project"
-        ? newChampion
-          ? i18n.t("{{author}} assigned {{personName}} as the champion")
-          : i18n.t("{{author}} removed the champion")
-        : newChampion
-          ? i18n.t("{{author}} assigned {{personName}} as the champion on <project>{{projectName}}</project>")
-          : i18n.t("{{author}} removed the champion on <project>{{projectName}}</project>");
-    return (
-      <Trans
-        defaults={sentence}
-        values={{
-          author: activityAuthorName(activity),
-          personName: newChampion ? People.shortName(newChampion) : "",
-          projectName: project.name,
-        }}
-        components={{ project: projectLink(paths, project) }}
-      />
-    );
+    const values = {
+      author: activityAuthorName(activity),
+      personName: newChampion ? People.shortName(newChampion) : "",
+      projectName: project.name,
+    };
+
+    if (page === "project") {
+      if (newChampion) {
+        return <Trans i18nKey="{{author}} assigned {{personName}} as the champion" values={values} />;
+      } else {
+        return <Trans i18nKey="{{author}} removed the champion" values={values} />;
+      }
+    } else {
+      const components = { project: projectLink(paths, project) };
+      if (newChampion) {
+        return (
+          <Trans
+            i18nKey="{{author}} assigned {{personName}} as the champion on <project>{{projectName}}</project>"
+            values={values}
+            components={components}
+          />
+        );
+      } else {
+        return (
+          <Trans
+            i18nKey="{{author}} removed the champion on <project>{{projectName}}</project>"
+            values={values}
+            components={components}
+          />
+        );
+      }
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

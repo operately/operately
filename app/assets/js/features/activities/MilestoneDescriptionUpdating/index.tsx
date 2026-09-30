@@ -39,29 +39,45 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, milestone, milestoneName, hasDescription } = content(activity);
     const title = milestone ? milestoneLink(paths, milestone, milestoneName) : <React.Fragment />;
-    const sentence =
-      page === "project"
-        ? hasDescription
-          ? i18n.t("{{author}} updated milestone <milestone>{{title}}</milestone> description")
-          : i18n.t("{{author}} removed description from milestone <milestone>{{title}}</milestone>")
-        : hasDescription
-          ? i18n.t(
-              "{{author}} updated milestone <milestone>{{title}}</milestone> description in <project>{{projectName}}</project>",
-            )
-          : i18n.t(
-              "{{author}} removed description from milestone <milestone>{{title}}</milestone> in <project>{{projectName}}</project>",
-            );
-    return (
-      <Trans
-        defaults={sentence}
-        values={{
-          author: activityAuthorName(activity),
-          title: milestone ? milestoneName || milestone.title : `"${milestoneName}"`,
-          projectName: project.name,
-        }}
-        components={{ milestone: title, project: projectLink(paths, project) }}
-      />
-    );
+    const values = {
+      author: activityAuthorName(activity),
+      title: milestone ? milestoneName || milestone.title : `"${milestoneName}"`,
+      projectName: project.name,
+    };
+    const components = {
+      milestone: title,
+      project: projectLink(paths, project),
+    };
+
+    if (page === "project") {
+      return hasDescription ? (
+        <Trans
+          i18nKey="{{author}} updated milestone <milestone>{{title}}</milestone> description"
+          values={values}
+          components={{ milestone: components.milestone }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed description from milestone <milestone>{{title}}</milestone>"
+          values={values}
+          components={{ milestone: components.milestone }}
+        />
+      );
+    } else {
+      return hasDescription ? (
+        <Trans
+          i18nKey="{{author}} updated milestone <milestone>{{title}}</milestone> description in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed description from milestone <milestone>{{title}}</milestone> in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

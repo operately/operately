@@ -39,28 +39,36 @@ const ProjectDescriptionChanged: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, projectName, hasDescription } = content(activity);
     const projectDisplay = project ? projectLink(paths, project) : <React.Fragment />;
+    const values = { author: activityAuthorName(activity), projectName: project?.name ?? projectName };
 
     if (page === "project") {
       return hasDescription ? (
-        <Trans i18nKey="{{author}} updated the project description" values={{ author: activityAuthorName(activity) }} />
+        <Trans i18nKey="{{author}} updated the project description" values={values} />
       ) : (
-        <Trans i18nKey="{{author}} removed the project description" values={{ author: activityAuthorName(activity) }} />
+        <Trans i18nKey="{{author}} removed the project description" values={values} />
       );
     }
 
-    const sentence = project
-      ? hasDescription
-        ? i18n.t("{{author}} updated the <project>{{projectName}}</project> project description")
-        : i18n.t("{{author}} removed the <project>{{projectName}}</project> project description")
-      : hasDescription
-        ? i18n.t('{{author}} updated the "{{projectName}}" project description')
-        : i18n.t('{{author}} removed the "{{projectName}}" project description');
-    return (
-      <Trans
-        defaults={sentence}
-        values={{ author: activityAuthorName(activity), projectName: project?.name ?? projectName }}
-        components={{ project: projectDisplay }}
-      />
+    if (project) {
+      return hasDescription ? (
+        <Trans
+          i18nKey="{{author}} updated the <project>{{projectName}}</project> project description"
+          values={values}
+          components={{ project: projectDisplay }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed the <project>{{projectName}}</project> project description"
+          values={values}
+          components={{ project: projectDisplay }}
+        />
+      );
+    }
+
+    return hasDescription ? (
+      <Trans i18nKey={'{{author}} updated the "{{projectName}}" project description'} values={values} />
+    ) : (
+      <Trans i18nKey={'{{author}} removed the "{{projectName}}" project description'} values={values} />
     );
   },
 

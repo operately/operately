@@ -216,12 +216,12 @@ msgid "%{author} <action>commented</action> on the <activity>timeframe change</a
 msgstr "%{author} <action>comentou</action> no <activity>alteração de período</activity> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:48
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:58
 msgid "%{author} <action>commented</action> on the <milestone>%{milestoneName}</milestone> milestone"
 msgstr "%{author} <action>comentou</action> no marco <milestone>%{milestoneName}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:49
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:66
 msgid "%{author} <action>commented</action> on the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
 msgstr "%{author} <action>comentou</action> no marco <milestone>%{milestoneName}</milestone> no projeto <project>%{projectName}</project>"
 
@@ -621,7 +621,7 @@ msgstr[1] "%{author} atribuiu %{count} pessoas à tarefa <task>%{taskName}</task
 
 #.frontend
 #: assets/js/features/activities/GoalChampionUpdating/index.tsx:39
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:39
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:44
 msgid "%{author} assigned %{personName} as the champion"
 msgstr "%{author} atribuiu %{personName} como champion"
 
@@ -631,13 +631,13 @@ msgid "%{author} assigned %{personName} as the champion on <goal>%{goalName}</go
 msgstr "%{author} atribuiu %{personName} como champion no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:42
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:52
 msgid "%{author} assigned %{personName} as the champion on <project>%{projectName}</project>"
 msgstr "%{author} atribuiu %{personName} como champion no projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:39
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:39
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:44
 msgid "%{author} assigned %{personName} as the reviewer"
 msgstr "%{author} atribuiu %{personName} como revisor"
 
@@ -647,7 +647,7 @@ msgid "%{author} assigned %{personName} as the reviewer on <goal>%{goalName}</go
 msgstr "%{author} atribuiu %{personName} como revisor no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:42
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:52
 msgid "%{author} assigned %{personName} as the reviewer on <project>%{projectName}</project>"
 msgstr "%{author} atribuiu %{personName} como revisor no projeto <project>%{projectName}</project>"
 
@@ -693,7 +693,7 @@ msgstr "%{author} alterou os responsáveis da tarefa <task>%{taskName}</task> em
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:41
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:40
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:49
 msgid "%{author} changed the due date to <date/>"
 msgstr "%{author} alterou a data de conclusão para <date/>"
 
@@ -713,7 +713,7 @@ msgid "%{author} changed the due date to <date/> on the <goal>%{goalName}</goal>
 msgstr "%{author} alterou a data de conclusão para <date/> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:43
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:59
 msgid "%{author} changed the due date to <date/> on the <project>%{projectName}</project>"
 msgstr "%{author} alterou a data de conclusão para <date/> no projeto <project>%{projectName}</project>"
 
@@ -728,13 +728,13 @@ msgid "%{author} changed the parent goal of <goal>%{goalName}</goal>"
 msgstr "%{author} alterou o objetivo pai de <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:91
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:104
 msgid "%{author} changed the reviewer for %{projectName}"
 msgstr "%{author} alterou o revisor de %{projectName}"
 
 #.frontend
 #: assets/js/features/activities/GoalStartDateUpdating/index.tsx:41
-#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:41
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:49
 msgid "%{author} changed the start date to <date/>"
 msgstr "%{author} alterou a data de início para <date/>"
 
@@ -744,13 +744,13 @@ msgid "%{author} changed the start date to <date/> on the <goal>%{goalName}</goa
 msgstr "%{author} alterou a data de início para <date/> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:44
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:59
 msgid "%{author} changed the start date to <date/> on the <project>%{projectName}</project>"
 msgstr "%{author} alterou a data de início para <date/> no projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:42
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:41
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:55
 msgid "%{author} cleared the due date"
 msgstr "%{author} removeu a data de conclusão"
 
@@ -770,13 +770,13 @@ msgid "%{author} cleared the due date on the <goal>%{goalName}</goal>"
 msgstr "%{author} removeu a data de conclusão do objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:44
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:65
 msgid "%{author} cleared the due date on the <project>%{projectName}</project>"
 msgstr "%{author} removeu a data de conclusão do projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalStartDateUpdating/index.tsx:42
-#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:42
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:55
 msgid "%{author} cleared the start date"
 msgstr "%{author} removeu a data de início"
 
@@ -786,7 +786,7 @@ msgid "%{author} cleared the start date on the <goal>%{goalName}</goal>"
 msgstr "%{author} removeu a data de início do objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:45
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:65
 msgid "%{author} cleared the start date on the <project>%{projectName}</project>"
 msgstr "%{author} removeu a data de início do projeto <project>%{projectName}</project>"
 
@@ -832,27 +832,27 @@ msgid "%{author} commented on a task in the <space>%{spaceName}</space> space"
 msgstr "%{author} comentou em uma tarefa no espaço <space>%{spaceName}</space>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:56
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:76
 msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone"
 msgstr "%{author} concluiu o marco <milestone>%{milestoneName}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:57
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:84
 msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
 msgstr "%{author} concluiu o marco <milestone>%{milestoneName}</milestone> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:46
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:60
 msgid "%{author} connected the <project>%{projectName}</project> project to the <goal>%{goalName}</goal> goal"
 msgstr "%{author} conectou o projeto <project>%{projectName}</project> ao objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:45
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:52
 msgid "%{author} connected the <project>%{projectName}</project> project to the goal"
 msgstr "%{author} conectou o projeto <project>%{projectName}</project> ao objetivo"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:43
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:44
 msgid "%{author} connected the project to the <goal>%{goalName}</goal> goal"
 msgstr "%{author} conectou o projeto ao objetivo <goal>%{goalName}</goal>"
 
@@ -1139,12 +1139,12 @@ msgid "%{author} disabled public sharing for <document>%{documentName}</document
 msgstr "%{author} desativou o compartilhamento público do documento <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:75
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:93
 msgid "%{author} disconnected the <project>%{projectName}</project> project from its parent goal"
 msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo pai"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:61
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:80
 #: assets/js/features/activities/ProjectGoalDisconnection/index.tsx:58
 msgid "%{author} disconnected the <project>%{projectName}</project> project from the <goal>%{goalName}</goal> goal"
 msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo <goal>%{goalName}</goal>"
@@ -1155,28 +1155,28 @@ msgid "%{author} disconnected the <project>%{projectName}</project> project from
 msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:73
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:90
 msgid "%{author} disconnected the project from its parent goal"
 msgstr "%{author} desconectou o projeto do objetivo pai"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:60
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:72
 #: assets/js/features/activities/ProjectGoalDisconnection/index.tsx:42
 msgid "%{author} disconnected the project from the <goal>%{goalName}</goal> goal"
 msgstr "%{author} desconectou o projeto do objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:76
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:83
 msgid "%{author} edited %{personName}'s access"
 msgstr "%{author} editou o acesso de %{personName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:79
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:93
 msgid "%{author} edited %{personName}'s access on a project"
 msgstr "%{author} editou o acesso de %{personName} em um projeto"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:78
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:86
 msgid "%{author} edited %{personName}'s access on the <project>%{projectName}</project> project"
 msgstr "%{author} editou o acesso de %{personName} no projeto <project>%{projectName}</project>"
 
@@ -1474,27 +1474,27 @@ msgid "%{author} promoted %{names} to account owner"
 msgstr "%{author} promoveu %{names} a proprietário da conta"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:64
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:94
 msgid "%{author} re-opened the <milestone>%{milestoneName}</milestone> milestone"
 msgstr "%{author} reabriu o marco <milestone>%{milestoneName}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:65
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:102
 msgid "%{author} re-opened the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
 msgstr "%{author} reabriu o marco <milestone>%{milestoneName}</milestone> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:69
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:77
 msgid "%{author} reassigned %{personName} as a %{role} on a project"
 msgstr "%{author} reatribuiu %{personName} como %{role} em um projeto"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:66
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:70
 msgid "%{author} reassigned %{personName} as a %{role} on the <project>%{projectName}</project> project"
 msgstr "%{author} reatribuiu %{personName} como %{role} no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:64
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:67
 msgid "%{author} reassigned %{personName} as a %{role} on the project"
 msgstr "%{author} reatribuiu %{personName} como %{role} no projeto"
 
@@ -1574,38 +1574,38 @@ msgid "%{author} removed description from goal <goal>%{goalName}</goal>"
 msgstr "%{author} removeu a descrição do objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:46
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:60
 msgid "%{author} removed description from milestone <milestone>%{title}</milestone>"
 msgstr "%{author} removeu a descrição do marco <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:51
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:74
 msgid "%{author} removed description from milestone <milestone>%{title}</milestone> in <project>%{projectName}</project>"
 msgstr "%{author} removeu a descrição do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:41
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:55
 msgid "%{author} removed due date from the <milestone>%{title}</milestone> milestone"
 msgstr "%{author} removeu a data de conclusão do marco <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:46
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:69
 msgid "%{author} removed due date from the <milestone>%{title}</milestone> milestone in <project>%{projectName}</project>"
 msgstr "%{author} removeu a data de conclusão do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:57
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:71
 msgid "%{author} removed the \"%{projectName}\" project description"
 msgstr "%{author} removeu a descrição do projeto \"%{projectName}\""
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:54
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:60
 msgid "%{author} removed the <project>%{projectName}</project> project description"
 msgstr "%{author} removeu a descrição do projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalChampionUpdating/index.tsx:40
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:40
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:46
 msgid "%{author} removed the champion"
 msgstr "%{author} removeu o champion"
 
@@ -1615,18 +1615,18 @@ msgid "%{author} removed the champion on <goal>%{goalName}</goal>"
 msgstr "%{author} removeu o champion no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:43
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:60
 msgid "%{author} removed the champion on <project>%{projectName}</project>"
 msgstr "%{author} removeu o champion no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:47
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:48
 msgid "%{author} removed the project description"
 msgstr "%{author} removeu a descrição do projeto"
 
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:40
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:40
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:46
 msgid "%{author} removed the reviewer"
 msgstr "%{author} removeu o revisor"
 
@@ -1636,7 +1636,7 @@ msgid "%{author} removed the reviewer on <goal>%{goalName}</goal>"
 msgstr "%{author} removeu o revisor no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:43
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:60
 msgid "%{author} removed the reviewer on <project>%{projectName}</project>"
 msgstr "%{author} removeu o revisor no projeto <project>%{projectName}</project>"
 
@@ -1751,12 +1751,12 @@ msgid "%{author} restored a member's account"
 msgstr "%{author} restaurou a conta de um membro"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:52
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:51
 msgid "%{author} set %{personName} as the new %{role}"
 msgstr "%{author} definiu %{personName} como o novo %{role}"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:57
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:61
 msgid "%{author} set %{personName} as the new %{role} on a project"
 msgstr "%{author} definiu %{personName} como o novo %{role} em um projeto"
 
@@ -1800,17 +1800,17 @@ msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task>
 msgstr "%{author} removeu a atribuição de %{personName} na tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:85
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:98
 msgid "%{author} updated %{personName}'s role"
 msgstr "%{author} atualizou o papel de %{personName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:88
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:108
 msgid "%{author} updated %{personName}'s role on a project"
 msgstr "%{author} atualizou o papel de %{personName} em um projeto"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:87
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:101
 msgid "%{author} updated %{personName}'s role on the <project>%{projectName}</project> project"
 msgstr "%{author} atualizou o papel de %{personName} no projeto <project>%{projectName}</project>"
 
@@ -1865,22 +1865,22 @@ msgid "%{author} updated goal <goal>%{goalName}</goal> description"
 msgstr "%{author} atualizou a descrição do objetivo <goal>%{goalName}</goal>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:45
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:54
 msgid "%{author} updated milestone <milestone>%{title}</milestone> description"
 msgstr "%{author} atualizou a descrição do marco <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:48
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:68
 msgid "%{author} updated milestone <milestone>%{title}</milestone> description in <project>%{projectName}</project>"
 msgstr "%{author} atualizou a descrição do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:56
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:69
 msgid "%{author} updated the \"%{projectName}\" project description"
 msgstr "%{author} atualizou a descrição do projeto \"%{projectName}\""
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:53
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:54
 msgid "%{author} updated the <project>%{projectName}</project> project description"
 msgstr "%{author} atualizou a descrição do projeto <project>%{projectName}</project>"
 
@@ -1910,37 +1910,37 @@ msgid "%{author} updated the description of a task in %{context}"
 msgstr "%{author} atualizou a descrição de uma tarefa em %{context}"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:40
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:49
 msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone"
 msgstr "%{author} atualizou a data de conclusão do marco <milestone>%{title}</milestone>"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:43
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:63
 msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone in <project>%{projectName}</project>"
 msgstr "%{author} atualizou a data de conclusão do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:44
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:50
 msgid "%{author} updated the milestone %{oldName}"
 msgstr "%{author} atualizou o marco %{oldName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:47
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:61
 msgid "%{author} updated the milestone %{oldName} in <project>%{projectName}</project>"
 msgstr "%{author} atualizou o marco %{oldName} no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:43
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:48
 msgid "%{author} updated the milestone %{oldName} to %{newName}"
 msgstr "%{author} atualizou o marco %{oldName} para %{newName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:46
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:55
 msgid "%{author} updated the milestone %{oldName} to %{newName} in <project>%{projectName}</project>"
 msgstr "%{author} atualizou o marco %{oldName} para %{newName} no projeto <project>%{projectName}</project>"
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:45
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:46
 msgid "%{author} updated the project description"
 msgstr "%{author} atualizou a descrição do projeto"
 
@@ -2135,7 +2135,7 @@ msgid "%{percentage}% tasks completed, %{completed}/%{total} tasks completed"
 msgstr "%{percentage}% das tarefas concluídas, %{completed}/%{total} tarefas concluídas"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:128
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:148
 msgid "%{personName} now has %{access} on this project"
 msgstr "%{personName} agora tem %{access} neste projeto"
 
@@ -2972,7 +2972,7 @@ msgid "Add new team members, update profiles, or remove access as needed."
 msgstr "Adicione novos membros à equipe, atualize perfis ou remova acessos conforme necessário."
 
 #.frontend
-#: ../turboui/src/TaskCreationModal/index.tsx:409
+#: ../turboui/src/TaskCreationModal/index.tsx:408
 #: ../turboui/src/TaskPage/Overview.tsx:18
 msgid "Add notes about this task..."
 msgstr "Adicione notas sobre esta tarefa..."
@@ -3788,7 +3788,7 @@ msgstr "Não pode ficar em branco"
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:100
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:109
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:595
-#: ../turboui/src/TaskCreationModal/index.tsx:388
+#: ../turboui/src/TaskCreationModal/index.tsx:387
 #: ../turboui/src/TaskPage/DeleteModal.tsx:75
 #: ../turboui/src/TaskPage/MoveModal.tsx:109
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:172
@@ -3955,7 +3955,7 @@ msgid "Changed a goal's parent goal"
 msgstr "Alterou o objetivo pai de um objetivo"
 
 #.frontend
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:92
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:105
 msgid "Changed the champion for %{projectName}"
 msgstr "Alterou o champion de %{projectName}"
 
@@ -4169,7 +4169,7 @@ msgid "Clear task selection"
 msgstr "Limpar seleção de tarefas"
 
 #.frontend
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:100
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:113
 msgid "Cleared due date for %{projectName}"
 msgstr "Removeu a data de conclusão de %{projectName}"
 
@@ -4224,12 +4224,12 @@ msgid "Closed"
 msgstr "Fechado"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:133
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:158
 msgid "Closed a milestone"
 msgstr "Encerrou um marco"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:122
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:147
 msgid "Closed milestone: %{title}"
 msgstr "Encerrou o marco: %{title}"
 
@@ -4290,7 +4290,7 @@ msgid "Comment on this update"
 msgstr "Comentar nesta atualização"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:131
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:156
 msgid "Commented on a milestone"
 msgstr "Comentou em um marco"
 
@@ -4504,7 +4504,7 @@ msgid "Connected"
 msgstr "Conectado"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:107
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:126
 msgid "Connected %{projectName} project to the %{goalName} goal"
 msgstr "Conectou o projeto %{projectName} ao objetivo %{goalName}"
 
@@ -4514,7 +4514,7 @@ msgid "Connected Clients"
 msgstr "Clientes conectados"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:111
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:130
 msgid "Connected a project to the %{goalName} goal"
 msgstr "Conectou um projeto ao objetivo %{goalName}"
 
@@ -4804,7 +4804,7 @@ msgid "Create project"
 msgstr "Criar projeto"
 
 #.frontend
-#: ../turboui/src/TaskCreationModal/index.tsx:391
+#: ../turboui/src/TaskCreationModal/index.tsx:390
 msgid "Create task"
 msgstr "Criar tarefa"
 
@@ -4929,17 +4929,17 @@ msgid "Date"
 msgstr "Data"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:70
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:83
 msgid "Date added: <date/>"
 msgstr "Data adicionada: <date/>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:97
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:110
 msgid "Date changed from <old/> to <new/>"
 msgstr "Data alterada de <old/> para <new/>"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:84
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:97
 msgid "Date removed"
 msgstr "Data removida"
 
@@ -5269,12 +5269,12 @@ msgstr "Descartar rascunho"
 #~ msgstr "Descartar este documento"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:116
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:135
 msgid "Disconnected %{projectName} project from the %{goalName} goal"
 msgstr "Desconectou o projeto %{projectName} do objetivo %{goalName}"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:120
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:139
 msgid "Disconnected a project from the %{goalName} goal"
 msgstr "Desconectou um projeto do objetivo %{goalName}"
 
@@ -5499,22 +5499,22 @@ msgid "Due date (optional)"
 msgstr "Data de conclusão (opcional)"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:82
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:98
 msgid "Due date <date><value/></date> was removed."
 msgstr "A data de conclusão <date><value/></date> foi removida."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:96
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:112
 msgid "Due date was changed from <old><oldDate/></old> to <new><newDate/></new>."
 msgstr "A data de conclusão foi alterada de <old><oldDate/></old> para <new><newDate/></new>."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:68
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:84
 msgid "Due date was set to <date><value/></date>."
 msgstr "A data de conclusão foi definida para <date><value/></date>."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:109
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:125
 msgid "Due date was updated."
 msgstr "A data de conclusão foi atualizada."
 
@@ -7684,12 +7684,12 @@ msgid "Milestone \"%{milestoneName}\" was deleted"
 msgstr "O marco \"%{milestoneName}\" foi excluído"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:99
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:115
 msgid "Milestone \"%{title}\" description was removed"
 msgstr "A descrição do marco \"%{title}\" foi removida"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:97
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:113
 msgid "Milestone \"%{title}\" description was updated"
 msgstr "A descrição do marco \"%{title}\" foi atualizada"
 
@@ -9013,7 +9013,7 @@ msgid "Previous values"
 msgstr "Valores anteriores"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:114
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:134
 msgid "Previously %{personName} was a %{oldRole}"
 msgstr "Anteriormente, %{personName} era %{oldRole}"
 
@@ -9031,14 +9031,14 @@ msgstr "Anteriormente atribuída a:"
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:71
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:70
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:83
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:114
 msgid "Previously had no due date"
 msgstr "Anteriormente não tinha data de conclusão"
 
 #.frontend
 #: assets/js/features/activities/GoalStartDateUpdating/index.tsx:71
-#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:71
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:83
 msgid "Previously had no start date"
 msgstr "Anteriormente não tinha data de início"
 
@@ -9054,14 +9054,14 @@ msgstr "Anteriormente, ela estava sem responsável"
 
 #.frontend
 #: assets/js/features/activities/GoalDueDateUpdating/index.tsx:69
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:68
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:81
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:107
 msgid "Previously the due date was <date/>"
 msgstr "Anteriormente, a data de conclusão era <date/>"
 
 #.frontend
 #: assets/js/features/activities/GoalStartDateUpdating/index.tsx:69
-#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:69
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:81
 msgid "Previously the start date was <date/>"
 msgstr "Anteriormente, a data de início era <date/>"
 
@@ -9072,13 +9072,13 @@ msgstr "Antes, %{oldValue} %{unit}; agora, %{newValue} %{unit}."
 
 #.frontend
 #: assets/js/features/activities/GoalChampionUpdating/index.tsx:62
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:62
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:75
 msgid "Previously, %{personName} was the champion."
 msgstr "Anteriormente, %{personName} era o champion."
 
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:62
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:62
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:75
 msgid "Previously, %{personName} was the reviewer."
 msgstr "Anteriormente, %{personName} era o revisor."
 
@@ -9149,12 +9149,12 @@ msgid "Project"
 msgstr "Projeto"
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:95
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:103
 msgid "Project \"%{projectName}\" description was removed"
 msgstr "A descrição do projeto \"%{projectName}\" foi removida"
 
 #.frontend
-#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:94
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:102
 msgid "Project \"%{projectName}\" description was updated"
 msgstr "A descrição do projeto \"%{projectName}\" foi atualizada"
 
@@ -9340,12 +9340,12 @@ msgid "Re-open Goal"
 msgstr "Reabrir objetivo"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:135
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:160
 msgid "Re-opened a milestone"
 msgstr "Reabriu um marco"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:124
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:149
 msgid "Re-opened milestone: %{title}"
 msgstr "Reabriu o marco: %{title}"
 
@@ -9354,7 +9354,7 @@ msgstr "Reabriu o marco: %{title}"
 #: assets/js/features/activities/CommentAdded/index.tsx:339
 #: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:99
 #: assets/js/features/activities/KpiEntryCommented/index.tsx:121
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:145
 #: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
 #: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
 #: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
@@ -9598,7 +9598,7 @@ msgid "Removed KPI annotation: %{title}"
 msgstr "Removeu a anotação do KPI: %{title}"
 
 #.frontend
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:94
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:107
 msgid "Removed the champion for %{projectName}"
 msgstr "Removeu o champion de %{projectName}"
 
@@ -10985,12 +10985,12 @@ msgid "That version could not be found. Choose another version from the history 
 msgstr "Essa versão não foi encontrada. Escolha outra versão na lista de histórico."
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:130
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:146
 msgid "The \"%{title}\" milestone due date was removed"
 msgstr "A data de conclusão do marco \"%{title}\" foi removida"
 
 #.frontend
-#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:128
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:144
 msgid "The \"%{title}\" milestone due date was updated"
 msgstr "A data de conclusão do marco \"%{title}\" foi atualizada"
 
@@ -11100,7 +11100,7 @@ msgid "The parent goal has been successfully changed."
 msgstr "O objetivo pai foi alterado."
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:100
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:120
 msgid "The previous %{oldRole} %{oldName} is now a %{newRole}"
 msgstr "O %{oldRole} anterior, %{oldName}, agora é %{newRole}"
 
@@ -11188,13 +11188,13 @@ msgstr "Ocorreu um erro inesperado. Tente novamente mais tarde."
 
 #.frontend
 #: assets/js/features/activities/GoalChampionUpdating/index.tsx:68
-#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:68
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:81
 msgid "There was no previous champion."
 msgstr "Não havia champion anterior."
 
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:68
-#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:68
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:81
 msgid "There was no previous reviewer."
 msgstr "Não havia revisor anterior."
 
@@ -11876,7 +11876,7 @@ msgstr[0] "Atualizou um marco:"
 msgstr[1] "Atualizou marcos:"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:125
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:144
 msgid "Updated a project's parent goal"
 msgstr "Atualizou o objetivo pai de um projeto"
 
@@ -11886,7 +11886,7 @@ msgid "Updated date"
 msgstr "Data de atualização"
 
 #.frontend
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:93
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:106
 msgid "Updated due date for %{projectName} to <date/>"
 msgstr "Atualizou a data de conclusão de %{projectName} para <date/>"
 
@@ -11911,7 +11911,7 @@ msgid "Updated the description of: a task"
 msgstr "Atualizou a descrição de: uma tarefa"
 
 #.frontend
-#: assets/js/features/activities/ProjectGoalConnection/index.tsx:124
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:143
 msgid "Updated the parent goal of %{projectName} project"
 msgstr "Atualizou o objetivo pai do projeto %{projectName}"
 
@@ -12638,7 +12638,7 @@ msgstr "Você precisará acessar as duas caixas de entrada. Seu e-mail só será
 
 #.frontend
 #: assets/js/features/activities/ProjectContributorAddition/index.tsx:35
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:165
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:185
 #: assets/js/features/activities/ProjectContributorRemoved/index.tsx:35
 msgid "a contributor"
 msgstr "um contribuidor"
@@ -12690,7 +12690,7 @@ msgid "a link"
 msgstr "um link"
 
 #.frontend
-#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:77
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:50
 msgid "a milestone"
 msgstr "um marco"
 
@@ -12736,7 +12736,7 @@ msgstr "cancelado"
 
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:208
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:171
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:191
 msgid "champion"
 msgstr "champion"
 
@@ -12770,8 +12770,8 @@ msgid "concrete actions or deliverables"
 msgstr "ações concretas ou entregas"
 
 #.frontend
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:175
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:177
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:195
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:197
 msgid "contributor"
 msgstr "contribuidor"
 
@@ -12972,7 +12972,7 @@ msgstr "restaurou este documento da Versão %{version}"
 
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:209
-#: assets/js/features/activities/ProjectContributorEdited/index.tsx:173
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:193
 msgid "reviewer"
 msgstr "revisor"
 
@@ -13004,7 +13004,7 @@ msgid "the pending plan"
 msgstr "o plano pendente"
 
 #.frontend
-#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:89
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:102
 msgid "the project"
 msgstr "o projeto"
 
