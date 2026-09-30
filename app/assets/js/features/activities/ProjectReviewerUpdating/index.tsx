@@ -33,25 +33,26 @@ const ProjectReviewerUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const newReviewer = content(activity).newReviewer;
-    const sentence =
-      page === "project"
-        ? newReviewer
-          ? i18n.t("{{author}} assigned {{personName}} as the reviewer")
-          : i18n.t("{{author}} removed the reviewer")
-        : newReviewer
-          ? i18n.t("{{author}} assigned {{personName}} as the reviewer on <project>{{projectName}}</project>")
-          : i18n.t("{{author}} removed the reviewer on <project>{{projectName}}</project>");
-    return (
-      <Trans
-        defaults={sentence}
-        values={{
-          author: activityAuthorName(activity),
-          personName: newReviewer ? People.shortName(newReviewer) : "",
-          projectName: project.name,
-        }}
-        components={{ project: projectLink(paths, project) }}
-      />
-    );
+    const values = {
+      author: activityAuthorName(activity),
+      personName: newReviewer ? People.shortName(newReviewer) : "",
+      projectName: project.name,
+    };
+
+    if (page === "project") {
+      if (newReviewer) {
+        return <Trans i18nKey="{{author}} assigned {{personName}} as the reviewer" values={values} />;
+      } else {
+        return <Trans i18nKey="{{author}} removed the reviewer" values={values} />;
+      }
+    } else {
+      const components = { project: projectLink(paths, project) };
+      if (newReviewer) {
+        return <Trans i18nKey="{{author}} assigned {{personName}} as the reviewer on <project>{{projectName}}</project>" values={values} components={components} />;
+      } else {
+        return <Trans i18nKey="{{author}} removed the reviewer on <project>{{projectName}}</project>" values={values} components={components} />;
+      }
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {

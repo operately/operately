@@ -47,46 +47,42 @@ const ProjectContributorEdited: ActivityHandler = {
     const components = { project: project ? projectLink(paths, project) : <React.Fragment /> };
 
     if (personChanged(activity)) {
-      const sentence =
-        page === "project"
-          ? i18n.t("{{author}} set {{personName}} as the new {{role}}")
-          : project
-            ? i18n.t(
-                "{{author}} set {{personName}} as the new {{role}} on the <project>{{projectName}}</project> project",
-              )
-            : i18n.t("{{author}} set {{personName}} as the new {{role}} on a project");
-      return <Trans defaults={sentence} values={values} components={components} />;
+      if (page === "project") {
+        return <Trans i18nKey="{{author}} set {{personName}} as the new {{role}}" values={values} />;
+      } else if (project) {
+        return <Trans i18nKey="{{author}} set {{personName}} as the new {{role}} on the <project>{{projectName}}</project> project" values={values} components={components} />;
+      } else {
+        return <Trans i18nKey="{{author}} set {{personName}} as the new {{role}} on a project" values={values} />;
+      }
     }
 
     if (roleChanged(activity)) {
-      const sentence =
-        page === "project"
-          ? i18n.t("{{author}} reassigned {{personName}} as a {{role}} on the project")
-          : project
-            ? i18n.t(
-                "{{author}} reassigned {{personName}} as a {{role}} on the <project>{{projectName}}</project> project",
-              )
-            : i18n.t("{{author}} reassigned {{personName}} as a {{role}} on a project");
-      return <Trans defaults={sentence} values={values} components={components} />;
+      if (page === "project") {
+        return <Trans i18nKey="{{author}} reassigned {{personName}} as a {{role}} on the project" values={values} />;
+      } else if (project) {
+        return <Trans i18nKey="{{author}} reassigned {{personName}} as a {{role}} on the <project>{{projectName}}</project> project" values={values} components={components} />;
+      } else {
+        return <Trans i18nKey="{{author}} reassigned {{personName}} as a {{role}} on a project" values={values} />;
+      }
     }
 
     if (accessChanged(activity)) {
-      const sentence =
-        page === "project"
-          ? i18n.t("{{author}} edited {{personName}}'s access")
-          : project
-            ? i18n.t("{{author}} edited {{personName}}'s access on the <project>{{projectName}}</project> project")
-            : i18n.t("{{author}} edited {{personName}}'s access on a project");
-      return <Trans defaults={sentence} values={values} components={components} />;
+      if (page === "project") {
+        return <Trans i18nKey="{{author}} edited {{personName}}'s access" values={values} />;
+      } else if (project) {
+        return <Trans i18nKey="{{author}} edited {{personName}}'s access on the <project>{{projectName}}</project> project" values={values} components={components} />;
+      } else {
+        return <Trans i18nKey="{{author}} edited {{personName}}'s access on a project" values={values} />;
+      }
     }
 
-    const sentence =
-      page === "project"
-        ? i18n.t("{{author}} updated {{personName}}'s role")
-        : project
-          ? i18n.t("{{author}} updated {{personName}}'s role on the <project>{{projectName}}</project> project")
-          : i18n.t("{{author}} updated {{personName}}'s role on a project");
-    return <Trans defaults={sentence} values={values} components={components} />;
+    if (page === "project") {
+      return <Trans i18nKey="{{author}} updated {{personName}}'s role" values={values} />;
+    } else if (project) {
+      return <Trans i18nKey="{{author}} updated {{personName}}'s role on the <project>{{projectName}}</project> project" values={values} components={components} />;
+    } else {
+      return <Trans i18nKey="{{author}} updated {{personName}}'s role on a project" values={values} />;
+    }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {

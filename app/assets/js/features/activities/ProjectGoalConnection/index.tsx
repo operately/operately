@@ -37,47 +37,66 @@ const ProjectGoalConnection: ActivityHandler = {
     const project = projectLink(paths, p);
 
     const values = { author: activityAuthorName(activity), projectName: p.name };
+
     if (g || connectedGoalName) {
-      const sentence =
-        page === "project"
-          ? i18n.t("{{author}} connected the project to the <goal>{{goalName}}</goal> goal")
-          : page === "goal" && g
-            ? i18n.t("{{author}} connected the <project>{{projectName}}</project> project to the goal")
-            : i18n.t(
-                "{{author}} connected the <project>{{projectName}}</project> project to the <goal>{{goalName}}</goal> goal",
-              );
-      return (
-        <Trans
-          defaults={sentence}
-          values={{ ...values, goalName: connectedGoalName }}
-          components={{ project, goal: g ? goalLink(paths, g) : <React.Fragment /> }}
-        />
-      );
+      if (page === "project") {
+        return (
+          <Trans
+            i18nKey="{{author}} connected the project to the <goal>{{goalName}}</goal> goal"
+            values={{ ...values, goalName: connectedGoalName }}
+            components={{ goal: g ? goalLink(paths, g) : <React.Fragment /> }}
+          />
+        );
+      } else if (page === "goal" && g) {
+        return (
+          <Trans
+            i18nKey="{{author}} connected the <project>{{projectName}}</project> project to the goal"
+            values={values}
+            components={{ project }}
+          />
+        );
+      } else {
+        return (
+          <Trans
+            i18nKey="{{author}} connected the <project>{{projectName}}</project> project to the <goal>{{goalName}}</goal> goal"
+            values={{ ...values, goalName: connectedGoalName }}
+            components={{ project, goal: g ? goalLink(paths, g) : <React.Fragment /> }}
+          />
+        );
+      }
     }
+
     if (previousGoal || disconnectedGoalName) {
-      const sentence =
-        page === "project"
-          ? i18n.t("{{author}} disconnected the project from the <goal>{{goalName}}</goal> goal")
-          : i18n.t(
-              "{{author}} disconnected the <project>{{projectName}}</project> project from the <goal>{{goalName}}</goal> goal",
-            );
+      if (page === "project") {
+        return (
+          <Trans
+            i18nKey="{{author}} disconnected the project from the <goal>{{goalName}}</goal> goal"
+            values={{ ...values, goalName: disconnectedGoalName }}
+            components={{ goal: previousGoal ? goalLink(paths, previousGoal) : <React.Fragment /> }}
+          />
+        );
+      } else {
+        return (
+          <Trans
+            i18nKey="{{author}} disconnected the <project>{{projectName}}</project> project from the <goal>{{goalName}}</goal> goal"
+            values={{ ...values, goalName: disconnectedGoalName }}
+            components={{ project, goal: previousGoal ? goalLink(paths, previousGoal) : <React.Fragment /> }}
+          />
+        );
+      }
+    }
+
+    if (page === "project") {
+      return <Trans i18nKey="{{author}} disconnected the project from its parent goal" values={values} />;
+    } else {
       return (
         <Trans
-          defaults={sentence}
-          values={{ ...values, goalName: disconnectedGoalName }}
-          components={{ project, goal: previousGoal ? goalLink(paths, previousGoal) : <React.Fragment /> }}
+          i18nKey="{{author}} disconnected the <project>{{projectName}}</project> project from its parent goal"
+          values={values}
+          components={{ project }}
         />
       );
     }
-    return page === "project" ? (
-      <Trans i18nKey="{{author}} disconnected the project from its parent goal" values={values} />
-    ) : (
-      <Trans
-        i18nKey="{{author}} disconnected the <project>{{projectName}}</project> project from its parent goal"
-        values={values}
-        components={{ project }}
-      />
-    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

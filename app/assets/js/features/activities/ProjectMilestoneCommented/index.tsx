@@ -40,50 +40,75 @@ const ProjectMilestoneCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { comment, commentAction, milestone, project } = content(activity);
-    let sentence: string;
+    const components = {
+      action: milestoneCommentLink(paths, milestone, comment),
+      milestone: milestone ? milestoneLink(paths, milestone) : <React.Fragment />,
+      project: projectLink(paths, project),
+    };
+    const values = {
+      author: activityAuthorName(activity),
+      milestoneName: milestone?.title ?? i18n.t("a milestone"),
+      projectName: project.name,
+    };
+
     switch (commentAction) {
       case "none":
-        sentence =
-          page === "project"
-            ? i18n.t("{{author}} <action>commented</action> on the <milestone>{{milestoneName}}</milestone> milestone")
-            : i18n.t(
-                "{{author}} <action>commented</action> on the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project",
-              );
-        break;
+        if (page === "project") {
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <milestone>{{milestoneName}}</milestone> milestone"
+              values={values}
+              components={components}
+            />
+          );
+        } else {
+          return (
+            <Trans
+              i18nKey="{{author}} <action>commented</action> on the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project"
+              values={values}
+              components={components}
+            />
+          );
+        }
       case "complete":
-        sentence =
-          page === "project"
-            ? i18n.t("{{author}} completed the <milestone>{{milestoneName}}</milestone> milestone")
-            : i18n.t(
-                "{{author}} completed the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project",
-              );
-        break;
+        if (page === "project") {
+          return (
+            <Trans
+              i18nKey="{{author}} completed the <milestone>{{milestoneName}}</milestone> milestone"
+              values={values}
+              components={components}
+            />
+          );
+        } else {
+          return (
+            <Trans
+              i18nKey="{{author}} completed the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project"
+              values={values}
+              components={components}
+            />
+          );
+        }
       case "reopen":
-        sentence =
-          page === "project"
-            ? i18n.t("{{author}} re-opened the <milestone>{{milestoneName}}</milestone> milestone")
-            : i18n.t(
-                "{{author}} re-opened the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project",
-              );
-        break;
+        if (page === "project") {
+          return (
+            <Trans
+              i18nKey="{{author}} re-opened the <milestone>{{milestoneName}}</milestone> milestone"
+              values={values}
+              components={components}
+            />
+          );
+        } else {
+          return (
+            <Trans
+              i18nKey="{{author}} re-opened the <milestone>{{milestoneName}}</milestone> milestone in the <project>{{projectName}}</project> project"
+              values={values}
+              components={components}
+            />
+          );
+        }
       default:
         throw new Error("Unknown action: " + commentAction);
     }
-    return (
-      <Trans
-        defaults={sentence}
-        values={{
-          author: activityAuthorName(activity),
-          milestoneName: milestone?.title ?? i18n.t("a milestone"),
-          projectName: project.name,
-        }}
-        components={{
-          action: milestoneCommentLink(paths, milestone, comment),
-          milestone: milestone ? milestoneLink(paths, milestone) : <React.Fragment />,
-          project: projectLink(paths, project),
-        }}
-      />
-    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
