@@ -283,7 +283,7 @@ function TemplateTaskCreationForm({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={translationText(t("Create Task"))} size="medium">
-      <form onSubmit={submit} className="min-w-0 space-y-6 overflow-x-hidden" data-test-id="template-task-form">
+      <form onSubmit={submit} className="min-w-0 space-y-6" data-test-id="template-task-form">
         <TextField
           variant="form-field"
           label={translationText(t("Task title"))}
@@ -375,14 +375,13 @@ function CreateMoreFooter({
   const { t } = useTranslation();
 
   return (
-    <div className="mt-8 flex items-center">
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-4" data-test-id="create-more-footer">
       <SwitchToggle
         value={createMore}
         setValue={setCreateMore}
         label={translationText(t("Create more"))}
         testId={createMoreTestId}
       />
-      <div className="flex-1" />
       <div className="flex space-x-3">
         <SecondaryButton onClick={onClose} type="button">
           {t("Cancel")}

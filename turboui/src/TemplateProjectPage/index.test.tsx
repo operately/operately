@@ -1051,8 +1051,6 @@ describe("TemplateProjectPage", () => {
     expect(screen.getByText("Relative due date")).toBeInTheDocument();
     expect(screen.getByText("Create more")).toBeInTheDocument();
 
-    const form = document.querySelector('[data-test-id="template-task-form"]');
-    expect(form).toHaveClass("overflow-x-hidden");
     expect(document.querySelector('[data-test-id="template-task-status"]')).toBeInTheDocument();
     expect(document.querySelector('[data-test-id="template-task-milestone"]')).toBeInTheDocument();
   });
