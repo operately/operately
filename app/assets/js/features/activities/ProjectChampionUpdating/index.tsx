@@ -48,9 +48,21 @@ const ProjectChampionUpdating: ActivityHandler = {
     } else {
       const components = { project: projectLink(paths, project) };
       if (newChampion) {
-        return <Trans i18nKey="{{author}} assigned {{personName}} as the champion on <project>{{projectName}}</project>" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} assigned {{personName}} as the champion on <project>{{projectName}}</project>"
+            values={values}
+            components={components}
+          />
+        );
       } else {
-        return <Trans i18nKey="{{author}} removed the champion on <project>{{projectName}}</project>" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} removed the champion on <project>{{projectName}}</project>"
+            values={values}
+            components={components}
+          />
+        );
       }
     }
   },

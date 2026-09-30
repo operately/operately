@@ -44,11 +44,27 @@ const activity: Activity = {
     },
     contributors: [
       {
-        person: { __typename: "person", id: "p1", fullName: "Jordan Smith", title: "Designer", avatarUrl: null, email: "jordan@example.com", type: "human" },
+        person: {
+          __typename: "person",
+          id: "p1",
+          fullName: "Jordan Smith",
+          title: "Designer",
+          avatarUrl: null,
+          email: "jordan@example.com",
+          type: "human",
+        },
         responsibility: "Design lead",
       },
       {
-        person: { __typename: "person", id: "p2", fullName: "Sam Lee", title: "Developer", avatarUrl: null, email: "sam@example.com", type: "human" },
+        person: {
+          __typename: "person",
+          id: "p2",
+          fullName: "Sam Lee",
+          title: "Developer",
+          avatarUrl: null,
+          email: "sam@example.com",
+          type: "human",
+        },
         responsibility: "Developer",
       },
     ],

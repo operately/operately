@@ -45,13 +45,29 @@ const ProjectDueDateUpdating: ActivityHandler = {
     };
 
     if (props.page === "project") {
-      return newDueDate
-        ? <Trans i18nKey="{{author}} changed the due date to <date/>" values={values} components={{ date: components.date }} />
-        : <Trans i18nKey="{{author}} cleared the due date" values={values} />;
+      return newDueDate ? (
+        <Trans
+          i18nKey="{{author}} changed the due date to <date/>"
+          values={values}
+          components={{ date: components.date }}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} cleared the due date" values={values} />
+      );
     } else {
-      return newDueDate
-        ? <Trans i18nKey="{{author}} changed the due date to <date/> on the <project>{{projectName}}</project>" values={values} components={components} />
-        : <Trans i18nKey="{{author}} cleared the due date on the <project>{{projectName}}</project>" values={values} components={components} />;
+      return newDueDate ? (
+        <Trans
+          i18nKey="{{author}} changed the due date to <date/> on the <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} cleared the due date on the <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 

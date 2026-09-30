@@ -45,13 +45,33 @@ const MilestoneDueDateUpdating: ActivityHandler = {
     };
 
     if (page === "project") {
-      return newDueDate
-        ? <Trans i18nKey="{{author}} updated the due date for the <milestone>{{title}}</milestone> milestone" values={values} components={{ milestone: components.milestone }} />
-        : <Trans i18nKey="{{author}} removed due date from the <milestone>{{title}}</milestone> milestone" values={values} components={{ milestone: components.milestone }} />;
+      return newDueDate ? (
+        <Trans
+          i18nKey="{{author}} updated the due date for the <milestone>{{title}}</milestone> milestone"
+          values={values}
+          components={{ milestone: components.milestone }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed due date from the <milestone>{{title}}</milestone> milestone"
+          values={values}
+          components={{ milestone: components.milestone }}
+        />
+      );
     } else {
-      return newDueDate
-        ? <Trans i18nKey="{{author}} updated the due date for the <milestone>{{title}}</milestone> milestone in <project>{{projectName}}</project>" values={values} components={components} />
-        : <Trans i18nKey="{{author}} removed due date from the <milestone>{{title}}</milestone> milestone in <project>{{projectName}}</project>" values={values} components={components} />;
+      return newDueDate ? (
+        <Trans
+          i18nKey="{{author}} updated the due date for the <milestone>{{title}}</milestone> milestone in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed due date from the <milestone>{{title}}</milestone> milestone in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 

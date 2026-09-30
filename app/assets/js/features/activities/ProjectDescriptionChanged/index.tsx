@@ -51,9 +51,17 @@ const ProjectDescriptionChanged: ActivityHandler = {
 
     if (project) {
       return hasDescription ? (
-        <Trans i18nKey="{{author}} updated the <project>{{projectName}}</project> project description" values={values} components={{ project: projectDisplay }} />
+        <Trans
+          i18nKey="{{author}} updated the <project>{{projectName}}</project> project description"
+          values={values}
+          components={{ project: projectDisplay }}
+        />
       ) : (
-        <Trans i18nKey="{{author}} removed the <project>{{projectName}}</project> project description" values={values} components={{ project: projectDisplay }} />
+        <Trans
+          i18nKey="{{author}} removed the <project>{{projectName}}</project> project description"
+          values={values}
+          components={{ project: projectDisplay }}
+        />
       );
     }
 

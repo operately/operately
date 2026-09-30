@@ -50,13 +50,33 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     };
 
     if (page === "project") {
-      return hasDescription
-        ? <Trans i18nKey="{{author}} updated milestone <milestone>{{title}}</milestone> description" values={values} components={{ milestone: components.milestone }} />
-        : <Trans i18nKey="{{author}} removed description from milestone <milestone>{{title}}</milestone>" values={values} components={{ milestone: components.milestone }} />;
+      return hasDescription ? (
+        <Trans
+          i18nKey="{{author}} updated milestone <milestone>{{title}}</milestone> description"
+          values={values}
+          components={{ milestone: components.milestone }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed description from milestone <milestone>{{title}}</milestone>"
+          values={values}
+          components={{ milestone: components.milestone }}
+        />
+      );
     } else {
-      return hasDescription
-        ? <Trans i18nKey="{{author}} updated milestone <milestone>{{title}}</milestone> description in <project>{{projectName}}</project>" values={values} components={components} />
-        : <Trans i18nKey="{{author}} removed description from milestone <milestone>{{title}}</milestone> in <project>{{projectName}}</project>" values={values} components={components} />;
+      return hasDescription ? (
+        <Trans
+          i18nKey="{{author}} updated milestone <milestone>{{title}}</milestone> description in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} removed description from milestone <milestone>{{title}}</milestone> in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 

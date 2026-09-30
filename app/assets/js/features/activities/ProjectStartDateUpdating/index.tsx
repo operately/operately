@@ -45,13 +45,29 @@ const ProjectStartDateUpdating: ActivityHandler = {
     };
 
     if (props.page === "project") {
-      return newStartDate
-        ? <Trans i18nKey="{{author}} changed the start date to <date/>" values={values} components={{ date: components.date }} />
-        : <Trans i18nKey="{{author}} cleared the start date" values={values} />;
+      return newStartDate ? (
+        <Trans
+          i18nKey="{{author}} changed the start date to <date/>"
+          values={values}
+          components={{ date: components.date }}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} cleared the start date" values={values} />
+      );
     } else {
-      return newStartDate
-        ? <Trans i18nKey="{{author}} changed the start date to <date/> on the <project>{{projectName}}</project>" values={values} components={components} />
-        : <Trans i18nKey="{{author}} cleared the start date on the <project>{{projectName}}</project>" values={values} components={components} />;
+      return newStartDate ? (
+        <Trans
+          i18nKey="{{author}} changed the start date to <date/> on the <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} cleared the start date on the <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 

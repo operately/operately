@@ -50,7 +50,13 @@ const ProjectContributorEdited: ActivityHandler = {
       if (page === "project") {
         return <Trans i18nKey="{{author}} set {{personName}} as the new {{role}}" values={values} />;
       } else if (project) {
-        return <Trans i18nKey="{{author}} set {{personName}} as the new {{role}} on the <project>{{projectName}}</project> project" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} set {{personName}} as the new {{role}} on the <project>{{projectName}}</project> project"
+            values={values}
+            components={components}
+          />
+        );
       } else {
         return <Trans i18nKey="{{author}} set {{personName}} as the new {{role}} on a project" values={values} />;
       }
@@ -60,7 +66,13 @@ const ProjectContributorEdited: ActivityHandler = {
       if (page === "project") {
         return <Trans i18nKey="{{author}} reassigned {{personName}} as a {{role}} on the project" values={values} />;
       } else if (project) {
-        return <Trans i18nKey="{{author}} reassigned {{personName}} as a {{role}} on the <project>{{projectName}}</project> project" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} reassigned {{personName}} as a {{role}} on the <project>{{projectName}}</project> project"
+            values={values}
+            components={components}
+          />
+        );
       } else {
         return <Trans i18nKey="{{author}} reassigned {{personName}} as a {{role}} on a project" values={values} />;
       }
@@ -70,7 +82,13 @@ const ProjectContributorEdited: ActivityHandler = {
       if (page === "project") {
         return <Trans i18nKey="{{author}} edited {{personName}}'s access" values={values} />;
       } else if (project) {
-        return <Trans i18nKey="{{author}} edited {{personName}}'s access on the <project>{{projectName}}</project> project" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} edited {{personName}}'s access on the <project>{{projectName}}</project> project"
+            values={values}
+            components={components}
+          />
+        );
       } else {
         return <Trans i18nKey="{{author}} edited {{personName}}'s access on a project" values={values} />;
       }
@@ -79,7 +97,13 @@ const ProjectContributorEdited: ActivityHandler = {
     if (page === "project") {
       return <Trans i18nKey="{{author}} updated {{personName}}'s role" values={values} />;
     } else if (project) {
-      return <Trans i18nKey="{{author}} updated {{personName}}'s role on the <project>{{projectName}}</project> project" values={values} components={components} />;
+      return (
+        <Trans
+          i18nKey="{{author}} updated {{personName}}'s role on the <project>{{projectName}}</project> project"
+          values={values}
+          components={components}
+        />
+      );
     } else {
       return <Trans i18nKey="{{author}} updated {{personName}}'s role on a project" values={values} />;
     }

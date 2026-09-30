@@ -48,9 +48,21 @@ const ProjectReviewerUpdating: ActivityHandler = {
     } else {
       const components = { project: projectLink(paths, project) };
       if (newReviewer) {
-        return <Trans i18nKey="{{author}} assigned {{personName}} as the reviewer on <project>{{projectName}}</project>" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} assigned {{personName}} as the reviewer on <project>{{projectName}}</project>"
+            values={values}
+            components={components}
+          />
+        );
       } else {
-        return <Trans i18nKey="{{author}} removed the reviewer on <project>{{projectName}}</project>" values={values} components={components} />;
+        return (
+          <Trans
+            i18nKey="{{author}} removed the reviewer on <project>{{projectName}}</project>"
+            values={values}
+            components={components}
+          />
+        );
       }
     }
   },

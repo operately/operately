@@ -44,14 +44,26 @@ const ProjectMilestoneUpdating: ActivityHandler = {
     };
 
     if (props.page === "project") {
-      return oldName !== newName
-        ? <Trans i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}}" values={values} />
-        : <Trans i18nKey="{{author}} updated the milestone {{oldName}}" values={values} />;
+      return oldName !== newName ? (
+        <Trans i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}}" values={values} />
+      ) : (
+        <Trans i18nKey="{{author}} updated the milestone {{oldName}}" values={values} />
+      );
     } else {
       const components = { project: projectLink(paths, project) };
-      return oldName !== newName
-        ? <Trans i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}} in <project>{{projectName}}</project>" values={values} components={components} />
-        : <Trans i18nKey="{{author}} updated the milestone {{oldName}} in <project>{{projectName}}</project>" values={values} components={components} />;
+      return oldName !== newName ? (
+        <Trans
+          i18nKey="{{author}} updated the milestone {{oldName}} to {{newName}} in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} updated the milestone {{oldName}} in <project>{{projectName}}</project>"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 
