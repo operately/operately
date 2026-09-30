@@ -1,7 +1,7 @@
 import Api, * as api from "@/api";
 import { hashKey, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { CompanyBillingPage as CompanyBillingPageTypes } from "turboui/CompanyBillingPage";
+import type { CompanyBillingPage as CompanyBillingPageTypes } from "turboui";
 
 type BillingTarget = CompanyBillingPageTypes.BillingTarget;
 

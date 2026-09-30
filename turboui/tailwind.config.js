@@ -92,7 +92,9 @@ module.exports = {
       },
     },
   },
+  safelist: [{ pattern: /(bg|text)-(green|yellow|red|gray)-(50|100|200|300|400|500|600|700|800|900|950)/ }],
   plugins: [
+    plugin(({ addVariant }) => addVariant("not-first", "&:not(:first-child)")),
     function ({ addBase, theme }) {
       function extractColorVars(colorObj, colorGroup = "") {
         return Object.keys(colorObj).reduce((vars, colorKey) => {

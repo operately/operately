@@ -48,6 +48,11 @@ blocks:
             - make test.setup.turboui
             - make turboui.build
 
+        - name: Turbo Package
+          commands:
+            - make test.setup.turboui
+            - make turboui.test.package
+
         - name: Turbo Test
           commands:
             - make test.setup.turboui

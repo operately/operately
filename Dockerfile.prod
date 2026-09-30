@@ -63,6 +63,9 @@ COPY app/config/config.exs app/config/${MIX_ENV}.exs app/config/
 # copy turboui files
 COPY turboui/package.json turboui/package-lock.json turboui/tsconfig.json turboui/tsconfig.build.json turboui/
 COPY turboui/src turboui/src
+COPY turboui/styles turboui/styles
+COPY turboui/scripts turboui/scripts
+COPY turboui/tailwind.config.js turboui/
 
 # build turboui assets
 WORKDIR /src/turboui

@@ -21,9 +21,10 @@ let mockUpdate = {
 
 // Share the app's React instance with the real TurboUI form state hook.
 jest.mock("../../../../../turboui/node_modules/react", () => jest.requireActual("react"));
-jest.mock("turboui", () => ({
-  Forms: jest.requireActual("turboui/Forms/useForm"),
-}));
+jest.mock("turboui", () => {
+  globalThis.TextEncoder = require("util").TextEncoder;
+  return { Forms: jest.requireActual("turboui").Forms };
+});
 jest.mock("@/features/goals/GoalCheckIn", () => ({
   useForm: jest.requireActual("@/features/goals/GoalCheckIn/useForm").useForm,
   Form: ({ form }) => {

@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next, setI18n } from "react-i18next";
 import type { TOptions } from "i18next";
-import { i18nOptions } from "turboui/i18nOptions";
+import { i18nOptions } from "turboui";
 
 import en from "./generated/locales/en.json";
 import ptBR from "./generated/locales/pt-BR.json";

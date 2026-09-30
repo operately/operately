@@ -4,7 +4,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { Paths } from "@/routes/paths";
 import { redirect } from "react-router";
-import { isCompanyBillingPaidStatus } from "turboui/CompanyBilling";
+import { isCompanyBillingPaidStatus } from "turboui";
 import {
   loader as companyBillingLoader,
   useLoadedData as useCompanyBillingLoadedData,

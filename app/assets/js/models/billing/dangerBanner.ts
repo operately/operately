@@ -1,5 +1,5 @@
 import * as api from "@/api";
-import { formatStorageBytes } from "turboui/CompanyBilling";
+import { formatStorageBytes } from "turboui";
 
 import { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
 
