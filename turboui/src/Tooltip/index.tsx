@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as ReactTooltip from "@radix-ui/react-tooltip";
+import * as ReactTooltip from "../Embedding/Tooltip";
 import classNames from "classnames";
 import { TestableElement } from "../TestableElement";
 
@@ -26,10 +26,7 @@ export function Tooltip(props: Tooltip.Props) {
   const size = props.size ?? "md";
   const [open, setOpen] = React.useState(false);
 
-  const sizeClasses =
-    size === "sm"
-      ? ["py-2 px-3", "text-xs"]
-      : ["py-4 px-5", "text-sm"];
+  const sizeClasses = size === "sm" ? ["py-2 px-3", "text-xs"] : ["py-4 px-5", "text-sm"];
 
   const tooltipClassName = classNames(
     "bg-surface-base rounded-lg",

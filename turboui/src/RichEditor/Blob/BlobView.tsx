@@ -1,3 +1,4 @@
+import { useEmbedding, useOverlay } from "../../Embedding";
 import React from "react";
 import { createPortal } from "react-dom";
 
@@ -8,9 +9,6 @@ import { UnstyledButton } from "../../Button/UnstalyedButton";
 import { IconFileFilled, IconFileZip, IconPdf, IconTrash, IconX } from "../../icons";
 import { DivLink } from "../../Link";
 import classNames from "../../utils/classnames";
-
-let imagePreviewScrollLockCount = 0;
-let imagePreviewPreviousBodyOverflow: string | null = null;
 
 //
 // This is view component for the blob node for the TipTap editor.
@@ -311,30 +309,15 @@ function ImagePreviewModal({
   title?: string;
   alt?: string;
 }) {
-  React.useEffect(() => {
-    if (!isOpen || typeof document === "undefined") return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !event.defaultPrevented) {
-        event.preventDefault();
-        onClose();
-      }
-    };
-
-    const unlockBodyScroll = lockBodyScroll();
-    // Claim Escape before document listeners belonging to lower UI layers, such as a task slide-in.
-    document.addEventListener("keydown", handleKeyDown, { capture: true });
-
-    return () => {
-      unlockBodyScroll();
-      document.removeEventListener("keydown", handleKeyDown, { capture: true });
-    };
-  }, [isOpen, onClose]);
+  const embedding = useEmbedding();
+  const overlayRef = React.useRef<HTMLDivElement>(null);
+  useOverlay(isOpen, onClose, overlayRef);
 
   if (!isOpen || typeof document === "undefined") return null;
 
   return createPortal(
     <div
+      ref={overlayRef}
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 p-4"
       role="dialog"
       aria-modal="true"
@@ -362,26 +345,8 @@ function ImagePreviewModal({
         </div>
       </div>
     </div>,
-    document.body,
+    embedding?.portalContainer ?? document.body,
   );
-}
-
-function lockBodyScroll() {
-  if (imagePreviewScrollLockCount === 0) {
-    imagePreviewPreviousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-  }
-
-  imagePreviewScrollLockCount += 1;
-
-  return () => {
-    imagePreviewScrollLockCount = Math.max(0, imagePreviewScrollLockCount - 1);
-
-    if (imagePreviewScrollLockCount === 0) {
-      document.body.style.overflow = imagePreviewPreviousBodyOverflow || "";
-      imagePreviewPreviousBodyOverflow = null;
-    }
-  };
 }
 
 function FileView({ node, deleteNode, view }) {

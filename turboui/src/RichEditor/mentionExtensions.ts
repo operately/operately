@@ -4,7 +4,11 @@ type MentionExtensionHandlers = {
   peopleSearch?: SearchFn;
 };
 
-export function mentionExtensions(handlers: MentionExtensionHandlers, editable: boolean | undefined) {
+export function mentionExtensions(
+  handlers: MentionExtensionHandlers,
+  editable: boolean | undefined,
+  container?: HTMLElement,
+) {
   const includeForReadOnlyDisplay = editable === false;
   const includeForMentionCreation = handlers.peopleSearch != null;
 
@@ -12,5 +16,5 @@ export function mentionExtensions(handlers: MentionExtensionHandlers, editable: 
     return [];
   }
 
-  return [MentionPeople.configure(handlers.peopleSearch)];
+  return [MentionPeople.configure(handlers.peopleSearch, container)];
 }

@@ -1,3 +1,4 @@
+import { useEmbedding, portalRect } from "../Embedding";
 import * as React from "react";
 import AsyncSelect from "react-select/async";
 import { useTranslation } from "react-i18next";
@@ -101,6 +102,7 @@ interface PersonSearchProps {
 }
 
 function PersonSearch(props: PersonSearchProps) {
+  const embedding = useEmbedding();
   if (props.allowEmptySelection && !props.emptySelectionLabel) {
     throw new Error("emptySelectionLabel is required when allowEmptySelection is true");
   }
@@ -121,12 +123,13 @@ function PersonSearch(props: PersonSearchProps) {
       cacheOptions={false}
       filterOption={props.filterOption || (() => true)}
       classNames={asyncSelectClassNames(!!props.error)}
-      styles={asyncSelectStyles(!!props.portalMenu)}
+      styles={asyncSelectStyles(!!props.portalMenu, embedding?.portalContainer)}
+      menuPosition={embedding ? "fixed" : undefined}
       // When `portalMenu` is set, render the menu in a body-level portal so it
       // floats above (and is not clipped by) overflow/scroll boundaries of
       // ancestors such as the Modal's `overflow-auto` container.
       menuPortalTarget={
-        props.portalMenu && typeof document !== "undefined" ? document.body : undefined
+        props.portalMenu && typeof document !== "undefined" ? (embedding?.portalContainer ?? document.body) : undefined
       }
       menuPlacement={props.portalMenu ? "auto" : undefined}
     />
@@ -185,7 +188,7 @@ function PersonLabel({ person, showTitle }: { person: SelectPersonPerson; showTi
   );
 }
 
-function asyncSelectStyles(portalMenu: boolean) {
+function asyncSelectStyles(portalMenu: boolean, container?: HTMLElement) {
   return {
     input: (provided: Record<string, unknown>) => ({
       ...provided,
@@ -199,6 +202,16 @@ function asyncSelectStyles(portalMenu: boolean) {
           // (z-50) to remain visible above the dialog and its backdrop.
           menuPortal: (provided: Record<string, unknown>) => ({
             ...provided,
+            ...(container
+              ? portalRect(
+                  {
+                    left: Number(provided.left),
+                    top: Number(provided.top),
+                    width: Number(provided.width),
+                  },
+                  container,
+                )
+              : {}),
             zIndex: 60,
           }),
         }

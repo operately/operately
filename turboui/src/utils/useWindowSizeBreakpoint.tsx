@@ -1,23 +1,32 @@
+import { useEmbedding } from "../Embedding";
 import React from "react";
 type WindowSizeBreakpoint = "xs" | "sm" | "md" | "lg" | "xl";
 
 export function useWindowSizeBreakpoints() {
-  const [size, setSize] = React.useState<WindowSizeBreakpoint>(getWindowSizeBreakpoint());
+  const embedding = useEmbedding();
+  const container = embedding?.portalContainer;
+  const [size, setSize] = React.useState<WindowSizeBreakpoint>(() => getWindowSizeBreakpoint(container?.clientWidth));
 
   React.useEffect(() => {
-    const handleResize = () => setSize(getWindowSizeBreakpoint());
+    const handleResize = () => setSize(getWindowSizeBreakpoint(container?.clientWidth));
+    if (container) {
+      const observer = new ResizeObserver(handleResize);
+      observer.observe(container);
+      handleResize();
+      return () => observer.disconnect();
+    }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [container]);
 
   return size;
 }
 
-function getWindowSizeBreakpoint(): WindowSizeBreakpoint {
-  if (window.innerWidth < 640) return "xs";
-  if (window.innerWidth < 768) return "sm";
-  if (window.innerWidth < 1024) return "md";
-  if (window.innerWidth < 1280) return "lg";
+function getWindowSizeBreakpoint(width = window.innerWidth): WindowSizeBreakpoint {
+  if (width < 640) return "xs";
+  if (width < 768) return "sm";
+  if (width < 1024) return "md";
+  if (width < 1280) return "lg";
 
   return "xl";
 }
