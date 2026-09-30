@@ -17,6 +17,7 @@ export type CreateRichEditorExtensionsOptions = {
   editable?: boolean;
   placeholder?: string;
   thumbnailBlobs?: boolean;
+  portalContainer?: HTMLElement;
 };
 
 const starterKitExtension = StarterKit.configure({
@@ -62,7 +63,7 @@ export function createRichEditorExtensions(
     extensions.push(Placeholder.configure({ placeholder: options.placeholder }));
   }
 
-  extensions.push(...mentionExtensions(handlers, editable), Highlight, FakeTextSelection);
+  extensions.push(...mentionExtensions(handlers, editable, options.portalContainer), Highlight, FakeTextSelection);
 
   return extensions;
 }

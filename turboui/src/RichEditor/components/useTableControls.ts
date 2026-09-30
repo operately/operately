@@ -1,3 +1,4 @@
+import { activeElement } from "../../Embedding";
 import React from "react";
 import type { Editor } from "@tiptap/core";
 import type { Transaction } from "@tiptap/pm/state";
@@ -37,16 +38,20 @@ function useActiveTable(editor: Editor, owner: string, closeMenu: () => void) {
     if (editor.isDestroyed) return;
     const dom = editor.view.dom;
     const doc = dom.ownerDocument;
+
     const ownsFocus = (element: EventTarget | null) =>
       element instanceof Element &&
       (dom.contains(element) ||
         element.closest("[data-table-controls]")?.getAttribute("data-table-controls") === owner);
-    const refresh = () => setTarget(ownsFocus(doc.activeElement) ? tableTarget(editor) : null);
+    const refresh = () =>
+      setTarget(ownsFocus(activeElement(dom.getRootNode() as Document | ShadowRoot)) ? tableTarget(editor) : null);
     const hideControls = () => {
       closeMenu();
       setTarget(null);
     };
+
     let previousSelection = editor.state.selection;
+
     const onTransaction = ({ transaction }: { transaction: Transaction }) => {
       const selectionChanged = !previousSelection.eq(editor.state.selection);
       previousSelection = editor.state.selection;
@@ -54,11 +59,13 @@ function useActiveTable(editor: Editor, owner: string, closeMenu: () => void) {
       refresh();
     };
     const onFocus = (event: FocusEvent) => {
-      if (ownsFocus(event.target)) refresh();
+      // Look inside Shadow DOM so editor focus isn't mistaken for focus outside it.
+      if (ownsFocus(event.composedPath()[0] ?? event.target)) refresh();
       else hideControls();
     };
     const onPointerDown = (event: PointerEvent) => {
-      if (!ownsFocus(event.target)) hideControls();
+      // Shadow DOM retargets event.target to its host; check the actual clicked element.
+      if (!ownsFocus(event.composedPath()[0] ?? event.target)) hideControls();
     };
 
     refresh();

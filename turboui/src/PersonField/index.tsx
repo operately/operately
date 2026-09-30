@@ -1,4 +1,4 @@
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../Embedding/Popover";
 import * as React from "react";
 
 import { IconCircleX, IconExternalLink, IconSearch, IconUser, IconUserPlus } from "../icons";

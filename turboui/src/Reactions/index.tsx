@@ -1,4 +1,4 @@
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../Embedding/Popover";
 import * as React from "react";
 
 import classNames from "../utils/classnames";
@@ -13,13 +13,13 @@ export namespace Reactions {
     avatarUrl: string | null;
     profileLink: string;
   }
-  
+
   export interface Reaction {
     id: string;
     person: Person;
     emoji: string;
   }
-  
+
   export interface Props {
     reactions: Reaction[];
     size?: number;
@@ -58,7 +58,8 @@ export function Reactions({
     if (!deleteMode) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target as Element | null)?.closest("[data-reaction-item]")) {
+      // Shadow DOM retargets event.target to its host; use the actual clicked element.
+      if (!((event.composedPath()[0] ?? event.target) as Element | null)?.closest("[data-reaction-item]")) {
         setDeleteMode(null);
       }
     };

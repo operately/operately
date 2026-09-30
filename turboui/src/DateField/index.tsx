@@ -1,4 +1,4 @@
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../Embedding/Popover";
 import React, { useState } from "react";
 import { match } from "ts-pattern";
 import { IconCalendarEvent, IconX } from "../icons";
@@ -319,9 +319,8 @@ function DatePickerTrigger({
   };
 
   const shouldShowMessage = showOverdueMessage && isDateOverdue;
-  const overdueMessage = shouldShowMessage && selectedDate?.date
-    ? `Overdue by ${durationHumanized(selectedDate.date, new Date())}`
-    : null;
+  const overdueMessage =
+    shouldShowMessage && selectedDate?.date ? `Overdue by ${durationHumanized(selectedDate.date, new Date())}` : null;
   const calendarIcon = !hideCalendarIcon ? (
     <IconCalendarEvent
       size={match(size)
@@ -364,11 +363,7 @@ function DatePickerTrigger({
         </span>
       </button>
 
-      {overdueMessage && (
-        <div className="text-xs text-content-error mt-1">
-          {overdueMessage}
-        </div>
-      )}
+      {overdueMessage && <div className="text-xs text-content-error mt-1">{overdueMessage}</div>}
     </div>
   );
 }
