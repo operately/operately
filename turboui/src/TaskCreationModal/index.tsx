@@ -375,7 +375,7 @@ function CreateMoreFooter({
   const { t } = useTranslation();
 
   return (
-    <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-4" data-test-id="create-more-footer">
       <SwitchToggle
         value={createMore}
         setValue={setCreateMore}
