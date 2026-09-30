@@ -7,7 +7,10 @@ import i18n from "@/i18n";
 import { renderHook } from "@/__tests__/renderHook";
 import { useProjectTasksForTurboUi, buildProjectTaskCreateInput } from "./useProjectTasksForTurboUi";
 
-jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
+jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
+  showErrorToast: jest.fn(),
+}));
 
 jest.mock("@/api", () => ({
   __esModule: true,

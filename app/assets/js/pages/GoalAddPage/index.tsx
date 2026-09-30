@@ -1,12 +1,12 @@
 import React from "react";
 
 import { Paths, usePaths } from "@/routes/paths";
-import { GoalAddPage, SpaceField } from "turboui";
+import { GoalAddPage, SpaceField, GoalAddForm } from "turboui";
 
 import { PageModule } from "@/routes/types";
 import { loader, useLoadedData } from "./loader";
 import { useNavigate } from "react-router";
-import { GoalAddForm } from "turboui/src/GoalAddForm";
+
 import { accessLevelAsNumber } from "../../models/goals";
 
 import * as Goals from "@/models/goals";

@@ -1,10 +1,11 @@
 import * as Billing from "@/models/billing";
 
-import { parseCompanyBillingSearch, selectCompanyBillingTarget } from "turboui/CompanyBilling";
 import {
+  parseCompanyBillingSearch,
+  selectCompanyBillingTarget,
   buildCompanyBillingPlanSelectionMode,
   buildCompanyBillingPlanSelectionPageViewModel,
-} from "turboui/CompanyBillingPlanSelectionPage";
+} from "turboui";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;

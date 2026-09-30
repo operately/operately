@@ -16,7 +16,7 @@ jest.mock("@/ee/models/billingCatalogLifecycle", () => ({
 
 jest.mock("turboui", () => {
   const React = require("react");
-  const { formatStorageBytes } = jest.requireActual("turboui/CompanyBilling");
+  const { formatStorageBytes } = jest.requireActual("turboui");
 
   return {
     formatStorageBytes,

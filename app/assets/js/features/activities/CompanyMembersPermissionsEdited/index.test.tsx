@@ -6,8 +6,6 @@ import type { Activity } from "@/api";
 import type { Paths } from "@/routes/paths";
 import Handler from ".";
 
-jest.mock("turboui", () => ({}));
-
 const portuguese = { ...i18n.getResourceBundle("pt-BR", "translation") };
 
 function activityWithMembers(count: number): Activity {

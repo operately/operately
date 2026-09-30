@@ -3,7 +3,7 @@ import * as React from "react";
 import type { ActivityContentKpiEntryDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { formatValue } from "turboui/SpaceKpisPage/utils";
+import { formatKpiValue as formatValue } from "turboui";
 
 import { Trans } from "../i18n";
 import i18n from "@/i18n";

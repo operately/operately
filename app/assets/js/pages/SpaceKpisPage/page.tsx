@@ -3,8 +3,7 @@ import * as React from "react";
 import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { showErrorToast, SpaceKpisPage } from "turboui";
-import type { SpaceKpisPage as SpaceKpisPageTypes } from "turboui/SpaceKpisPage/types";
+import { showErrorToast, SpaceKpisPage, type SpaceKpisPageTypes } from "turboui";
 
 import Api from "@/api";
 import * as Comments from "@/models/comments";

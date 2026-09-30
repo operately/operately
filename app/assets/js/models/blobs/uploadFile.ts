@@ -2,8 +2,7 @@ import { AxiosRequestConfig } from "axios";
 import i18n from "@/i18n";
 import csrftoken from "@/utils/csrf_token";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
-import { showErrorToast } from "turboui";
-import { formatStorageBytes } from "turboui/CompanyBilling";
+import { showErrorToast, formatStorageBytes } from "turboui";
 
 import type { BlobCreationInput, BlobCreationOutput } from "@/api";
 import { createFileBlobs, createAvatarBlobs, createImportArtifactBlobs, confirmBlobUpload } from "./blobLifecycle";

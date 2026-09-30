@@ -7,8 +7,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { LinkNewPage, showErrorToast } from "turboui";
-import type { LinkNewPage as LinkNewPageTypes } from "turboui/LinkNewPage/types";
+import { LinkNewPage, showErrorToast, type LinkNewPageTypes } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { buildNewLinkPageNavigation } from "./navigation";

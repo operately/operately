@@ -3,8 +3,10 @@ import { queryClient } from "@/api/queryClient";
 import { uploadFile, uploadAvatarFile, uploadImportArtifactFile } from "./uploadFile";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 
-jest.mock("turboui", () => ({ showErrorToast: jest.fn() }));
-jest.mock("turboui/CompanyBilling", () => ({ formatStorageBytes: (value: number) => String(value) }));
+jest.mock("turboui", () => ({
+  showErrorToast: jest.fn(),
+  formatStorageBytes: (value: number) => String(value),
+}));
 jest.mock("@/utils/axiosErrorReporting", () => ({ createSentryAxiosClient: jest.fn() }));
 jest.mock("@/utils/csrf_token", () => ({ __esModule: true, default: () => "csrf-token" }));
 jest.mock("./utils", () => ({

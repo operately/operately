@@ -6,8 +6,7 @@ import { useUpdateFile } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { FileEditPage, showErrorToast } from "turboui";
-import type { FileEditPage as FileEditPageTypes } from "turboui/FileEditPage/types";
+import { FileEditPage, showErrorToast, type FileEditPageTypes } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { buildEditFilePageNavigation } from "./navigation";

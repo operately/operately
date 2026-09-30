@@ -72,7 +72,7 @@ export default defineConfig({
     alias: [
       { find: /^@\/ee\/(.*)$/, replacement: path.resolve(__dirname, "ee/assets/js/$1") },
       { find: /^@\/(.*)$/, replacement: path.resolve(__dirname, "assets/js/$1") },
-      { find: "turboui", replacement: path.resolve(__dirname, "../turboui/src") },
+      { find: /^turboui$/, replacement: path.resolve(__dirname, "../turboui/src") },
     ],
   },
 
