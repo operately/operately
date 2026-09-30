@@ -1,10 +1,13 @@
 export * from "./TestableElement";
+export { default as i18n } from "./i18n";
+export { i18nOptions } from "./i18nOptions";
 
 export { AccessLevelSummary } from "./AccessLevelSummary";
 export type { AccessLevelSummaryProps } from "./AccessLevelSummary";
 export { AssigneesField } from "./AssigneesField";
 export * from "./Avatar";
 export * from "./Button";
+export { UnstyledButton } from "./Button/UnstalyedButton";
 export * from "./BorderedRow";
 export * from "./Chronometer";
 export * from "./CheckInHeader";
@@ -72,7 +75,8 @@ export { defaultFormattedTimePreferences } from "./FormattedTime/types";
 export type { FormState } from "./Forms";
 export { useFormContext } from "./Forms";
 export { GlobalSearch } from "./GlobalSearch";
-export { GoalAddPage } from "./GoalAddForm";
+export { GoalAddPage, GoalAddForm } from "./GoalAddForm";
+export { OperatelyLogo } from "./Logo";
 export { GoalPage } from "./GoalPage";
 export { HomePage } from "./HomePage";
 export { LastCheckIn } from "./LastCheckIn";
@@ -87,6 +91,7 @@ export {
   buildCompanyBillingCancellationFeedback,
   buildCompanyBillingChangeConsequence,
   canCreateCompanyBillingCheckout,
+  compareCompanyBillingPlanDefinitions,
   buildCompanyBillingOverageDescription,
   buildCompanyBillingPlanChangeFeedback,
   buildCompanyBillingReactivationFeedback,
@@ -110,6 +115,7 @@ export {
   isCompanyBillingCheckoutReturnSuccessful,
   isCompanyBillingPaidStatus,
   listCompanyBillingSellableTargets,
+  listCompanyBillingSellablePlanDefinitions,
   normalizeCompanyBillingPlanKey,
   matchesCompanyBillingTarget,
   parseCompanyBillingSearch,
@@ -166,14 +172,18 @@ export { TemplateDiscussionForm } from "./TemplateDiscussionForm";
 export { ProjectCheckInFormPage } from "./ProjectCheckInFormPage";
 export { NewDocumentPage } from "./NewDocumentPage";
 export { DocumentEditPage } from "./DocumentEditPage";
+export type { DocumentEditPage as DocumentEditPageTypes } from "./DocumentEditPage/types";
 export { DocumentPage } from "./DocumentPage";
 export { DocumentTitle } from "./DocumentTitle";
 export { OngoingDraftActions } from "./OngoingDraftActions";
 export { LinkNewPage } from "./LinkNewPage";
+export type { LinkNewPage as LinkNewPageTypes } from "./LinkNewPage/types";
 export { LinkEditPage } from "./LinkEditPage";
+export type { LinkEditPage as LinkEditPageTypes } from "./LinkEditPage/types";
 export { LinkPage } from "./LinkPage";
 export { FilePage } from "./FilePage";
 export { FileEditPage } from "./FileEditPage";
+export type { FileEditPage as FileEditPageTypes } from "./FileEditPage/types";
 export { ProjectTemplatesPage } from "./ProjectTemplatesPage";
 export * from "./ProjectTemplateLifecycle";
 export { ResourceHubDraftsPage } from "./ResourceHubDraftsPage";
@@ -189,8 +199,8 @@ export { SpaceCard, SpaceCardGrid } from "./SpaceCards";
 export type { SpaceCardProps } from "./SpaceCards";
 export { SpaceField } from "./SpaceField";
 export { SpaceKpisPage } from "./SpaceKpisPage";
-// The types namespace (`SpaceKpisPage.Props`, `.Kpi`, ...) is imported directly
-// from "turboui/SpaceKpisPage/types" to avoid a value/namespace name clash.
+export type { SpaceKpisPage as SpaceKpisPageTypes } from "./SpaceKpisPage/types";
+export { formatValue as formatKpiValue, fromIsoDate as kpiDateFromIso } from "./SpaceKpisPage/utils";
 // KPI summary card for the space home page (see KpiSummaryCard.stories.tsx).
 export { KpiSummaryCard } from "./SpaceKpisPage/KpiSummaryCard";
 export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";

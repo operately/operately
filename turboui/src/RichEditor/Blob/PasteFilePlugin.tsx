@@ -1,4 +1,4 @@
-import { Plugin, PluginKey } from "prosemirror-state";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { AddBlobsEditorCommand } from "./AddBlobsEditorCommand";
 import { UploadFileFn } from "../useEditor";
 

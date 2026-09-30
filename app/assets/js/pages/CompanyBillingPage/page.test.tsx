@@ -7,13 +7,11 @@ import {
   buildCompanyBillingReactivationFeedback,
   buildCompanyBillingRecoveryFeedback,
   buildCompanyBillingSuccessFeedback,
-} from "turboui/CompanyBilling";
-import {
   buildCompanyBillingConfirmingMode,
   buildCompanyBillingOverviewMode,
   buildCompanyBillingPageViewModel,
   buildCompanyBillingStatusNotices,
-} from "turboui/CompanyBillingPage";
+} from "turboui";
 
 function billingOverviewMock(params: Partial<Billing.BillingOverview> = {}): Billing.BillingOverview {
   const { account, ...rest } = params;

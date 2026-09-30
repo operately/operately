@@ -5,13 +5,12 @@ import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { IconBuildingEstate } from "turboui";
+import { IconBuildingEstate, formatCompanyBillingPlanName } from "turboui";
 import { PageModule } from "@/routes/types";
 import { Paths } from "@/routes/paths";
 import classnames from "classnames";
 import plurarize from "@/utils/plurarize";
 import { useNavigate } from "react-router";
-import { formatCompanyBillingPlanName } from "turboui/CompanyBilling";
 
 export default { name: "BillingPickCompanyPage", loader, Page } as PageModule;
 

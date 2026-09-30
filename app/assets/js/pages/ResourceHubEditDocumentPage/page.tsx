@@ -8,8 +8,7 @@ import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { DocumentEditPage, showErrorToast, SubscribersSelector } from "turboui";
-import type { DocumentEditPage as DocumentEditPageTypes } from "turboui/DocumentEditPage/types";
+import { DocumentEditPage, showErrorToast, SubscribersSelector, type DocumentEditPageTypes } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { buildEditDocumentPageNavigation } from "./navigation";

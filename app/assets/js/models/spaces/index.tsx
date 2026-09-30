@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useQuerySearch } from "@/models/search/useQuerySearch";
 import Api, * as api from "@/api";
-import { SpaceField } from "turboui/src/SpaceField";
+import { SpaceField } from "turboui";
 import { Paths, usePaths } from "../../routes/paths";
 
 export { invalidateSpaceTaskQueries, useUpdateSpaceKanban, useUpdateSpaceTaskStatuses } from "./spaceTaskLifecycle";
