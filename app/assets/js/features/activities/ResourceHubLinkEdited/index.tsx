@@ -4,7 +4,9 @@ import type { ActivityContentResourceHubLinkEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 import * as Activities from "@/models/activities";
 
-import { feedTitle } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { EditedResourceList } from "../resourceHubEditedResources";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
@@ -42,20 +44,42 @@ const ResourceHubLinkEdited: ActivityHandler = {
     const parent = visibleParentDescriptor(paths, page, data);
 
     if (Activities.getAggregatedActivities(activity).length === 1) {
-      const link = data.link?.name ?? "a link";
-
-      if (!parent) {
-        return feedTitle(activity, "edited a link:", link);
-      }
-
-      return feedTitle(activity, "edited a link in the", parent.link, `${parent.label}:`, link);
+      const sentence =
+        parent?.page === "project"
+          ? i18n.t("{{author}} edited a link in the <parent>{{parentName}}</parent> project: {{linkName}}")
+          : parent?.page === "goal"
+            ? i18n.t("{{author}} edited a link in the <parent>{{parentName}}</parent> goal: {{linkName}}")
+            : parent
+              ? i18n.t("{{author}} edited a link in the <parent>{{parentName}}</parent> space: {{linkName}}")
+              : i18n.t("{{author}} edited a link: {{linkName}}");
+      return (
+        <Trans
+          defaults={sentence}
+          values={{
+            author: activityAuthorName(activity),
+            linkName: data.link?.name ?? i18n.t("a link"),
+            parentName: parent?.name,
+          }}
+          components={{ parent: parent?.link ?? <React.Fragment /> }}
+        />
+      );
     }
 
-    if (!parent) {
-      return feedTitle(activity, "edited", resources);
-    }
-
-    return feedTitle(activity, "edited", resources, "in the", parent.link, parent.label);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t("{{author}} edited <resources/> in the <parent>{{parentName}}</parent> project")
+        : parent?.page === "goal"
+          ? i18n.t("{{author}} edited <resources/> in the <parent>{{parentName}}</parent> goal")
+          : parent
+            ? i18n.t("{{author}} edited <resources/> in the <parent>{{parentName}}</parent> space")
+            : i18n.t("{{author}} edited <resources/>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(activity), parentName: parent?.name }}
+        components={{ resources, parent: parent?.link ?? <React.Fragment /> }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -88,7 +112,8 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Edited a link: " + (content(activity).link?.name ?? "a link");
+    const name = content(activity).link?.name;
+    return name == null ? i18n.t("Edited a link") : i18n.t("Edited a link: {{linkName}}", { linkName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
@@ -107,7 +132,7 @@ function NameEdited({ previousName, currentName }: { previousName: string; curre
 
   return (
     <div>
-      <b>Name: </b>
+      <b>{i18n.t("Name:")} </b>
       <span className="line-through">{previousName}</span> → {currentName}
     </div>
   );
@@ -118,7 +143,7 @@ function UrlEdited({ previousUrl, currentUrl }: { previousUrl: string; currentUr
 
   return (
     <div>
-      <b>Url: </b>
+      <b>{i18n.t("Url:")} </b>
       <span className="line-through">{previousUrl}</span> → {currentUrl}
     </div>
   );
@@ -129,7 +154,7 @@ function TypeEdited({ previousType, currentType }: { previousType: string; curre
 
   return (
     <div>
-      <b>Type: </b>
+      <b>{i18n.t("Type:")} </b>
       <span className="line-through">{previousType}</span> → {currentType}
     </div>
   );

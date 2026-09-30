@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link, Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, spaceLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink, spaceLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -47,13 +49,42 @@ const KpiEntryCommented: ActivityHandler = {
           ? paths.spaceKpisPath(space.id)
           : paths.homePath();
     const action = kpi ? commentedLink(kpiPath, comment) : "commented";
-    const kpiLink = kpi ? <Link to={kpiPath}>{kpi.name}</Link> : "a KPI";
+    const components = {
+      action: typeof action === "string" ? <React.Fragment /> : action,
+      kpi: <Link to={kpiPath}>{null}</Link>,
+      space: spaceLink(paths, space),
+    };
+    const values = { author: activityAuthorName(activity), kpiName: kpi?.name, spaceName: space.name };
 
     if (page === "space") {
-      return feedTitle(activity, action, "on a", kpiLink, "update");
+      return kpi ? (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on a <kpi>{{kpiName}}</kpi> update"
+          values={values}
+          components={components}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on a a KPI update"
+          values={values}
+          components={components}
+        />
+      );
     }
 
-    return feedTitle(activity, action, "on a", kpiLink, "update in the", spaceLink(paths, space), "space");
+    return kpi ? (
+      <Trans
+        i18nKey="{{author}} <action>commented</action> on a <kpi>{{kpiName}}</kpi> update in the <space>{{spaceName}}</space> space"
+        values={values}
+        components={components}
+      />
+    ) : (
+      <Trans
+        i18nKey="{{author}} <action>commented</action> on a a KPI update in the <space>{{spaceName}}</space> space"
+        values={values}
+        components={components}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -87,8 +118,7 @@ const KpiEntryCommented: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const { kpi } = content(activity);
-    const kpiName = kpi?.name ? kpi.name : "a KPI";
-    return "Re: " + kpiName;
+    return kpi?.name ? i18n.t("Re: {{title}}", { title: kpi.name }) : i18n.t("Re: a KPI");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { SmallStatusIndicator, Summary } from "turboui";
-import { feedTitle, projectCheckInLink, projectLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectCheckInLink, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectCheckInSubmitted: ActivityHandler = {
@@ -38,11 +40,24 @@ const ProjectCheckInSubmitted: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const project = content(activity).project!;
     const checkInLink = projectCheckInLink(paths, content(activity).checkIn);
+    const checkIn = typeof checkInLink === "string" ? <React.Fragment /> : checkInLink;
 
     if (page === "project") {
-      return feedTitle(activity, "submitted a ", checkInLink);
+      return (
+        <Trans
+          i18nKey="{{author}} submitted a <checkIn>Check-In</checkIn>"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ checkIn }}
+        />
+      );
     } else {
-      return feedTitle(activity, "submitted a ", checkInLink, " in the ", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} submitted a <checkIn>Check-In</checkIn> in the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ checkIn, project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -71,7 +86,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Submitted a check-in";
+    return i18n.t("Submitted a check-in");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

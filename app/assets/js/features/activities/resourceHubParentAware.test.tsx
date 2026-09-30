@@ -7,7 +7,14 @@ import ResourceHubDocumentCommented from "./ResourceHubDocumentCommented";
 import ResourceHubDocumentDeleted from "./ResourceHubDocumentDeleted";
 import ResourceHubFileCreated from "./ResourceHubFileCreated";
 import ResourceHubFileDeleted from "./ResourceHubFileDeleted";
+import ResourceHubFileEdited from "./ResourceHubFileEdited";
+import ResourceHubFolderCopied from "./ResourceHubFolderCopied";
+import ResourceHubFolderCreated from "./ResourceHubFolderCreated";
+import ResourceHubFolderDeleted from "./ResourceHubFolderDeleted";
+import ResourceHubFolderRenamed from "./ResourceHubFolderRenamed";
 import ResourceHubLinkCreated from "./ResourceHubLinkCreated";
+import ResourceHubLinkDeleted from "./ResourceHubLinkDeleted";
+import ResourceHubLinkEdited from "./ResourceHubLinkEdited";
 
 jest.mock("turboui", () => ({
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
@@ -290,5 +297,37 @@ describe("resource hub activity parent-aware rendering", () => {
     };
 
     expect(ResourceHubDocumentDeleted.pagePath(paths, activity)).toBe("/resource-hubs/hub-1");
+  });
+
+  it("uses Docs & Files when a deleted resource has no hub name", () => {
+    const activity: any = {
+      author: { fullName: "Jo Smith" },
+      content: { document: { name: "Start Here" } },
+    };
+
+    const html = renderToStaticMarkup(
+      <>{ResourceHubDocumentDeleted.FeedItemTitle({ paths: usePaths(), activity, page: "feed" })}</>,
+    );
+
+    expect(html).toContain('deleted &quot;Start Here&quot; from Docs &amp; Files');
+    expect(html).not.toContain("resource hub");
+  });
+
+  it("uses short notification titles when the resource name is missing", () => {
+    const activity: any = { content: {} };
+
+    expect(ResourceHubFileCreated.NotificationTitle({ activity: { content: { files: [{}] } } as any })).toBe(
+      "Added a file",
+    );
+    expect(ResourceHubLinkCreated.NotificationTitle({ activity })).toBe("Added a link");
+    expect(ResourceHubFolderCreated.NotificationTitle({ activity })).toBe("Created a folder");
+    expect(ResourceHubDocumentDeleted.NotificationTitle({ activity })).toBe("Deleted a document");
+    expect(ResourceHubFileDeleted.NotificationTitle({ activity })).toBe("Deleted a file");
+    expect(ResourceHubFolderDeleted.NotificationTitle({ activity })).toBe("Deleted a folder");
+    expect(ResourceHubLinkDeleted.NotificationTitle({ activity })).toBe("Deleted a link");
+    expect(ResourceHubFileEdited.NotificationTitle({ activity })).toBe("Edited a file");
+    expect(ResourceHubLinkEdited.NotificationTitle({ activity })).toBe("Edited a link");
+    expect(ResourceHubFolderCopied.NotificationTitle({ activity })).toBe("Made a copy of a folder");
+    expect(ResourceHubFolderRenamed.NotificationTitle({ activity })).toBe("Renamed a folder");
   });
 });

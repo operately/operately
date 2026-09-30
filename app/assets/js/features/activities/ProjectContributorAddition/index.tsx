@@ -4,7 +4,10 @@ import type { ActivityContentProjectContributorAddition } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "./../feedItemLinks";
 
 const ProjectContributorAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -29,13 +32,28 @@ const ProjectContributorAddition: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { person, project } = content(activity);
-    const personName = person ? People.firstName(person) : "a contributor";
+    const personName = person ? People.firstName(person) : i18n.t("a contributor");
 
     if (page === "project") {
-      return feedTitle(activity, "added", personName, "to the project");
+      return (
+        <Trans
+          i18nKey="{{author}} added {{personName}} to the project"
+          values={{ author: activityAuthorName(activity), personName }}
+        />
+      );
     } else {
-      const projectParts = project ? ["the", projectLink(paths, project), "project"] : ["a project"];
-      return feedTitle(activity, "added", personName, "to", ...projectParts);
+      return project ? (
+        <Trans
+          i18nKey="{{author}} added {{personName}} to the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), personName, projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} added {{personName}} to a project"
+          values={{ author: activityAuthorName(activity), personName }}
+        />
+      );
     }
   },
 
@@ -56,7 +74,7 @@ const ProjectContributorAddition: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Added you as a contributor";
+    return i18n.t("Added you as a contributor");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

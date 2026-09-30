@@ -1,6 +1,7 @@
 import type { Paths } from "@/routes/paths";
 import * as People from "@/models/people";
 import * as React from "react";
+import i18n from "@/i18n";
 
 import { Link } from "turboui";
 
@@ -12,21 +13,19 @@ export const commentPath = (path: string, comment?: Pick<api.Comment, "id"> | nu
 };
 
 export const commentedLink = (path: string, comment?: api.Comment | null) => {
-  if (!comment?.id) return "commented";
+  if (!comment?.id) return i18n.t("commented");
 
-  return <Link to={commentPath(path, comment)}>commented</Link>;
+  return <Link to={commentPath(path, comment)}>{i18n.t("commented")}</Link>;
 };
 
-export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element)[]) => {
-  return (
-    <>
-      {People.firstName(activity.author!)}{" "}
-      {rest.map((part, i) => (
-        <React.Fragment key={i}>{part} </React.Fragment>
-      ))}
-    </>
-  );
-};
+export function activityPeopleNames(people: api.Person[]): string {
+  const names = people.map(People.shortName);
+  if (names.length < 2) return names[0] ?? "";
+  return i18n.t("{{names}} and {{lastName}}", {
+    names: names.slice(0, -1).join(", "),
+    lastName: names[names.length - 1],
+  });
+}
 
 export const activityAuthorName = (activity: api.Activity) => People.firstName(activity.author);
 
@@ -53,22 +52,22 @@ export const goalDocsAndFilesLink = (paths: Paths, goal: api.Goal) => {
 
 export const goalCheckInLink = (paths: Paths, checkIn?: api.GoalProgressUpdate | null) => {
   if (!checkIn) {
-    return "Check-In";
+    return i18n.t("Check-In");
   }
 
   const path = paths.goalCheckInPath(checkIn.id);
 
-  return <Link to={path}>Check-In</Link>;
+  return <Link to={path}>{i18n.t("Check-In")}</Link>;
 };
 
 export const projectCheckInLink = (paths: Paths, checkIn?: api.ProjectCheckIn | null) => {
   if (!checkIn?.id) {
-    return "Check-In";
+    return i18n.t("Check-In");
   }
 
   const path = paths.projectCheckInPath(checkIn.id);
 
-  return <Link to={path}>Check-In</Link>;
+  return <Link to={path}>{i18n.t("Check-In")}</Link>;
 };
 
 export const spaceLink = (paths: Paths, space: api.Space) => {
@@ -133,11 +132,11 @@ export const milestoneCommentLink = (
   milestone: api.Milestone | null | undefined,
   comment: api.Comment | null | undefined,
 ) => {
-  if (!milestone?.id || !comment?.id) return <span>commented</span>;
+  if (!milestone?.id || !comment?.id) return <span>{i18n.t("commented")}</span>;
 
   const path = commentPath(paths.projectMilestonePath(milestone.id), comment);
 
-  return <Link to={path}>commented</Link>;
+  return <Link to={path}>{i18n.t("commented")}</Link>;
 };
 
 export const taskLink = (paths: Paths, task: api.Task, attrs?: { taskName?: string; spaceId?: string }) => {

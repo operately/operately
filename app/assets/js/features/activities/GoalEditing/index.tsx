@@ -6,7 +6,10 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { compareIds } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { assertPresent } from "@/utils/assertions";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 
 const GoalEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,9 +34,17 @@ const GoalEditing: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "goal") {
-      return feedTitle(activity, "edited the goal");
+      return <Trans i18nKey="{{author}} edited the goal" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "edited the", goalLink(paths, content(activity).goal!), "goal");
+      const goal = content(activity).goal;
+      assertPresent(goal, "Goal is required for an editing activity");
+      return (
+        <Trans
+          i18nKey="{{author}} edited the <goal>{{goalName}}</goal> goal"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -82,7 +93,11 @@ export default GoalEditing;
 function NewName({ content }: { content: ActivityContentGoalEditing }) {
   if (content.newName === content.oldName) return null;
 
-  return <div>The name was changed to {content.newName}.</div>;
+  return (
+    <div>
+      <Trans i18nKey="The name was changed to {{name}}." values={{ name: content.newName }} />
+    </div>
+  );
 }
 
 function Timeframe({ content }: { content: ActivityContentGoalEditing }) {
@@ -91,19 +106,40 @@ function Timeframe({ content }: { content: ActivityContentGoalEditing }) {
 
   if (Timeframes.equalDates(oldTimeframe, newTimeframe)) return null;
 
-  return <div>The timeframe was changed to {Timeframes.getTimeframeRange(newTimeframe)}.</div>;
+  return (
+    <div>
+      <Trans
+        i18nKey="The timeframe was changed to {{timeframe}}."
+        values={{ timeframe: Timeframes.getTimeframeRange(newTimeframe) }}
+      />
+    </div>
+  );
 }
 
 function Champion({ content }: { content: ActivityContentGoalEditing }) {
   if (compareIds(content.oldChampionId, content.newChampionId)) return null;
 
-  return <div>The champion was changed to {content.newChampion!.fullName}.</div>;
+  return (
+    <div>
+      <Trans
+        i18nKey="The champion was changed to {{personName}}."
+        values={{ personName: content.newChampion?.fullName }}
+      />
+    </div>
+  );
 }
 
 function Reviewer({ content }: { content: ActivityContentGoalEditing }) {
   if (compareIds(content.oldReviewerId, content.newReviewerId)) return null;
 
-  return <div>The reviewer was changed to {content.newReviewer!.fullName}.</div>;
+  return (
+    <div>
+      <Trans
+        i18nKey="The reviewer was changed to {{personName}}."
+        values={{ personName: content.newReviewer?.fullName }}
+      />
+    </div>
+  );
 }
 
 function AddedTargets({ content }: { content: ActivityContentGoalEditing }) {
@@ -112,7 +148,7 @@ function AddedTargets({ content }: { content: ActivityContentGoalEditing }) {
 
   return (
     <div className="not-first:mt-2">
-      The following measures were added:
+      <Trans i18nKey="The following measures were added:" />
       <ul>
         {content.addedTargets.map((target) => (
           <li key={target!.id}>- {target!.name}</li>
@@ -129,7 +165,7 @@ function UpdatedTargets({ content }: { content: ActivityContentGoalEditing }) {
 
   return (
     <div className="not-first:mt-2">
-      The following measures were updated:
+      <Trans i18nKey="The following measures were updated:" />
       <ul>
         {updated.map((target) => (
           <li key={target!.id}>- {target!.newName}</li>
@@ -145,7 +181,7 @@ function DeletedTargets({ content }: { content: ActivityContentGoalEditing }) {
 
   return (
     <div className="not-first:mt-2">
-      The following measures were removed:
+      <Trans i18nKey="The following measures were removed:" />
       <ul>
         {content.deletedTargets.map((target) => (
           <li key={target!.id}>- {target!.name}</li>
@@ -166,15 +202,16 @@ function shortDesc(content: ActivityContentGoalEditing): string {
     measurements: content.addedTargets!.length + content.updatedTargets!.length + content.deletedTargets!.length > 0,
   };
 
-  const activeChanges = Object.keys(changes).filter((key) => changes[key]);
-
-  return "changed the goal's " + joinChanges(activeChanges);
-}
-
-function joinChanges(changes: string[]): string {
-  if (changes.length === 0) return "";
-  if (changes.length === 1) return changes[0]!;
-  if (changes.length === 2) return changes[0]! + " and " + changes[1]!;
-
-  return changes.slice(0, -1).join(", ") + ", and " + changes[changes.length - 1]!;
+  const labels = {
+    name: i18n.t("name"),
+    timeframe: i18n.t("timeframe"),
+    champion: i18n.t("champion"),
+    reviewer: i18n.t("reviewer"),
+    measurements: i18n.t("measurements"),
+  };
+  const activeChanges = (Object.keys(changes) as Array<keyof typeof changes>)
+    .filter((key) => changes[key])
+    .map((key) => labels[key]);
+  const list = new Intl.ListFormat(i18n.resolvedLanguage, { style: "long", type: "conjunction" }).format(activeChanges);
+  return i18n.t("changed the goal's {{changes}}", { changes: list });
 }

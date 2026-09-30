@@ -2,7 +2,10 @@ import type { ActivityContentProjectGoalDisconnection } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink, projectLink } from "../feedItemLinks";
 
 const ProjectGoalDisconnection: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,13 +31,36 @@ const ProjectGoalDisconnection: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const goal = goalLink(paths, content(activity).goal!);
     const project = projectLink(paths, content(activity).project!);
+    const values = {
+      author: activityAuthorName(activity),
+      projectName: content(activity).project?.name,
+      goalName: content(activity).goal?.name,
+    };
 
     if (page === "project") {
-      return feedTitle(activity, "disconnected the project from the", goal, "goal");
+      return (
+        <Trans
+          i18nKey="{{author}} disconnected the project from the <goal>{{goalName}}</goal> goal"
+          values={values}
+          components={{ goal }}
+        />
+      );
     } else if (page === "goal") {
-      return feedTitle(activity, "disconnected the", project, "project from the goal");
+      return (
+        <Trans
+          i18nKey="{{author}} disconnected the <project>{{projectName}}</project> project from the goal"
+          values={values}
+          components={{ project }}
+        />
+      );
     } else {
-      return feedTitle(activity, "disconnected the", project, "project from the", goal, "goal");
+      return (
+        <Trans
+          i18nKey="{{author}} disconnected the <project>{{projectName}}</project> project from the <goal>{{goalName}}</goal> goal"
+          values={values}
+          components={{ project, goal }}
+        />
+      );
     }
   },
 
@@ -58,7 +84,7 @@ const ProjectGoalDisconnection: ActivityHandler = {
     const projectName = content(activity).project!.name!;
     const goalName = content(activity).goal!.name!;
 
-    return `Disconnected the ${projectName} project from the ${goalName} goal`;
+    return i18n.t("Disconnected the {{projectName}} project from the {{goalName}} goal", { projectName, goalName });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

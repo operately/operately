@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectPausing } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -10,7 +12,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectPausing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
-    return "Project paused";
+    return i18n.t("Project paused");
   },
 
   pagePath(paths, activity: Activity): string {
@@ -23,7 +25,7 @@ const ProjectPausing: ActivityHandler = {
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Project paused</>;
+    return <Trans i18nKey="Project paused" />;
   },
 
   PageContent({ activity }: { activity: Activity }) {
@@ -49,15 +51,33 @@ const ProjectPausing: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const activityPath = activity.id ? paths.projectActivityPath(activity.id) : null;
-    const link = activityPath ? <Link to={activityPath}>paused</Link> : "paused";
+    const link = activityPath ? <Link to={activityPath}>{null}</Link> : <React.Fragment />;
     const project = content(activity).project;
 
     if (page === "project") {
-      return feedTitle(activity, link, "the project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>paused</action> the project"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ action: link }}
+        />
+      );
     } else if (project) {
-      return feedTitle(activity, link, "the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>paused</action> the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ action: link, project: projectLink(paths, project) }}
+        />
+      );
     } else {
-      return feedTitle(activity, link, "a project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>paused</action> a project"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ action: link }}
+        />
+      );
     }
   },
 
@@ -91,7 +111,7 @@ const ProjectPausing: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const projectName = content(activity).project?.name;
-    return projectName ? `Paused the ${projectName} project` : "Paused a project";
+    return projectName ? i18n.t("Paused the {{projectName}} project", { projectName }) : i18n.t("Paused a project");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

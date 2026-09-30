@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentTaskStatusUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { hasAggregatedTasks, UpdatedTaskList } from "../taskUpdatedResources";
 
@@ -45,30 +47,37 @@ const TaskStatusUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, space, task, newStatus, name } = content(activity);
     const location = project ? projectLink(paths, project) : spaceLink(paths, space);
+    const values = {
+      author: activityAuthorName(activity),
+      taskName: task?.name ?? name,
+      status: newStatus.label,
+      locationName: project?.name ?? space.name,
+    };
+    const showLocation = page !== "project" && !(page === "space" && !project);
 
     if (hasAggregatedTasks(activity)) {
       const tasks = <UpdatedTaskList activity={activity} paths={paths} />;
 
-      if (page === "project") {
-        return feedTitle(activity, "updated the status of", tasks);
-      } else if (page === "space" && !project) {
-        return feedTitle(activity, "updated the status of", tasks);
-      } else {
-        return feedTitle(activity, "updated the status of", tasks, "in", location);
-      }
+      return showLocation ? (
+        <Trans
+          i18nKey="{{author}} updated the status of <tasks/> in <location>{{locationName}}</location>"
+          values={values}
+          components={{ tasks, location }}
+        />
+      ) : (
+        <Trans i18nKey="{{author}} updated the status of <tasks/>" values={values} components={{ tasks }} />
+      );
     }
 
-    const taskName = task ? taskLink(paths, task, { spaceId: !project ? space.id : undefined }) : `the "${name}" task`;
-
-    const message = ["marked", taskName, "as", newStatus.label];
-
-    if (page === "project") {
-      return feedTitle(activity, ...message);
-    } else if (page === "space" && !project) {
-      return feedTitle(activity, ...message);
-    } else {
-      return feedTitle(activity, ...message, "in", location);
-    }
+    const taskAnchor = task ? taskLink(paths, task, { spaceId: !project ? space.id : undefined }) : <React.Fragment />;
+    const sentence = showLocation
+      ? task
+        ? i18n.t("{{author}} marked <task>{{taskName}}</task> as {{status}} in <location>{{locationName}}</location>")
+        : i18n.t('{{author}} marked the "{{taskName}}" task as {{status}} in <location>{{locationName}}</location>')
+      : task
+        ? i18n.t("{{author}} marked <task>{{taskName}}</task> as {{status}}")
+        : i18n.t('{{author}} marked the "{{taskName}}" task as {{status}}');
+    return <Trans defaults={sentence} values={values} components={{ task: taskAnchor, location }} />;
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -77,9 +86,10 @@ const TaskStatusUpdating: ActivityHandler = {
     const { oldStatus, newStatus } = content(activity);
 
     return (
-      <>
-        Previously, the task was {oldStatus.label}. Now it's {newStatus.label}.
-      </>
+      <Trans
+        i18nKey="Previously, the task was {{oldStatus}}. Now it's {{newStatus}}."
+        values={{ oldStatus: oldStatus.label, newStatus: newStatus.label }}
+      />
     );
   },
 
@@ -98,7 +108,7 @@ const TaskStatusUpdating: ActivityHandler = {
   NotificationTitle(props: { activity: Activity }) {
     const { newStatus, name } = content(props.activity);
 
-    return `Task "${name}" was marked as ${newStatus.label}`;
+    return i18n.t('Task "{{taskName}}" was marked as {{status}}', { taskName: name, status: newStatus.label });
   },
 
   NotificationLocation(props: { activity: Activity }) {

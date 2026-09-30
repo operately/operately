@@ -5,7 +5,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Link, Summary } from "turboui";
-import { commentPath, commentedLink, feedTitle, projectLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentPath, commentedLink, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -37,12 +39,30 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
 
     const retrospectivePath = paths.projectRetrospectivePath(project.id);
     const action = commentedLink(retrospectivePath, comment);
-    const retrospectiveLink = <Link to={retrospectivePath}>Retrospective</Link>;
+    const retrospectiveLink = <Link to={retrospectivePath}>{null}</Link>;
+    const components = {
+      action: typeof action === "string" ? <React.Fragment /> : action,
+      retrospective: retrospectiveLink,
+      project: projectLink(paths, project),
+    };
+    const values = { author: activityAuthorName(activity), projectName: project.name };
 
     if (page === "project") {
-      return feedTitle(activity, action, "on", retrospectiveLink);
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <retrospective>Retrospective</retrospective>"
+          values={values}
+          components={components}
+        />
+      );
     } else {
-      return feedTitle(activity, action, "on", retrospectiveLink, "in the", projectLink(paths, project), "project");
+      return (
+        <Trans
+          i18nKey="{{author}} <action>commented</action> on <retrospective>Retrospective</retrospective> in the <project>{{projectName}}</project> project"
+          values={values}
+          components={components}
+        />
+      );
     }
   },
 
@@ -71,7 +91,7 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Re: project retrospective";
+    return i18n.t("Re: project retrospective");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
