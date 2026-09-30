@@ -3,6 +3,7 @@ import { uploadFile } from "./index";
 import { createFileBlobs } from "./blobLifecycle";
 
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   showErrorToast: jest.fn(),
 }));
 

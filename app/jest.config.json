@@ -2,6 +2,7 @@
   "transform": {
     "^.+\\.(ts|tsx)$": ["ts-jest", { "tsconfig": "tsconfig.test.json", "isolatedModules": true }]
   },
+  "setupFiles": ["<rootDir>/assets/js/__tests__/setup.ts"],
   "testMatch": [
     "**/?(*.)+(test).+(ts|tsx|js)"
   ],
