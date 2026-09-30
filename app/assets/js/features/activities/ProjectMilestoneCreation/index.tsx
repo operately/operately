@@ -1,7 +1,10 @@
 import type { ActivityContentProjectMilestoneCreation } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const ProjectMilestoneCreation: ActivityHandler = {
@@ -35,12 +38,22 @@ const ProjectMilestoneCreation: ActivityHandler = {
     const { paths } = props;
     const project = content(props.activity).project;
     const milestoneName = content(props.activity).milestoneName;
-    const message = `added the ${milestoneName} milestone`;
 
     if (props.page === "project") {
-      return feedTitle(props.activity, message);
+      return (
+        <Trans
+          i18nKey="{{author}} added the {{milestoneName}} milestone"
+          values={{ author: activityAuthorName(props.activity), milestoneName }}
+        />
+      );
     } else {
-      return feedTitle(props.activity, message, "to", projectLink(paths, project));
+      return (
+        <Trans
+          i18nKey="{{author}} added the {{milestoneName}} milestone to <project>{{projectName}}</project>"
+          values={{ author: activityAuthorName(props.activity), milestoneName, projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      );
     }
   },
 
@@ -62,7 +75,7 @@ const ProjectMilestoneCreation: ActivityHandler = {
 
   NotificationTitle(props: { activity: Activity }) {
     const milestoneName = content(props.activity).milestoneName;
-    return `A new milestone "${milestoneName}" was created`;
+    return i18n.t('A new milestone "{{milestoneName}}" was created', { milestoneName });
   },
 
   NotificationLocation(_props: { activity: Activity }) {

@@ -1,4 +1,6 @@
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import { activityAuthorName } from "../feedItemLinks";
 
 import type { ActivityContentCompanyEditing } from "@/api";
 import type { Activity } from "@/models/activities";
@@ -26,7 +28,12 @@ const CompanyEditing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity }) {
-    return feedTitle(activity, "renamed the company to", content(activity).newName!);
+    return (
+      <Trans
+        i18nKey="{{author}} renamed the company to {{companyName}}"
+        values={{ author: activityAuthorName(activity), companyName: content(activity).newName }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {

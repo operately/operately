@@ -4,7 +4,9 @@ import type { Activity, ActivityContentGroupEdited } from "@/api";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { assertPresent } from "@/utils/assertions";
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 
 const GroupEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -38,10 +40,16 @@ const GroupEdited: ActivityHandler = {
     assertPresent(data.space, "space must be present in GroupEdited activity content");
 
     if (page === "space") {
-      return feedTitle(activity, "updated this space");
+      return <Trans i18nKey="{{author}} updated this space" values={{ author: activityAuthorName(activity) }} />;
     }
 
-    return feedTitle(activity, "updated the", spaceLink(paths, data.space), "space");
+    return (
+      <Trans
+        i18nKey="{{author}} updated the <space>{{spaceName}}</space> space"
+        values={{ author: activityAuthorName(activity), spaceName: data.space.name }}
+        components={{ space: spaceLink(paths, data.space) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -63,12 +71,20 @@ const GroupEdited: ActivityHandler = {
       <div className="flex flex-col gap-1 text-sm">
         {nameChanged && (
           <div>
-            <span className="font-semibold">Name:</span> {oldName} → {newName}
+            <Trans
+              i18nKey="<label>Name:</label> {{oldName}} → {{newName}}"
+              values={{ oldName, newName }}
+              components={{ label: <span className="font-semibold" /> }}
+            />
           </div>
         )}
         {missionChanged && (
           <div>
-            <span className="font-semibold">Purpose:</span> {oldMission} → {newMission}
+            <Trans
+              i18nKey="<label>Purpose:</label> {{oldMission}} → {{newMission}}"
+              values={{ oldMission, newMission }}
+              components={{ label: <span className="font-semibold" /> }}
+            />
           </div>
         )}
       </div>
@@ -93,10 +109,10 @@ const GroupEdited: ActivityHandler = {
     const spaceName = data.newName || data.space?.name;
 
     if (spaceName) {
-      return `Updated the ${spaceName} space`;
+      return i18n.t("Updated the {{spaceName}} space", { spaceName });
     }
 
-    return "Updated the space";
+    return i18n.t("Updated the space");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

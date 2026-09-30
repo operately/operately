@@ -10,7 +10,9 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { accessLevelAsString } from "@/features/Permissions";
 import { compareIds } from "@/routes/paths";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "../feedItemLinks";
 
 const ProjectContributorEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -36,63 +38,80 @@ const ProjectContributorEdited: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project, updatedContributor } = content(activity);
     const person = contributorFirstName(updatedContributor);
-    const projectParts = project ? ["the", projectLink(paths, project), "project"] : ["a project"];
+    const values = {
+      author: activityAuthorName(activity),
+      personName: person,
+      role: roleName(updatedContributor?.role),
+      projectName: project?.name,
+    };
+    const components = { project: project ? projectLink(paths, project) : <React.Fragment /> };
 
     if (personChanged(activity)) {
-      const newRole = updatedContributor?.role || "contributor";
-
-      if (page === "project") {
-        return feedTitle(activity, "set", person, "as the new", newRole);
-      } else {
-        return feedTitle(activity, "set", person, "as the new", newRole, "on", ...projectParts);
-      }
+      const sentence =
+        page === "project"
+          ? i18n.t("{{author}} set {{personName}} as the new {{role}}")
+          : project
+            ? i18n.t(
+                "{{author}} set {{personName}} as the new {{role}} on the <project>{{projectName}}</project> project",
+              )
+            : i18n.t("{{author}} set {{personName}} as the new {{role}} on a project");
+      return <Trans defaults={sentence} values={values} components={components} />;
     }
 
     if (roleChanged(activity)) {
-      const newRole = updatedContributor?.role || "contributor";
-
-      if (page === "project") {
-        return feedTitle(activity, "reassigned", person, "as a", newRole, "on the project");
-      } else {
-        return feedTitle(activity, "reassigned", person, "as a", newRole, "on", ...projectParts);
-      }
+      const sentence =
+        page === "project"
+          ? i18n.t("{{author}} reassigned {{personName}} as a {{role}} on the project")
+          : project
+            ? i18n.t(
+                "{{author}} reassigned {{personName}} as a {{role}} on the <project>{{projectName}}</project> project",
+              )
+            : i18n.t("{{author}} reassigned {{personName}} as a {{role}} on a project");
+      return <Trans defaults={sentence} values={values} components={components} />;
     }
 
     if (accessChanged(activity)) {
-      if (page === "project") {
-        return feedTitle(activity, "edited", person + "'s", "access");
-      } else {
-        return feedTitle(activity, "edited", person + "'s", "access on", ...projectParts);
-      }
+      const sentence =
+        page === "project"
+          ? i18n.t("{{author}} edited {{personName}}'s access")
+          : project
+            ? i18n.t("{{author}} edited {{personName}}'s access on the <project>{{projectName}}</project> project")
+            : i18n.t("{{author}} edited {{personName}}'s access on a project");
+      return <Trans defaults={sentence} values={values} components={components} />;
     }
 
-    if (page === "project") {
-      return feedTitle(activity, "updated", person + "'s", "role");
-    } else {
-      return feedTitle(activity, "updated", person + "'s", "role on", ...projectParts);
-    }
+    const sentence =
+      page === "project"
+        ? i18n.t("{{author}} updated {{personName}}'s role")
+        : project
+          ? i18n.t("{{author}} updated {{personName}}'s role on the <project>{{projectName}}</project> project")
+          : i18n.t("{{author}} updated {{personName}}'s role on a project");
+    return <Trans defaults={sentence} values={values} components={components} />;
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     if (personChanged(activity)) {
-      const oldRole = content(activity).updatedContributor?.role || "contributor";
+      const oldRole = roleName(content(activity).updatedContributor?.role);
       const oldName = contributorFirstName(content(activity).previousContributor);
-      const newRole = content(activity).previousContributor?.role || "contributor";
+      const newRole = roleName(content(activity).previousContributor?.role);
 
       return (
         <div className="text-xs">
-          The previous {oldRole} {oldName} is now a {newRole}
+          <Trans
+            i18nKey="The previous {{oldRole}} {{oldName}} is now a {{newRole}}"
+            values={{ oldRole, oldName, newRole }}
+          />
         </div>
       );
     }
 
     if (roleChanged(activity)) {
-      const oldRole = content(activity).previousContributor?.role || "contributor";
+      const oldRole = roleName(content(activity).previousContributor?.role);
       const person = contributorFirstName(content(activity).updatedContributor);
 
       return (
         <div className="text-xs">
-          Previously {person} was a {oldRole}
+          <Trans i18nKey="Previously {{personName}} was a {{oldRole}}" values={{ personName: person, oldRole }} />
         </div>
       );
     }
@@ -106,7 +125,10 @@ const ProjectContributorEdited: ActivityHandler = {
 
       return (
         <div className="text-xs">
-          {person} now has {newAccessText} on this project
+          <Trans
+            i18nKey="{{personName}} now has {{access}} on this project"
+            values={{ personName: person, access: newAccessText }}
+          />
         </div>
       );
     }
@@ -140,7 +162,20 @@ function content(activity: Activity): ActivityContentProjectContributorEdited {
 }
 
 function contributorFirstName(contributor?: ActivityContentProjectContributorEditedContributor | null) {
-  return contributor?.person ? People.firstName(contributor.person) : "a contributor";
+  return contributor?.person ? People.firstName(contributor.person) : i18n.t("a contributor");
+}
+
+function roleName(role?: string | null): string {
+  switch (role) {
+    case "champion":
+      return i18n.t("champion");
+    case "reviewer":
+      return i18n.t("reviewer");
+    case "contributor":
+      return i18n.t("contributor");
+    default:
+      return role || i18n.t("contributor");
+  }
 }
 
 function contributorPersonId(contributor?: ActivityContentProjectContributorEditedContributor | null) {

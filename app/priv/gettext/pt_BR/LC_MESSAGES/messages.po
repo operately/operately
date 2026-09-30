@@ -8,9 +8,522 @@ msgstr ""
 "X-Generator: Operately I18n\n"
 
 #.frontend
+#: assets/js/features/activities/GoalClosing/index.tsx:92
+msgid "%{author} <action>closed</action> the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>encerrou</action> o objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GoalClosing/index.tsx:83
+msgid "%{author} <action>closed</action> the goal"
+msgstr "%{author} <action>encerrou</action> o objetivo"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:284
+msgid "%{author} <action>commented</action> on <activity>project pausing</activity>"
+msgstr "%{author} <action>comentou</action> em <activity>pausa do projeto</activity>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:292
+msgid "%{author} <action>commented</action> on <activity>project pausing</activity> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> em <activity>pausa do projeto</activity> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:255
+msgid "%{author} <action>commented</action> on <activity>project resuming</activity>"
+msgstr "%{author} <action>comentou</action> em <activity>retomada do projeto</activity>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:263
+msgid "%{author} <action>commented</action> on <activity>project resuming</activity> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> em <activity>retomada do projeto</activity> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInCommented/index.tsx:54
+msgid "%{author} <action>commented</action> on <checkIn>Check-In</checkIn>"
+msgstr "%{author} <action>comentou</action> em <checkIn>Check-in</checkIn>"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInCommented/index.tsx:62
+msgid "%{author} <action>commented</action> on <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> em <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:158
+#: assets/js/features/activities/CommentAdded/index.tsx:226
+#: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:51
+msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion>"
+msgstr "%{author} <action>comentou</action> em <discussion>%{title}</discussion>"
+
+#.frontend
+#: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:61
+msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion> in %{spaceName} space"
+msgstr "%{author} <action>comentou</action> em <discussion>%{title}</discussion> no espaço %{spaceName}"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:166
+msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>comentou</action> em <discussion>%{title}</discussion> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:234
+msgid "%{author} <action>commented</action> on <discussion>%{title}</discussion> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> em <discussion>%{title}</discussion> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:67
+msgid "%{author} <action>commented</action> on <document>%{documentName}</document>"
+msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:60
+msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:56
+msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:64
+msgid "%{author} <action>commented</action> on <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} <action>comentou</action> em <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:67
+msgid "%{author} <action>commented</action> on <file>%{fileName}</file>"
+msgstr "%{author} <action>comentou</action> em <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:60
+msgid "%{author} <action>commented</action> on <file>%{fileName}</file> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} <action>comentou</action> em <file>%{fileName}</file> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:56
+msgid "%{author} <action>commented</action> on <file>%{fileName}</file> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} <action>comentou</action> em <file>%{fileName}</file> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:64
+msgid "%{author} <action>commented</action> on <file>%{fileName}</file> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} <action>comentou</action> em <file>%{fileName}</file> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:66
+msgid "%{author} <action>commented</action> on <resource>%{linkName}</resource>"
+msgstr "%{author} <action>comentou</action> em <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:59
+msgid "%{author} <action>commented</action> on <resource>%{linkName}</resource> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} <action>comentou</action> em <resource>%{linkName}</resource> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:55
+msgid "%{author} <action>commented</action> on <resource>%{linkName}</resource> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} <action>comentou</action> em <resource>%{linkName}</resource> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:63
+msgid "%{author} <action>commented</action> on <resource>%{linkName}</resource> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} <action>comentou</action> em <resource>%{linkName}</resource> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ProjectRetrospectiveCommented/index.tsx:52
+msgid "%{author} <action>commented</action> on <retrospective>Retrospective</retrospective>"
+msgstr "%{author} <action>comentou</action> em <retrospective>Retrospectiva</retrospective>"
+
+#.frontend
+#: assets/js/features/activities/ProjectRetrospectiveCommented/index.tsx:60
+msgid "%{author} <action>commented</action> on <retrospective>Retrospective</retrospective> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> em <retrospective>Retrospectiva</retrospective> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectTaskCommented/index.tsx:52
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:55
+msgid "%{author} <action>commented</action> on <task>%{taskName}</task>"
+msgstr "%{author} <action>comentou</action> na tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/ProjectTaskCommented/index.tsx:62
+msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> na tarefa <task>%{taskName}</task> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:65
+msgid "%{author} <action>commented</action> on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
+msgstr "%{author} <action>comentou</action> na tarefa <task>%{taskName}</task> no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckInCommented/index.tsx:54
+msgid "%{author} <action>commented</action> on a <checkIn>Check-In</checkIn>"
+msgstr "%{author} <action>comentou</action> em um <checkIn>Check-in</checkIn>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckInCommented/index.tsx:62
+msgid "%{author} <action>commented</action> on a <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>comentou</action> em um <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryCommented/index.tsx:61
+msgid "%{author} <action>commented</action> on a <kpi>%{kpiName}</kpi> update"
+msgstr "%{author} <action>comentou</action> em uma atualização do <kpi>%{kpiName}</kpi>"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryCommented/index.tsx:76
+msgid "%{author} <action>commented</action> on a <kpi>%{kpiName}</kpi> update in the <space>%{spaceName}</space> space"
+msgstr "%{author} <action>comentou</action> em uma atualização do <kpi>%{kpiName}</kpi> no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryCommented/index.tsx:67
+msgid "%{author} <action>commented</action> on a a KPI update"
+msgstr "%{author} <action>comentou</action> em uma atualização de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryCommented/index.tsx:82
+msgid "%{author} <action>commented</action> on a a KPI update in the <space>%{spaceName}</space> space"
+msgstr "%{author} <action>comentou</action> em uma atualização de KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:120
+msgid "%{author} <action>commented</action> on the <activity>goal closing</activity>"
+msgstr "%{author} <action>comentou</action> no <activity>encerramento do objetivo</activity>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:128
+msgid "%{author} <action>commented</action> on the <activity>goal closing</activity> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>comentou</action> no <activity>encerramento do objetivo</activity> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:188
+msgid "%{author} <action>commented</action> on the <activity>goal reopening</activity>"
+msgstr "%{author} <action>comentou</action> no <activity>reabertura do objetivo</activity>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:196
+msgid "%{author} <action>commented</action> on the <activity>goal reopening</activity> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>comentou</action> no <activity>reabertura do objetivo</activity> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:90
+msgid "%{author} <action>commented</action> on the <activity>timeframe change</activity>"
+msgstr "%{author} <action>comentou</action> no <activity>alteração de período</activity>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:98
+msgid "%{author} <action>commented</action> on the <activity>timeframe change</activity> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>comentou</action> no <activity>alteração de período</activity> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:48
+msgid "%{author} <action>commented</action> on the <milestone>%{milestoneName}</milestone> milestone"
+msgstr "%{author} <action>comentou</action> no marco <milestone>%{milestoneName}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:49
+msgid "%{author} <action>commented</action> on the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
+msgstr "%{author} <action>comentou</action> no marco <milestone>%{milestoneName}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:82
+msgid "%{author} <action>extended the timeframe</action>"
+msgstr "%{author} <action>estendeu o período</action>"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:85
+msgid "%{author} <action>extended the timeframe</action> on the <goal>%{goalName}</goal>"
+msgstr "%{author} <action>estendeu o período</action> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectPausing/index.tsx:75
+msgid "%{author} <action>paused</action> a project"
+msgstr "%{author} <action>pausou</action> um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectPausing/index.tsx:67
+msgid "%{author} <action>paused</action> the <project>%{projectName}</project> project"
+msgstr "%{author} <action>pausou</action> o projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectPausing/index.tsx:59
+msgid "%{author} <action>paused</action> the project"
+msgstr "%{author} <action>pausou</action> o projeto"
+
+#.frontend
+#: assets/js/features/activities/GoalReopening/index.tsx:62
+msgid "%{author} <action>reopened</action> the <goal>%{goalName}</goal> goal"
+msgstr "%{author} <action>reabriu</action> o objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GoalReopening/index.tsx:53
+msgid "%{author} <action>reopened</action> the goal"
+msgstr "%{author} <action>reabriu</action> o objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectResuming/index.tsx:75
+msgid "%{author} <action>resumed</action> a project"
+msgstr "%{author} <action>retomou</action> um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectResuming/index.tsx:67
+msgid "%{author} <action>resumed</action> the <project>%{projectName}</project> project"
+msgstr "%{author} <action>retomou</action> o projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectResuming/index.tsx:59
+msgid "%{author} <action>resumed</action> the project"
+msgstr "%{author} <action>retomou</action> o projeto"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:83
+msgid "%{author} <action>shortened the timeframe</action>"
+msgstr "%{author} <action>encurtou o período</action>"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:86
+msgid "%{author} <action>shortened the timeframe</action> on the <goal>%{goalName}</goal>"
+msgstr "%{author} <action>encurtou o período</action> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckIn/index.tsx:55
+msgid "%{author} <checkIn>submitted a check-in</checkIn>"
+msgstr "%{author} <checkIn>enviou um check-in</checkIn>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckIn/index.tsx:65
+msgid "%{author} <checkIn>submitted a check-in</checkIn> for <goal>%{goalName}</goal>"
+msgstr "%{author} <checkIn>enviou um check-in</checkIn> do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:44
+msgid "%{author} acknowledged a <checkIn>Check-In</checkIn>"
+msgstr "%{author} reconheceu um <checkIn>Check-in</checkIn>"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:52
+msgid "%{author} acknowledged a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+msgstr "%{author} reconheceu um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:42
+msgid "%{author} acknowledged the <checkIn>Check-In</checkIn>"
+msgstr "%{author} reconheceu o <checkIn>Check-in</checkIn>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:50
+msgid "%{author} acknowledged the <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} reconheceu o <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:40
+msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective>"
+msgstr "%{author} reconheceu a <retrospective>Retrospectiva</retrospective>"
+
+#.frontend
+#: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:48
+msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective> in the <goal>%{goalName}</goal> goal"
+msgstr "%{author} reconheceu a <retrospective>Retrospectiva</retrospective> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:37
+msgid "%{author} acknowledged the retrospective"
+msgstr "%{author} reconheceu a retrospectiva"
+
+#.frontend
+#: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:41
+msgid "%{author} acknowledged the retrospective in the <project>%{projectName}</project> project"
+msgstr "%{author} reconheceu a retrospectiva no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/SpaceMembersAdded/index.tsx:43
+msgid "%{author} added %{names} to the <space>%{spaceName}</space> space"
+msgstr "%{author} adicionou %{names} ao espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/SpaceMembersAdded/index.tsx:36
+msgid "%{author} added %{names} to the space"
+msgstr "%{author} adicionou %{names} ao espaço"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberAdded/index.tsx:45
+msgid "%{author} added %{personName} as a company member"
+msgstr "%{author} adicionou %{personName} como membro da empresa"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorAddition/index.tsx:52
+msgid "%{author} added %{personName} to a project"
+msgstr "%{author} adicionou %{personName} a um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorAddition/index.tsx:46
+msgid "%{author} added %{personName} to the <project>%{projectName}</project> project"
+msgstr "%{author} adicionou %{personName} ao projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorAddition/index.tsx:39
+msgid "%{author} added %{personName} to the project"
+msgstr "%{author} adicionou %{personName} ao projeto"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberAdded/index.tsx:37
+msgid "%{author} added <person>%{personName}</person> as a company member"
+msgstr "%{author} adicionou <person>%{personName}</person> como membro da empresa"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:86
+msgid "%{author} added a file in the <parent>%{parentName}</parent> goal: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo no objetivo <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:84
+msgid "%{author} added a file in the <parent>%{parentName}</parent> project: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo no projeto <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:87
+msgid "%{author} added a file in the <parent>%{parentName}</parent> space: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo no espaço <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:73
+msgid "%{author} added a file to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo a <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:69
+msgid "%{author} added a file to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo a <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:76
+msgid "%{author} added a file to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo a <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:62
+msgid "%{author} added a file: <file>%{fileName}</file>"
+msgstr "%{author} adicionou um arquivo: <file>%{fileName}</file>"
+
+#.frontend
 #: assets/js/features/activities/GoalCreated/index.tsx:43
 msgid "%{author} added a goal"
 msgstr "%{author} adicionou um objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectKeyResourceAdded/index.tsx:42
+msgid "%{author} added a key resource to the <project>%{projectName}</project> project"
+msgstr "%{author} adicionou um recurso principal ao projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectKeyResourceAdded/index.tsx:34
+msgid "%{author} added a key resource to the project"
+msgstr "%{author} adicionou um recurso principal ao projeto"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:89
+msgid "%{author} added a link in the <parent>%{parentName}</parent> goal: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link no objetivo <parent>%{parentName}</parent>: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:85
+msgid "%{author} added a link in the <parent>%{parentName}</parent> project: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link no projeto <parent>%{parentName}</parent>: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:92
+msgid "%{author} added a link in the <parent>%{parentName}</parent> space: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link no espaço <parent>%{parentName}</parent>: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:74
+msgid "%{author} added a link to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link a <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:70
+msgid "%{author} added a link to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link a <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:77
+msgid "%{author} added a link to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link a <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:59
+msgid "%{author} added a link: <resource>%{linkName}</resource>"
+msgstr "%{author} adicionou um link: <resource>%{linkName}</resource>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckAdding/index.tsx:36
+msgid "%{author} added a new checklist item"
+msgstr "%{author} adicionou um novo item da checklist"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckAdding/index.tsx:43
+msgid "%{author} added a new checklist item on <goal>%{goalName}</goal>"
+msgstr "%{author} adicionou um novo item da checklist no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationAdded/index.tsx:42
+msgid "%{author} added an annotation to a KPI"
+msgstr "%{author} adicionou uma anotação a um KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationAdded/index.tsx:47
+msgid "%{author} added an annotation to a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} adicionou uma anotação a um KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:109
+msgid "%{author} added files in the <parent>%{parentName}</parent> goal:"
+msgstr "%{author} adicionou arquivos no objetivo <parent>%{parentName}</parent>:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:107
+msgid "%{author} added files in the <parent>%{parentName}</parent> project:"
+msgstr "%{author} adicionou arquivos no projeto <parent>%{parentName}</parent>:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:110
+msgid "%{author} added files in the <parent>%{parentName}</parent> space:"
+msgstr "%{author} adicionou arquivos no espaço <parent>%{parentName}</parent>:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:100
+msgid "%{author} added files to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal:"
+msgstr "%{author} adicionou arquivos a <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:98
+msgid "%{author} added files to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project:"
+msgstr "%{author} adicionou arquivos a <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:101
+msgid "%{author} added files to <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space:"
+msgstr "%{author} adicionou arquivos a <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:92
+msgid "%{author} added files:"
+msgstr "%{author} adicionou arquivos:"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorsAddition/index.tsx:54
+msgid "%{author} added new contributors to a project"
+msgstr "%{author} adicionou novos contribuidores a um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorsAddition/index.tsx:48
+msgid "%{author} added new contributors to the <project>%{projectName}</project> project"
+msgstr "%{author} adicionou novos contribuidores ao projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorsAddition/index.tsx:41
+msgid "%{author} added new contributors to the project"
+msgstr "%{author} adicionou novos contribuidores ao projeto"
 
 #.frontend
 #: assets/js/features/activities/TaskAdding/index.tsx:67
@@ -21,6 +534,26 @@ msgstr "%{author} adicionou as tarefas <tasks/>"
 #: assets/js/features/activities/TaskAdding/index.tsx:59
 msgid "%{author} added tasks <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author} adicionou as tarefas <tasks/> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:44
+msgid "%{author} added the %{milestoneName} milestone"
+msgstr "%{author} adicionou o marco %{milestoneName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:51
+msgid "%{author} added the %{milestoneName} milestone to <project>%{projectName}</project>"
+msgstr "%{author} adicionou o marco %{milestoneName} ao projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetAdding/index.tsx:38
+msgid "%{author} added the %{targetName} target"
+msgstr "%{author} adicionou a meta %{targetName}"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetAdding/index.tsx:45
+msgid "%{author} added the %{targetName} target to <goal>%{goalName}</goal>"
+msgstr "%{author} adicionou a meta %{targetName} ao objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/GoalCreated/index.tsx:47
@@ -53,14 +586,1064 @@ msgid "%{author} added this goal"
 msgstr "%{author} adicionou este objetivo"
 
 #.frontend
+#: assets/js/features/activities/GoalArchived/index.tsx:39
+msgid "%{author} archived the <goal>%{goalName}</goal> goal"
+msgstr "%{author} arquivou o objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectArchived/index.tsx:39
+msgid "%{author} archived the <project>%{projectName}</project> project"
+msgstr "%{author} arquivou o projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectArchived/index.tsx:34
+msgid "%{author} archived the project"
+msgstr "%{author} arquivou o projeto"
+
+#.frontend
+#: assets/js/features/activities/GoalArchived/index.tsx:34
+msgid "%{author} archived this goal"
+msgstr "%{author} arquivou este objetivo"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:197
+msgid "%{author} assigned %{count} person to the task <task>%{taskName}</task>"
+msgid_plural "%{author} assigned %{count} people to the task <task>%{taskName}</task>"
+msgstr[0] "%{author} atribuiu %{count} pessoa à tarefa <task>%{taskName}</task>"
+msgstr[1] "%{author} atribuiu %{count} pessoas à tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:192
+msgid "%{author} assigned %{count} person to the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgid_plural "%{author} assigned %{count} people to the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr[0] "%{author} atribuiu %{count} pessoa à tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+msgstr[1] "%{author} atribuiu %{count} pessoas à tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:39
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:39
+msgid "%{author} assigned %{personName} as the champion"
+msgstr "%{author} atribuiu %{personName} como champion"
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:42
+msgid "%{author} assigned %{personName} as the champion on <goal>%{goalName}</goal>"
+msgstr "%{author} atribuiu %{personName} como champion no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:42
+msgid "%{author} assigned %{personName} as the champion on <project>%{projectName}</project>"
+msgstr "%{author} atribuiu %{personName} como champion no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:39
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:39
+msgid "%{author} assigned %{personName} as the reviewer"
+msgstr "%{author} atribuiu %{personName} como revisor"
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:42
+msgid "%{author} assigned %{personName} as the reviewer on <goal>%{goalName}</goal>"
+msgstr "%{author} atribuiu %{personName} como revisor no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:42
+msgid "%{author} assigned %{personName} as the reviewer on <project>%{projectName}</project>"
+msgstr "%{author} atribuiu %{personName} como revisor no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:38
+msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}</new>"
+msgstr "%{author} atribuiu a tarefa <task>%{taskName}</task> ao marco <new>%{newName}</new>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:39
+msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}</new> in <project>%{projectName}</project>"
+msgstr "%{author} atribuiu a tarefa <task>%{taskName}</task> ao marco <new>%{newName}</new> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:177
+msgid "%{author} assigned to %{personName} the task <task>%{taskName}</task>"
+msgstr "%{author} atribuiu a %{personName} a tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:174
+msgid "%{author} assigned to %{personName} the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} atribuiu a %{personName} a tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:85
+msgid "%{author} assigned you as the champion"
+msgstr "%{author} atribuiu você como champion"
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:85
+msgid "%{author} assigned you as the reviewer"
+msgstr "%{author} atribuiu você como revisor"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:189
+msgid "%{author} changed assignees on the task <task>%{taskName}</task>"
+msgstr "%{author} alterou os responsáveis da tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:186
+msgid "%{author} changed assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} alterou os responsáveis da tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalDueDateUpdating/index.tsx:41
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:40
+msgid "%{author} changed the due date to <date/>"
+msgstr "%{author} alterou a data de conclusão para <date/>"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:84
+msgid "%{author} changed the due date to <date/> on <task>%{taskName}</task>"
+msgstr "%{author} alterou a data de conclusão para <date/> na tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:77
+msgid "%{author} changed the due date to <date/> on <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} alterou a data de conclusão para <date/> na tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalDueDateUpdating/index.tsx:44
+msgid "%{author} changed the due date to <date/> on the <goal>%{goalName}</goal>"
+msgstr "%{author} alterou a data de conclusão para <date/> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:43
+msgid "%{author} changed the due date to <date/> on the <project>%{projectName}</project>"
+msgstr "%{author} alterou a data de conclusão para <date/> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:38
+msgid "%{author} changed the parent goal"
+msgstr "%{author} alterou o objetivo pai"
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:41
+msgid "%{author} changed the parent goal of <goal>%{goalName}</goal>"
+msgstr "%{author} alterou o objetivo pai de <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:91
+msgid "%{author} changed the reviewer for %{projectName}"
+msgstr "%{author} alterou o revisor de %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/GoalStartDateUpdating/index.tsx:41
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:41
+msgid "%{author} changed the start date to <date/>"
+msgstr "%{author} alterou a data de início para <date/>"
+
+#.frontend
+#: assets/js/features/activities/GoalStartDateUpdating/index.tsx:44
+msgid "%{author} changed the start date to <date/> on the <goal>%{goalName}</goal>"
+msgstr "%{author} alterou a data de início para <date/> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:44
+msgid "%{author} changed the start date to <date/> on the <project>%{projectName}</project>"
+msgstr "%{author} alterou a data de início para <date/> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalDueDateUpdating/index.tsx:42
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:41
+msgid "%{author} cleared the due date"
+msgstr "%{author} removeu a data de conclusão"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:85
+msgid "%{author} cleared the due date on <task>%{taskName}</task>"
+msgstr "%{author} removeu a data de conclusão da tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:80
+msgid "%{author} cleared the due date on <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} removeu a data de conclusão da tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalDueDateUpdating/index.tsx:45
+msgid "%{author} cleared the due date on the <goal>%{goalName}</goal>"
+msgstr "%{author} removeu a data de conclusão do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:44
+msgid "%{author} cleared the due date on the <project>%{projectName}</project>"
+msgstr "%{author} removeu a data de conclusão do projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalStartDateUpdating/index.tsx:42
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:42
+msgid "%{author} cleared the start date"
+msgstr "%{author} removeu a data de início"
+
+#.frontend
+#: assets/js/features/activities/GoalStartDateUpdating/index.tsx:45
+msgid "%{author} cleared the start date on the <goal>%{goalName}</goal>"
+msgstr "%{author} removeu a data de início do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:45
+msgid "%{author} cleared the start date on the <project>%{projectName}</project>"
+msgstr "%{author} removeu a data de início do projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectClosed/index.tsx:49
+msgid "%{author} closed the <project>%{projectName}</project> project and submitted a <retrospective>retrospective</retrospective>"
+msgstr "%{author} encerrou o projeto <project>%{projectName}</project> e enviou uma <retrospective>retrospectiva</retrospective>"
+
+#.frontend
+#: assets/js/features/activities/ProjectClosed/index.tsx:41
+msgid "%{author} closed the project and submitted a <retrospective>retrospective</retrospective>"
+msgstr "%{author} encerrou o projeto e enviou uma <retrospective>retrospectiva</retrospective>"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:72
+msgid "%{author} commented"
+msgstr "%{author} comentou"
+
+#.frontend
+#: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:57
+msgid "%{author} commented on a message"
+msgstr "%{author} comentou em uma mensagem"
+
+#.frontend
+#: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:67
+msgid "%{author} commented on a message in %{spaceName} space"
+msgstr "%{author} comentou em uma mensagem no espaço %{spaceName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectTaskCommented/index.tsx:58
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:61
+msgid "%{author} commented on a task"
+msgstr "%{author} comentou em uma tarefa"
+
+#.frontend
+#: assets/js/features/activities/ProjectTaskCommented/index.tsx:68
+msgid "%{author} commented on a task in the <project>%{projectName}</project> project"
+msgstr "%{author} comentou em uma tarefa no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:71
+msgid "%{author} commented on a task in the <space>%{spaceName}</space> space"
+msgstr "%{author} comentou em uma tarefa no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:56
+msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone"
+msgstr "%{author} concluiu o marco <milestone>%{milestoneName}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:57
+msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
+msgstr "%{author} concluiu o marco <milestone>%{milestoneName}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:46
+msgid "%{author} connected the <project>%{projectName}</project> project to the <goal>%{goalName}</goal> goal"
+msgstr "%{author} conectou o projeto <project>%{projectName}</project> ao objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:45
+msgid "%{author} connected the <project>%{projectName}</project> project to the goal"
+msgstr "%{author} conectou o projeto <project>%{projectName}</project> ao objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:43
+msgid "%{author} connected the project to the <goal>%{goalName}</goal> goal"
+msgstr "%{author} conectou o projeto ao objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberConvertedToGuest/index.tsx:36
+msgid "%{author} converted <person>%{personName}</person> to an outside collaborator"
+msgstr "%{author} converteu <person>%{personName}</person> em colaborador externo"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberConvertedToGuest/index.tsx:44
+msgid "%{author} converted a team member to an outside collaborator"
+msgstr "%{author} converteu um membro da equipe em colaborador externo"
+
+#.frontend
+#: assets/js/features/activities/KpiCreated/index.tsx:43
+msgid "%{author} created a KPI"
+msgstr "%{author} criou um KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiCreated/index.tsx:47
+msgid "%{author} created a KPI in the <space>%{spaceName}</space> space"
+msgstr "%{author} criou um KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:118
+msgid "%{author} created a copy of <original>%{originalName}</original> and named it <document>%{documentName}</document>"
+msgstr "%{author} criou uma cópia de <original>%{originalName}</original> e a nomeou <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:111
+msgid "%{author} created a copy of <original>%{originalName}</original> and named it <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} criou uma cópia de <original>%{originalName}</original> e a nomeou <document>%{documentName}</document> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:107
+msgid "%{author} created a copy of <original>%{originalName}</original> and named it <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} criou uma cópia de <original>%{originalName}</original> e a nomeou <document>%{documentName}</document> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:115
+msgid "%{author} created a copy of <original>%{originalName}</original> and named it <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} criou uma cópia de <original>%{originalName}</original> e a nomeou <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:147
+msgid "%{author} created a document in the <parent>%{parentName}</parent> goal: <document>%{documentName}</document>"
+msgstr "%{author} criou um documento no objetivo <parent>%{parentName}</parent>: <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:143
+msgid "%{author} created a document in the <parent>%{parentName}</parent> project: <document>%{documentName}</document>"
+msgstr "%{author} criou um documento no projeto <parent>%{parentName}</parent>: <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:151
+msgid "%{author} created a document in the <parent>%{parentName}</parent> space: <document>%{documentName}</document>"
+msgstr "%{author} criou um documento no espaço <parent>%{parentName}</parent>: <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:154
+msgid "%{author} created a document: <document>%{documentName}</document>"
+msgstr "%{author} criou um documento: <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:46
+msgid "%{author} created a folder in the <parent>%{parentName}</parent> goal: <folder>%{folderName}</folder>"
+msgstr "%{author} criou uma pasta no objetivo <parent>%{parentName}</parent>: <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:42
+msgid "%{author} created a folder in the <parent>%{parentName}</parent> project: <folder>%{folderName}</folder>"
+msgstr "%{author} criou uma pasta no projeto <parent>%{parentName}</parent>: <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:50
+msgid "%{author} created a folder in the <parent>%{parentName}</parent> space: <folder>%{folderName}</folder>"
+msgstr "%{author} criou uma pasta no espaço <parent>%{parentName}</parent>: <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:53
+msgid "%{author} created a folder: <folder>%{folderName}</folder>"
+msgstr "%{author} criou uma pasta: <folder>%{folderName}</folder>"
+
+#.frontend
 #: assets/js/features/activities/ProjectCreated/index.tsx:38
 msgid "%{author} created the <project>%{projectName}</project> project"
 msgstr "%{author} criou o projeto <project>%{projectName}</project>"
 
 #.frontend
+#: assets/js/features/activities/SpaceAdded/index.tsx:35
+msgid "%{author} created the <space>%{spaceName}</space> space"
+msgstr "%{author} criou o espaço <space>%{spaceName}</space>"
+
+#.frontend
 #: assets/js/features/activities/ProjectCreated/index.tsx:35
 msgid "%{author} created the project"
 msgstr "%{author} criou o projeto"
+
+#.frontend
+#: assets/js/features/activities/CompanyAdding/index.tsx:30
+msgid "%{author} created this company"
+msgstr "%{author} criou esta empresa"
+
+#.frontend
+#: assets/js/features/activities/SpaceAdded/index.tsx:31
+msgid "%{author} created this space"
+msgstr "%{author} criou este espaço"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:55
+msgid "%{author} deleted \"%{documentName}\" from <hub>%{hubName}</hub>"
+msgstr "%{author} excluiu \"%{documentName}\" de <hub>%{hubName}</hub>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:48
+msgid "%{author} deleted \"%{documentName}\" from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} excluiu \"%{documentName}\" de <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:44
+msgid "%{author} deleted \"%{documentName}\" from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} excluiu \"%{documentName}\" de <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:52
+msgid "%{author} deleted \"%{documentName}\" from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} excluiu \"%{documentName}\" de <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:55
+msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub>"
+msgstr "%{author} excluiu \"%{fileName}\" de <hub>%{hubName}</hub>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:48
+msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} excluiu \"%{fileName}\" de <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:44
+msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} excluiu \"%{fileName}\" de <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:52
+msgid "%{author} deleted \"%{fileName}\" from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} excluiu \"%{fileName}\" de <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryDeleted/index.tsx:42
+msgid "%{author} deleted a KPI update"
+msgstr "%{author} excluiu uma atualização de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryDeleted/index.tsx:46
+msgid "%{author} deleted a KPI update in the <space>%{spaceName}</space> space"
+msgstr "%{author} excluiu uma atualização de KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:57
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:67
+msgid "%{author} deleted a comment on <task>%{taskName}</task>"
+msgstr "%{author} excluiu um comentário na tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:77
+msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <project>%{projectName}</project> project"
+msgstr "%{author} excluiu um comentário na tarefa <task>%{taskName}</task> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:86
+msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
+msgstr "%{author} excluiu um comentário na tarefa <task>%{taskName}</task> no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:42
+msgid "%{author} deleted a key resource from the <project>%{projectName}</project> project"
+msgstr "%{author} excluiu um recurso principal do projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:34
+msgid "%{author} deleted a key resource from the project"
+msgstr "%{author} excluiu um recurso principal do projeto"
+
+#.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:43
+#: assets/js/features/activities/TaskDeleting/index.tsx:45
+msgid "%{author} deleted task \"%{taskName}\""
+msgstr "%{author} excluiu a tarefa \"%{taskName}\""
+
+#.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:48
+msgid "%{author} deleted task \"%{taskName}\" in <location>%{locationName}</location>"
+msgstr "%{author} excluiu a tarefa \"%{taskName}\" em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:55
+msgid "%{author} deleted the \"%{folderName}\" folder from <hub>%{hubName}</hub>"
+msgstr "%{author} excluiu a pasta \"%{folderName}\" de <hub>%{hubName}</hub>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:48
+msgid "%{author} deleted the \"%{folderName}\" folder from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} excluiu a pasta \"%{folderName}\" de <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:44
+msgid "%{author} deleted the \"%{folderName}\" folder from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} excluiu a pasta \"%{folderName}\" de <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:52
+msgid "%{author} deleted the \"%{folderName}\" folder from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} excluiu a pasta \"%{folderName}\" de <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:55
+msgid "%{author} deleted the \"%{linkName}\" link from <hub>%{hubName}</hub>"
+msgstr "%{author} excluiu o link \"%{linkName}\" de <hub>%{hubName}</hub>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:48
+msgid "%{author} deleted the \"%{linkName}\" link from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} excluiu o link \"%{linkName}\" de <hub>%{hubName}</hub> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:44
+msgid "%{author} deleted the \"%{linkName}\" link from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} excluiu o link \"%{linkName}\" de <hub>%{hubName}</hub> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:52
+msgid "%{author} deleted the \"%{linkName}\" link from <hub>%{hubName}</hub> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} excluiu o link \"%{linkName}\" de <hub>%{hubName}</hub> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:36
+msgid "%{author} deleted the \"%{milestoneName}\" milestone"
+msgstr "%{author} excluiu o marco \"%{milestoneName}\""
+
+#.frontend
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:43
+msgid "%{author} deleted the \"%{milestoneName}\" milestone in <project>%{projectName}</project>"
+msgstr "%{author} excluiu o marco \"%{milestoneName}\" no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetDeleting/index.tsx:38
+msgid "%{author} deleted the %{targetName} target"
+msgstr "%{author} excluiu a meta %{targetName}"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetDeleting/index.tsx:45
+msgid "%{author} deleted the %{targetName} target to <goal>%{goalName}</goal>"
+msgstr "%{author} excluiu a meta %{targetName} do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/MessageArchiving/index.tsx:37
+msgid "%{author} deleted: %{title}"
+msgstr "%{author} excluiu: %{title}"
+
+#.frontend
+#: assets/js/features/activities/MessageArchiving/index.tsx:40
+msgid "%{author} deleted: %{title} from <space>%{spaceName}</space>"
+msgstr "%{author} excluiu: %{title} de <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:63
+msgid "%{author} disabled public sharing for <document>%{documentName}</document>"
+msgstr "%{author} desativou o compartilhamento público do documento <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:56
+msgid "%{author} disabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} desativou o compartilhamento público do documento <document>%{documentName}</document> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:52
+msgid "%{author} disabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} desativou o compartilhamento público do documento <document>%{documentName}</document> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:60
+msgid "%{author} disabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} desativou o compartilhamento público do documento <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:75
+msgid "%{author} disconnected the <project>%{projectName}</project> project from its parent goal"
+msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo pai"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:61
+#: assets/js/features/activities/ProjectGoalDisconnection/index.tsx:58
+msgid "%{author} disconnected the <project>%{projectName}</project> project from the <goal>%{goalName}</goal> goal"
+msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalDisconnection/index.tsx:50
+msgid "%{author} disconnected the <project>%{projectName}</project> project from the goal"
+msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:73
+msgid "%{author} disconnected the project from its parent goal"
+msgstr "%{author} desconectou o projeto do objetivo pai"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:60
+#: assets/js/features/activities/ProjectGoalDisconnection/index.tsx:42
+msgid "%{author} disconnected the project from the <goal>%{goalName}</goal> goal"
+msgstr "%{author} desconectou o projeto do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:76
+msgid "%{author} edited %{personName}'s access"
+msgstr "%{author} editou o acesso de %{personName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:79
+msgid "%{author} edited %{personName}'s access on a project"
+msgstr "%{author} editou o acesso de %{personName} em um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:78
+msgid "%{author} edited %{personName}'s access on the <project>%{projectName}</project> project"
+msgstr "%{author} editou o acesso de %{personName} no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentEdited/index.tsx:51
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:75
+msgid "%{author} edited <resources/>"
+msgstr "%{author} editou <resources/>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentEdited/index.tsx:48
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:72
+msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} editou <resources/> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentEdited/index.tsx:46
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:70
+msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} editou <resources/> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentEdited/index.tsx:50
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:74
+msgid "%{author} edited <resources/> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} editou <resources/> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationEdited/index.tsx:41
+msgid "%{author} edited a KPI annotation"
+msgstr "%{author} editou uma anotação de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationEdited/index.tsx:45
+msgid "%{author} edited a KPI annotation in the <space>%{spaceName}</space> space"
+msgstr "%{author} editou uma anotação de KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryEdited/index.tsx:41
+msgid "%{author} edited a KPI update"
+msgstr "%{author} editou uma atualização de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryEdited/index.tsx:45
+msgid "%{author} edited a KPI update in the <space>%{spaceName}</space> space"
+msgstr "%{author} editou uma atualização de KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:50
+msgid "%{author} edited a file in the <parent>%{parentName}</parent> goal: <file>%{fileName}</file>"
+msgstr "%{author} editou um arquivo no objetivo <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:48
+msgid "%{author} edited a file in the <parent>%{parentName}</parent> project: <file>%{fileName}</file>"
+msgstr "%{author} editou um arquivo no projeto <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:52
+msgid "%{author} edited a file in the <parent>%{parentName}</parent> space: <file>%{fileName}</file>"
+msgstr "%{author} editou um arquivo no espaço <parent>%{parentName}</parent>: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:53
+msgid "%{author} edited a file: <file>%{fileName}</file>"
+msgstr "%{author} editou um arquivo: <file>%{fileName}</file>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:51
+msgid "%{author} edited a link in the <parent>%{parentName}</parent> goal: %{linkName}"
+msgstr "%{author} editou um link no objetivo <parent>%{parentName}</parent>: %{linkName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:49
+msgid "%{author} edited a link in the <parent>%{parentName}</parent> project: %{linkName}"
+msgstr "%{author} editou um link no projeto <parent>%{parentName}</parent>: %{linkName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:53
+msgid "%{author} edited a link in the <parent>%{parentName}</parent> space: %{linkName}"
+msgstr "%{author} editou um link no espaço <parent>%{parentName}</parent>: %{linkName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:54
+msgid "%{author} edited a link: %{linkName}"
+msgstr "%{author} editou um link: %{linkName}"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:42
+msgid "%{author} edited the <goal>%{goalName}</goal> goal"
+msgstr "%{author} editou o objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:37
+msgid "%{author} edited the goal"
+msgstr "%{author} editou o objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:38
+msgid "%{author} edited the timeline"
+msgstr "%{author} editou a linha do tempo"
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:42
+msgid "%{author} edited the timeline on the <project>%{projectName}</project> project"
+msgstr "%{author} editou a linha do tempo no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:47
+msgid "%{author} enabled public sharing for <document>%{documentName}</document>"
+msgstr "%{author} ativou o compartilhamento público do documento <document>%{documentName}</document>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:40
+msgid "%{author} enabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} ativou o compartilhamento público do documento <document>%{documentName}</document> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:36
+msgid "%{author} enabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> project"
+msgstr "%{author} ativou o compartilhamento público do documento <document>%{documentName}</document> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:44
+msgid "%{author} enabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
+msgstr "%{author} ativou o compartilhamento público do documento <document>%{documentName}</document> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/CompanyAdminAdded/index.tsx:33
+msgid "%{author} has granted admin privileges to %{names}"
+msgstr "%{author} concedeu privilégios de administrador a %{names}"
+
+#.frontend
+#: assets/js/features/activities/CompanyAdminRemoved/index.tsx:35
+msgid "%{author} has revoked %{personName}'s admin privileges"
+msgstr "%{author} revogou os privilégios de administrador de %{personName}"
+
+#.frontend
+#: assets/js/features/activities/CompanyAdminRemoved/index.tsx:43
+msgid "%{author} has revoked a member's admin privileges"
+msgstr "%{author} revogou os privilégios de administrador de um membro"
+
+#.frontend
+#: assets/js/features/activities/CompanyMembersPermissionsEdited/index.tsx:33
+msgid "%{author} has updated %{count} member's access level"
+msgid_plural "%{author} has updated %{count} members' access level"
+msgstr[0] "%{author} atualizou o nível de acesso de %{count} membro"
+msgstr[1] "%{author} atualizou o nível de acesso de %{count} membros"
+
+#.frontend
+#: assets/js/features/activities/GuestInvited/index.tsx:38
+msgid "%{author} invited %{personName} as an outside collaborator"
+msgstr "%{author} convidou %{personName} como colaborador externo"
+
+#.frontend
+#: assets/js/features/activities/GuestInvited/index.tsx:45
+msgid "%{author} invited an outside collaborator"
+msgstr "%{author} convidou um colaborador externo"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberJoined/index.tsx:37
+msgid "%{author} joined %{companyName}"
+msgstr "%{author} entrou em %{companyName}"
+
+#.frontend
+#: assets/js/features/activities/SpaceJoining/index.tsx:35
+msgid "%{author} joined the <space>%{spaceName}</space> space"
+msgstr "%{author} entrou no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/SpaceJoining/index.tsx:31
+msgid "%{author} joined the space"
+msgstr "%{author} entrou no espaço"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:54
+msgid "%{author} made a copy of the <original>%{originalName}</original> folder and named it <folder>%{folderName}</folder>"
+msgstr "%{author} fez uma cópia da pasta <original>%{originalName}</original> e a nomeou <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:47
+msgid "%{author} made a copy of the <original>%{originalName}</original> folder in the <parent>%{parentName}</parent> goal and named it <folder>%{folderName}</folder>"
+msgstr "%{author} fez uma cópia da pasta <original>%{originalName}</original> no objetivo <parent>%{parentName}</parent> e a nomeou <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:43
+msgid "%{author} made a copy of the <original>%{originalName}</original> folder in the <parent>%{parentName}</parent> project and named it <folder>%{folderName}</folder>"
+msgstr "%{author} fez uma cópia da pasta <original>%{originalName}</original> no projeto <parent>%{parentName}</parent> e a nomeou <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:51
+msgid "%{author} made a copy of the <original>%{originalName}</original> folder in the <parent>%{parentName}</parent> space and named it <folder>%{folderName}</folder>"
+msgstr "%{author} fez uma cópia da pasta <original>%{originalName}</original> no espaço <parent>%{parentName}</parent> e a nomeou <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:78
+msgid "%{author} marked <task>%{taskName}</task> as %{status}"
+msgstr "%{author} marcou a tarefa <task>%{taskName}</task> como %{status}"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:75
+msgid "%{author} marked <task>%{taskName}</task> as %{status} in <location>%{locationName}</location>"
+msgstr "%{author} marcou a tarefa <task>%{taskName}</task> como %{status} em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckToggled/index.tsx:38
+msgid "%{author} marked a checklist item as completed"
+msgstr "%{author} marcou um item da checklist como concluído"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckToggled/index.tsx:41
+msgid "%{author} marked a checklist item as completed on <goal>%{goalName}</goal>"
+msgstr "%{author} marcou um item da checklist como concluído no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckToggled/index.tsx:39
+msgid "%{author} marked a checklist item as pending"
+msgstr "%{author} marcou um item da checklist como pendente"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckToggled/index.tsx:42
+msgid "%{author} marked a checklist item as pending on <goal>%{goalName}</goal>"
+msgstr "%{author} marcou um item da checklist como pendente no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:79
+msgid "%{author} marked the \"%{taskName}\" task as %{status}"
+msgstr "%{author} marcou a tarefa \"%{taskName}\" como %{status}"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:76
+msgid "%{author} marked the \"%{taskName}\" task as %{status} in <location>%{locationName}</location>"
+msgstr "%{author} marcou a tarefa \"%{taskName}\" como %{status} em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:52
+msgid "%{author} moved <task>%{taskName}</task> from milestone <old>%{oldName}</old> to <new>%{newName}</new>"
+msgstr "%{author} moveu a tarefa <task>%{taskName}</task> do marco <old>%{oldName}</old> para <new>%{newName}</new>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:55
+msgid "%{author} moved <task>%{taskName}</task> from milestone <old>%{oldName}</old> to <new>%{newName}</new> in <project>%{projectName}</project>"
+msgstr "%{author} moveu a tarefa <task>%{taskName}</task> do marco <old>%{oldName}</old> para <new>%{newName}</new> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalSpaceUpdating/index.tsx:37
+msgid "%{author} moved the <goal>%{goalName}</goal> goal to <space>%{spaceName}</space>"
+msgstr "%{author} moveu o objetivo <goal>%{goalName}</goal> para o espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMoved/index.tsx:41
+msgid "%{author} moved the <project>%{projectName}</project> project"
+msgstr "%{author} moveu o projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMoved/index.tsx:36
+msgid "%{author} moved the project"
+msgstr "%{author} moveu o projeto"
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:70
+msgid "%{author} moved the task \"%{taskName}\" to <destination>%{destinationName}</destination>"
+msgstr "%{author} moveu a tarefa \"%{taskName}\" para <destination>%{destinationName}</destination>"
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:64
+msgid "%{author} moved the task <task>%{taskName}</task> to <destination>%{destinationName}</destination>"
+msgstr "%{author} moveu a tarefa <task>%{taskName}</task> para <destination>%{destinationName}</destination>"
+
+#.frontend
+#: assets/js/features/activities/DiscussionPosting/index.tsx:42
+#: assets/js/features/activities/GoalDiscussionCreation/index.tsx:94
+#: assets/js/features/activities/ProjectDiscussionSubmitted/index.tsx:54
+msgid "%{author} posted <discussion>%{title}</discussion>"
+msgstr "%{author} publicou <discussion>%{title}</discussion>"
+
+#.frontend
+#: assets/js/features/activities/DiscussionPosting/index.tsx:51
+msgid "%{author} posted <discussion>%{title}</discussion> in the <space>%{spaceName}</space>"
+msgstr "%{author} publicou <discussion>%{title}</discussion> no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/GoalDiscussionCreation/index.tsx:103
+msgid "%{author} posted <discussion>%{title}</discussion> on the <goal>%{goalName}</goal> goal"
+msgstr "%{author} publicou <discussion>%{title}</discussion> no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDiscussionSubmitted/index.tsx:63
+msgid "%{author} posted <discussion>%{title}</discussion> on the <project>%{projectName}</project> project"
+msgstr "%{author} publicou <discussion>%{title}</discussion> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/CompanyOwnersAdding/index.tsx:37
+msgid "%{author} promoted %{names} to account owner"
+msgstr "%{author} promoveu %{names} a proprietário da conta"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:64
+msgid "%{author} re-opened the <milestone>%{milestoneName}</milestone> milestone"
+msgstr "%{author} reabriu o marco <milestone>%{milestoneName}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:65
+msgid "%{author} re-opened the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
+msgstr "%{author} reabriu o marco <milestone>%{milestoneName}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:69
+msgid "%{author} reassigned %{personName} as a %{role} on a project"
+msgstr "%{author} reatribuiu %{personName} como %{role} em um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:66
+msgid "%{author} reassigned %{personName} as a %{role} on the <project>%{projectName}</project> project"
+msgstr "%{author} reatribuiu %{personName} como %{role} no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:64
+msgid "%{author} reassigned %{personName} as a %{role} on the project"
+msgstr "%{author} reatribuiu %{personName} como %{role} no projeto"
+
+#.frontend
+#: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:38
+msgid "%{author} removed %{personName} as an account owner"
+msgstr "%{author} removeu %{personName} como proprietário da conta"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorRemoved/index.tsx:52
+msgid "%{author} removed %{personName} from a project"
+msgstr "%{author} removeu %{personName} de um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorRemoved/index.tsx:46
+msgid "%{author} removed %{personName} from the <project>%{projectName}</project> project"
+msgstr "%{author} removeu %{personName} do projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/SpaceMemberRemoved/index.tsx:43
+msgid "%{author} removed %{personName} from the <space>%{spaceName}</space> space"
+msgstr "%{author} removeu %{personName} do espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorRemoved/index.tsx:39
+msgid "%{author} removed %{personName} from the project"
+msgstr "%{author} removeu %{personName} do projeto"
+
+#.frontend
+#: assets/js/features/activities/SpaceMemberRemoved/index.tsx:36
+msgid "%{author} removed %{personName} from the space"
+msgstr "%{author} removeu %{personName} do espaço"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:45
+msgid "%{author} removed <task>%{taskName}</task> from milestone <old>%{oldName}</old>"
+msgstr "%{author} removeu a tarefa <task>%{taskName}</task> do marco <old>%{oldName}</old>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:46
+msgid "%{author} removed <task>%{taskName}</task> from milestone <old>%{oldName}</old> in <project>%{projectName}</project>"
+msgstr "%{author} removeu a tarefa <task>%{taskName}</task> do marco <old>%{oldName}</old> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationDeleted/index.tsx:41
+msgid "%{author} removed a KPI annotation"
+msgstr "%{author} removeu uma anotação de KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationDeleted/index.tsx:45
+msgid "%{author} removed a KPI annotation in the <space>%{spaceName}</space> space"
+msgstr "%{author} removeu uma anotação de KPI no espaço <space>%{spaceName}</space>"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckRemoving/index.tsx:36
+msgid "%{author} removed a checklist item"
+msgstr "%{author} removeu um item da checklist"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckRemoving/index.tsx:40
+msgid "%{author} removed a checklist item on <goal>%{goalName}</goal>"
+msgstr "%{author} removeu um item da checklist no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:45
+msgid "%{author} removed an account owner"
+msgstr "%{author} removeu um proprietário da conta"
+
+#.frontend
+#: assets/js/features/activities/GoalDescriptionChanged/index.tsx:48
+msgid "%{author} removed description from goal \"%{goalName}\""
+msgstr "%{author} removeu a descrição do objetivo \"%{goalName}\""
+
+#.frontend
+#: assets/js/features/activities/GoalDescriptionChanged/index.tsx:45
+msgid "%{author} removed description from goal <goal>%{goalName}</goal>"
+msgstr "%{author} removeu a descrição do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:46
+msgid "%{author} removed description from milestone <milestone>%{title}</milestone>"
+msgstr "%{author} removeu a descrição do marco <milestone>%{title}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:51
+msgid "%{author} removed description from milestone <milestone>%{title}</milestone> in <project>%{projectName}</project>"
+msgstr "%{author} removeu a descrição do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:41
+msgid "%{author} removed due date from the <milestone>%{title}</milestone> milestone"
+msgstr "%{author} removeu a data de conclusão do marco <milestone>%{title}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:46
+msgid "%{author} removed due date from the <milestone>%{title}</milestone> milestone in <project>%{projectName}</project>"
+msgstr "%{author} removeu a data de conclusão do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:57
+msgid "%{author} removed the \"%{projectName}\" project description"
+msgstr "%{author} removeu a descrição do projeto \"%{projectName}\""
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:54
+msgid "%{author} removed the <project>%{projectName}</project> project description"
+msgstr "%{author} removeu a descrição do projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:40
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:40
+msgid "%{author} removed the champion"
+msgstr "%{author} removeu o champion"
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:43
+msgid "%{author} removed the champion on <goal>%{goalName}</goal>"
+msgstr "%{author} removeu o champion no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:43
+msgid "%{author} removed the champion on <project>%{projectName}</project>"
+msgstr "%{author} removeu o champion no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:47
+msgid "%{author} removed the project description"
+msgstr "%{author} removeu a descrição do projeto"
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:40
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:40
+msgid "%{author} removed the reviewer"
+msgstr "%{author} removeu o revisor"
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:43
+msgid "%{author} removed the reviewer on <goal>%{goalName}</goal>"
+msgstr "%{author} removeu o revisor no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:43
+msgid "%{author} removed the reviewer on <project>%{projectName}</project>"
+msgstr "%{author} removeu o revisor no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GoalNameUpdating/index.tsx:39
+msgid "%{author} renamed <goal>%{goalName}</goal>"
+msgstr "%{author} renomeou <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/TaskNameUpdating/index.tsx:57
@@ -73,6 +1656,16 @@ msgid "%{author} renamed <tasks/> in <location>%{locationName}</location>"
 msgstr "%{author} renomeou <tasks/> em <location>%{locationName}</location>"
 
 #.frontend
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:43
+msgid "%{author} renamed milestone to <milestone>%{title}</milestone>"
+msgstr "%{author} renomeou o marco para <milestone>%{title}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:51
+msgid "%{author} renamed milestone to <milestone>%{title}</milestone> in <project>%{projectName}</project>"
+msgstr "%{author} renomeou o marco para <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
 #: assets/js/features/activities/TaskNameUpdating/index.tsx:80
 msgid "%{author} renamed task to <task>%{newName}</task>"
 msgstr "%{author} renomeou a tarefa para <task>%{newName}</task>"
@@ -81,6 +1674,220 @@ msgstr "%{author} renomeou a tarefa para <task>%{newName}</task>"
 #: assets/js/features/activities/TaskNameUpdating/index.tsx:88
 msgid "%{author} renamed task to <task>%{newName}</task> in <location>%{locationName}</location>"
 msgstr "%{author} renomeou a tarefa para <task>%{newName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:53
+msgid "%{author} renamed the <folder>%{folderName}</folder> folder"
+msgstr "%{author} renomeou a pasta <folder>%{folderName}</folder>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:46
+msgid "%{author} renamed the <folder>%{folderName}</folder> folder in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} renomeou a pasta <folder>%{folderName}</folder> no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:42
+msgid "%{author} renamed the <folder>%{folderName}</folder> folder in the <parent>%{parentName}</parent> project"
+msgstr "%{author} renomeou a pasta <folder>%{folderName}</folder> no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:50
+msgid "%{author} renamed the <folder>%{folderName}</folder> folder in the <parent>%{parentName}</parent> space"
+msgstr "%{author} renomeou a pasta <folder>%{folderName}</folder> no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ProjectRenamed/index.tsx:40
+msgid "%{author} renamed the <project>%{projectName}</project> project"
+msgstr "%{author} renomeou o projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/CompanyEditing/index.tsx:32
+msgid "%{author} renamed the company to %{companyName}"
+msgstr "%{author} renomeou a empresa para %{companyName}"
+
+#.frontend
+#: assets/js/features/activities/GoalNameUpdating/index.tsx:36
+msgid "%{author} renamed the goal"
+msgstr "%{author} renomeou o objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectRenamed/index.tsx:35
+msgid "%{author} renamed the project"
+msgstr "%{author} renomeou o projeto"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberRestoring/index.tsx:38
+msgid "%{author} restored %{personName}'s account"
+msgstr "%{author} restaurou a conta de %{personName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:67
+msgid "%{author} restored <document>%{documentName}</document> to a previous version"
+msgstr "%{author} restaurou <document>%{documentName}</document> para uma versão anterior"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:60
+msgid "%{author} restored <document>%{documentName}</document> to a previous version in the <parent>%{parentName}</parent> goal"
+msgstr "%{author} restaurou <document>%{documentName}</document> para uma versão anterior no objetivo <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:56
+msgid "%{author} restored <document>%{documentName}</document> to a previous version in the <parent>%{parentName}</parent> project"
+msgstr "%{author} restaurou <document>%{documentName}</document> para uma versão anterior no projeto <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:64
+msgid "%{author} restored <document>%{documentName}</document> to a previous version in the <parent>%{parentName}</parent> space"
+msgstr "%{author} restaurou <document>%{documentName}</document> para uma versão anterior no espaço <parent>%{parentName}</parent>"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:45
+msgid "%{author} restored a document to a previous version"
+msgstr "%{author} restaurou um documento para uma versão anterior"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberRestoring/index.tsx:45
+msgid "%{author} restored a member's account"
+msgstr "%{author} restaurou a conta de um membro"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:52
+msgid "%{author} set %{personName} as the new %{role}"
+msgstr "%{author} definiu %{personName} como o novo %{role}"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:57
+msgid "%{author} set %{personName} as the new %{role} on a project"
+msgstr "%{author} definiu %{personName} como o novo %{role} em um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:54
+msgid "%{author} set %{personName} as the new %{role} on the <project>%{projectName}</project> project"
+msgstr "%{author} definiu %{personName} como o novo %{role} no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:47
+msgid "%{author} submitted a <checkIn>Check-In</checkIn>"
+msgstr "%{author} enviou um <checkIn>Check-in</checkIn>"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:55
+msgid "%{author} submitted a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+msgstr "%{author} enviou um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:209
+msgid "%{author} unassigned %{count} person from the task <task>%{taskName}</task>"
+msgid_plural "%{author} unassigned %{count} people from the task <task>%{taskName}</task>"
+msgstr[0] "%{author} removeu a atribuição de %{count} pessoa na tarefa <task>%{taskName}</task>"
+msgstr[1] "%{author} removeu a atribuição de %{count} pessoas na tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:204
+msgid "%{author} unassigned %{count} person from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgid_plural "%{author} unassigned %{count} people from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr[0] "%{author} removeu a atribuição de %{count} pessoa na tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+msgstr[1] "%{author} removeu a atribuição de %{count} pessoas na tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:183
+msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task>"
+msgstr "%{author} removeu a atribuição de %{personName} na tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:180
+msgid "%{author} unassigned %{personName} from the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} removeu a atribuição de %{personName} na tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:85
+msgid "%{author} updated %{personName}'s role"
+msgstr "%{author} atualizou o papel de %{personName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:88
+msgid "%{author} updated %{personName}'s role on a project"
+msgstr "%{author} atualizou o papel de %{personName} em um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:87
+msgid "%{author} updated %{personName}'s role on the <project>%{projectName}</project> project"
+msgstr "%{author} atualizou o papel de %{personName} no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:61
+msgid "%{author} updated <task>%{taskName}</task> milestone"
+msgstr "%{author} atualizou o marco da tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:62
+msgid "%{author} updated <task>%{taskName}</task> milestone in <project>%{projectName}</project>"
+msgstr "%{author} atualizou o marco da tarefa <task>%{taskName}</task> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:68
+msgid "%{author} updated assignees on <tasks/>"
+msgstr "%{author} atualizou os responsáveis em <tasks/>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:62
+msgid "%{author} updated assignees on <tasks/> in <location>%{locationName}</location>"
+msgstr "%{author} atualizou os responsáveis em <tasks/> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:219
+msgid "%{author} updated assignees on the task <task>%{taskName}</task>"
+msgstr "%{author} atualizou os responsáveis da tarefa <task>%{taskName}</task>"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:216
+msgid "%{author} updated assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr "%{author} atualizou os responsáveis da tarefa <task>%{taskName}</task> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:70
+msgid "%{author} updated due dates on <tasks/>"
+msgstr "%{author} atualizou as datas de conclusão em <tasks/>"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:64
+msgid "%{author} updated due dates on <tasks/> in <location>%{locationName}</location>"
+msgstr "%{author} atualizou as datas de conclusão em <tasks/> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalDescriptionChanged/index.tsx:47
+msgid "%{author} updated goal \"%{goalName}\" description"
+msgstr "%{author} atualizou a descrição do objetivo \"%{goalName}\""
+
+#.frontend
+#: assets/js/features/activities/GoalDescriptionChanged/index.tsx:44
+msgid "%{author} updated goal <goal>%{goalName}</goal> description"
+msgstr "%{author} atualizou a descrição do objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:45
+msgid "%{author} updated milestone <milestone>%{title}</milestone> description"
+msgstr "%{author} atualizou a descrição do marco <milestone>%{title}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:48
+msgid "%{author} updated milestone <milestone>%{title}</milestone> description in <project>%{projectName}</project>"
+msgstr "%{author} atualizou a descrição do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:56
+msgid "%{author} updated the \"%{projectName}\" project description"
+msgstr "%{author} atualizou a descrição do projeto \"%{projectName}\""
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:53
+msgid "%{author} updated the <project>%{projectName}</project> project description"
+msgstr "%{author} atualizou a descrição do projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/GroupEdited/index.tsx:47
+msgid "%{author} updated the <space>%{spaceName}</space> space"
+msgstr "%{author} atualizou o espaço <space>%{spaceName}</space>"
 
 #.frontend
 #: assets/js/features/activities/TaskDescriptionChange/index.tsx:78
@@ -101,6 +1908,66 @@ msgstr "%{author} atualizou a descrição de uma tarefa"
 #: assets/js/features/activities/TaskDescriptionChange/index.tsx:59
 msgid "%{author} updated the description of a task in %{context}"
 msgstr "%{author} atualizou a descrição de uma tarefa em %{context}"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:40
+msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone"
+msgstr "%{author} atualizou a data de conclusão do marco <milestone>%{title}</milestone>"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:43
+msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone in <project>%{projectName}</project>"
+msgstr "%{author} atualizou a data de conclusão do marco <milestone>%{title}</milestone> no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:44
+msgid "%{author} updated the milestone %{oldName}"
+msgstr "%{author} atualizou o marco %{oldName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:47
+msgid "%{author} updated the milestone %{oldName} in <project>%{projectName}</project>"
+msgstr "%{author} atualizou o marco %{oldName} no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:43
+msgid "%{author} updated the milestone %{oldName} to %{newName}"
+msgstr "%{author} atualizou o marco %{oldName} para %{newName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:46
+msgid "%{author} updated the milestone %{oldName} to %{newName} in <project>%{projectName}</project>"
+msgstr "%{author} atualizou o marco %{oldName} para %{newName} no projeto <project>%{projectName}</project>"
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:45
+msgid "%{author} updated the project description"
+msgstr "%{author} atualizou a descrição do projeto"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:68
+msgid "%{author} updated the status of <tasks/>"
+msgstr "%{author} atualizou o status de <tasks/>"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:62
+msgid "%{author} updated the status of <tasks/> in <location>%{locationName}</location>"
+msgstr "%{author} atualizou o status de <tasks/> em <location>%{locationName}</location>"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetUpdating/index.tsx:37
+msgid "%{author} updated the value for the %{targetName} target"
+msgstr "%{author} atualizou o valor da meta %{targetName}"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetUpdating/index.tsx:44
+msgid "%{author} updated the value for the %{targetName} target on the <goal>%{goalName}</goal>"
+msgstr "%{author} atualizou o valor da meta %{targetName} no objetivo <goal>%{goalName}</goal>"
+
+#.frontend
+#: assets/js/features/activities/GroupEdited/index.tsx:43
+msgid "%{author} updated this space"
+msgstr "%{author} atualizou este espaço"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:248
@@ -203,6 +2070,11 @@ msgstr "%{hour}:00 PM"
 msgid "%{interval} billing"
 msgstr "Faturamento %{interval}"
 
+#.frontend
+#: assets/js/features/activities/feedItemLinks.tsx:24
+msgid "%{names} and %{lastName}"
+msgstr "%{names} e %{lastName}"
+
 #.elixir
 #: lib/operately_email/templates.ex:93
 msgid "%{name} (1 update)"
@@ -261,6 +2133,11 @@ msgstr "%{percentage}% das tarefas concluídas"
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:75
 msgid "%{percentage}% tasks completed, %{completed}/%{total} tasks completed"
 msgstr "%{percentage}% das tarefas concluídas, %{completed}/%{total} tarefas concluídas"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:128
+msgid "%{personName} now has %{access} on this project"
+msgstr "%{personName} agora tem %{access} neste projeto"
 
 #.frontend
 #: assets/js/features/activities/GoalCreated/index.tsx:77
@@ -691,9 +2568,29 @@ msgid "<label>Logged by</label> <avatar/> <details><name>%{name}</name> on %{dat
 msgstr "<label>Registrado por</label> <avatar/> <details><name>%{name}</name> em %{date}</details>"
 
 #.frontend
+#: assets/js/features/activities/GroupEdited/index.tsx:74
+msgid "<label>Name:</label> %{oldName} → %{newName}"
+msgstr "<label>Nome:</label> %{oldName} → %{newName}"
+
+#.frontend
 #: ../turboui/src/DocumentTitle/index.tsx:54
 msgid "<label>Posted</label> <date/>"
 msgstr "<label>Publicado</label> <date/>"
+
+#.frontend
+#: assets/js/features/activities/GroupEdited/index.tsx:83
+msgid "<label>Purpose:</label> %{oldMission} → %{newMission}"
+msgstr "<label>Propósito:</label> %{oldMission} → %{newMission}"
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:209
+msgid "<milestone>%{title}</milestone> <separator>·</separator> Due date on <date/>"
+msgstr "<milestone>%{title}</milestone> <separator>·</separator> Data de conclusão em <date/>"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberJoined/index.tsx:45
+msgid "<person>%{personName}</person> joined %{companyName}"
+msgstr "<person>%{personName}</person> entrou em %{companyName}"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/UpdateBadge.tsx:45
@@ -704,6 +2601,11 @@ msgstr "<version>%{version}</version> disponível"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:35
 msgid "A new invitation URL will be generated for %{name}."
 msgstr "Uma nova URL de convite será gerada para %{name}."
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:78
+msgid "A new milestone \"%{milestoneName}\" was created"
+msgstr "Um novo marco \"%{milestoneName}\" foi criado"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:84
@@ -729,6 +2631,27 @@ msgstr "Um lugar para compartilhar documentos, imagens, vídeos e outros arquivo
 #: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:42
 msgid "A second update is needed to plot a trend line."
 msgstr "É preciso registrar uma segunda atualização para traçar a linha de tendência."
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:234
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:251
+msgid "A task was assigned to %{personName}"
+msgstr "Uma tarefa foi atribuída a %{personName}"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:240
+msgid "A task was no longer assigned to %{personName}"
+msgstr "Uma tarefa deixou de ser atribuída a %{personName}"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:253
+msgid "A task was unassigned"
+msgstr "Uma tarefa ficou sem responsável"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:245
+msgid "A task was updated with new assignees"
+msgstr "Uma tarefa foi atualizada com novos responsáveis"
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:190
@@ -807,6 +2730,18 @@ msgstr "Conta"
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:50
 msgid "Account Owners"
 msgstr "Proprietários da conta"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:76
+#: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:78
+msgid "Acknowledged check-in"
+msgstr "Check-in reconhecido"
+
+#.frontend
+#: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:74
+#: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:67
+msgid "Acknowledged retrospective"
+msgstr "Retrospectiva reconhecida"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
@@ -1135,9 +3070,77 @@ msgid "Added"
 msgstr "Adicionado"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
+msgid "Added a file"
+msgstr "Adicionou um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
+msgid "Added a file: %{fileName}"
+msgstr "Adicionou um arquivo: %{fileName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:159
+#~ msgid "Added a file: a file"
+#~ msgstr "Adicionou um arquivo: um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectKeyResourceAdded/index.tsx:79
+msgid "Added a key resource to the %{projectName} project"
+msgstr "Adicionou um recurso principal ao projeto %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
+msgid "Added a link"
+msgstr "Adicionou um link"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
+msgid "Added a link: %{linkName}"
+msgstr "Adicionou um link: %{linkName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:116
+#~ msgid "Added a link: a link"
+#~ msgstr "Adicionou um link: um link"
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:170
+msgid "Added a new milestone:"
+msgid_plural "Added new milestones:"
+msgstr[0] "Adicionou um novo marco:"
+msgstr[1] "Adicionou novos marcos:"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:161
+msgid "Added files"
+msgstr "Adicionou arquivos"
+
+#.frontend
 #: assets/js/features/activities/ProjectCreated/index.tsx:64
 msgid "Added the %{projectName} project"
 msgstr "Adicionou o projeto %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberAdded/index.tsx:70
+msgid "Added you as a company member"
+msgstr "Adicionou você como membro da empresa"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorAddition/index.tsx:77
+#: assets/js/features/activities/ProjectContributorsAddition/index.tsx:83
+msgid "Added you as a contributor"
+msgstr "Adicionou você como contribuidor"
+
+#.frontend
+#: assets/js/features/activities/SpaceMembersAdded/index.tsx:69
+msgid "Added you to the %{spaceName} space"
+msgstr "Adicionou você ao espaço %{spaceName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:83
+msgid "Added: %{documentName}"
+msgstr "Adicionou: %{documentName}"
 
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:76
@@ -1268,6 +3271,11 @@ msgstr "É necessária a ajuda de um administrador ou proprietário"
 msgid "An admin or owner needs to review billing or free up member space before anyone else can join."
 msgstr "Um administrador ou proprietário precisa revisar o faturamento ou liberar vagas para membros antes que outras pessoas possam entrar."
 
+#.frontend
+#: assets/js/features/activities/KpiAnnotationAdded/index.tsx:81
+msgid "Annotated KPI: %{title}"
+msgstr "Anotou o KPI: %{title}"
+
 #~ #.frontend
 #~ #: ../turboui/src/AccessLevelSummary/index.tsx:97
 #~ msgid "Anyone on the internet can view this %{resource}"
@@ -1341,6 +3349,16 @@ msgstr "Arquivar"
 #: ../turboui/src/SearchPage/index.tsx:342
 msgid "Archived"
 msgstr "Arquivado"
+
+#.frontend
+#: assets/js/features/activities/GoalArchived/index.tsx:65
+msgid "Archived the %{goalName} goal"
+msgstr "Arquivou o objetivo %{goalName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectArchived/index.tsx:65
+msgid "Archived the %{projectName} project"
+msgstr "Arquivou o projeto %{projectName}"
 
 #.frontend
 #: ../turboui/src/ResourceHub/DeleteResourceConfirmModal.tsx:95
@@ -1932,6 +3950,42 @@ msgid "Change to read-only"
 msgstr "Alterar para somente leitura"
 
 #.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:107
+msgid "Changed a goal's parent goal"
+msgstr "Alterou o objetivo pai de um objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:92
+msgid "Changed the champion for %{projectName}"
+msgstr "Alterou o champion de %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:59
+msgid "Changed the parent goal from <old>%{oldName}</old> to <new>%{newName}</new>."
+msgstr "Alterou o objetivo pai de <old>%{oldName}</old> para <new>%{newName}</new>."
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:106
+msgid "Changed the parent goal of %{goalName}"
+msgstr "Alterou o objetivo pai de %{goalName}"
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:69
+msgid "Changed the parent goal to <goal>%{goalName}</goal>."
+msgstr "Alterou o objetivo pai para o objetivo <goal>%{goalName}</goal>."
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:78
+msgid "Changed the project timeline"
+msgstr "Alterou a linha do tempo do projeto"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckIn/index.tsx:21
+#: assets/js/features/activities/GoalCheckIn/index.tsx:25
+msgid "Check In"
+msgstr "Check-in"
+
+#.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:259
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:82
 msgid "Check in"
@@ -1960,6 +4014,14 @@ msgstr "Confira o código no seu e-mail"
 #: ../turboui/src/AccountChangeEmailPage/VerifyNewEmailStep.tsx:14
 msgid "Check your new inbox"
 msgstr "Verifique sua nova caixa de entrada"
+
+#.frontend
+#: assets/js/features/activities/feedItemLinks.tsx:55
+#: assets/js/features/activities/feedItemLinks.tsx:60
+#: assets/js/features/activities/feedItemLinks.tsx:65
+#: assets/js/features/activities/feedItemLinks.tsx:70
+msgid "Check-In"
+msgstr "Check-in"
 
 #.frontend
 #: ../turboui/src/GoalPage/CheckIns.tsx:16
@@ -2107,6 +4169,16 @@ msgid "Clear task selection"
 msgstr "Limpar seleção de tarefas"
 
 #.frontend
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:100
+msgid "Cleared due date for %{projectName}"
+msgstr "Removeu a data de conclusão de %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:147
+msgid "Cleared due date for %{taskName}"
+msgstr "Removeu a data de conclusão de %{taskName}"
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:283
 msgid "Click + or press 'c' to add a task, or drag a task here."
 msgstr "Clique em + ou pressione 'c' para adicionar uma tarefa, ou arraste uma tarefa para cá."
@@ -2150,6 +4222,26 @@ msgstr "Fechar busca"
 #: ../turboui/src/SearchPage/index.tsx:338
 msgid "Closed"
 msgstr "Fechado"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:133
+msgid "Closed a milestone"
+msgstr "Encerrou um marco"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:122
+msgid "Closed milestone: %{title}"
+msgstr "Encerrou o marco: %{title}"
+
+#.frontend
+#: assets/js/features/activities/GoalClosing/index.tsx:114
+msgid "Closed the goal"
+msgstr "Encerrou o objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectClosed/index.tsx:75
+msgid "Closed this project and submitted a retrospective"
+msgstr "Encerrou este projeto e enviou uma retrospectiva"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:51
@@ -2196,6 +4288,11 @@ msgstr "Acesso para comentar"
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:468
 msgid "Comment on this update"
 msgstr "Comentar nesta atualização"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:131
+msgid "Commented on a milestone"
+msgstr "Comentou em um marco"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:420
@@ -2407,9 +4504,19 @@ msgid "Connected"
 msgstr "Conectado"
 
 #.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:107
+msgid "Connected %{projectName} project to the %{goalName} goal"
+msgstr "Conectou o projeto %{projectName} ao objetivo %{goalName}"
+
+#.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:68
 msgid "Connected Clients"
 msgstr "Clientes conectados"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:111
+msgid "Connected a project to the %{goalName} goal"
+msgstr "Conectou um projeto ao objetivo %{goalName}"
 
 #.frontend
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:38
@@ -2511,6 +4618,11 @@ msgstr "Converter %{name} em colaborador externo?"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:82
 msgid "Convert to Outside Collaborator"
 msgstr "Converter em colaborador externo"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberConvertedToGuest/index.tsx:69
+msgid "Converted your account to an outside collaborator"
+msgstr "Converteu sua conta para colaborador externo"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:75
@@ -2703,6 +4815,26 @@ msgid "Created"
 msgstr "Criado"
 
 #.frontend
+#: assets/js/features/activities/KpiCreated/index.tsx:72
+msgid "Created KPI: %{kpiName}"
+msgstr "Criou o KPI: %{kpiName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:78
+msgid "Created a copy of %{originalName} and named it %{documentName}"
+msgstr "Criou uma cópia de %{originalName} e a nomeou %{documentName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
+msgid "Created a folder"
+msgstr "Criou uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
+msgid "Created a folder: %{folderName}"
+msgstr "Criou uma pasta: %{folderName}"
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:283
 msgid "Created and last-used timestamps will appear here once available."
 msgstr "As datas de criação e de último uso aparecerão aqui quando estiverem disponíveis."
@@ -2711,6 +4843,16 @@ msgstr "As datas de criação e de último uso aparecerão aqui quando estiverem
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:107
 msgid "Created date"
 msgstr "Data de criação"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:87
+#~ msgid "Created folder: %{folderName}"
+#~ msgstr "Criou a pasta: %{folderName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:86
+#~ msgid "Created folder: a folder"
+#~ msgstr "Criou a pasta: uma pasta"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:81
@@ -2785,6 +4927,21 @@ msgstr "Área de risco:"
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:133
 msgid "Date"
 msgstr "Data"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:70
+msgid "Date added: <date/>"
+msgstr "Data adicionada: <date/>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:97
+msgid "Date changed from <old/> to <new/>"
+msgstr "Data alterada de <old/> para <new/>"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneUpdating/index.tsx:84
+msgid "Date removed"
+msgstr "Data removida"
 
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:197
@@ -2918,6 +5075,81 @@ msgid "Delete update"
 msgstr "Excluir atualização"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
+msgid "Deleted a document"
+msgstr "Excluiu um documento"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:90
+msgid "Deleted a document: %{documentName}"
+msgstr "Excluiu um documento: %{documentName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:89
+#~ msgid "Deleted a document: a document"
+#~ msgstr "Excluiu um documento: um documento"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
+msgid "Deleted a file"
+msgstr "Excluiu um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
+msgid "Deleted a file: %{fileName}"
+msgstr "Excluiu um arquivo: %{fileName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:88
+#~ msgid "Deleted a file: a file"
+#~ msgstr "Excluiu um arquivo: um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
+msgid "Deleted a folder"
+msgstr "Excluiu uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:90
+msgid "Deleted a folder: %{folderName}"
+msgstr "Excluiu uma pasta: %{folderName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:89
+#~ msgid "Deleted a folder: a folder"
+#~ msgstr "Excluiu uma pasta: uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:79
+msgid "Deleted a key resource from the %{projectName} project"
+msgstr "Excluiu um recurso principal do projeto %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
+msgid "Deleted a link"
+msgstr "Excluiu um link"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
+msgid "Deleted a link: %{linkName}"
+msgstr "Excluiu um link: %{linkName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:88
+#~ msgid "Deleted a link: a link"
+#~ msgstr "Excluiu um link: um link"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryDeleted/index.tsx:85
+msgid "Deleted an update from %{kpiName}: %{value}"
+msgstr "Excluiu uma atualização de %{kpiName}: %{value}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryDeleted/index.tsx:84
+msgid "Deleted an update from KPI: %{value}"
+msgstr "Excluiu uma atualização do KPI: %{value}"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:54
 msgid "Deleting \"%{name}\" permanently removes the KPI and all of its recorded updates."
 msgstr "Excluir \"%{name}\" remove de forma permanente o KPI e todas as atualizações registradas."
@@ -3014,6 +5246,11 @@ msgid "Disable public sharing"
 msgstr "Desativar compartilhamento público"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:71
+msgid "Disabled public sharing"
+msgstr "Desativou o compartilhamento público"
+
+#.frontend
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:62
 msgid "Disabling sharing stops this link from working. Enabling it again creates a new link."
 msgstr "Desativar o compartilhamento faz este link deixar de funcionar. Ativá-lo novamente cria um novo link."
@@ -3030,6 +5267,21 @@ msgstr "Descartar rascunho"
 #~ #: ../turboui/src/NewDocumentPage/index.tsx:147
 #~ msgid "Discard this document"
 #~ msgstr "Descartar este documento"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:116
+msgid "Disconnected %{projectName} project from the %{goalName} goal"
+msgstr "Desconectou o projeto %{projectName} do objetivo %{goalName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:120
+msgid "Disconnected a project from the %{goalName} goal"
+msgstr "Desconectou um projeto do objetivo %{goalName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalDisconnection/index.tsx:87
+msgid "Disconnected the %{projectName} project from the %{goalName} goal"
+msgstr "Desconectou o projeto %{projectName} do objetivo %{goalName}"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:38
@@ -3102,6 +5354,10 @@ msgstr "Documento"
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:39
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:100
 #: ../turboui/src/ResourceHub/Navigation/parentNavigation.ts:114
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
 msgid "Docs & Files"
 msgstr "Docs & Arquivos"
@@ -3129,6 +5385,12 @@ msgstr "O documento não foi criado"
 #: assets/js/pages/ResourceHubEditDocumentPage/page.tsx:102
 msgid "Document not updated"
 msgstr "O documento não foi atualizado"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:15
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:20
+msgid "Document public sharing"
+msgstr "Compartilhamento público do documento"
 
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:19
@@ -3237,6 +5499,26 @@ msgid "Due date (optional)"
 msgstr "Data de conclusão (opcional)"
 
 #.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:82
+msgid "Due date <date><value/></date> was removed."
+msgstr "A data de conclusão <date><value/></date> foi removida."
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:96
+msgid "Due date was changed from <old><oldDate/></old> to <new><newDate/></new>."
+msgstr "A data de conclusão foi alterada de <old><oldDate/></old> para <new><newDate/></new>."
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:68
+msgid "Due date was set to <date><value/></date>."
+msgstr "A data de conclusão foi definida para <date><value/></date>."
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:109
+msgid "Due date was updated."
+msgstr "A data de conclusão foi atualizada."
+
+#.frontend
 #: ../turboui/src/TaskPage/PageOptions.tsx:14
 msgid "Duplicate"
 msgstr "Duplicar"
@@ -3255,6 +5537,7 @@ msgstr "Versão anterior"
 #: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:33
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:502
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:318
+#: assets/js/features/activities/GoalDiscussionCreation/index.tsx:62
 #: assets/js/pages/DiscussionPage/page.tsx:201
 #: assets/js/pages/ProjectDiscussionEditPage/page.tsx:25
 #: assets/js/pages/ProjectDiscussionPage/page.tsx:72
@@ -3351,6 +5634,46 @@ msgid "Edited"
 msgstr "Editado"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
+msgid "Edited a file"
+msgstr "Editou um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
+msgid "Edited a file: %{fileName}"
+msgstr "Editou um arquivo: %{fileName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFileEdited/index.tsx:88
+#~ msgid "Edited a file: a file"
+#~ msgstr "Editou um arquivo: um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
+msgid "Edited a link"
+msgstr "Editou um link"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
+msgid "Edited a link: %{linkName}"
+msgstr "Editou um link: %{linkName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:116
+#~ msgid "Edited a link: a link"
+#~ msgstr "Editou um link: um link"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentEdited/index.tsx:78
+msgid "Edited the document"
+msgstr "Editou o documento"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:134
+msgid "Edited the goal's timeframe"
+msgstr "Editou o período do objetivo"
+
+#.frontend
 #: assets/js/pages/SpaceEditPage/index.tsx:49
 msgid "Editing %{name}"
 msgstr "Editando %{name}"
@@ -3423,6 +5746,11 @@ msgstr "Ativar link de convite"
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:91
 msgid "Enable public sharing"
 msgstr "Ativar compartilhamento público"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:71
+msgid "Enabled public sharing"
+msgstr "Ativou o compartilhamento público"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:124
@@ -4377,6 +6705,11 @@ msgid "Free plan storage limit"
 msgstr "Limite de armazenamento do plano Gratuito"
 
 #.frontend
+#: assets/js/features/activities/ProjectMoved/index.tsx:61
+msgid "From <old>%{oldName}</old> to <new>%{newName}</new>"
+msgstr "De <old>%{oldName}</old> para <new>%{newName}</new>"
+
+#.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:34
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
 #: assets/js/components/Badges/AccessLevelBadges.tsx:87
@@ -4458,6 +6791,16 @@ msgid "Goal"
 msgstr "Objetivo"
 
 #.frontend
+#: assets/js/features/activities/GoalDescriptionChanged/index.tsx:90
+msgid "Goal \"%{goalName}\" description was removed"
+msgstr "A descrição do objetivo \"%{goalName}\" foi removida"
+
+#.frontend
+#: assets/js/features/activities/GoalDescriptionChanged/index.tsx:88
+msgid "Goal \"%{goalName}\" description was updated"
+msgstr "A descrição do objetivo \"%{goalName}\" foi atualizada"
+
+#.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:149
 msgid "Goal Champion"
 msgstr "Champion do objetivo"
@@ -4483,6 +6826,12 @@ msgid "Goal check-ins"
 msgstr "Check-ins de objetivos"
 
 #.frontend
+#: assets/js/features/activities/GoalClosing/index.tsx:15
+#: assets/js/features/activities/GoalClosing/index.tsx:23
+msgid "Goal closed"
+msgstr "Objetivo encerrado"
+
+#.frontend
 #: ../turboui/src/GoalPage/Overview.tsx:33
 msgid "Goal description"
 msgstr "Descrição do objetivo"
@@ -4491,6 +6840,17 @@ msgstr "Descrição do objetivo"
 #: assets/js/pages/GoalPage/index.tsx:75
 msgid "Goal name cannot be empty"
 msgstr "O nome do objetivo não pode ficar em branco"
+
+#.frontend
+#: assets/js/features/activities/GoalReopening/index.tsx:15
+#: assets/js/features/activities/GoalReopening/index.tsx:23
+msgid "Goal reopened"
+msgstr "Objetivo reaberto"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:20
+msgid "Goal timeframe change"
+msgstr "Alteração de período do objetivo"
 
 #.frontend
 #: ../turboui/src/GoalPage/PageHeader.tsx:17
@@ -4509,6 +6869,11 @@ msgstr "Objetivos & Projetos"
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:257
 msgid "Grant Access"
 msgstr "Conceder acesso"
+
+#.frontend
+#: assets/js/features/activities/CompanyAdminAdded/index.tsx:57
+msgid "Granted you admin privileges"
+msgstr "Concedeu privilégios de administrador a você"
 
 #.frontend
 #: ../turboui/src/TaskBoard/KanbanView/Card.tsx:226
@@ -4762,6 +7127,11 @@ msgid "Invite-only Access"
 msgstr "Acesso somente por convite"
 
 #.frontend
+#: assets/js/features/activities/GuestInvited/index.tsx:67
+msgid "Invited you as an outside collaborator"
+msgstr "Convidou você como colaborador externo"
+
+#.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:73
 msgid "Is this a demo company?"
 msgstr "Esta é uma empresa de demonstração?"
@@ -4770,6 +7140,13 @@ msgstr "Esta é uma empresa de demonstração?"
 #: ../turboui/src/OngoingDraftActions/index.tsx:59
 msgid "It will be posted on <date/> at <time/>."
 msgstr "Será publicado em <date/> às <time/>."
+
+#.frontend
+#: assets/js/features/activities/GoalCheckAdding/index.tsx:53
+#: assets/js/features/activities/GoalCheckRemoving/index.tsx:50
+#: assets/js/features/activities/GoalCheckToggled/index.tsx:53
+msgid "Item: %{name}"
+msgstr "Item: %{name}"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:23
@@ -4805,6 +7182,26 @@ msgstr "URL do KPI copiada para a área de transferência"
 #: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:164
 msgid "KPI history line chart"
 msgstr "Gráfico de linha do histórico do KPI"
+
+#.frontend
+#: assets/js/features/activities/KpiCreated/index.tsx:56
+msgid "KPI: %{kpiName}"
+msgstr "KPI: %{kpiName}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryEdited/index.tsx:58
+msgid "KPI: %{oldValue} → %{newValue}"
+msgstr "KPI: %{oldValue} → %{newValue}"
+
+#.frontend
+#: assets/js/features/activities/KpiAnnotationAdded/index.tsx:59
+msgid "KPI: %{title}"
+msgstr "KPI: %{title}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryDeleted/index.tsx:58
+msgid "KPI: %{value}"
+msgstr "KPI: %{value}"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:64
@@ -5117,6 +7514,21 @@ msgid "MILESTONES"
 msgstr "MARCOS"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
+msgid "Made a copy of a folder"
+msgstr "Fez uma cópia de uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:91
+msgid "Made a copy of a folder: %{folderName}"
+msgstr "Fez uma cópia de uma pasta: %{folderName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:90
+#~ msgid "Made a copy of a folder: a folder"
+#~ msgstr "Fez uma cópia de uma pasta: uma pasta"
+
+#.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:36
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:148
 #: ../turboui/src/ProfileEditPage/index.tsx:95
@@ -5267,6 +7679,21 @@ msgid "Milestone"
 msgstr "Marco"
 
 #.frontend
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:70
+msgid "Milestone \"%{milestoneName}\" was deleted"
+msgstr "O marco \"%{milestoneName}\" foi excluído"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:99
+msgid "Milestone \"%{title}\" description was removed"
+msgstr "A descrição do marco \"%{title}\" foi removida"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDescriptionUpdating/index.tsx:97
+msgid "Milestone \"%{title}\" description was updated"
+msgstr "A descrição do marco \"%{title}\" foi atualizada"
+
+#.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:211
 msgid "Milestone URL copied to clipboard"
 msgstr "URL do marco copiada"
@@ -5298,6 +7725,11 @@ msgstr "Progresso do marco: %{progress} concluído"
 #: ../turboui/src/MilestonePage/index.tsx:355
 msgid "Milestone status"
 msgstr "Status do marco"
+
+#.frontend
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:87
+msgid "Milestone was renamed to \"%{newTitle}\""
+msgstr "O marco foi renomeado para \"%{newTitle}\""
 
 #.frontend
 #: ../turboui/src/MilestoneList/index.tsx:119
@@ -5377,6 +7809,16 @@ msgid "Move to another space"
 msgstr "Mover para outro espaço"
 
 #.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:109
+msgid "Moved task \"%{taskName}\" to %{destinationName}"
+msgstr "Moveu a tarefa \"%{taskName}\" para %{destinationName}"
+
+#.frontend
+#: assets/js/features/activities/ProjectMoved/index.tsx:85
+msgid "Moved the project from %{oldSpace} to %{newSpace}"
+msgstr "Moveu o projeto de %{oldSpace} para %{newSpace}"
+
+#.frontend
 #: ../turboui/src/Forms/validation.ts:76
 msgid "Must be a valid number"
 msgstr "Deve ser um número válido"
@@ -5450,6 +7892,11 @@ msgstr "O nome é obrigatório"
 #: assets/js/pages/SetupPage/page.tsx:109
 msgid "Name of the company"
 msgstr "Nome da empresa"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:135
+msgid "Name:"
+msgstr "Nome:"
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:72
@@ -5770,6 +8217,11 @@ msgstr "Nenhuma atualização nova."
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:123
 msgid "No parent goal"
 msgstr "Nenhum objetivo pai"
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:87
+msgid "No parent goal was set."
+msgstr "Nenhum objetivo pai foi definido."
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:570
@@ -6277,6 +8729,16 @@ msgid "Paused"
 msgstr "Pausado"
 
 #.frontend
+#: assets/js/features/activities/ProjectPausing/index.tsx:114
+msgid "Paused a project"
+msgstr "Pausou um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectPausing/index.tsx:114
+msgid "Paused the %{projectName} project"
+msgstr "Pausou o projeto %{projectName}"
+
+#.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:190
 msgid "Payment for this company is past due. Billing access may be affected until payment is resolved."
 msgstr "O pagamento desta empresa está em atraso. O acesso ao faturamento pode ser afetado até a regularização do pagamento."
@@ -6518,6 +8980,13 @@ msgid "Posted as the first comment on this update."
 msgstr "Publicado como o primeiro comentário nesta atualização."
 
 #.frontend
+#: assets/js/features/activities/DiscussionPosting/index.tsx:80
+#: assets/js/features/activities/GoalDiscussionCreation/index.tsx:125
+#: assets/js/features/activities/ProjectDiscussionSubmitted/index.tsx:89
+msgid "Posted: %{title}"
+msgstr "Publicou: %{title}"
+
+#.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:236
 msgid "Preparing Workspace"
 msgstr "Preparando o ambiente"
@@ -6542,6 +9011,96 @@ msgstr "Notificações anteriores"
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:560
 msgid "Previous values"
 msgstr "Valores anteriores"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:114
+msgid "Previously %{personName} was a %{oldRole}"
+msgstr "Anteriormente, %{personName} era %{oldRole}"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:96
+msgid "Previously assigned to %{count} person"
+msgid_plural "Previously assigned to %{count} people"
+msgstr[0] "Anteriormente atribuída a %{count} pessoa"
+msgstr[1] "Anteriormente atribuída a %{count} pessoas"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:101
+msgid "Previously assigned to:"
+msgstr "Anteriormente atribuída a:"
+
+#.frontend
+#: assets/js/features/activities/GoalDueDateUpdating/index.tsx:71
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:70
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:114
+msgid "Previously had no due date"
+msgstr "Anteriormente não tinha data de conclusão"
+
+#.frontend
+#: assets/js/features/activities/GoalStartDateUpdating/index.tsx:71
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:71
+msgid "Previously had no start date"
+msgstr "Anteriormente não tinha data de início"
+
+#.frontend
+#: assets/js/features/activities/GoalNameUpdating/index.tsx:51
+msgid "Previously it was %{oldName}, now it is %{newName}."
+msgstr "Anteriormente era %{oldName}, agora é %{newName}."
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:109
+msgid "Previously it was unassigned"
+msgstr "Anteriormente, ela estava sem responsável"
+
+#.frontend
+#: assets/js/features/activities/GoalDueDateUpdating/index.tsx:69
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:68
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:107
+msgid "Previously the due date was <date/>"
+msgstr "Anteriormente, a data de conclusão era <date/>"
+
+#.frontend
+#: assets/js/features/activities/GoalStartDateUpdating/index.tsx:69
+#: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:69
+msgid "Previously the start date was <date/>"
+msgstr "Anteriormente, a data de início era <date/>"
+
+#.frontend
+#: assets/js/features/activities/GoalTargetUpdating/index.tsx:59
+msgid "Previously, %{oldValue} %{unit}, now %{newValue} %{unit}."
+msgstr "Antes, %{oldValue} %{unit}; agora, %{newValue} %{unit}."
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:62
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:62
+msgid "Previously, %{personName} was the champion."
+msgstr "Anteriormente, %{personName} era o champion."
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:62
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:62
+msgid "Previously, %{personName} was the reviewer."
+msgstr "Anteriormente, %{personName} era o revisor."
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:82
+msgid "Previously, it was in <origin>%{originName}</origin>"
+msgstr "Anteriormente, ela estava em <origin>%{originName}</origin>"
+
+#.frontend
+#: assets/js/features/activities/GoalSpaceUpdating/index.tsx:50
+msgid "Previously, it was in the <space>%{spaceName}</space> space."
+msgstr "Anteriormente, ele estava no espaço <space>%{spaceName}</space>."
+
+#.frontend
+#: assets/js/features/activities/MilestoneTitleUpdating/index.tsx:64
+msgid "Previously, the milestone was called <name>\"%{oldTitle}\"</name>."
+msgstr "Anteriormente, o marco se chamava <name>\"%{oldTitle}\"</name>."
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:89
+msgid "Previously, the task was %{oldStatus}. Now it's %{newStatus}."
+msgstr "Anteriormente, a tarefa estava %{oldStatus}. Agora está %{newStatus}."
 
 #.frontend
 #: assets/js/features/activities/TaskNameUpdating/index.tsx:102
@@ -6584,9 +9143,20 @@ msgstr "Progresso: %{progress}%"
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:202
+#: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
 #: lib/operately_email/templates.ex:31
 msgid "Project"
 msgstr "Projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:95
+msgid "Project \"%{projectName}\" description was removed"
+msgstr "A descrição do projeto \"%{projectName}\" foi removida"
+
+#.frontend
+#: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:94
+msgid "Project \"%{projectName}\" description was updated"
+msgstr "A descrição do projeto \"%{projectName}\" foi atualizada"
 
 #.frontend
 #: assets/js/features/SpaceTools/GoalsAndProjects/ZeroState.tsx:38
@@ -6636,6 +9206,18 @@ msgid "Project name cannot be empty"
 msgstr "O nome do projeto não pode ficar em branco"
 
 #.frontend
+#: assets/js/features/activities/ProjectPausing/index.tsx:15
+#: assets/js/features/activities/ProjectPausing/index.tsx:28
+msgid "Project paused"
+msgstr "Projeto pausado"
+
+#.frontend
+#: assets/js/features/activities/ProjectResuming/index.tsx:15
+#: assets/js/features/activities/ProjectResuming/index.tsx:28
+msgid "Project resumed"
+msgstr "Projeto retomado"
+
+#.frontend
 #: ../turboui/src/SearchPage/index.tsx:331
 msgid "Project retrospective"
 msgstr "Retrospectiva de projeto"
@@ -6651,6 +9233,12 @@ msgid "Project reviewer"
 msgstr "Revisor do projeto"
 
 #.frontend
+#: assets/js/features/activities/MilestoneDeleting/index.tsx:76
+#: assets/js/features/activities/TaskDeleting/index.tsx:82
+msgid "Project: %{projectName}"
+msgstr "Projeto: %{projectName}"
+
+#.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 #: ../turboui/src/SearchPage/filterOptions.ts:10
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:76
@@ -6661,6 +9249,11 @@ msgstr "Projetos"
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:195
 msgid "Promote to manager"
 msgstr "Promover a gestor"
+
+#.frontend
+#: assets/js/features/activities/CompanyOwnersAdding/index.tsx:61
+msgid "Promoted you to an account owner"
+msgstr "Promoveu você a proprietário da conta"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:199
@@ -6745,6 +9338,97 @@ msgstr "Digite sua nova senha novamente"
 #: ../turboui/src/GoalPage/Sidebar.tsx:382
 msgid "Re-open Goal"
 msgstr "Reabrir objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:135
+msgid "Re-opened a milestone"
+msgstr "Reabriu um marco"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:124
+msgid "Re-opened milestone: %{title}"
+msgstr "Reabriu o marco: %{title}"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:335
+#: assets/js/features/activities/CommentAdded/index.tsx:339
+#: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:99
+#: assets/js/features/activities/KpiEntryCommented/index.tsx:121
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:120
+#: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
+#: assets/js/features/activities/TaskCommentDeleting/index.tsx:112
+msgid "Re: %{title}"
+msgstr "Re: %{title}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryCommented/index.tsx:121
+msgid "Re: a KPI"
+msgstr "Re: um KPI"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:113
+msgid "Re: a document"
+msgstr "Re: um documento"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:113
+msgid "Re: a file"
+msgstr "Re: um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:111
+msgid "Re: a link"
+msgstr "Re: um link"
+
+#.frontend
+#: assets/js/features/activities/ProjectTaskCommented/index.tsx:108
+#: assets/js/features/activities/SpaceTaskCommented/index.tsx:111
+msgid "Re: a task"
+msgstr "Re: uma tarefa"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckInCommented/index.tsx:96
+msgid "Re: goal check-in"
+msgstr "Re: check-in de objetivo"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:333
+msgid "Re: goal closing"
+msgstr "Re: encerramento do objetivo"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:337
+msgid "Re: goal reopening"
+msgstr "Re: reabertura do objetivo"
+
+#.frontend
+#: assets/js/features/activities/ProjectCheckInCommented/index.tsx:96
+msgid "Re: project check-in"
+msgstr "Re: check-in de projeto"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:342
+msgid "Re: project pausing"
+msgstr "Re: pausa do projeto"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:341
+msgid "Re: project resuming"
+msgstr "Re: retomada do projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectRetrospectiveCommented/index.tsx:94
+msgid "Re: project retrospective"
+msgstr "Re: retrospectiva do projeto"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:332
+msgid "Re: timeframe change"
+msgstr "Re: alteração de período"
 
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:191
@@ -6909,6 +9593,26 @@ msgid "Removed"
 msgstr "Removido"
 
 #.frontend
+#: assets/js/features/activities/KpiAnnotationDeleted/index.tsx:70
+msgid "Removed KPI annotation: %{title}"
+msgstr "Removeu a anotação do KPI: %{title}"
+
+#.frontend
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:94
+msgid "Removed the champion for %{projectName}"
+msgstr "Removeu o champion de %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/GoalReparent/index.tsx:79
+msgid "Removed the parent goal <goal>%{goalName}</goal>."
+msgstr "Removeu o objetivo pai <goal>%{goalName}</goal>."
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorRemoved/index.tsx:77
+msgid "Removed you from the project"
+msgstr "Removeu você do projeto"
+
+#.frontend
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:99
 #: ../turboui/src/ResourceHubFolderPage/index.tsx:34
 msgid "Rename"
@@ -6930,6 +9634,26 @@ msgid "Rename the company"
 msgstr "Renomear a empresa"
 
 #.frontend
+#: assets/js/features/activities/ProjectRenamed/index.tsx:73
+msgid "Renamed %{oldName} to %{newName}"
+msgstr "Renomeou %{oldName} para %{newName}"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
+msgid "Renamed a folder"
+msgstr "Renomeou uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:91
+msgid "Renamed a folder: %{folderName}"
+msgstr "Renomeou a pasta: %{folderName}"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:90
+#~ msgid "Renamed a folder: a folder"
+#~ msgstr "Renomeou a pasta: uma pasta"
+
+#.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:92
 msgid "Renew Invitation"
 msgstr "Renovar convite"
@@ -6944,6 +9668,11 @@ msgstr "Renova em"
 #: ../turboui/src/MilestonePage/index.tsx:374
 msgid "Reopen"
 msgstr "Reabrir"
+
+#.frontend
+#: assets/js/features/activities/GoalReopening/index.tsx:100
+msgid "Reopened the %{goalName} goal"
+msgstr "Reabriu o objetivo %{goalName}"
 
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:119
@@ -7000,6 +9729,12 @@ msgid "Resource"
 msgstr "Recurso"
 
 #.frontend
+#: assets/js/features/activities/ProjectKeyResourceAdded/index.tsx:58
+#: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:58
+msgid "Resource:"
+msgstr "Recurso:"
+
+#.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
 msgid "Restore"
 msgstr "Restaurar"
@@ -7031,6 +9766,16 @@ msgid "Restore this version?"
 msgstr "Restaurar esta versão?"
 
 #.frontend
+#: assets/js/features/activities/ResourceHubDocumentVersionRestored/index.tsx:94
+msgid "Restored a document version"
+msgstr "Restaurou uma versão do documento"
+
+#.frontend
+#: assets/js/features/activities/CompanyMemberRestoring/index.tsx:65
+msgid "Restored your account"
+msgstr "Restaurou sua conta"
+
+#.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:142
 msgid "Restoring…"
 msgstr "Restaurando…"
@@ -7039,6 +9784,16 @@ msgstr "Restaurando…"
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:364
 msgid "Resume project"
 msgstr "Retomar projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectResuming/index.tsx:114
+msgid "Resumed a project"
+msgstr "Retomou um projeto"
+
+#.frontend
+#: assets/js/features/activities/ProjectResuming/index.tsx:114
+msgid "Resumed the %{projectName} project"
+msgstr "Retomou o projeto %{projectName}"
 
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
@@ -7184,6 +9939,16 @@ msgstr "Revogar conexão"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:28
 msgid "Revoke invitation for %{name}?"
 msgstr "Revogar convite para %{name}?"
+
+#.frontend
+#: assets/js/features/activities/CompanyOwnerRemoving/index.tsx:65
+msgid "Revoked your account owner status"
+msgstr "Revogou seu status de proprietário da conta"
+
+#.frontend
+#: assets/js/features/activities/CompanyAdminRemoved/index.tsx:67
+msgid "Revoked your admin privileges"
+msgstr "Revogou seus privilégios de administrador"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:40
@@ -7851,6 +10616,11 @@ msgid "Space-wide Access"
 msgstr "Acesso para todo o espaço"
 
 #.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:84
+msgid "Space: %{spaceName}"
+msgstr "Espaço: %{spaceName}"
+
+#.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:87
 msgid "Spaces help organize projects, goals, and team members in one place."
 msgstr "Os espaços ajudam a organizar projetos, objetivos e membros da equipe em um só lugar."
@@ -8001,6 +10771,16 @@ msgid "Submit"
 msgstr "Enviar"
 
 #.frontend
+#: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:89
+msgid "Submitted a check-in"
+msgstr "Enviou um check-in"
+
+#.frontend
+#: assets/js/features/activities/GoalCheckIn/index.tsx:87
+msgid "Submitted a check-in for %{goalName}"
+msgstr "Enviou um check-in de %{goalName}"
+
+#.frontend
 #: assets/js/pages/SetupPage/page.tsx:208
 msgid "Submitting..."
 msgstr "Enviando..."
@@ -8065,6 +10845,37 @@ msgid "Task \"%{oldName}\" was renamed to \"%{newName}\""
 msgstr "A tarefa \"%{oldName}\" foi renomeada para \"%{newName}\""
 
 #.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:233
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:250
+msgid "Task \"%{taskName}\" was assigned to %{personName}"
+msgstr "A tarefa \"%{taskName}\" foi atribuída a %{personName}"
+
+#.frontend
+#: assets/js/features/activities/TaskDeleting/index.tsx:75
+msgid "Task \"%{taskName}\" was deleted"
+msgstr "A tarefa \"%{taskName}\" foi excluída"
+
+#.frontend
+#: assets/js/features/activities/TaskStatusUpdating/index.tsx:111
+msgid "Task \"%{taskName}\" was marked as %{status}"
+msgstr "A tarefa \"%{taskName}\" foi marcada como %{status}"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:239
+msgid "Task \"%{taskName}\" was no longer assigned to %{personName}"
+msgstr "A tarefa \"%{taskName}\" deixou de ser atribuída a %{personName}"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:253
+msgid "Task \"%{taskName}\" was unassigned"
+msgstr "A tarefa \"%{taskName}\" ficou sem responsável"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:244
+msgid "Task \"%{taskName}\" was updated with new assignees"
+msgstr "A tarefa \"%{taskName}\" foi atualizada com novos responsáveis"
+
+#.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:413
 msgid "Task URL copied to clipboard"
 msgstr "URL da tarefa copiada"
@@ -8073,6 +10884,11 @@ msgstr "URL da tarefa copiada"
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:90
 msgid "Task management"
 msgstr "Gestão de tarefas"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:113
+msgid "Task milestone was updated"
+msgstr "O marco da tarefa foi atualizado"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/InlineTaskCreator.tsx:24
@@ -8095,6 +10911,21 @@ msgstr "Status da tarefa"
 #: ../turboui/src/TaskCreationModal/index.tsx:289
 msgid "Task title"
 msgstr "Título da tarefa"
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:104
+msgid "Task was assigned to milestone \"%{title}\""
+msgstr "A tarefa foi atribuída ao marco \"%{title}\""
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:108
+msgid "Task was moved from milestone \"%{oldTitle}\" to \"%{newTitle}\""
+msgstr "A tarefa foi movida do marco \"%{oldTitle}\" para \"%{newTitle}\""
+
+#.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:106
+msgid "Task was removed from milestone \"%{title}\""
+msgstr "A tarefa foi removida do marco \"%{title}\""
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
@@ -8154,6 +10985,16 @@ msgid "That version could not be found. Choose another version from the history 
 msgstr "Essa versão não foi encontrada. Escolha outra versão na lista de histórico."
 
 #.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:130
+msgid "The \"%{title}\" milestone due date was removed"
+msgstr "A data de conclusão do marco \"%{title}\" foi removida"
+
+#.frontend
+#: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:128
+msgid "The \"%{title}\" milestone due date was updated"
+msgstr "A data de conclusão do marco \"%{title}\" foi atualizada"
+
+#.frontend
 #: assets/js/pages/AccountApiTokensPage/index.tsx:106
 msgid "The API token was removed."
 msgstr "O token de API foi removido."
@@ -8172,6 +11013,11 @@ msgstr "O champion ainda não definiu metas para este objetivo."
 #: ../turboui/src/ProjectPage/CheckInOverdueCallout.tsx:36
 msgid "The champion needs to post the update."
 msgstr "O champion precisa publicar a atualização."
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:124
+msgid "The champion was changed to %{personName}."
+msgstr "O champion foi alterado para %{personName}."
 
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:69
@@ -8199,9 +11045,29 @@ msgid "The draft has been discarded."
 msgstr "O rascunho foi descartado."
 
 #.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:115
+msgid "The due date was set to <date/>."
+msgstr "A data de conclusão foi definida para <date/>."
+
+#.frontend
 #: assets/js/pages/CompanyExportPage/index.tsx:54
 msgid "The export package is not ready yet."
 msgstr "O pacote de exportação ainda não está pronto."
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:151
+msgid "The following measures were added:"
+msgstr "As seguintes metas foram adicionadas:"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:184
+msgid "The following measures were removed:"
+msgstr "As seguintes metas foram removidas:"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:168
+msgid "The following measures were updated:"
+msgstr "As seguintes metas foram atualizadas:"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:151
@@ -8224,9 +11090,19 @@ msgid "The last check-in was more than a month ago. The information may be outda
 msgstr "O último check-in foi há mais de um mês. As informações podem estar desatualizadas. Avise o champion para fazer o check-in ou encerre o objetivo."
 
 #.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:98
+msgid "The name was changed to %{name}."
+msgstr "O nome foi alterado para %{name}."
+
+#.frontend
 #: assets/js/pages/GoalPage/index.tsx:130
 msgid "The parent goal has been successfully changed."
 msgstr "O objetivo pai foi alterado."
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:100
+msgid "The previous %{oldRole} %{oldName} is now a %{newRole}"
+msgstr "O %{oldRole} anterior, %{oldName}, agora é %{newRole}"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:36
@@ -8254,9 +11130,19 @@ msgid "The requested billing option is not currently available. Showing the clos
 msgstr "A opção de faturamento solicitada não está disponível no momento. Estamos exibindo o plano disponível mais próximo."
 
 #.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:137
+msgid "The reviewer was changed to %{personName}."
+msgstr "O revisor foi alterado para %{personName}."
+
+#.frontend
 #: assets/js/pages/SpacePage/page.tsx:182
 msgid "The space and its content were deleted."
 msgstr "O espaço e o conteúdo foram excluídos."
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:101
+msgid "The start date was set to <date/>."
+msgstr "A data de início foi definida para <date/>."
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:90
@@ -8267,6 +11153,11 @@ msgstr "As tarefas permanecem neste marco e usam o status selecionado."
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:91
 msgid "The tasks stay open and remain visible on the project task board."
 msgstr "As tarefas continuam em aberto e visíveis no quadro de tarefas do projeto."
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:111
+msgid "The timeframe was changed to %{timeframe}."
+msgstr "O período foi alterado para %{timeframe}."
 
 #.frontend
 #: assets/js/pages/SpaceKpisPage/page.tsx:131
@@ -8294,6 +11185,18 @@ msgstr "Ocorreu um erro ao atualizar sua senha. Tente novamente."
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 msgid "There was an unexpected error. Please try again later."
 msgstr "Ocorreu um erro inesperado. Tente novamente mais tarde."
+
+#.frontend
+#: assets/js/features/activities/GoalChampionUpdating/index.tsx:68
+#: assets/js/features/activities/ProjectChampionUpdating/index.tsx:68
+msgid "There was no previous champion."
+msgstr "Não havia champion anterior."
+
+#.frontend
+#: assets/js/features/activities/GoalReviewerUpdating/index.tsx:68
+#: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:68
+msgid "There was no previous reviewer."
+msgstr "Não havia revisor anterior."
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:23
@@ -8539,6 +11442,20 @@ msgid "Time unavailable"
 msgstr "Horário indisponível"
 
 #.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:30
+msgid "Timeframe extended by %{count} days"
+msgid_plural "Timeframe extended by %{count} days"
+msgstr[0] "Período estendido em %{count} dia"
+msgstr[1] "Período estendido em %{count} dias"
+
+#.frontend
+#: assets/js/features/activities/GoalTimeframeEditing/index.tsx:31
+msgid "Timeframe shortened by %{count} days"
+msgid_plural "Timeframe shortened by %{count} days"
+msgstr[0] "Período encurtado em %{count} dia"
+msgstr[1] "Período encurtado em %{count} dias"
+
+#.frontend
 #: ../turboui/src/WorkMap/components/WorkMapNavigation.tsx:34
 msgid "Timeline"
 msgstr "Linha do tempo"
@@ -8655,6 +11572,28 @@ msgid "Too many incorrect attempts. Request a new code to continue."
 msgstr "Muitas tentativas incorretas. Solicite um novo código para continuar."
 
 #.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:155
+msgid "Total project duration by %{percentage}% (%{old} days -> %{now} days)."
+msgstr "Duração total do projeto em %{percentage}% (%{old} dias -> %{now} dias)."
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:150
+msgid "Total project duration decreased by %{percentage}% (%{old} days -> %{now} days)."
+msgstr "A duração total do projeto diminuiu %{percentage}% (%{old} dias -> %{now} dias)."
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:145
+msgid "Total project duration increased by %{percentage}% (%{old} days -> %{now} days)."
+msgstr "A duração total do projeto aumentou %{percentage}% (%{old} dias -> %{now} dias)."
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:126
+msgid "Total project duration is %{count} days."
+msgid_plural "Total project duration is %{count} days."
+msgstr[0] "A duração total do projeto é de %{count} dia."
+msgstr[1] "A duração total do projeto é de %{count} dias."
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:115
 msgid "Track a KPI"
 msgstr "Acompanhar um KPI"
@@ -8720,6 +11659,11 @@ msgstr "Tipo"
 #: ../turboui/src/LinkNewPage/index.tsx:53
 msgid "Type the title of this link"
 msgstr "Digite o título deste link"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:157
+msgid "Type:"
+msgstr "Tipo:"
 
 #.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:58
@@ -8905,14 +11849,56 @@ msgid "Update your email across all your companies"
 msgstr "Atualize seu e-mail em todas as suas empresas"
 
 #.frontend
+#: assets/js/features/activities/KpiEntryEdited/index.tsx:89
+msgid "Updated %{kpiName}: %{oldValue} → %{newValue}"
+msgstr "Atualizou %{kpiName}: %{oldValue} → %{newValue}"
+
+#.frontend
 #: ../turboui/src/ResourceHub/NodeMetadata.tsx:45
 msgid "Updated <date/>"
 msgstr "Atualizado em <date/>"
 
 #.frontend
+#: assets/js/features/activities/KpiAnnotationEdited/index.tsx:75
+msgid "Updated KPI annotation: %{title}"
+msgstr "Atualizou a anotação do KPI: %{title}"
+
+#.frontend
+#: assets/js/features/activities/KpiEntryEdited/index.tsx:88
+msgid "Updated KPI: %{oldValue} → %{newValue}"
+msgstr "Atualizou o KPI: %{oldValue} → %{newValue}"
+
+#.frontend
+#: assets/js/features/activities/ProjectTimelineEdited/index.tsx:187
+msgid "Updated a milestone:"
+msgid_plural "Updated milestones:"
+msgstr[0] "Atualizou um marco:"
+msgstr[1] "Atualizou marcos:"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:125
+msgid "Updated a project's parent goal"
+msgstr "Atualizou o objetivo pai de um projeto"
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:113
 msgid "Updated date"
 msgstr "Data de atualização"
+
+#.frontend
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:93
+msgid "Updated due date for %{projectName} to <date/>"
+msgstr "Atualizou a data de conclusão de %{projectName} para <date/>"
+
+#.frontend
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:137
+msgid "Updated due date for %{taskName} to <date/>"
+msgstr "Atualizou a data de conclusão de %{taskName} para <date/>"
+
+#.frontend
+#: assets/js/features/activities/GroupEdited/index.tsx:112
+msgid "Updated the %{spaceName} space"
+msgstr "Atualizou o espaço %{spaceName}"
 
 #.frontend
 #: assets/js/features/activities/TaskDescriptionChange/index.tsx:115
@@ -8923,6 +11909,27 @@ msgstr "Atualizou a descrição de: %{taskName}"
 #: assets/js/features/activities/TaskDescriptionChange/index.tsx:116
 msgid "Updated the description of: a task"
 msgstr "Atualizou a descrição de: uma tarefa"
+
+#.frontend
+#: assets/js/features/activities/ProjectGoalConnection/index.tsx:124
+msgid "Updated the parent goal of %{projectName} project"
+msgstr "Atualizou o objetivo pai do projeto %{projectName}"
+
+#.frontend
+#: assets/js/features/activities/GroupEdited/index.tsx:115
+msgid "Updated the space"
+msgstr "Atualizou o espaço"
+
+#.frontend
+#: assets/js/features/activities/CompanyMembersPermissionsEdited/index.tsx:61
+#: assets/js/features/activities/CompanyMembersPermissionsEdited/index.tsx:64
+msgid "Updated your company access level"
+msgstr "Atualizou seu nível de acesso na empresa"
+
+#.frontend
+#: assets/js/features/activities/CompanyMembersPermissionsEdited/index.tsx:66
+msgid "Updated your company access level to %{accessLevel}"
+msgstr "Atualizou seu nível de acesso na empresa para %{accessLevel}"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:10
@@ -9007,6 +12014,11 @@ msgstr "O envio de arquivos está indisponível para esta conta."
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:126
 msgid "Uptime"
 msgstr "Tempo de atividade"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:146
+msgid "Url:"
+msgstr "URL:"
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:47
@@ -9625,6 +12637,88 @@ msgid "You’ll need access to both inboxes. Your email won’t change until bot
 msgstr "Você precisará acessar as duas caixas de entrada. Seu e-mail só será alterado após a verificação de ambas. Esta alteração vale para todas as suas empresas."
 
 #.frontend
+#: assets/js/features/activities/ProjectContributorAddition/index.tsx:35
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:165
+#: assets/js/features/activities/ProjectContributorRemoved/index.tsx:35
+msgid "a contributor"
+msgstr "um contribuidor"
+
+#.frontend
+#: assets/js/features/activities/CommentAdded/index.tsx:152
+#: assets/js/features/activities/CommentAdded/index.tsx:220
+msgid "a discussion"
+msgstr "uma discussão"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:73
+#: assets/js/features/activities/ResourceHubDocumentCommented/index.tsx:117
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:75
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:126
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:127
+#: assets/js/features/activities/ResourceHubDocumentCreated/index.tsx:160
+#: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:39
+#: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:29
+msgid "a document"
+msgstr "um documento"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:73
+#: assets/js/features/activities/ResourceHubFileCommented/index.tsx:117
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:49
+#: assets/js/features/activities/ResourceHubFileCreated/index.tsx:121
+#: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:39
+#: assets/js/features/activities/ResourceHubFileEdited/index.tsx:59
+msgid "a file"
+msgstr "um arquivo"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:62
+#: assets/js/features/activities/ResourceHubFolderCopied/index.tsx:63
+#: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:59
+#: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:39
+#: assets/js/features/activities/ResourceHubFolderRenamed/index.tsx:59
+msgid "a folder"
+msgstr "uma pasta"
+
+#.frontend
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:72
+#: assets/js/features/activities/ResourceHubLinkCommented/index.tsx:115
+#: assets/js/features/activities/ResourceHubLinkCreated/index.tsx:47
+#: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:39
+#: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:60
+msgid "a link"
+msgstr "um link"
+
+#.frontend
+#: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:77
+msgid "a milestone"
+msgstr "um marco"
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:60
+#: assets/js/features/activities/TaskMoving/index.tsx:88
+msgid "a project"
+msgstr "um projeto"
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:60
+#: assets/js/features/activities/TaskMoving/index.tsx:88
+msgid "a space"
+msgstr "um espaço"
+
+#.frontend
+#: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:54
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:56
+#: assets/js/features/activities/TaskDueDateUpdating/index.tsx:132
+msgid "a task"
+msgstr "uma tarefa"
+
+#.frontend
+#: assets/js/features/activities/TaskMoving/index.tsx:137
+msgid "another destination"
+msgstr "outro destino"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:194
 msgid "as of %{date}"
 msgstr "em %{date}"
@@ -9641,9 +12735,28 @@ msgid "cancelled"
 msgstr "cancelado"
 
 #.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:208
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:171
+msgid "champion"
+msgstr "champion"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:216
+msgid "changed the goal's %{changes}"
+msgstr "alterou %{changes} do objetivo"
+
+#.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/types.ts:109
 msgid "changed the title of this document from “%{previousTitle}” to “%{title}”"
 msgstr "alterou o título deste documento de “%{previousTitle}” para “%{title}”"
+
+#.frontend
+#: assets/js/features/activities/feedItemLinks.tsx:16
+#: assets/js/features/activities/feedItemLinks.tsx:18
+#: assets/js/features/activities/feedItemLinks.tsx:135
+#: assets/js/features/activities/feedItemLinks.tsx:139
+msgid "commented"
+msgstr "comentou"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:217
@@ -9655,6 +12768,12 @@ msgstr "concluído"
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:102
 msgid "concrete actions or deliverables"
 msgstr "ações concretas ou entregas"
+
+#.frontend
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:175
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:177
+msgid "contributor"
+msgstr "contribuidor"
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:62
@@ -9820,6 +12939,16 @@ msgid "less than a minute"
 msgstr "menos de um minuto"
 
 #.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:210
+msgid "measurements"
+msgstr "metas"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:206
+msgid "name"
+msgstr "nome"
+
+#.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:130
 msgid "name@company.com"
 msgstr "nome@empresa.com"
@@ -9842,6 +12971,12 @@ msgid "restored this document from Version %{version}"
 msgstr "restaurou este documento da Versão %{version}"
 
 #.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:209
+#: assets/js/features/activities/ProjectContributorEdited/index.tsx:173
+msgid "reviewer"
+msgstr "revisor"
+
+#.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:221
 #: ../turboui/src/CompanyImportPage/index.tsx:401
 msgid "running"
@@ -9853,6 +12988,11 @@ msgid "show all"
 msgstr "mostrar todos"
 
 #.frontend
+#: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:69
+msgid "task"
+msgstr "tarefa"
+
+#.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:44
 msgid "the new plan"
 msgstr "o novo plano"
@@ -9862,6 +13002,24 @@ msgstr "o novo plano"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:219
 msgid "the pending plan"
 msgstr "o plano pendente"
+
+#.frontend
+#: assets/js/features/activities/ProjectDueDateUpdating/index.tsx:89
+msgid "the project"
+msgstr "o projeto"
+
+#~ #.frontend
+#~ #: assets/js/features/activities/ResourceHubDocumentDeleted/index.tsx:62
+#~ #: assets/js/features/activities/ResourceHubFileDeleted/index.tsx:62
+#~ #: assets/js/features/activities/ResourceHubFolderDeleted/index.tsx:62
+#~ #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
+#~ msgid "the resource hub"
+#~ msgstr "o hub de recursos"
+
+#.frontend
+#: assets/js/features/activities/GoalEditing/index.tsx:207
+msgid "timeframe"
+msgstr "período"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:536

@@ -6,7 +6,9 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { Avatar } from "turboui";
-import { feedTitle, projectLink } from "./../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink } from "./../feedItemLinks";
 
 const ProjectContributorsAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -34,12 +36,26 @@ const ProjectContributorsAddition: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const { project } = content(activity);
 
-    const projectLinkOrName = project ? ["the", projectLink(paths, project), "project"] : ["a project"];
-
     if (page === "project") {
-      return feedTitle(activity, "added new contributors to the project");
+      return (
+        <Trans
+          i18nKey="{{author}} added new contributors to the project"
+          values={{ author: activityAuthorName(activity) }}
+        />
+      );
     } else {
-      return feedTitle(activity, "added new contributors to", ...projectLinkOrName);
+      return project ? (
+        <Trans
+          i18nKey="{{author}} added new contributors to the <project>{{projectName}}</project> project"
+          values={{ author: activityAuthorName(activity), projectName: project.name }}
+          components={{ project: projectLink(paths, project) }}
+        />
+      ) : (
+        <Trans
+          i18nKey="{{author}} added new contributors to a project"
+          values={{ author: activityAuthorName(activity) }}
+        />
+      );
     }
   },
 
@@ -64,11 +80,11 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Added you as a contributor";
+    return i18n.t("Added you as a contributor");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project?.name || "Project";
+    return content(activity).project?.name || i18n.t("Project");
   },
 };
 

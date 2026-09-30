@@ -4,7 +4,9 @@ import type { ActivityContentKpiAnnotationAdded } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 
 const KpiAnnotationAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -36,15 +38,25 @@ const KpiAnnotationAdded: ActivityHandler = {
     const data = content(activity);
 
     if (page === "space") {
-      return feedTitle(activity, "added an annotation to a KPI");
+      return (
+        <Trans i18nKey="{{author}} added an annotation to a KPI" values={{ author: activityAuthorName(activity) }} />
+      );
     }
 
-    return feedTitle(activity, "added an annotation to a KPI in the", spaceLink(paths, data.space), "space");
+    return (
+      <Trans
+        i18nKey="{{author}} added an annotation to a KPI in the <space>{{spaceName}}</space> space"
+        values={{ author: activityAuthorName(activity), spaceName: data.space.name }}
+        components={{ space: spaceLink(paths, data.space) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
-    const kpiName = data.kpi?.name ?? "KPI";
+    const kpiName = data.kpi?.name;
+
+    if (kpiName == null) return <Trans i18nKey="KPI: {{title}}" values={{ title: data.title }} />;
 
     return (
       <>
@@ -66,7 +78,7 @@ const KpiAnnotationAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return `Annotated KPI: ${content(activity).title}`;
+    return i18n.t("Annotated KPI: {{title}}", { title: content(activity).title });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

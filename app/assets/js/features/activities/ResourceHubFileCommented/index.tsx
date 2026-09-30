@@ -5,7 +5,9 @@ import type { ActivityContentResourceHubFileCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { commentedLink, feedTitle, fileLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, commentedLink, fileLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
@@ -38,8 +40,8 @@ const ResourceHubFileCommented: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
     const parent = visibleParentDescriptor(paths, page, data);
-    let action: any = "commented";
-    let file: any = "a file";
+    let action: string | JSX.Element = "commented";
+    let file = <React.Fragment />;
 
     if (data.file) {
       file = fileLink(paths, data.file);
@@ -49,11 +51,35 @@ const ResourceHubFileCommented: ActivityHandler = {
       action = commentedLink(paths.resourceHubFilePath(data.file.id), data.comment);
     }
 
-    if (!parent) {
-      return feedTitle(activity, action, "on", file);
-    }
-
-    return feedTitle(activity, action, "on", file, "in the", parent.link, parent.label);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t(
+            "{{author}} <action>commented</action> on <file>{{fileName}}</file> in the <parent>{{parentName}}</parent> project",
+          )
+        : parent?.page === "goal"
+          ? i18n.t(
+              "{{author}} <action>commented</action> on <file>{{fileName}}</file> in the <parent>{{parentName}}</parent> goal",
+            )
+          : parent
+            ? i18n.t(
+                "{{author}} <action>commented</action> on <file>{{fileName}}</file> in the <parent>{{parentName}}</parent> space",
+              )
+            : i18n.t("{{author}} <action>commented</action> on <file>{{fileName}}</file>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          fileName: data.file?.name ?? i18n.t("a file"),
+          parentName: parent?.name,
+        }}
+        components={{
+          action: typeof action === "string" ? <React.Fragment /> : action,
+          file,
+          parent: parent?.link ?? <React.Fragment />,
+        }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -83,11 +109,12 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Re: " + (content(activity).file?.name || "a file");
+    const title = content(activity).file?.name;
+    return title ? i18n.t("Re: {{title}}", { title }) : i18n.t("Re: a file");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).file?.name || "a file";
+    return content(activity).file?.name || i18n.t("a file");
   },
 };
 

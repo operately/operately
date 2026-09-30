@@ -2,7 +2,9 @@ import type { ActivityContentGoalCheckToggled } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalCheckToggled: ActivityHandler = {
@@ -29,19 +31,26 @@ const GoalCheckToggled: ActivityHandler = {
   FeedItemTitle(props: FeedItemProps) {
     const { paths } = props;
     const goal = content(props.activity).goal!;
-    const message = content(props.activity).completed
-      ? "marked a checklist item as completed"
-      : "marked a checklist item as pending";
-
-    if (props.page === "goal") {
-      return feedTitle(props.activity, message);
-    } else {
-      return feedTitle(props.activity, message, "on", goalLink(paths, goal));
-    }
+    const completed = content(props.activity).completed;
+    const sentence =
+      props.page === "goal"
+        ? completed
+          ? i18n.t("{{author}} marked a checklist item as completed")
+          : i18n.t("{{author}} marked a checklist item as pending")
+        : completed
+          ? i18n.t("{{author}} marked a checklist item as completed on <goal>{{goalName}}</goal>")
+          : i18n.t("{{author}} marked a checklist item as pending on <goal>{{goalName}}</goal>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{ author: activityAuthorName(props.activity), goalName: goal.name }}
+        components={{ goal: goalLink(paths, goal) }}
+      />
+    );
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
-    return <>Item: {content(props.activity).name}</>;
+    return <Trans i18nKey="Item: {{name}}" values={{ name: content(props.activity).name }} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

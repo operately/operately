@@ -1,7 +1,10 @@
 import type { ActivityContentResourceHubFileDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, resourceHubLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, resourceHubLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { resourceHubLocationName, resourceHubPathOrParent, visibleParentDescriptor } from "../resourceHubActivity";
 
@@ -28,17 +31,40 @@ const ResourceHubFileDeleted: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const resourceHub = data.resourceHub
-      ? resourceHubLink(paths, data.resourceHub, { project: data.project, goal: data.goal })
-      : "the resource hub";
-    const fileName = data.file?.name ?? "a file";
+    const resourceHub = data.resourceHub ? (
+      resourceHubLink(paths, data.resourceHub, { project: data.project, goal: data.goal })
+    ) : (
+      <React.Fragment />
+    );
+    const fileName = data.file?.name ?? i18n.t("a file");
     const parent = visibleParentDescriptor(paths, page, data);
 
-    if (!parent) {
-      return feedTitle(activity, `deleted "${fileName}" from`, resourceHub);
-    }
-
-    return feedTitle(activity, `deleted "${fileName}" from`, resourceHub, "in the", parent.link, parent.label);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t(
+            '{{author}} deleted "{{fileName}}" from <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> project',
+          )
+        : parent?.page === "goal"
+          ? i18n.t(
+              '{{author}} deleted "{{fileName}}" from <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> goal',
+            )
+          : parent
+            ? i18n.t(
+                '{{author}} deleted "{{fileName}}" from <hub>{{hubName}}</hub> in the <parent>{{parentName}}</parent> space',
+              )
+            : i18n.t('{{author}} deleted "{{fileName}}" from <hub>{{hubName}}</hub>');
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          fileName,
+          hubName: data.resourceHub?.name ?? i18n.t("Docs & Files"),
+          parentName: parent?.name,
+        }}
+        components={{ hub: resourceHub, parent: parent?.link ?? <React.Fragment /> }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -58,7 +84,8 @@ const ResourceHubFileDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Deleted a file: " + (content(activity).file?.name ?? "a file");
+    const name = content(activity).file?.name;
+    return name == null ? i18n.t("Deleted a file") : i18n.t("Deleted a file: {{fileName}}", { fileName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

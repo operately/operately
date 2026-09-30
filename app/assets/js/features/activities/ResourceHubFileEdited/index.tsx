@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentResourceHubFileEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 
-import { feedTitle, fileLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, fileLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -38,14 +40,28 @@ const ResourceHubFileEdited: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const data = content(activity);
-    const file = data.file?.id && data.file?.name ? fileLink(paths, data.file) : (data.file?.name ?? "a file");
+    const file = data.file?.id && data.file?.name ? fileLink(paths, data.file) : <React.Fragment />;
     const parent = visibleParentDescriptor(paths, page, data);
 
-    if (!parent) {
-      return feedTitle(activity, "edited a file:", file);
-    }
-
-    return feedTitle(activity, "edited a file in the", parent.link, `${parent.label}:`, file);
+    const sentence =
+      parent?.page === "project"
+        ? i18n.t("{{author}} edited a file in the <parent>{{parentName}}</parent> project: <file>{{fileName}}</file>")
+        : parent?.page === "goal"
+          ? i18n.t("{{author}} edited a file in the <parent>{{parentName}}</parent> goal: <file>{{fileName}}</file>")
+          : parent
+            ? i18n.t("{{author}} edited a file in the <parent>{{parentName}}</parent> space: <file>{{fileName}}</file>")
+            : i18n.t("{{author}} edited a file: <file>{{fileName}}</file>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          fileName: data.file?.name ?? i18n.t("a file"),
+          parentName: parent?.name,
+        }}
+        components={{ file, parent: parent?.link ?? <React.Fragment /> }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
@@ -68,7 +84,8 @@ const ResourceHubFileEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Edited a file: " + (content(activity).file?.name ?? "a file");
+    const name = content(activity).file?.name;
+    return name == null ? i18n.t("Edited a file") : i18n.t("Edited a file: {{fileName}}", { fileName: name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

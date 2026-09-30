@@ -1,6 +1,8 @@
 import { Activity, ActivityContentCompanyAdminAdded } from "@/api";
-import { namesListToString } from "@/models/people";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, activityPeopleNames } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
 const CompanyAdminAdded: ActivityHandler = {
@@ -25,9 +27,14 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   FeedItemTitle({ activity }: { activity: Activity; page: any }) {
-    const names = namesListToString(content(activity).people!);
+    const names = activityPeopleNames(content(activity).people ?? []);
 
-    return feedTitle(activity, "has granted admin privileges to", names);
+    return (
+      <Trans
+        i18nKey="{{author}} has granted admin privileges to {{names}}"
+        values={{ author: activityAuthorName(activity), names }}
+      />
+    );
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -47,7 +54,7 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Granted you admin privileges";
+    return i18n.t("Granted you admin privileges");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

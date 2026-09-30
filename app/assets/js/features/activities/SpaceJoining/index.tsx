@@ -1,6 +1,8 @@
 import { Activity, ActivityContentSpaceJoining } from "@/api";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceJoining: ActivityHandler = {
@@ -26,9 +28,16 @@ const SpaceJoining: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "space") {
-      return feedTitle(activity, "joined the space");
+      return <Trans i18nKey="{{author}} joined the space" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "joined the", spaceLink(paths, content(activity).space!), "space");
+      const space = content(activity).space;
+      return (
+        <Trans
+          i18nKey="{{author}} joined the <space>{{spaceName}}</space> space"
+          values={{ author: activityAuthorName(activity), spaceName: space?.name }}
+          components={{ space: space ? spaceLink(paths, space) : <span /> }}
+        />
+      );
     }
   },
 

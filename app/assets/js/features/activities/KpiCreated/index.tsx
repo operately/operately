@@ -4,7 +4,9 @@ import type { ActivityContentKpiCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 
 const KpiCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -38,14 +40,20 @@ const KpiCreated: ActivityHandler = {
     const data = content(activity);
 
     if (page === "space") {
-      return feedTitle(activity, "created a KPI");
+      return <Trans i18nKey="{{author}} created a KPI" values={{ author: activityAuthorName(activity) }} />;
     }
 
-    return feedTitle(activity, "created a KPI in the", spaceLink(paths, data.space), "space");
+    return (
+      <Trans
+        i18nKey="{{author}} created a KPI in the <space>{{spaceName}}</space> space"
+        values={{ author: activityAuthorName(activity), spaceName: data.space.name }}
+        components={{ space: spaceLink(paths, data.space) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    return <>KPI: {content(activity).kpiName}</>;
+    return <Trans i18nKey="KPI: {{kpiName}}" values={{ kpiName: content(activity).kpiName }} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -61,7 +69,7 @@ const KpiCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return `Created KPI: ${content(activity).kpiName}`;
+    return i18n.t("Created KPI: {{kpiName}}", { kpiName: content(activity).kpiName });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

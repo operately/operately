@@ -1,6 +1,8 @@
 import { Activity, ActivityContentSpaceAdded } from "@/api";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const SpaceAdded: ActivityHandler = {
@@ -26,9 +28,16 @@ const SpaceAdded: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     if (page === "space") {
-      return feedTitle(activity, "created this space");
+      return <Trans i18nKey="{{author}} created this space" values={{ author: activityAuthorName(activity) }} />;
     } else {
-      return feedTitle(activity, "created the", spaceLink(paths, content(activity).space!), "space");
+      const space = content(activity).space;
+      return (
+        <Trans
+          i18nKey="{{author}} created the <space>{{spaceName}}</space> space"
+          values={{ author: activityAuthorName(activity), spaceName: space?.name }}
+          components={{ space: space ? spaceLink(paths, space) : <span /> }}
+        />
+      );
     }
   },
 

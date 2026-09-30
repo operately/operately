@@ -4,7 +4,10 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { firstName } from "@/models/people";
-import { feedTitle } from "../feedItemLinks";
+import React from "react";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName } from "../feedItemLinks";
 
 const CompanyOwnerRemoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -31,10 +34,15 @@ const CompanyOwnerRemoving: ActivityHandler = {
     const person = content(activity).person;
 
     if (person) {
-      return feedTitle(activity, `removed ${firstName(person)} as an account owner`);
+      return (
+        <Trans
+          i18nKey="{{author}} removed {{personName}} as an account owner"
+          values={{ author: activityAuthorName(activity), personName: firstName(person) }}
+        />
+      );
     }
 
-    return feedTitle(activity, "removed an account owner");
+    return <Trans i18nKey="{{author}} removed an account owner" values={{ author: activityAuthorName(activity) }} />;
   },
 
   FeedItemContent(_props: { activity: Activity; page: any }) {
@@ -54,7 +62,7 @@ const CompanyOwnerRemoving: ActivityHandler = {
   },
 
   NotificationTitle(_activity: { activity: Activity }) {
-    return "Revoked your account owner status";
+    return i18n.t("Revoked your account owner status");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

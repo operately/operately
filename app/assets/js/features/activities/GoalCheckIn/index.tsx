@@ -7,7 +7,10 @@ import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 import { truncateString } from "@/utils/strings";
 import { Link, SmallStatusIndicator, richContentToString } from "turboui";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { assertPresent } from "@/utils/assertions";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(paths, activity: Activity): string {
@@ -15,11 +18,11 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   pageHtmlTitle(_activity: Activity): string {
-    return "Check In";
+    return i18n.t("Check In");
   },
 
   PageTitle(_props: { activity: any }) {
-    return <>Check In</>;
+    return <Trans i18nKey="Check In" />;
   },
 
   PageContent(_data: { activity: Activity }) {
@@ -45,12 +48,26 @@ const GoalCheckIn: ActivityHandler = {
 
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const path = paths.goalCheckInPath(content(activity).update!.id!);
-    const link = <Link to={path}>submitted a check-in</Link>;
+    const link = <Link to={path}>{null}</Link>;
 
     if (page === "goal") {
-      return feedTitle(activity, link);
+      return (
+        <Trans
+          i18nKey="{{author}} <checkIn>submitted a check-in</checkIn>"
+          values={{ author: activityAuthorName(activity) }}
+          components={{ checkIn: link }}
+        />
+      );
     } else {
-      return feedTitle(activity, link, "for", goalLink(paths, content(activity).goal!));
+      const goal = content(activity).goal;
+      assertPresent(goal, "Goal is required for a check-in activity");
+      return (
+        <Trans
+          i18nKey="{{author}} <checkIn>submitted a check-in</checkIn> for <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(activity), goalName: goal.name }}
+          components={{ checkIn: link, goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -67,7 +84,7 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Submitted a check-in for " + content(activity).goal!.name!;
+    return i18n.t("Submitted a check-in for {{goalName}}", { goalName: content(activity).goal?.name });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

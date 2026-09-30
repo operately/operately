@@ -4,7 +4,9 @@ import React from "react";
 import type { ActivityContentGoalChampionUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalChampionUpdating: ActivityHandler = {
@@ -31,22 +33,39 @@ const GoalChampionUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const goal = content(activity).goal!;
     const newChampion = content(activity).newChampion;
-    const message = newChampion ? `assigned ${People.shortName(newChampion)} as the champion` : "removed the champion";
-
-    if (page === "goal") {
-      return feedTitle(activity, message);
-    } else {
-      return feedTitle(activity, message, "on", goalLink(paths, goal));
-    }
+    const sentence =
+      page === "goal"
+        ? newChampion
+          ? i18n.t("{{author}} assigned {{personName}} as the champion")
+          : i18n.t("{{author}} removed the champion")
+        : newChampion
+          ? i18n.t("{{author}} assigned {{personName}} as the champion on <goal>{{goalName}}</goal>")
+          : i18n.t("{{author}} removed the champion on <goal>{{goalName}}</goal>");
+    return (
+      <Trans
+        defaults={sentence}
+        values={{
+          author: activityAuthorName(activity),
+          personName: newChampion ? People.shortName(newChampion) : "",
+          goalName: goal.name,
+        }}
+        components={{ goal: goalLink(paths, goal) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const oldChampion = content(activity).oldChampion;
 
     if (oldChampion) {
-      return <>Previously, {People.shortName(oldChampion)} was the champion.</>;
+      return (
+        <Trans
+          i18nKey="Previously, {{personName}} was the champion."
+          values={{ personName: People.shortName(oldChampion) }}
+        />
+      );
     } else {
-      return <>There was no previous champion.</>;
+      return <Trans i18nKey="There was no previous champion." />;
     }
   },
 
@@ -63,7 +82,7 @@ const GoalChampionUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    return People.firstName(props.activity.author!) + " assigned you as the champion";
+    return i18n.t("{{author}} assigned you as the champion", { author: activityAuthorName(props.activity) });
   },
 
   NotificationLocation(props: { activity: Activity }) {

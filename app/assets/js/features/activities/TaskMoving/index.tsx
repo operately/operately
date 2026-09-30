@@ -3,7 +3,9 @@ import React from "react";
 import type { ActivityContentTaskMoving } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
-import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 
 const TaskMoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -42,19 +44,52 @@ const TaskMoving: ActivityHandler = {
   FeedItemTitle({ activity, paths }: FeedItemProps) {
     const data = content(activity);
     const movedTask =
-      data.task && data.destinationType === "space" && data.destinationSpace?.id
-        ? taskLink(paths, data.task, { spaceId: data.destinationSpace.id })
-        : data.task
-          ? taskLink(paths, data.task)
-          : `"${data.taskName}"`;
-
-    return feedTitle(activity, "moved the task", movedTask, "to", destinationLabel(paths, data));
+      data.task && data.destinationType === "space" && data.destinationSpace?.id ? (
+        taskLink(paths, data.task, { spaceId: data.destinationSpace.id })
+      ) : data.task ? (
+        taskLink(paths, data.task)
+      ) : (
+        <React.Fragment />
+      );
+    const values = {
+      author: activityAuthorName(activity),
+      taskName: data.task?.name ?? data.taskName,
+      destinationName:
+        data.destinationProject?.name ??
+        data.destinationSpace?.name ??
+        (data.destinationType === "project" ? i18n.t("a project") : i18n.t("a space")),
+    };
+    const components = { task: movedTask, destination: destinationLabel(paths, data) };
+    return data.task ? (
+      <Trans
+        i18nKey="{{author}} moved the task <task>{{taskName}}</task> to <destination>{{destinationName}}</destination>"
+        values={values}
+        components={components}
+      />
+    ) : (
+      <Trans
+        i18nKey={'{{author}} moved the task "{{taskName}}" to <destination>{{destinationName}}</destination>'}
+        values={values}
+        components={components}
+      />
+    );
   },
 
   FeedItemContent({ activity, paths }: FeedItemProps) {
     const data = content(activity);
 
-    return <>Previously, it was in {originLabel(paths, data)}</>;
+    return (
+      <Trans
+        i18nKey="Previously, it was in <origin>{{originName}}</origin>"
+        values={{
+          originName:
+            data.originProject?.name ??
+            data.originSpace?.name ??
+            (data.originType === "project" ? i18n.t("a project") : i18n.t("a space")),
+        }}
+        components={{ origin: originLabel(paths, data) }}
+      />
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -71,7 +106,10 @@ const TaskMoving: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const data = content(activity);
-    return `Moved task "${data.taskName}" to ${destinationName(data)}`;
+    return i18n.t('Moved task "{{taskName}}" to {{destinationName}}', {
+      taskName: data.taskName,
+      destinationName: destinationName(data),
+    });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
@@ -86,17 +124,17 @@ function content(activity: Activity): ActivityContentTaskMoving {
 function originLabel(paths: Paths, data: ActivityContentTaskMoving) {
   if (data.originProject) return projectLink(paths, data.originProject);
   if (data.originSpace) return spaceLink(paths, data.originSpace);
-  return data.originType === "project" ? "a project" : "a space";
+  return <React.Fragment />;
 }
 
 function destinationLabel(paths: Paths, data: ActivityContentTaskMoving) {
   if (data.destinationProject) return projectLink(paths, data.destinationProject);
   if (data.destinationSpace) return spaceLink(paths, data.destinationSpace);
-  return data.destinationType === "project" ? "a project" : "a space";
+  return <React.Fragment />;
 }
 
 function destinationName(data: ActivityContentTaskMoving) {
-  return data.destinationProject?.name || data.destinationSpace?.name || "another destination";
+  return data.destinationProject?.name || data.destinationSpace?.name || i18n.t("another destination");
 }
 
 export default TaskMoving;

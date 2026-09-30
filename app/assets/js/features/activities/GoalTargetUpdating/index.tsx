@@ -3,7 +3,8 @@ import React from "react";
 import type { ActivityContentGoalTargetUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalTargetUpdating: ActivityHandler = {
@@ -30,12 +31,22 @@ const GoalTargetUpdating: ActivityHandler = {
   FeedItemTitle({ activity, page, paths }: FeedItemProps) {
     const goal = content(activity).goal;
     const targetName = content(activity).targetName;
-    const message = `updated the value for the ${targetName} target`;
 
     if (page === "goal") {
-      return feedTitle(activity, message);
+      return (
+        <Trans
+          i18nKey="{{author}} updated the value for the {{targetName}} target"
+          values={{ author: activityAuthorName(activity), targetName }}
+        />
+      );
     } else {
-      return feedTitle(activity, message, " on the", goalLink(paths, goal));
+      return (
+        <Trans
+          i18nKey="{{author}} updated the value for the {{targetName}} target on the <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(activity), targetName, goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
@@ -45,9 +56,10 @@ const GoalTargetUpdating: ActivityHandler = {
     const unit = content(activity).unit;
 
     return (
-      <>
-        Previously, {oldValue} {unit}, now {newValue} {unit}.
-      </>
+      <Trans
+        i18nKey="Previously, {{oldValue}} {{unit}}, now {{newValue}} {{unit}}."
+        values={{ oldValue, newValue, unit }}
+      />
     );
   },
 

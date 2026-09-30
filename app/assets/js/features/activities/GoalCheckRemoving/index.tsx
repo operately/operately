@@ -2,7 +2,8 @@ import type { ActivityContentGoalCheckRemoving } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import { activityAuthorName, goalLink } from "../feedItemLinks";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
 const GoalCheckRemoving: ActivityHandler = {
@@ -31,14 +32,22 @@ const GoalCheckRemoving: ActivityHandler = {
     const goal = content(props.activity).goal!;
 
     if (props.page === "goal") {
-      return feedTitle(props.activity, "removed a checklist item");
+      return (
+        <Trans i18nKey="{{author}} removed a checklist item" values={{ author: activityAuthorName(props.activity) }} />
+      );
     } else {
-      return feedTitle(props.activity, "removed a checklist item", "on", goalLink(paths, goal));
+      return (
+        <Trans
+          i18nKey="{{author}} removed a checklist item on <goal>{{goalName}}</goal>"
+          values={{ author: activityAuthorName(props.activity), goalName: goal.name }}
+          components={{ goal: goalLink(paths, goal) }}
+        />
+      );
     }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
-    return <>Item: {content(props.activity).name}</>;
+    return <Trans i18nKey="Item: {{name}}" values={{ name: content(props.activity).name }} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

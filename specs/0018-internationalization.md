@@ -77,7 +77,6 @@ Validation includes substituted translations, Portuguese catalog lookup, missing
 - Project add/check-in/closing/pause/resume/retrospective forms and check-in presentation
 - Remaining shared work-management fields, status customization/display, subscription/comment/timeline presentation, and milestone-completion copy
 - Remaining task-board sentences and accessibility text, including selected filter descriptions and Kanban add-status presentation
-- Most activity handlers beyond the four in this batch; keep translations out of stored activity data
 - Project-template selection, creation, lifecycle, and template project/task/discussion/Docs & Files flows
 - Exhaustive narrow-screen/expanded-translation visual review and app-level end-to-end workflow verification
 
@@ -90,6 +89,16 @@ Existing catalog entries and TurboUI primitives are reused. Resource names stay 
 Verification covers substituted translations in components and app bridges, success/empty/error states, saved Portuguese preferences with the flag off, and missing-Portuguese fallback including zero/singular/plural folder counts and upload/progress states. An expanded-catalog document-history Storybook interaction checks heading/confirmation layout and restore controls. Catalog generation, targeted Jest, TurboUI tests/build, and TypeScript checks are required for the slice.
 
 This does not complete people directory or org-chart copy, Portuguese/native-speaker review, remaining backend/email/digest/server-rendered copy, project-template workflows, other remaining shared work-management presentation, formatting follow-ups, exhaustive narrow-screen/end-to-end validation, or language-selection rollout. Earlier extraction remains intact.
+
+### Remaining activity-feed extraction — cataloged
+
+Audited all activity handlers, including handlers registered but not currently displayed in the feed. The previously extracted `TaskAdding`, `GoalCreated`, `ProjectCreated`, `TaskNameUpdating`, and `TaskDescriptionChange` handlers retain their completed catalog work. The remaining company/member/guest/space, goal/project/milestone/task, discussion/comment, Docs & Files, and KPI handlers now look up feed titles, UI-composed bodies, in-app notification titles, fallback labels, and handler-owned detail-page labels at render time.
+
+Complete sentences replace `feedTitle` fragments. Named placeholders keep user-authored resource names and links within the sentence; page-context variants include the relevant goal/project/space noun. Counts include company access changes, assignees, timeline milestone summaries, and timeframe/duration presentation. Existing English wording is preserved, including legacy “1 days” wording. An activity-scoped `Trans` adapter preserves literal user names while rendering catalog-owned rich-text tags. No stored activity payloads, permissions, interactions, formatting preferences, or language-flag/selector behavior change.
+
+New activity sentences have Brazilian Portuguese drafts from the glossary. Reviewed translations remain intact. `intlRelativeDateTime` stays an interpolation key. Native-speaker review remains PR 8 work. Verification includes targeted activity Jest tests and TypeScript checks, substituted translations, saved Portuguese preferences with the flag disabled, missing-Portuguese fallback at zero/one/many counts, page-context wording, link destinations, literal names, KPI bodies/notifications, and detail labels. `make gen.i18n` regenerates POT/PO/JSON resources and is checked for deterministic output and placeholder/plural integrity.
+
+This completes the handler-owned copy inventory, not all activity-adjacent or PR 6 work. Shared feed/timeline/comment/subscription chrome and shared status/permission presentation outside these handlers remain open. Backend-supplied status/access labels and unknown legacy role labels stay as stored. Earlier cataloged handlers retain their rendering implementation; extending rich-text name escaping beyond this slice is follow-up work. Unfinished goal/project/task page/form/board/toast and template work remains in PR 6, alongside expanded-text/narrow-screen/end-to-end verification. Earlier completed extraction is preserved. Emails, digests, backend/server-rendered copy, people directory/org-chart copy, Portuguese/native-speaker review, and general rollout remain tracked below.
 
 Remaining gaps before general availability:
 

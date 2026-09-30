@@ -4,7 +4,9 @@ import type { ActivityContentKpiAnnotationDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler, FeedItemProps } from "../interfaces";
 
-import { feedTitle, spaceLink } from "../feedItemLinks";
+import { Trans } from "../i18n";
+import i18n from "@/i18n";
+import { activityAuthorName, spaceLink } from "../feedItemLinks";
 
 const KpiAnnotationDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -36,10 +38,16 @@ const KpiAnnotationDeleted: ActivityHandler = {
     const data = content(activity);
 
     if (page === "space") {
-      return feedTitle(activity, "removed a KPI annotation");
+      return <Trans i18nKey="{{author}} removed a KPI annotation" values={{ author: activityAuthorName(activity) }} />;
     }
 
-    return feedTitle(activity, "removed a KPI annotation in the", spaceLink(paths, data.space), "space");
+    return (
+      <Trans
+        i18nKey="{{author}} removed a KPI annotation in the <space>{{spaceName}}</space> space"
+        values={{ author: activityAuthorName(activity), spaceName: data.space.name }}
+        components={{ space: spaceLink(paths, data.space) }}
+      />
+    );
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -59,7 +67,7 @@ const KpiAnnotationDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return `Removed KPI annotation: ${content(activity).title}`;
+    return i18n.t("Removed KPI annotation: {{title}}", { title: content(activity).title });
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
