@@ -4,7 +4,7 @@ import Api, * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
 import { usePaths } from "@/routes/paths";
-import { ProjectField } from "turboui/src/ProjectField";
+import { ProjectField } from "turboui";
 
 export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
 export { useTaskStatuses } from "./useTaskStatuses";

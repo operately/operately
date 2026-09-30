@@ -7,7 +7,6 @@ import { loader } from "./loader";
 jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("react-router", () => ({ redirect: (location: string) => ({ location }) }));
-jest.mock("turboui", () => ({}));
 jest.mock("@/api/socket", () => ({ setHeaders: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn() }));
 const args = { params: { companyId: "company" } };

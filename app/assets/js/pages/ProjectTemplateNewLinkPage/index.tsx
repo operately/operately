@@ -4,8 +4,8 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { buildProjectTemplateResourceNavigation } from "@/models/projectTemplates/pageNavigation";
 import { usePaths } from "@/routes/paths";
 import type { PageModule } from "@/routes/types";
-import { LinkNewPage, showErrorToast } from "turboui";
-import type { LinkNewPage as LinkNewPageTypes } from "turboui/LinkNewPage/types";
+import { LinkNewPage, showErrorToast, type LinkNewPageTypes } from "turboui";
+
 import { useNavigate } from "react-router";
 import React from "react";
 

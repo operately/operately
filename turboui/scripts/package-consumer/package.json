@@ -1,0 +1,23 @@
+{
+  "name": "turboui-package-consumer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit --skipLibCheck --jsx react-jsx --moduleResolution bundler --module esnext --target es2020 main.tsx && vite build",
+    "test": "node smoke.mjs"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router": "^7.6.3",
+    "i18next": "^22.5.1",
+    "react-i18next": "^12.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "playwright": "^1.52.0",
+    "typescript": "^5.4.3",
+    "vite": "6.4.3"
+  }
+}

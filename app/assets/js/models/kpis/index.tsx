@@ -1,8 +1,7 @@
 import { Kpi as ApiKpi, KpiAnnotation as ApiKpiAnnotation, KpiEntry as ApiKpiEntry } from "@/api";
 import { Paths } from "@/routes/paths";
 import { parsePersonForTurboUi } from "@/models/people";
-import type { SpaceKpisPage } from "turboui/SpaceKpisPage/types";
-import { fromIsoDate } from "turboui/SpaceKpisPage/utils";
+import { type SpaceKpisPageTypes as SpaceKpisPage, kpiDateFromIso as fromIsoDate } from "turboui";
 
 export type { Kpi } from "@/api";
 export {

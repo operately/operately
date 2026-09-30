@@ -6,8 +6,7 @@ import { useUpdateLink } from "@/models/resourceHubs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { LinkEditPage, showErrorToast } from "turboui";
-import type { LinkEditPage as LinkEditPageTypes } from "turboui/LinkEditPage/types";
+import { LinkEditPage, showErrorToast, type LinkEditPageTypes } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { buildEditLinkPageNavigation } from "./navigation";
