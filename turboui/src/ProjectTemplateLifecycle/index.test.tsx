@@ -1,9 +1,10 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { showSuccessToast } from "../Toasts";
 import { ProjectTemplateLifecycleDialogs } from ".";
+import { i18n, setupTestCatalog } from "../../test/i18n";
 
 jest.mock("../Toasts", () => ({
   showSuccessToast: jest.fn(),
@@ -12,6 +13,48 @@ jest.mock("../Toasts", () => ({
 }));
 
 const template = { id: "template-1", name: "Launch kit" };
+
+describe("template lifecycle translations", () => {
+  afterEach(cleanup);
+  setupTestCatalog();
+
+  it("uses the Portuguese catalog and keeps the template name literal", async () => {
+    await i18n.changeLanguage("pt-BR");
+    const props = handlers();
+    render(
+      <ProjectTemplateLifecycleDialogs
+        action="archive"
+        template={{ id: "template-1", name: "Launch <QA> & Sales" }}
+        {...props}
+      />,
+    );
+    expect(screen.getByRole("heading")).toHaveTextContent("Arquivar “Launch <QA> & Sales”?");
+    await userEvent.setup().click(screen.getByRole("button", { name: "Arquivar template" }));
+    await waitFor(() => expect(props.onArchive).toHaveBeenCalledWith("template-1"));
+    expect(showSuccessToast).toHaveBeenCalledWith("Template arquivado", "Ele pode ser restaurado depois.");
+  });
+
+  it("looks up the duplication form and its failure feedback", async () => {
+    i18n.addResourceBundle(
+      "pt-BR",
+      "translation",
+      {
+        "Duplicate project template": "Título traduzido",
+        "Duplicate template": "Duplicar agora",
+        "The template could not be duplicated. Try again.": "Falha traduzida",
+      },
+      true,
+      true,
+    );
+    await i18n.changeLanguage("pt-BR");
+    const props = handlers({ onDuplicate: jest.fn().mockResolvedValue({ success: false }) });
+    render(<ProjectTemplateLifecycleDialogs action="duplicate" template={template} {...props} />);
+    expect(screen.getByRole("heading")).toHaveTextContent("Título traduzido");
+    await userEvent.setup().click(screen.getByRole("button", { name: "Duplicar agora" }));
+    expect(await screen.findByText("Falha traduzida")).toBeInTheDocument();
+    expect(props.onClose).not.toHaveBeenCalled();
+  });
+});
 
 function handlers(overrides: Partial<React.ComponentProps<typeof ProjectTemplateLifecycleDialogs>> = {}) {
   return {

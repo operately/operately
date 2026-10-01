@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { type QueryClient } from "@tanstack/react-query";
 import * as Paper from "@/components/PaperContainer";
@@ -64,6 +66,7 @@ function Page() {
 }
 
 function Nav() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { goal, activity } = useLoadedData();
 
@@ -72,11 +75,11 @@ function Nav() {
 
   if (goal.space) {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
-    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: t("Work Map") });
   }
   if (isDiscussion) {
     items.push({ to: paths.goalPath(goal.id), label: goal.name });
-    items.push({ to: paths.goalPath(goal.id, { tab: "discussions" }), label: "Discussions" });
+    items.push({ to: paths.goalPath(goal.id, { tab: "discussions" }), label: t("Discussions") });
   } else {
     items.push({ to: paths.goalPath(goal.id), label: goal.name });
   }
@@ -97,8 +100,14 @@ function Title({ activity }: { activity: Activities.Activity }) {
           <ActivityHandler.PageTitle activity={activity} />
         </div>
         <div className="inline-flex items-center gap-1">
-          <span>{activity.author.fullName}</span>
-          on <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="long-date" />
+          <Trans
+            i18nKey="<author>{{name}}</author> on <date/>"
+            values={{ name: activity.author.fullName }}
+            components={{
+              author: <span />,
+              date: <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="long-date" />,
+            }}
+          />
           {activity.action === "goal_closing" && (
             <>
               <span>&middot;</span>
@@ -132,6 +141,7 @@ function ActivityReactions() {
 }
 
 function Comments({ goal }: { goal: Goals.Goal }) {
+  const { t } = useTranslation();
   const { activity } = useLoadedData();
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
@@ -155,7 +165,7 @@ function Comments({ goal }: { goal: Goals.Goal }) {
     canComment: activity.permissions.canCommentOnThread,
     acknowledgedAt: thread.acknowledgedAt,
     acknowledgedBy: thread.acknowledgedBy,
-    ackLabel: activity.action === "goal_closing" ? "Retrospective" : undefined,
+    ackLabel: activity.action === "goal_closing" ? t("Retrospective") : undefined,
   });
 
   if (!props) return null;

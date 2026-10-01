@@ -1,3 +1,4 @@
+import { Trans } from "../Translate";
 import React from "react";
 
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
@@ -38,8 +39,13 @@ function FullPostedTimestamp({
 }) {
   return (
     <>
-      Posted <FormattedTime {...formattedTimePreferences} time={postingTime} format="long-date" /> at{" "}
-      <FormattedTime {...formattedTimePreferences} time={postingTime} format="time-only" />
+      <Trans
+        i18nKey="Posted <date/> at <time/>"
+        components={{
+          date: <FormattedTime {...formattedTimePreferences} time={postingTime} format="long-date" />,
+          time: <FormattedTime {...formattedTimePreferences} time={postingTime} format="time-only" />,
+        }}
+      />
     </>
   );
 }

@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as Templates from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -119,7 +120,10 @@ function Page() {
       return true;
     } catch {
       setOverview(snapshot);
-      showErrorToast("Template not updated", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Template not updated"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }
@@ -192,8 +196,11 @@ function useTemplateLifecycle(template: LoadedData["template"]) {
       navigate(paths.projectTemplatePath(created.id));
       return { success: true };
     } catch {
-      showErrorToast("Template not duplicated", "Restore archived templates before duplicating them, then try again.");
-      return { success: false, error: "The template could not be duplicated. Refresh the page and try again." };
+      showErrorToast(
+        i18n.t("Template not duplicated"),
+        i18n.t("Restore archived templates before duplicating them, then try again."),
+      );
+      return { success: false, error: i18n.t("The template could not be duplicated. Refresh the page and try again.") };
     }
   }
 
@@ -203,8 +210,11 @@ function useTemplateLifecycle(template: LoadedData["template"]) {
       await refresh();
       return { success: true };
     } catch {
-      showErrorToast("Template not archived", "The template may have changed. Refresh the page and try again.");
-      return { success: false, error: "The template could not be changed. Refresh the page and try again." };
+      showErrorToast(
+        i18n.t("Template not archived"),
+        i18n.t("The template may have changed. Refresh the page and try again."),
+      );
+      return { success: false, error: i18n.t("The template could not be changed. Refresh the page and try again.") };
     }
   }
 
@@ -214,8 +224,11 @@ function useTemplateLifecycle(template: LoadedData["template"]) {
       await refresh();
       return { success: true };
     } catch {
-      showErrorToast("Template not restored", "The template may have changed. Refresh the page and try again.");
-      return { success: false, error: "The template could not be changed. Refresh the page and try again." };
+      showErrorToast(
+        i18n.t("Template not restored"),
+        i18n.t("The template may have changed. Refresh the page and try again."),
+      );
+      return { success: false, error: i18n.t("The template could not be changed. Refresh the page and try again.") };
     }
   }
 
@@ -225,8 +238,11 @@ function useTemplateLifecycle(template: LoadedData["template"]) {
       navigate(paths.spaceProjectTemplatesPath(template.space.id));
       return { success: true };
     } catch {
-      showErrorToast("Template not deleted", "The template may have changed. Refresh the page and try again.");
-      return { success: false, error: "The template could not be deleted. Refresh the page and try again." };
+      showErrorToast(
+        i18n.t("Template not deleted"),
+        i18n.t("The template may have changed. Refresh the page and try again."),
+      );
+      return { success: false, error: i18n.t("The template could not be deleted. Refresh the page and try again.") };
     }
   }
 
@@ -249,7 +265,10 @@ export function useTemplateResources(template: LoadedData["template"]) {
       await refresh();
       return true;
     } catch {
-      showErrorToast("Folder not created", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Folder not created"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }
@@ -260,7 +279,10 @@ export function useTemplateResources(template: LoadedData["template"]) {
       await refresh();
       return true;
     } catch {
-      showErrorToast("Folder not renamed", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Folder not renamed"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }
@@ -271,7 +293,10 @@ export function useTemplateResources(template: LoadedData["template"]) {
       await refresh();
       return true;
     } catch {
-      showErrorToast("Resource not deleted", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Resource not deleted"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }
@@ -282,7 +307,10 @@ export function useTemplateResources(template: LoadedData["template"]) {
       await refresh();
       return true;
     } catch {
-      showErrorToast("Resource not moved", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Resource not moved"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }
@@ -306,7 +334,10 @@ export function useTemplateResources(template: LoadedData["template"]) {
       await refresh();
       return true;
     } catch {
-      showErrorToast("Files not uploaded", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Files not uploaded"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }

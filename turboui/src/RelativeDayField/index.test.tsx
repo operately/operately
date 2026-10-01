@@ -1,7 +1,46 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { RelativeDayField } from ".";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+describe("relative-day translations", () => {
+  afterEach(cleanup);
+  setupTestCatalog();
+
+  it.each([0, 1, 5])("renders the Portuguese catalog for %s days", async (count) => {
+    await i18n.changeLanguage("pt-BR");
+    render(<RelativeDayField value={count} readonly />);
+    const expected =
+      count === 0
+        ? "Na data de início do projeto"
+        : count === 1
+          ? "1 dia após o início do projeto"
+          : "5 dias após o início do projeto";
+    expect(screen.getByRole("button")).toHaveTextContent(expected);
+  });
+
+  it.each([0, 1, 5])("falls back to English for %s days when Portuguese is missing", async (count) => {
+    i18n.removeResourceBundle("pt-BR", "translation");
+    await i18n.changeLanguage("pt-BR");
+    render(<RelativeDayField value={count} readonly />);
+    expect(screen.getByRole("button")).toHaveTextContent(
+      count === 0
+        ? "On the project start date"
+        : count === 1
+          ? "1 day after project starts"
+          : "5 days after project starts",
+    );
+  });
+
+  it("updates an already rendered field when the language changes", async () => {
+    render(<RelativeDayField value={2} readonly />);
+    await act(async () => {
+      await i18n.changeLanguage("pt-BR");
+    });
+    expect(screen.getByRole("button")).toHaveTextContent("2 dias após o início do projeto");
+  });
+});
 
 describe("RelativeDayField", () => {
   it.each([

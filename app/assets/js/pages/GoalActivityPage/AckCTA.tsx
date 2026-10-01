@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Goals from "@/models/goals";
 
@@ -8,6 +10,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 
 export function AckCTA() {
+  const { t } = useTranslation();
   const { activity, goal } = useLoadedData();
 
   const me = useMe();
@@ -26,13 +29,14 @@ export function AckCTA() {
   return (
     <div className="flex flex-row items-center justify-center mt-8 mb-4">
       <PrimaryButton testId="acknowledge-retrospective" onClick={ackHandler}>
-        Acknowledge Retrospective
+        {t("Acknowledge Retrospective")}
       </PrimaryButton>
     </div>
   );
 }
 
 export function AcknowledgementStatus() {
+  const { t } = useTranslation();
   const { activity } = useLoadedData();
 
   if (activity.action !== "goal_closing") return null;
@@ -40,13 +44,16 @@ export function AcknowledgementStatus() {
   if (activity.commentThread?.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
-        <IconSquareCheckFilled size={16} className="text-accent-1" />
-        Acknowledged by {activity.commentThread.acknowledgedBy?.fullName}
+        <Trans
+          i18nKey="<icon/>Acknowledged by {{fullName}}"
+          values={{ fullName: activity.commentThread.acknowledgedBy?.fullName }}
+          components={{ icon: <IconSquareCheckFilled size={16} className="text-accent-1" /> }}
+        />
       </span>
     );
   }
 
-  return <span className="flex items-center gap-1">Not yet acknowledged</span>;
+  return <span className="flex items-center gap-1">{t("Not yet acknowledged")}</span>;
 }
 
 function useAcknowledgeHandler(goal: Goals.Goal, ackOnLoad: boolean, canAcknowledge: boolean) {

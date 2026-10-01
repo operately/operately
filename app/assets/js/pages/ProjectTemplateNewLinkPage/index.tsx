@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useCreateTemplateLink } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -12,6 +14,7 @@ import React from "react";
 export default { name: "ProjectTemplateNewLinkPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, parentFolderId, linkType } = useLoadedData();
   const createLinkMutation = useCreateTemplateLink({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -32,14 +35,14 @@ function Page() {
       navigate(paths.projectTemplateLinkPath(template.id, result.link.nodeId));
       return true;
     } catch {
-      showErrorToast("Link not created", "Check the form and try again.");
+      showErrorToast(i18n.t("Link not created"), i18n.t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <LinkNewPage
-      pageTitle={["New Link", template.name]}
+      pageTitle={[t("New Link"), template.name]}
       navigation={buildProjectTemplateResourceNavigation(template, paths, { parentFolderId })}
       testId="project-template-new-link-page"
       richTextHandlers={richTextHandlers}

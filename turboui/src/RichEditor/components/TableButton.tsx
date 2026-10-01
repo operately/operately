@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { Command, Editor } from "@tiptap/core";
 import { createTable } from "@tiptap/extension-table";
@@ -8,13 +9,14 @@ import { ToolbarButton } from "./ToolbarButton";
 import { canExecuteEditorCommand } from "./canExecuteEditorCommand";
 
 export function TableButton({ editor, iconSize }: { editor: Editor | null; iconSize: number }) {
+  const { t } = useTranslation();
   if (!editor || editor.isDestroyed || !editor.isEditable) return null;
 
   return (
     <ToolbarButton
-      title="Table"
+      title={t("Table")}
       tabIndex={0}
-      aria-label="Table"
+      aria-label={t("Table")}
       disabled={!canExecuteEditorCommand(editor, (can) => can.command(insertTableFromToolbar))}
       onClick={() => {
         editor

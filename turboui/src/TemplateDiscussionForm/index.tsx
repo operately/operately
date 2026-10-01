@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { DimmedLink } from "../Link";
@@ -26,14 +28,15 @@ export namespace TemplateDiscussionForm {
 }
 
 export function TemplateDiscussionForm(props: TemplateDiscussionForm.Props) {
+  const { t } = useTranslation();
   const form = Forms.useForm<TemplateDiscussionForm.Values>({
     fields: {
       title: props.initialValues?.title ?? "",
       body: props.initialValues?.body ?? emptyContent(),
     },
     validate: (addError) => {
-      if (!form.values.title.trim()) addError("title", "Please add a title");
-      if (isContentEmpty(form.values.body)) addError("body", "Body is required");
+      if (!form.values.title.trim()) addError("title", i18n.t("Please add a title"));
+      if (isContentEmpty(form.values.body)) addError("body", i18n.t("Body is required"));
     },
     submit: async () => {
       await props.onSubmit(form.values);
@@ -45,12 +48,12 @@ export function TemplateDiscussionForm(props: TemplateDiscussionForm.Props) {
       <main className="px-8 py-6 sm:px-10 sm:py-8">
         <Forms.Form form={form}>
           <Forms.FieldGroup>
-            <Forms.TitleInput field="title" placeholder="Title..." autoFocus testId="discussion-title" />
+            <Forms.TitleInput field="title" placeholder={t("Title...")} autoFocus testId="discussion-title" />
             <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
               <Forms.RichTextArea
                 field="body"
                 richTextHandlers={props.richTextHandlers}
-                placeholder="Start a new discussion..."
+                placeholder={t("Start a new discussion...")}
                 hideBorder
                 height="min-h-[350px]"
                 fontSize="text-lg"
@@ -60,7 +63,7 @@ export function TemplateDiscussionForm(props: TemplateDiscussionForm.Props) {
             </div>
           </Forms.FieldGroup>
 
-          <Forms.FormError message="Fill out all the required fields" className="mt-4" />
+          <Forms.FormError message={t("Fill out all the required fields")} className="mt-4" />
           <div className="flex items-center gap-4 mt-4">
             <Forms.Submit
               saveText={props.submitLabel}
@@ -69,7 +72,7 @@ export function TemplateDiscussionForm(props: TemplateDiscussionForm.Props) {
               containerClassName="mt-0"
             />
             <DimmedLink to={props.cancelLink} className="inline-flex items-center">
-              Cancel
+              {t("Cancel")}
             </DimmedLink>
           </div>
         </Forms.Form>

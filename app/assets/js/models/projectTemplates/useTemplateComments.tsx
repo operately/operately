@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { type ProjectTemplateComment } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import * as People from "@/models/people";
@@ -16,7 +17,9 @@ type TurboUiPerson = CommentSectionProps["currentUser"];
 
 const UNKNOWN_AUTHOR: TurboUiPerson = {
   id: "unknown",
-  fullName: "Unknown",
+  get fullName() {
+    return i18n.t("Unknown");
+  },
   avatarUrl: null,
   profileLink: "",
 };
@@ -64,7 +67,7 @@ export function useTemplateComments({
         });
         return true;
       } catch {
-        showErrorToast("Comment not added", "The comment was not saved. Try again.");
+        showErrorToast(i18n.t("Comment not added"), i18n.t("The comment was not saved. Try again."));
         return false;
       }
     },
@@ -78,7 +81,7 @@ export function useTemplateComments({
 
         return true;
       } catch {
-        showErrorToast("Comment not updated", "The comment was not saved. Try again.");
+        showErrorToast(i18n.t("Comment not updated"), i18n.t("The comment was not saved. Try again."));
         return false;
       }
     },
@@ -87,7 +90,7 @@ export function useTemplateComments({
           try {
             await remove.mutateAsync({ templateId, commentId: id });
           } catch {
-            showErrorToast("Comment not deleted", "The comment is still on this page. Try again.");
+            showErrorToast(i18n.t("Comment not deleted"), i18n.t("The comment is still on this page. Try again."));
           }
         }
       : undefined,

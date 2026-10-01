@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import classNames from "../../utils/classnames";
@@ -18,6 +19,7 @@ export type StatusRowProps = {
 };
 
 export function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove, index }: StatusRowProps) {
+  const { t } = useTranslation();
   const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
     itemId: status.id,
     index: status.index,
@@ -26,7 +28,10 @@ export function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemov
   return (
     <div className="relative">
       {closestEdge === "top" && <DropIndicator edge="top" />}
-      <div ref={ref as React.RefObject<HTMLDivElement>} className={classNames("flex items-center gap-2 group", isDragging && "opacity-50")}>
+      <div
+        ref={ref as React.RefObject<HTMLDivElement>}
+        className={classNames("flex items-center gap-2 group", isDragging && "opacity-50")}
+      >
         <div ref={dragHandleRef as React.RefObject<HTMLDivElement>} className="flex items-center">
           <DragHandle isDragging={isDragging} className="opacity-100" />
         </div>
@@ -41,7 +46,7 @@ export function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemov
         <input
           value={status.label}
           onChange={(event) => onUpdate(status.id, { label: event.target.value })}
-          placeholder="Status label"
+          placeholder={t("Status label")}
           className={classNames(
             "flex-1 rounded-md border px-3 py-2 text-sm bg-surface-base text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
             isLabelInvalid ? "border-rose-300 focus:ring-rose-400" : "border-stroke-base",
@@ -57,7 +62,7 @@ export function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemov
               ? "text-content-subtle cursor-not-allowed opacity-50"
               : "text-content-dimmed hover:text-red-500 hover:bg-red-50",
           )}
-          aria-label="Remove status"
+          aria-label={t("Remove status")}
           disabled={!canRemove}
           data-test-id={createTestId("remove-status", index.toString())}
         >

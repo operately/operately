@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { IconCheck, IconCircleDashed, IconCircleFilled, IconX } from "../icons";
 import { BadgeStatus, StatusBadgeProps } from "./types";
@@ -7,6 +9,8 @@ import classNames from "../utils/classnames";
 export type { BadgeStatus };
 
 export function StatusBadge({ status, hideIcon = false, className = "", style, customLabel }: StatusBadgeProps) {
+  const { t } = useTranslation();
+
   if (isStatusOption(status)) {
     const option = status;
     const label = customLabel || option.label;
@@ -27,15 +31,13 @@ export function StatusBadge({ status, hideIcon = false, className = "", style, c
         )}
         style={style}
       >
-        {!hideIcon && (
-          <IconComponent size={12} className={classNames("mr-1 flex-shrink-0", textColor)} />
-        )}
+        {!hideIcon && <IconComponent size={12} className={classNames("mr-1 flex-shrink-0", textColor)} />}
         {label}
       </span>
     );
   }
 
-  const { bgColor, textColor, borderColor, label } = getStatusProperties(status);
+  const { bgColor, textColor, borderColor, label } = getStatusProperties(status, t);
   const icon = hideIcon ? null : getStatusIcon(status, textColor);
 
   return (
@@ -82,7 +84,7 @@ function getStatusOptionBadgeStyles(color: StatusSelector.StatusColorName) {
   }
 }
 
-const getStatusProperties = (status: BadgeStatus) => {
+const getStatusProperties = (status: BadgeStatus, t: TFunction) => {
   switch (status) {
     case "on_track":
       return {
@@ -90,7 +92,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-callout-success-content",
         dotColor: "bg-callout-success-content",
         borderColor: "border-emerald-200",
-        label: "On track",
+        label: t("On track"),
       };
     case "achieved":
       return {
@@ -98,7 +100,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-callout-success-content",
         dotColor: "bg-callout-success-content",
         borderColor: "border-emerald-200",
-        label: "Achieved",
+        label: t("Achieved"),
       };
     case "completed":
       return {
@@ -106,7 +108,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-callout-success-content",
         dotColor: "bg-callout-success-content",
         borderColor: "border-emerald-200",
-        label: "Completed",
+        label: t("Completed"),
       };
     case "paused":
       return {
@@ -114,7 +116,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-gray-700 dark:text-gray-300",
         dotColor: "bg-gray-400 dark:bg-gray-400",
         borderColor: "border-gray-200 dark:border-gray-600",
-        label: "Paused",
+        label: t("Paused"),
       };
     case "outdated":
       return {
@@ -122,7 +124,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-gray-700 dark:text-gray-300",
         dotColor: "bg-gray-400 dark:bg-gray-400",
         borderColor: "border-gray-200 dark:border-gray-600",
-        label: "Outdated",
+        label: t("Outdated"),
       };
     case "caution":
       return {
@@ -130,7 +132,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-amber-800 dark:text-amber-300",
         dotColor: "bg-amber-500 dark:bg-amber-400",
         borderColor: "border-amber-200 dark:border-amber-800",
-        label: "Caution",
+        label: t("Caution"),
       };
     case "off_track":
       return {
@@ -138,7 +140,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-red-700 dark:text-red-300",
         dotColor: "bg-red-500 dark:bg-red-400",
         borderColor: "border-red-200 dark:border-red-800",
-        label: "Off track",
+        label: t("Off track"),
       };
     case "missed":
       return {
@@ -146,7 +148,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-red-700 dark:text-red-300",
         dotColor: "bg-red-500 dark:bg-red-400",
         borderColor: "border-red-200 dark:border-red-800",
-        label: "Missed",
+        label: t("Missed"),
       };
     case "pending":
       return {
@@ -154,7 +156,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-blue-700 dark:text-blue-300",
         dotColor: "bg-blue-500 dark:bg-blue-400",
         borderColor: "border-blue-200 dark:border-blue-800",
-        label: "Pending",
+        label: t("Pending"),
       };
 
     default:

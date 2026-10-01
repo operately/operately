@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { IconPaperclip } from "../../icons";
 import * as React from "react";
 
@@ -11,6 +12,7 @@ import { isInsideTable } from "../extensions/Table";
 // Then, when the user clicks the button, we trigger a click event on that input element, which will open the file chooser.
 //
 export function AttachmentButton({ editor, iconSize }): JSX.Element | null {
+  const { t } = useTranslation();
   let ref = React.useRef<HTMLInputElement | null>(null);
   const uploadFile = useUploadFile();
 
@@ -48,7 +50,11 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element | null {
 
   return (
     <>
-      <ToolbarButton onClick={handleClick} title="Add an Image or File" disabled={isInsideTable(editor.state.selection.$from)}>
+      <ToolbarButton
+        onClick={handleClick}
+        title={t("Add an Image or File")}
+        disabled={isInsideTable(editor.state.selection.$from)}
+      >
         <IconPaperclip size={iconSize} />
       </ToolbarButton>
 

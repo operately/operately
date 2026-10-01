@@ -1,4 +1,4 @@
-import plurarize from "@/utils/plurarize";
+import { tn } from "@/i18n";
 
 import { GoalProgressUpdate } from "@/api";
 import { Goal } from "@/models/goals";
@@ -61,11 +61,15 @@ export class GoalNode extends Node {
     const projects = this.totalNestedProjects();
 
     if (subGoals > 0 && projects > 0) {
-      return `${plurarize(subGoals, "subgoal", "subgoals")} and ${plurarize(projects, "project", "projects")}`;
+      return subGoals === 1
+        ? tn("1 subgoal and 1 project", "1 subgoal and {{count}} projects", projects)
+        : tn("{{goals}} subgoals and 1 project", "{{goals}} subgoals and {{count}} projects", projects, {
+            goals: subGoals,
+          });
     } else if (subGoals > 0) {
-      return plurarize(subGoals, "subgoal", "subgoals");
+      return tn("1 subgoal", "{{count}} subgoals", subGoals);
     } else if (projects > 0) {
-      return plurarize(projects, "project", "projects");
+      return tn("1 project", "{{count}} projects", projects);
     } else {
       return "";
     }

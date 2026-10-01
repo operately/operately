@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import React from "react";
 
 import { useEditProjectCheckIn } from "@/models/projectCheckIns";
@@ -15,6 +17,7 @@ import { useLoadedData } from "./loader";
 import { buildProjectCheckInEditNavigation } from "./navigation";
 
 export function Page() {
+  const { t } = useTranslation();
   const { checkIn } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -80,7 +83,7 @@ export function Page() {
       navigate(paths.projectCheckInPath(res.checkIn.id));
       return true;
     } catch {
-      showErrorToast("Check-in not updated", "Check the form and try again.");
+      showErrorToast(i18n.t("Check-in not updated"), i18n.t("Check the form and try again."));
       return false;
     }
   }
@@ -88,7 +91,7 @@ export function Page() {
   return (
     <ProjectCheckInFormPage
       mode="edit"
-      pageTitle={["Edit Project Check-In", checkIn.project.name!]}
+      pageTitle={[t("Edit Project Check-In"), checkIn.project.name!]}
       navigation={buildProjectCheckInEditNavigation(checkIn, paths)}
       cancelLink={paths.projectCheckInPath(checkIn.id!)}
       richTextHandlers={richTextHandlers}

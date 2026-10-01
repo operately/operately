@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as People from "@/models/people";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as React from "react";
@@ -28,6 +29,7 @@ import { useLoadedData } from "./loader";
 //
 
 export function AckCTA() {
+  const { t } = useTranslation();
   const me = useMe();
   const { checkIn } = useLoadedData();
 
@@ -40,7 +42,7 @@ export function AckCTA() {
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
       <PrimaryButton size="lg" testId="acknowledge-check-in" onClick={ackHandler}>
-        Acknowledge this Check-In
+        {t("Acknowledge this Check-In")}
       </PrimaryButton>
     </div>
   );

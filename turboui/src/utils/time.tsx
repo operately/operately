@@ -1,4 +1,6 @@
 import * as datefsn from "date-fns";
+import i18n, { tn } from "../i18n";
+import { dateInTimezone } from "./timezone";
 
 export function now() {
   return new Date();
@@ -156,8 +158,14 @@ export function toDateWithoutTime(date: Date) {
   return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
 
-export function isCurrentYear(date: Date) {
-  return date.getFullYear() === new Date().getFullYear();
+export function isCurrentYear(date: Date, timezone?: string) {
+  const currentDate = now();
+
+  if (timezone) {
+    return dateInTimezone(date, timezone).getFullYear() === dateInTimezone(currentDate, timezone).getFullYear();
+  }
+
+  return date.getFullYear() === currentDate.getFullYear();
 }
 
 export function weeksBetween(start: Date, end: Date) {
@@ -202,20 +210,17 @@ export function dateChanged(old: Date | null, current: Date | null): boolean {
 
 export function durationHumanized(a: Date, b: Date, suffix?: string): string {
   const days = daysBetween(a, b);
-  if (days === 0) return "Last day";
-  if (days === 1) return withSuffix("1 day", suffix);
-  if (days < 14) return withSuffix(`${days} days`, suffix);
+  if (days === 0) return i18n.t("Last day");
+  if (days < 14) return withSuffix(tn("1 day", "{{count}} days", days), suffix);
 
   const weeks = weeksBetween(a, b);
-  if (days < 60) return withSuffix(`${weeks} weeks`, suffix);
+  if (days < 60) return withSuffix(tn("1 weeks", "{{count}} weeks", weeks), suffix);
 
   const months = Math.floor(days / 30);
-  if (days < 365) return withSuffix(`${months} months`, suffix);
+  if (days < 365) return withSuffix(tn("1 months", "{{count}} months", months), suffix);
 
   const years = Math.floor(days / 365);
-  if (years === 1) return withSuffix(`${years} year`, suffix);
-
-  return withSuffix(`${years} years`, suffix);
+  return withSuffix(tn("1 year", "{{count}} years", years), suffix);
 }
 
 function withSuffix(str: string, suffix?: string): string {

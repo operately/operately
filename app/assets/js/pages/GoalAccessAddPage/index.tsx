@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
@@ -30,9 +32,10 @@ function newMember() {
 }
 
 function Page() {
+  const { t } = useTranslation();
   const { goal, accessMembers } = useLoadedData();
   const paths = usePaths();
-  const goalName = goal.name ?? "Goal";
+  const goalName = goal.name ?? t("Goal");
   const backPath = paths.goalAccessManagementPath(goal.id);
   const navigate = useNavigate();
   const add = Goals.useCreateGoalAccessMembers();
@@ -52,15 +55,17 @@ function Page() {
   });
 
   return (
-    <Pages.Page title={["Add people", goalName]} testId="goal-access-add-page">
+    <Pages.Page title={[t("Add people"), goalName]} testId="goal-access-add-page">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={backPath} title="Back to Team & Access" />
-        <div className="text-2xl font-extrabold mb-4 text-center">Add people to {goalName}</div>
+        <Paper.NavigateBack to={backPath} title={t("Back to Team & Access")} />
+        <div className="text-2xl font-extrabold mb-4 text-center">
+          <Trans i18nKey="Add people to {{goalName}}" values={{ goalName: goalName }} />
+        </div>
 
         <Forms.Form form={form}>
           <Members accessMembers={accessMembers} />
 
-          <Forms.Submit saveText="Add people" layout="centered" buttonSize="base" submitOnEnter={false} />
+          <Forms.Submit saveText={t("Add people")} layout="centered" buttonSize="base" submitOnEnter={false} />
         </Forms.Form>
       </Paper.Root>
     </Pages.Page>
@@ -100,12 +105,13 @@ function Member({
   index: number;
   exclude: People.Person[];
 }) {
+  const { t } = useTranslation();
   return (
     <div data-test-id={`member-${index}`}>
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
-          <Forms.SelectPerson field={field + ".personId"} label="Person" searchFn={search} exclude={exclude} />
-          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
+          <Forms.SelectPerson field={field + ".personId"} label={t("Person")} searchFn={search} exclude={exclude} />
+          <Forms.SelectBox field={field + ".accessLevel"} label={t("Access Level")} options={PERMISSIONS_LIST} />
         </Forms.FieldGroup>
 
         <RemoveMemberButton index={index} />

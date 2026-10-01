@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 export const COLORS = {
   on_track: "green",
   caution: "yellow",
@@ -8,12 +9,24 @@ export const COLORS = {
 } as const;
 
 export const TITLES = {
-  on_track: "On Track",
-  caution: "Caution",
-  off_track: "Off Track",
-  paused: "Paused",
-  outdated: "Outdated",
-  pending: "Pending",
+  get on_track() {
+    return i18n.t("On Track");
+  },
+  get caution() {
+    return i18n.t("Caution");
+  },
+  get off_track() {
+    return i18n.t("Off Track");
+  },
+  get paused() {
+    return i18n.t("Paused");
+  },
+  get outdated() {
+    return i18n.t("Outdated");
+  },
+  get pending() {
+    return i18n.t("Pending");
+  },
 } as const;
 
 export const CIRCLE_BORDER_COLORS = {

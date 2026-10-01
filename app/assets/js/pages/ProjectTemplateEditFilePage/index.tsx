@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useUpdateTemplateFile } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -12,6 +14,7 @@ import React from "react";
 export default { name: "ProjectTemplateEditFilePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, node } = useLoadedData();
   const updateFileMutation = useUpdateTemplateFile({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -34,14 +37,14 @@ function Page() {
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("File not updated", "Check the form and try again.");
+      showErrorToast(i18n.t("File not updated"), i18n.t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <FileEditPage
-      pageTitle={["Edit File", template.name]}
+      pageTitle={[t("Edit File"), template.name]}
       navigation={buildProjectTemplateResourceNavigation(template, paths, {
         parentFolderId: node.parentFolderId,
         current: { to: cancelLink, label: file.name },

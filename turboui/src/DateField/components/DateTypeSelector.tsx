@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { DateField } from "../index";
 import { OptionButton } from "./OptionButton";
 
@@ -9,13 +10,14 @@ interface DateTypeSelectorProps {
 }
 
 export const DateTypeSelector: React.FC<DateTypeSelectorProps> = ({ dateType, dateTypes, setDateType }) => {
+  const { t } = useTranslation();
   const handleDateTypeChange = (type: DateField.DateType) => {
     setDateType(type);
   };
 
   return (
     <div className="mb-3 border-b border-stroke-dimmed pb-2">
-      <label className="block text-xs font-medium text-content-base mb-1.5">Date Type</label>
+      <label className="block text-xs font-medium text-content-base mb-1.5">{t("Date Type")}</label>
       <div className="flex overflow-hidden rounded-md bg-surface-base">
         {dateTypes.map((type) => (
           <OptionButton

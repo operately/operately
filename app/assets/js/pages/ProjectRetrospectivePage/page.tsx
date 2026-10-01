@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import * as Pages from "@/components/Pages";
@@ -30,6 +32,7 @@ import { AckCTA } from "./AckCTA";
 import { usePaths } from "@/routes/paths";
 
 export function Page() {
+  const { t } = useTranslation();
   const { retrospective } = useLoadedData();
 
   useReadNotificationsOnLoad(retrospective.notifications, (client) =>
@@ -46,7 +49,7 @@ export function Page() {
   );
 
   return (
-    <Pages.Page title={["Retrospective", retrospective.project!.name!]}>
+    <Pages.Page title={[t("Retrospective"), retrospective.project!.name!]}>
       <Paper.Root size="medium">
         <ProjectPageNavigation project={retrospective.project!} />
 
@@ -73,6 +76,7 @@ export function Page() {
 }
 
 function Options() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { retrospective } = useLoadedData();
 
@@ -81,7 +85,7 @@ function Options() {
       {retrospective.permissions?.canEdit && (
         <PageOptions.Link
           icon={IconEdit}
-          title="Edit retrospective"
+          title={t("Edit retrospective")}
           to={paths.projectRetrospectiveEditPath(retrospective.project!.id!)}
           testId="edit-retrospective"
         />
@@ -91,6 +95,7 @@ function Options() {
 }
 
 function Header() {
+  const { t } = useTranslation();
   const { retrospective } = useLoadedData();
   const formattedTimePreferences = useFormattedTimePreferences();
 
@@ -98,7 +103,7 @@ function Header() {
 
   return (
     <>
-      <div className="text-center text-content-accent text-3xl font-extrabold">Project Retrospective</div>
+      <div className="text-center text-content-accent text-3xl font-extrabold">{t("Project Retrospective")}</div>
 
       <div className="flex items-center gap-1.5 font-medium justify-center mt-2">
         {retrospective.author && <AvatarWithName person={retrospective.author!} size={20} />}
@@ -112,18 +117,22 @@ function Header() {
 }
 
 function Acknowledgement() {
+  const { t } = useTranslation();
   const { retrospective } = useLoadedData();
 
   if (retrospective.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
-        <IconSquareCheckFilled size={16} className="text-accent-1" />
-        Acknowledged by {retrospective.acknowledgedBy?.fullName}
+        <Trans
+          i18nKey="<icon/>Acknowledged by {{fullName}}"
+          values={{ fullName: retrospective.acknowledgedBy?.fullName }}
+          components={{ icon: <IconSquareCheckFilled size={16} className="text-accent-1" /> }}
+        />
       </span>
     );
   }
 
-  return <span className="flex items-center gap-1">Not yet acknowledged</span>;
+  return <span className="flex items-center gap-1">{t("Not yet acknowledged")}</span>;
 }
 
 function Status() {

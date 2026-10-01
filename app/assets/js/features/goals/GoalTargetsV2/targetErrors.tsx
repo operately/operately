@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useEffect } from "react";
 
 import { Forms } from "turboui";
@@ -72,7 +73,7 @@ function validField(target: Target, field: TargetFields) {
 function collectErrors(target: Target): ErrorMap {
   return REQUIRED_FIELDS.reduce((acc, field) => {
     if (validField(target, field)) {
-      acc[getErrorKey(target.id!, field)] = "Can't be empty";
+      acc[getErrorKey(target.id!, field)] = i18n.t("Can't be empty");
     }
 
     return acc;

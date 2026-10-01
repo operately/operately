@@ -1,5 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconChevronDown, IconClock } from "../icons";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -27,17 +28,18 @@ export function TimePicker({
   ariaLabelledBy,
   disabled = false,
   id,
-  placeholder = "Select time",
+  placeholder,
   className = "",
   wrapperClassName = "w-full",
   formattedTimePreferences,
 }: TimePickerProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const hour = value?.getHours() ?? 9;
   const minute = value?.getMinutes() ?? 0;
   const displayValue = value
     ? formatTime(value, formattedTimePreferences.locale, formattedTimePreferences.timeFormat)
-    : placeholder;
+    : (placeholder ?? t("Select time"));
 
   const selectTime = (nextHour: number, nextMinute: number) => {
     const nextValue = value ? new Date(value) : new Date();
@@ -79,7 +81,7 @@ export function TimePicker({
         <Popover.Portal>
           <Popover.Content
             role="dialog"
-            aria-label="Select time"
+            aria-label={t("Select time")}
             side="top"
             align="end"
             sideOffset={8}
@@ -87,19 +89,19 @@ export function TimePicker({
             className="z-[100] w-48 overflow-hidden rounded-lg border border-stroke-base bg-surface-base text-content-base shadow-xl"
           >
             <div className="border-b border-stroke-base bg-surface-base px-3 py-2.5">
-              <h3 className="text-sm font-semibold">Select time</h3>
+              <h3 className="text-sm font-semibold">{t("Select time")}</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-2 bg-surface-base p-2">
               <TimeOptions
-                label="Hour"
+                label={t("Hour")}
                 options={HOURS}
                 selectedValue={hour}
                 formatOption={formatTwoDigitTimePart}
                 onSelect={(nextHour) => selectTime(nextHour, minute)}
               />
               <TimeOptions
-                label="Minute"
+                label={t("Minute")}
                 options={MINUTES}
                 selectedValue={minute}
                 formatOption={formatTwoDigitTimePart}

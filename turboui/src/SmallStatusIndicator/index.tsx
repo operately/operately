@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "../utils/classnames";
 import { CIRCLE_BACKGROUND_COLORS, COLORS, SmallStatusIndicatorStatus, TITLES } from "./constants";
 
@@ -12,6 +13,7 @@ interface SmallStatusIndicatorProps {
 }
 
 export function SmallStatusIndicator({ status, size, textClassName = "", hideText }: SmallStatusIndicatorProps) {
+  useTranslation();
   if (!isSmallStatusIndicatorStatus(status)) {
     return null;
   }
