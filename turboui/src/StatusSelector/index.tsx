@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { ComponentType } from "react";
 import * as Popover from "@radix-ui/react-popover";
@@ -39,6 +40,7 @@ function buildButtonClassNames(variant: ButtonVariantKey, readonly: boolean) {
 }
 
 function NoStatusButton({ size, readonly }: { size: StatusSelector.Size; readonly: boolean }) {
+  const { t } = useTranslation();
   const { textSize, padding, iconSize } = BUTTON_SIZE_CONFIG[size];
 
   const buttonClassName = classNames(
@@ -56,7 +58,7 @@ function NoStatusButton({ size, readonly }: { size: StatusSelector.Size; readonl
         size={iconSize}
         className={classNames("flex-shrink-0", StatusSelector.STATUS_COLOR_MAP.gray.iconClass)}
       />
-      <span className="flex items-center leading-none">No status</span>
+      <span className="flex items-center leading-none">{t("No status")}</span>
       {!readonly && (
         <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60 flex items-center self-center" />
       )}
@@ -110,6 +112,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   onOpenChange,
   onCloseAutoFocus,
 }: StatusSelector.Props<T>) {
+  const { t } = useTranslation();
   const { iconSize, containerSize } = SIZE_CONFIG[size];
   const isOpenControlled = controlledIsOpen !== undefined;
   const [internalIsOpen, setInternalIsOpen] = React.useState(false);
@@ -227,7 +230,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
     <span className="flex min-w-0 items-center gap-2">
       <ActiveIcon size={iconSize} className={classNames("shrink-0", activeIconClass)} />
       <span className={classNames("truncate text-sm", currentOption ? "text-content-base" : "text-content-dimmed")}>
-        {currentOption?.label ?? "No status"}
+        {currentOption?.label ?? t("No status")}
       </span>
     </span>
   ) : showFullBadge ? (
@@ -272,7 +275,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
               <input
                 ref={inputRef}
                 className="w-full border border-stroke-base rounded px-2 py-1 text-sm bg-surface-base text-content-accent placeholder:text-content-dimmed focus:outline-none focus:ring-2 focus:ring-brand-1"
-                placeholder="Change status..."
+                placeholder={t("Change status...")}
                 value={searchTerm}
                 autoFocus
                 onChange={(e) => setSearchTerm(e.target.value)}

@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
@@ -25,11 +27,12 @@ import { OtherPeople } from "./OtherPeople";
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
-  const goalName = goal.name ?? "Goal";
+  const goalName = goal.name ?? t("Goal");
 
   return (
-    <Pages.Page title={["Team & Access", goalName]} testId="goal-access-management-page">
+    <Pages.Page title={[t("Team & Access"), goalName]} testId="goal-access-management-page">
       <Paper.Root>
         <Navigation />
 
@@ -45,6 +48,7 @@ export function Page() {
 }
 
 function Navigation() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
   const paths = usePaths();
 
@@ -52,9 +56,9 @@ function Navigation() {
 
   if (goal.space) {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
-    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: t("Work Map") });
   } else {
-    items.push({ to: paths.workMapPath("goals"), label: "Work Map" });
+    items.push({ to: paths.workMapPath("goals"), label: t("Work Map") });
   }
   items.push({ to: paths.goalPath(goal.id), label: goal.name });
 
@@ -62,6 +66,7 @@ function Navigation() {
 }
 
 function Title() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { goal } = useLoadedData();
 
@@ -72,13 +77,15 @@ function Title() {
     <div className="rounded-t-[20px]">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-2xl font-extrabold">Team &amp; Access</div>
-          <div className="text-medium">Manage the team and access to this goal</div>
+          <div className="text-2xl font-extrabold">
+            <Trans i18nKey="Team & Access" />
+          </div>
+          <div className="text-medium">{t("Manage the team and access to this goal")}</div>
         </div>
 
         {canEdit && (
           <PrimaryButton linkTo={addPath} testId="add-goal-access" size="sm">
-            Add People
+            {t("Add People")}
           </PrimaryButton>
         )}
       </div>
@@ -87,6 +94,7 @@ function Title() {
 }
 
 function GeneralAccess() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { goal } = useLoadedData();
   const editPath = paths.goalEditPermissionsPath(goal.id);
@@ -100,7 +108,7 @@ function GeneralAccess() {
   const canEdit = goal.permissions?.canEdit ?? false;
 
   return (
-    <PageSection title="General Access">
+    <PageSection title={t("General Access")}>
       <BorderedRow>
         <AccessLevelSummary
           resourceType="goal"
@@ -112,7 +120,7 @@ function GeneralAccess() {
 
         {canEdit && (
           <SecondaryButton linkTo={editPath} size="xs">
-            Edit
+            {t("Edit")}
           </SecondaryButton>
         )}
       </BorderedRow>
@@ -121,12 +129,13 @@ function GeneralAccess() {
 }
 
 function AccessMembers() {
+  const { t } = useTranslation();
   const { accessMembers } = useLoadedData();
 
   if (accessMembers.length === 0) return null;
 
   return (
-    <PageSection title="People with Direct Access">
+    <PageSection title={t("People with Direct Access")}>
       {accessMembers.map((member) => (
         <AccessMemberRow key={member.id} member={member} />
       ))}
@@ -153,7 +162,8 @@ function AccessMemberRow({ member }: { member: People.Person }) {
 }
 
 function MemberName({ member, role }: { member: People.Person; role: string | null }) {
-  const memberName = member.fullName ?? "Unknown";
+  const { t } = useTranslation();
+  const memberName = member.fullName ?? t("Unknown");
   const title = member.title ?? "";
 
   return (
@@ -168,6 +178,7 @@ function MemberName({ member, role }: { member: People.Person; role: string | nu
 }
 
 function MemberMenu({ member, role }: { member: People.Person; role: string | null }) {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
   const update = Goals.useUpdateGoalAccessMember();
   const remove = Goals.useDeleteGoalAccessMember();
@@ -191,36 +202,38 @@ function MemberMenu({ member, role }: { member: People.Person; role: string | nu
     <Menu testId={createTestId("goal-access-menu", menuLabel)} size="medium">
       <ChangeAccessLevelMenuItem onChange={handleUpdate} />
       <MenuActionItem danger={true} onClick={handleRemove} testId="remove-goal-access">
-        Remove from goal
+        {t("Remove from goal")}
       </MenuActionItem>
     </Menu>
   );
 }
 
 function ChangeAccessLevelMenuItem({ onChange }: { onChange: (accessLevel: number) => void }) {
+  const { t } = useTranslation();
   return (
-    <SubMenu label="Change access level">
+    <SubMenu label={t("Change access level")}>
       <MenuActionItem testId="full-access" onClick={() => onChange(PermissionLevels.FULL_ACCESS)}>
-        Full access
+        {t("Full access")}
       </MenuActionItem>
       <MenuActionItem testId="edit-access" onClick={() => onChange(PermissionLevels.EDIT_ACCESS)}>
-        Edit access
+        {t("Edit access")}
       </MenuActionItem>
       <MenuActionItem testId="comment-access" onClick={() => onChange(PermissionLevels.COMMENT_ACCESS)}>
-        Comment access
+        {t("Comment access")}
       </MenuActionItem>
       <MenuActionItem testId="view-access" onClick={() => onChange(PermissionLevels.VIEW_ACCESS)}>
-        View access
+        {t("View access")}
       </MenuActionItem>
     </SubMenu>
   );
 }
 
 function useMemberRole(member: People.Person): string | null {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
 
-  if (goal.champion && compareIds(goal.champion.id, member.id)) return "Champion";
-  if (goal.reviewer && compareIds(goal.reviewer.id, member.id)) return "Reviewer";
+  if (goal.champion && compareIds(goal.champion.id, member.id)) return t("Champion");
+  if (goal.reviewer && compareIds(goal.reviewer.id, member.id)) return t("Reviewer");
 
   return null;
 }

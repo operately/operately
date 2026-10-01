@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { tn } from "@/i18n";
 import { useMemo, useState } from "react";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Subscriber } from "@/models/notifications";
@@ -31,6 +33,7 @@ export function useSubscriptionsAdapter(
   allSubscribers: Subscriber[],
   opts: UseSubscriptionsAdapterOpts,
 ): SubscriptionsAdapterState {
+  useTranslation();
   const me = useMe();
 
   const subscribers = opts.ignoreMe ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id)) : allSubscribers;
@@ -61,7 +64,7 @@ export function useSubscriptionsAdapter(
     }
   }, [subscriptionType, selectedSubscribers, subscribers, alwaysNotify]);
 
-  const allSubscribersLabel = useMemo(() => buildAllSubscribersLabel(subscribers, opts), [subscribers, opts]);
+  const allSubscribersLabel = buildAllSubscribersLabel(subscribers, opts);
 
   return {
     subscribers,
@@ -113,18 +116,24 @@ function isSubscriberInList(list: Subscriber[], subscriber: Subscriber) {
 
 function buildAllSubscribersLabel(subscribers: Subscriber[], opts: UseSubscriptionsAdapterOpts): string {
   const count = subscribers.length;
-  const part1 = count > 1 ? `All ${count} people` : "The 1 person";
-
-  let part2 = "";
-  if ("projectName" in opts) {
-    part2 = ` contributing to ${opts.projectName}`;
-  } else if ("spaceName" in opts) {
-    part2 = ` who are members of the ${opts.spaceName} space`;
-  } else if ("resourceHubName" in opts) {
-    part2 = ` who have access to ${opts.resourceHubName}`;
-  } else if ("goalName" in opts) {
-    part2 = ` who have access to ${opts.goalName}`;
-  }
-
-  return part1 + part2;
+  // This label is only displayed when recipients exist; retain its legacy zero-count fallback.
+  const displayCount = Math.max(1, count);
+  if ("projectName" in opts)
+    return tn("The 1 person contributing to {{name}}", "All {{count}} people contributing to {{name}}", displayCount, {
+      name: opts.projectName,
+    });
+  if ("spaceName" in opts)
+    return tn(
+      "The 1 person who are members of the {{name}} space",
+      "All {{count}} people who are members of the {{name}} space",
+      displayCount,
+      { name: opts.spaceName },
+    );
+  const name = "resourceHubName" in opts ? opts.resourceHubName : opts.goalName;
+  return tn(
+    "The 1 person who have access to {{name}}",
+    "All {{count}} people who have access to {{name}}",
+    displayCount,
+    { name },
+  );
 }

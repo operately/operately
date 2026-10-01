@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Forms, emptyContent, SubscribersSelector } from "turboui";
@@ -12,6 +13,7 @@ import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export function Form() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { goal } = useLoadedData();
 
@@ -57,34 +59,36 @@ export function Form() {
 
       <Subscribers subscriptionsState={subscriptionsState} />
 
-      <Forms.Submit saveText="Close Goal" />
+      <Forms.Submit saveText={t("Close Goal")} />
     </Forms.Form>
   );
 }
 
 function AccomplishedOrDropped() {
+  const { t } = useTranslation();
   return (
     <Forms.RadioButtons
       field="success"
-      label="Was this goal achieved?"
+      label={t("Was this goal achieved?")}
       options={[
-        { value: "yes", label: "Yes" },
-        { value: "no", label: "No" },
+        { value: "yes", label: t("Yes") },
+        { value: "no", label: t("No") },
       ]}
     />
   );
 }
 
 function RetrospectiveNotes() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
   return (
     <Forms.RichTextArea
       field="retrospective"
-      label="Retrospective notes"
+      label={t("Retrospective notes")}
       richTextHandlers={richTextHandlers}
-      placeholder="What went well? What didn't? What did you learn?"
+      placeholder={t("What went well? What didn't? What did you learn?")}
       required
     />
   );

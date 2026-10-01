@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -9,10 +11,11 @@ import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={"Closing " + goal.name} testId="goal-closing-page">
+    <Pages.Page title={t("Closing {{name}}", { name: goal.name })} testId="goal-closing-page">
       <Paper.Root>
         <Navigation />
 
@@ -34,5 +37,9 @@ function Navigation() {
 }
 
 function PageTitle() {
-  return <div className="mb-6 text-content-accent text-2xl font-extrabold">Review &amp; Close Goal</div>;
+  return (
+    <div className="mb-6 text-content-accent text-2xl font-extrabold">
+      <Trans i18nKey="Review & Close Goal" />
+    </div>
+  );
 }

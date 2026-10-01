@@ -1,3 +1,4 @@
+import { formatDate } from "../utils/formatting";
 import React from "react";
 import { match } from "ts-pattern";
 
@@ -22,6 +23,8 @@ export type Format =
   | "short-date-with-weekday"
   | "time-only"
   | "relative-weekday-or-date"
+  | "long-month-date"
+  | "month"
   | "long-date"
   | "relative-time-or-date";
 
@@ -63,6 +66,17 @@ export function FormattedTime(props: FormattedTimeProps): JSX.Element {
   const localizedTime = dateInTimezone(parsedTime, timezone);
 
   switch (format) {
+    case "month":
+    case "long-month-date":
+      return (
+        <>
+          {formatDate(localizedTime, locale, {
+            month: "long",
+            day: format === "month" ? undefined : "numeric",
+            year: Time.isCurrentYear(parsedTime, timezone) ? undefined : "numeric",
+          })}
+        </>
+      );
     case "relative-weekday-or-date":
       return <RelativeWeekdayOrDate time={localizedTime} locale={locale} />;
     case "short-date":

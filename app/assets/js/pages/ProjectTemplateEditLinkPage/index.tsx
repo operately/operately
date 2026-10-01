@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useUpdateTemplateLink } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -12,6 +14,7 @@ import React from "react";
 export default { name: "ProjectTemplateEditLinkPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, node } = useLoadedData();
   const updateLinkMutation = useUpdateTemplateLink({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -36,14 +39,14 @@ function Page() {
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("Link not updated", "Check the form and try again.");
+      showErrorToast(i18n.t("Link not updated"), i18n.t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <LinkEditPage
-      pageTitle={["Edit Link", template.name]}
+      pageTitle={[t("Edit Link"), template.name]}
       navigation={buildProjectTemplateResourceNavigation(template, paths, {
         parentFolderId: node.parentFolderId,
         current: { to: cancelLink, label: link.name },

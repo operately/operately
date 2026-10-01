@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -25,6 +26,7 @@ export function useLinkEditFormClose() {
 }
 
 export function LinkEditForm({ editor }): JSX.Element {
+  const { t } = useTranslation();
   const [linkEditActive, setLinkEditActive] = useLinkState();
 
   const [link, setLink] = React.useState("");
@@ -80,7 +82,7 @@ export function LinkEditForm({ editor }): JSX.Element {
               },
             )}
             value={link}
-            placeholder="ex. https://example.com"
+            placeholder={t("ex. https://example.com")}
             onChange={(e) => setLink(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -92,21 +94,21 @@ export function LinkEditForm({ editor }): JSX.Element {
           {isSelectionLink ? (
             <>
               <PrimaryButton onClick={save} size="xxs">
-                Save
+                {t("Save")}
               </PrimaryButton>
 
               <SecondaryButton onClick={unlink} size="xxs">
-                Unlink
+                {t("Unlink")}
               </SecondaryButton>
             </>
           ) : (
             <>
               <PrimaryButton onClick={save} size="xxs">
-                Add
+                {t("Add")}
               </PrimaryButton>
 
               <SecondaryButton onClick={unlink} size="xxs">
-                Cancel
+                {t("Cancel")}
               </SecondaryButton>
             </>
           )}

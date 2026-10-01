@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -77,6 +78,7 @@ function BucketIcon({ iconSize, editor }): React.ReactElement {
 }
 
 function ClearOption({ editor }): React.ReactElement {
+  const { t } = useTranslation();
   const hasHighlight = editor?.isActive("highlight");
 
   const handleClick = React.useCallback((e: React.MouseEvent) => {
@@ -90,7 +92,7 @@ function ClearOption({ editor }): React.ReactElement {
     return (
       <div className="mt-4 flex items-center justify-center">
         <SecondaryButton size="xs" onClick={handleClick}>
-          Remove Highlight
+          {t("Remove Highlight")}
         </SecondaryButton>
       </div>
     );

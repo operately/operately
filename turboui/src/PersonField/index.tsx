@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -103,6 +105,7 @@ export function PersonField(props: PersonField.Props) {
 }
 
 export function useState(props: PersonField.Props): PersonField.State {
+  const { t } = useTranslation();
   const isOpenControlled = props.isOpen !== undefined;
   const [internalIsOpen, changeOpen] = React.useState(!!props.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">(
@@ -117,8 +120,8 @@ export function useState(props: PersonField.Props): PersonField.State {
   const showTitle = props.showTitle ?? true;
   const size = props.size ?? "normal";
   const avatarOnly = props.avatarOnly ?? false;
-  const emptyStateMessage = props.emptyStateMessage ?? "Select person";
-  const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
+  const emptyStateMessage = props.emptyStateMessage ?? t("Select person");
+  const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? t("Not assigned");
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
   const variant = props.variant ?? "inline";
   const isOpen = isOpenControlled ? !!props.isOpen : internalIsOpen;
@@ -355,7 +358,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       options.push({
         testId: `${state.testId}-view-profile`,
         icon: IconExternalLink,
-        label: "View profile",
+        label: i18n.t("View profile"),
         linkTo: state.person.profileLink,
       });
     }
@@ -364,7 +367,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       options.push({
         testId: `${state.testId}-assign-another`,
         icon: IconSearch,
-        label: "Choose someone else",
+        label: i18n.t("Choose someone else"),
         onClick: () => {
           state.setSearchQuery(""); // Clear any previous search
           state.setDialogMode("search");
@@ -391,7 +394,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       options.push({
         testId: `${state.testId}-clear-assignment`,
         icon: IconCircleX,
-        label: "Clear assignment",
+        label: i18n.t("Clear assignment"),
         onClick: () => {
           state?.setPerson?.(null);
           state.setIsOpen(false);
@@ -479,6 +482,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
 }
 
 function DialogSearch({ state }: { state: PersonField.State }) {
+  const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
@@ -528,7 +532,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
         {/* Use text-base (16px) on mobile to prevent auto-zoom and text-sm (14px) on desktop for consistency */}
         <input
           className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
-          placeholder="Search..."
+          placeholder={t("Search...")}
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}

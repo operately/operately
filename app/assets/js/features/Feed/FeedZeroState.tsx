@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 type Page = "company" | "project" | "goal" | "space" | "profile";
@@ -6,20 +7,20 @@ interface FeedZeroStateProps {
   page: Page;
 }
 
-const DESCRIPTION_BY_PAGE: Record<Page, string> = {
-  company: "Activity from your spaces, goals, and projects will appear here.",
-  goal: "Activity from this goal will appear here once people start sharing updates.",
-  profile: "This person's activity will appear here once they start sharing updates.",
-  project: "Activity from this project will appear here once people start sharing updates.",
-  space: "Activity from this space will appear here once people start sharing updates.",
-};
-
 export function FeedZeroState({ page }: FeedZeroStateProps) {
+  const { t } = useTranslation();
+  const DESCRIPTION_BY_PAGE: Record<Page, string> = {
+    company: t("Activity from your spaces, goals, and projects will appear here."),
+    goal: t("Activity from this goal will appear here once people start sharing updates."),
+    profile: t("This person's activity will appear here once they start sharing updates."),
+    project: t("Activity from this project will appear here once people start sharing updates."),
+    space: t("Activity from this space will appear here once people start sharing updates."),
+  };
   return (
     <div className="w-full p-8 sm:p-10 dark:bg-stone-900/20 dark:rounded-2xl" data-test-id="feed-zero-state">
       <div className="flex flex-col items-center text-center">
         <FeedZeroStateIllustration />
-        <h3 className="mt-4 text-xl font-bold text-content-accent dark:text-content-base">All quiet for now</h3>
+        <h3 className="mt-4 text-xl font-bold text-content-accent dark:text-content-base">{t("All quiet for now")}</h3>
         <p className="mt-2 max-w-xl text-sm text-content-dimmed">{DESCRIPTION_BY_PAGE[page]}</p>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { Trans } from "../Translate";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { GoalPage } from ".";
@@ -33,10 +34,11 @@ export function Contributors(props: GoalPage.State) {
             <div className="mt-0.5">
               {c.contributions.map((contribution, index) => (
                 <span key={index}>
-                  {contribution.role} on{" "}
-                  <Link to={contribution.link} underline="hover">
-                    {contribution.location}
-                  </Link>
+                  <Trans
+                    i18nKey="{{role}} on <location>{{location}}</location>"
+                    values={{ role: contribution.role, location: contribution.location }}
+                    components={{ location: <Link to={contribution.link} underline="hover" /> }}
+                  />
                   {index < c.contributions.length - 1 ? ", " : ""}
                 </span>
               ))}

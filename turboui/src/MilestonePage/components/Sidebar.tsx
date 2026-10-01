@@ -171,8 +171,9 @@ function SidebarCompletedOn({
   completedAt: Date;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   return (
-    <SidebarSection title="Completed on">
+    <SidebarSection title={t("Completed on")}>
       <div className="flex items-center gap-1.5 text-sm">
         <IconCircleCheckFilled size={16} className="text-accent-1" />
         <FormattedTime {...formattedTimePreferences} time={completedAt} format="short-date" />
@@ -190,8 +191,9 @@ function SidebarCreatedBy({
   createdAt: Date;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   return (
-    <SidebarSection title="Created">
+    <SidebarSection title={t("Created")}>
       <div className="space-y-2 text-sm">
         <AvatarWithName person={createdBy} size="tiny" nameFormat="short" link={createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">

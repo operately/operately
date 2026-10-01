@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { Forms, IconBuilding, IconTent } from "turboui";
 
@@ -5,6 +6,7 @@ import { PermissionLevels } from "../Permissions";
 import { Option } from "../Permissions/AccessFields";
 
 export function AccessSelectors() {
+  const { t } = useTranslation();
   const [companyMembersOptions = []] = Forms.useFieldValue<Option[]>("access.companyMembersOptions");
   const [spaceMembersOptions = []] = Forms.useFieldValue<Option[]>("access.spaceMembersOptions");
 
@@ -13,14 +15,14 @@ export function AccessSelectors() {
       <Forms.FieldGroup layout="horizontal" layoutOptions={{ dividers: true, ratio: "1:1" }}>
         <Forms.SelectBox
           field={"access.companyMembers"}
-          label="Company members"
+          label={t("Company members")}
           labelIcon={<IconBuilding size={20} />}
           options={companyMembersOptions}
           hidden={shouldHide(companyMembersOptions)}
         />
         <Forms.SelectBox
           field={"access.spaceMembers"}
-          label="Space members"
+          label={t("Space members")}
           labelIcon={<IconTent size={20} />}
           options={spaceMembersOptions}
         />

@@ -1,3 +1,6 @@
+import { Trans } from "turboui";
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
@@ -17,8 +20,9 @@ import { AccessLevelSummary, Forms, ProjectTemplateSelection, SecondaryButton } 
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
+  const { t } = useTranslation();
   return (
-    <Pages.Page title="New Project">
+    <Pages.Page title={t("New Project")}>
       <Paper.Root size="small">
         <Navigation />
         <PageTitle />
@@ -29,12 +33,17 @@ export function Page() {
 }
 
 function PageTitle() {
+  const { t } = useTranslation();
   const { spaceID, space } = useLoadedData();
 
   if (spaceID && space) {
-    return <h1 className="mb-4 font-bold text-3xl text-center">Start a new project in {space!.name}</h1>;
+    return (
+      <h1 className="mb-4 font-bold text-3xl text-center">
+        <Trans i18nKey="Start a new project in {{name}}" values={{ name: space!.name }} />
+      </h1>
+    );
   } else {
-    return <h1 className="mb-4 font-bold text-3xl text-center">Start a new project</h1>;
+    return <h1 className="mb-4 font-bold text-3xl text-center">{t("Start a new project")}</h1>;
   }
 }
 
@@ -46,6 +55,7 @@ function Navigation() {
 }
 
 function Form() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
@@ -83,10 +93,10 @@ function Form() {
     },
     validate: (addError) => {
       if (!form.values.template && compareIds(form.values.champion, form.values.reviewer)) {
-        addError("reviewer", "Can't be the same as the champion");
+        addError("reviewer", i18n.t("Can't be the same as the champion"));
       }
       if (!form.values.space) {
-        addError("space", "Space is required");
+        addError("space", i18n.t("Space is required"));
       }
     },
     submit: async () => {
@@ -117,7 +127,7 @@ function Form() {
     },
     onError: () => {
       form.actions.addErrors({
-        form: "The project could not be created. Check the form and try again.",
+        form: i18n.t("The project could not be created. Check the form and try again."),
       });
     },
   });
@@ -127,8 +137,14 @@ function Form() {
     <Forms.Form form={form}>
       <Paper.Body minHeight="300px">
         <Forms.FieldGroup>
-          <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus required />
-          <Forms.SelectBox label="Space" field="space" options={spaceOptions} required />
+          <Forms.TextInput
+            label={t("Project Name")}
+            field="name"
+            placeholder={t("e.g. HR System Update")}
+            autoFocus
+            required
+          />
+          <Forms.SelectBox label={t("Space")} field="space" options={spaceOptions} required />
           <ProjectTemplateSelection
             spaceId={form.values.space}
             onCreateTemplate={
@@ -142,7 +158,7 @@ function Form() {
               inactiveDiscussionCount: template.inactiveDiscussionCount,
             }))}
           />
-          <Forms.SelectGoal label="Goal" field="goal" goals={goals} required={false} />
+          <Forms.SelectGoal label={t("Goal")} field="goal" goals={goals} required={false} />
 
           {!form.values.template && (
             <Forms.FieldGroup layout="grid">
@@ -156,23 +172,25 @@ function Form() {
         <Forms.FormError message={form.errors.form} />
       </Paper.Body>
 
-      <Forms.Submit saveText="Add Project" layout="centered" buttonSize="lg" />
+      <Forms.Submit saveText={t("Add Project")} layout="centered" buttonSize="lg" />
     </Forms.Form>
   );
 }
 
 function SelectChampion({ me, search }: { me: People.Person; search: (query: string) => Promise<People.Person[]> }) {
-  return <Forms.SelectPerson label="Champion" field="champion" searchFn={search} default={me} />;
+  const { t } = useTranslation();
+  return <Forms.SelectPerson label={t("Champion")} field="champion" searchFn={search} default={me} />;
 }
 
 function SelectReviewer({ me, search }: { me: People.Person; search: (query: string) => Promise<People.Person[]> }) {
+  const { t } = useTranslation();
   return (
     <Forms.SelectPerson
-      label="Reviewer"
+      label={t("Reviewer")}
       field="reviewer"
       searchFn={search}
       allowEmpty={true}
-      emptyLabel="No reviewer"
+      emptyLabel={t("No reviewer")}
       default={me?.manager}
       required={false}
     />
@@ -180,6 +198,7 @@ function SelectReviewer({ me, search }: { me: People.Person; search: (query: str
 }
 
 function PrivacyLevel() {
+  useTranslation();
   const [isAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
 
   return (
@@ -212,12 +231,13 @@ function PrivacyLevelTitle({ field }: { field: string }) {
 }
 
 function PrivacyEdit() {
+  const { t } = useTranslation();
   const [isAdvanced, setIsAdvanced] = Forms.useFieldValue<boolean>("showAdvancedAccess");
   if (isAdvanced) return null;
 
   return (
     <SecondaryButton size="xs" onClick={() => setIsAdvanced(true)} testId="edit-access-levels">
-      Edit
+      {t("Edit")}
     </SecondaryButton>
   );
 }

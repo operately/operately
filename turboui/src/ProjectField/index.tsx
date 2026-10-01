@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useAsyncSearch } from "../utils/useAsyncSearch";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
@@ -53,14 +55,19 @@ const DefaultProps = {
   isOpen: false,
   iconSize: 20,
   readonly: false,
-  emptyStateMessage: "Select project",
-  emptyStateReadOnlyMessage: "No project selected",
+  get emptyStateMessage() {
+    return i18n.t("Select project");
+  },
+  get emptyStateReadOnlyMessage() {
+    return i18n.t("No project selected");
+  },
   variant: "inline",
   testId: "project-field",
   showIcon: true,
 } as const;
 
 export function ProjectField(props: ProjectField.Props) {
+  useTranslation();
   const state = useProjectFieldState(props);
 
   const containerClass = state.variant === "form-field" ? "w-full" : undefined;
@@ -181,6 +188,7 @@ function DialogMenu({ state }: { state: ProjectField.State }) {
 }
 
 function MenuMode({ state }: { state: ProjectField.State }) {
+  const { t } = useTranslation();
   const commonButtonClass =
     "flex items-center gap-2 text-sm w-full text-left px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
 
@@ -195,7 +203,7 @@ function MenuMode({ state }: { state: ProjectField.State }) {
           className={classNames(commonButtonClass)}
         >
           <IconCircleX size={14} />
-          <span>Clear project</span>
+          <span>{t("Clear project")}</span>
         </button>
       )}
       <button
@@ -203,19 +211,20 @@ function MenuMode({ state }: { state: ProjectField.State }) {
         className={classNames(commonButtonClass, state.project ? "mt-1" : "")}
       >
         <IconSearch size={14} />
-        <span>Choose another project</span>
+        <span>{t("Choose another project")}</span>
       </button>
     </div>
   );
 }
 
 function SearchMode({ state }: { state: ProjectField.State }) {
+  const { t } = useTranslation();
   return (
     <div className="p-1">
       <div className="p-1 pb-0.5">
         <input
           type="text"
-          placeholder="Search projects..."
+          placeholder={t("Search projects...")}
           className="w-full border border-surface-outline rounded px-2 py-1 text-sm focus:outline-none focus:ring-0 text-content-base bg-surface-base"
           value={state.searchQuery}
           onChange={(e) => state.setSearchQuery(e.target.value)}
@@ -224,7 +233,7 @@ function SearchMode({ state }: { state: ProjectField.State }) {
       </div>
       <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: "210px" }}>
         {state.searchResults.length === 0 && state.searchQuery && (
-          <div className="px-1.5 py-1 text-sm text-content-dimmed">No projects found.</div>
+          <div className="px-1.5 py-1 text-sm text-content-dimmed">{t("No projects found.")}</div>
         )}
         {state.searchResults.map((project) => (
           <SearchResult key={project.id} project={project} state={state} />

@@ -1,3 +1,6 @@
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 import React from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { ConfirmDialog } from "../ConfirmDialog";
@@ -34,6 +37,7 @@ export namespace ProjectTemplateLifecycle {
 }
 
 export function ProjectTemplateLifecycleDialogs(props: ProjectTemplateLifecycle.Props) {
+  const { t } = useTranslation();
   const template = props.template;
   const action = props.action;
   if (!template || !action) return null;
@@ -42,7 +46,7 @@ export function ProjectTemplateLifecycleDialogs(props: ProjectTemplateLifecycle.
     return <DuplicateTemplateModal {...props} template={template} />;
   }
 
-  const copy = confirmationCopy(action, template.name);
+  const copy = confirmationCopy(t, action, template.name);
 
   return (
     <LifecycleConfirmDialog
@@ -59,32 +63,33 @@ export function ProjectTemplateLifecycleDialogs(props: ProjectTemplateLifecycle.
 function DuplicateTemplateModal(
   props: ProjectTemplateLifecycle.Props & { template: ProjectTemplateLifecycle.Template },
 ) {
+  const { t } = useTranslation();
   const form = Forms.useForm({
-    fields: { name: `Copy of ${props.template.name}` },
+    fields: { name: t("Copy of {{name}}", { name: props.template.name }) },
     submit: async () => {
       const result = await props.onDuplicate(props.template.id, form.values.name.trim());
-      if (!result.success) throw new Error(result.error ?? "The template could not be duplicated. Try again.");
+      if (!result.success) throw new Error(result.error ?? i18n.t("The template could not be duplicated. Try again."));
       notifyLifecycleSuccess("duplicate");
       props.onClose();
     },
     cancel: props.onClose,
     onError: (error) =>
       form.actions.addErrors({
-        form: error instanceof Error ? error.message : "The template could not be duplicated. Try again.",
+        form: error instanceof Error ? error.message : t("The template could not be duplicated. Try again."),
       }),
   });
 
   return (
-    <Modal isOpen onClose={() => void form.actions.cancel()} title="Duplicate project template" size="medium">
+    <Modal isOpen onClose={() => void form.actions.cancel()} title={t("Duplicate project template")} size="medium">
       <Forms.Form form={form} className="space-y-5" testId="duplicate-project-template-form">
-        <Forms.TextInput field="name" label="Template name" required autoFocus />
+        <Forms.TextInput field="name" label={t("Template name")} required autoFocus />
         <Forms.FormError message={form.errors.form} />
         <div className="flex justify-end gap-3">
           <SecondaryButton type="button" onClick={() => void form.actions.cancel()} disabled={form.state !== "idle"}>
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton type="submit" loading={form.state === "submitting"} testId="duplicate-project-template">
-            Duplicate template
+            {t("Duplicate template")}
           </PrimaryButton>
         </div>
       </Forms.Form>
@@ -127,15 +132,15 @@ function notifyLifecycleSuccess(action: ProjectTemplateLifecycleAction) {
 
 function successToast(action: ProjectTemplateLifecycleAction) {
   if (action === "duplicate") {
-    return { title: "Template duplicated", description: "You're now editing the copy." };
+    return { title: i18n.t("Template duplicated"), description: i18n.t("You're now editing the copy.") };
   }
 
   if (action === "archive") {
-    return { title: "Template archived", description: "It can be restored later." };
+    return { title: i18n.t("Template archived"), description: i18n.t("It can be restored later.") };
   }
 
   if (action === "restore") {
-    return { title: "Template restored", description: "It's available for project creation again." };
+    return { title: i18n.t("Template restored"), description: i18n.t("It's available for project creation again.") };
   }
 
   return null;
@@ -150,32 +155,32 @@ function lifecycleHandler(
   return props.onDelete;
 }
 
-function confirmationCopy(action: Exclude<ProjectTemplateLifecycleAction, "duplicate">, name: string) {
+function confirmationCopy(t: TFunction, action: Exclude<ProjectTemplateLifecycleAction, "duplicate">, name: string) {
   if (action === "archive") {
     return {
-      title: `Archive “${name}”?`,
-      message: "This template will leave project creation and can be restored later.",
-      confirmText: "Archive template",
-      cancelText: "Keep active",
+      title: t("Archive “{{name}}”?", { name }),
+      message: t("This template will leave project creation and can be restored later."),
+      confirmText: t("Archive template"),
+      cancelText: t("Keep active"),
       icon: IconArchive,
     };
   }
 
   if (action === "restore") {
     return {
-      title: `Restore “${name}”?`,
-      message: "This template will return to active use and project creation.",
-      confirmText: "Restore template",
-      cancelText: "Keep archived",
+      title: t("Restore “{{name}}”?", { name }),
+      message: t("This template will return to active use and project creation."),
+      confirmText: t("Restore template"),
+      cancelText: t("Keep archived"),
       icon: IconRotate,
     };
   }
 
   return {
-    title: `Delete “${name}”?`,
-    message: "This template will be permanently removed. Existing projects created from it will remain unchanged.",
-    confirmText: "Delete template",
-    cancelText: "Keep template",
+    title: t("Delete “{{name}}”?", { name }),
+    message: t("This template will be permanently removed. Existing projects created from it will remain unchanged."),
+    confirmText: t("Delete template"),
+    cancelText: t("Keep template"),
     variant: "danger" as const,
     icon: IconTrash,
   };

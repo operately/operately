@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
 import type { Subscriber as ApiSubscriber } from "../ApiTypes";
 import { Avatar } from "../Avatar";
@@ -15,6 +16,7 @@ export function SubscribersSelector({
   allSubscribersLabel,
   testIdPrefix = "subscribe",
 }: SubscribersSelector.Props) {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
 
   // Automatically open modal when switching to SELECTED option
@@ -36,7 +38,7 @@ export function SubscribersSelector({
 
   return (
     <div>
-      <p className="font-bold mb-1.5">When I post this, notify:</p>
+      <p className="font-bold mb-1.5">{t("When I post this, notify:")}</p>
 
       <RadioGroup
         name="subscriptions-options"
@@ -53,7 +55,7 @@ export function SubscribersSelector({
 
         <div onClick={() => setShowModal(true)}>
           <SubscriptionOptionItem
-            label="Only the people I select"
+            label={t("Only the people I select")}
             value={SubscribersSelector.SubscriptionOption.SELECTED}
             subscribers={selectedSubscribers}
             isSelected={subscriptionType === SubscribersSelector.SubscriptionOption.SELECTED}
@@ -62,7 +64,7 @@ export function SubscribersSelector({
         </div>
 
         <SubscriptionOptionItem
-          label="No one"
+          label={t("No one")}
           value={SubscribersSelector.SubscriptionOption.NONE}
           subscribers={[]}
           isSelected={subscriptionType === SubscribersSelector.SubscriptionOption.NONE}
@@ -89,9 +91,10 @@ function AlwaysNotifyOnly({
   subscribers: SubscribersSelector.Subscriber[];
   allSubscribersLabel: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div>
-      <p className="font-bold mb-1.5">When I post this, notify:</p>
+      <p className="font-bold mb-1.5">{t("When I post this, notify:")}</p>
       <div className="my-1">
         <p className="text-content-accent">{allSubscribersLabel}</p>
         <SelectedPeople subscribers={subscribers} hide={false} indent={false} />

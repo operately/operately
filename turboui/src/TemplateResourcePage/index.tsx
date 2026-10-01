@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { DocsAndFilesTab } from "../DocsAndFiles";
@@ -60,6 +61,7 @@ function ResourceContent({
   resource: TemplateResourcePage.Resource;
   richTextHandlers: RichEditorHandlers;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-4xl">
       <h1 className="text-2xl font-bold text-content-accent">{resource.name}</h1>
@@ -81,13 +83,13 @@ function ResourceContent({
           target="_blank"
           className="mt-6 inline-block font-medium text-link-base underline"
         >
-          Open link
+          {t("Open link")}
         </DivLink>
       )}
 
       {resource.type === "file" && resource.downloadUrl && (
         <a href={resource.downloadUrl} className="mt-6 inline-block font-medium text-link-base underline" download>
-          Download file
+          {t("Download file")}
         </a>
       )}
     </div>

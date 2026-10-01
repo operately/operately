@@ -33,6 +33,17 @@ function translationBindings(sourceFile) {
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement) || !statement.importClause) continue;
     const moduleName = literal(statement.moduleSpecifier);
+    if (moduleName === "turboui" || moduleName?.endsWith("/Translate")) {
+      const clause = statement.importClause;
+      if (!clause.isTypeOnly && clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+        for (const specifier of clause.namedBindings.elements) {
+          if (!specifier.isTypeOnly && (specifier.propertyName?.text ?? specifier.name.text) === "Trans") {
+            bindings.components.add(specifier.name.text);
+          }
+        }
+      }
+      continue;
+    }
     if (!moduleName || (!["i18next", "react-i18next"].includes(moduleName) && !moduleName.endsWith("/i18n"))) continue;
 
     const clause = statement.importClause;
@@ -121,7 +132,7 @@ function jsxMessage(node, bindings) {
 
 function extract(source, path) {
   // Avoid parsing files that cannot import the translation runtime.
-  if (!source.includes("i18next") && !source.includes("/i18n")) return [];
+  if (!["i18next", "/i18n", "turboui", "/Translate"].some((moduleName) => source.includes(moduleName))) return [];
   const sourceFile = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true);
   if (sourceFile.parseDiagnostics.length) {
     const diagnostic = sourceFile.parseDiagnostics[0];

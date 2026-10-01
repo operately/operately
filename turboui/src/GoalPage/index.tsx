@@ -261,6 +261,7 @@ export function GoalPage(props: GoalPage.Props) {
       <PageNew title={[state.goalName]} size="fullwidth" testId="goal-page">
         <PageHeader {...state} />
         <StatusBanner
+          formattedTimePreferences={state.formattedTimePreferences}
           state={state.state === "closed" ? "closed" : null}
           closedAt={state.closedAt}
           reopenLink={state.reopenLink}

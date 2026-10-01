@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as Activities from "@/models/activities";
 import * as Time from "@/utils/time";
 import * as React from "react";
@@ -46,6 +47,7 @@ const FEED_PROP_DEFAULTS = {
 };
 
 export function Feed(props: FeedProps) {
+  const { t } = useTranslation();
   props = { ...FEED_PROP_DEFAULTS, ...props };
   const items = Activities.aggregateConsecutiveFeedActivities(props.items);
   const groupedActivities = Activities.groupByDate(items);
@@ -93,14 +95,14 @@ export function Feed(props: FeedProps) {
   );
 
   return (
-    <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
+    <ErrorBoundary fallback={<div>{t("Ooops, something went wrong while loading the feed")}</div>}>
       <InfiniteScroll
         {...props.pagination}
         loadingIndicator={
           <div className={classNames("w-full flex flex-col sm:flex-row gap-2", props.paddedGroups ? "p-8" : "py-4")}>
             <div className="hidden sm:block w-1/5 shrink-0" aria-hidden="true" />
             <div className="w-full min-w-0 flex-1">
-              <ContentListSkeleton variant="feed" label="Loading more activities" testId="feed-loading-more" />
+              <ContentListSkeleton variant="feed" label={t("Loading more activities")} testId="feed-loading-more" />
             </div>
           </div>
         }
@@ -111,9 +113,11 @@ export function Feed(props: FeedProps) {
         isOpen={!!activityToDelete}
         onConfirm={handleConfirmDelete}
         onCancel={() => setActivityToDelete(null)}
-        title="Delete feed item"
-        message="This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted."
-        confirmText="Delete"
+        title={t("Delete feed item")}
+        message={t(
+          "This removes the item from the company feed. The underlying project, goal, task, or document will not be deleted.",
+        )}
+        confirmText={t("Delete")}
         variant="danger"
         testId="delete-feed-activity-dialog"
       />
@@ -254,6 +258,7 @@ function ActivityItemOptions({
   activity: Activities.Activity;
   onDeleteItem: (activity: Activity) => void;
 }) {
+  const { t } = useTranslation();
   const triggerClassName = classNames(
     "w-7 flex justify-end opacity-100 pointer-events-auto transition-opacity",
     "sm:opacity-0 sm:pointer-events-none",
@@ -270,8 +275,8 @@ function ActivityItemOptions({
         customTrigger={
           <button
             type="button"
-            title="Feed item actions"
-            aria-label="Feed item actions"
+            title={t("Feed item actions")}
+            aria-label={t("Feed item actions")}
             className="w-6 h-6 flex items-center justify-center rounded-full text-content-dimmed hover:text-content-base hover:bg-surface-dimmed focus:text-content-base focus:bg-surface-dimmed focus:outline-none"
           >
             <IconDots size={16} />
@@ -279,7 +284,7 @@ function ActivityItemOptions({
         }
       >
         <MenuActionItem onClick={() => onDeleteItem(activity)} testId="delete-feed-activity" icon={IconTrash} danger>
-          Delete feed item
+          {t("Delete feed item")}
         </MenuActionItem>
       </Menu>
     </div>

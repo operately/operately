@@ -1,3 +1,5 @@
+import i18n, { tn } from "../i18n";
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { Avatar, AvatarList } from "../Avatar";
 import type { AvatarPerson } from "../Avatar";
@@ -43,6 +45,7 @@ export function CommentInput({
 }
 
 function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProps) {
+  const { t } = useTranslation();
   return (
     <div
       className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
@@ -50,7 +53,7 @@ function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProp
       onClick={onClick}
     >
       <Avatar person={currentUser} size="normal" />
-      Write a comment here...
+      {t("Write a comment here...")}
     </div>
   );
 }
@@ -63,12 +66,13 @@ function CommentInputActive({
   richTextHandlers,
   notificationInfo,
 }: CommentInputActiveProps) {
+  const { t } = useTranslation();
   const [uploading] = useState(false);
 
   const editor = useEditor({
     content: "",
     editable: true,
-    placeholder: "Write a comment here...",
+    placeholder: t("Write a comment here..."),
     handlers: richTextHandlers,
     autoFocus: true,
     className: "min-h-[200px] px-4 py-3",
@@ -126,11 +130,11 @@ function CommentInputActive({
                 disabled={editor.empty}
                 testId="post-comment"
               >
-                {uploading ? "Uploading..." : "Post"}
+                {uploading ? t("Uploading...") : t("Post")}
               </PrimaryButton>
 
               <SecondaryButton size="xs" onClick={handleCancel}>
-                Cancel
+                {t("Cancel")}
               </SecondaryButton>
             </div>
           </div>
@@ -143,6 +147,7 @@ function CommentInputActive({
 }
 
 function CommentNotificationSummary({ info }: { info: CommentNotificationInfo }) {
+  const { t } = useTranslation();
   const subscribedPeople = (info.subscribedPeople ?? []).filter((person) => person.id !== info.currentUserId);
   const [showAllRecipients, setShowAllRecipients] = useState(false);
   const recipientSummary = buildRecipientSummary(subscribedPeople, info.entityLabel);
@@ -160,7 +165,7 @@ function CommentNotificationSummary({ info }: { info: CommentNotificationInfo })
                 className="text-content-link hover:underline"
                 onClick={() => setShowAllRecipients((prev) => !prev)}
               >
-                {showAllRecipients ? "Hide list" : "View all"}
+                {showAllRecipients ? t("Hide list") : t("View all")}
               </button>
             )}
           </div>
@@ -168,7 +173,7 @@ function CommentNotificationSummary({ info }: { info: CommentNotificationInfo })
             <div className="text-xs text-content-dimmed mt-1">{recipientSummary.allNames.join(", ")}</div>
           )}
           {!info.isCurrentUserSubscribed && subscribedPeople.length > 0 && (
-            <div className="text-xs text-content-dimmed mt-1">Tip: Subscribe if you want notifications too.</div>
+            <div className="text-xs text-content-dimmed mt-1">{t("Tip: Subscribe if you want notifications too.")}</div>
           )}
         </div>
       </div>
@@ -183,7 +188,10 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   if (names.length === 0) {
     return {
-      message: `Tip: @-mention someone to notify them about this ${entityLabel}.`,
+      message:
+        entityLabel === "task"
+          ? i18n.t("Tip: @-mention someone to notify them about this task.")
+          : i18n.t("Tip: @-mention someone to notify them about this milestone."),
       allNames: [],
       hasHiddenRecipients: false,
     };
@@ -191,7 +199,7 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   if (names.length === 1) {
     return {
-      message: withSentencePeriod(`This comment will notify ${names[0]}`),
+      message: withSentencePeriod(i18n.t("This comment will notify {{name}}", { name: names[0] })),
       allNames: names,
       hasHiddenRecipients: false,
     };
@@ -199,7 +207,12 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   if (names.length === 2) {
     return {
-      message: withSentencePeriod(`This comment will notify ${names[0]} and ${names[1]}`),
+      message: withSentencePeriod(
+        i18n.t("This comment will notify {{first}} and {{second}}", {
+          first: names[0],
+          second: names[1],
+        }),
+      ),
       allNames: names,
       hasHiddenRecipients: false,
     };
@@ -207,14 +220,17 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   const remainingCount = names.length - 2;
   return {
-    message: withSentencePeriod(
-      `This comment will notify ${names[0]}, ${names[1]}, and ${remainingCount} other${remainingCount === 1 ? "" : "s"}`,
+    message: tn(
+      "This comment will notify {{first}}, {{second}}, and 1 other.",
+      "This comment will notify {{first}}, {{second}}, and {{count}} others.",
+      remainingCount,
+      { first: names[0], second: names[1] },
     ),
     allNames: names,
     hasHiddenRecipients: true,
   };
 }
 
-function withSentencePeriod(text: string) {
-  return text.endsWith(".") ? text : `${text}.`;
+function withSentencePeriod(message: string) {
+  return message.endsWith(".") ? message : `${message}.`;
 }

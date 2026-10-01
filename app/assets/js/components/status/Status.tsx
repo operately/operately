@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as People from "@/models/people";
 
@@ -14,6 +15,7 @@ interface StatusProps {
 }
 
 export function Status({ status, reviewer, selectable, onSelected, testId }: StatusProps) {
+  useTranslation();
   const color = COLORS[status] as ColorOptions;
   const title = TITLES[status];
   const description = <StatusDescription status={status} reviewer={reviewer} />;
@@ -37,17 +39,30 @@ export function Status({ status, reviewer, selectable, onSelected, testId }: Sta
 }
 
 function StatusDescription({ status, reviewer }: { status: StatusOptions; reviewer?: People.Person | null }) {
+  const { t } = useTranslation();
   const reviewerName = reviewer && People.firstName(reviewer);
 
   switch (status) {
     case "on_track":
-      return <>Progressing as planned. No blockers.</>;
+      return <>{t("Progressing as planned. No blockers.")}</>;
     case "caution":
-      return <>Emerging risks or delays. {reviewerName || "The reviewer"} should be aware.</>;
+      return (
+        <>
+          {reviewerName
+            ? t("Emerging risks or delays. {{reviewer}} should be aware.", { reviewer: reviewerName })
+            : t("Emerging risks or delays. The reviewer should be aware.")}
+        </>
+      );
     case "off_track":
-      return <>Significant problems affecting success. {reviewerName || "The reviewer"}’s help is needed.</>;
+      return (
+        <>
+          {reviewerName
+            ? t("Significant problems affecting success. {{reviewer}}’s help is needed.", { reviewer: reviewerName })
+            : t("Significant problems affecting success. The reviewer’s help is needed.")}
+        </>
+      );
     case "pending":
-      return <>Work hasn't started yet.</>;
+      return <>{t("Work hasn't started yet.")}</>;
 
     default:
       throw new Error(`Unknown status: ${status}`);

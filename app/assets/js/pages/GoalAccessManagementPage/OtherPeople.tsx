@@ -1,10 +1,11 @@
+import { tn } from "@/i18n";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as People from "@/models/people";
 
 import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { PermissionLevels } from "@/features/Permissions";
 import { ActionLink, Avatar } from "turboui";
-import { match } from "ts-pattern";
 import { useBindedPeopleList } from "./loader";
 
 export function OtherPeople() {
@@ -23,13 +24,16 @@ export function OtherPeople() {
 }
 
 function Expanded({ people }: { people: People.Person[] }) {
+  const { t } = useTranslation();
   const groups = groupPeopleByAccessLevel(people);
 
   return (
     <div>
-      <div className="font-bold mt-10 text-lg">Other People with Access</div>
+      <div className="font-bold mt-10 text-lg">{t("Other People with Access")}</div>
       <div className="text-medium text-sm max-w-lg mb-6">
-        People who have access to the goal based on their company or space membership but are not directly assigned.
+        {t(
+          "People who have access to the goal based on their company or space membership but are not directly assigned.",
+        )}
       </div>
 
       <div data-test-id="goal-other-people-list">
@@ -42,14 +46,17 @@ function Expanded({ people }: { people: People.Person[] }) {
 }
 
 function Condensed({ people, onShowAllClick }: { people: People.Person[]; onShowAllClick: () => void }) {
-  const message = match(people.length)
-    .with(1, () => "1 other person has access to this goal")
-    .otherwise(() => `${people.length} other people have access to this goal`);
+  const { t } = useTranslation();
+  const message = tn(
+    "1 other person has access to this goal",
+    "{{count}} other people have access to this goal",
+    people.length,
+  );
 
   const testId = "show-all-other-people";
   const showAll = (
     <ActionLink onClick={onShowAllClick} testId={testId}>
-      show all
+      {t("show all")}
     </ActionLink>
   );
 

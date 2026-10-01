@@ -1,3 +1,5 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Avatar } from "../Avatar";
@@ -22,14 +24,18 @@ export interface CheckInTitleProps {
 }
 
 export function CheckInTitle({ state, timestamp, formattedTimePreferences }: CheckInTitleProps) {
+  const { t } = useTranslation();
   const postingTime = parseCheckInTimestamp(timestamp);
 
   return (
     <h1 className="flex flex-wrap items-center justify-center gap-2 text-content-accent text-xl sm:text-3xl font-extrabold text-center">
       <span>
-        Check-In for <FormattedTime {...formattedTimePreferences} time={postingTime} format="long-date" />
+        <Trans
+          i18nKey="Check-In for <date/>"
+          components={{ date: <FormattedTime {...formattedTimePreferences} time={postingTime} format="long-date" /> }}
+        />
       </span>
-      {state === "draft" && <StatusBadge status="pending" customLabel="Draft" hideIcon />}
+      {state === "draft" && <StatusBadge status="pending" customLabel={t("Draft")} hideIcon />}
       {state === "scheduled" && <ScheduledPostLabel />}
     </h1>
   );
@@ -91,15 +97,19 @@ export function CheckInMetadata({
 }
 
 function Acknowledgement({ acknowledgedBy }: { acknowledgedBy?: CheckInAcknowledgingPerson | null }) {
+  const { t } = useTranslation();
   if (!acknowledgedBy) {
-    return <span className="flex items-center gap-1">Not yet acknowledged</span>;
+    return <span className="flex items-center gap-1">{t("Not yet acknowledged")}</span>;
   }
 
   return (
     <span className="flex items-center gap-1">
       <IconSquareCheckFilled size={16} className="text-accent-1" />
-      <span className="hidden sm:inline">Acknowledged by</span>
-      <span className="truncate">{acknowledgedBy.fullName}</span>
+      <Trans
+        i18nKey="<label>Acknowledged by</label> <person>{{name}}</person>"
+        values={{ name: acknowledgedBy.fullName }}
+        components={{ label: <span className="hidden sm:inline" />, person: <span className="truncate" /> }}
+      />
     </span>
   );
 }

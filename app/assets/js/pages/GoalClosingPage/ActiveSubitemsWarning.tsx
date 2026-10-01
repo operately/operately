@@ -1,11 +1,12 @@
+import { tn } from "@/i18n";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { BlackLink, WarningCallout } from "turboui";
 import { ActiveSubitem, useLoadedData } from "./loader";
 
-import plurarize from "@/utils/plurarize";
-
 export function ActiveSubitemsWarning() {
+  useTranslation();
   const { activeSubitems } = useLoadedData();
 
   if (activeSubitems.length === 0) return null;
@@ -35,24 +36,30 @@ function ActiveItemLinkList({ items }: { items: ActiveSubitem[] }) {
 }
 
 function warningTitle(activeSubitems: ActiveSubitem[]): string {
-  let title = "This goal contains ";
-
-  const activeSubgoals = activeSubitems.filter((item) => item.type === "goal");
-  const activeProjects = activeSubitems.filter((item) => item.type === "project");
-
-  if (activeSubgoals.length > 0) {
-    title += plurarize(activeSubgoals.length, "subgoal", "subgoals");
-  }
-
-  if (activeSubgoals.length > 0 && activeProjects.length > 0) {
-    title += " and ";
-  }
-
-  if (activeProjects.length > 0) {
-    title += plurarize(activeProjects.length, "project", "projects");
-  }
-
-  title += " that will remain active: ";
-
-  return title;
+  const goals = activeSubitems.filter((item) => item.type === "goal").length;
+  const projects = activeSubitems.filter((item) => item.type === "project").length;
+  if (goals === 0)
+    return tn(
+      "This goal contains 1 project that will remain active: ",
+      "This goal contains {{count}} projects that will remain active: ",
+      projects,
+    );
+  if (projects === 0)
+    return tn(
+      "This goal contains 1 subgoal that will remain active: ",
+      "This goal contains {{count}} subgoals that will remain active: ",
+      goals,
+    );
+  if (goals === 1)
+    return tn(
+      "This goal contains 1 subgoal and 1 project that will remain active: ",
+      "This goal contains 1 subgoal and {{count}} projects that will remain active: ",
+      projects,
+    );
+  return tn(
+    "This goal contains {{goals}} subgoals and 1 project that will remain active: ",
+    "This goal contains {{goals}} subgoals and {{count}} projects that will remain active: ",
+    projects,
+    { goals },
+  );
 }
