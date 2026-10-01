@@ -180,3 +180,16 @@ Storybook runner’s Playwright environment, separately from jsdom unit tests:
 
 Start Storybook with `make turboui.storybook` before running this focused check.
 `make turboui.test.storybook` runs these browser tests after the story checks in CI.
+
+## Demos
+
+`src/demos/` contains shared mock data and in-memory behavior for interactive
+Storybook examples and website previews. Demo helpers are exported from
+`@operately/turboui` and provide data and callbacks to the regular UI components.
+
+Each demo instance has independent state, makes no backend requests, and resets
+when remounted. The host supplies routing, translations, formatting, and the
+embedding container. Keep demo state above routes and panels so navigation does
+not discard changes.
+
+See [the KPI stories](src/SpaceKpisPage/index.stories.tsx) for an example.

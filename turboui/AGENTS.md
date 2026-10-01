@@ -8,7 +8,7 @@ This document captures the architecture principles, patterns, and workflow for d
 
 - **Self-contained components**: Components should manage their own state when possible, using callbacks to notify parents of changes
 - **Generic callbacks**: Prefer generic update callbacks (e.g., `onTaskUpdate`, `onMilestoneUpdate`) over specific ones (e.g., `onAssigneeChange`, `onDueDateChange`)
-- **No mock data in components**: Mock data belongs in Storybook stories, not in component files
+- **No mock data in components**: Shared, publishable fixtures and in-memory demo behavior belong in `src/demos/`. Story-specific setup stays in Storybook; production components and app bridges must not import demo data.
 - **Backward compatibility**: Maintain compatibility where possible when refactoring
 
 ### State Management

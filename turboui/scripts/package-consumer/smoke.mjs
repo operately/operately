@@ -37,6 +37,9 @@ try {
   assert.equal(await page.evaluate(() => document.body.style.overflow), "");
   await page.keyboard.press("Escape");
   await modal.waitFor({ state: "detached" });
+  await page.locator('[data-test-id="kpi-demo"][data-entry-count="1"]').waitFor();
+  await page.locator('[data-test-id="demo-record-value"]').click();
+  await page.locator('[data-test-id="kpi-demo"][data-entry-count="2"][data-comment-count="1"]').waitFor();
   assert.deepEqual(errors, [], "Installed package must load without browser errors");
   console.log("Installed consumer type-checks, bundles, renders, and handles clicks.");
 } finally {

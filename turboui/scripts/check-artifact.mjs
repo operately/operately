@@ -42,8 +42,13 @@ async function checkRequiredDocuments(packageDirectory) {
 async function checkCompiledFiles(packageDirectory) {
   const distDirectory = path.join(packageDirectory, "dist");
   const files = await readdir(distDirectory, { recursive: true });
+  // Demo fixtures under dist/demos are intentional public data, unlike story/test fixtures.
   const developmentFilePattern =
     /(?:\.stories\.|\.test\.|\.spec\.|mockData|Story\.|storybook|__mocks__|(?:^|\/)tests\/)/;
+
+  for (const declaration of ["demos/index.d.ts", "demos/kpis/fixtures.d.ts", "demos/kpis/useKpiDemo.d.ts"]) {
+    await access(path.join(distDirectory, declaration));
+  }
 
   for (const file of files) {
     assert.doesNotMatch(file, developmentFilePattern, `Development artifact included in package: ${file}`);
@@ -57,6 +62,12 @@ async function checkCompiledFiles(packageDirectory) {
 function checkModuleImports(content, filename) {
   assert.doesNotMatch(content, /(?:\.\.\/)+app\//, `App dependency in ${filename}`);
   assert.doesNotMatch(content, /from ["']@\//, `App alias in ${filename}`);
+
+  assert.doesNotMatch(
+    content,
+    /(?:from\s*|import\s*\(?)["'](?:@storybook\/|@testing-library\/|(?:[^"']*\/)?utils\/storybook)/,
+    `Development import in ${filename}`,
+  );
 
   if (filename.endsWith(".d.ts")) {
     assert.doesNotMatch(content, /@tabler\/icons-react\/dist\//, `Untyped icon import in ${filename}`);

@@ -1,41 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { useParams } from "react-router";
-
 import { CommentSection } from "../CommentSection";
-import type { CommentSectionItem } from "../CommentSection";
-import { defaultFormattedTimePreferences } from "../utils/storybook/formattedTime";
-import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
-import { useMockSubscriptions } from "../utils/storybook/subscriptions";
+import { defaultFormattedTimePreferences } from "../FormattedTime";
+import { createKpiDemoFixtures, useKpiDemo } from "../demos";
+import { showErrorToast } from "../Toasts";
 import { SpaceKpisPage } from "./index";
-import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import { mockChampionSearch, mockCurrentUser, mockKpis, mockKpisLink, mockPeople, mockSpace } from "./mockData";
 
-//
-// Space KPIs — proof of concept (frontend, Storybook only).
-//
-// Demonstrates the end-to-end KPIs experience described in the POC:
-//   - a KPIs space tool using the same page chrome (breadcrumb header + tool
-//     title) as the other space tools (Work Map, Tasks)
-//   - a list view: name, unit, champion, an inline history sparkline,
-//     latest value + trend
-//   - a detail view: name + current value, line chart of history, champion +
-//     cadence, "Log update"
-//   - a "New KPI" form (name, unit, cadence, champion picker)
-//   - editing a KPI in place on its own page: its name above the description, its
-//     unit, cadence and champion in the sidebar, and a sidebar Actions section
-//     offering Copy URL and Delete (with a destructive confirmation)
-//   - single-KPI "Log update" only — NO "update all KPIs at once" batch UI
-//
-// The stories use an in-memory harness so the create/edit/delete/record
-// callbacks (which in the app call the createKpi / updateKpi / deleteKpi /
-// recordKpiEntry GraphQL mutations) actually update the UI, letting reviewers
-// exercise the happy path.
-//
-// Each KPI has its own page, so the harness reads the open KPI from the route
-// (`/spaces/:spaceId/kpis/:kpiId`) the way the app does. Stories that show the
-// detail view set that route through the `reactRouter` parameter.
-//
+const kpisLink = "/spaces/space-growth/kpis";
+const referenceDate = new Date("2026-07-31T12:00:00Z");
+
 type HarnessArgs = {
   loading?: boolean;
   error?: string | null;
@@ -44,328 +18,63 @@ type HarnessArgs = {
   failMutations?: boolean;
 };
 
-// Opens a story on a single KPI's page.
-function kpiRoute(kpiId: string) {
-  return { reactRouter: { path: `${mockKpisLink}/${kpiId}`, routePath: `${mockKpisLink}/:kpiId` } };
+function kpiRoute(kpiId?: string) {
+  return { reactRouter: { path: kpiId ? `${kpisLink}/${kpiId}` : kpisLink, routePath: `${kpisLink}/*` } };
 }
 
 const meta = {
   title: "Pages/SpaceKpisPage",
   component: SpaceKpisPage,
-  parameters: {
-    layout: "fullscreen",
-  },
+  parameters: { layout: "fullscreen", ...kpiRoute() },
   render: (args: HarnessArgs) => <Harness {...args} />,
 } satisfies Meta<HarnessArgs>;
 
 export default meta;
 type Story = StoryObj<HarnessArgs>;
 
-function clone(kpis: SpaceKpisPageNS.Kpi[]): SpaceKpisPageNS.Kpi[] {
-  return kpis.map((kpi) => ({
-    ...kpi,
-    entries: kpi.entries.map((e) => ({ ...e, edits: e.edits.map((edit) => ({ ...edit })) })),
-    annotations: kpi.annotations.map((a) => ({ ...a })),
-  }));
-}
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 function Harness(args: HarnessArgs) {
-  const [kpis, setKpis] = React.useState<SpaceKpisPageNS.Kpi[]>(() => (args.emptySpace ? [] : clone(mockKpis)));
-  const { kpiId } = useParams();
-  const subscriptions = useMockSubscriptions({ entityType: "kpi", initial: true });
-
-  const onCreateKpi = async (input: SpaceKpisPageNS.NewKpiInput): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("createKpi", input);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "A KPI with that name already exists in this space." };
-    }
-
-    const champion = mockPeople.find((p) => p.id === input.championId) ?? null;
-    const id = `kpi-${crypto.randomUUID()}`;
-    const newKpi: SpaceKpisPageNS.Kpi = {
-      id,
-      name: input.name,
-      description: null,
-      unit: input.unit,
-      cadence: input.cadence,
-      champion,
-      insertedAt: new Date(),
-      link: `${mockKpisLink}/${id}`,
-      latestEntry: null,
-      entries: [],
-      annotations: [],
-    };
-
-    setKpis((prev) => [newKpi, ...prev]);
-    return { success: true, id: newKpi.id };
-  };
-
-  const onEditKpi = async (input: SpaceKpisPageNS.EditKpiInput): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("updateKpi", input);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "A KPI with that name already exists in this space." };
-    }
-
-    const champion = mockPeople.find((p) => p.id === input.championId) ?? null;
-
-    setKpis((prev) =>
-      prev.map((kpi) =>
-        kpi.id === input.id ? { ...kpi, name: input.name, unit: input.unit, cadence: input.cadence, champion } : kpi,
-      ),
-    );
-
-    return { success: true, id: input.id };
-  };
-
-  const onDescriptionChange = async (kpiId: string, description: Record<string, unknown>) => {
-    await delay(400);
-
-    if (args.failMutations) return false;
-
-    setKpis((prev) => prev.map((kpi) => (kpi.id === kpiId ? { ...kpi, description } : kpi)));
-    return true;
-  };
-
-  const onDeleteKpi = async (kpiId: string): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("deleteKpi", kpiId);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to delete this KPI." };
-    }
-
-    setKpis((prev) => prev.filter((kpi) => kpi.id !== kpiId));
-    return { success: true };
-  };
-
-  const onRecordEntry = async (input: SpaceKpisPageNS.RecordEntryInput): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("recordKpiEntry", input);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to update this KPI." };
-    }
-
-    setKpis((prev) =>
-      prev.map((kpi) =>
-        kpi.id === input.kpiId
-          ? (() => {
-              const entry = {
-                id: `entry-${crypto.randomUUID()}`,
-                value: input.value,
-                recordedAt: new Date(),
-                recordedBy: mockCurrentUser,
-                // The app posts the note as the update's first comment.
-                commentsCount: input.comment ? 1 : 0,
-                edits: [],
-              };
-              return { ...kpi, latestEntry: entry, entries: [...kpi.entries, entry] };
-            })()
-          : kpi,
-      ),
-    );
-
-    return { success: true };
-  };
-
-  const onEditEntry = async (input: SpaceKpisPageNS.EditEntryInput): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("editKpiEntry", input);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to edit this update." };
-    }
-
-    setKpis((prev) =>
-      prev
-        .map((kpi) => ({
-          ...kpi,
-          entries: kpi.entries.map((entry) => {
-            if (entry.id !== input.entryId) return entry;
-
-            const edit: SpaceKpisPageNS.KpiEntryEdit = {
-              id: `edit-${crypto.randomUUID()}`,
-              previousValue: entry.value,
-              previousPeriod: entry.recordedAt,
-              editedBy: mockCurrentUser,
-              editedAt: new Date(),
-            };
-
-            const next = {
-              ...entry,
-              value: input.value,
-              recordedAt: new Date(`${input.period}T12:00:00`),
-              edits: [edit, ...entry.edits],
-            };
-
-            return next;
-          }),
-        }))
-        .map((kpi) => ({
-          ...kpi,
-          latestEntry: kpi.entries.length > 0 ? kpi.entries[kpi.entries.length - 1]! : null,
-        })),
-    );
-
-    return { success: true, id: input.entryId };
-  };
-
-  const onDeleteEntry = async (entryId: string): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("deleteKpiEntry", entryId);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to delete this update." };
-    }
-
-    setKpis((prev) =>
-      prev.map((kpi) => {
-        const entries = kpi.entries.filter((entry) => entry.id !== entryId);
-
-        return {
-          ...kpi,
-          entries,
-          latestEntry: entries.length > 0 ? entries[entries.length - 1]! : null,
-        };
-      }),
-    );
-
-    return { success: true, id: entryId };
-  };
-
-  const onAddAnnotation = async (input: SpaceKpisPageNS.AnnotationInput): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("addKpiAnnotation", input);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to annotate this KPI." };
-    }
-
-    const annotation: SpaceKpisPageNS.KpiAnnotation = {
-      id: `annotation-${crypto.randomUUID()}`,
-      date: new Date(`${input.date}T12:00:00`),
-      title: input.title,
-      createdBy: mockCurrentUser,
-    };
-
-    setKpis((prev) =>
-      prev.map((kpi) => (kpi.id === input.kpiId ? { ...kpi, annotations: [...kpi.annotations, annotation] } : kpi)),
-    );
-    return { success: true, id: annotation.id };
-  };
-
-  const onEditAnnotation = async (
-    input: SpaceKpisPageNS.EditAnnotationInput,
-  ): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("editKpiAnnotation", input);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to edit this annotation." };
-    }
-
-    setKpis((prev) =>
-      prev.map((kpi) => ({
-        ...kpi,
-        annotations: kpi.annotations.map((annotation) =>
-          annotation.id === input.id
-            ? {
-                ...annotation,
-                date: new Date(`${input.date}T12:00:00`),
-                title: input.title,
-              }
-            : annotation,
-        ),
-      })),
-    );
-
-    return { success: true, id: input.id };
-  };
-
-  const onDeleteAnnotation = async (annotationId: string): Promise<SpaceKpisPageNS.MutationResult> => {
-    console.log("deleteKpiAnnotation", annotationId);
-    await delay(400);
-
-    if (args.failMutations) {
-      return { success: false, error: "You don't have permission to delete this annotation." };
-    }
-
-    setKpis((prev) =>
-      prev.map((kpi) => ({
-        ...kpi,
-        annotations: kpi.annotations.filter((annotation) => annotation.id !== annotationId),
-      })),
-    );
-
-    return { success: true };
-  };
+  const [fixtures] = React.useState(() =>
+    createKpiDemoFixtures({ referenceDate, kpisLink, scenario: args.emptySpace ? "empty" : "populated" }),
+  );
+  // The wildcard route keeps this owner mounted when moving between the list and details.
+  const demo = useKpiDemo(fixtures, { mutationDelayMs: 400, failMutations: args.failMutations });
+  const { "*": kpiId } = useParams();
+  const selectedKpi = demo.kpis.find((kpi) => kpi.id === kpiId) ?? null;
+  const subscriptions = kpiId ? demo.getSubscriptionProps(kpiId) : undefined;
 
   return (
     <SpaceKpisPage
-      space={mockSpace}
-      navigation={[{ to: mockSpace.link, label: mockSpace.name }]}
-      kpisLink={mockKpisLink}
-      kpis={kpis}
-      selectedKpi={kpis.find((kpi) => kpi.id === kpiId) ?? null}
-      currentUser={mockCurrentUser}
-      championSearch={mockChampionSearch}
-      richTextHandlers={createMockRichTextHandlers()}
-      onCreateKpi={onCreateKpi}
-      onEditKpi={onEditKpi}
-      onDescriptionChange={onDescriptionChange}
-      onDeleteKpi={onDeleteKpi}
-      onRecordEntry={onRecordEntry}
-      onEditEntry={onEditEntry}
-      onDeleteEntry={onDeleteEntry}
-      onAddAnnotation={onAddAnnotation}
-      onEditAnnotation={onEditAnnotation}
-      onDeleteAnnotation={onDeleteAnnotation}
+      {...demo.actions}
+      space={demo.space}
+      navigation={[{ to: demo.space.link, label: demo.space.name }]}
+      kpisLink={demo.kpisLink}
+      kpis={demo.kpis}
+      selectedKpi={selectedKpi}
+      currentUser={demo.currentUser}
+      championSearch={demo.championSearch}
+      richTextHandlers={demo.richTextHandlers}
       loading={args.loading}
       error={args.error}
       canManage={args.canManage}
-      subscriptions={subscriptions}
-      canComment
-      renderEntryComments={(entry) => <EntryComments key={entry.id} />}
-    />
-  );
-}
-
-// Stands in for the app's KpiEntryComments bridge, which loads the thread for a
-// recorded update and posts to the comments API.
-function EntryComments() {
-  const [items, setItems] = React.useState<CommentSectionItem[]>([]);
-
-  return (
-    <CommentSection
-      items={items}
-      currentUser={{ ...mockCurrentUser, profileLink: mockCurrentUser.profileLink ?? "#" }}
-      canComment
-      commentParentType="kpi_entry"
-      richTextHandlers={createMockRichTextHandlers()}
-      formattedTimePreferences={defaultFormattedTimePreferences}
-      onAddComment={(content) => {
-        setItems((prev) => [
-          ...prev,
-          {
-            type: "comment",
-            value: {
-              id: `comment-${prev.length + 1}`,
-              content: JSON.stringify(content),
-              author: { ...mockCurrentUser, profileLink: mockCurrentUser.profileLink ?? "#" },
-              insertedAt: new Date().toISOString(),
-              reactions: [],
-            },
+      subscriptions={
+        subscriptions && {
+          ...subscriptions,
+          onToggle: (subscribed) => {
+            void subscriptions
+              .onToggle(subscribed)
+              .catch((error) => showErrorToast("Could not update demo subscription.", error.message));
           },
-        ]);
-        return true;
-      }}
-      onEditComment={() => true}
+        }
+      }
+      canComment
+      renderEntryComments={(entry) => (
+        <CommentSection
+          {...demo.getCommentProps(entry.id)}
+          canComment
+          canManageComments
+          formattedTimePreferences={defaultFormattedTimePreferences}
+        />
+      )}
     />
   );
 }
