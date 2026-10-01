@@ -61,7 +61,8 @@ export function usePopoverPositioning({ open }: UsePopoverPositioningOptions) {
 
     if (open) {
       checkViewportSize();
-      const observer = container ? new ResizeObserver(checkViewportSize) : null;
+      const observer =
+        container && typeof ResizeObserver !== "undefined" ? new ResizeObserver(checkViewportSize) : null;
       if (container) observer?.observe(container);
       const scrollTarget = embedding?.scrollContainer ?? window;
       window.addEventListener("resize", checkViewportSize);

@@ -9,12 +9,13 @@ export function useWindowSizeBreakpoints() {
 
   React.useEffect(() => {
     const handleResize = () => setSize(getWindowSizeBreakpoint(container?.clientWidth));
-    if (container) {
+    if (container && typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver(handleResize);
       observer.observe(container);
       handleResize();
       return () => observer.disconnect();
     }
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [container]);

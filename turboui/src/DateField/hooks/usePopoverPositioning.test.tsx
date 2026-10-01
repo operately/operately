@@ -39,3 +39,21 @@ test("embedded date pickers use the unscaled preview bounds", () => {
   );
   expect(screen.getByTestId("trigger").getAttribute("data-side")).toBe("top");
 });
+
+test("embedded date pickers still position themselves without ResizeObserver", () => {
+  const original = global.ResizeObserver;
+  Object.defineProperty(global, "ResizeObserver", { value: undefined, configurable: true, writable: true });
+  const container = document.createElement("div");
+  Object.defineProperties(container, { clientWidth: { value: 1100 }, clientHeight: { value: 900 } });
+  try {
+    const view = render(
+      <EmbeddingProvider portalContainer={container} scrollContainer={container}>
+        <Positioning />
+      </EmbeddingProvider>,
+    );
+    expect(screen.getByTestId("trigger").getAttribute("data-side")).toBe("bottom");
+    view.unmount();
+  } finally {
+    global.ResizeObserver = original;
+  }
+});
