@@ -66,7 +66,7 @@ and source alias, so its code continues to import from `"turboui"`. Other
 consumers can also keep that name by installing an npm alias:
 
 ```sh
-npm install turboui@npm:@operately/turboui@0.1.0
+npm install turboui@npm:@operately/turboui@0.2.0
 ```
 
 With that alias, use `import { PrimaryButton } from "turboui"` and
@@ -127,5 +127,46 @@ tarball, extracted package, and consumer for inspection.
 
 `npm pack` includes compiled output, this README, and the Apache-2.0 license.
 It excludes tests, fixtures, Storybook, and build tools. Installing the tarball
-does not compile anything. Version 0.1.0 is prepared for public npm publishing;
+does not compile anything. Version 0.2.0 is prepared for public npm publishing;
 publishing and release automation are separate steps.
+
+## Embedding in an open Shadow DOM
+
+`EmbeddingProvider` is opt-in. Supply a positioned portal layer inside the same
+shadow root as the UI, and the element that scrolls the preview:
+
+```tsx
+import { EmbeddingProvider } from "@operately/turboui";
+
+<EmbeddingProvider
+  portalContainer={portalElement}
+  scrollContainer={scrollElement}
+  manageDocumentTitle={false}
+>
+  <Demo />
+</EmbeddingProvider>
+```
+
+The provider keeps supported overlays inside the preview, scopes nested dialog
+scroll locks and keyboard focus, and uses the portal layer's unscaled width for
+JavaScript breakpoints. `manageDocumentTitle` defaults to true; false preserves
+the host article's title. Keep the container elements stable when resizing.
+Without a provider, components keep their existing app behavior.
+
+The host owns the shadow root, React mounting, router, translation setup, and
+formatting preferences. It must load TurboUI CSS inside the root and Inter in the
+host document. For a simulated viewport, adapt `html`/`body`/`:root` rules to the
+demo root, width media queries to container queries, and viewport units to the
+demo's dimensions. The standard published CSS is unchanged.
+
+Give the portal layer the preview's full width/height and a containing block for
+fixed overlays (for example, a positioned ancestor with `transform: translateZ(0)`).
+If it covers the content, set `pointer-events: none` on the layer and `auto` on its
+children. The form person picker also needs an Emotion `CacheProvider` whose cache
+uses the shadow root as its `container`, so generated styles stay inside it.
+
+See Storybook **Utilities / Embedding** for normal, scaled, and independent shadow
+roots. Support currently targets the KPI UI and its editor/pickers; it does not
+promise that every TurboUI surface supports embedding. The rich-text table
+right-click focus loop remains a known issue, tracked in PR 2 of
+`specs/0021-shadow-dom-kpi-demos.md`. Website adoption should wait for that fix.

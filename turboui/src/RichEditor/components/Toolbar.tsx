@@ -1,4 +1,4 @@
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../../Embedding/Popover";
 import { IconChevronDown } from "../../icons";
 import * as React from "react";
 
