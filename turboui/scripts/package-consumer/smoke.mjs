@@ -31,6 +31,12 @@ try {
     "inline-block",
     "The installed stylesheet must style the rendered button",
   );
+  await page.locator('[data-test-id="open-embedded"]').click();
+  const modal = page.locator('[data-test-id="embedded-container"] [data-test-id="embedded-modal"]');
+  await modal.waitFor();
+  assert.equal(await page.evaluate(() => document.body.style.overflow), "");
+  await page.keyboard.press("Escape");
+  await modal.waitFor({ state: "detached" });
   assert.deepEqual(errors, [], "Installed package must load without browser errors");
   console.log("Installed consumer type-checks, bundles, renders, and handles clicks.");
 } finally {

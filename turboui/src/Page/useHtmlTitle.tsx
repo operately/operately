@@ -1,6 +1,8 @@
+import { useEmbedding } from "../Embedding";
 import React from "react";
 
 export function useHtmlTitle(title: string | string[]) {
+  const embedding = useEmbedding();
   if (!title) {
     throw new Error("Page title cannot be null");
   }
@@ -18,6 +20,8 @@ export function useHtmlTitle(title: string | string[]) {
   titleArray.push("Operately");
 
   React.useEffect(() => {
-    document.title = titleArray.join(" · ");
-  }, [titleArray]);
+    if (embedding?.manageDocumentTitle === false) return;
+    const ownerDocument = embedding?.portalContainer.ownerDocument ?? document;
+    ownerDocument.title = titleArray.join(" · ");
+  }, [titleArray, embedding]);
 }

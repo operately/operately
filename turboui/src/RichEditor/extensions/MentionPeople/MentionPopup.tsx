@@ -1,3 +1,4 @@
+import type { EditorView } from "@tiptap/pm/view";
 import { ReactRenderer } from "@tiptap/react";
 
 import { MentionList } from "./MentionList";
@@ -18,7 +19,9 @@ export class MentionPopup {
   component: ReactRenderer | null;
   unmount: (() => void) | null;
 
-  constructor() {
+  cleanupOutsideClick: (() => void) | null = null;
+
+  constructor(private dismiss?: (view: EditorView) => void) {
     this.component = null;
     this.unmount = null;
   }
@@ -35,6 +38,18 @@ export class MentionPopup {
 
     this.component.element.style.zIndex = String(MENTION_POPUP_Z_INDEX);
     this.unmount = props.mount(this.component.element);
+
+    if (this.dismiss) {
+      const element = this.component.element;
+      const editorElement = props.editor.view.dom as HTMLElement;
+      const onOutsideClick = (event: PointerEvent) => {
+        // The full path includes popup/editor elements hidden by Shadow DOM retargeting.
+        const path = event.composedPath();
+        if (!path.includes(element) && !path.includes(editorElement)) this.dismiss?.(props.editor.view);
+      };
+      element.ownerDocument.addEventListener("pointerdown", onOutsideClick, true);
+      this.cleanupOutsideClick = () => element.ownerDocument.removeEventListener("pointerdown", onOutsideClick, true);
+    }
   }
 
   onUpdate(props: MentionPopupProps) {
@@ -57,6 +72,8 @@ export class MentionPopup {
   }
 
   onExit() {
+    this.cleanupOutsideClick?.();
+    this.cleanupOutsideClick = null;
     this.unmount?.();
 
     if (this.component !== null) {

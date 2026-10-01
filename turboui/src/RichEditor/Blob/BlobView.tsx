@@ -1,3 +1,4 @@
+import { useEmbedding, useEmbeddedOverlay } from "../../Embedding";
 import React from "react";
 import { createPortal } from "react-dom";
 
@@ -311,8 +312,12 @@ function ImagePreviewModal({
   title?: string;
   alt?: string;
 }) {
+  const embedding = useEmbedding();
+  const overlayRef = React.useRef<HTMLDivElement>(null);
+  useEmbeddedOverlay(isOpen, onClose, overlayRef);
+
   React.useEffect(() => {
-    if (!isOpen || typeof document === "undefined") return;
+    if (!isOpen || embedding || typeof document === "undefined") return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !event.defaultPrevented) {
@@ -329,12 +334,13 @@ function ImagePreviewModal({
       unlockBodyScroll();
       document.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, embedding]);
 
   if (!isOpen || typeof document === "undefined") return null;
 
   return createPortal(
     <div
+      ref={overlayRef}
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 p-4"
       role="dialog"
       aria-modal="true"
@@ -362,7 +368,7 @@ function ImagePreviewModal({
         </div>
       </div>
     </div>,
-    document.body,
+    embedding?.portalContainer ?? document.body,
   );
 }
 
