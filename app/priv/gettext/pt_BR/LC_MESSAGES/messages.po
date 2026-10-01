@@ -2556,8 +2556,8 @@ msgstr[1] "%{count} pessoas neste template não estão mais ativas."
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:203
 msgid "1 person will be notified when someone comments on this %{resourceName}."
 msgid_plural "%{count} people will be notified when someone comments on this %{resourceName}."
-msgstr[0] "1 pessoa será notificada quando alguém comentar neste recurso: %{resourceName}."
-msgstr[1] "%{count} pessoas serão notificadas quando alguém comentar neste recurso: %{resourceName}."
+msgstr[0] "1 pessoa será notificada quando alguém comentar em %{resourceName}."
+msgstr[1] "%{count} pessoas serão notificadas quando alguém comentar em %{resourceName}."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:132
@@ -9987,7 +9987,7 @@ msgstr "Ninguém"
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:202
 msgid "No one will be notified when someone comments on this %{resourceName}."
-msgstr "Ninguém será notificado quando alguém comentar neste recurso: %{resourceName}."
+msgstr "Ninguém será notificado quando alguém comentar em %{resourceName}."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:131
@@ -15981,7 +15981,7 @@ msgstr "Você não receberá notificações quando comentários forem publicados
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:235
 msgid "You'll get a notification when someone comments on this %{resourceName}."
-msgstr "Você receberá uma notificação quando alguém comentar neste recurso: %{resourceName}."
+msgstr "Você receberá uma notificação quando alguém comentar em %{resourceName}."
 
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:215
