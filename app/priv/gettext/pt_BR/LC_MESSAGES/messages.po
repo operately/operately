@@ -917,7 +917,7 @@ msgstr "%{author} alterou o objetivo superior de %{goal_name}"
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:38
 msgid "%{author} changed the parent goal"
-msgstr "%{author} alterou o objetivo pai"
+msgstr "%{author} alterou o objetivo superior"
 
 #.elixir
 #: lib/operately_email/templates/goal_reparent.text.eex:1
@@ -927,7 +927,7 @@ msgstr "%{author} alterou o objetivo superior de %{goal_name}"
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:41
 msgid "%{author} changed the parent goal of <goal>%{goalName}</goal>"
-msgstr "%{author} alterou o objetivo pai de <goal>%{goalName}</goal>"
+msgstr "%{author} alterou o objetivo superior de <goal>%{goalName}</goal>"
 
 #.elixir
 #: lib/operately_email/templates/project_timeline_edited.text.eex:1
@@ -1405,7 +1405,7 @@ msgstr "%{author} desvinculou o projeto %{project_name} do objetivo %{goal_name}
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:75
 msgid "%{author} disconnected the <project>%{projectName}</project> project from its parent goal"
-msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo pai"
+msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do objetivo superior"
 
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:61
@@ -1421,7 +1421,7 @@ msgstr "%{author} desconectou o projeto <project>%{projectName}</project> do obj
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:73
 msgid "%{author} disconnected the project from its parent goal"
-msgstr "%{author} desconectou o projeto do objetivo pai"
+msgstr "%{author} desconectou o projeto do objetivo superior"
 
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:60
@@ -5404,7 +5404,7 @@ msgstr "Alterar para somente leitura"
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:107
 msgid "Changed a goal's parent goal"
-msgstr "Alterou o objetivo pai de um objetivo"
+msgstr "Alterou o objetivo superior de um objetivo"
 
 #.frontend
 #: assets/js/features/activities/ProjectChampionUpdating/index.tsx:92
@@ -5414,17 +5414,17 @@ msgstr "Alterou o champion de %{projectName}"
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:59
 msgid "Changed the parent goal from <old>%{oldName}</old> to <new>%{newName}</new>."
-msgstr "Alterou o objetivo pai de <old>%{oldName}</old> para <new>%{newName}</new>."
+msgstr "Alterou o objetivo superior de <old>%{oldName}</old> para <new>%{newName}</new>."
 
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:106
 msgid "Changed the parent goal of %{goalName}"
-msgstr "Alterou o objetivo pai de %{goalName}"
+msgstr "Alterou o objetivo superior de %{goalName}"
 
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:69
 msgid "Changed the parent goal to <goal>%{goalName}</goal>."
-msgstr "Alterou o objetivo pai para o objetivo <goal>%{goalName}</goal>."
+msgstr "Alterou o objetivo superior para o objetivo <goal>%{goalName}</goal>."
 
 #.frontend
 #: assets/js/features/activities/ProjectTimelineEdited/index.tsx:78
@@ -10856,12 +10856,12 @@ msgstr "Ninguém será notificado quando alguém comentar nesta tarefa."
 #: ../turboui/src/GoalPage/Sidebar.tsx:130
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:123
 msgid "No parent goal"
-msgstr "Nenhum objetivo pai"
+msgstr "Nenhum objetivo superior"
 
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:87
 msgid "No parent goal was set."
-msgstr "Nenhum objetivo pai foi definido."
+msgstr "Nenhum objetivo superior foi definido."
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:570
@@ -11479,17 +11479,17 @@ msgstr "Plano pago"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
 msgid "Parent Goal"
-msgstr "Objetivo pai"
+msgstr "Objetivo superior"
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:130
 msgid "Parent Goal Updated"
-msgstr "Objetivo pai atualizado"
+msgstr "Objetivo superior atualizado"
 
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:115
 msgid "Parent goal"
-msgstr "Objetivo pai"
+msgstr "Objetivo superior"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:134
@@ -12645,7 +12645,7 @@ msgstr "Removeu o champion de %{projectName}"
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:79
 msgid "Removed the parent goal <goal>%{goalName}</goal>."
-msgstr "Removeu o objetivo pai <goal>%{goalName}</goal>."
+msgstr "Removeu o objetivo superior <goal>%{goalName}</goal>."
 
 #.frontend
 #: assets/js/features/activities/ProjectContributorRemoved/index.tsx:77
@@ -12998,7 +12998,7 @@ msgstr "O nome do objetivo voltou ao valor anterior."
 #: assets/js/pages/GoalPage/index.tsx:128
 #: assets/js/pages/ProjectPage/index.tsx:106
 msgid "Reverted the parent goal to its previous value."
-msgstr "O objetivo pai voltou ao valor anterior."
+msgstr "O objetivo superior voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/MilestonePage/index.tsx:64
@@ -13719,7 +13719,7 @@ msgstr "Defina objetivos, acompanhe o progresso e colabore com sua equipe para a
 #: ../turboui/src/GoalPage/Sidebar.tsx:129
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:122
 msgid "Set parent goal"
-msgstr "Definir objetivo pai"
+msgstr "Definir objetivo superior"
 
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:126
@@ -14954,7 +14954,7 @@ msgstr "O nome foi alterado para %{name}."
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:130
 msgid "The parent goal has been successfully changed."
-msgstr "O objetivo pai foi alterado."
+msgstr "O objetivo superior foi alterado."
 
 #.elixir
 #: lib/operately_email/templates/goal_reparent.html.eex:7
@@ -16103,7 +16103,7 @@ msgstr[1] "Atualizou marcos:"
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:125
 msgid "Updated a project's parent goal"
-msgstr "Atualizou o objetivo pai de um projeto"
+msgstr "Atualizou o objetivo superior de um projeto"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:114
@@ -16153,7 +16153,7 @@ msgstr "Atualizou a descrição de: uma tarefa"
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:124
 msgid "Updated the parent goal of %{projectName} project"
-msgstr "Atualizou o objetivo pai do projeto %{projectName}"
+msgstr "Atualizou o objetivo superior do projeto %{projectName}"
 
 #.frontend
 #: assets/js/features/activities/GroupEdited/index.tsx:115

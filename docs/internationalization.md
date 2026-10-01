@@ -48,6 +48,7 @@ Use these Brazilian Portuguese terms in the pilot and later translations:
 | space | espaço |
 | project | projeto |
 | goal | objetivo |
+| parent goal | objetivo superior |
 | task | tarefa |
 | milestone | marco |
 | check-in | check-in |
