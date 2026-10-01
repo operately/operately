@@ -60,15 +60,14 @@ export function Reactions({
     if (!deleteMode) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      // Shadow DOM retargets event.target to its host; use the actual clicked element.
-      if (!((event.composedPath()[0] ?? event.target) as Element | null)?.closest("[data-reaction-item]")) {
-        setDeleteMode(null);
-      }
+      // The composed path identifies this instance even when Shadow DOM retargets the click.
+      if (root.current && !event.composedPath().includes(root.current)) setDeleteMode(null);
     };
 
     const ownerDocument = root.current?.ownerDocument ?? document;
-    ownerDocument.addEventListener("click", handleClickOutside);
-    return () => ownerDocument.removeEventListener("click", handleClickOutside);
+    // Capture also observes clicks stopped by a reaction in another instance.
+    ownerDocument.addEventListener("click", handleClickOutside, true);
+    return () => ownerDocument.removeEventListener("click", handleClickOutside, true);
   }, [deleteMode]);
 
   React.useEffect(() => {
