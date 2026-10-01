@@ -106,6 +106,7 @@ function ProjectMilestoneLayout({ state }: { state: MilestonePage.ProjectState }
 
   return (
     <ProjectPageLayout
+      formattedTimePreferences={state.formattedTimePreferences}
       projectName={state.projectName}
       title={[state.projectName]}
       testId="milestone-page"
@@ -224,6 +225,7 @@ function TemplateMilestoneLayout({ state }: { state: MilestonePage.TemplateState
 
   return (
     <ProjectPageLayout
+      formattedTimePreferences={state.formattedTimePreferences}
       mode="template"
       title={[state.template.name]}
       testId="template-milestone-page"

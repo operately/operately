@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import { IconChevronDown } from "../../icons";
 import * as React from "react";
@@ -126,9 +127,10 @@ function MobileToolbar() {
 }
 
 function MobilePopupTools({ children }: { children: React.ReactNode }): JSX.Element {
+  const { t } = useTranslation();
   return (
     <Popover.Root>
-      <Popover.Trigger className="mr-2" aria-label="More formatting options">
+      <Popover.Trigger className="mr-2" aria-label={t("More formatting options")}>
         <IconChevronDown size={20} />
       </Popover.Trigger>
       <Popover.Content

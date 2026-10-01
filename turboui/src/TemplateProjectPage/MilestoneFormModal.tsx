@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import Modal from "../Modal";
@@ -15,6 +16,7 @@ export function MilestoneFormModal({
   onClose: () => void;
   onCreate: TemplateProjectPage.Props["onMilestoneCreate"];
 }) {
+  const { t } = useTranslation();
   const [title, setTitle] = React.useState("");
   const [dueOffsetDays, setDueOffsetDays] = React.useState<number | null>(null);
   const [createMore, setCreateMore] = React.useState(false);
@@ -44,26 +46,26 @@ export function MilestoneFormModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create Milestone" size="medium">
+    <Modal isOpen={isOpen} onClose={onClose} title={t("Create Milestone")} size="medium">
       <form onSubmit={create} className="space-y-6" data-test-id="add-template-milestone-form">
         <TextField
           variant="form-field"
-          label="Milestone name"
+          label={t("Milestone name")}
           text={title}
           onChange={setTitle}
-          placeholder="Enter milestone name"
+          placeholder={t("Enter milestone name")}
           autofocus
           onChangeOnType
           testId="template-milestone-name"
         />
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-content-base">Relative due date</label>
+          <label className="mb-1 block text-sm font-medium text-content-base">{t("Relative due date")}</label>
           <RelativeDayField
             variant="form-field"
             value={dueOffsetDays}
             onChange={setDueOffsetDays}
-            placeholder="Set relative date"
+            placeholder={t("Set relative date")}
           />
         </div>
 
@@ -71,16 +73,16 @@ export function MilestoneFormModal({
           <SwitchToggle
             value={createMore}
             setValue={setCreateMore}
-            label="Create more"
+            label={t("Create more")}
             testId="add-template-milestone-more-switch"
           />
           <div className="flex-1" />
           <div className="flex space-x-3">
             <SecondaryButton onClick={onClose} type="button">
-              Cancel
+              {t("Cancel")}
             </SecondaryButton>
             <PrimaryButton type="submit" disabled={!title.trim()}>
-              Create milestone
+              {t("Create milestone")}
             </PrimaryButton>
           </div>
         </div>

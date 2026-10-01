@@ -1,3 +1,5 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { MentionedPersonLookupFn } from "../RichEditor";
@@ -30,12 +32,8 @@ namespace CheckInCard {
   }
 }
 
-export function CheckInCard({
-  checkIn,
-  mentionedPersonLookup,
-  type,
-  formattedTimePreferences,
-}: CheckInCard.Props) {
+export function CheckInCard({ checkIn, mentionedPersonLookup, type, formattedTimePreferences }: CheckInCard.Props) {
+  const { t } = useTranslation();
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",
@@ -55,10 +53,26 @@ export function CheckInCard({
         <div className="flex-1 h-full">
           <div className="flex items-center gap-2 mb-1">
             <div className="font-semibold leading-none" data-test-id="check-in-title">
-              Check-In for {formatTitleDate(checkIn.date, type)}
+              <Trans
+                i18nKey="Check-In for <date/>"
+                components={{
+                  date: (
+                    <FormattedTime
+                      {...formattedTimePreferences}
+                      time={checkIn.date}
+                      format={type === "goal" ? "month" : "long-month-date"}
+                    />
+                  ),
+                }}
+              />
             </div>
             {checkIn.state === "draft" && (
-              <StatusBadge status="pending" customLabel="Draft" hideIcon className="scale-95 inline-block shrink-0" />
+              <StatusBadge
+                status="pending"
+                customLabel={t("Draft")}
+                hideIcon
+                className="scale-95 inline-block shrink-0"
+              />
             )}
             {checkIn.state === "scheduled" && <ScheduledPostLabel />}
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
@@ -91,27 +105,4 @@ export function CheckInCard({
       <CommentCountIndicator count={checkIn.commentCount} size={28} />
     </DivLink>
   );
-}
-
-function formatTitleDate(date: Date, type: "goal" | "project") {
-  const year = date.getFullYear();
-  const thisYear = new Date().getFullYear();
-
-  if (type === "project") {
-    if (year === thisYear) {
-      const options: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" };
-      return new Intl.DateTimeFormat("en-US", options).format(date);
-    } else {
-      const options: Intl.DateTimeFormatOptions = { month: "long", day: "numeric", year: "numeric" };
-      return new Intl.DateTimeFormat("en-US", options).format(date);
-    }
-  } else {
-    if (year === thisYear) {
-      const options: Intl.DateTimeFormatOptions = { month: "long" };
-      return new Intl.DateTimeFormat("en-US", options).format(date);
-    } else {
-      const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
-      return new Intl.DateTimeFormat("en-US", options).format(date);
-    }
-  }
 }

@@ -1,3 +1,6 @@
+import { Trans } from "../Translate";
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import type { Person, ProjectCheckIn, ProjectCheckInStatus } from "../ApiTypes";
@@ -75,6 +78,7 @@ export namespace ProjectCheckInFormPage {
 }
 
 export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
+  const { t } = useTranslation();
   const allowFullEdit = props.mode === "create" || props.allowFullEdit;
   const isUnpublished =
     props.mode === "edit" && (props.checkIn.state === "draft" || props.checkIn.state === "scheduled");
@@ -90,10 +94,10 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
     },
     validate: (addError) => {
       if (allowFullEdit && !form.values.status) {
-        addError("status", "Status is required");
+        addError("status", i18n.t("Status is required"));
       }
       if (!form.values.description) {
-        addError("description", "Description is required");
+        addError("description", i18n.t("Description is required"));
       }
     },
     submit: async (attrs?: unknown) => {
@@ -158,7 +162,7 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
             <SubscribersSelector {...props.subscriptions!} />
           )}
 
-          <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
+          <Forms.FormError message={t("Fill out all the required fields")} className="-mb-6 mt-4" />
 
           <SubmitButtons
             form={form}
@@ -176,10 +180,11 @@ export function ProjectCheckInFormPage(props: ProjectCheckInFormPage.Props) {
 }
 
 function Header({ props }: { props: ProjectCheckInFormPage.Props }) {
+  const { t } = useTranslation();
   if (props.mode === "create") {
     return (
       <div>
-        <div className="text-2xl font-bold mx-auto">Let's Check In</div>
+        <div className="text-2xl font-bold mx-auto">{t("Let's Check In")}</div>
       </div>
     );
   }
@@ -187,20 +192,29 @@ function Header({ props }: { props: ProjectCheckInFormPage.Props }) {
   return (
     <div>
       <div className="text-2xl font-bold mx-auto">
-        Editing the Check-In from{" "}
-        <FormattedTime {...props.formattedTimePreferences} time={displayDate(props.checkIn)} format="long-date" />
+        <Trans
+          i18nKey="Editing the Check-In from <date/>"
+          components={{
+            date: (
+              <FormattedTime {...props.formattedTimePreferences} time={displayDate(props.checkIn)} format="long-date" />
+            ),
+          }}
+        />
       </div>
     </div>
   );
 }
 
 function FullEditDisabledMessage({ allowFullEdit, isUnpublished }: { allowFullEdit: boolean; isUnpublished: boolean }) {
+  const { t } = useTranslation();
   if (isUnpublished || allowFullEdit) return null;
 
   return (
     <InfoCallout
-      message="Editing locked after 3 days"
-      description="You can edit the status for up to 3 days after submitting your check-in. After that, it's locked in to keep the history clear and decisions accountable. Need to make a change? Leave a comment or create a new check-in."
+      message={t("Editing locked after 3 days")}
+      description={t(
+        "You can edit the status for up to 3 days after submitting your check-in. After that, it's locked in to keep the history clear and decisions accountable. Need to make a change? Leave a comment or create a new check-in.",
+      )}
     />
   );
 }
@@ -214,11 +228,12 @@ function StatusSection({
   allowFullEdit: boolean;
   status: ProjectCheckInStatus | null;
 }) {
+  const { t } = useTranslation();
   if (allowFullEdit) {
     return (
       <div className="mt-8 mb-4">
         <Forms.SelectStatus
-          label="1. How's the project going?"
+          label={t("1. How's the project going?")}
           field="status"
           reviewer={reviewer}
           options={["on_track", "caution", "off_track"]}
@@ -231,7 +246,7 @@ function StatusSection({
 
   return (
     <div className="mt-8 mb-4">
-      <div className="font-bold">1. How's the project going?</div>
+      <div className="font-bold">{t("1. How's the project going?")}</div>
       <div className="mt-2 flex flex-col gap-2 rounded-lg border border-stroke-base p-2">
         <StatusDisplay status={status} reviewer={reviewer} />
       </div>
@@ -240,13 +255,14 @@ function StatusSection({
 }
 
 function DescriptionSection({ props }: { props: ProjectCheckInFormPage.Props }) {
+  const { t } = useTranslation();
   if (props.mode === "edit") {
     return (
       <Forms.RichTextArea
-        label="2. What's new since the last check-in?"
+        label={t("2. What's new since the last check-in?")}
         field="description"
         richTextHandlers={props.richTextHandlers}
-        placeholder="Write your check-in here..."
+        placeholder={t("Write your check-in here...")}
       />
     );
   }
@@ -272,12 +288,13 @@ function CreateDescriptionSection({
   mentionedPersonLookup: ProjectCheckInFormPage.CreateProps["mentionedPersonLookup"];
   formattedTimePreferences: ProjectCheckInFormPage.CreateProps["formattedTimePreferences"];
 }) {
+  const { t } = useTranslation();
   const [showPrevious, setShowPrevious] = React.useState(false);
 
   return (
     <div>
       <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <div className="font-bold">2. What's new since the last check-in?</div>
+        <div className="font-bold">{t("2. What's new since the last check-in?")}</div>
 
         {previousCheckIn && (
           <ActionLink
@@ -285,7 +302,7 @@ function CreateDescriptionSection({
             underline="hover"
             onClick={() => setShowPrevious((show) => !show)}
           >
-            {showPrevious ? "Hide previous check-in" : "Show previous check-in"}
+            {showPrevious ? t("Hide previous check-in") : t("Show previous check-in")}
           </ActionLink>
         )}
       </div>
@@ -301,7 +318,7 @@ function CreateDescriptionSection({
       <Forms.RichTextArea
         field="description"
         richTextHandlers={richTextHandlers}
-        placeholder="Write your check-in here..."
+        placeholder={t("Write your check-in here...")}
       />
     </div>
   );
@@ -316,6 +333,7 @@ function PreviousCheckInPreview({
   mentionedPersonLookup: ProjectCheckInFormPage.CreateProps["mentionedPersonLookup"];
   formattedTimePreferences: ProjectCheckInFormPage.CreateProps["formattedTimePreferences"];
 }) {
+  const { t } = useTranslation();
   const { checkIn, link } = previousCheckIn;
   const content = JSON.parse(checkIn.description || "{}");
   const date = displayDate(checkIn);
@@ -324,17 +342,20 @@ function PreviousCheckInPreview({
     <div className="mb-3 mt-2 rounded border border-stroke-base p-4">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-content-accent">Previous check-in</div>
+          <div className="text-sm font-semibold text-content-accent">{t("Previous check-in")}</div>
           <div className="mt-0.5 text-sm text-content-dimmed">
-            Posted by {checkIn.author?.fullName || "Unknown"} on{" "}
-            <FormattedTime {...formattedTimePreferences} time={date} format="long-date" />
+            <Trans
+              i18nKey="Posted by {{author}} on <date/>"
+              values={{ author: checkIn.author?.fullName || t("Unknown") }}
+              components={{ date: <FormattedTime {...formattedTimePreferences} time={date} format="long-date" /> }}
+            />
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
           <StatusBadge status={checkIn.status} hideIcon />
           <Link to={link} underline="hover" className="text-sm font-medium">
-            View original
+            {t("View original")}
           </Link>
         </div>
       </div>
@@ -361,6 +382,7 @@ function SubmitButtons({
   formattedTimePreferences: FormattedTimePreferences;
   cancelLink: string;
 }) {
+  const { t } = useTranslation();
   const submit = (action: string) => {
     form.actions.setTrigger(action);
     form.actions.submit(action);
@@ -371,12 +393,12 @@ function SubmitButtons({
   if (!canSchedule) {
     return (
       <div className="mt-8">
-        <Forms.Submit saveText="Submit" buttonSize="base" />
+        <Forms.Submit saveText={t("Submit")} buttonSize="base" />
         <div className="mt-4">
-          Or,{" "}
-          <DimmedLink to={cancelLink} className="font-medium">
-            Cancel
-          </DimmedLink>
+          <Trans
+            i18nKey="Or, <resource>Cancel</resource>"
+            components={{ resource: <DimmedLink to={cancelLink} className="font-medium" /> }}
+          />
         </div>
       </div>
     );
@@ -387,12 +409,12 @@ function SubmitButtons({
       <div className="mt-8">
         <ScheduleFlowControls
           scheduleFlow={scheduleFlow}
-          primaryLabel="Submit"
+          primaryLabel={t("Submit")}
           onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "submit")}
           loading={isSubmitting && (form.trigger === "submit" || form.trigger === "schedule")}
           testId="submit"
           formattedTimePreferences={formattedTimePreferences}
-          modalTitle="Schedule Check-in"
+          modalTitle={t("Schedule Check-in")}
           secondaryAction={
             <GhostButton
               loading={isSubmitting && form.trigger === "draft"}
@@ -400,15 +422,15 @@ function SubmitButtons({
               size="base"
               onClick={() => submit("draft")}
             >
-              Save as draft
+              {t("Save as draft")}
             </GhostButton>
           }
         />
         <div className="mt-4">
-          Or,{" "}
-          <DimmedLink to={cancelLink} className="font-medium">
-            Cancel
-          </DimmedLink>
+          <Trans
+            i18nKey="Or, <resource>Cancel</resource>"
+            components={{ resource: <DimmedLink to={cancelLink} className="font-medium" /> }}
+          />
         </div>
       </div>
     );
@@ -418,7 +440,7 @@ function SubmitButtons({
     <div className="mt-8">
       <ScheduleFlowControls
         scheduleFlow={scheduleFlow}
-        primaryLabel={isScheduled ? "Save Changes" : "Submit check-in"}
+        primaryLabel={isScheduled ? t("Save Changes") : t("Submit check-in")}
         onPrimaryClick={() =>
           submit(isScheduled ? "save-changes" : scheduleFlow.isScheduledLocally ? "schedule" : "publish")
         }
@@ -427,8 +449,8 @@ function SubmitButtons({
         }
         testId="publish-draft"
         formattedTimePreferences={formattedTimePreferences}
-        modalTitle="Schedule Check-in"
-        scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
+        modalTitle={t("Schedule Check-in")}
+        scheduledPrimaryLabel={isScheduled ? t("Save Changes") : undefined}
         showScheduleOption={!isScheduled}
         secondaryAction={
           !isScheduled && (
@@ -438,24 +460,24 @@ function SubmitButtons({
               size="base"
               onClick={() => submit("save")}
             >
-              Save draft
+              {t("Save draft")}
             </GhostButton>
           )
         }
         options={
           isScheduled
             ? [
-                { label: "Publish now", action: () => submit("publish-now"), testId: "publish-now-option" },
-                { label: "Save as draft", action: () => submit("save-as-draft"), testId: "save-as-draft-option" },
+                { label: t("Publish now"), action: () => submit("publish-now"), testId: "publish-now-option" },
+                { label: t("Save as draft"), action: () => submit("save-as-draft"), testId: "save-as-draft-option" },
               ]
             : []
         }
       />
       <div className="mt-4">
-        Or,{" "}
-        <DimmedLink to={cancelLink} className="font-medium">
-          Cancel
-        </DimmedLink>
+        <Trans
+          i18nKey="Or, <resource>Cancel</resource>"
+          components={{ resource: <DimmedLink to={cancelLink} className="font-medium" /> }}
+        />
       </div>
     </div>
   );

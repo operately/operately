@@ -120,9 +120,7 @@ export function MilestoneList(props: MilestoneListProps) {
         {props.variant === "project" && totalMilestones > 0 && (
           <div className="flex items-center gap-1 text-sm text-content-accent">
             <PieChart size={16} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
-            <span>
-              {completedCount}/{totalMilestones} completed
-            </span>
+            <span>{t("{{completed}}/{{total}} completed", { completed: completedCount, total: totalMilestones })}</span>
           </div>
         )}
         {props.canEdit && (

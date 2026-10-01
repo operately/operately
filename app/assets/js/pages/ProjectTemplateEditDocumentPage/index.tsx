@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useUpdateTemplateDocument } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -12,6 +14,7 @@ import React from "react";
 export default { name: "ProjectTemplateEditDocumentPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, node } = useLoadedData();
   const updateDocumentMutation = useUpdateTemplateDocument({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -36,14 +39,14 @@ function Page() {
       navigate(cancelLink);
       return true;
     } catch {
-      showErrorToast("Document not updated", "Check the form and try again.");
+      showErrorToast(i18n.t("Document not updated"), i18n.t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <DocumentEditPage
-      pageTitle={["Edit Document", template.name]}
+      pageTitle={[t("Edit Document"), template.name]}
       navigation={buildProjectTemplateResourceNavigation(template, paths, {
         parentFolderId: node.parentFolderId,
         current: { to: cancelLink, label: document.name },

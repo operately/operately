@@ -1,3 +1,5 @@
+import i18n from "../../i18n";
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { Modal } from "../../Modal";
 import type { SubscribersSelector } from "../SubscribersSelector";
@@ -25,8 +27,9 @@ export function SubscribersSelectorModal({
   selectedSubscribers,
   alwaysNotify,
   onSave,
-  alwaysNotifyLabel = "Always notified",
+  alwaysNotifyLabel = i18n.t("Always notified"),
 }: SubscribersSelectorModalProps) {
+  const { t } = useTranslation();
   const [localSelected, setLocalSelected] = useState<Set<string>>(
     new Set(selectedSubscribers.map((s) => s.person?.id || "").filter(Boolean)),
   );
@@ -73,11 +76,11 @@ export function SubscribersSelectorModal({
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
             <ActionLink onClick={handleSelectEveryone} testId="select-everyone">
-              Select everyone
+              {t("Select everyone")}
             </ActionLink>
             <span className="text-content-dimmed">&middot;</span>
             <ActionLink onClick={handleSelectNoOne} testId="select-no-one">
-              Select no one
+              {t("Select no one")}
             </ActionLink>
           </div>
 
@@ -87,8 +90,8 @@ export function SubscribersSelectorModal({
               type="search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Find people"
-              aria-label="Find people"
+              placeholder={t("Find people")}
+              aria-label={t("Find people")}
               className="w-full rounded-md border border-surface-outline bg-surface-base py-2 pl-9 pr-3 text-sm text-content-accent placeholder:text-content-dimmed focus:outline-none focus:ring-2 focus:ring-brand-1"
             />
           </div>
@@ -104,10 +107,10 @@ export function SubscribersSelectorModal({
 
           <div className="flex gap-2">
             <PrimaryButton onClick={handleSave} testId="submit">
-              Save selection
+              {t("Save selection")}
             </PrimaryButton>
             <SecondaryButton onClick={onClose} testId="cancel">
-              Never mind
+              {t("Never mind")}
             </SecondaryButton>
           </div>
         </div>
@@ -121,13 +124,14 @@ interface ModalHeaderProps {
 }
 
 function ModalHeader({ onClose }: ModalHeaderProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between mb-6">
-      <h2 className="text-2xl font-bold">Select people to notify</h2>
+      <h2 className="text-2xl font-bold">{t("Select people to notify")}</h2>
       <button
         onClick={onClose}
         className="text-content-dimmed hover:text-content-accent transition-colors"
-        aria-label="Close"
+        aria-label={t("Close")}
       >
         <IconX size={24} />
       </button>

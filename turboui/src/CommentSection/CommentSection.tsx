@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React, { useMemo } from "react";
 import { CommentInput } from "./CommentInput";
 import { CommentItem } from "./CommentItem";
@@ -20,10 +22,11 @@ export function CommentSection({
   commentDraftKey,
   editCommentDraftKey,
   commentNotificationInfo,
-  ackLabel = "Check-In",
+  ackLabel = i18n.t("Check-In"),
   onCommentVisible,
   canManageComments = false,
 }: CommentSectionProps) {
+  useTranslation();
   const form = useMemo<CommentFormState>(
     () => ({
       items: [],

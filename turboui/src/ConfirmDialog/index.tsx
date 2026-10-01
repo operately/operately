@@ -61,17 +61,22 @@ export function ConfirmDialog({
       >
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <Icon size={20} className={iconColor} />
-            <h2 className="text-xl font-semibold text-content-base">{title}</h2>
+            <Icon size={20} className={`${iconColor} shrink-0`} />
+            <h2 className="min-w-0 break-words text-xl font-semibold text-content-base">{title}</h2>
           </div>
 
           <p className="text-content-base">{message}</p>
 
-          <div className="flex gap-3 justify-end">
-            <SecondaryButton onClick={onCancel} disabled={confirming}>
+          <div className="flex flex-wrap gap-3 justify-end">
+            <SecondaryButton onClick={onCancel} disabled={confirming} className="max-w-full !whitespace-normal">
               {resolvedCancelText}
             </SecondaryButton>
-            <ConfirmButton onClick={onConfirm} loading={confirming} disabled={confirming}>
+            <ConfirmButton
+              onClick={onConfirm}
+              loading={confirming}
+              disabled={confirming}
+              className="max-w-full !whitespace-normal"
+            >
               {resolvedConfirmText}
             </ConfirmButton>
           </div>

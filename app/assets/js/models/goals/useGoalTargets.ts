@@ -140,7 +140,7 @@ export function useGoalTargets({ goalId, initialTargets }: { goalId: string; ini
         return normalize(reordered);
       },
       () => updateIndex.mutateAsync({ goalId, targetId: resolveId(id), index: destination }),
-      "Failed to reorder targets",
+      i18n.t("Failed to reorder targets"),
     );
   };
 

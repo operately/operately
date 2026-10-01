@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import type { Space } from "@/api";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import * as ProjectTemplateModel from "@/models/projectTemplates";
@@ -13,6 +15,7 @@ import { updateTemplateCreationSearchParams } from "./templateCreationUrl";
 export default { name: "ProjectTemplatesPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const data = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -54,10 +57,10 @@ function Page() {
       navigate(paths.projectTemplatePath(result.template.id));
       return { success: true };
     } catch (_error) {
-      showErrorToast("Template not created", "Check the name and Space, then try again.");
+      showErrorToast(i18n.t("Template not created"), i18n.t("Check the name and Space, then try again."));
       return {
         success: false,
-        error: "The template could not be created. Check the name and Space, then try again.",
+        error: i18n.t("The template could not be created. Check the name and Space, then try again."),
       };
     }
   }
@@ -68,7 +71,7 @@ function Page() {
       navigation={
         fixedSpace
           ? [{ to: paths.spacePath(fixedSpace.id), label: fixedSpace.name }]
-          : [{ to: paths.homePath(), label: "Home" }]
+          : [{ to: paths.homePath(), label: t("Home") }]
       }
       templates={data.templates}
       spaces={data.spaces.map((space) => toSpace(space, paths))}
@@ -81,7 +84,7 @@ function Page() {
               templateId: template.id,
               spaceId: template.space.id,
               backPath: libraryPath,
-              backPathName: "Project Templates",
+              backPathName: t("Project Templates"),
             })
           : null
       }
@@ -117,8 +120,11 @@ function createProjectTemplateLifecycleHandlers({
     try {
       result = await mutations.duplicate({ id, name });
     } catch (_error) {
-      showErrorToast("Template not duplicated", "Restore archived templates before duplicating them, then try again.");
-      return { success: false, error: "The template could not be duplicated. Refresh the page and try again." };
+      showErrorToast(
+        i18n.t("Template not duplicated"),
+        i18n.t("Restore archived templates before duplicating them, then try again."),
+      );
+      return { success: false, error: i18n.t("The template could not be duplicated. Refresh the page and try again.") };
     }
 
     navigate(paths.projectTemplatePath(result.template.id));
@@ -130,16 +136,16 @@ function createProjectTemplateLifecycleHandlers({
       await operation();
       return { success: true };
     } catch (_error) {
-      showErrorToast(message, "The template may have changed. Refresh the page and try again.");
-      return { success: false, error: "The template could not be changed. Refresh the page and try again." };
+      showErrorToast(message, i18n.t("The template may have changed. Refresh the page and try again."));
+      return { success: false, error: i18n.t("The template could not be changed. Refresh the page and try again.") };
     }
   }
 
   return {
     onDuplicate,
-    onArchive: (id) => lifecycleMutation("Template not archived", () => mutations.archive({ id })),
-    onRestore: (id) => lifecycleMutation("Template not restored", () => mutations.restore({ id })),
-    onDelete: (id) => lifecycleMutation("Template not deleted", () => mutations.delete({ id })),
+    onArchive: (id) => lifecycleMutation(i18n.t("Template not archived"), () => mutations.archive({ id })),
+    onRestore: (id) => lifecycleMutation(i18n.t("Template not restored"), () => mutations.restore({ id })),
+    onDelete: (id) => lifecycleMutation(i18n.t("Template not deleted"), () => mutations.delete({ id })),
   };
 }
 

@@ -1,3 +1,5 @@
+import { Trans } from "../../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Modal } from "../../Modal";
 import { DangerButton, SecondaryButton } from "../../Button";
@@ -12,7 +14,15 @@ interface DeleteStatusModalProps {
   onConfirm: (replacementStatusId: string) => void;
 }
 
-export function DeleteStatusModal({ isOpen, onClose, status, isLastStatus, statuses, onConfirm }: DeleteStatusModalProps) {
+export function DeleteStatusModal({
+  isOpen,
+  onClose,
+  status,
+  isLastStatus,
+  statuses,
+  onConfirm,
+}: DeleteStatusModalProps) {
+  const { t } = useTranslation();
   const [replacementStatusId, setReplacementStatusId] = React.useState<string>("");
   const [showValidation, setShowValidation] = React.useState(false);
 
@@ -35,14 +45,14 @@ export function DeleteStatusModal({ isOpen, onClose, status, isLastStatus, statu
 
   if (isLastStatus) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} title="Delete Status" testId={"delete-status-modal"}>
+      <Modal isOpen={isOpen} onClose={onClose} title={t("Delete Status")} testId={"delete-status-modal"}>
         <div className="space-y-4">
           <div className="text-content-base">
-            This status cannot be deleted. The Kanban board must have at least one status.
+            {t("This status cannot be deleted. The Kanban board must have at least one status.")}
           </div>
           <div className="flex justify-end pt-2">
             <SecondaryButton onClick={onClose} testId="delete-status-cancel">
-              Close
+              {t("Close")}
             </SecondaryButton>
           </div>
         </div>
@@ -51,11 +61,14 @@ export function DeleteStatusModal({ isOpen, onClose, status, isLastStatus, statu
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Delete Status" testId={"delete-status-modal"}>
+    <Modal isOpen={isOpen} onClose={onClose} title={t("Delete Status")} testId={"delete-status-modal"}>
       <div className="space-y-4">
         <div className="text-content-base">
-          To delete the <strong>{status.label}</strong> status, select a replacement status. All tasks
-          currently in <strong>{status.label}</strong> will be moved to the replacement status.
+          <Trans
+            i18nKey="To delete the <strong>{{label}}</strong> status, select a replacement status. All tasks currently in <strong2>{{label2}}</strong2> will be moved to the replacement status."
+            values={{ label: status.label, label2: status.label }}
+            components={{ strong: <strong />, strong2: <strong /> }}
+          />
         </div>
 
         <div className="flex items-center gap-2">
@@ -69,14 +82,14 @@ export function DeleteStatusModal({ isOpen, onClose, status, isLastStatus, statu
 
           {showValidation && replacementStatusId.length === 0 && (
             <span className="text-xs text-content-error" data-test-id="missing-replacement">
-              Required
+              {t("Required")}
             </span>
           )}
         </div>
 
         <div className="flex justify-end gap-3 pt-2">
           <SecondaryButton onClick={onClose} testId="delete-status-cancel">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <DangerButton
             onClick={() => {
@@ -89,7 +102,7 @@ export function DeleteStatusModal({ isOpen, onClose, status, isLastStatus, statu
             }}
             testId="delete-status-confirm"
           >
-            Delete Status
+            {t("Delete Status")}
           </DangerButton>
         </div>
       </div>

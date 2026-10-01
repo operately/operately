@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import React from "react";
 import { match } from "ts-pattern";
@@ -43,6 +45,7 @@ export namespace PrivacyField {
 }
 
 function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   return {
@@ -54,13 +57,13 @@ function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
     variant: props.variant || "inline",
     label: props.label || "",
     error: props.error || "",
-    placeholder: props.placeholder || "Select privacy level",
+    placeholder: props.placeholder || t("Select privacy level"),
     readonly: props.readonly || false,
     className: props.className || "",
     iconSize: props.iconSize || 18,
     textSize: props.textSize || "text-sm",
-    emptyStateText: props.emptyStateText || "Set privacy",
-    emptyStateReadonlyText: props.emptyStateReadonlyText || "No privacy set",
+    emptyStateText: props.emptyStateText || t("Set privacy"),
+    emptyStateReadonlyText: props.emptyStateReadonlyText || t("No privacy set"),
     hideCompanyAccess: props.hideCompanyAccess || false,
     testId: props.testId || "privacy-field",
   };
@@ -77,6 +80,7 @@ export function PrivacyField(props: PrivacyField.Props) {
 }
 
 function PrivacyPickerPopover(props: PrivacyField.State) {
+  const { t } = useTranslation();
   const [tempAccessLevels, setTempAccessLevels] = React.useState<PrivacyField.AccessLevels>({
     company: props.accessLevels.company,
     space: props.accessLevels.space,
@@ -101,17 +105,17 @@ function PrivacyPickerPopover(props: PrivacyField.State) {
     >
       <div className="p-4">
         <div className="mb-3">
-          <div className="text-sm font-medium">Privacy Settings</div>
+          <div className="text-sm font-medium">{t("Privacy Settings")}</div>
         </div>
 
         <AccessLevelOptions {...props} accessLevels={tempAccessLevels} setAccessLevels={setTempAccessLevels} />
 
         <div className="flex justify-end gap-2 mt-4">
           <SecondaryButton size="xs" onClick={handleCancel} testId="cancel">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton size="xs" onClick={handleSave} testId="save">
-            Save
+            {t("Save")}
           </PrimaryButton>
         </div>
       </div>
@@ -154,35 +158,46 @@ function getPrivacyIcon(levels: PrivacyField.AccessLevels, size: number) {
 
 function getPrivacyTitle(levels: PrivacyField.AccessLevels) {
   return match([levels.company, levels.space])
-    .with(["no_access", "no_access"], () => "Only assigned people have access")
-    .with(["no_access", "view"], () => `Only space members can view`)
-    .with(["no_access", "comment"], () => `Only space members can comment`)
-    .with(["no_access", "edit"], () => `Only space members can edit`)
-    .with(["no_access", "full"], () => `Space members have full access`)
-    .with(["view", "view"], () => `Everyone in the company can view`)
-    .with(["view", "comment"], () => `Company members can view, space members can comment`)
-    .with(["view", "edit"], () => `Company members can view, space members can edit`)
-    .with(["view", "full"], () => `Company members can view, space members have full access`)
-    .with(["comment", "comment"], () => `Everyone in the company can comment`)
-    .with(["comment", "edit"], () => `Company members can comment, space members can edit`)
-    .with(["comment", "full"], () => `Company members can comment, space members have full access`)
-    .with(["edit", "edit"], () => `Everyone in the company can edit`)
-    .with(["edit", "full"], () => `Company members can edit, space members have full access`)
-    .with(["full", "full"], () => `Everyone in the company has full access`)
+    .with(["no_access", "no_access"], () => i18n.t("Only assigned people have access"))
+    .with(["no_access", "view"], () => i18n.t("Only space members can view"))
+    .with(["no_access", "comment"], () => i18n.t("Only space members can comment"))
+    .with(["no_access", "edit"], () => i18n.t("Only space members can edit"))
+    .with(["no_access", "full"], () => i18n.t("Space members have full access"))
+    .with(["view", "view"], () => i18n.t("Everyone in the company can view"))
+    .with(["view", "comment"], () => i18n.t("Company members can view, space members can comment"))
+    .with(["view", "edit"], () => i18n.t("Company members can view, space members can edit"))
+    .with(["view", "full"], () => i18n.t("Company members can view, space members have full access"))
+    .with(["comment", "comment"], () => i18n.t("Everyone in the company can comment"))
+    .with(["comment", "edit"], () => i18n.t("Company members can comment, space members can edit"))
+    .with(["comment", "full"], () => i18n.t("Company members can comment, space members have full access"))
+    .with(["edit", "edit"], () => i18n.t("Everyone in the company can edit"))
+    .with(["edit", "full"], () => i18n.t("Company members can edit, space members have full access"))
+    .with(["full", "full"], () => i18n.t("Everyone in the company has full access"))
     .otherwise(() => {
       throw new Error("Invalid access levels: " + JSON.stringify(levels));
     });
 }
 
 const LEVEL_NAME: Record<PrivacyField.AccessLevel, string> = {
-  no_access: "No Access",
-  view: "View Access",
-  comment: "Comment Access",
-  edit: "Edit Access",
-  full: "Full Access",
+  get no_access() {
+    return i18n.t("No Access");
+  },
+  get view() {
+    return i18n.t("View Access");
+  },
+  get comment() {
+    return i18n.t("Comment Access");
+  },
+  get edit() {
+    return i18n.t("Edit Access");
+  },
+  get full() {
+    return i18n.t("Full Access");
+  },
 };
 
 function AccessLevelOptions(props: PrivacyField.State) {
+  const { t } = useTranslation();
   const setCompanyLevel = (level: PrivacyField.AccessLevel) => {
     props.setAccessLevels({
       ...props.accessLevels,
@@ -221,7 +236,7 @@ function AccessLevelOptions(props: PrivacyField.State) {
           <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-2">
               <IconBuilding size={18} className="-mt-[1px]" />
-              <label className="text-sm">Company Members</label>
+              <label className="text-sm">{t("Company Members")}</label>
             </div>
 
             <div className="w-40">
@@ -243,7 +258,7 @@ function AccessLevelOptions(props: PrivacyField.State) {
         <div className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <IconTent size={18} className="-mt-[1px]" />
-            <label className="text-sm">Space Members</label>
+            <label className="text-sm">{t("Space Members")}</label>
           </div>
 
           <div className="w-40">

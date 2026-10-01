@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { type ProjectTemplate } from "@/api";
 import { loader, useLoadedData } from "./loader";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
@@ -52,8 +53,8 @@ function Page() {
 function navigation(template: ProjectTemplate, paths: Paths) {
   return [
     { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
+    { to: paths.spaceProjectTemplatesPath(template.space.id), label: i18n.t("Project Templates") },
     { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: "Discussions" },
+    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: i18n.t("Discussions") },
   ];
 }

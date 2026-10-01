@@ -1,3 +1,6 @@
+import { tn } from "../i18n";
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import Select from "react-select";
 
@@ -80,6 +83,7 @@ export function ProjectTemplateFields({
   startDateField,
   onCreateTemplate,
 }: ProjectTemplateFields.Props & { startDateField?: string }) {
+  const { t } = useTranslation();
   const compatibleTemplates = React.useMemo(
     () => templates.filter((template) => template.spaceId === spaceId),
     [spaceId, templates],
@@ -96,10 +100,10 @@ export function ProjectTemplateFields({
   if (!spaceId) return null;
 
   const options: TemplateOption[] = [
-    { value: "", label: "No template", kind: "none" },
+    { value: "", label: t("No template"), kind: "none" },
     ...compatibleTemplates.map((template) => ({ value: template.id, label: template.name, kind: "template" as const })),
     ...(onCreateTemplate
-      ? [{ value: CREATE_TEMPLATE_OPTION, label: "Create a project template", kind: "create" as const }]
+      ? [{ value: CREATE_TEMPLATE_OPTION, label: t("Create a project template"), kind: "create" as const }]
       : []),
   ];
 
@@ -115,12 +119,12 @@ export function ProjectTemplateFields({
   return (
     <>
       <div>
-        <label className="font-bold text-sm mb-1 block text-left">Template</label>
+        <label className="font-bold text-sm mb-1 block text-left">{t("Template")}</label>
         <div data-test-id="template" className="flex-1">
           <Select
             unstyled={true}
             className="flex-1"
-            aria-label="Template"
+            aria-label={t("Template")}
             classNames={selectBoxClassNames(false)}
             value={options.find(({ value }) => value === templateId)}
             onChange={(option) => handleTemplateChange(option?.value ?? "")}
@@ -169,6 +173,7 @@ function SelectedTemplateFields({
   startDateError?: string;
   startDateField?: string;
 }) {
+  const { t } = useTranslation();
   if (!templateId) return null;
 
   return (
@@ -177,10 +182,10 @@ function SelectedTemplateFields({
       <InactiveDiscussionAuthorsWarning count={inactiveDiscussionCount} />
       {startDateField ? (
         <Forms.DateInput
-          label="Project start date"
+          label={t("Project start date")}
           field={startDateField}
           required
-          requiredMessage="Select a project start date."
+          requiredMessage={t("Select a project start date.")}
         />
       ) : (
         <ControlledStartDateField startDate={startDate} onStartDateChange={onStartDateChange} error={startDateError} />
@@ -198,10 +203,14 @@ function ControlledStartDateField({
   onStartDateChange: (startDate: string) => void;
   error?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div>
       <label className="font-bold text-sm mb-1 block text-left">
-        Project start date <span className="text-content-dimmed">*</span>
+        <Trans
+          i18nKey="Project start date <text>*</text>"
+          components={{ text: <span className="text-content-dimmed" /> }}
+        />
       </label>
       <DateField
         id="startDate"
@@ -209,10 +218,10 @@ function ControlledStartDateField({
         onDateSelect={(date) => onStartDateChange(date ? toDateWithoutTime(date.date) : "")}
         variant="form-input"
         calendarOnly
-        placeholder="Select a date"
+        placeholder={t("Select a date")}
         testId={createTestId("startDate")}
         error={!!error}
-        ariaLabel="Project start date"
+        ariaLabel={t("Project start date")}
         ariaDescribedBy={error ? "startDate-error" : undefined}
         ariaRequired
       />
@@ -226,10 +235,8 @@ function ControlledStartDateField({
 }
 
 function InactiveDiscussionAuthorsWarning({ count = 0 }: { count?: number }) {
+  useTranslation();
   if (count === 0) return null;
-
-  const discussions = count === 1 ? "1 discussion" : `${count} discussions`;
-  const author = count === 1 ? "its original author is" : "their original authors are";
 
   return (
     <div
@@ -237,36 +244,59 @@ function InactiveDiscussionAuthorsWarning({ count = 0 }: { count?: number }) {
       role="status"
     >
       <span className="font-semibold">
-        {discussions} in this template will be attributed to you because {author} no longer active.
+        {tn(
+          "1 discussion in this template will be attributed to you because its original author is no longer active.",
+          "{{count}} discussions in this template will be attributed to you because their original authors are no longer active.",
+          count,
+        )}
       </span>
     </div>
   );
 }
 
 function InactivePeopleWarning({ summary }: { summary?: ProjectTemplateSelection.Template["inactivePeopleSummary"] }) {
+  useTranslation();
   if (!summary || summary.personCount === 0) return null;
-
-  const people =
-    summary.personCount === 1 ? "1 person in this template is" : `${summary.personCount} people in this template are`;
-  const effects = [
-    summary.roleCount === 1 ? "project role" : summary.roleCount > 1 ? `${summary.roleCount} project roles` : null,
-    summary.taskCount === 1 ? "1 task" : summary.taskCount > 1 ? `${summary.taskCount} tasks` : null,
-  ].filter((effect): effect is string => effect !== null);
 
   return (
     <div
       className="rounded-lg border border-callout-warning-content bg-callout-warning-bg p-3 text-sm text-content-base"
       role="status"
     >
-      <span className="font-semibold">{people} no longer active.</span>{" "}
-      {effects.length > 0 && `Their ${joinEffects(effects)} will be left unassigned.`}
+      <span className="font-semibold">
+        {tn(
+          "1 person in this template is no longer active.",
+          "{{count}} people in this template are no longer active.",
+          summary.personCount,
+        )}
+      </span>{" "}
+      {inactiveAssignmentSummary(summary.roleCount, summary.taskCount)}
     </div>
   );
 }
 
-function joinEffects(effects: string[]) {
-  if (effects.length === 1) return effects[0];
-  return `${effects[0]} and ${effects[1]}`;
+function inactiveAssignmentSummary(roles: number, tasks: number) {
+  if (roles === 0 && tasks === 0) return null;
+  if (roles === 0)
+    return tn("Their 1 task will be left unassigned.", "Their {{count}} tasks will be left unassigned.", tasks);
+  if (tasks === 0)
+    return tn(
+      "Their project role will be left unassigned.",
+      "Their {{count}} project roles will be left unassigned.",
+      roles,
+    );
+  if (roles === 1)
+    return tn(
+      "Their project role and 1 task will be left unassigned.",
+      "Their project role and {{count}} tasks will be left unassigned.",
+      tasks,
+    );
+  return tn(
+    "Their {{roles}} project roles and 1 task will be left unassigned.",
+    "Their {{roles}} project roles and {{count}} tasks will be left unassigned.",
+    tasks,
+    { roles },
+  );
 }
 
 function isoDateToContextualDate(value: string | undefined): DateField.ContextualDate | null {

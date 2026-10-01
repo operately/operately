@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import classNames from "../../utils/classnames";
@@ -27,6 +28,7 @@ export function DeletedStatusRow({
   onRestore,
   showValidation,
 }: DeletedStatusRowProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-1" data-test-id={createTestId("deleted-status-row", index.toString())}>
       <div
@@ -58,12 +60,12 @@ export function DeletedStatusRow({
               size="sm"
             />
 
-            <Tooltip content="Restore this status" size="sm">
+            <Tooltip content={t("Restore this status")} size="sm">
               <button
                 type="button"
                 onClick={onRestore}
                 className="p-1 rounded transition text-content-dimmed hover:text-content-base hover:bg-surface-dimmed"
-                aria-label="Restore status"
+                aria-label={t("Restore status")}
                 data-test-id={createTestId("restore-deleted-status", deletedStatus.id)}
               >
                 <IconArrowBackUp size={16} />
@@ -78,7 +80,7 @@ export function DeletedStatusRow({
           className="text-xs text-rose-600 text-right"
           data-test-id={createTestId("missing-replacement", deletedStatus.id)}
         >
-          Select a replacement status
+          {t("Select a replacement status")}
         </div>
       )}
     </div>

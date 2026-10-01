@@ -1,3 +1,6 @@
+import i18n from "../i18n";
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Avatar } from "../Avatar";
 import { FormattedTime } from "../FormattedTime";
@@ -43,11 +46,12 @@ export function MilestoneCompletedFeedRow({
   activity: MilestoneActivity;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   return (
     <MilestoneFeedRow
       activity={activity}
       formattedTimePreferences={formattedTimePreferences}
-      label="Completed the Milestone"
+      label={t("Completed the Milestone")}
       icon={<IconSquareCheckFilled size={20} className="text-accent-1" />}
     />
   );
@@ -60,11 +64,12 @@ export function MilestoneReopenedFeedRow({
   activity: MilestoneActivity;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   return (
     <MilestoneFeedRow
       activity={activity}
       formattedTimePreferences={formattedTimePreferences}
-      label="Re-Opened the Milestone"
+      label={t("Re-Opened the Milestone")}
       icon={<IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />}
     />
   );
@@ -73,7 +78,7 @@ export function MilestoneReopenedFeedRow({
 export function AcknowledgmentFeedRow({
   person,
   ackAt,
-  label = "Check-In",
+  label = i18n.t("Check-In"),
   formattedTimePreferences,
 }: {
   person: Person;
@@ -81,6 +86,7 @@ export function AcknowledgmentFeedRow({
   label?: string;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  useTranslation();
   return (
     <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
       <div className="shrink-0">
@@ -89,8 +95,11 @@ export function AcknowledgmentFeedRow({
 
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
-          {person.fullName} acknowledged this {label}
-          <IconSquareCheckFilled size={24} className="text-accent-1" />
+          <Trans
+            i18nKey="{{fullName}} acknowledged this {{label}}<icon/>"
+            values={{ fullName: person.fullName, label: label }}
+            components={{ icon: <IconSquareCheckFilled size={24} className="text-accent-1" /> }}
+          />
         </div>
 
         <span className="text-content-dimmed text-sm">

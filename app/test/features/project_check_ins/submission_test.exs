@@ -21,6 +21,15 @@ defmodule Operately.Features.ProjectCheckIns.SubmissionTest do
     |> Steps.assert_notification_sent_to_reviewer(values)
   end
 
+  feature "Portuguese check-in submission preserves content and returns to English with the flag off", ctx do
+    ctx
+    |> Steps.given_champion_uses_portuguese()
+    |> Steps.submit_check_in(%{status: "on_track", description: "Ship <QA> & Sales"})
+    |> Steps.assert_portuguese_check_in("Ship <QA> & Sales")
+    |> Steps.disable_language_flag_and_reload_check_in()
+    |> Steps.assert_check_in_submitted(%{status: "on_track", description: "Ship <QA> & Sales"})
+  end
+
   @tag has_reviewer: false
   feature "submitting a check-in when project has no reviewers", ctx do
     values = %{status: "on_track", description: "This is a check-in."}

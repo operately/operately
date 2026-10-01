@@ -14,12 +14,34 @@ import { YearSelector } from "./components/YearSelector";
 import { getDateWithoutCurrentYear } from "./utils";
 import { usePopoverPositioning } from "./hooks/usePopoverPositioning";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 
 const DATE_TYPES = [
-  { value: "day" as const, label: "Day" },
-  { value: "month" as const, label: "Month" },
-  { value: "quarter" as const, label: "Quarter" },
-  { value: "year" as const, label: "Year" },
+  {
+    value: "day" as const,
+    get label() {
+      return i18n.t("Day");
+    },
+  },
+  {
+    value: "month" as const,
+    get label() {
+      return i18n.t("Month");
+    },
+  },
+  {
+    value: "quarter" as const,
+    get label() {
+      return i18n.t("Quarter");
+    },
+  },
+  {
+    value: "year" as const,
+    get label() {
+      return i18n.t("Year");
+    },
+  },
 ];
 
 export { DateDisplay } from "./DateDisplay";
@@ -84,7 +106,7 @@ export function DateField({
   date,
   minYear = 2020,
   maxYear = 2030,
-  placeholder = "Date",
+  placeholder = i18n.t("Date"),
   readonly = false,
   showOverdueWarning = false,
   variant = "inline",
@@ -106,6 +128,7 @@ export function DateField({
   onOpenChange,
   onCloseAutoFocus,
 }: DateField.Props) {
+  useTranslation();
   const isOpenControlled = controlledOpen !== undefined;
   const [internalOpen, setInternalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
@@ -319,9 +342,10 @@ function DatePickerTrigger({
   };
 
   const shouldShowMessage = showOverdueMessage && isDateOverdue;
-  const overdueMessage = shouldShowMessage && selectedDate?.date
-    ? `Overdue by ${durationHumanized(selectedDate.date, new Date())}`
-    : null;
+  const overdueMessage =
+    shouldShowMessage && selectedDate?.date
+      ? i18n.t("Overdue by {{duration}}", { duration: durationHumanized(selectedDate.date, new Date()) })
+      : null;
   const calendarIcon = !hideCalendarIcon ? (
     <IconCalendarEvent
       size={match(size)
@@ -364,11 +388,7 @@ function DatePickerTrigger({
         </span>
       </button>
 
-      {overdueMessage && (
-        <div className="text-xs text-content-error mt-1">
-          {overdueMessage}
-        </div>
-      )}
+      {overdueMessage && <div className="text-xs text-content-error mt-1">{overdueMessage}</div>}
     </div>
   );
 }
@@ -411,7 +431,7 @@ function DatePickerContent(props: DatePickerContentProps) {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <IconCalendarEvent size={19} />
-          Set Date
+          {i18n.t("Set Date")}
         </h2>
         {selectedDate && <ClearButton onClear={onClearDate} testId={testId} />}
       </div>
@@ -468,6 +488,7 @@ function DatePickerContent(props: DatePickerContentProps) {
 }
 
 function ClearButton({ onClear, testId }: { onClear?: () => void; testId: string }) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={() => onClear?.()}
@@ -475,7 +496,7 @@ function ClearButton({ onClear, testId }: { onClear?: () => void; testId: string
       data-test-id={createTestId(testId, "clear")}
     >
       <IconX size={14} className="mr-1" />
-      Clear
+      {t("Clear")}
     </button>
   );
 }

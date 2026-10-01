@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import * as Goals from "@/models/goals";
@@ -54,18 +55,26 @@ function TitleSection({ target, index, editing }) {
 }
 
 function DetailsSection({ target, editing }) {
+  const { t } = useTranslation();
   if (!editing) return null;
 
   return (
     <div className="col-span-3 mt-2 grid grid-cols-3 gap-2">
-      <TargetNumericField label="Start" target={target} field="from" testid="target-input-from" placeholder="30" />
-      <TargetNumericField label="Target" target={target} field="to" testid="target-input-to" placeholder="15" />
-      <TargetTextField label="Unit" target={target} field="unit" testid="target-input-unit" placeholder="minutes" />
+      <TargetNumericField label={t("Start")} target={target} field="from" testid="target-input-from" placeholder="30" />
+      <TargetNumericField label={t("Target")} target={target} field="to" testid="target-input-to" placeholder="15" />
+      <TargetTextField
+        label={t("Unit")}
+        target={target}
+        field="unit"
+        testid="target-input-unit"
+        placeholder={t("minutes")}
+      />
     </div>
   );
 }
 
 function NameField({ editing, target }: { target: Target; editing: boolean }) {
+  const { t } = useTranslation();
   if (!editing) {
     return <div className="font-medium truncate">{target.name}</div>;
   } else {
@@ -75,7 +84,7 @@ function NameField({ editing, target }: { target: Target; editing: boolean }) {
           target={target}
           field="name"
           testid="target-input-name"
-          placeholder="e.g. Average Onboarding Time is twice as fast"
+          placeholder={t("e.g. Average Onboarding Time is twice as fast")}
         />
       </div>
     );
@@ -90,6 +99,7 @@ function ProgressPieChart({ target }: { target: Target }) {
 }
 
 function Actions({ editing, target }: { editing: boolean; target: Target }) {
+  const { t } = useTranslation();
   const { closeEdit, resetEdit, targetOpen, deleteTarget } = useTargetsContext();
 
   if (!editing) return <></>;
@@ -97,11 +107,11 @@ function Actions({ editing, target }: { editing: boolean; target: Target }) {
   return (
     <div className="mt-3 flex items-center gap-2">
       <PrimaryButton size="sm" onClick={() => closeEdit(targetOpen)}>
-        Done
+        {t("Done")}
       </PrimaryButton>
       {!target.isNew && (
         <SecondaryButton size="sm" onClick={() => resetEdit(targetOpen)}>
-          Cancel
+          {t("Cancel")}
         </SecondaryButton>
       )}
       <IconTrash className="text-content-dimmed cursor-pointer" size={20} onClick={() => deleteTarget(targetOpen)} />

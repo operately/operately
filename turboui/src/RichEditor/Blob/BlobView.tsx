@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { createPortal } from "react-dom";
 
@@ -95,9 +96,10 @@ function ThumbnailView({ node }: { node: BlobNode }) {
 }
 
 function ImageThumbnail({ node }: { node: BlobNode }) {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const src = blobSrcUrl(node.attrs.src);
-  const label = node.attrs.alt || node.attrs.title || "image";
+  const label = node.attrs.alt || node.attrs.title;
 
   return (
     <NodeViewWrapper className="blob-container blob-image blob-thumbnail relative">
@@ -105,7 +107,7 @@ function ImageThumbnail({ node }: { node: BlobNode }) {
         type="button"
         className="block max-w-full appearance-none bg-transparent border-0 p-0"
         onClick={() => setIsModalOpen(true)}
-        ariaLabel={`Open ${label} preview`}
+        ariaLabel={label ? t("Open {{name}} preview", { name: label }) : t("Open image preview")}
       >
         <img
           src={src}
@@ -195,6 +197,7 @@ function VideoView({ node, deleteNode, view, updateAttributes }) {
 }
 
 function ImageView({ node, deleteNode, updateAttributes, view }) {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const disableEnter = (e: React.KeyboardEvent<HTMLSpanElement>) => {
@@ -231,7 +234,11 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
       type="button"
       className="block max-w-full appearance-none bg-transparent border-0 p-0"
       onClick={() => setIsModalOpen(true)}
-      aria-label={`Open ${node.attrs.alt || node.attrs.title || "image"} preview`}
+      aria-label={
+        node.attrs.alt || node.attrs.title
+          ? t("Open {{name}} preview", { name: node.attrs.alt || node.attrs.title })
+          : t("Open image preview")
+      }
     >
       {image}
     </button>
@@ -259,7 +266,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
               title={node.attrs.title}
               href={downloadableUrl(node.attrs.src)}
             >
-              Download
+              {t("Download")}
             </a>
           </span>
         )}
@@ -267,7 +274,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
           <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
             <div className="text-content-dimmed text-sm">•</div>
             <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
-              View original
+              {t("View original")}
             </a>
           </span>
         )}
@@ -311,6 +318,7 @@ function ImagePreviewModal({
   title?: string;
   alt?: string;
 }) {
+  const { t } = useTranslation();
   React.useEffect(() => {
     if (!isOpen || typeof document === "undefined") return;
 
@@ -338,7 +346,7 @@ function ImagePreviewModal({
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={title || alt || "Image preview"}
+      aria-label={title || alt || t("Image preview")}
       onClick={onClose}
     >
       <div
@@ -351,7 +359,7 @@ function ImagePreviewModal({
             type="button"
             className="rounded-full p-1 text-content-subtle transition-colors hover:bg-surface-highlight hover:text-content-base"
             onClick={onClose}
-            aria-label="Close image preview"
+            aria-label={t("Close image preview")}
           >
             <IconX size={20} />
           </button>
@@ -385,6 +393,7 @@ function lockBodyScroll() {
 }
 
 function FileView({ node, deleteNode, view }) {
+  const { t } = useTranslation();
   return (
     <NodeViewWrapper className="blob-container relative group bg-surface-dimmed rounded-lg p-2">
       <div className="flex items-center gap-2">
@@ -406,7 +415,7 @@ function FileView({ node, deleteNode, view }) {
                   title={node.attrs.title}
                   href={downloadableUrl(node.attrs.src)}
                 >
-                  Download
+                  {t("Download")}
                 </a>
               </span>
             )}

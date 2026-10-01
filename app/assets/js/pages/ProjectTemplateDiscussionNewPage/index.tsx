@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { type ProjectTemplate } from "@/api";
 import { useCreateTemplateDiscussion } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
@@ -11,6 +13,7 @@ import React from "react";
 export default { name: "ProjectTemplateDiscussionNewPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template } = useLoadedData();
   const createDiscussionMutation = useCreateTemplateDiscussion({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -27,18 +30,18 @@ function Page() {
       navigate(paths.projectTemplateDiscussionPath(template.id, result.discussion.id));
       return true;
     } catch {
-      showErrorToast("Discussion not created", "Check the form and try again.");
+      showErrorToast(i18n.t("Discussion not created"), i18n.t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <TemplateDiscussionForm
-      pageTitle={["New Discussion", template.name]}
+      pageTitle={[t("New Discussion"), template.name]}
       navigation={navigation(template, paths)}
       richTextHandlers={richTextHandlers}
       cancelLink={paths.projectTemplatePath(template.id, { tab: "discussions" })}
-      submitLabel="Post Discussion"
+      submitLabel={t("Post Discussion")}
       onSubmit={createDiscussion}
     />
   );
@@ -47,8 +50,8 @@ function Page() {
 function navigation(template: ProjectTemplate, paths: Paths) {
   return [
     { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
+    { to: paths.spaceProjectTemplatesPath(template.space.id), label: i18n.t("Project Templates") },
     { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: "Discussions" },
+    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: i18n.t("Discussions") },
   ];
 }

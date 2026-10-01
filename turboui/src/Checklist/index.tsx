@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
@@ -76,12 +77,13 @@ export namespace Checklist {
 }
 
 export function Checklist(props: Checklist.Props) {
+  const { t } = useTranslation();
   const [addActive, setAddActive] = React.useState(false);
   const completedCount = props.items.filter((item) => item.completed).length;
   const totalCount = props.items.length;
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const sectionTitle = props.sectionTitle || "Checklist";
+  const sectionTitle = props.sectionTitle || t("Checklist");
   const sectionTitlBottomMargin = props.sectionTitleBottomMargin || "mb-3";
   const togglable = props.togglable ?? true;
   const disabled = props.disabled ?? false;
@@ -103,8 +105,8 @@ export function Checklist(props: Checklist.Props) {
         <div className="mt-1">
           <div className="text-content-dimmed text-sm">
             {props.canEdit
-              ? "Create a checklist to track qualitative progress or binary outcomes."
-              : "This goal doesn't have a checklist."}
+              ? t("Create a checklist to track qualitative progress or binary outcomes.")
+              : t("This goal doesn't have a checklist.")}
           </div>
         </div>
       )}
@@ -147,6 +149,7 @@ function ChecklistSectionHeader({
   onAddClick: () => void;
   title: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -155,13 +158,17 @@ function ChecklistSectionHeader({
           <div className="flex items-center gap-2">
             <PieChart size={20} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
             <span className="text-sm text-content-dimmed">
-              {completedCount}/{totalCount} completed ({completionPercentage}%)
+              {t("{{completed}}/{{total}} completed ({{percentage}}%)", {
+                completed: completedCount,
+                total: totalCount,
+                percentage: completionPercentage,
+              })}
             </span>
           </div>
         )}
         {canEdit && !addActive && togglable && (
           <SecondaryButton size="xxs" onClick={onAddClick} testId="add-checklist-item">
-            Add
+            {t("Add")}
           </SecondaryButton>
         )}
       </div>
@@ -235,11 +242,7 @@ function ChecklistItemList({ state }: { state: State }) {
         </React.Fragment>
       ))}
       {placeholderIndex !== null && placeholderIndex === itemsWithIndex.length && (
-        <SubtleDropPlaceholder
-          containerId={containerId}
-          index={itemsWithIndex.length}
-          height={placeholderHeight}
-        />
+        <SubtleDropPlaceholder containerId={containerId} index={itemsWithIndex.length} height={placeholderHeight} />
       )}
 
       {state.addActive && <ChecklistItemAdd state={state} />}
@@ -268,6 +271,7 @@ function ChecklistItemCard({
 }
 
 function ChecklistItemAdd({ state }: { state: State }) {
+  const { t } = useTranslation();
   const [createMore, setCreateMore] = React.useState(false);
 
   const {
@@ -310,22 +314,22 @@ function ChecklistItemAdd({ state }: { state: State }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           testId="checklist-item-name"
-          label="Check"
+          label={t("Check")}
           autoFocus
-          placeholder="e.g. Sign the contract"
+          placeholder={t("e.g. Sign the contract")}
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
-          {...register("name", { required: "Can't be empty" })}
+          {...register("name", { required: t("Can't be empty") })}
         />
         <div className="flex items-center mt-4">
-          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" />
+          <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} />
           <div className="flex-1"></div>
           <div className="flex gap-2">
             <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button" testId="cancel">
-              Cancel
+              {t("Cancel")}
             </SecondaryButton>
             <PrimaryButton size="xs" type="submit" testId="save">
-              Add Check
+              {t("Add Check")}
             </PrimaryButton>
           </div>
         </div>
@@ -335,6 +339,7 @@ function ChecklistItemAdd({ state }: { state: State }) {
 }
 
 function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemState }) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -362,17 +367,17 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
     <InlineModal index={item.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
-          label="Check"
+          label={t("Check")}
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
-          {...register("name", { required: "Can't be empty" })}
+          {...register("name", { required: t("Can't be empty") })}
         />
         <div className="flex items-center gap-2 justify-end mt-4">
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(item.id)} type="button">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton size="xs" type="submit" testId="save">
-            Save
+            {t("Save")}
           </PrimaryButton>
         </div>
       </form>
@@ -431,7 +436,11 @@ function ChecklistItemView({
       data-test-id={createTestId("checklist-item", item.name)}
     >
       <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
-        <DragHandle isDragging={isDragging} disabled={!state.togglable || state.disabled} className="absolute -left-5 mt-0.5" />
+        <DragHandle
+          isDragging={isDragging}
+          disabled={!state.togglable || state.disabled}
+          className="absolute -left-5 mt-0.5"
+        />
       </div>
       <Checkbox
         checked={item.completed}
@@ -467,6 +476,7 @@ function ChecklistItemEditButton({
   isMenuOpen: boolean;
   setIsMenuOpen: (open: boolean) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="opacity-0 group-hover:opacity-100 transition-opacity relative">
       <button
@@ -493,7 +503,7 @@ function ChecklistItemEditButton({
               }}
               data-test-id="edit"
             >
-              Edit
+              {t("Edit")}
             </button>
             <button
               className="block w-full text-left px-3 py-1 text-sm text-content-error hover:bg-surface-highlight"
@@ -503,7 +513,7 @@ function ChecklistItemEditButton({
               }}
               data-test-id="delete"
             >
-              Delete
+              {t("Delete")}
             </button>
           </div>
         </>

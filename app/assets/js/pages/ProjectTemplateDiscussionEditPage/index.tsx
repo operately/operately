@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { type ProjectTemplate, type ProjectTemplateDiscussion } from "@/api";
 import { useUpdateTemplateDiscussion } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
@@ -11,6 +13,7 @@ import React from "react";
 export default { name: "ProjectTemplateDiscussionEditPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, discussion } = useLoadedData();
   const updateDiscussionMutation = useUpdateTemplateDiscussion({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -19,12 +22,12 @@ function Page() {
 
   return (
     <TemplateDiscussionForm
-      pageTitle={["Edit", discussion.title, template.name]}
+      pageTitle={[t("Edit"), discussion.title, template.name]}
       navigation={navigation(template, discussion, paths)}
       initialValues={{ title: discussion.title, body: JSON.parse(discussion.body || "{}") }}
       richTextHandlers={richTextHandlers}
       cancelLink={paths.projectTemplateDiscussionPath(template.id, discussion.id)}
-      submitLabel="Save"
+      submitLabel={t("Save")}
       onSubmit={async (values) => {
         try {
           await updateDiscussionMutation.mutateAsync({
@@ -36,7 +39,7 @@ function Page() {
           navigate(paths.projectTemplateDiscussionPath(template.id, discussion.id));
           return true;
         } catch {
-          showErrorToast("Discussion not updated", "Check the form and try again.");
+          showErrorToast(i18n.t("Discussion not updated"), i18n.t("Check the form and try again."));
           return false;
         }
       }}
@@ -47,9 +50,9 @@ function Page() {
 function navigation(template: ProjectTemplate, discussion: ProjectTemplateDiscussion, paths: Paths) {
   return [
     { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
+    { to: paths.spaceProjectTemplatesPath(template.space.id), label: i18n.t("Project Templates") },
     { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: "Discussions" },
+    { to: paths.projectTemplatePath(template.id, { tab: "discussions" }), label: i18n.t("Discussions") },
     { to: paths.projectTemplateDiscussionPath(template.id, discussion.id), label: discussion.title },
   ];
 }

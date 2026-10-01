@@ -1,3 +1,6 @@
+import { Trans } from "turboui";
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import type { TaskListInteraction } from "turboui";
 import * as Goals from "@/models/goals";
 import { parseCheckInsForTurboUi } from "@/models/goalCheckIns";
@@ -53,6 +56,7 @@ interface CheckInReferenceProps {
 }
 
 export function Form(props: Props) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { mentionedPersonLookup } = useRichEditorHandlers();
   const lastCheckIns =
@@ -71,7 +75,7 @@ export function Form(props: Props) {
 
         <Subscribers {...props} />
 
-        <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
+        <Forms.FormError message={t("Fill out all the required fields")} className="-mb-6 mt-4" />
 
         <SubmitSection {...props} />
       </div>
@@ -80,6 +84,7 @@ export function Form(props: Props) {
 }
 
 function SubmitSection(props: Props) {
+  const { t } = useTranslation();
   if (props.mode === "view") return null;
 
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -99,12 +104,12 @@ function SubmitSection(props: Props) {
       <div className="mt-8">
         <ScheduleFlowControls
           scheduleFlow={scheduleFlow}
-          primaryLabel="Check-in"
+          primaryLabel={t("Check-in")}
           onPrimaryClick={() => submit(scheduleFlow.isScheduledLocally ? "schedule" : "submit")}
           loading={isSubmitting && (props.form.trigger === "submit" || props.form.trigger === "schedule")}
           testId="submit"
           formattedTimePreferences={formattedTimePreferences}
-          modalTitle="Schedule Check-in"
+          modalTitle={t("Schedule Check-in")}
           secondaryAction={
             <GhostButton
               loading={isSubmitting && props.form.trigger === "save-draft"}
@@ -112,7 +117,7 @@ function SubmitSection(props: Props) {
               size="base"
               onClick={() => submit("save-draft")}
             >
-              Save as draft
+              {t("Save as draft")}
             </GhostButton>
           }
         />
@@ -125,7 +130,7 @@ function SubmitSection(props: Props) {
       <div className="mt-8">
         <ScheduleFlowControls
           scheduleFlow={scheduleFlow}
-          primaryLabel={isScheduled ? "Save Changes" : "Submit check-in"}
+          primaryLabel={isScheduled ? t("Save Changes") : t("Submit check-in")}
           onPrimaryClick={() =>
             submit(isScheduled ? "save-changes" : scheduleFlow.isScheduledLocally ? "schedule" : "publish-draft")
           }
@@ -137,8 +142,8 @@ function SubmitSection(props: Props) {
           }
           testId="publish-draft"
           formattedTimePreferences={formattedTimePreferences}
-          modalTitle="Schedule Check-in"
-          scheduledPrimaryLabel={isScheduled ? "Save Changes" : undefined}
+          modalTitle={t("Schedule Check-in")}
+          scheduledPrimaryLabel={isScheduled ? t("Save Changes") : undefined}
           showScheduleOption={!isScheduled}
           secondaryAction={
             !isScheduled && (
@@ -148,15 +153,15 @@ function SubmitSection(props: Props) {
                 size="base"
                 onClick={() => submit("save-draft")}
               >
-                Save draft
+                {t("Save draft")}
               </GhostButton>
             )
           }
           options={
             isScheduled
               ? [
-                  { label: "Publish now", action: () => submit("publish-now"), testId: "publish-now-option" },
-                  { label: "Save as draft", action: () => submit("save-as-draft"), testId: "save-as-draft-option" },
+                  { label: t("Publish now"), action: () => submit("publish-now"), testId: "publish-now-option" },
+                  { label: t("Save as draft"), action: () => submit("save-as-draft"), testId: "save-as-draft-option" },
                 ]
               : []
           }
@@ -165,19 +170,20 @@ function SubmitSection(props: Props) {
     );
   }
 
-  return <Forms.Submit saveText="Save" buttonSize="base" />;
+  return <Forms.Submit saveText={t("Save")} buttonSize="base" />;
 }
 
 function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
+  const { t } = useTranslation();
   if (mode !== "edit") return null;
   if (allowFullEdit) return null;
 
   return (
     <InfoCallout
-      message={"Editing locked after 3 days"}
-      description={
-        "You can edit the due date, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
-      }
+      message={t("Editing locked after 3 days")}
+      description={t(
+        "You can edit the due date, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in.",
+      )}
     />
   );
 }
@@ -191,9 +197,10 @@ function StatusAndDueDate(props: Props) {
 }
 
 function TextualOverview({ goal }: { goal: Goals.Goal }) {
+  const { t } = useTranslation();
   return (
     <div className="ProseMirror">
-      <Label text="Overview" />
+      <Label text={t("Overview")} />
       <OverviewStatus goal={goal} /> <OverviewDueDate />
     </div>
   );
@@ -211,9 +218,13 @@ function OverviewStatus({ goal }: { goal: Goals.Goal }) {
 }
 
 function OverviewPending() {
+  useTranslation();
   return (
     <span>
-      The goal is <span className="bg-stone-300 dark:bg-stone-600">pending</span>. Work has not started yet.
+      <Trans
+        i18nKey="The goal is <text>pending</text>. Work has not started yet."
+        components={{ text: <span className="bg-stone-300 dark:bg-stone-600" /> }}
+      />
     </span>
   );
 }
@@ -221,7 +232,10 @@ function OverviewPending() {
 function OverviewOnTrack() {
   return (
     <span>
-      The goal is <mark data-highlight="bgGreen">on track</mark>.
+      <Trans
+        i18nKey="The goal is <status>on track</status>."
+        components={{ status: <mark data-highlight="bgGreen" /> }}
+      />
     </span>
   );
 }
@@ -229,8 +243,15 @@ function OverviewOnTrack() {
 function OverviewConcern({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
-      The goal <mark data-highlight="bgYellow">needs caution</mark> due to emerging risks.
-      {goal.reviewer && <span> {People.firstName(goal.reviewer)} should be aware.</span>}
+      <Trans
+        i18nKey="The goal <status>needs caution</status> due to emerging risks."
+        components={{ status: <mark data-highlight="bgYellow" /> }}
+      />
+      {goal.reviewer && (
+        <span>
+          <Trans i18nKey=" {{firstName}} should be aware." values={{ firstName: People.firstName(goal.reviewer) }} />
+        </span>
+      )}
     </span>
   );
 }
@@ -238,13 +259,21 @@ function OverviewConcern({ goal }: { goal: Goals.Goal }) {
 function OverviewIssue({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
-      The goal is <mark data-highlight="bgRed">off track</mark> due to significant problems affecting success.
-      {goal.reviewer && <span> {People.firstName(goal.reviewer)}'s help is needed.</span>}
+      <Trans
+        i18nKey="The goal is <status>off track</status> due to significant problems affecting success."
+        components={{ status: <mark data-highlight="bgRed" /> }}
+      />
+      {goal.reviewer && (
+        <span>
+          <Trans i18nKey=" {{firstName}}'s help is needed." values={{ firstName: People.firstName(goal.reviewer) }} />
+        </span>
+      )}
     </span>
   );
 }
 
 function OverviewDueDate() {
+  const { t } = useTranslation();
   const [dueDate] = Forms.useFieldValue<DateField.ContextualDate | null>("dueDate");
 
   if (dueDate) {
@@ -253,14 +282,25 @@ function OverviewDueDate() {
     if (date < new Date()) {
       return (
         <span>
-          {durationHumanized(date, new Date())} <mark data-highlight="bgRed">overdue</mark>.
+          <Trans
+            i18nKey="{{duration}} <status>overdue</status>."
+            values={{ duration: durationHumanized(date, new Date()) }}
+            components={{ status: <mark data-highlight="bgRed" /> }}
+          />
         </span>
       );
     } else {
-      return <span>{durationHumanized(new Date(), date)} until the deadline.</span>;
+      return (
+        <span>
+          <Trans
+            i18nKey="{{durationHumanized}} until the deadline."
+            values={{ durationHumanized: durationHumanized(new Date(), date) }}
+          />
+        </span>
+      );
     }
   } else {
-    return <span>No due date set.</span>;
+    return <span>{t("No due date set.")}</span>;
   }
 }
 
@@ -276,12 +316,13 @@ function StatusAndDueDateForm({ goal }: { goal: Goals.Goal }) {
 }
 
 function GoalStatusSelector({ goal }: { goal: Goals.Goal }) {
+  const { t } = useTranslation();
   const noReviewer = !goal.reviewer;
   const reviewerName = goal.reviewer ? People.firstName(goal.reviewer) : "";
 
   return (
     <div>
-      <Label text="Status" />
+      <Label text={t("Status")} />
       <StatusSelector field="status" reviewerFirstName={reviewerName} noReviewer={noReviewer} />
     </div>
   );
@@ -296,25 +337,27 @@ function Description(props: Props & CheckInReferenceProps) {
 }
 
 function DescriptionView({ taskList, content }: { taskList: TaskListInteraction; content?: unknown }) {
+  const { t } = useTranslation();
   const [value] = Forms.useFieldValue("description");
   const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <div>
-      <Label text="Key wins, obstacles and needs" />
+      <Label text={t("Key wins, obstacles and needs")} />
       <RichContent taskList={taskList} content={content ?? value} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
 
 function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: Goals.Goal } & CheckInReferenceProps) {
+  const { t } = useTranslation();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id! } });
   const [showPrevious, setShowPrevious] = React.useState(false);
 
   return (
     <div>
       <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <div className="font-bold">Describe key wins, obstacles and needs</div>
+        <div className="font-bold">{t("Describe key wins, obstacles and needs")}</div>
 
         {lastCheckIns.length > 0 && (
           <ActionLink
@@ -322,7 +365,7 @@ function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: 
             underline="hover"
             onClick={() => setShowPrevious((show) => !show)}
           >
-            {showPrevious ? "Hide previous check-in" : "Show previous check-in"}
+            {showPrevious ? t("Hide previous check-in") : t("Show previous check-in")}
           </ActionLink>
         )}
       </div>
@@ -332,7 +375,7 @@ function DescriptionEdit({ goal, lastCheckIns, mentionedPersonLookup }: { goal: 
       <Forms.FieldGroup>
         <Forms.RichTextArea
           field="description"
-          placeholder="Write here..."
+          placeholder={t("Write here...")}
           richTextHandlers={richTextHandlers}
           required
         />
@@ -348,6 +391,7 @@ function PreviousCheckIn({
   checkIns: ReturnType<typeof parseCheckInsForTurboUi>;
   mentionedPersonLookup: ReturnType<typeof useRichEditorHandlers>["mentionedPersonLookup"];
 }) {
+  const { t } = useTranslation();
   const formattedTimePreferences = useFormattedTimePreferences();
   const checkIn = checkIns[0];
   if (!checkIn) return null;
@@ -356,17 +400,22 @@ function PreviousCheckIn({
     <div className="mb-3 mt-2 rounded border border-stroke-base p-4">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-content-accent">Previous check-in</div>
+          <div className="text-sm font-semibold text-content-accent">{t("Previous check-in")}</div>
           <div className="mt-0.5 text-sm text-content-dimmed">
-            Posted by {checkIn.author?.fullName || "Unknown"} on{" "}
-            <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="long-date" />
+            <Trans
+              i18nKey="Posted by {{author}} on <date/>"
+              values={{ author: checkIn.author?.fullName || t("Unknown") }}
+              components={{
+                date: <FormattedTime {...formattedTimePreferences} time={checkIn.date} format="long-date" />,
+              }}
+            />
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
           <StatusBadge status={checkIn.status} hideIcon />
           <Link to={checkIn.link} underline="hover" className="text-sm font-medium">
-            View original
+            {t("View original")}
           </Link>
         </div>
       </div>
@@ -395,16 +444,17 @@ function Label({ text, info, className = "" }: { text: string; className?: strin
 }
 
 function DueDateSelector() {
+  const { t } = useTranslation();
   const [value, setValue] = Forms.useFieldValue<DateField.ContextualDate | null>("dueDate");
 
   return (
     <div>
-      <Label text="Due Date" info="Set a new due date for the goal." />
+      <Label text={t("Due Date")} info="Set a new due date for the goal." />
       <DateField
         date={value ?? null}
         onDateSelect={(date) => setValue(date)}
         variant="form-field"
-        placeholder="No due date set"
+        placeholder={t("No due date set")}
       />
     </div>
   );
@@ -431,15 +481,15 @@ function Targets(props: Props) {
 function targetSectionLabel(targetCount: number, mode: Props["mode"], allowFullEdit: boolean) {
   if ((mode === "edit" && allowFullEdit) || mode === "new") {
     if (targetCount === 1) {
-      return "Update Target";
+      return i18n.t("Update Target");
     } else {
-      return "Update Targets";
+      return i18n.t("Update Targets");
     }
   } else {
     if (targetCount === 1) {
-      return "Target";
+      return i18n.t("Target");
     } else {
-      return "Targets";
+      return i18n.t("Targets");
     }
   }
 }
@@ -461,6 +511,7 @@ function Subscribers(props: Props) {
 }
 
 function Checks(props: Props) {
+  const { t } = useTranslation();
   const [items, setItems] = Forms.useFieldValue<Goals.Check[]>("checklist");
 
   if (!items || items.length === 0) {
@@ -499,7 +550,7 @@ function Checks(props: Props) {
       updateItem={noOp}
       toggleItem={toggle}
       updateItemIndex={updateItemIndex}
-      sectionTitle={props.mode === "view" ? "Checklist" : "Update Checklist"}
+      sectionTitle={props.mode === "view" ? t("Checklist") : t("Update Checklist")}
       togglable={props.mode !== "view"}
       disabled={true}
     />

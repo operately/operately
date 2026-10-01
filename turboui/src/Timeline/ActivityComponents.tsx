@@ -1,3 +1,4 @@
+import { Trans } from "../Translate";
 import React from "react";
 import { AvatarWithName } from "../Avatar";
 import FormattedTime from "../FormattedTime";
@@ -10,15 +11,22 @@ export function MilestoneCompletedActivity({ activity, formattedTimePreferences 
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AvatarWithName
-              person={activity.author}
-              size="normal"
-              nameFormat="short"
-              link={activity.author.profileLink}
-              className="font-semibold"
+            <Trans
+              i18nKey="<author/> <icon/><text>completed the milestone</text>"
+              components={{
+                author: (
+                  <AvatarWithName
+                    person={activity.author}
+                    size="normal"
+                    nameFormat="short"
+                    link={activity.author.profileLink}
+                    className="font-semibold"
+                  />
+                ),
+                icon: <IconSquareCheckFilled size={20} className="text-accent-1" />,
+                text: <div className="pr-2 font-semibold text-content-accent" />,
+              }}
             />
-            <IconSquareCheckFilled size={20} className="text-accent-1" />
-            <div className="pr-2 font-semibold text-content-accent">completed the milestone</div>
           </div>
 
           <div className="flex items-center justify-between gap-2">
@@ -38,15 +46,22 @@ export function MilestoneReopenedActivity({ activity, formattedTimePreferences }
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AvatarWithName
-              person={activity.author}
-              size="normal"
-              nameFormat="short"
-              link={activity.author.profileLink}
-              className="font-semibold"
+            <Trans
+              i18nKey="<author/> <icon/><text>re-opened the milestone</text>"
+              components={{
+                author: (
+                  <AvatarWithName
+                    person={activity.author}
+                    size="normal"
+                    nameFormat="short"
+                    link={activity.author.profileLink}
+                    className="font-semibold"
+                  />
+                ),
+                icon: <IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />,
+                text: <div className="pr-2 font-semibold text-content-accent" />,
+              }}
             />
-            <IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
-            <div className="pr-2 font-semibold text-content-accent">re-opened the milestone</div>
           </div>
 
           <div className="flex items-center justify-between gap-2">
@@ -69,16 +84,17 @@ export function MilestoneCreatedActivity({ activity, formattedTimePreferences }:
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-1.5">
-          <AvatarWithName
-            person={activity.author}
-            size="tiny"
-            textSize="small"
-            nameFormat="short"
-            link={activity.author.profileLink}
-            className="text-content-dimmed font-medium"
-            showAvatar={false}
-          />
-          <span className="min-w-0">{activity.content || "created the milestone"}</span>
+          {activity.content ? (
+            <>
+              <MilestoneAuthor activity={activity} />
+              <span className="min-w-0">{activity.content}</span>
+            </>
+          ) : (
+            <Trans
+              i18nKey="<author/> <text>created the milestone</text>"
+              components={{ author: <MilestoneAuthor activity={activity} />, text: <span className="min-w-0" /> }}
+            />
+          )}
         </div>
       </div>
 
@@ -100,16 +116,17 @@ export function MilestoneDescriptionActivity({ activity, formattedTimePreference
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-1.5">
-          <AvatarWithName
-            person={activity.author}
-            size="tiny"
-            textSize="small"
-            nameFormat="short"
-            link={activity.author.profileLink}
-            className="text-content-dimmed font-medium"
-            showAvatar={false}
-          />
-          <span className="min-w-0">{activity.content || "added a description"}</span>
+          {activity.content ? (
+            <>
+              <MilestoneAuthor activity={activity} />
+              <span className="min-w-0">{activity.content}</span>
+            </>
+          ) : (
+            <Trans
+              i18nKey="<author/> <text>added a description</text>"
+              components={{ author: <MilestoneAuthor activity={activity} />, text: <span className="min-w-0" /> }}
+            />
+          )}
         </div>
       </div>
 
@@ -131,16 +148,17 @@ export function MilestoneUpdateActivity({ activity, formattedTimePreferences }: 
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-1.5">
-          <AvatarWithName
-            person={activity.author}
-            size="tiny"
-            textSize="small"
-            nameFormat="short"
-            link={activity.author.profileLink}
-            className="text-content-dimmed font-medium"
-            showAvatar={false}
-          />
-          <span className="min-w-0">{activity.content || "updated the milestone"}</span>
+          {activity.content ? (
+            <>
+              <MilestoneAuthor activity={activity} />
+              <span className="min-w-0">{activity.content}</span>
+            </>
+          ) : (
+            <Trans
+              i18nKey="<author/> <text>updated the milestone</text>"
+              components={{ author: <MilestoneAuthor activity={activity} />, text: <span className="min-w-0" /> }}
+            />
+          )}
         </div>
       </div>
 
@@ -158,15 +176,22 @@ export function AcknowledgmentActivity({ person, ackAt, formattedTimePreferences
     <div className="flex items-center justify-between gap-3 py-6 px-4 not-first:border-t border-stroke-base text-content-accent">
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
-          <AvatarWithName
-            person={person}
-            size="normal"
-            nameFormat="short"
-            link={person.profileLink}
-            className="font-semibold"
+          <Trans
+            i18nKey="<author/> <text>acknowledged this Check-In</text><icon/>"
+            components={{
+              author: (
+                <AvatarWithName
+                  person={person}
+                  size="normal"
+                  nameFormat="short"
+                  link={person.profileLink}
+                  className="font-semibold"
+                />
+              ),
+              text: <span />,
+              icon: <IconSquareCheckFilled size={24} className="text-accent-1" />,
+            }}
           />
-          <span>acknowledged this Check-In</span>
-          <IconSquareCheckFilled size={24} className="text-accent-1" />
         </div>
 
         <div className="flex items-center justify-between">
@@ -176,5 +201,19 @@ export function AcknowledgmentActivity({ person, ackAt, formattedTimePreferences
         </div>
       </div>
     </div>
+  );
+}
+
+function MilestoneAuthor({ activity }: Pick<ActivityProps, "activity">) {
+  return (
+    <AvatarWithName
+      person={activity.author}
+      size="tiny"
+      textSize="small"
+      nameFormat="short"
+      link={activity.author.profileLink}
+      className="text-content-dimmed font-medium"
+      showAvatar={false}
+    />
   );
 }

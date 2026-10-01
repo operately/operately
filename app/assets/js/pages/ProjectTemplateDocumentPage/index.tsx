@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import { useDeleteTemplateResource } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -14,6 +16,7 @@ import { useNavigate } from "react-router";
 export default { name: "ProjectTemplateDocumentPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, node, comments } = useLoadedData();
   const deleteResourceMutation = useDeleteTemplateResource({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -43,7 +46,7 @@ function Page() {
       await deleteResourceMutation.mutateAsync({ templateId: template.id, nodeId: node.id });
       navigate(docsAndFilesLink);
     } catch {
-      showErrorToast("Resource not deleted", "The document is still on this page. Try again.");
+      showErrorToast(i18n.t("Resource not deleted"), i18n.t("The document is still on this page. Try again."));
     }
   }
 
@@ -55,7 +58,7 @@ function Page() {
         {
           type: "link",
           icon: IconEdit,
-          label: "Edit",
+          label: t("Edit"),
           link: paths.projectTemplateEditDocumentPath(template.id, node.id),
           keepOutsideOnBigScreen: true,
           testId: "edit-document-link",
@@ -63,7 +66,7 @@ function Page() {
         {
           type: "action",
           icon: IconTrash,
-          label: "Delete",
+          label: t("Delete"),
           onClick: toggleDeleteModal,
           hidden: !canEdit,
           testId: "delete-resource-link",
