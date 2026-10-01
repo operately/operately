@@ -10,6 +10,15 @@ jest.mock("@/hooks/useFormattedTimePreferences", () => ({
 }));
 
 describe("goal status banner", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-01-01T12:00:00Z"));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   const goal = (overrides: Partial<Goal>): Goal => ({
     __typename: "goal",
     id: "goal-1",
@@ -33,11 +42,13 @@ describe("goal status banner", () => {
   });
 
   it.each([
-    { isClosed: true, closedAt: "2024-05-12T12:00:00Z", state: "closed" },
-    { isArchived: true, archivedAt: "2024-05-12T12:00:00Z", state: "archived" },
-  ])("renders the $state banner", ({ state, ...overrides }) => {
+    { isClosed: true, closedAt: "2024-05-12T12:00:00Z", state: "closed", expectedDate: "May 12th, 2024" },
+    { isArchived: true, archivedAt: "2024-05-13T12:00:00Z", state: "archived", expectedDate: "May 13th, 2024" },
+  ])("renders the $state banner with its date", ({ state, expectedDate, ...overrides }) => {
     const container = renderBanner(goal(overrides));
-    expect(container.querySelector(`[data-test-id="goal-${state}-banner"]`)).not.toBeNull();
+    const statusBanner = container.querySelector(`[data-test-id="goal-${state}-banner"]`);
+    expect(statusBanner).not.toBeNull();
+    expect(statusBanner?.textContent).toContain(expectedDate);
   });
 
   it.each([null, undefined])("renders nothing when the closing date is missing (%s)", (closedAt) => {
@@ -53,7 +64,9 @@ describe("goal status banner", () => {
       goal({ isClosed: true, closedAt, isArchived: true, archivedAt: "2024-05-12T12:00:00Z" }),
     );
 
-    expect(container.querySelector('[data-test-id="goal-archived-banner"]')).not.toBeNull();
+    const archivedBanner = container.querySelector('[data-test-id="goal-archived-banner"]');
+    expect(archivedBanner).not.toBeNull();
+    expect(archivedBanner?.textContent).toContain("May 12th, 2024");
     expect(container.querySelector('[data-test-id="goal-closed-banner"]')).toBeNull();
   });
 
@@ -67,7 +80,9 @@ describe("goal status banner", () => {
       }),
     );
 
-    expect(container.querySelector('[data-test-id="goal-closed-banner"]')).not.toBeNull();
+    const closedBanner = container.querySelector('[data-test-id="goal-closed-banner"]');
+    expect(closedBanner).not.toBeNull();
+    expect(closedBanner?.textContent).toContain("May 12th, 2024");
     expect(container.querySelector('[data-test-id="goal-archived-banner"]')).toBeNull();
   });
 });
