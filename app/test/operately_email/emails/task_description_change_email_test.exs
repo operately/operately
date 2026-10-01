@@ -22,7 +22,7 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmailTest do
     {:ok, ctx}
   end
 
-  test "renders non-empty text body for mention emails", ctx do
+  test "renders complete mention subjects and bodies in English and Portuguese", ctx do
     description = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
 
     activity =
@@ -41,18 +41,23 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmailTest do
         }
       })
 
-    flush_emails()
-    TaskDescriptionChangeEmail.send(ctx.recipient, activity)
+    for {locale, expected} <- [{"en", "mentioned you"}, {"pt_BR", "mencionou você"}] do
+      flush_emails()
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
+        TaskDescriptionChangeEmail.send(ctx.recipient, activity)
+      end)
 
-    assert_email_sent(fn email ->
-      assert email.subject =~ "mentioned you"
-      assert email.subject =~ "Call leads"
-      assert String.trim(email.text_body) != ""
-      assert email.text_body =~ "mentioned you"
-      assert email.text_body =~ "Call leads"
-      assert email.text_body =~ "Link:"
-      true
-    end)
+      assert_email_sent(fn email ->
+        assert email.subject =~ expected
+        assert email.subject =~ "Call leads"
+        assert email.html_body =~ expected
+        assert email.text_body =~ expected
+        assert email.text_body =~ "Call leads"
+        assert email.text_body =~ "Dwight Schrute"
+        assert email.text_body =~ "Link:"
+        true
+      end)
+    end
   end
 
   defp flush_emails do

@@ -1,13 +1,13 @@
-<%= title("#{short_name(@author)} edited the timeframe of the #{@goal.name} goal") %>
+<%= title(gettext("%{author} edited the timeframe of the %{goal_name} goal", author: short_name(@author), goal_name: @goal.name)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  Old timeframe: <%= Date.to_string(@old_timeframe.start_date) %> &rarr; <%= Date.to_string(@old_timeframe.end_date) %>
+  <%= gettext("Old timeframe: %{old_start_date} → %{old_end_date}", old_start_date: Date.to_string(@old_timeframe.start_date), old_end_date: Date.to_string(@old_timeframe.end_date)) %>
 <% end %>
 
 <%= row do %>
-  New timeframe: <%= Date.to_string(@new_timeframe.start_date) %> &rarr; <%= Date.to_string(@new_timeframe.end_date) %>
+  <%= gettext("New timeframe: %{new_start_date} → %{new_end_date}", new_start_date: Date.to_string(@new_timeframe.start_date), new_end_date: Date.to_string(@new_timeframe.end_date)) %>
 <% end %>
 
 <%= spacer() %>
@@ -19,5 +19,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View/Comment") %>
+  <%= cta_button(@link, gettext("View/Comment")) %>
 <% end %>

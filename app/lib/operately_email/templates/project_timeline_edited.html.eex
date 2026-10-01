@@ -1,22 +1,22 @@
-<%= title("#{short_name(@author)} changed the timeline for #{@project.name}") %>
+<%= title(gettext("%{author} changed the timeline for %{project_name}", author: short_name(@author), project_name: @project.name)) %>
 
 <%= spacer() %>
 
 <%= if @duration_changed && @old_duration == :undefined do %>
   <%= row do %>
-    The duration is now <%= @new_duration %>.
+    <%= gettext("The duration is now %{new_duration}.", new_duration: @new_duration) %>
   <% end %>
 <% end %>
 
 <%= if @duration_changed && @old_duration != :undefined do %>
   <%= row do %>
-    The duration was changed from <%= @old_duration %> to <%= @new_duration %>.
+    <%= gettext("The duration was changed from %{old_duration} to %{new_duration}.", old_duration: @old_duration, new_duration: @new_duration) %>
   <% end %>
 <% end %>
 
 <%= if Enum.any?(@new_milestones) do %>
   <%= row do %>
-    New milestones added:
+    <%= gettext("New milestones added:") %>
   <% end %>
 
   <%= for milestone <- @new_milestones do %>
@@ -29,5 +29,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Project") %>
+  <%= cta_button(@link, gettext("View Project")) %>
 <% end %>

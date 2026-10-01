@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectResumingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   def send(person, activity) do
@@ -12,7 +13,7 @@ defmodule OperatelyEmail.Emails.ProjectResumingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "resumed the project")
+    |> subject(gettext("(%{project_name}) %{author} resumed the project", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:link, link)

@@ -1,28 +1,28 @@
-<%= title("#{short_name(@author)} edited the #{@goal.name} goal") %>
+<%= title(gettext("%{author} edited the %{goal_name} goal", author: short_name(@author), goal_name: @goal.name)) %>
 
 <%= spacer() %>
 
 <%= if @content.old_name != @content.new_name do %>
   <%= row do %>
-    The name was changed from <%= @content.old_name %> to <%= @content.new_name %>.
+    <%= gettext("The name was changed from %{content_old_name} to %{content_new_name}.", content_old_name: @content.old_name, content_new_name: @content.new_name) %>
   <% end %>
 <% end %>
 
 <%= if @content.old_timeframe != @content.new_timeframe do %>
   <%= row do %>
-    The timeframe was changed from <%= @content.old_timeframe %> to <%= @content.new_timeframe %>.
+    <%= gettext("The timeframe was changed from %{content_old_timeframe} to %{content_new_timeframe}.", content_old_timeframe: @content.old_timeframe, content_new_timeframe: @content.new_timeframe) %>
   <% end %>
 <% end %>
 
 <%= if @content.old_champion_id != @content.new_champion_id do %>
   <%= row do %>
-    The champion was changed from <%= short_name(@old_champion) %> to <%= short_name(@new_champion) %>
+    <%= gettext("The champion was changed from %{old_champion} to %{new_champion}", old_champion: short_name(@old_champion), new_champion: short_name(@new_champion)) %>
   <% end %>
 <% end %>
 
 <%= if @content.old_reviewer_id != @content.new_reviewer_id do %>
   <%= row do %>
-    The reviewer was changed from <%= short_name(@old_reviewer) %> to <%= short_name(@new_reviewer) %>
+    <%= gettext("The reviewer was changed from %{old_reviewer} to %{new_reviewer}", old_reviewer: short_name(@old_reviewer), new_reviewer: short_name(@new_reviewer)) %>
   <% end %>
 <% end %>
 
@@ -30,7 +30,7 @@
 
 <%= if @content.added_targets != [] do %>
   <%= row do %>
-    The following measurements were added:
+    <%= gettext("The following measurements were added:") %>
   <% end %>
 
   <%= for target <- @content.added_targets do %>
@@ -44,7 +44,7 @@
 
 <%= if @content.updated_targets != [] do %>
   <%= row do %>
-    The following measurements were updated:
+    <%= gettext("The following measurements were updated:") %>
   <% end %>
 
   <%= for target <- @content.updated_targets do %>
@@ -58,7 +58,7 @@
 
 <%= if @content.deleted_targets != [] do %>
   <%= row do %>
-    The following measurements were deleted:
+    <%= gettext("The following measurements were deleted:") %>
   <% end %>
 
   <%= for target <- @content.deleted_targets do %>
@@ -71,5 +71,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Goal") %>
+  <%= cta_button(@link, gettext("View Goal")) %>
 <% end %>

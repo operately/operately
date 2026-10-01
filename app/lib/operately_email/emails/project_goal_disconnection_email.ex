@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectGoalDisconnectionEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -16,7 +17,14 @@ defmodule OperatelyEmail.Emails.ProjectGoalDisconnectionEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "disconnected the project from the #{goal.name} goal")
+    |> subject(
+      gettext(
+        "(%{project_name}) %{author} disconnected the project from the %{goal_name} goal",
+        project_name: project.name,
+        author: Operately.People.Person.short_name(author),
+        goal_name: goal.name
+      )
+    )
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:goal, goal)
