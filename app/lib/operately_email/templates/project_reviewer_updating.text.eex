@@ -1,3 +1,3 @@
-<%= short_name(@author) %> changed the reviewer for <%= @project.name %>.
+<%= gettext("%{author} changed the reviewer for %{project_name}.", author: short_name(@author), project_name: @project.name) %>
 
-Link: <%= @cta_url %>
+<%= gettext("Link: %{url}", url: @cta_url) %>

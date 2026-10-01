@@ -1,8 +1,8 @@
-<%= title("#{short_name(@author)} submitted a check-in") %>
+<%= title(gettext("%{author} submitted a check-in", author: short_name(@author))) %>
 
 <%= spacer() %>
 
-<%= title("Overview", font_size: "16") %>
+<%= title(gettext("Overview"), font_size: "16") %>
 
 <%= row do %>
   <%= rich_text(@overview) %>
@@ -10,7 +10,7 @@
 
 <%= spacer() %>
 
-<%= title("Check-in notes", font_size: "16") %>
+<%= title(gettext("Check-in notes"), font_size: "16") %>
 
 <%= row do %>
   <%= rich_text(@check_in.description) %>

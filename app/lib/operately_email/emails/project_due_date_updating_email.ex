@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -11,13 +12,13 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
 
     previous_date = get_date_value(activity.content["old_due_date"])
     new_date = get_date_value(activity.content["new_due_date"])
-    action = subject_action(previous_date, new_date)
+    subject_text = subject_text(project.name, author, previous_date, new_date)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: action)
+    |> subject(subject_text)
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:previous_date, previous_date)
@@ -37,9 +38,9 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
   end
   defp get_date_value(date), do: Calendar.strftime(date, "%b %-d, %Y")
 
-  defp subject_action(_old, nil), do: "removed the due date"
-  defp subject_action(nil, _new), do: "set the due date"
-  defp subject_action(_old, _new), do: "changed the due date"
+  defp subject_text(where, author, _old, nil), do: gettext("(%{where}) %{author} removed the due date", where: where, author: Operately.People.Person.short_name(author))
+  defp subject_text(where, author, nil, _new), do: gettext("(%{where}) %{author} set the due date", where: where, author: Operately.People.Person.short_name(author))
+  defp subject_text(where, author, _old, _new), do: gettext("(%{where}) %{author} changed the due date", where: where, author: Operately.People.Person.short_name(author))
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])

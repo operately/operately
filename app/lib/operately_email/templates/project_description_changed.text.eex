@@ -1,9 +1,9 @@
-<%= short_name(@author) %> updated the "<%= @project_name %>" project description.
+<%= gettext("%{author} updated the \"%{project_name}\" project description.", author: short_name(@author), project_name: @project_name) %>
 
 <%= if @description do %>
-View the project to read the updated details.
+<%= gettext("View the project to read the updated details.") %>
 <% else %>
-The description was cleared.
+<%= gettext("The description was cleared.") %>
 <% end %>
 
-View Project: <%= @cta_url %>
+<%= gettext("View Project: %{url}", url: @cta_url) %>

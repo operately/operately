@@ -1,5 +1,5 @@
-<%= short_name(@author) %> moved <%= @task_name %>.
+<%= gettext("%{author} moved %{task_name}.", author: short_name(@author), task_name: @task_name) %>
 
-The task is now in <%= @destination_name %>.
+<%= gettext("The task is now in %{destination_name}.", destination_name: @destination_name) %>
 
-Link: <%= @cta_url %>
+<%= gettext("Link: %{url}", url: @cta_url) %>

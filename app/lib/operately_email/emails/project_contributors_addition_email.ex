@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectContributorsAdditionEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
@@ -13,7 +14,7 @@ defmodule OperatelyEmail.Emails.ProjectContributorsAdditionEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "added you as a contributor")
+    |> subject(gettext("(%{project_name}) %{author} added you as a contributor", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:responsibility, contributor.responsibility)

@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectMilestoneCreationEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -18,7 +19,14 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCreationEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "created the \"#{milestone.title}\" milestone")
+    |> subject(
+      gettext(
+        "(%{project_name}) %{author} created the \"%{milestone_title}\" milestone",
+        project_name: project.name,
+        author: Operately.People.Person.short_name(author),
+        milestone_title: milestone.title
+      )
+    )
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:milestone, milestone)

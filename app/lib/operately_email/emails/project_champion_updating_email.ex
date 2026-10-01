@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectChampionUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.ProjectChampionUpdatingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: get_action(person, champion))
+    |> subject(subject_text(project.name, author, person, champion))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:champion, champion)
@@ -28,12 +29,12 @@ defmodule OperatelyEmail.Emails.ProjectChampionUpdatingEmail do
   defp get_champion(nil), do: nil
   defp get_champion(id), do: Person.get!(:system, id: id)
 
-  defp get_action(_person, nil), do: "removed the champion"
-  defp get_action(person, champion) do
+  defp subject_text(where, author, _person, nil), do: gettext("(%{where}) %{author} removed the champion", where: where, author: Operately.People.Person.short_name(author))
+  defp subject_text(where, author, person, champion) do
     if person.id == champion.id do
-      "assigned you as the champion"
+      gettext("(%{where}) %{author} assigned you as the champion", where: where, author: Operately.People.Person.short_name(author))
     else
-      "assigned #{Person.short_name(champion)} as the champion"
+      gettext("(%{where}) %{author} assigned %{champion} as the champion", where: where, author: Operately.People.Person.short_name(author), champion: Person.short_name(champion))
     end
   end
 

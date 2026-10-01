@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -29,7 +30,7 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: where, who: author, action: subject_action(task, assigned_to_recipient, removed_from_recipient))
+    |> subject(subject_text(where, author, task, assigned_to_recipient, removed_from_recipient))
     |> assign(:author, author)
     |> assign(:name, task.name)
     |> assign(:old_assignee, old_assignee)
@@ -40,9 +41,30 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     |> render("task_assignee_updating")
   end
 
-  defp subject_action(task, true, _), do: "assigned you the task #{task.name}"
-  defp subject_action(task, _, true), do: "removed you from the task #{task.name}"
-  defp subject_action(task, _, _), do: "changed the assignees for #{task.name}"
+  defp subject_text(where, author, task, true, _) do
+    gettext(
+      "(%{where}) %{author} assigned you the task %{task_name}",
+      where: where,
+      author: Operately.People.Person.short_name(author),
+      task_name: task.name
+    )
+  end
+  defp subject_text(where, author, task, _, true) do
+    gettext(
+      "(%{where}) %{author} removed you from the task %{task_name}",
+      where: where,
+      author: Operately.People.Person.short_name(author),
+      task_name: task.name
+    )
+  end
+  defp subject_text(where, author, task, _, _) do
+    gettext(
+      "(%{where}) %{author} changed the assignees for %{task_name}",
+      where: where,
+      author: Operately.People.Person.short_name(author),
+      task_name: task.name
+    )
+  end
 
   defp get_person(nil), do: nil
   defp get_person(id) do

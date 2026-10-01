@@ -1,3 +1,3 @@
-<%= short_name(@author) %> closed the project and submitted a retrospective.
+<%= gettext("%{author} closed the project and submitted a retrospective.", author: short_name(@author)) %>
 
-Link: <%= @link %>
+<%= gettext("Link: %{url}", url: @link) %>
