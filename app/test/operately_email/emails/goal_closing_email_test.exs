@@ -39,11 +39,11 @@ defmodule OperatelyEmail.Emails.GoalClosingEmailTest do
       assert_email_sent(fn email ->
         if portuguese? do
           assert email.subject =~ "encerrou"
-          assert email.html_body =~ "Confirmar leitura"
+          assert email.html_body =~ "Reconhecer"
           assert email.text_body =~ "encerrou"
         else
           refute email.subject =~ "encerrou"
-          refute email.html_body =~ "Confirmar leitura"
+          refute email.html_body =~ "Reconhecer"
         end
         refute email.html_body =~ "%{"
         refute email.text_body =~ "%{"

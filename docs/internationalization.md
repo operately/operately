@@ -39,7 +39,7 @@ Disable the `i18n` company feature. The selector disappears and every surface re
 
 ## Terminology glossary
 
-Use these Brazilian Portuguese terms for product nouns in the pilot and later translations:
+Use these Brazilian Portuguese terms in the pilot and later translations:
 
 | English | Português (Brasil) |
 | --- | --- |
@@ -51,6 +51,8 @@ Use these Brazilian Portuguese terms for product nouns in the pilot and later tr
 | task | tarefa |
 | milestone | marco |
 | check-in | check-in |
+| acknowledge | reconhecer |
+| acknowledgement | reconhecimento |
 | champion | champion |
 | home | início |
 | my work | meu trabalho |

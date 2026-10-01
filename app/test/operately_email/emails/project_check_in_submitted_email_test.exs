@@ -38,11 +38,11 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
       assert_email_sent(fn email ->
         if portuguese? do
           assert email.subject =~ "enviou um check-in"
-          assert email.html_body =~ "Confirmar leitura"
+          assert email.html_body =~ "Reconhecer"
           assert email.text_body =~ "enviou um check-in"
         else
           refute email.subject =~ "enviou um check-in"
-          refute email.html_body =~ "Confirmar leitura"
+          refute email.html_body =~ "Reconhecer"
         end
         refute email.html_body =~ "%{"
         refute email.text_body =~ "%{"
