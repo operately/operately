@@ -208,7 +208,12 @@ function SearchResults({
   return (
     <>
       {state.isSearching && (
-        <div role="status" aria-live="polite" className="p-4 text-center text-content-dimmed text-sm">
+        <div
+          role="status"
+          aria-live="polite"
+          data-test-id={createTestId(state.testId, "loading")}
+          className="p-4 text-center text-content-dimmed text-sm"
+        >
           {t("Searching…")}
         </div>
       )}

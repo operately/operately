@@ -49,9 +49,40 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   end
 
   step :start_typing, ctx, query do
-    ctx
-    |> UI.fill(testid: "header-global-search", with: query)
-    |> UI.sleep(100)
+    UI.fill(ctx, testid: "header-global-search", with: query)
+  end
+
+  step :pause_search_requests, ctx do
+    script = """
+    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalSend = XMLHttpRequest.prototype.send;
+    const pendingSearches = [];
+
+    XMLHttpRequest.prototype.open = function(method, url, ...args) {
+      this.isQuickSearch = new URL(url, window.location.origin).pathname.endsWith('/companies/quick_search');
+      return originalOpen.call(this, method, url, ...args);
+    };
+    XMLHttpRequest.prototype.send = function(...args) {
+      if (!this.isQuickSearch) return originalSend.apply(this, args);
+      pendingSearches.push(() => originalSend.apply(this, args));
+    };
+    window.releaseSearchRequests = () => {
+      XMLHttpRequest.prototype.open = originalOpen;
+      XMLHttpRequest.prototype.send = originalSend;
+      pendingSearches.forEach(send => send());
+      return pendingSearches.length;
+    };
+    """
+
+    UI.execute("pause_search_requests", ctx, fn session -> Wallaby.Browser.execute_script(session, script) end)
+  end
+
+  step :release_search_requests, ctx do
+    UI.execute("release_search_requests", ctx, fn session ->
+      Wallaby.Browser.execute_script(session, "return window.releaseSearchRequests()", fn count ->
+        assert count > 0, "Expected a pending quick-search request"
+      end)
+    end)
   end
 
   #
@@ -293,7 +324,11 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
   end
 
   step :assert_searching_indicator, ctx do
-    ctx |> UI.assert_text("Searching…")
+    UI.assert_has(ctx, testid: "header-global-search-loading")
+  end
+
+  step :refute_searching_indicator, ctx do
+    UI.refute_has(ctx, testid: "header-global-search-loading")
   end
 
   step :assert_full_text_search_action, ctx, query do
