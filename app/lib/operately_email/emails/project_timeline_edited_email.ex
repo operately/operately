@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
@@ -23,7 +24,7 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "edited the timeline")
+    |> subject(gettext("(%{project_name}) %{author} edited the timeline", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:activity, activity)
@@ -37,23 +38,21 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
 
   defp calculate_duration(start_time, end_time) do
     if start_time && end_time do
-      duration_in_days = Date.diff(end_time, start_time)
+      duration_in_days = Date.diff(parse_date(end_time), parse_date(start_time))
       duration_in_weeks = div(duration_in_days, 7)
 
       cond do
-        duration_in_days == 1 ->
-          "1 day"
-        duration_in_days < 7 ->
-          "#{duration_in_days} days"
-        duration_in_weeks == 1 ->
-          "1 week"
-        true ->
-          "#{duration_in_weeks} weeks"
+        duration_in_days == 0 -> gettext("0 days")
+        duration_in_days < 7 -> ngettext("1 day", "%{count} days", duration_in_days)
+        true -> ngettext("1 week", "%{count} weeks", duration_in_weeks)
       end
     else
       :undefined
     end
   end
+
+  defp parse_date(%Date{} = date), do: date
+  defp parse_date(date) when is_binary(date), do: Date.from_iso8601!(date)
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])

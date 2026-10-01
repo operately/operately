@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectDescriptionChangedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.{Projects, Repo}
@@ -9,13 +10,13 @@ defmodule OperatelyEmail.Emails.ProjectDescriptionChangedEmail do
 
     project = Projects.get_project!(activity.content["project_id"])
 
-    action = get_action(person, activity, project)
+    subject_text = subject_text(project.name, author, person, activity, project)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: action)
+    |> subject(subject_text)
     |> assign(:author, author)
     |> assign(:project_name, project.name)
     |> assign(:description, description(activity))
@@ -23,13 +24,13 @@ defmodule OperatelyEmail.Emails.ProjectDescriptionChangedEmail do
     |> render("project_description_changed")
   end
 
-  defp get_action(person, activity, project) do
+  defp subject_text(where, author, person, activity, project) do
     mentioned_ids = Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
 
     if person.id in mentioned_ids do
-      "mentioned you in the description for \"#{project.name}\""
+      gettext("(%{where}) %{author} mentioned you in the description for \"%{project_name}\"", where: where, author: Operately.People.Person.short_name(author), project_name: project.name)
     else
-      "updated the description for \"#{project.name}\""
+      gettext("(%{where}) %{author} updated the description for \"%{project_name}\"", where: where, author: Operately.People.Person.short_name(author), project_name: project.name)
     end
   end
 

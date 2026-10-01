@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -14,17 +15,13 @@ defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
         opts: [preload: [:project]]
       )
 
-    action = get_action(person, activity, milestone)
+    subject_text = subject_text(milestone.project.name, author, person, activity, milestone)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(
-      where: milestone.project.name,
-      who: author,
-      action: action
-    )
+    |> subject(subject_text)
     |> assign(:author, author)
     |> assign(:milestone_name, milestone.title)
     |> assign(:description, decode_description(activity.content["description"]))
@@ -32,13 +29,13 @@ defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
     |> render("milestone_description_updating")
   end
 
-  defp get_action(person, activity, milestone) do
+  defp subject_text(where, author, person, activity, milestone) do
     mentioned_ids = Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
 
     if person.id in mentioned_ids do
-      "mentioned you in the description for \"#{milestone.title}\""
+      gettext("(%{where}) %{author} mentioned you in the description for \"%{milestone_title}\"", where: where, author: Operately.People.Person.short_name(author), milestone_title: milestone.title)
     else
-      "updated the description for \"#{milestone.title}\""
+      gettext("(%{where}) %{author} updated the description for \"%{milestone_title}\"", where: where, author: Operately.People.Person.short_name(author), milestone_title: milestone.title)
     end
   end
 

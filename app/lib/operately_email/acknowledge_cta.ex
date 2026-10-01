@@ -1,7 +1,9 @@
 defmodule OperatelyEmail.AcknowledgeCta do
+  use Gettext, backend: OperatelyWeb.Gettext
+
   def build(person, author_id, roles, url, view_text) do
     if should_acknowledge?(person, author_id, roles) do
-      {"Acknowledge", url <> "?acknowledge=true"}
+      {gettext("Acknowledge"), url <> "?acknowledge=true"}
     else
       {view_text, url}
     end

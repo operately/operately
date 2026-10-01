@@ -34,7 +34,7 @@ The build generates English JSON from the source catalog and other languages fro
 
 ## Delivery plan
 
-**Each numbered step is a separate PR merged to production.** Every PR must work independently with the flag disabled; incomplete translations remain available only to enabled companies.
+**Each numbered step is a separate PR merged to production, except PR 7, which is delivered through the sub-PRs below.** Every PR must work independently with the flag disabled; incomplete translations remain available only to enabled companies.
 
 | PR | Change | Production behavior and validation |
 | --- | --- | --- |
@@ -44,9 +44,31 @@ The build generates English JSON from the source catalog and other languages fro
 | 4 — Complete, in production | Translate the pilot workflow into Brazilian Portuguese (`pt-BR`) and add the gated language selector. | The Portuguese pilot and selector are shipped. Saved selection, recipient language, pluralization, layout, and switching the flag off are covered by the pilot. Unmigrated surfaces remain English. |
 | 5 — Complete | Extract remaining shared controls, account/onboarding screens, and company/space administration copy, including billing, export/import, and desktop company-dropdown, account-menu, New, Help, search, and update-badge chrome deferred from the pilot. | English remains unchanged. Extraction and follow-up audits cover these surfaces, including validation, errors, tooltips, and accessibility text. Existing translations are preserved; missing translations fall back to English, including plurals. Remaining Portuguese coverage and native-speaker review belong to PR 8. |
 | 6 — Implemented locally; ready for review | Extract remaining work-management copy: goals, projects, tasks, discussions, Docs & Files, and activity feeds. Include task-board filters/menus/milestone creation, remaining project and task operation toasts (due date, reminders, assignees, description, status, milestone, delete, move), space-task operations, and generic “Update failed” titles deferred from the pilot. | Work-management extraction is complete, including lifecycle forms, shared presentation, task boards, templates, and activity feeds. New messages have Brazilian Portuguese drafts. Catalog integrity, English/fallback behavior, pluralization, frontend builds, focused regressions, browser workflows, and representative narrow-screen/expanded-text layouts are verified. Pending review and merge; native-speaker approval remains PR 8. |
-| 7 | Extract remaining backend messages, email subjects/bodies, digests, and server-rendered pages. | Verify recipient-scoped rendering, mixed-language recipients, and unchanged API machine identifiers. |
+| 7 — In progress | Extract remaining backend messages, email subjects/bodies, digests, and server-rendered pages. | Verify recipient-scoped rendering, mixed-language recipients, and unchanged API machine identifiers. |
 | 8 | Complete the Brazilian Portuguese translation, terminology review, and coverage checks. | Test the full experience in English and Brazilian Portuguese with selected companies. CI checks catalog freshness and placeholder/plural integrity; establish checks against new uncataloged product copy. |
 | 9 | Enable language selection by default after acceptance. | Keep the flag as a rollback switch. Verify existing users retain English and disabling the flag restores English across UI and emails. |
+
+### PR 7 — backend and email substeps
+
+PR 7 is an umbrella milestone. Each sub-PR is independently deployable and includes extraction, Brazilian Portuguese drafts, regenerated catalogs, and focused English/Portuguese/fallback tests. Email changes verify recipient-scoped rendering and flag-off behavior. Preserve user-authored content, API machine identifiers, permissions, and delivery behavior. Native-speaker approval remains PR 8.
+
+| Sub-PR | Scope | Status |
+| --- | --- | --- |
+| 7a | Goal, project, milestone, and task notification email subjects and HTML/plain-text bodies, including lifecycle events, assignments, check-ins, and acknowledgements. | Implemented locally; ready for review |
+| 7b | Discussion, comment, Docs & Files, and remaining activity emails. | Planned |
+| 7c | Buffered notification item copy and digest subjects/bodies, including mixed-language recipients. | Planned |
+| 7d | Account, invitation, onboarding, security, and billing emails. | Planned |
+| 7e | Remaining backend user-facing messages and server-rendered pages. | Planned |
+
+7a covers implemented immediate notification emails. Existing unsupported email stubs remain unsupported. Discussion/comment emails belong to 7b even when attached to goals, projects, milestones, or tasks. Buffered-item headlines and digest composition belong to 7c; existing pilot translations remain intact. Remaining frontend extraction is tracked separately from PR 7.
+
+### PR 7a — work notification emails
+
+The 37 remaining implemented goal/project/milestone/task immediate email templates now use the shared catalog for subjects, HTML, and plain text. The previously translated task-creation email is preserved. This adds 197 messages with Brazilian Portuguese drafts; existing translations are retained. Complete subjects include the actor and location in named placeholders. Role labels and acknowledgement CTAs are translated without changing stored role/status identifiers or acknowledgement links.
+
+The catalog extractor now scans `.eex` templates using EEx, preserving source references and nested control flow. Goal and project check-in summaries share complete translated status/deadline sentences with catalog-owned emphasis and language-aware plurals. User-written names, descriptions, notes, and links remain literal. Shared deadline rendering handles due today and uses singular week/month forms; timeline emails handle persisted ISO dates and explicitly translate zero-day durations. Existing date display conventions remain unchanged; regional formatting follow-ups stay separately tracked.
+
+The 132 focused email, worker, and catalog tests pass. Validation covers every newly migrated HTML/plain-text template, missing-locale English fallback, literal names and escaping, success/removal branches, Portuguese mention emails, zero/singular/plural durations, recipient-scoped worker delivery to English and Portuguese recipients, and English rendering with the company flag disabled. Catalog regeneration is checked for determinism, placeholder/plural integrity, complete translations of new messages, and preservation of existing translations. Buffered-item headlines and digest composition remain 7c work. Native-speaker approval remains PR 8. This implementation has not been merged or deployed.
 
 ## Release acceptance
 
@@ -111,7 +133,7 @@ Validation covers English, Portuguese, substituted translations, missing-languag
 Remaining gaps before general availability:
 
 - Review and merge the local PR 6 implementation. Full-product acceptance with selected companies remains PR 8 work.
-- PR 7: remaining backend messages and email copy, digests, and server-rendered pages.
+- PR 7: review and merge 7a; complete substeps 7b–7e for remaining email copy, buffered notifications/digests, backend messages, and server-rendered pages.
 - People directory and org-chart page copy still need extraction.
 - PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted translations, and coverage checks.
 

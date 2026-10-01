@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -11,28 +12,27 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
     {:ok, task} =
       Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]])
 
-    action = get_action(person, activity, task)
+    mentioned = person.id in Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+    subject_text = subject_text(find_where_name(task), author, task, mentioned)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: find_where_name(task), who: author, action: action)
+    |> subject(subject_text)
     |> assign(:author, author)
-    |> assign(:action, action)
+    |> assign(:mentioned, mentioned)
     |> assign(:task_name, task.name)
     |> assign(:description, decode_description(activity.content["description"]))
     |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_description_change")
   end
 
-  defp get_action(person, activity, task) do
-    mentioned_ids = Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
-
-    if person.id in mentioned_ids do
-      "mentioned you in the description for \"#{task.name}\""
+  defp subject_text(where, author, task, mentioned) do
+    if mentioned do
+      gettext("(%{where}) %{author} mentioned you in the description for \"%{task_name}\"", where: where, author: Operately.People.Person.short_name(author), task_name: task.name)
     else
-      "updated the description for \"#{task.name}\""
+      gettext("(%{where}) %{author} updated the description for \"%{task_name}\"", where: where, author: Operately.People.Person.short_name(author), task_name: task.name)
     end
   end
 
@@ -52,7 +52,7 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
     case task do
       %{project: %{name: name}} -> name
       %{space: %{name: name}} -> name
-      _ -> "Unknown"
+      _ -> gettext("Unknown")
     end
   end
 

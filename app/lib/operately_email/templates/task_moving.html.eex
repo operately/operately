@@ -1,13 +1,13 @@
-<%= title("#{short_name(@author)} moved #{@task_name}") %>
+<%= title(gettext("%{author} moved %{task_name}", author: short_name(@author), task_name: @task_name)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  The task is now in <%= @destination_name %>.
+  <%= gettext("The task is now in %{destination_name}.", destination_name: @destination_name) %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Task") %>
+  <%= cta_button(@cta_url, gettext("View Task")) %>
 <% end %>

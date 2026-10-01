@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectClosedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -19,7 +20,7 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "closed the project and submitted a retrospective")
+    |> subject(gettext("(%{project_name}) %{author} closed the project and submitted a retrospective", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:project, project)
     |> assign(:retrospective, project.retrospective)
     |> assign(:author, author)
@@ -36,7 +37,7 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
       author.id,
       [project.reviewer, project.champion],
       url,
-      "View Retrospective"
+      gettext("View Retrospective")
     )
   end
 

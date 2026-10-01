@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -15,7 +16,7 @@ defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: get_action(person, reviewer))
+    |> subject(subject_text(project.name, author, person, reviewer))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:reviewer, reviewer)
@@ -27,12 +28,12 @@ defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
   defp get_reviewer(nil), do: nil
   defp get_reviewer(id), do: Person.get!(:system, id: id)
 
-  defp get_action(_person, nil), do: "removed the reviewer"
-  defp get_action(person, reviewer) do
+  defp subject_text(where, author, _person, nil), do: gettext("(%{where}) %{author} removed the reviewer", where: where, author: Operately.People.Person.short_name(author))
+  defp subject_text(where, author, person, reviewer) do
     if person.id == reviewer.id do
-      "assigned you as the reviewer"
+      gettext("(%{where}) %{author} assigned you as the reviewer", where: where, author: Operately.People.Person.short_name(author))
     else
-      "assigned #{Person.short_name(reviewer)} as the reviewer"
+      gettext("(%{where}) %{author} assigned %{reviewer} as the reviewer", where: where, author: Operately.People.Person.short_name(author), reviewer: Person.short_name(reviewer))
     end
   end
 

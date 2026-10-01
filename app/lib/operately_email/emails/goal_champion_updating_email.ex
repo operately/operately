@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalChampionUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.{Repo, Goals}
@@ -12,7 +13,7 @@ defmodule OperatelyEmail.Emails.GoalChampionUpdatingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "assigned you as the champion")
+    |> subject(gettext("(%{goal_name}) %{author} assigned you as the champion", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:link, OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url())

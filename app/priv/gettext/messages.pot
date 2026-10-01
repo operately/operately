@@ -16,6 +16,21 @@ msgstr ""
 msgid " %{firstName}'s help is needed."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/check_in_overview.ex:36
+msgid " %{name} should be aware."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:37
+msgid " %{name}'s help is needed."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:45
+msgid " due today."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalClosing/index.tsx:92
 msgid "%{author} <action>closed</action> the <goal>%{goalName}</goal> goal"
@@ -334,14 +349,42 @@ msgstr ""
 msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective> in the <goal>%{goalName}</goal> goal"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:1
+#: lib/operately_email/templates/goal_check_in_acknowledgement.text.eex:1
+msgid "%{author} acknowledged the check-in for %{goal_name}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:37
 msgid "%{author} acknowledged the retrospective"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_retrospective_acknowledged.html.eex:1
+#: lib/operately_email/templates/goal_retrospective_acknowledged.text.eex:1
+msgid "%{author} acknowledged the retrospective for %{goal_name}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:41
 msgid "%{author} acknowledged the retrospective in the <project>%{projectName}</project> project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_check_in_acknowledged.html.eex:1
+msgid "%{author} acknowledged your check-in for %{project_name} project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_check_in_acknowledged.text.eex:1
+msgid "%{author} acknowledged your check-in for %{project_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_retrospective_acknowledged.html.eex:1
+#: lib/operately_email/templates/project_retrospective_acknowledged.text.eex:1
+msgid "%{author} acknowledged your retrospective for %{project_name} project"
 msgstr ""
 
 #.frontend
@@ -544,6 +587,16 @@ msgstr ""
 msgid "%{author} added tasks <tasks/> in <location>%{locationName}</location>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_created.text.eex:1
+msgid "%{author} added the %{goal_name} and assigned you as the %{role}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_created.html.eex:1
+msgid "%{author} added the %{goal_name} goal"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:44
 msgid "%{author} added the %{milestoneName} milestone"
@@ -552,6 +605,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectMilestoneCreation/index.tsx:51
 msgid "%{author} added the %{milestoneName} milestone to <project>%{projectName}</project>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_created.html.eex:1
+msgid "%{author} added the %{project_name} project"
 msgstr ""
 
 #.frontend
@@ -594,6 +652,38 @@ msgstr ""
 msgid "%{author} added this goal"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_contributor_addition.html.eex:1
+#: lib/operately_email/templates/project_contributor_addition.text.eex:1
+msgid "%{author} added you as a %{role} on %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_contributors_addition.html.eex:1
+#: lib/operately_email/templates/project_contributors_addition.text.eex:1
+msgid "%{author} added you as a contributor on %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_archived.html.eex:1
+msgid "%{author} archived the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_archived.text.eex:1
+msgid "%{author} archived the %{goal_name} goal."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_archived.html.eex:1
+msgid "%{author} archived the %{project_name} project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_archived.text.eex:1
+msgid "%{author} archived the %{project_name} project."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:39
 msgid "%{author} archived the <goal>%{goalName}</goal> goal"
@@ -612,6 +702,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:34
 msgid "%{author} archived this goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_champion_updating.html.eex:7
+msgid "%{author} assigned %{champion} as the champion on %{project_name}"
 msgstr ""
 
 #.frontend
@@ -660,6 +755,11 @@ msgstr ""
 msgid "%{author} assigned %{personName} as the reviewer on <project>%{projectName}</project>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_reviewer_updating.html.eex:7
+msgid "%{author} assigned %{reviewer} as the reviewer on %{project_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:38
 msgid "%{author} assigned <task>%{taskName}</task> to milestone <new>%{newName}</new>"
@@ -685,9 +785,49 @@ msgstr ""
 msgid "%{author} assigned you as the champion"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_champion_updating.text.eex:1
+msgid "%{author} assigned you as the champion for the goal %{goal_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_champion_updating.html.eex:5
+msgid "%{author} assigned you as the champion on %{project_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:85
 msgid "%{author} assigned you as the reviewer"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_reviewer_updating.text.eex:1
+msgid "%{author} assigned you as the reviewer for the goal %{goal_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_reviewer_updating.html.eex:1
+msgid "%{author} assigned you as the reviewer on %{goal_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_reviewer_updating.html.eex:5
+msgid "%{author} assigned you as the reviewer on %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:2
+msgid "%{author} assigned you the task %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.text.eex:2
+msgid "%{author} assigned you the task %{name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_champion_updating.html.eex:1
+msgid "%{author} assinged you as the champion on %{goal_name}"
 msgstr ""
 
 #.frontend
@@ -698,6 +838,43 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:186
 msgid "%{author} changed assignees on the task <task>%{taskName}</task> in <location>%{locationName}</location>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:8
+msgid "%{author} changed the assignees for %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.text.eex:11
+msgid "%{author} changed the assignees for %{name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_champion_updating.text.eex:1
+msgid "%{author} changed the champion for %{project_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.html.eex:2
+#: lib/operately_email/templates/task_due_date_updating.html.eex:2
+msgid "%{author} changed the due date for %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.text.eex:1
+#: lib/operately_email/templates/task_due_date_updating.text.eex:1
+msgid "%{author} changed the due date for %{name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.html.eex:3
+msgid "%{author} changed the due date for %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.text.eex:3
+msgid "%{author} changed the due date for %{project_name} from %{previous_date} to %{new_date}."
 msgstr ""
 
 #.frontend
@@ -726,9 +903,19 @@ msgstr ""
 msgid "%{author} changed the due date to <date/> on the <project>%{projectName}</project>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_reparent.html.eex:1
+msgid "%{author} changed the goal parent of %{goal_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalReparent/index.tsx:38
 msgid "%{author} changed the parent goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_reparent.text.eex:1
+msgid "%{author} changed the parent goal of %{goal_name}"
 msgstr ""
 
 #.frontend
@@ -736,9 +923,19 @@ msgstr ""
 msgid "%{author} changed the parent goal of <goal>%{goalName}</goal>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_timeline_edited.text.eex:1
+msgid "%{author} changed the project timeline for %{project_name}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:91
 msgid "%{author} changed the reviewer for %{projectName}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_reviewer_updating.text.eex:1
+msgid "%{author} changed the reviewer for %{project_name}."
 msgstr ""
 
 #.frontend
@@ -755,6 +952,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectStartDateUpdating/index.tsx:44
 msgid "%{author} changed the start date to <date/> on the <project>%{projectName}</project>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_timeline_edited.html.eex:1
+msgid "%{author} changed the timeline for %{project_name}"
 msgstr ""
 
 #.frontend
@@ -799,14 +1001,34 @@ msgstr ""
 msgid "%{author} cleared the start date on the <project>%{projectName}</project>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_closing.html.eex:1
+msgid "%{author} closed the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_closed.html.eex:1
+msgid "%{author} closed the %{project_name} project and submitted a retrospective"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectClosed/index.tsx:49
 msgid "%{author} closed the <project>%{projectName}</project> project and submitted a <retrospective>retrospective</retrospective>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_closing.text.eex:1
+msgid "%{author} closed the goal \"%{goal_name}\"."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectClosed/index.tsx:41
 msgid "%{author} closed the project and submitted a <retrospective>retrospective</retrospective>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_closed.text.eex:1
+msgid "%{author} closed the project and submitted a retrospective."
 msgstr ""
 
 #.frontend
@@ -848,6 +1070,12 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:57
 msgid "%{author} completed the <milestone>%{milestoneName}</milestone> milestone in the <project>%{projectName}</project> project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_goal_connection.html.eex:1
+#: lib/operately_email/templates/project_goal_connection.text.eex:1
+msgid "%{author} connected the %{project_name} project to the %{goal_name} goal"
 msgstr ""
 
 #.frontend
@@ -943,6 +1171,21 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ResourceHubFolderCreated/index.tsx:53
 msgid "%{author} created a folder: <folder>%{folderName}</folder>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_milestone_creation.html.eex:1
+msgid "%{author} created the %{milestone_title} milestone"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_milestone_creation.text.eex:1
+msgid "%{author} created the %{milestone_title} milestone for %{project_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_created.text.eex:1
+msgid "%{author} created the %{project_name} project and assigned you as the %{role}."
 msgstr ""
 
 #.frontend
@@ -1147,6 +1390,12 @@ msgstr ""
 msgid "%{author} disabled public sharing for <document>%{documentName}</document> in the <parent>%{parentName}</parent> space"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_goal_disconnection.html.eex:1
+#: lib/operately_email/templates/project_goal_disconnection.text.eex:1
+msgid "%{author} disconnected the %{project_name} project from the %{goal_name} goal"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectGoalConnection/index.tsx:75
 msgid "%{author} disconnected the <project>%{projectName}</project> project from its parent goal"
@@ -1273,6 +1522,12 @@ msgstr ""
 msgid "%{author} edited a link: %{linkName}"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:1
+#: lib/operately_email/templates/goal_editing.text.eex:1
+msgid "%{author} edited the %{goal_name} goal"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:42
 msgid "%{author} edited the <goal>%{goalName}</goal> goal"
@@ -1283,9 +1538,19 @@ msgstr ""
 msgid "%{author} edited the goal"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_timeframe_editing.html.eex:1
+msgid "%{author} edited the timeframe of the %{goal_name} goal"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectTimelineEdited/index.tsx:38
 msgid "%{author} edited the timeline"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_timeframe_editing.text.eex:1
+msgid "%{author} edited the timeline of the %{goal_name} goal"
 msgstr ""
 
 #.frontend
@@ -1420,6 +1685,26 @@ msgstr ""
 msgid "%{author} marked the \"%{taskName}\" task as %{status} in <location>%{locationName}</location>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/task_description_change.html.eex:2
+msgid "%{author} mentioned you in the description for \"%{task_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_description_change.text.eex:2
+msgid "%{author} mentioned you in the description for \"%{task_name}\"."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_moving.html.eex:1
+msgid "%{author} moved %{task_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_moving.text.eex:1
+msgid "%{author} moved %{task_name}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:52
 msgid "%{author} moved <task>%{taskName}</task> from milestone <old>%{oldName}</old> to <new>%{newName}</new>"
@@ -1453,6 +1738,16 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/TaskMoving/index.tsx:64
 msgid "%{author} moved the task <task>%{taskName}</task> to <destination>%{destinationName}</destination>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_pausing.text.eex:1
+msgid "%{author} paused the %{project_name} project."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_pausing.html.eex:1
+msgid "%{author} paused the project"
 msgstr ""
 
 #.frontend
@@ -1572,6 +1867,11 @@ msgstr ""
 msgid "%{author} removed an account owner"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:10
+msgid "%{author} removed assignees for %{name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalDescriptionChanged/index.tsx:48
 msgid "%{author} removed description from goal \"%{goalName}\""
@@ -1618,6 +1918,11 @@ msgstr ""
 msgid "%{author} removed the champion"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_champion_updating.html.eex:2
+msgid "%{author} removed the champion on %{project_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalChampionUpdating/index.tsx:43
 msgid "%{author} removed the champion on <goal>%{goalName}</goal>"
@@ -1626,6 +1931,27 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectChampionUpdating/index.tsx:43
 msgid "%{author} removed the champion on <project>%{projectName}</project>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.html.eex:4
+#: lib/operately_email/templates/task_due_date_updating.html.eex:4
+msgid "%{author} removed the due date for %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.html.eex:8
+msgid "%{author} removed the due date for %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.text.eex:11
+msgid "%{author} removed the due date for %{project_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.text.eex:9
+msgid "%{author} removed the due date for %{project_name}. It was previously %{previous_date}."
 msgstr ""
 
 #.frontend
@@ -1639,6 +1965,11 @@ msgstr ""
 msgid "%{author} removed the reviewer"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_reviewer_updating.html.eex:2
+msgid "%{author} removed the reviewer on %{project_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:43
 msgid "%{author} removed the reviewer on <goal>%{goalName}</goal>"
@@ -1647,6 +1978,16 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:43
 msgid "%{author} removed the reviewer on <project>%{projectName}</project>"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:5
+msgid "%{author} removed you from the task %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.text.eex:7
+msgid "%{author} removed you from the task %{name}."
 msgstr ""
 
 #.frontend
@@ -1724,6 +2065,16 @@ msgstr ""
 msgid "%{author} renamed the project"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_reopening.html.eex:1
+msgid "%{author} reopened the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_reopening.text.eex:1
+msgid "%{author} reopened the goal \"%{goal_name}\"."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/CompanyMemberRestoring/index.tsx:38
 msgid "%{author} restored %{personName}'s account"
@@ -1759,6 +2110,16 @@ msgstr ""
 msgid "%{author} restored a member's account"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_resuming.text.eex:1
+msgid "%{author} resumed the %{project_name} project."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_resuming.html.eex:1
+msgid "%{author} resumed the project"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:52
 msgid "%{author} set %{personName} as the new %{role}"
@@ -1774,6 +2135,16 @@ msgstr ""
 msgid "%{author} set %{personName} as the new %{role} on the <project>%{projectName}</project> project"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.html.eex:5
+msgid "%{author} set the due date for %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.text.eex:5
+msgid "%{author} set the due date for %{project_name} to %{new_date}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:47
 msgid "%{author} submitted a <checkIn>Check-In</checkIn>"
@@ -1782,6 +2153,14 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectCheckInSubmitted/index.tsx:55
 msgid "%{author} submitted a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_check_in.html.eex:1
+#: lib/operately_email/templates/goal_check_in.text.eex:1
+#: lib/operately_email/templates/project_check_in_submitted.html.eex:1
+#: lib/operately_email/templates/project_check_in_submitted.text.eex:1
+msgid "%{author} submitted a check-in"
 msgstr ""
 
 #.frontend
@@ -1888,6 +2267,16 @@ msgstr ""
 msgid "%{author} updated the \"%{projectName}\" project description"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_description_changed.html.eex:1
+msgid "%{author} updated the \"%{project_name}\" project description"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_description_changed.text.eex:1
+msgid "%{author} updated the \"%{project_name}\" project description."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectDescriptionChanged/index.tsx:53
 msgid "%{author} updated the <project>%{projectName}</project> project description"
@@ -1896,6 +2285,36 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/GroupEdited/index.tsx:47
 msgid "%{author} updated the <space>%{spaceName}</space> space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_description_changed.html.eex:1
+msgid "%{author} updated the description for \"%{goal_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_description_changed.text.eex:1
+msgid "%{author} updated the description for \"%{goal_name}\"."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_description_updating.html.eex:1
+msgid "%{author} updated the description for \"%{milestone_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_description_updating.text.eex:1
+msgid "%{author} updated the description for \"%{milestone_name}\"."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_description_change.html.eex:4
+msgid "%{author} updated the description for \"%{task_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_description_change.text.eex:4
+msgid "%{author} updated the description for \"%{task_name}\"."
 msgstr ""
 
 #.frontend
@@ -2281,6 +2700,246 @@ msgid "%{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.elixir
+#: lib/operately_email/emails/task_moving_email.ex:20
+msgid "(%{destination_name_task}) %{author} moved the task \"%{task_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_check_in_acknowledgement_email.ex:17
+msgid "(%{goal_name}) %{author} acknowledged your check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_retrospective_acknowledged_email.ex:17
+msgid "(%{goal_name}) %{author} acknowledged your retrospective"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_champion_updating_email.ex:16
+msgid "(%{goal_name}) %{author} assigned you as the champion"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_reviewer_updating_email.ex:16
+msgid "(%{goal_name}) %{author} assigned you as the reviewer"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_reparent_email.ex:16
+msgid "(%{goal_name}) %{author} changed the goal parent of %{goal_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_editing_email.ex:20
+msgid "(%{goal_name}) %{author} edited the goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_timeframe_editing_email.ex:18
+msgid "(%{goal_name}) %{author} edited the timeframe"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_check_in_email.ex:31
+msgid "(%{goal_name}) %{author} submitted a check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_description_changed_email.ex:17
+msgid "(%{goal_name}) %{author} updated the goal description"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/milestone_due_date_updating_email.ex:23
+msgid "(%{milestone_project_name}) %{author} changed the due date for \"%{milestone_title}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_check_in_acknowledged_email.ex:16
+msgid "(%{project_name}) %{author} acknowledged your check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:16
+msgid "(%{project_name}) %{author} acknowledged your retrospective"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_contributor_addition_email.ex:19
+msgid "(%{project_name}) %{author} added you as a %{role}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_contributors_addition_email.ex:17
+msgid "(%{project_name}) %{author} added you as a contributor"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_closed_email.ex:23
+msgid "(%{project_name}) %{author} closed the project and submitted a retrospective"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_goal_connection_email.ex:21
+msgid "(%{project_name}) %{author} connected the project to the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_creation_email.ex:23
+msgid "(%{project_name}) %{author} created the \"%{milestone_title}\" milestone"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_goal_disconnection_email.ex:21
+msgid "(%{project_name}) %{author} disconnected the project from the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_timeline_edited_email.ex:27
+msgid "(%{project_name}) %{author} edited the timeline"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_pausing_email.ex:16
+msgid "(%{project_name}) %{author} paused the project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_resuming_email.ex:16
+msgid "(%{project_name}) %{author} resumed the project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_check_in_submitted_email.ex:23
+msgid "(%{project_name}) %{author} submitted a check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_created_email.ex:19
+msgid "(%{space_name}) %{author} added the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_created_email.ex:20
+msgid "(%{space_name}) %{author} added the %{project_name} project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_archived_email.ex:17
+msgid "(%{space_name}) %{author} archived the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_archived_email.ex:17
+msgid "(%{space_name}) %{author} archived the %{project_name} project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_closing_email.ex:23
+msgid "(%{space_name}) %{author} closed the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_reopening_email.ex:18
+msgid "(%{space_name}) %{author} reopened the %{goal_name} goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_champion_updating_email.ex:37
+msgid "(%{where}) %{author} assigned %{champion} as the champion"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_reviewer_updating_email.ex:36
+msgid "(%{where}) %{author} assigned %{reviewer} as the reviewer"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_champion_updating_email.ex:35
+msgid "(%{where}) %{author} assigned you as the champion"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_reviewer_updating_email.ex:34
+msgid "(%{where}) %{author} assigned you as the reviewer"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_assignee_updating_email.ex:45
+msgid "(%{where}) %{author} assigned you the task %{task_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_assignee_updating_email.ex:61
+msgid "(%{where}) %{author} changed the assignees for %{task_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_due_date_updating_email.ex:43
+msgid "(%{where}) %{author} changed the due date"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_due_date_updating_email.ex:24
+msgid "(%{where}) %{author} changed the due date for \"%{task_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/milestone_description_updating_email.ex:36
+msgid "(%{where}) %{author} mentioned you in the description for \"%{milestone_title}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_description_changed_email.ex:31
+msgid "(%{where}) %{author} mentioned you in the description for \"%{project_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_description_change_email.ex:33
+msgid "(%{where}) %{author} mentioned you in the description for \"%{task_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_champion_updating_email.ex:32
+msgid "(%{where}) %{author} removed the champion"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_due_date_updating_email.ex:41
+msgid "(%{where}) %{author} removed the due date"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_reviewer_updating_email.ex:31
+msgid "(%{where}) %{author} removed the reviewer"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_assignee_updating_email.ex:53
+msgid "(%{where}) %{author} removed you from the task %{task_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_due_date_updating_email.ex:42
+msgid "(%{where}) %{author} set the due date"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/milestone_description_updating_email.ex:38
+msgid "(%{where}) %{author} updated the description for \"%{milestone_title}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_description_changed_email.ex:33
+msgid "(%{where}) %{author} updated the description for \"%{project_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/task_description_change_email.ex:35
+msgid "(%{where}) %{author} updated the description for \"%{task_name}\""
+msgstr ""
+
+#.elixir
 #: lib/operately_email/emails/task_adding_email.ex:82
 msgid "(%{where}) %{who} added the task \"%{task_name}\""
 msgstr ""
@@ -2298,6 +2957,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:117
 msgid "+ Create organization"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_created.html.eex:7
+msgid "- %{author} is a %{author_role}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_timeline_edited_email.ex:45
+msgid "0 days"
 msgstr ""
 
 #.frontend
@@ -2344,12 +3013,21 @@ msgid_plural "%{count} completed tasks (click to collapse)"
 msgstr[0] ""
 msgstr[1] ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/utils/time.tsx:214
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:137
 #: assets/js/utils/time.tsx:143
+#: lib/operately_email/emails/project_timeline_edited_email.ex:46
 msgid "1 day"
 msgid_plural "%{count} days"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:57
+msgid "1 day <highlight>overdue.</highlight>"
+msgid_plural "%{count} days <highlight>overdue.</highlight>"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -2357,6 +3035,13 @@ msgstr[1] ""
 #: ../turboui/src/RelativeDayField/index.tsx:27
 msgid "1 day after project starts"
 msgid_plural "%{count} days after project starts"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:61
+msgid "1 day until the deadline."
+msgid_plural "%{count} days until the deadline."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -2456,6 +3141,20 @@ msgstr[1] ""
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:128
 msgid "1 minute"
 msgid_plural "%{count} minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:73
+msgid "1 month <highlight>overdue.</highlight>"
+msgid_plural "%{count} months <highlight>overdue.</highlight>"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:77
+msgid "1 month until the deadline."
+msgid_plural "%{count} months until the deadline."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -2649,6 +3348,27 @@ msgstr[1] ""
 #: ../turboui/src/TaskBoard/components/CompletedMilestonesSection.tsx:98
 msgid "1 task"
 msgid_plural "%{count} tasks"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/emails/project_timeline_edited_email.ex:47
+msgid "1 week"
+msgid_plural "%{count} weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:65
+msgid "1 week <highlight>overdue.</highlight>"
+msgid_plural "%{count} weeks <highlight>overdue.</highlight>"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:69
+msgid "1 week until the deadline."
+msgid_plural "%{count} weeks until the deadline."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -2962,6 +3682,11 @@ msgid "A new milestone \"%{milestoneName}\" was created"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/templates/project_milestone_creation.html.eex:6
+msgid "A new milestone was added to %{project_name}."
+msgstr ""
+
+#.elixir
 #: lib/operately_email/emails/task_adding_email.ex:84
 msgid "A new task named %{task_name} was created in this project."
 msgstr ""
@@ -3094,6 +3819,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/StatusBadge/index.tsx:103
 msgid "Achieved"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/acknowledge_cta.ex:6
+msgid "Acknowledge"
 msgstr ""
 
 #.frontend
@@ -3921,6 +4651,16 @@ msgstr ""
 msgid "Are you sure you want to discard this draft?"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/emails/project_contributor_addition_email.ex:35
+msgid "As a champion, you are responsible for leading the project, defining the scope, goals and timeline, and providing regular updates."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_contributor_addition_email.ex:36
+msgid "As a reviewer, you are responsible for reviewing the progress of the project, providing feedback, and approving the final deliverables."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:110
 msgid "As an admin or owner, you can:"
@@ -4481,6 +5221,7 @@ msgstr ""
 msgid "Cell actions"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:166
@@ -4492,6 +5233,7 @@ msgstr ""
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:205
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
 #: assets/js/pages/ProjectAddPage/page.tsx:182
+#: lib/operately_email/emails/project_created_email.ex:50
 msgid "Champion"
 msgstr ""
 
@@ -4709,6 +5451,11 @@ msgstr ""
 msgid "Check-in not updated"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_check_in_submitted.html.eex:13
+msgid "Check-in notes"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/ProjectPage/CheckInOverdueCallout.tsx:46
 msgid "Check-in overdue"
@@ -4721,10 +5468,12 @@ msgstr ""
 msgid "Check-ins"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:86
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:553
+#: lib/operately_email/templates/goal_check_in.html.eex:28
 msgid "Checklist"
 msgstr ""
 
@@ -5473,8 +6222,10 @@ msgid_plural "Continue writing your %{count} drafts…"
 msgstr[0] ""
 msgstr[1] ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:29
+#: lib/operately_email/emails/project_created_email.ex:52
 msgid "Contributor"
 msgstr ""
 
@@ -6366,6 +7117,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyNavigation/HelpDropdown.tsx:38
 msgid "Discord chat"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_reopening.html.eex:12
+msgid "Discuss"
 msgstr ""
 
 #.frontend
@@ -8448,6 +9204,12 @@ msgstr ""
 msgid "It can be restored later."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_milestone_creation.html.eex:12
+#: lib/operately_email/templates/project_milestone_creation.text.eex:3
+msgid "It is scheduled for %{due_date}."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/OngoingDraftActions/index.tsx:59
 msgid "It will be posted on <date/> at <time/>."
@@ -8578,8 +9340,10 @@ msgstr ""
 msgid "Keep update"
 msgstr ""
 
+#.elixir
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:346
+#: lib/operately_email/templates/goal_check_in.html.eex:43
 msgid "Key wins, obstacles and needs"
 msgstr ""
 
@@ -8756,6 +9520,35 @@ msgstr ""
 
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:35
+#: lib/operately_email/templates/goal_archived.text.eex:3
+#: lib/operately_email/templates/goal_champion_updating.text.eex:3
+#: lib/operately_email/templates/goal_check_in_acknowledgement.text.eex:3
+#: lib/operately_email/templates/goal_closing.text.eex:3
+#: lib/operately_email/templates/goal_created.text.eex:3
+#: lib/operately_email/templates/goal_editing.text.eex:3
+#: lib/operately_email/templates/goal_reopening.text.eex:3
+#: lib/operately_email/templates/goal_reparent.text.eex:3
+#: lib/operately_email/templates/goal_reviewer_updating.text.eex:3
+#: lib/operately_email/templates/goal_timeframe_editing.text.eex:3
+#: lib/operately_email/templates/milestone_due_date_updating.text.eex:3
+#: lib/operately_email/templates/project_archived.text.eex:3
+#: lib/operately_email/templates/project_champion_updating.text.eex:3
+#: lib/operately_email/templates/project_closed.text.eex:3
+#: lib/operately_email/templates/project_contributor_addition.text.eex:3
+#: lib/operately_email/templates/project_contributors_addition.text.eex:3
+#: lib/operately_email/templates/project_created.text.eex:3
+#: lib/operately_email/templates/project_due_date_updating.text.eex:15
+#: lib/operately_email/templates/project_goal_connection.text.eex:3
+#: lib/operately_email/templates/project_goal_disconnection.text.eex:3
+#: lib/operately_email/templates/project_milestone_creation.text.eex:6
+#: lib/operately_email/templates/project_pausing.text.eex:3
+#: lib/operately_email/templates/project_resuming.text.eex:3
+#: lib/operately_email/templates/project_reviewer_updating.text.eex:3
+#: lib/operately_email/templates/project_timeline_edited.text.eex:3
+#: lib/operately_email/templates/task_assignee_updating.text.eex:15
+#: lib/operately_email/templates/task_description_change.text.eex:14
+#: lib/operately_email/templates/task_due_date_updating.text.eex:3
+#: lib/operately_email/templates/task_moving.text.eex:5
 msgid "Link: %{url}"
 msgstr ""
 
@@ -9027,6 +9820,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskPage/TaskCheckbox.tsx:29
 msgid "Mark task as done"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_closing.html.eex:7
+msgid "Marked as accomplished"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_closing.html.eex:9
+msgid "Marked as not accomplished"
 msgstr ""
 
 #.frontend
@@ -9495,6 +10298,11 @@ msgstr ""
 msgid "New milestone"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_timeline_edited.html.eex:19
+msgid "New milestones added:"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/CompanyNavigation/NewDropdown.tsx:36
 msgid "New project"
@@ -9524,6 +10332,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:136
 msgid "New template"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_timeframe_editing.html.eex:10
+msgid "New timeframe: %{new_start_date} → %{new_end_date}"
 msgstr ""
 
 #.frontend
@@ -10044,6 +10857,11 @@ msgstr ""
 msgid "Off track"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_timeframe_editing.html.eex:6
+msgid "Old timeframe: %{old_start_date} → %{old_end_date}"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:13
 msgid "On Track"
@@ -10351,12 +11169,15 @@ msgstr ""
 msgid "Overdue by %{duration}."
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/index.tsx:234
 #: ../turboui/src/MilestonePage/index.tsx:208
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:31
 #: ../turboui/src/TemplateProjectPage/index.tsx:30
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:203
+#: lib/operately_email/templates/goal_check_in.html.eex:5
+#: lib/operately_email/templates/project_check_in_submitted.html.eex:5
 msgid "Overview"
 msgstr ""
 
@@ -11863,6 +12684,11 @@ msgstr ""
 msgid "Retrospective notes"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_closed.html.eex:4
+msgid "Retrospective notes:"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
@@ -11979,6 +12805,7 @@ msgstr ""
 msgid "Review paid plans and continue to checkout when you're ready."
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:213
@@ -11987,6 +12814,7 @@ msgstr ""
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:63
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:236
 #: assets/js/pages/ProjectAddPage/page.tsx:189
+#: lib/operately_email/emails/project_created_email.ex:51
 msgid "Reviewer"
 msgstr ""
 
@@ -13307,10 +14135,12 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:16
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:45
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:492
+#: lib/operately_email/templates/goal_check_in.html.eex:14
 msgid "Targets"
 msgstr ""
 
@@ -13600,6 +14430,21 @@ msgstr ""
 msgid "The MCP client can no longer access your account."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:34
+msgid "The assignee is now %{new_assignee}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:30
+msgid "The assignee was changed from %{old_assignee} to %{new_assignee}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:40
+msgid "The assignee was removed. Previously it was %{old_assignee}"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:30
 msgid "The champion hasn't yet set targets for this goal."
@@ -13608,6 +14453,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectPage/CheckInOverdueCallout.tsx:36
 msgid "The champion needs to post the update."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:19
+msgid "The champion was changed from %{old_champion} to %{new_champion}"
 msgstr ""
 
 #.frontend
@@ -13651,6 +14501,18 @@ msgstr ""
 msgid "The current subscription will end at the close of the current billing period."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_description_changed.html.eex:11
+#: lib/operately_email/templates/goal_description_changed.text.eex:6
+#: lib/operately_email/templates/milestone_description_updating.html.eex:11
+#: lib/operately_email/templates/milestone_description_updating.text.eex:6
+#: lib/operately_email/templates/project_description_changed.html.eex:11
+#: lib/operately_email/templates/project_description_changed.text.eex:6
+#: lib/operately_email/templates/task_description_change.html.eex:15
+#: lib/operately_email/templates/task_description_change.text.eex:11
+msgid "The description was cleared."
+msgstr ""
+
 #.frontend
 #: assets/js/pages/ProjectTemplateDocumentPage/index.tsx:49
 msgid "The document is still on this page. Try again."
@@ -13663,9 +14525,45 @@ msgstr ""
 msgid "The draft has been discarded."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.html.eex:16
+#: lib/operately_email/templates/project_due_date_updating.html.eex:20
+#: lib/operately_email/templates/task_due_date_updating.html.eex:16
+msgid "The due date is now %{new_date}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.html.eex:12
+#: lib/operately_email/templates/project_due_date_updating.html.eex:16
+#: lib/operately_email/templates/task_due_date_updating.html.eex:12
+msgid "The due date was changed from %{previous_date} to %{new_date}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_due_date_updating.html.eex:28
+msgid "The due date was removed."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.html.eex:21
+#: lib/operately_email/templates/project_due_date_updating.html.eex:26
+#: lib/operately_email/templates/task_due_date_updating.html.eex:21
+msgid "The due date was removed. Previously it was %{previous_date}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectTimelineEdited/index.tsx:115
 msgid "The due date was set to <date/>."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_timeline_edited.html.eex:7
+msgid "The duration is now %{new_duration}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_timeline_edited.html.eex:13
+msgid "The duration was changed from %{old_duration} to %{new_duration}."
 msgstr ""
 
 #.frontend
@@ -13676,6 +14574,21 @@ msgstr ""
 #.frontend
 #: assets/js/pages/ProjectTemplateFilePage/index.tsx:52
 msgid "The file is still on this page. Try again."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:33
+msgid "The following measurements were added:"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:61
+msgid "The following measurements were deleted:"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:47
+msgid "The following measurements were updated:"
 msgstr ""
 
 #.frontend
@@ -13693,9 +14606,24 @@ msgstr ""
 msgid "The following measures were updated:"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/check_in_overview.ex:15
+msgid "The goal <highlight>needs attention</highlight> due to emerging risks or delays."
+msgstr ""
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:246
 msgid "The goal <status>needs caution</status> due to emerging risks."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:19
+msgid "The goal is <highlight>off track</highlight> due to significant problems affecting success."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:11
+msgid "The goal is <highlight>on-track</highlight> and progressing as planned."
 msgstr ""
 
 #.frontend
@@ -13743,6 +14671,11 @@ msgstr ""
 msgid "The milestone could not be completed. Check the tasks and try again."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:7
+msgid "The name was changed from %{content_old_name} to %{content_new_name}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:98
 msgid "The name was changed to %{name}."
@@ -13753,6 +14686,16 @@ msgstr ""
 msgid "The parent goal has been successfully changed."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_reparent.html.eex:7
+msgid "The parent goal of %{goal_name} was changed to %{new_parent_goal_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_reparent.html.eex:11
+msgid "The parent goal was removed from %{goal_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:100
 msgid "The previous %{oldRole} %{oldName} is now a %{newRole}"
@@ -13761,6 +14704,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:36
 msgid "The previous URL will no longer be valid."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:27
+msgid "The project <highlight>needs attention</highlight> due to emerging risks or delays."
 msgstr ""
 
 #.frontend
@@ -13778,6 +14726,16 @@ msgstr ""
 msgid "The project could not be created. Try again."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/check_in_overview.ex:31
+msgid "The project is <highlight>off track</highlight> due to significant problems affecting success."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/check_in_overview.ex:23
+msgid "The project is <highlight>on-track</highlight> and progressing as planned."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:172
 msgid "The project owner accountable for completion. Plans, assigns responsibilities, and submits weekly check-ins."
@@ -13786,6 +14744,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBilling/state.ts:99
 msgid "The requested billing option is not currently available. Showing the closest available plan instead."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:25
+msgid "The reviewer was changed from %{old_reviewer} to %{new_reviewer}"
 msgstr ""
 
 #.frontend
@@ -13801,6 +14764,17 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectTimelineEdited/index.tsx:101
 msgid "The start date was set to <date/>."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:42
+msgid "The task assignees were changed."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_moving.html.eex:6
+#: lib/operately_email/templates/task_moving.text.eex:3
+msgid "The task is now in %{destination_name}."
 msgstr ""
 
 #.frontend
@@ -13862,6 +14836,11 @@ msgstr ""
 #: assets/js/pages/ProjectTemplatePage/index.tsx:243
 #: assets/js/pages/ProjectTemplatesPage/index.tsx:139
 msgid "The template may have changed. Refresh the page and try again."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_editing.html.eex:13
+msgid "The timeframe was changed from %{content_old_timeframe} to %{content_new_timeframe}."
 msgstr ""
 
 #.frontend
@@ -14675,6 +15654,7 @@ msgstr ""
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:166
 #: lib/operately_email/emails/task_adding_email.ex:109
+#: lib/operately_email/emails/task_description_change_email.ex:55
 msgid "Unknown"
 msgstr ""
 
@@ -15108,9 +16088,53 @@ msgstr ""
 msgid "View Access"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/goal_archived.html.eex:6
+msgid "View Archived Goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_archived.html.eex:6
+msgid "View Archived Project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_check_in_email.ex:51
+#: lib/operately_email/emails/project_check_in_acknowledged_email.ex:20
+#: lib/operately_email/emails/project_check_in_submitted_email.ex:41
+#: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:6
+msgid "View Check-In"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_champion_updating.html.eex:6
+#: lib/operately_email/templates/goal_created.html.eex:6
+#: lib/operately_email/templates/goal_description_changed.html.eex:18
+#: lib/operately_email/templates/goal_editing.html.eex:74
+#: lib/operately_email/templates/goal_reparent.html.eex:18
+#: lib/operately_email/templates/goal_reviewer_updating.html.eex:6
+msgid "View Goal"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_description_changed.text.eex:9
+msgid "View Goal: %{url}"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:102
 msgid "View Invitation Link"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_description_updating.html.eex:18
+#: lib/operately_email/templates/project_milestone_creation.html.eex:19
+msgid "View Milestone"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_description_updating.text.eex:9
+msgid "View Milestone: %{url}"
 msgstr ""
 
 #.frontend
@@ -15119,7 +16143,46 @@ msgid "View Profile"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/templates/milestone_due_date_updating.html.eex:28
+#: lib/operately_email/templates/project_champion_updating.html.eex:14
+#: lib/operately_email/templates/project_contributor_addition.html.eex:10
+#: lib/operately_email/templates/project_contributors_addition.html.eex:10
+#: lib/operately_email/templates/project_created.html.eex:14
+#: lib/operately_email/templates/project_description_changed.html.eex:18
+#: lib/operately_email/templates/project_due_date_updating.html.eex:36
+#: lib/operately_email/templates/project_goal_connection.html.eex:6
+#: lib/operately_email/templates/project_goal_disconnection.html.eex:6
+#: lib/operately_email/templates/project_pausing.html.eex:12
+#: lib/operately_email/templates/project_resuming.html.eex:12
+#: lib/operately_email/templates/project_reviewer_updating.html.eex:14
+#: lib/operately_email/templates/project_timeline_edited.html.eex:32
+msgid "View Project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_description_changed.text.eex:9
+msgid "View Project: %{url}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_closing_email.ex:41
+#: lib/operately_email/emails/project_closed_email.ex:40
+#: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:20
+#: lib/operately_email/templates/goal_retrospective_acknowledged.html.eex:6
+msgid "View Retrospective"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_retrospective_acknowledged.text.eex:3
+msgid "View Retrospective: %{url}"
+msgstr ""
+
+#.elixir
 #: lib/operately_email/emails/task_adding_email.ex:33
+#: lib/operately_email/templates/task_assignee_updating.html.eex:52
+#: lib/operately_email/templates/task_description_change.html.eex:22
+#: lib/operately_email/templates/task_due_date_updating.html.eex:28
+#: lib/operately_email/templates/task_moving.html.eex:12
 msgid "View Task"
 msgstr ""
 
@@ -15194,8 +16257,28 @@ msgid "View profile"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/templates/goal_description_changed.text.eex:4
+msgid "View the goal to read the updated details."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/milestone_description_updating.text.eex:4
+msgid "View the milestone to read the updated details."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_description_changed.text.eex:4
+msgid "View the project to read the updated details."
+msgstr ""
+
+#.elixir
 #: lib/operately_email/templates.ex:89
 msgid "View update"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_timeframe_editing.html.eex:22
+msgid "View/Comment"
 msgstr ""
 
 #.frontend
@@ -15622,6 +16705,23 @@ msgstr ""
 msgid "You are joining as <name>%{name}</name>"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:24
+#: lib/operately_email/templates/task_assignee_updating.text.eex:9
+msgid "You are no longer assigned to this task."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/task_assignee_updating.html.eex:19
+#: lib/operately_email/templates/task_assignee_updating.text.eex:4
+msgid "You are now assigned to this task."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_contributor_addition_email.ex:37
+msgid "You are responsible for: %{contributor_responsibility}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:184
 msgid "You can edit the due date, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
@@ -15809,6 +16909,11 @@ msgstr ""
 msgid "Your password has been updated successfully."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_contributors_addition.html.eex:5
+msgid "Your responsibility is: %{responsibility}"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:112
 msgid "Your role"
@@ -15929,9 +17034,12 @@ msgstr ""
 msgid "cancelled"
 msgstr ""
 
+#.elixir
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:208
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:171
+#: lib/operately_email/emails/goal_created_email.ex:27
+#: lib/operately_email/emails/project_contributor_addition_email.ex:28
 msgid "champion"
 msgstr ""
 
@@ -15964,9 +17072,11 @@ msgstr ""
 msgid "concrete actions or deliverables"
 msgstr ""
 
+#.elixir
 #.frontend
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:175
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:177
+#: lib/operately_email/emails/project_contributor_addition_email.ex:30
 msgid "contributor"
 msgstr ""
 
@@ -16226,9 +17336,12 @@ msgstr ""
 msgid "restored this document from Version %{version}"
 msgstr ""
 
+#.elixir
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:209
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:173
+#: lib/operately_email/emails/goal_created_email.ex:28
+#: lib/operately_email/emails/project_contributor_addition_email.ex:29
 msgid "reviewer"
 msgstr ""
 

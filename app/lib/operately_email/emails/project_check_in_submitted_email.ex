@@ -1,8 +1,9 @@
 defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
   alias OperatelyWeb.Paths
-  alias __MODULE__.OverviewMsg
+  alias OperatelyEmail.CheckInOverview
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -19,13 +20,13 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "submitted a check-in")
+    |> subject(gettext("(%{project_name}) %{author} submitted a check-in", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:check_in, check_in)
     |> assign(:cta_url, cta_url)
     |> assign(:cta_text, cta_text)
-    |> assign(:overview, OverviewMsg.construct(check_in, project))
+    |> assign(:overview, CheckInOverview.construct(:project, check_in.status, project.reviewer, Operately.ContextualDates.Timeframe.end_date(project.timeframe)))
     |> render("project_check_in_submitted")
   end
 
@@ -37,76 +38,8 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
       check_in.author_id,
       [project.reviewer, project.champion],
       url,
-      "View Check-In"
+      gettext("View Check-In")
     )
-  end
-
-  defmodule OverviewMsg do
-    import Operately.RichContent.Builder
-    alias Operately.People.Person
-
-    def construct(check_in, project) do
-      status = normalize_status(check_in.status)
-      reviewer = project.reviewer
-
-      doc([
-        paragraph(
-          status_msg(status) ++
-            reviewer_note(status, reviewer) ++
-            due_date(project)
-        )
-      ])
-    end
-
-    defp status_msg(:on_track) do
-      [text("The project is "), bg_green("on-track"), text(" and progressing as planned.")]
-    end
-
-    defp status_msg(:caution) do
-      [text("The project "), bg_yellow("needs attention"), text(" due to emerging risks or delays.")]
-    end
-
-    defp status_msg(:off_track) do
-      [text("The project is "), bg_red("off track"), text(" due to significant problems affecting success.")]
-    end
-
-    def reviewer_note(:on_track, _), do: []
-
-    def reviewer_note(:caution, nil), do: []
-
-    def reviewer_note(:caution, reviewer),
-      do: [text(" "), text(Person.first_name(reviewer)), text(" should be aware.")]
-
-    def reviewer_note(:off_track, nil), do: []
-
-    def reviewer_note(:off_track, reviewer),
-      do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
-
-    defp due_date(%{timeframe: nil}), do: []
-    defp due_date(%{timeframe: timeframe}) do
-      case Operately.ContextualDates.Timeframe.end_date(timeframe) do
-        nil -> []
-        date ->
-          days = Date.diff(date, Date.utc_today())
-          duration = human_duration(abs(days))
-
-          cond do
-            days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
-            days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
-          end
-      end
-    end
-
-    defp human_duration(n) when n == 1, do: "1 day"
-    defp human_duration(n) when n < 7, do: "#{n} days"
-    defp human_duration(n) when n == 7, do: "1 week"
-    defp human_duration(n) when n < 30, do: "#{div(n, 7)} weeks"
-    defp human_duration(n) when n < 60, do: "1 month"
-    defp human_duration(n), do: "#{div(n, 30)} months"
-
-    defp normalize_status(:on_track), do: :on_track
-    defp normalize_status(:caution), do: :caution
-    defp normalize_status(:off_track), do: :off_track
   end
 
   def buffered_item(_person, activity) do

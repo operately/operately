@@ -1,3 +1,3 @@
-<%= short_name(@author) %> archived the <%= @goal.name %> goal.
+<%= gettext("%{author} archived the %{goal_name} goal.", author: short_name(@author), goal_name: @goal.name) %>
 
-Link: <%= @cta_url %>
+<%= gettext("Link: %{url}", url: @cta_url) %>

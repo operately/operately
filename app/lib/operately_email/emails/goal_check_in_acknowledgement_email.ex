@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalCheckInAcknowledgementEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
   alias Operately.Goals.Update
@@ -13,7 +14,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInAcknowledgementEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "acknowledged your check-in")
+    |> subject(gettext("(%{goal_name}) %{author} acknowledged your check-in", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)

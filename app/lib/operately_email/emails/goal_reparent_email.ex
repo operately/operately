@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalReparentEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
 
@@ -12,7 +13,7 @@ defmodule OperatelyEmail.Emails.GoalReparentEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "changed the goal parent of #{goal.name}")
+    |> subject(gettext("(%{goal_name}) %{author} changed the goal parent of %{goal_name}", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:new_parent_goal, new_parent_goal)
