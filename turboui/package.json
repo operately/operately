@@ -24,7 +24,7 @@
     "build-storybook": "storybook build",
     "test": "jest",
     "test-storybook": "test-storybook",
-    "test:browser": "TEST_MATCH='**/*.browser.test.js' test-storybook --no-index-json",
+    "test:browser": "TEST_MATCH='**/*.browser.test.ts' test-storybook --no-index-json",
     "test-storybook:ci": "npm run build-storybook -- --quiet && concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && JEST_JUNIT_OUTPUT_NAME=junit-storybook.xml test-storybook --ci --junit && JEST_JUNIT_OUTPUT_NAME=junit-browser.xml npm run test:browser -- --ci --junit\"",
     "prepack": "npm run build",
     "test:package": "node scripts/check-package.mjs"

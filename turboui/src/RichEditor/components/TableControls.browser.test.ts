@@ -1,4 +1,7 @@
-const assert = require("node:assert/strict");
+import assert from "node:assert/strict";
+import type { Locator, Page } from "playwright";
+
+declare const page: Page;
 
 // The Storybook runner provides Jest and a real Playwright page. jsdom cannot
 // reproduce focus transitions across shadow boundaries.
@@ -18,14 +21,14 @@ describe("Table controls in a browser", () => {
   });
 });
 
-async function checkTableMenus(page) {
+async function checkTableMenus(page: Page) {
   await page.locator('[data-test-id="open-table-dialog"], [contenteditable="true"]').first().waitFor();
   const openDialog = page.locator('[data-test-id="open-table-dialog"]');
   const inDialog = (await openDialog.count()) > 0;
   if (inDialog) await openDialog.click();
   const editor = page.locator('[contenteditable="true"]');
-  const action = (name) => page.locator(`[data-test-id="table-${name}"]`);
-  const toolbar = (name) => page.locator(`[data-test-id="table-toolbar-${name}"]`);
+  const action = (name: string) => page.locator(`[data-test-id="table-${name}"]`);
+  const toolbar = (name: string) => page.locator(`[data-test-id="table-toolbar-${name}"]`);
   const settings = page.locator('[data-test-id="toolbar-button-table-settings"]');
   const menu = page.locator('[role="menu"][data-table-controls]');
   const preview = page.locator('[data-test-id="table-action-preview"]');
@@ -123,32 +126,41 @@ async function checkTableMenus(page) {
   }
 }
 
-async function tableContents(editor) {
+async function tableContents(editor: Locator) {
   return editor
     .locator("tr")
-    .evaluateAll((rows) =>
+    .evaluateAll((rows: HTMLTableRowElement[]) =>
       rows.map((row) => Array.from(row.cells, (cell) => ({ type: cell.tagName, text: cell.textContent }))),
     );
 }
 
-async function assertFocused(locator) {
+async function assertFocused(locator: Locator) {
   await locator.waitFor();
   const element = await locator.elementHandle();
+  assert.ok(element, "The focus target must exist");
   try {
-    await locator.page().waitForFunction((element) => element.getRootNode().activeElement === element, element);
+    await locator
+      .page()
+      .waitForFunction(
+        (element) => (element.getRootNode() as Document | ShadowRoot).activeElement === element,
+        element,
+      );
     await locator.evaluate(async () => {
-      await new Promise(requestAnimationFrame);
-      await new Promise(requestAnimationFrame);
+      await new Promise<number>(requestAnimationFrame);
+      await new Promise<number>(requestAnimationFrame);
     });
-    assert.equal(await locator.evaluate((element) => element.getRootNode().activeElement === element), true);
+    assert.equal(
+      await locator.evaluate((element) => (element.getRootNode() as Document | ShadowRoot).activeElement === element),
+      true,
+    );
   } finally {
     await element.dispose();
   }
 }
 
-async function assertStableMenu(menu) {
+async function assertStableMenu(menu: Locator) {
   const stable = await menu.evaluate(async (element) => {
-    const root = element.getRootNode();
+    const root = element.getRootNode() as Document | ShadowRoot;
     // Storybook pauses document animations, but animations inside a shadow root still run.
     await Promise.all(
       element
@@ -158,7 +170,7 @@ async function assertStableMenu(menu) {
     );
     // Observe several rendering frames: visibility alone can pass between repeated menu mounts.
     for (let frame = 0; frame < 12; frame++) {
-      await new Promise(requestAnimationFrame);
+      await new Promise<number>(requestAnimationFrame);
       if (!element.isConnected || !element.contains(root.activeElement)) return false;
     }
     return true;

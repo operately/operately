@@ -171,7 +171,7 @@ independent shadow roots. Support currently targets the KPI UI and its editor/pi
 it does not promise that every TurboUI surface supports embedding. The **Table Menus**
 stories cover right-click and keyboard menus in a shadow root, a scaled preview,
 a dialog, and a normal document. The Jest tests live beside the component in
-`src/RichEditor/components/TableControls.browser.test.js`. They use the existing
+`src/RichEditor/components/TableControls.browser.test.ts`. They use the existing
 Storybook runner’s Playwright environment, separately from jsdom unit tests:
 
 ```sh
