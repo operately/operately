@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../Embedding/Popover";
 import * as React from "react";
 
 import classNames from "../utils/classnames";
@@ -39,6 +39,7 @@ export function Reactions({
   onAddReaction,
   onRemoveReaction,
 }: Reactions.Props) {
+  const root = React.useRef<HTMLDivElement>(null);
   const [deleteMode, setDeleteMode] = React.useState<string | null>(null);
 
   const handleReactionClick = React.useCallback((reactionId: string) => {
@@ -59,13 +60,17 @@ export function Reactions({
     if (!deleteMode) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target as Element | null)?.closest("[data-reaction-item]")) {
-        setDeleteMode(null);
-      }
+      // Only reaction items in this list count as inside, even when Shadow DOM retargets the click.
+      const path = event.composedPath();
+      const items = root.current?.querySelectorAll("[data-reaction-item]") ?? [];
+      const clickedReaction = Array.from(items).some((item) => path.includes(item));
+      if (!clickedReaction) setDeleteMode(null);
     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    const ownerDocument = root.current?.ownerDocument ?? document;
+    // Capture also observes clicks stopped by a reaction in another instance.
+    ownerDocument.addEventListener("click", handleClickOutside, true);
+    return () => ownerDocument.removeEventListener("click", handleClickOutside, true);
   }, [deleteMode]);
 
   React.useEffect(() => {
@@ -77,7 +82,7 @@ export function Reactions({
   const showAddReaction = Boolean(canAddReaction && onAddReaction);
 
   return (
-    <div className="flex items-start gap-2 flex-wrap">
+    <div ref={root} className="flex items-start gap-2 flex-wrap">
       {reactions.map((reaction) => {
         const isMyReaction = Boolean(currentPersonId && compareIds(reaction.person.id, currentPersonId));
         const canDeleteReaction = isMyReaction && Boolean(onRemoveReaction);

@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as ReactTooltip from "@radix-ui/react-tooltip";
+import * as ReactTooltip from "../Embedding/Tooltip";
 import classNames from "classnames";
 import { TestableElement } from "../TestableElement";
 

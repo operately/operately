@@ -1,3 +1,6 @@
+import { PluginKey } from "@tiptap/pm/state";
+import { flip, shift } from "@floating-ui/dom";
+import { exitSuggestion } from "@tiptap/suggestion";
 import * as TipTap from "@tiptap/react";
 
 import { mergeAttributes } from "@tiptap/core";
@@ -15,8 +18,10 @@ interface Person {
 
 export type SearchFn = ({ query }: { query: string }) => Promise<Person[]>;
 
+const embeddedMentionKey = new PluginKey("embeddedMention");
+
 export default {
-  configure(searchFn?: SearchFn) {
+  configure(searchFn?: SearchFn, container?: HTMLElement) {
     return Mention.extend({
       renderHTML({ HTMLAttributes }) {
         return ["react-component", mergeAttributes(HTMLAttributes)];
@@ -28,8 +33,14 @@ export default {
     }).configure({
       suggestion: {
         placement: "bottom-start",
-        floatingUi: { strategy: "fixed" },
-        render: () => new MentionPopup(),
+        container,
+        floatingUi: {
+          strategy: "fixed",
+          ...(container ? { middleware: [flip({ boundary: container }), shift({ boundary: container })] } : {}),
+        },
+        render: () => new MentionPopup(container ? (view) => exitSuggestion(view, embeddedMentionKey) : undefined),
+        // The library's document listener uses event.target, which is retargeted at shadow boundaries.
+        ...(container ? { pluginKey: embeddedMentionKey, dismissOnOutsideClick: false, flip: false } : {}),
         items: searchFn,
         allowedPrefixes: [",", "\\s"],
       },

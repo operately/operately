@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../../Embedding/Popover";
 import * as React from "react";
 
 import classNames from "classnames";

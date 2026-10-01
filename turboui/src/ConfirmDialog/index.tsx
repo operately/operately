@@ -1,3 +1,5 @@
+import { createPortal } from "react-dom";
+import { useEmbedding, useEmbeddedOverlay } from "../Embedding";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
@@ -44,6 +46,15 @@ export function ConfirmDialog({
   confirming = false,
 }: ConfirmDialogProps) {
   const { t } = useTranslation();
+  const embedding = useEmbedding();
+  const overlayRef = React.useRef<HTMLDivElement>(null);
+  useEmbeddedOverlay(
+    Boolean(embedding) && isOpen,
+    () => {
+      if (!confirming) onCancel();
+    },
+    overlayRef,
+  );
   const resolvedConfirmText = confirmText ?? translationText(t("Confirm"));
   const resolvedCancelText = cancelText ?? translationText(t("Cancel"));
 
@@ -53,8 +64,14 @@ export function ConfirmDialog({
   const iconColor = variant === "danger" ? "text-content-error" : "text-content-base";
   const ConfirmButton = variant === "danger" ? DangerButton : PrimaryButton;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  const dialog = (
+    <div
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    >
       <div
         data-test-id={testId}
         className={`bg-surface-base border border-stroke-base rounded-xl shadow-xl w-full ${SIZE_CLASSES[size]}`}
@@ -84,4 +101,5 @@ export function ConfirmDialog({
       </div>
     </div>
   );
+  return embedding ? createPortal(dialog, embedding.portalContainer) : dialog;
 }

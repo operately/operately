@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { useEmbedding, useEmbeddedOverlay } from "../Embedding";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -35,6 +36,9 @@ export function SlideIn({
   const [isAnimating, setIsAnimating] = useState(false);
   const slideInRef = useRef<HTMLDivElement>(null);
 
+  const embedding = useEmbedding();
+  useEmbeddedOverlay(isOpen && shouldRender, onClose, slideInRef);
+
   // Handle mounting and animation
   useEffect(() => {
     if (isOpen) {
@@ -45,6 +49,8 @@ export function SlideIn({
       const timer = setTimeout(() => {
         setIsAnimating(true);
       }, 10);
+
+      if (embedding) return () => clearTimeout(timer);
 
       // Disable body scroll when slide-in is open
       document.body.style.overflow = "hidden";
@@ -74,7 +80,7 @@ export function SlideIn({
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, embedding]);
 
   // Handle clicks outside the slide-in
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -102,7 +108,7 @@ export function SlideIn({
         className={`relative bg-surface-base shadow-2xl h-full overflow-auto flex flex-col ${
           isAnimating ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out ${contentClassName}`}
-        style={{ width }}
+        style={{ width, maxWidth: embedding ? "100%" : undefined }}
         onClick={(e) => e.stopPropagation()}
       >
         {header && header}
@@ -125,7 +131,7 @@ export function SlideIn({
   );
 
   // Use a portal to render the slide-in at the end of the document body
-  return createPortal(slideInContent, document.body);
+  return createPortal(slideInContent, embedding?.portalContainer ?? document.body);
 }
 
 export default SlideIn;
