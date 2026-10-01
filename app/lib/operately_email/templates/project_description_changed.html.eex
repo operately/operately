@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} updated the \"#{@project_name}\" project description") %>
+<%= title(gettext("%{author} updated the \"%{project_name}\" project description", author: short_name(@author), project_name: @project_name)) %>
 
 <%= spacer() %>
 
@@ -8,12 +8,12 @@
   <% end %>
 <% else %>
   <%= row do %>
-    The description was cleared.
+    <%= gettext("The description was cleared.") %>
   <% end %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Project") %>
+  <%= cta_button(@cta_url, gettext("View Project")) %>
 <% end %>

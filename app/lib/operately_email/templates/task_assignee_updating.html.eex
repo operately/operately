@@ -1,13 +1,13 @@
 <%= if @assigned_to_recipient do %>
-  <%= title("#{short_name(@author)} assigned you the task #{@name}") %>
+  <%= title(gettext("%{author} assigned you the task %{name}", author: short_name(@author), name: @name)) %>
 <% else %>
 <%= if @removed_from_recipient do %>
-  <%= title("#{short_name(@author)} removed you from the task #{@name}") %>
+  <%= title(gettext("%{author} removed you from the task %{name}", author: short_name(@author), name: @name)) %>
 <% else %>
   <%= if @new_assignee do %>
-  <%= title("#{short_name(@author)} changed the assignees for #{@name}") %>
+  <%= title(gettext("%{author} changed the assignees for %{name}", author: short_name(@author), name: @name)) %>
   <% else %>
-    <%= title("#{short_name(@author)} removed assignees for #{@name}") %>
+    <%= title(gettext("%{author} removed assignees for %{name}", author: short_name(@author), name: @name)) %>
   <% end %>
 <% end %>
 <% end %>
@@ -16,30 +16,30 @@
 
 <%= if @assigned_to_recipient do %>
   <%= row do %>
-    You are now assigned to this task.
+    <%= gettext("You are now assigned to this task.") %>
   <% end %>
 <% else %>
 <%= if @removed_from_recipient do %>
   <%= row do %>
-    You are no longer assigned to this task.
+    <%= gettext("You are no longer assigned to this task.") %>
   <% end %>
 <% else %>
   <%= if @new_assignee do %>
     <%= if @old_assignee do %>
       <%= row do %>
-        The assignee was changed from <%= short_name(@old_assignee) %> to <%= short_name(@new_assignee) %>
+        <%= gettext("The assignee was changed from %{old_assignee} to %{new_assignee}", old_assignee: short_name(@old_assignee), new_assignee: short_name(@new_assignee)) %>
       <% end %>
     <% else %>
       <%= row do %>
-        The assignee is now <%= short_name(@new_assignee) %>
+        <%= gettext("The assignee is now %{new_assignee}", new_assignee: short_name(@new_assignee)) %>
       <% end %>
     <% end %>
   <% else %>
     <%= row do %>
       <%= if @old_assignee do %>
-        The assignee was removed. Previously it was <%= short_name(@old_assignee) %>
+        <%= gettext("The assignee was removed. Previously it was %{old_assignee}", old_assignee: short_name(@old_assignee)) %>
       <% else %>
-        The task assignees were changed.
+        <%= gettext("The task assignees were changed.") %>
       <% end %>
     <% end %>
   <% end %>
@@ -49,5 +49,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Task") %>
+  <%= cta_button(@cta_url, gettext("View Task")) %>
 <% end %>

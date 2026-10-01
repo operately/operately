@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectRetrospectiveAcknowledgedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
@@ -12,11 +13,11 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveAcknowledgedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "acknowledged your retrospective")
+    |> subject(gettext("(%{project_name}) %{author} acknowledged your retrospective", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:retrospective, retrospective)
-    |> assign(:cta_text, "View Retrospective")
+    |> assign(:cta_text, gettext("View Retrospective"))
     |> assign(:cta_url, OperatelyWeb.Paths.project_retrospective_path(company, project) |> OperatelyWeb.Paths.to_url())
     |> render("project_retrospective_acknowledged")
   end

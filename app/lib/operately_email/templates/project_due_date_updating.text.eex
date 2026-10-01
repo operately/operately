@@ -1,15 +1,15 @@
 <%= if @new_date do %>
   <%= if @previous_date do %>
-<%= short_name(@author) %> changed the due date for <%= @project.name %> from <%= @previous_date %> to <%= @new_date %>.
+<%= gettext("%{author} changed the due date for %{project_name} from %{previous_date} to %{new_date}.", author: short_name(@author), project_name: @project.name, previous_date: @previous_date, new_date: @new_date) %>
   <% else %>
-<%= short_name(@author) %> set the due date for <%= @project.name %> to <%= @new_date %>.
+<%= gettext("%{author} set the due date for %{project_name} to %{new_date}.", author: short_name(@author), project_name: @project.name, new_date: @new_date) %>
   <% end %>
 <% else %>
   <%= if @previous_date do %>
-<%= short_name(@author) %> removed the due date for <%= @project.name %>. It was previously <%= @previous_date %>.
+<%= gettext("%{author} removed the due date for %{project_name}. It was previously %{previous_date}.", author: short_name(@author), project_name: @project.name, previous_date: @previous_date) %>
   <% else %>
-<%= short_name(@author) %> removed the due date for <%= @project.name %>.
+<%= gettext("%{author} removed the due date for %{project_name}.", author: short_name(@author), project_name: @project.name) %>
   <% end %>
 <% end %>
 
-Link: <%= @cta_url %>
+<%= gettext("Link: %{url}", url: @cta_url) %>

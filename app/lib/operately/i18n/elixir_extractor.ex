@@ -16,10 +16,10 @@ defmodule Operately.I18n.ElixirExtractor do
   end
 
   defp parse_source(source, path) do
-    if Path.extname(path) == ".heex" do
-      parse_heex(source, path)
-    else
-      Code.string_to_quoted!(source, file: path, columns: true)
+    case Path.extname(path) do
+      ".heex" -> parse_heex(source, path)
+      ".eex" -> EEx.compile_string(source, file: path)
+      _ -> Code.string_to_quoted!(source, file: path, columns: true)
     end
   end
 

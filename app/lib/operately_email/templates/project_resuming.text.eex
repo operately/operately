@@ -1,3 +1,3 @@
-<%= short_name(@author) %> resumed the <%= @project.name %> project.
+<%= gettext("%{author} resumed the %{project_name} project.", author: short_name(@author), project_name: @project.name) %>
 
-Link: <%= @link %>
+<%= gettext("Link: %{url}", url: @link) %>

@@ -15,7 +15,7 @@ defmodule Operately.I18n.Catalog do
   @json_dir "assets/js/generated/locales"
   @elixir_roots ["lib", "ee/lib"]
   @frontend_roots ["assets/js", "ee/assets/js", "../turboui/src"]
-  @elixir_extensions ~w(ex exs heex)
+  @elixir_extensions ~w(ex exs heex eex)
   @frontend_extensions ~w(js jsx ts tsx)
 
   def pot_path, do: Path.expand(@pot_path)

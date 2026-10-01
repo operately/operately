@@ -1,7 +1,7 @@
-<%= title("#{short_name(@author)} connected the #{@project.name} project to the #{@goal.name} goal") %>
+<%= title(gettext("%{author} connected the %{project_name} project to the %{goal_name} goal", author: short_name(@author), project_name: @project.name, goal_name: @goal.name)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Project") %>
+  <%= cta_button(@link, gettext("View Project")) %>
 <% end %>

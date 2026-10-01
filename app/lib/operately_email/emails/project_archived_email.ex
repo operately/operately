@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectArchivedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
@@ -13,7 +14,7 @@ defmodule OperatelyEmail.Emails.ProjectArchivedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: "archived the #{project.name} project")
+    |> subject(gettext("(%{space_name}) %{author} archived the %{project_name} project", space_name: space.name, author: Operately.People.Person.short_name(author), project_name: project.name))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:link, link)

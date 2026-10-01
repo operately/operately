@@ -34,7 +34,8 @@
 
 - Elixir: `mix format` with `app/.formatter.exs` (line_length 200). Modules under `Operately.*`. Tests end with `_test.exs`.
 - Always write clean code: work test-first by default, then keep names clear, functions focused, side effects explicit, control flow shallow, and error handling useful.
-- Agents should not wrap Elixir macros with parentheses unless explicitly requested. Keep keyword-style macro calls such as `field`, `field?`, `object`, `enum`, `plug`, etc. in their existing form (e.g., `field :company, :company`) across schemas, API modules, and similar contexts. Example of what not to do: do not rewrite `field :company, :company` to `field(:company, :company)` or `object :task` to `object(:task), do: ...`.
+- Preserve declaration-style macro calls without parentheses where that is the established local convention, especially `object`, `field`, and `field?` declarations in TurboConnect types, API `inputs`/`outputs` blocks, and Ecto schemas. For example, keep `field :company, :company` and `object :task do ... end` in that form. Follow the surrounding declarations when adding new ones.
+- Other macro calls follow their established local style. Parentheses are appropriate for expression-style calls such as `gettext(...)`, `ngettext(...)`, and `list_of(...)`, including nested calls, and for declarations already written as `primitive(...)` or `enum(...)`. Do not flag or rewrite a call solely because it is a macro with parentheses.
 - Agents should not format Elixir code beyond the scope of the requested change or bug fix; only format the lines directly related to the current work.
 - TypeScript/JS: Prettier (`printWidth: 120`, `trailingComma: all`). Check: `npm --prefix app run prettier:check`; fix: `make js.fmt.fix`.
 - Frontend backend requests use TanStack Query. Follow the **tanstack-query** skill (`.agents/skills/tanstack-query/SKILL.md`). New pages, loaders, and mutations must use generated `*Query` / `*MutationOptions` helpers. When changing an existing page or feature, migrate that surface's API calls to TanStack in the same change.
@@ -80,7 +81,7 @@ Embedded Ecto schema with `use Operately.Activities.Content`. Module name is Pas
 
 ### Type Definition
 
-Add `object :activity_content_[action_name]` to `app/lib/operately_web/api/types.ex`. Use `field` for required, `field?` for optional. Keep macro style without parentheses.
+Add `object :activity_content_[action_name]` to `app/lib/operately_web/api/types.ex`. Use `field` for required, `field?` for optional. Keep these `object`, `field`, and `field?` declarations without parentheses.
 
 **Examples:** Search for `activity_content_` in `app/lib/operately_web/api/types.ex`
 

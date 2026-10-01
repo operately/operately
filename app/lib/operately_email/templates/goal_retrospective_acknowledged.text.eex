@@ -1,3 +1,3 @@
-<%= short_name(@author) %> acknowledged the retrospective for <%= @goal.name %>.
+<%= gettext("%{author} acknowledged the retrospective for %{goal_name}.", author: short_name(@author), goal_name: @goal.name) %>
 
-View Retrospective: <%= @cta_url %>
+<%= gettext("View Retrospective: %{url}", url: @cta_url) %>

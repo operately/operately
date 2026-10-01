@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalRetrospectiveAcknowledgedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals, Activities}
   alias OperatelyWeb.Paths
@@ -13,7 +14,7 @@ defmodule OperatelyEmail.Emails.GoalRetrospectiveAcknowledgedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "acknowledged your retrospective")
+    |> subject(gettext("(%{goal_name}) %{author} acknowledged your retrospective", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:cta_url, Paths.goal_activity_path(company, retrospective_activity) |> Paths.to_url())

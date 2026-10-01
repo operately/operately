@@ -51,6 +51,23 @@ defmodule Operately.I18n.ElixirExtractorTest do
     assert messages[{"", "1 task"}].msgid_plural == "%{count} tasks"
   end
 
+  test "extracts HTML and plain-text EEx messages inside control flow" do
+    source = ~S"""
+    <%= if @show do %>
+      <%= gettext("Hello %{name}", name: @name) %>
+      <%= ngettext("1 day", "%{count} days", @count) %>
+      <% # gettext("Commented out") %>
+    <% end %>
+    """
+
+    for path <- ["email.html.eex", "email.text.eex"] do
+      messages = Map.new(ElixirExtractor.extract_contents(source, path), &{Message.key(&1), &1})
+      assert map_size(messages) == 2
+      assert messages[{"", "Hello %{name}"}].references == [{path, 2}]
+      assert messages[{"", "1 day"}].msgid_plural == "%{count} days"
+    end
+  end
+
   test "reports invalid Elixir instead of silently omitting its messages" do
     assert_raise SyntaxError, fn ->
       ElixirExtractor.extract_contents("gettext(\"Save\")\n)", "invalid.ex")

@@ -1,15 +1,15 @@
 <%= if @champion == nil do %>
-  <%= title("#{short_name(@author)} removed the champion on #{@project.name}") %>
+  <%= title(gettext("%{author} removed the champion on %{project_name}", author: short_name(@author), project_name: @project.name)) %>
 <% else %>
   <%= if @champion.id == @person.id do %>
-    <%= title("#{short_name(@author)} assigned you as the champion on #{@project.name}") %>
+    <%= title(gettext("%{author} assigned you as the champion on %{project_name}", author: short_name(@author), project_name: @project.name)) %>
   <% else %>
-    <%= title("#{short_name(@author)} assigned #{short_name(@champion)} as the champion on #{@project.name}") %>
+    <%= title(gettext("%{author} assigned %{champion} as the champion on %{project_name}", author: short_name(@author), champion: short_name(@champion), project_name: @project.name)) %>
   <% end %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Project") %>
+  <%= cta_button(@cta_url, gettext("View Project")) %>
 <% end %>
