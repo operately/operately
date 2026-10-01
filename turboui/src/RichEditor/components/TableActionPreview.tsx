@@ -1,4 +1,4 @@
-import { useEmbedding, portalRect } from "../../Embedding";
+import { useEmbedding, portalPosition } from "../../Embedding";
 import React from "react";
 import { createPortal } from "react-dom";
 import { TableMap } from "@tiptap/pm/tables";
@@ -29,8 +29,8 @@ export function TableActionPreview({ target, action }: { target: TableTarget; ac
       aria-hidden="true"
       data-test-id="table-action-preview"
       data-action={action}
-      className={`pointer-events-none fixed z-[99] ${action.startsWith("delete") ? "bg-content-error opacity-10" : "bg-brand-1/25"}`}
-      style={portalRect(rect, embedding?.portalContainer)}
+      className={`pointer-events-none z-[99] ${action.startsWith("delete") ? "bg-content-error opacity-10" : "bg-brand-1/25"}`}
+      style={portalPosition(rect, embedding?.portalContainer)}
     />,
     embedding?.portalContainer ?? target.table.ownerDocument.body,
   );

@@ -151,7 +151,8 @@ The provider keeps supported overlays inside the preview, scopes nested dialog
 scroll locks and keyboard focus, and uses the portal layer's unscaled width for
 JavaScript breakpoints. `manageDocumentTitle` defaults to true; false preserves
 the host article's title. Keep the container elements stable when resizing.
-Without a provider, components keep their existing app behavior.
+Without a provider, components keep their existing app behavior. If `ResizeObserver`
+is unavailable, breakpoint tracking falls back to window resize events.
 
 The host owns the shadow root, React mounting, router, translation setup, and
 formatting preferences. It must load TurboUI CSS inside the root and Inter in the
@@ -165,8 +166,8 @@ If it covers the content, set `pointer-events: none` on the layer and `auto` on 
 children. The form person picker also needs an Emotion `CacheProvider` whose cache
 uses the shadow root as its `container`, so generated styles stay inside it.
 
-See Storybook **Utilities / Embedding** for normal, scaled, and independent shadow
-roots. Support currently targets the KPI UI and its editor/pickers; it does not
-promise that every TurboUI surface supports embedding. The rich-text table
+See Storybook **Utilities / Embedding** for normal, scaled, offset-portal, and
+independent shadow roots. Support currently targets the KPI UI and its editor/pickers;
+it does not promise that every TurboUI surface supports embedding. The rich-text table
 right-click focus loop remains a known issue, tracked in PR 2 of
 `specs/0021-shadow-dom-kpi-demos.md`. Website adoption should wait for that fix.

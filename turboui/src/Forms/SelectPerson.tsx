@@ -1,5 +1,5 @@
 import { Trans } from "../Translate";
-import { useEmbedding, portalRect } from "../Embedding";
+import { useEmbedding, portalPosition } from "../Embedding";
 import * as React from "react";
 import AsyncSelect from "react-select/async";
 import { useTranslation } from "react-i18next";
@@ -208,7 +208,7 @@ function asyncSelectStyles(portalMenu: boolean, container?: HTMLElement) {
           menuPortal: (provided: Record<string, unknown>) => ({
             ...provided,
             ...(container
-              ? portalRect(
+              ? portalPosition(
                   {
                     left: Number(provided.left),
                     top: Number(provided.top),

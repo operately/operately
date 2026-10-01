@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 
+import { EmbeddingProvider } from "../Embedding";
 import { Menu, MenuActionItem } from "./index";
 
 function renderMenu(readonly?: boolean) {
@@ -56,4 +57,26 @@ describe("Menu", () => {
     await user.click(document.querySelector('[data-test-id="example-menu"]') as HTMLElement);
     expect(document.querySelector('[data-test-id="example-menu-item"]')).not.toBeInTheDocument();
   });
+});
+
+test("context anchors use the positioned portal layer when it is offset from the transformed viewport", () => {
+  const portal = document.createElement("div");
+  portal.style.position = "absolute";
+  document.body.append(portal);
+  Object.defineProperty(portal, "offsetWidth", { value: 1000 });
+  portal.getBoundingClientRect = () => ({ left: 150, top: 100, width: 500, height: 300 }) as DOMRect;
+  const view = render(
+    <EmbeddingProvider portalContainer={portal} scrollContainer={portal}>
+      <Menu anchorPosition={{ x: 250, y: 200 }} open={false}>
+        <MenuActionItem onClick={() => {}}>Action</MenuActionItem>
+      </Menu>
+    </EmbeddingProvider>,
+  );
+  const anchor = portal.querySelector<HTMLElement>('span[aria-hidden="true"]');
+  expect(anchor).not.toBeNull();
+  expect(anchor?.style.position).toBe("absolute");
+  expect(anchor?.style.left).toBe("200px");
+  expect(anchor?.style.top).toBe("200px");
+  view.unmount();
+  portal.remove();
 });
