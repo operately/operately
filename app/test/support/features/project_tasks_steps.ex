@@ -203,8 +203,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   end
 
   step :open_task_slide_in, ctx, title do
+    task_title_id = UI.testid(["task-title", Paths.task_id(ctx.task)])
+
     ctx
-    |> UI.click_text(title)
+    |> UI.assert_text(title, testid: task_title_id)
+    |> UI.click(testid: task_title_id)
   end
 
   step :assert_task_slide_in_open, ctx, title do
@@ -562,7 +565,9 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   end
 
   step :assert_task_added, ctx, title do
-    UI.assert_text(ctx, title)
+    UI.find(ctx, Wallaby.Query.css("[data-task-row-id]", text: title), fn row ->
+      UI.assert_text(row, title)
+    end)
 
     task = Task.get!(:system, name: title)
 

@@ -1,3 +1,6 @@
+import { tn } from "../i18n";
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -82,14 +85,15 @@ export function MilestoneField(props: MilestoneFieldProps) {
 }
 
 export function useState(props: MilestoneFieldProps): State {
+  const { t } = useTranslation();
   const [isOpen, changeOpen] = React.useState(!!props.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const readonly = props.readonly ?? false;
-  const emptyStateMessage = props.emptyStateMessage ?? "Select milestone";
-  const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "No milestone";
+  const emptyStateMessage = props.emptyStateMessage ?? t("Select milestone");
+  const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? t("No milestone");
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
 
   React.useEffect(() => {
@@ -175,11 +179,17 @@ function Trigger({ state }: { state: State }) {
             <div className="text-sm font-medium truncate">{state.milestone.name || state.milestone.title}</div>
             {state.milestone.dueDate?.date && state.formattedTimePreferences && (
               <div className="text-xs text-content-dimmed">
-                Due{" "}
-                <FormattedTime
-                  {...state.formattedTimePreferences}
-                  time={state.milestone.dueDate.date}
-                  format="short-date"
+                <Trans
+                  i18nKey="Due <date/>"
+                  components={{
+                    date: (
+                      <FormattedTime
+                        {...state.formattedTimePreferences}
+                        time={state.milestone.dueDate.date}
+                        format="short-date"
+                      />
+                    ),
+                  }}
                 />
               </div>
             )}
@@ -237,13 +247,14 @@ function Dialog({ state }: { state: State }) {
 }
 
 function DialogMenu({ state }: { state: State }) {
+  const { t } = useTranslation();
   return (
     <div className="p-1">
       {state.milestone?.link && (
         <DialogMenuOption
           testId={createTestId(state.testId, "view-milestone")}
           icon={IconExternalLink}
-          label="View milestone"
+          label={t("View milestone")}
           linkTo={state.milestone.link}
         />
       )}
@@ -252,7 +263,7 @@ function DialogMenu({ state }: { state: State }) {
         <DialogMenuOption
           testId={createTestId(state.testId, "view-in-project")}
           icon={IconExternalLink}
-          label="View in project"
+          label={t("View in project")}
           linkTo={state.milestone.projectLink}
         />
       )}
@@ -260,7 +271,7 @@ function DialogMenu({ state }: { state: State }) {
       <DialogMenuOption
         testId={createTestId(state.testId, "change-milestone")}
         icon={IconSearch}
-        label="Choose different milestone"
+        label={t("Choose different milestone")}
         onClick={() => {
           state.setSearchQuery(""); // Clear any previous search
           state.setDialogMode("search");
@@ -284,7 +295,7 @@ function DialogMenu({ state }: { state: State }) {
       <DialogMenuOption
         testId={createTestId(state.testId, "clear-milestone")}
         icon={IconCircleX}
-        label="Clear milestone"
+        label={t("Clear milestone")}
         onClick={() => {
           state.setMilestone(null);
           state.setIsOpen(false);
@@ -315,6 +326,7 @@ function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOp
 }
 
 function DialogSearch({ state }: { state: State }) {
+  const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [showCompletedMilestones, setShowCompletedMilestones] = React.useState(false);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
@@ -389,8 +401,18 @@ function DialogSearch({ state }: { state: State }) {
           <div className="text-sm truncate">{milestone.name || milestone.title}</div>
           {milestone.dueDate?.date && state.formattedTimePreferences && (
             <div className="text-xs text-content-dimmed">
-              Due{" "}
-              <FormattedTime {...state.formattedTimePreferences} time={milestone.dueDate.date} format="short-date" />
+              <Trans
+                i18nKey="Due <date/>"
+                components={{
+                  date: (
+                    <FormattedTime
+                      {...state.formattedTimePreferences}
+                      time={milestone.dueDate.date}
+                      format="short-date"
+                    />
+                  ),
+                }}
+              />
             </div>
           )}
         </div>
@@ -403,7 +425,7 @@ function DialogSearch({ state }: { state: State }) {
       <div className="p-1 pb-0.5">
         <input
           className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
-          placeholder="Find or create milestone..."
+          placeholder={t("Find or create milestone...")}
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}
@@ -426,9 +448,7 @@ function DialogSearch({ state }: { state: State }) {
             data-test-id={createTestId(state.testId, "completed-milestones-toggle")}
           >
             {showCompletedMilestones ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
-            <span>
-              {completedMilestones.length} completed milestone{completedMilestones.length === 1 ? "" : "s"}
-            </span>
+            <span>{tn("1 completed milestone", "{{count}} completed milestones", completedMilestones.length)}</span>
           </button>
         )}
 
@@ -436,7 +456,7 @@ function DialogSearch({ state }: { state: State }) {
           completedMilestones.map((milestone, index) => renderMilestone(milestone, activeMilestones.length + index))}
 
         {state.milestones.length === 0 && state.searchQuery && (
-          <div className="px-1.5 py-2 text-sm text-content-dimmed text-center">No milestones found</div>
+          <div className="px-1.5 py-2 text-sm text-content-dimmed text-center">{t("No milestones found")}</div>
         )}
       </div>
     </div>

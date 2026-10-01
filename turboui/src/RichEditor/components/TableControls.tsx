@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { tn } from "../../i18n";
 import React from "react";
 import { createPortal } from "react-dom";
 import { IconMinus, IconPlus, IconSettings } from "../../icons";
@@ -10,6 +12,7 @@ import { insertionActions, canRunTableAction, type TableAction } from "./tableAc
 import { useTableControls } from "./useTableControls";
 
 export function TableControls() {
+  const { t } = useTranslation();
   const editor = useTipTapEditor();
   const controls = useTableControls(editor);
   const { target, owner, menu, setMenu, closeMenu, preview, setPreview, run } = controls;
@@ -60,13 +63,13 @@ export function TableControls() {
       <MenuSeparator />
       {context ? (
         <>
-          {actionItem("deleteRow", "Delete row")}
-          {actionItem("deleteColumn", "Delete column")}
+          {actionItem("deleteRow", t("Delete row"))}
+          {actionItem("deleteColumn", t("Delete column"))}
         </>
       ) : (
         <>
-          {actionItem("toggleHeaderRow", hasTableHeader(target.node) ? "Remove header row" : "Add header row")}
-          {actionItem("deleteTable", "Delete table")}
+          {actionItem("toggleHeaderRow", hasTableHeader(target.node) ? t("Remove header row") : t("Add header row"))}
+          {actionItem("deleteTable", t("Delete table"))}
         </>
       )}
     </>
@@ -87,7 +90,7 @@ export function TableControls() {
           ref={controls.toolbar}
           data-table-controls={owner}
           role="group"
-          aria-label="Table controls"
+          aria-label={t("Table controls")}
           className="rich-text-table-controls flex flex-wrap justify-end items-center gap-1 cursor-default"
           onPointerDown={(event) => event.preventDefault()}
           onKeyDown={(event) => {
@@ -99,18 +102,18 @@ export function TableControls() {
           }}
         >
           <div className="flex items-center rounded-md border border-surface-outline bg-surface-base">
-            {actionButton("deleteRow", "Delete row", <IconMinus size={16} />)}
+            {actionButton("deleteRow", t("Delete row"), <IconMinus size={16} />)}
             <span className="text-xs tabular-nums text-content-dimmed whitespace-nowrap px-1">
-              {target.rows} {target.rows === 1 ? "row" : "rows"}
+              {tn("1 row", "{{count}} rows", target.rows)}
             </span>
-            {actionButton("addRowAfter", "Add row below", <IconPlus size={16} />)}
+            {actionButton("addRowAfter", t("Add row below"), <IconPlus size={16} />)}
           </div>
           <div className="flex items-center rounded-md border border-surface-outline bg-surface-base">
-            {actionButton("deleteColumn", "Delete column", <IconMinus size={16} />)}
+            {actionButton("deleteColumn", t("Delete column"), <IconMinus size={16} />)}
             <span className="text-xs tabular-nums text-content-dimmed whitespace-nowrap px-1">
-              {target.columns} {target.columns === 1 ? "column" : "columns"}
+              {tn("1 column", "{{count}} columns", target.columns)}
             </span>
-            {actionButton("addColumnAfter", "Add column right", <IconPlus size={16} />)}
+            {actionButton("addColumnAfter", t("Add column right"), <IconPlus size={16} />)}
           </div>
           <Menu
             size="tiny"
@@ -129,8 +132,8 @@ export function TableControls() {
             customTrigger={
               <ToolbarButton
                 testId="toolbar-button-table-settings"
-                title="Table settings"
-                aria-label="Table settings"
+                title={t("Table settings")}
+                aria-label={t("Table settings")}
                 tabIndex={0}
                 className="!p-2 !text-content-dimmed"
               >
@@ -151,7 +154,7 @@ export function TableControls() {
           anchorPosition={menu}
           contentProps={{
             ...contentProps,
-            "aria-label": "Cell actions",
+            "aria-label": t("Cell actions"),
             onPointerDownCapture: (event) => {
               pressedContextItem.current =
                 event.button === 0 && !event.ctrlKey && event.target instanceof Element

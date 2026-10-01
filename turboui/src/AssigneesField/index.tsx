@@ -1,3 +1,5 @@
+import { tn } from "../i18n";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
@@ -6,7 +8,6 @@ import { IconCircleX, IconSearch, IconUser, IconUserPlus } from "../icons";
 import { PersonField } from "../PersonField";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
-import { plurarize, plurarizeWord } from "../utils/plurarize";
 
 export namespace AssigneesField {
   export type Person = PersonField.Person;
@@ -90,6 +91,7 @@ interface State {
 }
 
 function useAssigneesFieldState(props: AssigneesField.Props): State {
+  const { t } = useTranslation();
   const isOpenControlled = props.isOpen !== undefined;
   const [internalIsOpen, changeOpen] = React.useState(!!props.isOpen);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -142,8 +144,8 @@ function useAssigneesFieldState(props: AssigneesField.Props): State {
     size: props.size ?? "normal",
     showTitle: props.showTitle ?? true,
     avatarOnly: props.avatarOnly ?? false,
-    emptyStateMessage: props.emptyStateMessage ?? "Assign task",
-    emptyStateReadOnlyMessage: props.emptyStateReadOnlyMessage ?? "No assignees",
+    emptyStateMessage: props.emptyStateMessage ?? t("Assign task"),
+    emptyStateReadOnlyMessage: props.emptyStateReadOnlyMessage ?? t("No assignees"),
     maxAvatars: props.maxAvatars ?? 3,
     variant: props.variant ?? "inline",
     testId: props.testId || "assignees-field",
@@ -214,6 +216,7 @@ function TriggerIcon({ state }: { state: State }) {
 }
 
 function TriggerText({ state }: { state: State }) {
+  useTranslation();
   if (state.avatarOnly) return null;
 
   if (state.people.length === 0) {
@@ -226,7 +229,10 @@ function TriggerText({ state }: { state: State }) {
     );
   }
 
-  const label = state.people.length === 1 ? state.people[0]!.fullName : plurarize(state.people.length, "assignee", "assignees");
+  const label =
+    state.people.length === 1
+      ? state.people[0]!.fullName
+      : tn("1 assignee", "{{count}} assignees", state.people.length);
   const title = state.people.map((person) => person.fullName).join(", ");
 
   return (
@@ -264,6 +270,7 @@ function Dialog({ state }: { state: State }) {
 }
 
 function DialogContent({ state }: { state: State }) {
+  const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
@@ -333,7 +340,7 @@ function DialogContent({ state }: { state: State }) {
         <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-content-dimmed" size={14} />
         <input
           className="w-full border border-surface-outline rounded-lg pl-7 pr-2 py-1.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
-          placeholder="Search..."
+          placeholder={t("Search...")}
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}
@@ -371,7 +378,7 @@ function DialogContent({ state }: { state: State }) {
           data-test-id={createTestId(state.testId, "clear")}
         >
           <IconCircleX size={14} />
-          Clear {plurarizeWord(state.people.length, "assignee", "assignees")}
+          {tn("Clear assignee", "Clear assignees", state.people.length)}
         </button>
       )}
     </div>

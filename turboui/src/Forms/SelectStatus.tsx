@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 
@@ -128,13 +129,14 @@ function StatusOption({
 }
 
 function Placeholder() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2 p-2 text-content-dimmed">
       <div className="w-10 h-10 rounded-full border-2 border-surface-outline border-dashed" />
 
       <div>
-        <p className="font-semibold">Select a status</p>
-        <div className="text-sm">Choose from the available options</div>
+        <p className="font-semibold">{t("Select a status")}</p>
+        <div className="text-sm">{t("Choose from the available options")}</div>
       </div>
     </div>
   );
@@ -147,17 +149,30 @@ function StatusDescription({
   status: SelectStatusOption;
   reviewer?: SelectStatusProps["reviewer"];
 }) {
+  const { t } = useTranslation();
   const reviewerName = reviewer?.fullName?.split(" ")[0];
 
   switch (status) {
     case "on_track":
-      return <>Progressing as planned. No blockers.</>;
+      return <>{t("Progressing as planned. No blockers.")}</>;
     case "caution":
-      return <>Emerging risks or delays. {reviewerName || "The reviewer"} should be aware.</>;
+      return (
+        <>
+          {reviewerName
+            ? t("Emerging risks or delays. {{reviewer}} should be aware.", { reviewer: reviewerName })
+            : t("Emerging risks or delays. The reviewer should be aware.")}
+        </>
+      );
     case "off_track":
-      return <>Significant problems affecting success. {reviewerName || "The reviewer"}’s help is needed.</>;
+      return (
+        <>
+          {reviewerName
+            ? t("Significant problems affecting success. {{reviewer}}’s help is needed.", { reviewer: reviewerName })
+            : t("Significant problems affecting success. The reviewer’s help is needed.")}
+        </>
+      );
     case "pending":
-      return <>Work hasn't started yet.</>;
+      return <>{t("Work hasn't started yet.")}</>;
     default:
       throw new Error(`Unknown status: ${status}`);
   }

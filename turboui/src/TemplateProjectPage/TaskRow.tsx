@@ -1,3 +1,5 @@
+import { tn } from "../i18n";
+import { useTranslation } from "react-i18next";
 import React, { useCallback } from "react";
 import { RelativeDayField } from "../RelativeDayField";
 import { StatusSelector } from "../StatusSelector";
@@ -42,6 +44,7 @@ export function TaskRow({
   isDraggable: boolean;
   selected?: boolean;
 }) {
+  const { t } = useTranslation();
   const activeAssignees = React.useMemo(
     () => (task.assignees ?? []).filter((assignee) => assignee.active && assignee.person),
     [task.assignees],
@@ -232,7 +235,7 @@ export function TaskRow({
               void props.onTaskUpdate?.(task.id, { dueOffsetDays });
             }}
             readonly={!canEdit}
-            placeholder="Set when due"
+            placeholder={t("Set when due")}
             hideCalendarIcon={!hasDueDate}
             className={hasDueDate ? undefined : EMPTY_DUE_DATE_REVEAL_CLASS}
             testId={`template-task-${task.id}-due-offset`}
@@ -293,13 +296,14 @@ function UnavailableTaskAssignees({
   assignees: TemplateProjectPage.TemplatePerson[];
   onRemove?: () => void;
 }) {
+  const { t } = useTranslation();
   if (assignees.length === 0) return null;
 
   const people = assignees.map(
-    (assignee) => assignee.person ?? { id: assignee.id, fullName: "Unavailable person", avatarUrl: null },
+    (assignee) => assignee.person ?? { id: assignee.id, fullName: t("Unavailable person"), avatarUrl: null },
   );
   const names = people.map((person) => person.fullName).join(", ");
-  const message = assignees.length === 1 ? `${names} is no longer active.` : `${names} are no longer active.`;
+  const message = tn("{{names}} is no longer active.", "{{names}} are no longer active.", assignees.length, { names });
 
   return (
     <div className="flex items-center gap-0.5" data-test-id="unavailable-task-assignees">
@@ -318,11 +322,11 @@ function UnavailableTaskAssignees({
           icon={IconX}
           iconSize={11}
           onClick={onRemove}
-          ariaLabel="Remove unavailable assignees"
+          ariaLabel={t("Remove unavailable assignees")}
           testId="remove-unavailable-task-assignees"
           className="!h-5 !w-5 !rounded-full !border-0 !p-0 mb-5"
         >
-          <span className="sr-only">Remove unavailable assignees</span>
+          <span className="sr-only">{t("Remove unavailable assignees")}</span>
         </SecondaryButton>
       )}
     </div>

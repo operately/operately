@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 interface Person {
@@ -132,5 +133,6 @@ function ItemList({ items, selectItem, selectedIndex }: ItemListProps): JSX.Elem
 }
 
 function NoResult(): JSX.Element {
-  return <div className="px-1.5 py-1 text-left">No result</div>;
+  const { t } = useTranslation();
+  return <div className="px-1.5 py-1 text-left">{t("No result")}</div>;
 }

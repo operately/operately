@@ -272,7 +272,7 @@ export function TaskItem({
               size={currentDueDate ? "small" : "lg"}
               calendarOnly
               testId="task-due-date-mobile"
-              ariaLabel="Set due date"
+              ariaLabel={t("Set due date")}
               className={
                 currentDueDate
                   ? ""
@@ -296,7 +296,7 @@ export function TaskItem({
               size="small"
               calendarOnly
               testId="task-due-date"
-              ariaLabel="Set due date"
+              ariaLabel={t("Set due date")}
               className={
                 currentDueDate
                   ? ""

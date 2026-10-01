@@ -1,3 +1,5 @@
+import { tn } from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { GhostButton } from "../Button";
@@ -26,15 +28,16 @@ export function SpaceTemplatesTool({ templates, testId = "space-templates-tool" 
 }
 
 function ZeroState() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center h-full" data-test-id="space-templates-tool-empty">
       <TemplateExamples />
 
       <div className="flex flex-col items-center px-6 text-center">
-        <div className="text-base font-bold">Templates</div>
-        <div className="mt-1 mb-4 text-sm">Save reusable project structures for recurring work.</div>
+        <div className="text-base font-bold">{t("Templates")}</div>
+        <div className="mt-1 mb-4 text-sm">{t("Save reusable project structures for recurring work.")}</div>
         <GhostButton size="sm" spanButton>
-          Create a template
+          {t("Create a template")}
         </GhostButton>
       </div>
     </div>
@@ -42,11 +45,12 @@ function ZeroState() {
 }
 
 function TemplateExamples() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2 w-[220px] mt-12 mb-8 opacity-75">
-      <TemplateExample name="Product launch" taskCount={12} />
-      <TemplateExample name="Customer onboarding" taskCount={8} />
-      <TemplateExample name="Hiring plan" taskCount={6} />
+      <TemplateExample name={t("Product launch")} taskCount={12} />
+      <TemplateExample name={t("Customer onboarding")} taskCount={8} />
+      <TemplateExample name={t("Hiring plan")} taskCount={6} />
     </div>
   );
 }
@@ -56,15 +60,16 @@ function TemplateExample({ name, taskCount }: { name: string; taskCount: number 
     <div className="flex items-center gap-2 px-3 py-2 border rounded bg-surface-base border-stroke-base group-hover:border-accent-1 transition-colors">
       <IconClipboardText size={16} className="text-content-dimmed group-hover:text-accent-1 transition-colors" />
       <span className="font-bold text-xs truncate">{name}</span>
-      <span className="ml-auto text-[11px] text-content-dimmed">{taskCount} tasks</span>
+      <span className="ml-auto text-[11px] text-content-dimmed">{tn("1 task", "{{count}} tasks", taskCount)}</span>
     </div>
   );
 }
 
 function RegularState({ templates }: Pick<SpaceTemplatesTool.Props, "templates">) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col h-full">
-      <div className="py-2 text-base font-bold text-center">Templates</div>
+      <div className="py-2 text-base font-bold text-center">{t("Templates")}</div>
 
       <div className="flex-1 mx-2 overflow-hidden rounded bg-surface-dimmed">
         {templates.slice(0, MAX_TEMPLATES).map((template) => (
@@ -92,9 +97,5 @@ function TemplateRow({ template }: { template: SpaceTemplatesTool.Template }) {
 }
 
 function formatCounts(template: SpaceTemplatesTool.Template) {
-  return `${pluralize(template.milestoneCount, "milestone")} · ${pluralize(template.taskCount, "task")}`;
-}
-
-function pluralize(count: number, singular: string) {
-  return `${count} ${singular}${count === 1 ? "" : "s"}`;
+  return `${tn("1 milestone", "{{count}} milestones", template.milestoneCount)} · ${tn("1 task", "{{count}} tasks", template.taskCount)}`;
 }

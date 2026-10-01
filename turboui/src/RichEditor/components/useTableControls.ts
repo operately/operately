@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../i18n";
 import type { Editor } from "@tiptap/core";
 import type { Transaction } from "@tiptap/pm/state";
 import type { Node as DocumentNode } from "@tiptap/pm/model";
@@ -157,10 +158,10 @@ function useTableDeletionUndo(editor: Editor) {
     dismissUndo();
     if (action !== "deleteRow" && action !== "deleteColumn") return;
     const doc = editor.state.doc;
-    const id = showInfoToast(action === "deleteRow" ? "Row deleted" : "Column deleted", "", {
+    const id = showInfoToast(action === "deleteRow" ? i18n.t("Row deleted") : i18n.t("Column deleted"), "", {
       duration: 5000,
       action: {
-        label: "Undo",
+        label: i18n.t("Undo"),
         onClick: () => {
           dismissUndo();
           if (!editor.isDestroyed && editor.isEditable && editor.state.doc === doc) editor.chain().focus().undo().run();

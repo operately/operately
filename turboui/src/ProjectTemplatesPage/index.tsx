@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { ProjectTemplate } from "../ApiTypes";
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -54,6 +56,7 @@ export namespace ProjectTemplatesPage {
 }
 
 export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
+  const { t } = useTranslation();
   const [templates, setTemplates] = React.useState(props.templates);
   const [search, setSearch] = React.useState("");
   const [selectedSpace, setSelectedSpace] = React.useState<ProjectTemplatesPage.Space | null>(props.fixedSpace ?? null);
@@ -123,14 +126,14 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
   );
 
   return (
-    <Page title="Project Templates" size="large" navigation={props.navigation} testId="project-templates-page">
+    <Page title={t("Project Templates")} size="large" navigation={props.navigation} testId="project-templates-page">
       <main className="min-h-[75vh] px-4 py-10 sm:px-12">
         <ResourceHubHeader
-          title="Project Templates"
+          title={t("Project Templates")}
           actions={
             props.canCreate ? (
               <PrimaryButton onClick={openCreateModal} testId="new-project-template">
-                New template
+                {t("New template")}
               </PrimaryButton>
             ) : undefined
           }
@@ -153,8 +156,8 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
                       type="text"
                       name="project-template-search"
                       role="searchbox"
-                      aria-label="Search project templates"
-                      placeholder="Search project templates…"
+                      aria-label={t("Search project templates")}
+                      placeholder={t("Search project templates…")}
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                       className="py-2 pl-9 pr-9 text-base sm:text-sm"
@@ -163,7 +166,7 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
                     {search && (
                       <button
                         type="button"
-                        aria-label="Clear search"
+                        aria-label={t("Clear search")}
                         onClick={() => setSearch("")}
                         className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-content-dimmed hover:text-content-accent"
                       >
@@ -177,7 +180,7 @@ export function ProjectTemplatesPage(props: ProjectTemplatesPage.Props) {
                     space={selectedSpace}
                     setSpace={setSelectedSpace}
                     search={filterSpaceSearch}
-                    emptyStateMessage="All Spaces"
+                    emptyStateMessage={t("All Spaces")}
                     testId="project-template-space-filter"
                   />
                 )}
@@ -252,6 +255,7 @@ function TemplatesContent(
     onLifecycleAction: (template: ProjectTemplate, action: ProjectTemplateLifecycleAction) => void;
   },
 ) {
+  const { t } = useTranslation();
   if (
     props.templates.length === 0 &&
     props.archiveStatus === "active" &&
@@ -259,16 +263,16 @@ function TemplatesContent(
     !props.isFiltered
   ) {
     return (
-      <TemplateListMessage actionLabel="View archived" onAction={props.onViewArchived}>
-        No active templates.
+      <TemplateListMessage actionLabel={t("View archived")} onAction={props.onViewArchived}>
+        {t("No active templates.")}
       </TemplateListMessage>
     );
   }
 
   if (props.templates.length === 0 && props.isFiltered)
     return (
-      <TemplateListMessage actionLabel="Clear filters" onAction={props.onClearFilters}>
-        No matching templates.
+      <TemplateListMessage actionLabel={t("Clear filters")} onAction={props.onClearFilters}>
+        {t("No matching templates.")}
       </TemplateListMessage>
     );
 
@@ -309,7 +313,8 @@ function TemplateGrid(
 }
 
 function ArchiveStatusMenu({ value, onChange }: { value: ArchiveStatus; onChange: (value: ArchiveStatus) => void }) {
-  const label = value === "active" ? "Active" : "Archived";
+  const { t } = useTranslation();
+  const label = value === "active" ? t("Active") : t("Archived");
 
   return (
     <Menu
@@ -325,8 +330,8 @@ function ArchiveStatusMenu({ value, onChange }: { value: ArchiveStatus; onChange
         </button>
       }
     >
-      <MenuActionItem onClick={() => onChange("active")}>Active</MenuActionItem>
-      <MenuActionItem onClick={() => onChange("archived")}>Archived</MenuActionItem>
+      <MenuActionItem onClick={() => onChange("active")}>{t("Active")}</MenuActionItem>
+      <MenuActionItem onClick={() => onChange("archived")}>{t("Archived")}</MenuActionItem>
     </Menu>
   );
 }
@@ -370,17 +375,18 @@ function CreateTemplateModal({
   spaceSearch: SpaceField.SearchSpaceFn;
   onCreate: ProjectTemplatesPage.Props["onCreate"];
 }) {
+  const { t } = useTranslation();
   const [space, setSpace] = React.useState<ProjectTemplatesPage.Space | null>(fixedSpace ?? null);
   const form = Forms.useForm({
     fields: { name: "" },
     validate: (addError) => {
-      if (!fixedSpace && !space) addError("space", "Select a Space");
+      if (!fixedSpace && !space) addError("space", i18n.t("Select a Space"));
     },
     submit: async () => {
       const selectedSpace = fixedSpace ?? space;
       if (!selectedSpace) return;
       const result = await onCreate({ name: form.values.name.trim(), spaceId: selectedSpace.id });
-      if (!result.success) throw new Error(result.error ?? "The template could not be created. Try again.");
+      if (!result.success) throw new Error(result.error ?? i18n.t("The template could not be created. Try again."));
       form.actions.reset();
       setSpace(fixedSpace ?? null);
       onCreated();
@@ -391,7 +397,7 @@ function CreateTemplateModal({
     },
     onError: (error) =>
       form.actions.addErrors({
-        form: error instanceof Error ? error.message : "The template could not be created. Try again.",
+        form: error instanceof Error ? error.message : t("The template could not be created. Try again."),
       }),
   });
 
@@ -400,16 +406,22 @@ function CreateTemplateModal({
   }, [editableSpaces, fixedSpace, isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={() => void form.actions.cancel()} title="New project template" size="medium">
+    <Modal isOpen={isOpen} onClose={() => void form.actions.cancel()} title={t("New project template")} size="medium">
       <Forms.Form form={form} className="space-y-5" testId="new-project-template-form">
-        <Forms.TextInput field="name" label="Template name" placeholder="e.g. Product launch" required autoFocus />
+        <Forms.TextInput
+          field="name"
+          label={t("Template name")}
+          placeholder={t("e.g. Product launch")}
+          required
+          autoFocus
+        />
         {!fixedSpace && (
           <SpaceField
             space={space}
             setSpace={setSpace}
             search={spaceSearch}
             variant="form-field"
-            label="Space"
+            label={t("Space")}
             error={form.errors.space}
             testId="new-project-template-space"
           />
@@ -417,10 +429,10 @@ function CreateTemplateModal({
         <Forms.FormError message={form.errors.form} />
         <div className="flex justify-end gap-3">
           <SecondaryButton type="button" onClick={() => void form.actions.cancel()} disabled={form.state !== "idle"}>
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton type="submit" loading={form.state === "submitting"} testId="create-project-template">
-            Create template
+            {t("Create template")}
           </PrimaryButton>
         </div>
       </Forms.Form>
@@ -435,10 +447,11 @@ function EmptyTemplateLibrary({
   canCreate: boolean;
   scope: ProjectTemplatesPage.Props["scope"];
 }) {
+  const { t } = useTranslation();
   const readOnlyMessage =
     scope === "space"
-      ? "No project templates have been created in this space yet."
-      : "No project templates have been created in this company yet.";
+      ? t("No project templates have been created in this space yet.")
+      : t("No project templates have been created in this company yet.");
 
   return (
     <section
@@ -447,10 +460,10 @@ function EmptyTemplateLibrary({
     >
       <div className="flex flex-col items-center gap-2">
         <h2 className="text-balance font-semibold text-content-accent">
-          {canCreate ? "Create your first project template" : "No project templates yet"}
+          {canCreate ? t("Create your first project template") : t("No project templates yet")}
         </h2>
         <p className="max-w-sm text-pretty text-base text-content-dimmed sm:text-sm">
-          {canCreate ? "Build a reusable starting point for recurring work." : readOnlyMessage}
+          {canCreate ? t("Build a reusable starting point for recurring work.") : readOnlyMessage}
         </p>
       </div>
     </section>

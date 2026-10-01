@@ -88,29 +88,31 @@ Most of these surfaces were already cataloged. This follow-up gives the add-memb
 
 English wording and behavior are preserved. The add-member accessible name has a Brazilian Portuguese translation drafted from the glossary. Previously reviewed access-summary translations remain intact. Focused tests exercise English, Portuguese catalog lookup, substituted catalog lookup, missing-Portuguese fallback (including the existing Other People count's singular and plural forms), and tool configuration interactions. Catalogs and generated resources are regenerated with `make gen.i18n`.
 
-Remaining coverage gaps:
+Coverage after the PR 5 extraction:
 
-- Work-management copy: goals, projects, tasks, discussions, Docs & Files, activity feeds, space home/work map/kanban/KPI/discussion pages, and their operation toasts.
+- Work-management copy is cataloged by the PR 6 implementation described below, including goals, projects, tasks, discussions, Docs & Files, activity feeds, space home/work map/kanban/KPI/discussion pages, and operation toasts.
 - Remaining backend messages, emails, digests, and server-rendered pages. Pass-through API error messages remain as returned, including `data.message` assigned to forms.
 - People directory and org-chart page copy.
 - Complete Brazilian Portuguese coverage, native-speaker review of new messages, and automated coverage checks.
 
 Operator SaaS administration is outside PR 5's scope. User-authored names, emails, company names, space names, and API identifiers stay outside translation lookup. The language flag, preference, and selector behavior are unchanged.
 
-## Work-management extraction (PR 6) — in progress
+## Work-management extraction (PR 6) — implemented locally, ready for review
 
 The first PR 6 batch catalogs goal/project overview panels, goal creation, task and milestone controls, task-board filters/menus, project/space task operation errors (including “Update failed”), Docs & Files menus/empty states, space home/discussion/work-map controls, KPI list/create/annotation surfaces, and four activity handlers. New messages in this batch have Brazilian Portuguese translations drafted from the glossary.
 
 English, Portuguese catalog lookup, and missing-Portuguese fallback are tested, including zero/singular/plural counts and saved Portuguese preferences with the company flag off. Substituted translations verify real component/hook lookup, rich activity sentences, dialog/menu labels, and representative expanded-text behavior. Existing reviewed translations are retained. Native-speaker review remains PR 8 work. The completed PR 5 scope is unchanged.
 
-Remaining client-authored PR 6 work, not PR 7 deferrals:
+The final implementation catalogs these previously open client-authored surfaces:
 
 - Goal access pages (`GoalAccess*`, `GoalEditAccessLevelsPage`), goal check-in/closing/reopening forms, target/checklist editors, and remaining contributor presentation
 - Project add/check-in/closing/pause/resume/retrospective forms and check-in presentation (`ProjectPageLayout/StatusBanner`, `CheckInHeader`, `CheckInCard`, `LastCheckIn`)
 - Remaining shared work-management fields, status customization/display, subscription/comment/timeline presentation, and milestone-completion copy
 - Remaining task-board sentences and accessibility text, including selected filter descriptions, milestone/task count summaries outside the converted completed sections, and Kanban add-status presentation
 - Project-template selection, creation, lifecycle, and template project/task/discussion/Docs & Files flows
-- Exhaustive narrow-screen/expanded-translation visual review and app-level end-to-end workflow verification
+- Editor, date/time control, reaction, and slide-in labels used by these workflows
+
+The shared `Trans` export from `turboui` (or `../Translate` inside TurboUI) escapes interpolated names before rich-text parsing. It subscribes to language changes, and extraction recognizes both import forms. Use it for newly cataloged rich sentences.
 
 When passing links to `Trans`, include their text as named placeholders inside the translation tags (for example, `<project>{{projectName}}</project>`). A self-closing tag can clear a passed element's existing children. Self-closing tags are appropriate for components that render their own content, such as `FormattedTime` or an aggregated task list. Verify link text and destinations in rendered tests.
 
@@ -127,7 +129,7 @@ English wording, permissions, interactions, stored activity payloads, and the de
 
 Focused tests verify real catalog substitution, success/empty/error states, resource-name preservation, saved Portuguese preferences with the flag disabled, and missing-Portuguese fallback. Folder counts and upload/progress states cover zero, singular, and plural cases. The expanded-catalog document-history Storybook interaction checks the heading and restore confirmation for overflow. This supplements, rather than replaces, exhaustive narrow-screen and end-to-end review.
 
-Remaining work stays explicit: the other PR 6 gaps above, people directory and org-chart extraction, backend/email/digest/server-rendered copy (PR 7), full Portuguese translation and native-speaker review (PR 8), formatting follow-ups, and default language-selection rollout. Earlier completed extraction is unchanged.
+The final PR 6 implementation above closes the remaining client-authored work-management extraction. People directory and org-chart extraction, backend/email/digest/server-rendered copy (PR 7), full Portuguese terminology and native-speaker review (PR 8), formatting follow-ups, and default language-selection rollout remain separate work.
 
 ### Remaining activity-feed presentation — cataloged
 
@@ -148,12 +150,20 @@ English wording is retained, including legacy fallback labels and the existing �
 
 Focused handler tests cover saved Portuguese preferences with the flag off, substituted catalog sentences, missing-Portuguese fallback, reordered links and literal resource names, KPI bodies/notifications, and handler-owned detail labels. Company access counts and timeframe day counts exercise zero, singular, and plural; task-assignee tests exercise the existing zero/one/many branches. Existing handler/link/path tests remain part of the targeted Jest run. Catalog generation is checked for determinism and preservation of existing PO translations and locale resources; `make test.tsc.lint` checks the changed surfaces.
 
-Remaining gaps are explicit:
+Scope and remaining release work:
 
-- Shared feed/timeline/comment/subscription chrome and shared status/permission presentation outside the handlers remain in the work-management inventory. Stored status/access labels and unknown legacy role labels remain as supplied; this extraction does not translate backend-originated payload text.
+- Shared feed/timeline/comment/subscription chrome and client-owned status/permission presentation are included in the final PR 6 implementation. Stored status/access labels and unknown legacy role labels remain as supplied; this extraction does not translate backend-originated payload text.
 - The older cataloged handlers keep their existing rendering implementation. Extending rich-text name escaping to those and other cataloged surfaces is a separate follow-up.
-- Goal/project/task page chrome, forms, boards, operation toasts, project-template flows, and any other unfinished PR 6 items above are not completed by this handler extraction. Earlier completed discussion, Docs & Files, space-board, and KPI page extraction is preserved.
-- Backend messages, emails, digests, and server-rendered pages remain PR 7 work. People directory/org-chart copy, full Portuguese coverage/native-speaker review, automated coverage checks, and exhaustive expanded-text/narrow-screen/end-to-end review remain open.
+- The final PR 6 implementation covers goal/project/task page chrome, forms, boards, operation toasts, and project-template flows. Earlier completed discussion, Docs & Files, space-board, and KPI page extraction is preserved.
+- Backend messages, emails, digests, and server-rendered pages remain PR 7 work. People directory/org-chart copy, full Portuguese terminology/native-speaker review, automated coverage checks, and full-product acceptance with selected companies remain open. PR 6 browser validation covers English workflows, Portuguese check-in submission with flag rollback, narrow goal/check-in/template/Kanban layouts, and expanded confirmation text.
+
+### Final implementation validation
+
+The final slice adds 593 active messages and Portuguese drafts. The current catalog has 2,931 active messages, of which 2,930 have translations or drafts; `intlRelativeDateTime` is intentionally left as an interpolation key. This is catalog coverage, not a whole-product translation percentage or native-speaker approval.
+
+Both frontend TypeScript checks and production builds pass. The Elixir i18n suite passes 55 tests, and targeted app bridge suites pass 127 tests. The full TurboUI run passed 1,305 tests; three timing-sensitive failures passed targeted reruns, with a longer local timeout for SearchPage. Two template lifecycle Storybook interactions pass. Browser workflows cover check-ins, template lifecycle/permissions, project pause/resume, and goal checklists; timing-sensitive English check-in and space-template cases pass isolated reruns with longer local timeouts. Portuguese submission preserves literal user content and machine status values and restores English when the flag is disabled.
+
+Mobile review at 375px covers goals, check-ins, templates, and Kanban. Expanded confirmation buttons now wrap inside their dialog. Existing TurboUI forms, buttons, dialogs, links, and `FormattedTime` are reused. Catalog generation is deterministic, placeholders/plurals remain intact, and existing nonempty translations are preserved. The implementation is ready for review; it has not been merged or deployed.
 
 ## Catalog files
 

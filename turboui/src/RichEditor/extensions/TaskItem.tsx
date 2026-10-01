@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { TaskItem } from "@tiptap/extension-list";
 import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, type NodeViewProps } from "@tiptap/react";
 import { Checkbox } from "../../Checkbox";
@@ -10,6 +11,7 @@ export const TaskListContext = React.createContext<{
 }>({ canEdit: false, pending: false, onChange: () => {} });
 
 function TaskItemView({ node, editor, getPos, updateAttributes }: NodeViewProps) {
+  const { t } = useTranslation();
   const interaction = React.useContext(TaskListContext);
   const disabled = !editor.isEditable && (!interaction.canEdit || interaction.pending);
 
@@ -39,7 +41,7 @@ function TaskItemView({ node, editor, getPos, updateAttributes }: NodeViewProps)
           checked={node.attrs.checked === true}
           onChange={change}
           disabled={disabled}
-          label={node.firstChild?.textContent || "Task item"}
+          label={node.firstChild?.textContent || t("Task item")}
           size="sm"
           testId="task-list-checkbox"
         />

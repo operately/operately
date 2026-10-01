@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 import React from "react";
 import { useLocation, useNavigate } from "react-router";
 
@@ -16,8 +17,6 @@ import { findFolder, folderBreadcrumbs, nodesInFolder } from "./resourceTree";
 
 type ResourceNode = TemplateProjectPage.ResourceNode;
 
-const ROOT_TITLE = "Documents & Files";
-
 const templateResourcePermissions: ResourceHubPermissions = {
   __typename: "resource_hub_permissions",
   canCreateDocument: true,
@@ -33,7 +32,9 @@ const emptySubscriptions: SubscribersSelector.Props = {
   subscriptionType: SubscribersSelector.SubscriptionOption.NONE,
   onSubscriptionTypeChange: ignoreResourceAction,
   alwaysNotify: [],
-  allSubscribersLabel: "No one",
+  get allSubscribersLabel() {
+    return i18n.t("No one");
+  },
 };
 
 interface TemplateDocsAndFilesProps {
@@ -131,7 +132,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
   const breadcrumbs =
     ancestorFolders.length > 0
       ? [
-          { label: ROOT_TITLE, onClick: () => setCurrentFolderId(null) },
+          { label: i18n.t("Documents & Files"), onClick: () => setCurrentFolderId(null) },
           ...ancestorFolders.slice(0, -1).map((folder) => ({
             label: folder.name,
             onClick: () => setCurrentFolderId(folder.folderId ?? null),
@@ -141,7 +142,7 @@ function TemplateDocsAndFiles(props: TemplateDocsAndFilesProps) {
   const content = (
     <>
       <DocsAndFilesTab
-        title={currentFolder?.name ?? ROOT_TITLE}
+        title={currentFolder?.name ?? i18n.t("Documents & Files")}
         items={items}
         breadcrumbs={breadcrumbs}
         emptyStateKind={effectiveFolderId ? "folder" : "resourceHub"}

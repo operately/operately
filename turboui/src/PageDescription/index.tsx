@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React, { useMemo, useState, useCallback } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { DimmedActionLink } from "../Link";
@@ -28,12 +30,13 @@ export function PageDescription({
   richTextHandlers,
   canEdit,
   label,
-  placeholder = "Describe...",
-  zeroStatePlaceholder = "Add notes...",
+  placeholder = i18n.t("Describe..."),
+  zeroStatePlaceholder = i18n.t("Add notes..."),
   testId,
   emptyTestId,
   localDraftKey,
 }: Props) {
+  useTranslation();
   const descriptionIsEmpty = isContentEmpty(description);
   const initialMode = descriptionIsEmpty ? "zero" : "view";
   const [mode, setMode] = useState<"view" | "edit" | "zero">(initialMode);
@@ -88,12 +91,13 @@ interface SectionHeaderProps {
 }
 
 function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2">
       <h2 className="font-bold">{title}</h2>
       {showButtons && (
         <SecondaryButton size="xxs" onClick={startEdit} testId="edit-description">
-          Edit
+          {t("Edit")}
         </SecondaryButton>
       )}
     </div>
@@ -107,6 +111,7 @@ interface ViewModeProps {
 }
 
 function ViewMode({ rawDescription, mentionedPersonLookup, taskList }: ViewModeProps) {
+  const { t } = useTranslation();
   const { transformContent, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
   const canCollapse = length > PREVIEW_CHARACTER_LIMIT && !hasTaskList(rawDescription);
 
@@ -128,7 +133,7 @@ function ViewMode({ rawDescription, mentionedPersonLookup, taskList }: ViewModeP
           underline="hover"
           disableColorHoverEffect
         >
-          {isExpanded ? "Collapse" : "Expand"}
+          {isExpanded ? t("Collapse") : t("Expand")}
         </DimmedActionLink>
       )}
     </div>
@@ -152,6 +157,7 @@ function EditMode({
   placeholder,
   localDraftKey,
 }: EditModeProps) {
+  const { t } = useTranslation();
   const editor = useEditor({
     content: description,
     editable: true,
@@ -186,10 +192,10 @@ function EditMode({
       <Editor editor={editor} />
       <div className="flex gap-2 mt-2">
         <PrimaryButton size="xs" onClick={save}>
-          Save
+          {t("Save")}
         </PrimaryButton>
         <SecondaryButton size="xs" onClick={cancel}>
-          Cancel
+          {t("Cancel")}
         </SecondaryButton>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { type QueryClient } from "@tanstack/react-query";
 import { CommentSection } from "turboui";
@@ -7,6 +8,7 @@ import { useIsEditMode } from "@/components/Pages";
 import { useLoadedData } from "./loader";
 
 export function Comments() {
+  const { t } = useTranslation();
   const { retrospective } = useLoadedData();
   const isEditMode = useIsEditMode();
   const project = retrospective.project;
@@ -28,7 +30,7 @@ export function Comments() {
     canComment: retrospective.permissions.canComment,
     acknowledgedAt: retrospective.acknowledgedAt,
     acknowledgedBy: retrospective.acknowledgedBy,
-    ackLabel: "Retrospective",
+    ackLabel: t("Retrospective"),
   });
 
   if (isEditMode || !props) return null;

@@ -1,3 +1,6 @@
+import i18n from "@/i18n";
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as React from "react";
 
@@ -16,15 +19,21 @@ const STATUS_COLORS: Record<Status, string> = {
 };
 
 const STATUS_LABELS: Record<Status, string> = {
-  on_track: "On track",
-  caution: "Caution",
-  off_track: "Off track",
+  get on_track() {
+    return i18n.t("On track");
+  },
+  get caution() {
+    return i18n.t("Caution");
+  },
+  get off_track() {
+    return i18n.t("Off track");
+  },
 };
 
 const STATUS_DESCRIPTIONS_TEMPLATE = (reviewer: string) => ({
-  on_track: "Progressing as planned. No blockers.",
-  caution: `Emerging risks or delays. ${reviewer} should be aware.`,
-  off_track: `Significant problems affecting success. ${reviewer}'s help is needed.`,
+  on_track: i18n.t("Progressing as planned. No blockers."),
+  caution: i18n.t("Emerging risks or delays. {{reviewer}} should be aware.", { reviewer }),
+  off_track: i18n.t("Significant problems affecting success. {{reviewer}}'s help is needed.", { reviewer }),
 });
 
 interface SelectGoalStatusProps {
@@ -41,6 +50,7 @@ const DEFAULT_PROPS = {
 };
 
 export function StatusSelector(props: SelectGoalStatusProps) {
+  const { t } = useTranslation();
   props = { ...DEFAULT_PROPS, ...props };
 
   const [value, setValue] = Forms.useFieldValue<Status | null>(props.field);
@@ -50,7 +60,7 @@ export function StatusSelector(props: SelectGoalStatusProps) {
   assertReviewer(props.reviewerFirstName, props.noReviewer);
 
   const normalizedValue = normalizeStatus(value ?? null);
-  const reviewer = props.noReviewer ? "Reviewer" : props.reviewerFirstName;
+  const reviewer = props.noReviewer ? t("Reviewer") : props.reviewerFirstName;
 
   Forms.useValidation(props.field, validateStatus(props.required));
 
@@ -148,7 +158,9 @@ function StatusTrigger({ value, error }: { value: Status | null; error?: boolean
         {value === null ? (
           <div className="flex items-center gap-2">
             <Circle size={18} border="border-surface-outline" noFill borderSize={2} borderDashed />
-            <div className="font-medium">Pick a status&hellip;</div>
+            <div className="font-medium">
+              <Trans i18nKey="Pick a status…" />
+            </div>
           </div>
         ) : (
           <div className="flex items-center gap-2">
@@ -206,7 +218,7 @@ function assertReviewer(reviewer: string | undefined, noReviewer: boolean | unde
 function validateStatus(required?: boolean) {
   return (field: string, value: unknown, addError: (field: string, message: string) => void) => {
     if (required && !STATUS_OPTIONS.includes(value as Status)) {
-      return addError(field, `Status is required`);
+      return addError(field, i18n.t("Status is required"));
     }
   };
 }

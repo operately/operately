@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { AvatarList } from "../Avatar";
 import { ContributorsSection, ContributorModal } from "../ContributorsSection";
@@ -6,6 +7,7 @@ import { SidebarSection } from "../SidebarSection";
 import type { TemplateProjectPage } from ".";
 
 export function TemplatePeople({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
+  const { t } = useTranslation();
   const people = props.people ?? [];
   const champion = people.find((item) => item.role === "champion") ?? null;
   const reviewer = people.find((item) => item.role === "reviewer") ?? null;
@@ -31,14 +33,16 @@ export function TemplatePeople({ props, canEdit }: { props: TemplateProjectPage.
     <section data-test-id="template-people">
       <div className="space-y-6">
         <RoleField
-          label="Champion"
+          role="champion"
+          label={t("Champion")}
           value={champion}
           canEdit={canEdit}
           searchData={props.personSearch}
           onChange={(person) => setRole("champion", champion, person)}
         />
         <RoleField
-          label="Reviewer"
+          role="reviewer"
+          label={t("Reviewer")}
           value={reviewer}
           canEdit={canEdit}
           searchData={props.personSearch}
@@ -74,37 +78,43 @@ export function TemplatePeople({ props, canEdit }: { props: TemplateProjectPage.
 }
 
 function RoleField({
+  role,
   label,
   value,
   canEdit,
   searchData,
   onChange,
 }: {
+  role: "champion" | "reviewer";
   label: string;
   value: TemplateProjectPage.TemplatePerson | null;
   canEdit: boolean;
   searchData: PersonField.SearchData;
   onChange: (person: PersonField.Person | null) => void;
 }) {
+  const { t } = useTranslation();
+  const emptyLabel = role === "champion" ? t("No champion") : t("No reviewer");
+  const selectLabel = role === "champion" ? t("Select champion") : t("Select reviewer");
   const field = canEdit ? (
     <PersonField
       person={value?.person ?? null}
       setPerson={onChange}
       searchData={searchData}
-      emptyStateMessage={`Select ${label.toLowerCase()}`}
-      emptyStateReadOnlyMessage={`No ${label.toLowerCase()}`}
+      emptyStateMessage={selectLabel}
+      emptyStateReadOnlyMessage={emptyLabel}
     />
   ) : (
-    <PersonField person={value?.person ?? null} readonly emptyStateReadOnlyMessage={`No ${label.toLowerCase()}`} />
+    <PersonField person={value?.person ?? null} readonly emptyStateReadOnlyMessage={emptyLabel} />
   );
 
   return <SidebarSection title={label}>{field}</SidebarSection>;
 }
 
 export function TemplateTaskAssignees({ assignees }: { assignees: TemplateProjectPage.TemplatePerson[] }) {
+  const { t } = useTranslation();
   if (assignees.length === 0) return null;
   const people = assignees.flatMap((assignee) =>
-    assignee.person ? [assignee.person] : [{ id: assignee.id, fullName: "Unavailable person", avatarUrl: null }],
+    assignee.person ? [assignee.person] : [{ id: assignee.id, fullName: t("Unavailable person"), avatarUrl: null }],
   );
   return <AvatarList people={people} size="tiny" maxElements={4} stacked />;
 }

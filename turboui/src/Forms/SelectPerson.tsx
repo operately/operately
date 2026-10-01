@@ -1,3 +1,4 @@
+import { Trans } from "../Translate";
 import * as React from "react";
 import AsyncSelect from "react-select/async";
 import { useTranslation } from "react-i18next";
@@ -125,9 +126,7 @@ function PersonSearch(props: PersonSearchProps) {
       // When `portalMenu` is set, render the menu in a body-level portal so it
       // floats above (and is not clipped by) overflow/scroll boundaries of
       // ancestors such as the Modal's `overflow-auto` container.
-      menuPortalTarget={
-        props.portalMenu && typeof document !== "undefined" ? document.body : undefined
-      }
+      menuPortalTarget={props.portalMenu && typeof document !== "undefined" ? document.body : undefined}
       menuPlacement={props.portalMenu ? "auto" : undefined}
     />
   );
@@ -180,7 +179,11 @@ function PersonLabel({ person, showTitle }: { person: SelectPersonPerson; showTi
     <div className="flex items-center gap-2" data-test-id={createTestId("person-option", person.fullName)}>
       <Avatar person={person} size="tiny" />
       {person.fullName}
-      {showTitle && person.title ? <>&middot; {person.title}</> : null}
+      {showTitle && person.title ? (
+        <>
+          <Trans i18nKey="· {{title}}" values={{ title: person.title }} />
+        </>
+      ) : null}
     </div>
   );
 }

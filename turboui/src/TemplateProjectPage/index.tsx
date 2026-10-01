@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import {
@@ -21,16 +22,22 @@ import { Discussions } from "./Discussions";
 import { DocsAndFiles } from "./DocsAndFiles";
 
 export function TemplateProjectPage(props: TemplateProjectPage.Props) {
+  const { t } = useTranslation();
   const orderedProps = React.useMemo(() => orderTemplateGraph(props), [props]);
   const canEdit = !props.template.archived && Boolean(props.permissions.canEdit || props.permissions.hasFullAccess);
   const [lifecycleAction, setLifecycleAction] = React.useState<ProjectTemplateLifecycleAction | null>(null);
   const tabs = useTabs("overview", [
-    { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} />, count: props.tasks.length },
-    { id: "discussions", label: "Discussions", icon: <IconMessageCircle size={14} />, count: props.discussions.length },
+    { id: "overview", label: t("Overview"), icon: <IconClipboardText size={14} /> },
+    { id: "tasks", label: t("Tasks"), icon: <IconListCheck size={14} />, count: props.tasks.length },
+    {
+      id: "discussions",
+      label: t("Discussions"),
+      icon: <IconMessageCircle size={14} />,
+      count: props.discussions.length,
+    },
     {
       id: "docs-and-files",
-      label: "Docs & Files",
+      label: t("Docs & Files"),
       icon: <IconPaperclip size={14} />,
       count: props.resourceNodes?.length ?? 0,
     },
@@ -39,6 +46,7 @@ export function TemplateProjectPage(props: TemplateProjectPage.Props) {
   return (
     <>
       <ProjectPageLayout
+        formattedTimePreferences={props.formattedTimePreferences}
         mode="template"
         title={[props.template.name]}
         testId="project-template-page"

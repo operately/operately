@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -29,6 +30,7 @@ export function SlideIn({
   testId,
   showCloseButton = true,
 }: SlideInProps) {
+  const { t } = useTranslation();
   const [shouldRender, setShouldRender] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const slideInRef = useRef<HTMLDivElement>(null);
@@ -109,9 +111,9 @@ export function SlideIn({
           <button
             onClick={onClose}
             className="absolute top-3 right-3 z-10 cursor-pointer text-content-dimmed hover:text-content-base rounded-full hover:bg-surface-highlight transition-colors"
-            aria-label="Close"
+            aria-label={t("Close")}
             data-test-id="slide-in-close-button"
-            title="Close"
+            title={t("Close")}
           >
             <IconX size={18} />
           </button>
