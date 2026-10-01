@@ -15,8 +15,7 @@ export function TableControls() {
   const { t } = useTranslation();
   const editor = useTipTapEditor();
   const controls = useTableControls(editor);
-  const { target, owner, menu, setMenu, closeMenu, preview, setPreview, run } = controls;
-  const restoreFocus = React.useRef(true);
+  const { target, owner, menu, setMenu, closeMenu, preview, setPreview, run, restoreFocus } = controls;
   const pressedContextItem = React.useRef<Element | null>(null);
 
   React.useEffect(() => {
@@ -24,6 +23,12 @@ export function TableControls() {
     pressedContextItem.current = null;
   }, [menu]);
   if (!target || editor.isDestroyed || !editor.isEditable) return null;
+
+  const restoreEditorFocus = (event: Event) => {
+    event.preventDefault();
+    if (!restoreFocus.current || editor.isDestroyed || !editor.isEditable) return;
+    editor.view.focus();
+  };
 
   const events = (action: TableAction) => ({
     onPointerEnter: () => setPreview(action),
@@ -124,11 +129,7 @@ export function TableControls() {
               setMenu(open ? { kind: "settings" } : null);
               setPreview(null);
             }}
-            onCloseAutoFocus={(event) => {
-              // Preserve the editor's cursor without overriding an intentional outside click.
-              event.preventDefault();
-              if (restoreFocus.current && !editor.isDestroyed && editor.isEditable) editor.view.focus();
-            }}
+            onCloseAutoFocus={restoreEditorFocus}
             customTrigger={
               <ToolbarButton
                 testId="toolbar-button-table-settings"
@@ -182,10 +183,7 @@ export function TableControls() {
           onOpenChange={(open) => {
             if (!open) closeMenu();
           }}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            if (restoreFocus.current && !editor.isDestroyed && editor.isEditable) editor.view.focus();
-          }}
+          onCloseAutoFocus={restoreEditorFocus}
         >
           {menuItems(true)}
         </Menu>

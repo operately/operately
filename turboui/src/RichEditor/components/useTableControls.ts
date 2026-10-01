@@ -12,6 +12,7 @@ type OpenMenu = { kind: "settings" } | { kind: "context"; x: number; y: number }
 
 export function useTableControls(editor: Editor) {
   const owner = React.useId();
+  const restoreFocus = React.useRef(true);
   const [menu, setMenu] = React.useState<OpenMenu>(null);
   const [preview, setPreview] = React.useState<TableAction | null>(null);
   const closeMenu = React.useCallback(() => {
@@ -19,36 +20,62 @@ export function useTableControls(editor: Editor) {
     setPreview(null);
   }, []);
 
-  const target = useActiveTable(editor, owner, closeMenu);
+  const target = useActiveTable(editor, owner, closeMenu, restoreFocus);
   const toolbar = useTableMenuTriggers(editor, setMenu);
   const showDeletionUndo = useTableDeletionUndo(editor);
 
   const run = (action: TableAction) => {
+    // The action's Tiptap command restores focus; menu cleanup must not race that restoration.
+    restoreFocus.current = false;
     closeMenu();
     if (target && runTableAction(editor, target, action)) showDeletionUndo(action);
   };
 
-  return { owner, target, toolbar, menu, setMenu, closeMenu, preview, setPreview, run };
+  return { owner, target, toolbar, menu, setMenu, closeMenu, preview, setPreview, run, restoreFocus };
 }
 
 /** Keeps controls active while focus belongs to the editor or its portalled controls. */
-function useActiveTable(editor: Editor, owner: string, closeMenu: () => void) {
+function useActiveTable(
+  editor: Editor,
+  owner: string,
+  closeMenu: () => void,
+  restoreFocus: React.MutableRefObject<boolean>,
+) {
   const [target, setTarget] = React.useState<TableTarget | null>(null);
 
   React.useEffect(() => {
     if (editor.isDestroyed) return;
     const dom = editor.view.dom;
     const doc = dom.ownerDocument;
+    const root = dom.getRootNode() as Document | ShadowRoot;
+    let disposed = false;
+    let dismissed = false;
 
     const ownsFocus = (element: EventTarget | null) =>
       element instanceof Element &&
       (dom.contains(element) ||
         element.closest("[data-table-controls]")?.getAttribute("data-table-controls") === owner);
-    const refresh = () =>
-      setTarget(ownsFocus(activeElement(dom.getRootNode() as Document | ShadowRoot)) ? tableTarget(editor) : null);
     const hideControls = () => {
       closeMenu();
       setTarget(null);
+    };
+    const leaveEditor = () => {
+      // Dismissal may unmount the menu before Radix gets its outside-interaction event.
+      dismissed = true;
+      restoreFocus.current = false;
+      hideControls();
+    };
+    const refresh = () => {
+      if (disposed || editor.isDestroyed) return;
+      const next = !dismissed && ownsFocus(activeElement(root)) ? tableTarget(editor) : null;
+      if (next) setTarget(next);
+      else hideControls();
+    };
+    // During blur, activeElement can be empty. Let the synchronous focus transition finish first.
+    const afterFocusTransition = () => queueMicrotask(refresh);
+    const enterEditor = () => {
+      dismissed = false;
+      refresh();
     };
 
     let previousSelection = editor.state.selection;
@@ -57,37 +84,45 @@ function useActiveTable(editor: Editor, owner: string, closeMenu: () => void) {
       const selectionChanged = !previousSelection.eq(editor.state.selection);
       previousSelection = editor.state.selection;
       if (transaction.docChanged || selectionChanged || !editor.isEditable) closeMenu();
-      refresh();
+      if (transaction.getMeta("blur")) afterFocusTransition();
+      else refresh();
     };
     const onFocus = (event: FocusEvent) => {
       // Look inside Shadow DOM so editor focus isn't mistaken for focus outside it.
-      if (ownsFocus(event.composedPath()[0] ?? event.target)) refresh();
-      else hideControls();
+      if (ownsFocus(event.composedPath()[0] ?? event.target)) enterEditor();
+      else leaveEditor();
     };
     const onPointerDown = (event: PointerEvent) => {
       // Shadow DOM retargets event.target to its host; check the actual clicked element.
-      if (!ownsFocus(event.composedPath()[0] ?? event.target)) hideControls();
+      if (ownsFocus(event.composedPath()[0] ?? event.target)) enterEditor();
+      else leaveEditor();
     };
 
     refresh();
+    // Focus changes within one shadow root may never reach the document.
+    if (root !== doc) root.addEventListener("focusin", onFocus as EventListener);
+    root.addEventListener("focusout", afterFocusTransition);
     doc.addEventListener("focusin", onFocus);
     doc.addEventListener("pointerdown", onPointerDown, true);
-    doc.defaultView?.addEventListener("blur", hideControls);
+    doc.defaultView?.addEventListener("blur", leaveEditor);
     editor.on("transaction", onTransaction);
-    editor.on("focus", refresh);
+    editor.on("focus", enterEditor);
     editor.on("update", refresh);
     editor.on("destroy", hideControls);
 
     return () => {
+      disposed = true;
+      if (root !== doc) root.removeEventListener("focusin", onFocus as EventListener);
+      root.removeEventListener("focusout", afterFocusTransition);
       doc.removeEventListener("focusin", onFocus);
       doc.removeEventListener("pointerdown", onPointerDown, true);
-      doc.defaultView?.removeEventListener("blur", hideControls);
+      doc.defaultView?.removeEventListener("blur", leaveEditor);
       editor.off("transaction", onTransaction);
-      editor.off("focus", refresh);
+      editor.off("focus", enterEditor);
       editor.off("update", refresh);
       editor.off("destroy", hideControls);
     };
-  }, [editor, owner, closeMenu]);
+  }, [editor, owner, closeMenu, restoreFocus]);
 
   return target;
 }
