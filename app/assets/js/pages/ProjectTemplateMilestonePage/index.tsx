@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useUpdateTemplate } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import { useRichTextHandlers } from "@/hooks/useRichTextHandlers";
@@ -85,7 +86,10 @@ function Page() {
       await refresh();
       return true;
     } catch {
-      showErrorToast("Template not updated", "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(
+        i18n.t("Template not updated"),
+        i18n.t("Your last confirmed template is still displayed. Try again."),
+      );
       return false;
     }
   }

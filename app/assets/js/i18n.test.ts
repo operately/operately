@@ -9,6 +9,11 @@ describe("i18n", () => {
     expect(i18n.t("No discussions yet")).toBe("No discussions yet");
     expect(i18n.t("Your drafts ({{count}})", { count: 3 })).toBe("Your drafts (3)");
     expect(tn("1 completed milestone", "{{count}} completed milestones", 0)).toBe("0 completed milestones");
+    expect(i18n.t("Close Project")).toBe("Close Project");
+    expect(i18n.t("Archive “{{name}}”?", { name: "Launch <QA>" })).toBe("Archive “Launch <QA>”?");
+    expect(tn("1 day after project starts", "{{count}} days after project starts", 5)).toBe(
+      "5 days after project starts",
+    );
   });
   it("falls back to the English message identifier", () => {
     expect(i18n.t("Not yet translated")).toEqual("Not yet translated");

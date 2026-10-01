@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import React from "react";
 
 import { usePostProjectCheckIn } from "@/models/projectCheckIns";
@@ -12,6 +14,7 @@ import { ProjectCheckInFormPage, showErrorToast, SubscribersSelector } from "tur
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { project } = useLoadedData();
   const paths = usePaths();
   const navigate = useNavigate();
@@ -62,7 +65,7 @@ export function Page() {
       navigate(paths.projectCheckInPath(res.checkIn.id));
       return true;
     } catch {
-      showErrorToast("Check-in not submitted", "Check the form and try again.");
+      showErrorToast(i18n.t("Check-in not submitted"), i18n.t("Check the form and try again."));
       return false;
     }
   }
@@ -70,7 +73,7 @@ export function Page() {
   return (
     <ProjectCheckInFormPage
       mode="create"
-      pageTitle={["Check-In", project.name!]}
+      pageTitle={[t("Check-In"), project.name!]}
       navigation={buildNavigation(project, paths)}
       cancelLink={paths.projectCheckInsPath(project.id!)}
       richTextHandlers={richTextHandlers}
@@ -89,13 +92,13 @@ function buildNavigation(project: ReturnType<typeof useLoadedData>["project"], p
 
   if (project.space) {
     items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
-    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects" as const), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects" as const), label: i18n.t("Work Map") });
   } else {
-    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+    items.push({ to: paths.workMapPath("projects"), label: i18n.t("Work Map") });
   }
 
   items.push({ to: paths.projectPath(project.id!), label: project.name! });
-  items.push({ to: paths.projectCheckInsPath(project.id!), label: "Check-Ins" });
+  items.push({ to: paths.projectCheckInsPath(project.id!), label: i18n.t("Check-Ins") });
 
   return items;
 }

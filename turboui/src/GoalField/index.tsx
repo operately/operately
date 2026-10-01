@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import { useAsyncSearch } from "../utils/useAsyncSearch";
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
@@ -53,6 +55,7 @@ export namespace GoalField {
 }
 
 export function GoalField(props: GoalField.Props) {
+  useTranslation();
   const state = useGoalFieldState(props);
 
   return (
@@ -67,8 +70,12 @@ const DefaultProps = {
   isOpen: false,
   iconSize: 20,
   readonly: false,
-  emptyStateMessage: "Select a goal",
-  emptyStateReadOnlyMessage: "No goal selected",
+  get emptyStateMessage() {
+    return i18n.t("Select a goal");
+  },
+  get emptyStateReadOnlyMessage() {
+    return i18n.t("No goal selected");
+  },
   extraDialogMenuOptions: [],
 };
 
@@ -182,19 +189,20 @@ function Dialog({ state }: { state: GoalField.State }) {
 }
 
 function DialogMenu({ state }: { state: GoalField.State }) {
+  const { t } = useTranslation();
   return (
     <div className="p-1">
       <DialogMenuOption
         testId={`${state.testId}-view-goal`}
         icon={IconExternalLink}
-        label="See goal"
+        label={t("See goal")}
         linkTo={state.goal?.link || "#"}
       />
 
       <DialogMenuOption
         testId={`${state.testId}-search`}
         icon={IconSearch}
-        label="Choose another goal"
+        label={t("Choose another goal")}
         onClick={() => state.setDialogMode("search")}
       />
 
@@ -214,7 +222,7 @@ function DialogMenu({ state }: { state: GoalField.State }) {
       <DialogMenuOption
         testId={`${state.testId}-clear`}
         icon={IconCircleX}
-        label="Clear goal"
+        label={t("Clear goal")}
         onClick={() => {
           state.setGoal(null);
           state.setIsOpen(false);
@@ -253,12 +261,13 @@ function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOp
 }
 
 function DialogSearch({ state }: { state: GoalField.State }) {
+  const { t } = useTranslation();
   return (
     <div className="p-1">
       <div className="p-1 pb-0.5">
         <input
           className="w-full border border-surface-outline rounded px-2 py-1 text-sm focus:outline-none focus:ring-0 text-content-base bg-surface-base"
-          placeholder="Search goals..."
+          placeholder={t("Search goals...")}
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}

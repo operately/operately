@@ -1,3 +1,4 @@
+import { Trans } from "turboui";
 import React from "react";
 
 import { IconPlus } from "turboui";
@@ -16,8 +17,10 @@ export function AddTargetButton({ display }: { display: boolean }) {
     >
       <div className="flex flex-col flex-1">
         <div className="flex items-center gap-1 text-content-dimmed font-medium">
-          <IconPlus size={16} className="text-content-dimmed shrink-0" />
-          Add target
+          <Trans
+            i18nKey="<icon/>Add target"
+            components={{ icon: <IconPlus size={16} className="text-content-dimmed shrink-0" /> }}
+          />
         </div>
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import type { ProjectTemplate } from "../ApiTypes";
 import { Avatar } from "../Avatar";
@@ -25,6 +27,7 @@ export function TemplateCard({
   canEdit,
   onLifecycleAction,
 }: TemplateCardProps) {
+  const { t } = useTranslation();
   const description = plainDescription(template.description);
   const archived = Boolean(template.archivedAt);
   const createProjectPath = archived ? null : projectCreationPath?.(template);
@@ -35,17 +38,17 @@ export function TemplateCard({
         <div className="absolute right-3 top-3 z-10">
           <Menu testId={`project-template-actions-${template.id}`} align="end" size="tiny">
             <MenuActionItem icon={IconCopy} hidden={archived} onClick={() => onLifecycleAction(template, "duplicate")}>
-              Duplicate
+              {t("Duplicate")}
             </MenuActionItem>
             <MenuActionItem icon={IconArchive} hidden={archived} onClick={() => onLifecycleAction(template, "archive")}>
-              Archive
+              {t("Archive")}
             </MenuActionItem>
             <MenuActionItem icon={IconRotate} hidden={!archived} onClick={() => onLifecycleAction(template, "restore")}>
-              Restore
+              {t("Restore")}
             </MenuActionItem>
             <MenuSeparator />
             <MenuActionItem icon={IconTrash} danger onClick={() => onLifecycleAction(template, "delete")}>
-              Delete
+              {t("Delete")}
             </MenuActionItem>
           </Menu>
         </div>
@@ -59,19 +62,29 @@ export function TemplateCard({
           <span>{template.name}</span>
           {archived && (
             <span className="rounded-full bg-surface-dimmed px-2 py-0.5 text-xs font-medium text-content-dimmed">
-              Archived
+              {t("Archived")}
             </span>
           )}
         </div>
-        <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || "No description"}</p>
+        <p className="mt-2 line-clamp-3 flex-1 text-sm text-content-dimmed">{description || t("No description")}</p>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-surface-outline pt-3 text-xs text-content-dimmed">
           <div className="flex min-w-32 flex-1 items-center gap-2">
             {template.creator ? <Avatar person={template.creator} size={20} /> : null}
-            <span className="min-w-0 break-words">{template.creator?.fullName ?? "Creator unavailable"}</span>
+            <span className="min-w-0 break-words">{template.creator?.fullName ?? t("Creator unavailable")}</span>
           </div>
           <span className="shrink-0">
-            Updated{" "}
-            <FormattedTime {...formattedTimePreferences} time={template.updatedAt} format="relative-time-or-date" />
+            <Trans
+              i18nKey="Updated <date/>"
+              components={{
+                date: (
+                  <FormattedTime
+                    {...formattedTimePreferences}
+                    time={template.updatedAt}
+                    format="relative-time-or-date"
+                  />
+                ),
+              }}
+            />
           </span>
         </div>
       </DivLink>
@@ -81,7 +94,7 @@ export function TemplateCard({
           className="group flex w-full items-center justify-between rounded-b-xl border-t border-surface-outline px-5 py-3 text-sm font-semibold text-content-accent transition-colors hover:bg-surface-highlight focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-base"
           testId={`create-project-from-template-${template.id}`}
         >
-          <span>Create project</span>
+          <span>{t("Create project")}</span>
           <IconArrowRight
             size={16}
             aria-hidden="true"

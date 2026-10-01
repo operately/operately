@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { Json, ProjectTemplateScheduleIssue, ProjectTemplatesCreateFromProjectResult } from "@/api";
 import type { Paths } from "@/routes/paths";
 import type { SaveProjectAsTemplateModal } from "turboui";
@@ -38,13 +39,13 @@ export function createSaveProjectAsTemplateHandler(dependencies: Dependencies) {
       }
 
       if (!response.template) {
-        return { success: false, error: "The template could not be created. Check the project and try again." };
+        return { success: false, error: i18n.t("The template could not be created. Check the project and try again.") };
       }
 
       dependencies.navigate(dependencies.paths.projectTemplatePath(response.template.id));
       return { success: true };
     } catch (_error) {
-      return { success: false, error: "The template could not be created. Check the project and try again." };
+      return { success: false, error: i18n.t("The template could not be created. Check the project and try again.") };
     }
   };
 }

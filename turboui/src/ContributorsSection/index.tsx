@@ -1,3 +1,6 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 import React from "react";
 
 import { SecondaryButton } from "../Button";
@@ -38,17 +41,18 @@ export function ContributorsSection<T extends Contributor>({
   addButtonTestId = "add-contributor",
   testIdPrefix = "contributor",
 }: ContributorsSectionProps<T>) {
+  const { t } = useTranslation();
   return (
     <SidebarSection
       title={
         <div className="flex items-center gap-3">
-          <span>Contributors</span>
+          <span>{t("Contributors")}</span>
           {canEdit && onAdd && (
             <SecondaryButton
               size="xxs"
               icon={IconPlus}
               iconSize={12}
-              ariaLabel="Add contributor"
+              ariaLabel={t("Add contributor")}
               onClick={onAdd}
               testId={addButtonTestId}
               className="!px-0 !py-0"
@@ -64,14 +68,13 @@ export function ContributorsSection<T extends Contributor>({
           contributors.map((contributor) => {
             const isActive = contributor.active !== false;
             const canRemove =
-              Boolean(canEdit && onDelete) &&
-              (hasFullAccess || (contributor.accessLevel ?? 0) < FULL_ACCESS_LEVEL);
+              Boolean(canEdit && onDelete) && (hasFullAccess || (contributor.accessLevel ?? 0) < FULL_ACCESS_LEVEL);
             const menuOptions: NonNullable<PersonField.Props["extraDialogMenuOptions"]> = [];
 
             if (canEdit && onEdit) {
               menuOptions.push({
                 icon: IconEdit,
-                label: isActive ? "Edit contributor" : "Replace unavailable contributor",
+                label: isActive ? i18n.t("Edit contributor") : i18n.t("Replace unavailable contributor"),
                 onClick: () => onEdit(contributor),
                 testId: `edit-${testIdPrefix}-${contributor.id}`,
               });
@@ -80,7 +83,7 @@ export function ContributorsSection<T extends Contributor>({
             if (canRemove) {
               menuOptions.push({
                 icon: IconTrash,
-                label: "Remove contributor",
+                label: i18n.t("Remove contributor"),
                 onClick: () => onDelete?.(contributor.id),
                 testId: `remove-${testIdPrefix}-${contributor.id}`,
                 danger: true,
@@ -93,7 +96,7 @@ export function ContributorsSection<T extends Contributor>({
                   person={contributor.person}
                   readonly
                   showTitle
-                  emptyStateReadOnlyMessage="Unavailable person"
+                  emptyStateReadOnlyMessage={i18n.t("Unavailable person")}
                   testId={`${testIdPrefix}-${contributor.id}`}
                   extraDialogMenuOptions={menuOptions.length > 0 ? menuOptions : undefined}
                 />
@@ -102,7 +105,7 @@ export function ContributorsSection<T extends Contributor>({
             );
           })
         ) : (
-          <div className="text-sm text-content-dimmed">No contributors</div>
+          <div className="text-sm text-content-dimmed">{t("No contributors")}</div>
         )}
       </div>
     </SidebarSection>
@@ -112,12 +115,10 @@ export function ContributorsSection<T extends Contributor>({
 function UnavailableContributorLabel() {
   return (
     <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
-      <IconAlertTriangleFilled size={14} />
-      Not active
+      <Trans i18nKey="<icon/>Not active" components={{ icon: <IconAlertTriangleFilled size={14} /> }} />
     </span>
   );
 }
 
 export { ContributorModal } from "./ContributorModal";
 export type { ContributorFormValues, ContributorModalProps } from "./ContributorModal";
-

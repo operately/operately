@@ -1,3 +1,4 @@
+import { Trans } from "turboui";
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
@@ -20,7 +21,12 @@ function GoalStatusBanner({ goal }: { goal: Goals.Goal }) {
   if (goal.isClosed) {
     return (
       <Paper.Banner>
-        This goal was closed on <FormattedTime {...formattedTimePreferences} time={goal.closedAt!} format="long-date" />
+        <Trans
+          i18nKey="This goal was closed on <date/>"
+          components={{
+            date: <FormattedTime {...formattedTimePreferences} time={goal.closedAt!} format="long-date" />,
+          }}
+        />
       </Paper.Banner>
     );
   }
@@ -28,8 +34,12 @@ function GoalStatusBanner({ goal }: { goal: Goals.Goal }) {
   if (goal.isArchived) {
     return (
       <Paper.Banner>
-        This goal was archived on{" "}
-        <FormattedTime {...formattedTimePreferences} time={goal.archivedAt!} format="long-date" />
+        <Trans
+          i18nKey="This goal was archived on <date/>"
+          components={{
+            date: <FormattedTime {...formattedTimePreferences} time={goal.archivedAt!} format="long-date" />,
+          }}
+        />
       </Paper.Banner>
     );
   }

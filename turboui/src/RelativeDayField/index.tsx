@@ -1,9 +1,9 @@
+import i18n, { tn } from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { IconCalendar } from "../icons";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
-
-const INVALID_VALUE_MESSAGE = "Enter zero or a positive number of days.";
 
 export namespace RelativeDayField {
   export interface Props {
@@ -21,11 +21,10 @@ export namespace RelativeDayField {
   }
 }
 
-export function formatRelativeDay(value: number | null, placeholder = "Set relative date") {
+export function formatRelativeDay(value: number | null, placeholder = i18n.t("Set relative date")) {
   if (value === null) return placeholder;
-  if (value === 0) return "On the project start date";
-  if (value === 1) return "1 day after project starts";
-  return `${value} days after project starts`;
+  if (value === 0) return i18n.t("On the project start date");
+  return tn("1 day after project starts", "{{count}} days after project starts", value);
 }
 
 export function RelativeDayField({
@@ -33,7 +32,7 @@ export function RelativeDayField({
   onChange,
   readonly = false,
   variant = "inline",
-  placeholder = "Set relative date",
+  placeholder = i18n.t("Set relative date"),
   label,
   testId = "relative-day-field",
   className,
@@ -41,6 +40,7 @@ export function RelativeDayField({
   isOpen,
   onOpenChange,
 }: RelativeDayField.Props) {
+  const { t } = useTranslation();
   const isOpenControlled = isOpen !== undefined;
   const [internalIsEditing, setInternalIsEditing] = React.useState(false);
   const isEditing = isOpenControlled ? !!isOpen : internalIsEditing;
@@ -72,7 +72,7 @@ export function RelativeDayField({
     const nextValue = trimmedValue === "" ? null : Number(trimmedValue);
 
     if (nextValue !== null && (!Number.isInteger(nextValue) || nextValue < 0)) {
-      setError(INVALID_VALUE_MESSAGE);
+      setError(t("Enter zero or a positive number of days."));
       return;
     }
 
@@ -133,7 +133,7 @@ export function RelativeDayField({
               isFormField ? "min-w-0 flex-1" : "w-8 px-0",
             )}
           />
-          <span className="shrink-0 text-sm text-content-dimmed">days</span>
+          <span className="shrink-0 text-sm text-content-dimmed">{t("days")}</span>
         </div>
       ) : (
         <button

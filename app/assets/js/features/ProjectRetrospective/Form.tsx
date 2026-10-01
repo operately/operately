@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Forms, emptyContent, SubscribersSelector } from "turboui";
@@ -27,6 +28,7 @@ interface EditProps extends BaseProps {
 type Props = CreateProps | EditProps;
 
 export function Form(props: Props) {
+  const { t } = useTranslation();
   const { project } = props;
   const retrospective = props.mode === "edit" ? props.retrospective : undefined;
 
@@ -77,34 +79,36 @@ export function Form(props: Props) {
 
       <Subscribers mode={props.mode} subscriptionsState={subscriptionsState} />
 
-      <Forms.Submit saveText={props.mode === "create" ? "Close Project" : "Save"} />
+      <Forms.Submit saveText={props.mode === "create" ? t("Close Project") : t("Save")} />
     </Forms.Form>
   );
 }
 
 function AccomplishedOrDropped() {
+  const { t } = useTranslation();
   return (
     <Forms.RadioButtons
       field="success"
-      label="Did this project achieve its intended outcomes?"
+      label={t("Did this project achieve its intended outcomes?")}
       options={[
-        { value: "yes", label: "Yes" },
-        { value: "no", label: "No" },
+        { value: "yes", label: t("Yes") },
+        { value: "no", label: t("No") },
       ]}
     />
   );
 }
 
 function RetrospectiveNotes({ project }: { project: Projects.Project }) {
+  const { t } = useTranslation();
   const richTextHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
 
   return (
     <div data-test-id="retrospective-notes">
       <Forms.RichTextArea
         field="retrospective"
-        label="Retrospective notes"
+        label={t("Retrospective notes")}
         richTextHandlers={richTextHandlers}
-        placeholder="What went well? What didn't? What did you learn?"
+        placeholder={t("What went well? What didn't? What did you learn?")}
         required
       />
     </div>

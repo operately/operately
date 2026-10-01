@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { ActionList } from "../ActionList";
 import { MilestoneList } from "../MilestoneList";
@@ -16,6 +17,7 @@ interface OverviewProps {
 }
 
 export function Overview({ props, canEdit, onLifecycleAction }: OverviewProps) {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto my-6 max-w-6xl p-4">
       <div className="grid gap-8 md:grid-cols-12">
@@ -26,9 +28,9 @@ export function Overview({ props, canEdit, onLifecycleAction }: OverviewProps) {
               onDescriptionChange={async (description) => (await props.onTemplateUpdate({ description })) !== false}
               richTextHandlers={props.richTextHandlers}
               canEdit={canEdit}
-              label="Description"
-              placeholder="Add a template description..."
-              zeroStatePlaceholder="Add a template description..."
+              label={t("Description")}
+              placeholder={t("Add a template description...")}
+              zeroStatePlaceholder={t("Add a template description...")}
             />
           </section>
           <div className="border-t border-surface-outline pt-8">
@@ -44,14 +46,14 @@ export function Overview({ props, canEdit, onLifecycleAction }: OverviewProps) {
         </div>
         <aside className="space-y-6 md:col-span-4 md:pl-8">
           <section>
-            <h2 className="mb-1 text-sm font-bold">Project duration</h2>
+            <h2 className="mb-1 text-sm font-bold">{t("Project duration")}</h2>
             <RelativeDayField
               value={props.template.durationDays}
               onChange={async (durationDays) => {
                 await props.onTemplateUpdate({ durationDays });
               }}
               readonly={!canEdit}
-              placeholder="Set project duration"
+              placeholder={t("Set project duration")}
               testId="template-duration"
             />
           </section>
@@ -70,12 +72,13 @@ function TemplateActions({
   props: TemplateProjectPage.Props;
   onAction: (action: ProjectTemplateLifecycleAction) => void;
 }) {
+  const { t } = useTranslation();
   if (!props.permissions.canEdit) return null;
 
   const deleteAction = {
     type: "action" as const,
     icon: IconTrash,
-    label: "Delete",
+    label: t("Delete"),
     testId: "delete-project-template",
     onClick: () => onAction("delete"),
     danger: true,
@@ -86,7 +89,7 @@ function TemplateActions({
         {
           type: "action" as const,
           icon: IconRotate,
-          label: "Restore",
+          label: t("Restore"),
           testId: "restore-project-template",
           onClick: () => onAction("restore"),
         },
@@ -96,14 +99,14 @@ function TemplateActions({
         {
           type: "action" as const,
           icon: IconCopy,
-          label: "Duplicate",
+          label: t("Duplicate"),
           testId: "duplicate-project-template-action",
           onClick: () => onAction("duplicate"),
         },
         {
           type: "action" as const,
           icon: IconArchive,
-          label: "Archive",
+          label: t("Archive"),
           testId: "archive-project-template",
           onClick: () => onAction("archive"),
         },
@@ -112,7 +115,7 @@ function TemplateActions({
 
   return (
     <div className="pt-6 mt-6 border-t border-surface-outline">
-      <SidebarSection title="Actions" testId="actions-section">
+      <SidebarSection title={t("Actions")} testId="actions-section">
         <ActionList actions={actions} />
       </SidebarSection>
     </div>

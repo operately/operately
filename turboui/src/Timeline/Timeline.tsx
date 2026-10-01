@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useMemo } from "react";
 import { TimelineItem } from "./TimelineItem";
 import { CommentInput } from "../CommentSection/CommentInput";
@@ -117,10 +118,11 @@ export function Timeline({
 }
 
 function EmptyTimeline() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="text-content-dimmed text-lg mb-2">No activity yet</div>
-      <div className="text-content-dimmed text-sm">Comments and task updates will appear here</div>
+      <div className="text-content-dimmed text-lg mb-2">{t("No activity yet")}</div>
+      <div className="text-content-dimmed text-sm">{t("Comments and task updates will appear here")}</div>
     </div>
   );
 }

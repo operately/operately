@@ -1,3 +1,5 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Modal } from "../Modal";
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -32,7 +34,8 @@ type NoReplacementProps = BaseProps & {
 export type StatusCustomizationModalProps = RequireReplacementProps | NoReplacementProps;
 
 export function StatusCustomizationModal(props: StatusCustomizationModalProps) {
-  const { isOpen, onClose, statuses, title = "Customize statuses" } = props;
+  const { t } = useTranslation();
+  const { isOpen, onClose, statuses, title = t("Customize statuses") } = props;
 
   const [draftStatuses, setDraftStatuses] = useDraftStatuses(statuses, isOpen);
   const [deletedStatuses, setDeletedStatuses] = React.useState<StatusSelector.StatusOption[]>([]);
@@ -132,7 +135,7 @@ export function StatusCustomizationModal(props: StatusCustomizationModalProps) {
     >
       <div className="p-6 space-y-4">
         <p className="text-sm text-content-dimmed">
-          Add, edit, or remove task statuses. Click the icon to change the color and appearance.
+          {t("Add, edit, or remove task statuses. Click the icon to change the color and appearance.")}
         </p>
 
         <div className="space-y-3">
@@ -158,16 +161,16 @@ export function StatusCustomizationModal(props: StatusCustomizationModalProps) {
           className="w-full rounded-lg border border-dashed border-surface-outline py-2 text-sm font-medium text-content-dimmed transition hover:text-brand-1 hover:border-brand-1/50 flex items-center justify-center gap-2"
           data-test-id="add-status-button"
         >
-          <IconPlus size={14} />
-          Add status
+          <Trans i18nKey="<icon/>Add status" components={{ icon: <IconPlus size={14} /> }} />
         </button>
 
         {props.requireReplacement === true && deletedStatuses.length > 0 && fallbackReplacementOption && (
           <div className="pt-4 mt-4 border-t border-surface-outline">
-            <h3 className="text-sm font-semibold text-content-base">Deleted statuses</h3>
+            <h3 className="text-sm font-semibold text-content-base">{t("Deleted statuses")}</h3>
             <p className="text-xs text-content-dimmed mt-1">
-              Select a replacement status for each deleted status. Tasks using deleted statuses will be moved to the
-              selected replacements.
+              {t(
+                "Select a replacement status for each deleted status. Tasks using deleted statuses will be moved to the selected replacements.",
+              )}
             </p>
 
             <div className="space-y-3 mt-3" data-test-id="deleted-statuses-section">
@@ -199,7 +202,7 @@ export function StatusCustomizationModal(props: StatusCustomizationModalProps) {
       <div className="flex flex-col gap-4 px-6 py-4 border-t border-surface-outline">
         <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
           <SecondaryButton type="button" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton
             type="button"
@@ -214,7 +217,7 @@ export function StatusCustomizationModal(props: StatusCustomizationModalProps) {
               }
             }}
           >
-            Save changes
+            {t("Save changes")}
           </PrimaryButton>
         </div>
       </div>

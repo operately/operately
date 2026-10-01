@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { ProjectTemplate, ProjectTemplateResourceNode } from "@/api";
 import { compareIds, type Paths } from "@/routes/paths";
 
@@ -13,9 +14,9 @@ export function buildProjectTemplateResourceNavigation(
 ): NavigationItem[] {
   const items: NavigationItem[] = [
     { to: paths.spacePath(template.space.id), label: template.space.name },
-    { to: paths.spaceProjectTemplatesPath(template.space.id), label: "Project Templates" },
+    { to: paths.spaceProjectTemplatesPath(template.space.id), label: i18n.t("Project Templates") },
     { to: paths.projectTemplatePath(template.id), label: template.name },
-    { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: "Docs & Files" },
+    { to: paths.projectTemplatePath(template.id, { tab: "docs-and-files" }), label: i18n.t("Docs & Files") },
   ];
 
   for (const folder of folderAncestors(template.resourceNodes ?? [], opts?.parentFolderId)) {

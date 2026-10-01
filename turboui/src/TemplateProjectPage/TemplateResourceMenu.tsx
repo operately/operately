@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Menu, MenuActionItem } from "../Menu";
@@ -24,6 +25,7 @@ export function TemplateResourceMenu({
   onMove?: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
   onDelete?: (nodeId: string) => Promise<boolean>;
 }) {
+  const { t } = useTranslation();
   const [showRenameForm, setShowRenameForm] = React.useState(false);
   const [showMoveForm, setShowMoveForm] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
@@ -50,17 +52,17 @@ export function TemplateResourceMenu({
             onClick={() => setShowRenameForm(true)}
             testId={createTestId("rename-folder", node.folderId!)}
           >
-            Rename
+            {t("Rename")}
           </MenuActionItem>
         )}
         {onMove && (
           <MenuActionItem onClick={() => setShowMoveForm(true)} testId={createTestId("move", node.id)}>
-            Move
+            {t("Move")}
           </MenuActionItem>
         )}
         {onDelete && (
           <MenuActionItem onClick={() => setShowDeleteConfirm(true)} testId={createTestId("delete", node.id)} danger>
-            Delete
+            {t("Delete")}
           </MenuActionItem>
         )}
       </Menu>

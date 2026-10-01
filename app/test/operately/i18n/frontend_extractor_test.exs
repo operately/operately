@@ -6,6 +6,17 @@ defmodule Operately.I18n.FrontendExtractorTest do
 
   @fixture Path.expand("fixtures/frontend/sample.tsx", __DIR__)
 
+  test "extracts the shared rich translation component through both public imports" do
+    for module <- ["turboui", "../Translate"] do
+      source = """
+      import { Trans as Sentence } from "#{module}";
+      <Sentence i18nKey="Hello <person>{{name}}</person>" />;
+      """
+
+      assert [%Message{msgid: "Hello <person>%{name}</person>"}] = FrontendExtractor.extract_contents(source, "sample.tsx")
+    end
+  end
+
   test "extracts literal JSX expressions and ignores dynamic keys" do
     source = ~S"""
     import { Trans } from "react-i18next";

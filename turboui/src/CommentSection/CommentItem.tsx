@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React, { useCallback, useState } from "react";
 import { Link } from "react-router";
 import { Avatar } from "../Avatar";
@@ -173,14 +175,15 @@ interface CommentMenuProps {
 }
 
 function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: CommentMenuProps) {
+  const { t } = useTranslation();
   const handleCopyLink = useCallback(async () => {
     try {
       const url = new URL(window.location.href);
       url.hash = comment.id;
       await navigator.clipboard.writeText(url.toString());
-      showSuccessToast("Success", "The comment link has been copied to your clipboard");
+      showSuccessToast(i18n.t("Success"), i18n.t("The comment link has been copied to your clipboard"));
     } catch (err) {
-      showErrorToast("Unexpected error", "Failed to copy comment link to clipboard");
+      showErrorToast(i18n.t("Unexpected error"), i18n.t("Failed to copy comment link to clipboard"));
     }
   }, [comment.id]);
 
@@ -193,7 +196,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
         icon={IconLink}
         testId={isFlat ? "copy-comment-link" : createTestId("copy-link", comment.id)}
       >
-        Copy link
+        {t("Copy link")}
       </MenuActionItem>
       {canEdit && (
         <>
@@ -202,7 +205,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
             icon={IconEdit}
             testId={isFlat ? "edit-comment" : createTestId("edit", comment.id)}
           >
-            Edit
+            {t("Edit")}
           </MenuActionItem>
           {onDelete && (
             <MenuActionItem
@@ -211,7 +214,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
               danger
               testId={isFlat ? "delete-comment" : createTestId("delete", comment.id)}
             >
-              Delete
+              {t("Delete")}
             </MenuActionItem>
           )}
         </>
@@ -271,10 +274,11 @@ interface CommentEditModeProps {
 }
 
 function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDraftKey }: CommentEditModeProps) {
+  const { t } = useTranslation();
   const editor = useEditor({
     content: content,
     editable: true,
-    placeholder: "Edit your comment...",
+    placeholder: t("Edit your comment..."),
     handlers: richTextHandlers,
     localDraft: { key: localDraftKey },
   });
@@ -298,10 +302,10 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers, localDra
       <Editor editor={editor} hideBorder />
       <div className="flex gap-2 p-2 mt-2">
         <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty} testId="post-comment">
-          Save Changes
+          {t("Save Changes")}
         </PrimaryButton>
         <SecondaryButton size="xs" onClick={handleCancel}>
-          Cancel
+          {t("Cancel")}
         </SecondaryButton>
       </div>
     </div>

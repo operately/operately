@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -10,6 +12,7 @@ import { useDeleteGoalProgressUpdate } from "@/models/goalCheckIns";
 import { usePaths } from "@/routes/paths";
 
 export function Options() {
+  const { t } = useTranslation();
   const { update, goal } = useLoadedData();
   const [showDiscardModal, toggleDiscardModal] = useBoolState(false);
 
@@ -28,7 +31,7 @@ export function Options() {
         {isEditVisible && (
           <PageOptions.Action
             icon={IconEdit}
-            title={"Edit"}
+            title={t("Edit")}
             onClick={() => setPageMode("edit")}
             testId="edit-check-in"
             keepOutsideOnBigScreen
@@ -37,7 +40,7 @@ export function Options() {
         {isDiscardVisible && (
           <PageOptions.Action
             icon={IconTrash}
-            title="Discard draft"
+            title={t("Discard draft")}
             onClick={toggleDiscardModal}
             testId="delete-check-in"
           />
@@ -64,6 +67,7 @@ function DiscardDraftModal({
   updateId: string;
   goalId: string;
 }) {
+  const { t } = useTranslation();
   const remove = useDeleteGoalProgressUpdate(goalId);
   const navigate = useNavigate();
   const paths = usePaths();
@@ -73,7 +77,7 @@ function DiscardDraftModal({
     cancel: toggleModal,
     submit: async () => {
       await remove.mutateAsync({ id: updateId });
-      showSuccessToast("Draft discarded", "The draft has been discarded.");
+      showSuccessToast(i18n.t("Draft discarded"), i18n.t("The draft has been discarded."));
       navigate(paths.goalPath(goalId, { tab: "check-ins" }));
     },
   });
@@ -81,8 +85,8 @@ function DiscardDraftModal({
   return (
     <Modal isOpen={isOpen} onClose={toggleModal}>
       <Forms.Form form={form}>
-        <p>Are you sure you want to discard this draft?</p>
-        <Forms.Submit saveText="Discard draft" cancelText="Cancel" />
+        <p>{t("Are you sure you want to discard this draft?")}</p>
+        <Forms.Submit saveText={t("Discard draft")} cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -6,12 +7,13 @@ import { SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { markdown } = useLoadedData();
 
   const [copied, setCopied] = React.useState(false);
 
   return (
-    <Pages.Page title={"Project As Markdown"}>
+    <Pages.Page title={t("Project As Markdown")}>
       <Paper.Root>
         <Paper.Body>
           <div className="flex justify-end mb-2">
@@ -23,7 +25,7 @@ export function Page() {
                 setTimeout(() => setCopied(false), 2000);
               }}
             >
-              {copied ? "Copied!" : "Copy to clipboard"}
+              {copied ? t("Copied!") : t("Copy to clipboard")}
             </SecondaryButton>
           </div>
           <pre className="whitespace-pre-wrap">

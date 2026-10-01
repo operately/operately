@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
@@ -78,6 +79,7 @@ function Nav() {
 }
 
 function Title({ activity }: { activity: Activities.Activity }) {
+  const { t } = useTranslation();
   const author = activity.author;
   const formattedTimePreferences = useFormattedTimePreferences();
 
@@ -96,7 +98,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
           <span>{author.fullName}</span>
           {activity.insertedAt && (
             <>
-              <span>on</span>
+              <span>{t("on")}</span>
               <FormattedTime {...formattedTimePreferences} time={activity.insertedAt} format="long-date" />
             </>
           )}

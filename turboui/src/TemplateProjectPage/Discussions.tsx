@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { PrimaryButton } from "../Button";
@@ -6,15 +7,16 @@ import { DiscussionCard } from "../DiscussionCard";
 import { TemplateProjectPage } from ".";
 
 export function Discussions({ props, canEdit }: { props: TemplateProjectPage.Props; canEdit: boolean }) {
+  const { t } = useTranslation();
   if (props.discussions.length === 0 && !canEdit) return null;
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
       <div className="flex items-center gap-2 justify-between">
-        <h2 className="font-bold text-xl">Discussions</h2>
+        <h2 className="font-bold text-xl">{t("Discussions")}</h2>
         {canEdit && props.newDiscussionLink && (
           <PrimaryButton linkTo={props.newDiscussionLink} size="xs" testId="start-template-discussion">
-            Start discussion
+            {t("Start discussion")}
           </PrimaryButton>
         )}
       </div>
@@ -22,8 +24,8 @@ export function Discussions({ props, canEdit }: { props: TemplateProjectPage.Pro
       <div className="mt-8" data-test-id="template-discussions-section">
         {props.discussions.length === 0 ? (
           <InfoCallout
-            message="No discussions yet"
-            description="Start a discussion to share reusable context, questions, or guidance for this template."
+            message={t("No discussions yet")}
+            description={t("Start a discussion to share reusable context, questions, or guidance for this template.")}
           />
         ) : (
           props.discussions.map((discussion) => (

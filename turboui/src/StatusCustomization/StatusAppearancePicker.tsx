@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 
@@ -18,29 +20,45 @@ export const STATUS_APPEARANCES: Record<
   }
 > = {
   gray: {
-    label: "Not started (gray)",
-    description: "Use for backlog or paused work",
+    get label() {
+      return i18n.t("Not started (gray)");
+    },
+    get description() {
+      return i18n.t("Use for backlog or paused work");
+    },
     color: "gray",
     icon: "circleDashed",
     swatchClassName: "bg-gray-400 dark:bg-gray-500",
   },
   blue: {
-    label: "In progress (blue)",
-    description: "Active work underway",
+    get label() {
+      return i18n.t("In progress (blue)");
+    },
+    get description() {
+      return i18n.t("Active work underway");
+    },
     color: "blue",
     icon: "circleDot",
     swatchClassName: "bg-brand-1",
   },
   green: {
-    label: "Done (green)",
-    description: "Completed or approved",
+    get label() {
+      return i18n.t("Done (green)");
+    },
+    get description() {
+      return i18n.t("Completed or approved");
+    },
     color: "green",
     icon: "circleCheck",
     swatchClassName: "bg-emerald-500",
   },
   red: {
-    label: "Canceled (red)",
-    description: "Blocked or intentionally stopped",
+    get label() {
+      return i18n.t("Canceled (red)");
+    },
+    get description() {
+      return i18n.t("Blocked or intentionally stopped");
+    },
     color: "red",
     icon: "circleX",
     swatchClassName: "bg-rose-500",
@@ -56,6 +74,7 @@ export type StatusAppearancePickerProps = {
 };
 
 export function StatusAppearancePicker({ value, onChange, testId }: StatusAppearancePickerProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const currentPreset = STATUS_APPEARANCES[value];
   const CurrentIcon = StatusSelector.STATUS_ICON_COMPONENTS[currentPreset.icon];
@@ -72,7 +91,7 @@ export function StatusAppearancePicker({ value, onChange, testId }: StatusAppear
         <button
           type="button"
           className="flex items-center justify-center p-1 rounded-md hover:bg-surface-dimmed transition"
-          aria-label="Select status color and icon"
+          aria-label={t("Select status color and icon")}
           data-test-id={testId}
         >
           <CurrentIcon size={16} className={iconClass} />

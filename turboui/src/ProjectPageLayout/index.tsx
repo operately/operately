@@ -1,3 +1,4 @@
+import type { FormattedTimePreferences } from "../FormattedTime";
 import React, { ReactNode } from "react";
 import { Page, PageNew } from "../Page";
 import { PrivacyField } from "../PrivacyField";
@@ -37,6 +38,7 @@ export namespace ProjectPageLayout {
   }
 
   export type Props = SpaceProps & {
+    formattedTimePreferences: FormattedTimePreferences;
     mode?: "project" | "template";
     title: string[];
     testId?: string;
@@ -70,6 +72,7 @@ export function ProjectPageLayout(props: ProjectPageLayout.Props) {
 
       {(props.state === "paused" || props.state === "closed") && (
         <StatusBanner
+          formattedTimePreferences={props.formattedTimePreferences}
           state={props.state}
           closedAt={props.closedAt}
           reopenLink={props.reopenLink}

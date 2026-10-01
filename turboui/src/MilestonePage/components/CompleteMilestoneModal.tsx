@@ -1,3 +1,5 @@
+import { tn } from "../../i18n";
+import i18n from "../../i18n";
 import { useTranslation } from "react-i18next";
 import React from "react";
 
@@ -34,13 +36,15 @@ export function CompleteMilestoneModal(props: CompleteMilestoneModalProps) {
       const resolution = buildResolution(form.values, props.closedStatuses);
 
       if (!resolution) {
-        form.actions.addErrors({ form: "Select a closed task status." });
+        form.actions.addErrors({ form: i18n.t("Select a closed task status.") });
         return;
       }
 
       const completed = await props.onComplete(resolution);
       if (!completed) {
-        form.actions.addErrors({ form: "The milestone could not be completed. Check the tasks and try again." });
+        form.actions.addErrors({
+          form: i18n.t("The milestone could not be completed. Check the tasks and try again."),
+        });
         return;
       }
 
@@ -60,20 +64,22 @@ export function CompleteMilestoneModal(props: CompleteMilestoneModalProps) {
   const selectedStatus =
     props.closedStatuses.find((status) => status.id === form.values.statusId) ?? defaultStatus ?? null;
   const changesStatus = form.values.resolutionAction === "set_status";
-  const taskLabel = `${props.openTaskCount} open task${props.openTaskCount === 1 ? "" : "s"}`;
+  const taskSummary = tn(
+    "This milestone has 1 open task. Choose what happens to them before completing it.",
+    "This milestone has {{count}} open tasks. Choose what happens to them before completing it.",
+    props.openTaskCount,
+  );
 
   return (
     <Modal
       isOpen={props.isOpen}
       onClose={() => void form.actions.cancel()}
-      title={`Complete “${props.milestoneName}”?`}
+      title={t("Complete “{{name}}”?", { name: props.milestoneName })}
       size="small"
       testId="complete-milestone-modal"
     >
       <Forms.Form form={form} className="space-y-5" testId="complete-milestone-form">
-        <p className="text-sm text-content-base">
-          This milestone has {taskLabel}. Choose what happens to them before completing it.
-        </p>
+        <p className="text-sm text-content-base">{taskSummary}</p>
 
         <div className="space-y-2">
           <Forms.RadioButtons

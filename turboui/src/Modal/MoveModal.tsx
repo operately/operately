@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
 
@@ -21,6 +22,7 @@ namespace MoveModal {
 }
 
 export function MoveModal(props: MoveModal.Props) {
+  const { t } = useTranslation();
   const [isMoving, setIsMoving] = React.useState(false);
   const [selectedSpace, setSelectedSpace] = React.useState<MoveModal.Space | null>(props.space);
 
@@ -49,11 +51,11 @@ export function MoveModal(props: MoveModal.Props) {
       isOpen={props.isMoveModalOpen}
       onClose={props.closeMoveModal}
       size="small"
-      title="Move goal to another space"
+      title={t("Move goal to another space")}
     >
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label className="font-bold text-sm mb-1.5 block">Select destination space</label>
+          <label className="font-bold text-sm mb-1.5 block">{t("Select destination space")}</label>
           <SpaceField
             testId="space-field"
             space={selectedSpace}
@@ -65,10 +67,10 @@ export function MoveModal(props: MoveModal.Props) {
 
         <div className="flex items-center gap-2">
           <PrimaryButton size="sm" type="submit" loading={isMoving} disabled={isMoving} testId="save">
-            Move
+            {t("Move")}
           </PrimaryButton>
           <SecondaryButton size="sm" onClick={props.closeMoveModal} testId="cancel">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
         </div>
       </form>

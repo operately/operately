@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -17,14 +18,15 @@ import { Forms } from "turboui";
 export default { name: "GoalEditAccessLevelsPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={["Edit General Access", goal.name ?? "Goal"]}>
+    <Pages.Page title={[t("Edit General Access"), goal.name ?? t("Goal")]}>
       <Paper.Root size="small">
         <Navigation />
         <Paper.Body>
-          <h1 className="text-2xl font-extrabold">Edit General Access</h1>
+          <h1 className="text-2xl font-extrabold">{t("Edit General Access")}</h1>
           <Form />
         </Paper.Body>
       </Paper.Root>
@@ -33,6 +35,7 @@ function Page() {
 }
 
 function Navigation() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { goal } = useLoadedData();
 
@@ -40,12 +43,12 @@ function Navigation() {
 
   if (goal.space) {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
-    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: t("Work Map") });
   } else {
-    items.push({ to: paths.workMapPath("goals"), label: "Work Map" });
+    items.push({ to: paths.workMapPath("goals"), label: t("Work Map") });
   }
   items.push({ to: paths.goalPath(goal.id), label: goal.name });
-  items.push({ to: paths.goalAccessManagementPath(goal.id), label: "Team & Access" });
+  items.push({ to: paths.goalAccessManagementPath(goal.id), label: t("Team & Access") });
 
   return <Paper.Navigation items={items} />;
 }

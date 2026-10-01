@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -8,10 +10,30 @@ import { PersonField } from "../PersonField";
 import { TextField } from "../TextField";
 
 const CONTRIBUTOR_ACCESS_LEVELS = [
-  { value: 10, label: "View Access" },
-  { value: 40, label: "Comment Access" },
-  { value: 70, label: "Edit Access" },
-  { value: 100, label: "Full Access" },
+  {
+    value: 10,
+    get label() {
+      return i18n.t("View Access");
+    },
+  },
+  {
+    value: 40,
+    get label() {
+      return i18n.t("Comment Access");
+    },
+  },
+  {
+    value: 70,
+    get label() {
+      return i18n.t("Edit Access");
+    },
+  },
+  {
+    value: 100,
+    get label() {
+      return i18n.t("Full Access");
+    },
+  },
 ];
 
 const FULL_ACCESS_LEVEL = 100;
@@ -57,6 +79,7 @@ export function ContributorModal({
   accessMenuTestId = "contributor-access",
   allowFullAccess = true,
 }: ContributorModalProps) {
+  const { t } = useTranslation();
   const isReplacingUnavailableContributor = Boolean(contributor && contributor.active === false);
   const [person, setPerson] = React.useState(isReplacingUnavailableContributor ? null : (contributor?.person ?? null));
   const [responsibility, setResponsibility] = React.useState(contributor?.responsibility ?? "");
@@ -84,18 +107,18 @@ export function ContributorModal({
   };
 
   const modalTitle = isReplacingUnavailableContributor
-    ? "Replace unavailable contributor"
+    ? t("Replace unavailable contributor")
     : contributor
-      ? "Edit contributor"
-      : "Add contributor";
-  const saveLabel = isReplacingUnavailableContributor ? "Replace contributor" : "Save contributor";
+      ? t("Edit contributor")
+      : t("Add contributor");
+  const saveLabel = isReplacingUnavailableContributor ? t("Replace contributor") : t("Save contributor");
 
   return (
     <Modal isOpen onClose={onClose} title={modalTitle} size="small">
       <div className="space-y-5" data-test-id={formTestId}>
         <div>
           <label className={FORM_FIELD_LABEL_CLASS}>
-            {isReplacingUnavailableContributor ? "Replacement" : "Person"}
+            {isReplacingUnavailableContributor ? t("Replacement") : t("Person")}
           </label>
           {contributor && !isReplacingUnavailableContributor ? (
             <PersonField person={person} variant="form-field" readonly />
@@ -105,20 +128,20 @@ export function ContributorModal({
               setPerson={setPerson}
               searchData={searchData}
               variant="form-field"
-              emptyStateMessage={isReplacingUnavailableContributor ? "Select replacement" : "Select person"}
+              emptyStateMessage={isReplacingUnavailableContributor ? t("Select replacement") : t("Select person")}
             />
           )}
         </div>
         <TextField
           variant="form-field"
-          label="Responsibility"
+          label={t("Responsibility")}
           text={responsibility}
           onChange={setResponsibility}
-          placeholder="What are they responsible for?"
+          placeholder={t("What are they responsible for?")}
           testId="contributor-responsibility"
         />
         <div>
-          <label className={FORM_FIELD_LABEL_CLASS}>Access level</label>
+          <label className={FORM_FIELD_LABEL_CLASS}>{t("Access level")}</label>
           <Menu
             testId={accessMenuTestId}
             readonly={accessLocked}
@@ -132,7 +155,7 @@ export function ContributorModal({
                     : "hover:bg-surface-dimmed focus:outline-none focus:ring-2 focus:ring-primary-base"
                 }`}
               >
-                <span>{accessLevelLabel ?? "Select access level"}</span>
+                <span>{accessLevelLabel ?? t("Select access level")}</span>
                 {!accessLocked && <IconChevronDown size={18} className="text-content-dimmed" />}
               </button>
             }
@@ -150,7 +173,7 @@ export function ContributorModal({
           </Menu>
         </div>
         <div className="flex justify-end gap-2">
-          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
+          <SecondaryButton onClick={onClose}>{t("Cancel")}</SecondaryButton>
           <PrimaryButton onClick={() => void save()} disabled={!person}>
             {saveLabel}
           </PrimaryButton>
