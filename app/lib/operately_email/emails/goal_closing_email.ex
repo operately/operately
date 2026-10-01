@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalClosingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
   alias OperatelyWeb.Paths
@@ -19,7 +20,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: "closed the #{goal.name} goal")
+    |> subject(gettext("(%{space_name}) %{author} closed the %{goal_name} goal", space_name: space.name, author: Operately.People.Person.short_name(author), goal_name: goal.name))
     |> assign(:goal, goal)
     |> assign(:author, author)
     |> assign(:link, cta_url)
@@ -37,7 +38,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
       author.id,
       [goal.reviewer_id, goal.champion_id],
       url,
-      "View Retrospective"
+      gettext("View Retrospective")
     )
   end
 

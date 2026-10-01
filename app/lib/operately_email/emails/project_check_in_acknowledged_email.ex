@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
 
@@ -12,11 +13,11 @@ defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "acknowledged your check-in")
+    |> subject(gettext("(%{project_name}) %{author} acknowledged your check-in", project_name: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:check_in, check_in)
-    |> assign(:cta_text, "View Check-In")
+    |> assign(:cta_text, gettext("View Check-In"))
     |> assign(:cta_url, OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url())
     |> render("project_check_in_acknowledged")
   end

@@ -1,15 +1,15 @@
 <%= if @assigned_to_recipient do %>
-<%= short_name(@author) %> assigned you the task <%= @name %>.
+<%= gettext("%{author} assigned you the task %{name}.", author: short_name(@author), name: @name) %>
 
-You are now assigned to this task.
+<%= gettext("You are now assigned to this task.") %>
 <% else %>
 <%= if @removed_from_recipient do %>
-<%= short_name(@author) %> removed you from the task <%= @name %>.
+<%= gettext("%{author} removed you from the task %{name}.", author: short_name(@author), name: @name) %>
 
-You are no longer assigned to this task.
+<%= gettext("You are no longer assigned to this task.") %>
 <% else %>
-<%= short_name(@author) %> changed the assignees for <%= @name %>.
+<%= gettext("%{author} changed the assignees for %{name}.", author: short_name(@author), name: @name) %>
 <% end %>
 <% end %>
 
-Link: <%= @cta_url %>
+<%= gettext("Link: %{url}", url: @cta_url) %>

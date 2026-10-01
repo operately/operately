@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -18,7 +19,14 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: milestone.project.name, who: author, action: "changed the due date for \"#{milestone.title}\"")
+    |> subject(
+      gettext(
+        "(%{milestone_project_name}) %{author} changed the due date for \"%{milestone_title}\"",
+        milestone_project_name: milestone.project.name,
+        author: Operately.People.Person.short_name(author),
+        milestone_title: milestone.title
+      )
+    )
     |> assign(:author, author)
     |> assign(:name, milestone.title)
     |> assign(:previous_date, previous_date)

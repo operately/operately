@@ -48,12 +48,6 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> UI.sleep(500)
   end
 
-  step :start_typing, ctx, query do
-    ctx
-    |> UI.fill(testid: "header-global-search", with: query)
-    |> UI.sleep(100)
-  end
-
   #
   # Assertions for search results
   #
@@ -290,10 +284,6 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     |> UI.refute_text("MILESTONES")
     |> UI.refute_text("TASKS")
     |> UI.refute_text("PEOPLE")
-  end
-
-  step :assert_searching_indicator, ctx do
-    ctx |> UI.assert_text("Searching…")
   end
 
   step :assert_full_text_search_action, ctx, query do

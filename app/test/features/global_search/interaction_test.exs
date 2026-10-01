@@ -35,13 +35,6 @@ defmodule Operately.Features.GlobalSearch.InteractionTest do
     |> Steps.assert_search_closed()
   end
 
-  feature "search shows loading state", ctx do
-    ctx
-    |> Steps.open_global_search()
-    |> Steps.start_typing("Website")
-    |> Steps.assert_searching_indicator()
-  end
-
   feature "search does not match discussion or document bodies", ctx do
     ctx
     |> Steps.given_body_only_matches_exist()

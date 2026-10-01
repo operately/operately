@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
   alias Operately.People.Person
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: "added the #{project.name} project")
+    |> subject(gettext("(%{space_name}) %{author} added the %{project_name} project", space_name: space.name, author: Operately.People.Person.short_name(author), project_name: project.name))
     |> assign(:author, author)
     |> assign(:author_role, author_role)
     |> assign(:role, role)
@@ -46,9 +47,9 @@ defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
 
   defp stringify_role(role) do
     case role do
-      :champion -> "Champion"
-      :reviewer -> "Reviewer"
-      :contributor -> "Contributor"
+      :champion -> gettext("Champion")
+      :reviewer -> gettext("Reviewer")
+      :contributor -> gettext("Contributor")
       nil -> nil
     end
   end

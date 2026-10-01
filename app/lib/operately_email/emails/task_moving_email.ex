@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.TaskMovingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -15,7 +16,14 @@ defmodule OperatelyEmail.Emails.TaskMovingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: destination_name(task), who: author, action: "moved the task \"#{task.name}\"")
+    |> subject(
+      gettext(
+        "(%{destination_name_task}) %{author} moved the task \"%{task_name}\"",
+        destination_name_task: destination_name(task),
+        author: Operately.People.Person.short_name(author),
+        task_name: task.name
+      )
+    )
     |> assign(:author, author)
     |> assign(:task_name, task.name)
     |> assign(:destination_name, destination_name(task))

@@ -1,10 +1,14 @@
-<%= short_name(@author) %> <%= @action %>.
+<%= if @mentioned do %>
+  <%= gettext("%{author} mentioned you in the description for \"%{task_name}\".", author: short_name(@author), task_name: @task_name) %>
+<% else %>
+  <%= gettext("%{author} updated the description for \"%{task_name}\".", author: short_name(@author), task_name: @task_name) %>
+<% end %>
 
 <%= if @description do %>
 <%= Operately.MD.RichText.render(@description) %>
 
 <% else %>
-The description was cleared.
+<%= gettext("The description was cleared.") %>
 
 <% end %>
-Link: <%= @cta_url %>
+<%= gettext("Link: %{url}", url: @cta_url) %>

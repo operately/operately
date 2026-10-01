@@ -1,9 +1,9 @@
-<%= short_name(@author) %> updated the description for "<%= @goal_name %>".
+<%= gettext("%{author} updated the description for \"%{goal_name}\".", author: short_name(@author), goal_name: @goal_name) %>
 
 <%= if @description do %>
-View the goal to read the updated details.
+<%= gettext("View the goal to read the updated details.") %>
 <% else %>
-The description was cleared.
+<%= gettext("The description was cleared.") %>
 <% end %>
 
-View Goal: <%= @cta_url %>
+<%= gettext("View Goal: %{url}", url: @cta_url) %>

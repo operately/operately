@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalEditingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
 
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.GoalEditingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "edited the goal")
+    |> subject(gettext("(%{goal_name}) %{author} edited the goal", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:content, activity.content)

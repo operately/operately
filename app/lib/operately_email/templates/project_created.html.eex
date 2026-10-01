@@ -1,15 +1,15 @@
-<%= title("#{short_name(@author)} added the #{@project.name} project") %>
+<%= title(gettext("%{author} added the %{project_name} project", author: short_name(@author), project_name: @project.name)) %>
 
 <%= spacer() %>
 
 <%= if @author_role do %>
   <%= row do %>
-    - <%= short_name(@author) %> is a <%= @author_role %>
+    <%= gettext("- %{author} is a %{author_role}", author: short_name(@author), author_role: @author_role) %>
   <% end %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Project") %>
+  <%= cta_button(@link, gettext("View Project")) %>
 <% end %>
