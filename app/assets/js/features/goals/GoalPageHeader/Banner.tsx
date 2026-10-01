@@ -15,7 +15,7 @@ function GoalStatusBanner({ goal }: { goal: Goals.Goal }) {
 
   if (goal.isClosed && goal.closedAt) {
     return (
-      <Paper.Banner>
+      <Paper.Banner testId="goal-closed-banner">
         <Trans
           i18nKey="This goal was closed on <date/>"
           components={{
@@ -28,7 +28,7 @@ function GoalStatusBanner({ goal }: { goal: Goals.Goal }) {
 
   if (goal.isArchived && goal.archivedAt) {
     return (
-      <Paper.Banner>
+      <Paper.Banner testId="goal-archived-banner">
         <Trans
           i18nKey="This goal was archived on <date/>"
           components={{
