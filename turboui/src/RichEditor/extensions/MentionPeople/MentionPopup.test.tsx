@@ -33,3 +33,45 @@ describe("MentionPopup", () => {
     expect(mount).toHaveBeenCalledWith(element);
   });
 });
+
+it("keeps shadow-root suggestions open for selection and dismisses clicks outside the editor", () => {
+  const host = document.createElement("div");
+  document.body.append(host);
+  const shadow = host.attachShadow({ mode: "open" });
+  const editorElement = document.createElement("div");
+  const popupElement = document.createElement("div");
+  const option = document.createElement("button");
+  popupElement.append(option);
+  shadow.append(editorElement);
+  const dismiss = jest.fn();
+  const view = { dom: editorElement };
+  (ReactRenderer as unknown as jest.Mock).mockImplementation(() => ({
+    element: popupElement,
+    updateProps: jest.fn(),
+    destroy: jest.fn(),
+    ref: null,
+  }));
+  const popup = new MentionPopup(dismiss);
+  popup.onStart({
+    clientRect: () => new DOMRect(),
+    editor: { view },
+    items: [],
+    command: jest.fn(),
+    mount: (element: HTMLElement) => {
+      shadow.append(element);
+      return () => element.remove();
+    },
+  });
+
+  option.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+  editorElement.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+  expect(dismiss).not.toHaveBeenCalled();
+  document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+  expect(dismiss).toHaveBeenCalledWith(view);
+
+  popup.onExit();
+  dismiss.mockClear();
+  document.body.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+  expect(dismiss).not.toHaveBeenCalled();
+  host.remove();
+});

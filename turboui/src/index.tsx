@@ -1,3 +1,5 @@
+export { EmbeddingProvider } from "./Embedding";
+export type { EmbeddingEnvironment } from "./Embedding";
 export * from "./TestableElement";
 export { default as i18n } from "./i18n";
 export { i18nOptions } from "./i18nOptions";

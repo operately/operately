@@ -1,3 +1,4 @@
+import { useEmbedding } from "../Embedding";
 import React from "react";
 
 import * as TipTap from "@tiptap/react";
@@ -81,6 +82,7 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
 
 export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
+  const embedding = useEmbedding();
 
   const [linkEditActive, setLinkEditActive] = React.useState(false);
   const [submittable, setSubmittable] = React.useState(true);
@@ -100,8 +102,16 @@ export function useEditor(props: UseEditorProps): EditorState {
         editable: props.editable,
         placeholder: props.placeholder,
         thumbnailBlobs: props.thumbnailBlobs,
+        portalContainer: embedding?.portalContainer,
       }),
-    [props.handlers.uploadFile, props.handlers.peopleSearch, props.editable, props.placeholder, props.thumbnailBlobs],
+    [
+      props.handlers.uploadFile,
+      props.handlers.peopleSearch,
+      props.editable,
+      props.placeholder,
+      props.thumbnailBlobs,
+      embedding?.portalContainer,
+    ],
   );
 
   const editorProps = React.useMemo(

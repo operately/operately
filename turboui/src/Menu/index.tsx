@@ -1,4 +1,5 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useEmbedding, portalRect } from "../Embedding";
+import * as DropdownMenu from "../Embedding/DropdownMenu";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { IconChevronRight, IconDots } from "../icons";
@@ -86,6 +87,7 @@ export function Menu(props: MenuProps) {
 }
 
 function Trigger(props: MenuProps) {
+  const embedding = useEmbedding();
   if (props.anchorPosition) {
     // A noninteractive anchor positions a controlled menu at a context-click location.
     return (
@@ -95,8 +97,7 @@ function Trigger(props: MenuProps) {
           tabIndex={-1}
           style={{
             position: "fixed",
-            left: props.anchorPosition.x,
-            top: props.anchorPosition.y,
+            ...portalRect({ left: props.anchorPosition.x, top: props.anchorPosition.y }, embedding?.portalContainer),
             width: 1,
             height: 1,
             pointerEvents: "none",

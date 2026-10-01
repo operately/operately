@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from "../Embedding/Popover";
 import * as React from "react";
 
 import classNames from "../utils/classnames";
@@ -39,6 +39,7 @@ export function Reactions({
   onAddReaction,
   onRemoveReaction,
 }: Reactions.Props) {
+  const root = React.useRef<HTMLDivElement>(null);
   const [deleteMode, setDeleteMode] = React.useState<string | null>(null);
 
   const handleReactionClick = React.useCallback((reactionId: string) => {
@@ -59,13 +60,15 @@ export function Reactions({
     if (!deleteMode) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (!(event.target as Element | null)?.closest("[data-reaction-item]")) {
+      // Shadow DOM retargets event.target to its host; use the actual clicked element.
+      if (!((event.composedPath()[0] ?? event.target) as Element | null)?.closest("[data-reaction-item]")) {
         setDeleteMode(null);
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    const ownerDocument = root.current?.ownerDocument ?? document;
+    ownerDocument.addEventListener("click", handleClickOutside);
+    return () => ownerDocument.removeEventListener("click", handleClickOutside);
   }, [deleteMode]);
 
   React.useEffect(() => {
@@ -77,7 +80,7 @@ export function Reactions({
   const showAddReaction = Boolean(canAddReaction && onAddReaction);
 
   return (
-    <div className="flex items-start gap-2 flex-wrap">
+    <div ref={root} className="flex items-start gap-2 flex-wrap">
       {reactions.map((reaction) => {
         const isMyReaction = Boolean(currentPersonId && compareIds(reaction.person.id, currentPersonId));
         const canDeleteReaction = isMyReaction && Boolean(onRemoveReaction);

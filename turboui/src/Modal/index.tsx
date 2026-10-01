@@ -1,3 +1,4 @@
+import { useEmbedding, useEmbeddedOverlay } from "../Embedding";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -67,12 +68,16 @@ export function Modal({
   const titleId = React.useId();
   const [mounted, setMounted] = useState(false);
 
+  const embedding = useEmbedding();
+  const overlayRef = React.useRef<HTMLDivElement>(null);
+  useEmbeddedOverlay(mounted && isOpen, onClose, overlayRef);
+
   // Handle mounting the modal in the DOM
   useEffect(() => {
     setMounted(true);
 
     // Disable body scroll when modal is open
-    if (isOpen) {
+    if (isOpen && !embedding) {
       document.body.style.overflow = "hidden";
 
       // Handle ESC key to close the modal
@@ -90,7 +95,7 @@ export function Modal({
       };
     }
     return;
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, embedding]);
 
   // Only close when the backdrop itself is clicked, not when clicks bubble from modal content.
   // Stopping propagation on the content would break Radix popovers (e.g. TimePicker) that
@@ -116,6 +121,7 @@ export function Modal({
 
   const modalContent = (
     <div
+      ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
       onClick={handleBackdropClick}
       aria-modal="true"
@@ -147,7 +153,7 @@ export function Modal({
   );
 
   // Use a portal to render the modal at the end of the document body
-  return createPortal(modalContent, document.body);
+  return createPortal(modalContent, embedding?.portalContainer ?? document.body);
 }
 
 export default Modal;
