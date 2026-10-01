@@ -68,6 +68,7 @@ blocks:
           commands:
             - "[ -f turboui/testreports/junit.xml ] && test-results publish turboui/testreports/junit.xml"
             - "[ -f turboui/testreports/junit-storybook.xml ] && test-results publish turboui/testreports/junit-storybook.xml"
+            - "[ -f turboui/testreports/junit-browser.xml ] && test-results publish turboui/testreports/junit-browser.xml"
 
   - name: App Tests
     run:

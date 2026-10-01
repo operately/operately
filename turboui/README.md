@@ -168,6 +168,15 @@ uses the shadow root as its `container`, so generated styles stay inside it.
 
 See Storybook **Utilities / Embedding** for normal, scaled, offset-portal, and
 independent shadow roots. Support currently targets the KPI UI and its editor/pickers;
-it does not promise that every TurboUI surface supports embedding. The rich-text table
-right-click focus loop remains a known issue, tracked in PR 2 of
-`specs/0021-shadow-dom-kpi-demos.md`. Website adoption should wait for that fix.
+it does not promise that every TurboUI surface supports embedding. The **Table Menus**
+stories cover right-click and keyboard menus in a shadow root, a scaled preview,
+a dialog, and a normal document. The Jest tests live beside the component in
+`src/RichEditor/components/TableControls.browser.test.js`. They use the existing
+Storybook runner’s Playwright environment, separately from jsdom unit tests:
+
+```sh
+./devenv bash -c 'cd turboui && CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser npm run test:browser -- --url http://127.0.0.1:$PORT_STORYBOOK_SERVER --maxWorkers=1'
+```
+
+Start Storybook with `make turboui.storybook` before running this focused check.
+`make turboui.test.storybook` runs these browser tests after the story checks in CI.
