@@ -27,7 +27,7 @@ const people = [
   { id: "sam", fullName: "Sam Rivera", title: "Engineer", avatarUrl: null, profileLink: "#" },
 ];
 
-function ShadowPreview({ scale = 1 }: { scale?: number }) {
+function ShadowPreview({ scale = 1, portalInset = 0 }: { scale?: number; portalInset?: number }) {
   const [host, setHost] = React.useState<HTMLDivElement | null>(null);
   const [root, setRoot] = React.useState<ShadowRoot | null>(null);
   const [scroll, setScroll] = React.useState<HTMLDivElement | null>(null);
@@ -74,7 +74,7 @@ function ShadowPreview({ scale = 1 }: { scale?: number }) {
                 </div>
                 <div
                   ref={setPortals}
-                  style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+                  style={{ position: "absolute", inset: portalInset, pointerEvents: "none" }}
                   data-test-id="preview-portals"
                 />
                 <style>{'[data-test-id="preview-portals"] > * { pointer-events: auto; }'}</style>
@@ -132,6 +132,7 @@ function Controls() {
         <span data-test-id="count">{count}</span>
       </div>
       <DateField date={date} onDateSelect={setDate} testId="outer-date" />
+      <PointMenu />
       <Reactions
         reactions={reactions}
         currentPersonId="alex"
@@ -156,9 +157,13 @@ function Controls() {
             portalMenu
           />
         </Forms.Form>
-        <SecondaryButton onClick={() => setConfirm(true)} testId="open-confirm">
-          Open confirmation
-        </SecondaryButton>
+        <Tooltip content="This tooltip must not release the modal's focus trap">
+          <span>
+            <SecondaryButton onClick={() => setConfirm(true)} testId="open-confirm">
+              Open confirmation
+            </SecondaryButton>
+          </span>
+        </Tooltip>
       </Modal>
       <SlideIn isOpen={slide} onClose={() => setSlide(false)} testId="embedded-slide">
         <div className="p-8">
@@ -173,6 +178,31 @@ function Controls() {
         message="Closing this keeps the modal open."
       />
     </div>
+  );
+}
+
+function PointMenu() {
+  const [position, setPosition] = React.useState<{ x: number; y: number } | null>(null);
+  return (
+    <>
+      <SecondaryButton
+        testId="point-menu"
+        onClick={(event: React.MouseEvent) => setPosition({ x: event.clientX, y: event.clientY })}
+      >
+        Open menu at pointer
+      </SecondaryButton>
+      {position && (
+        <Menu
+          anchorPosition={position}
+          open
+          onOpenChange={(open) => {
+            if (!open) setPosition(null);
+          }}
+        >
+          <MenuActionItem onClick={() => setPosition(null)}>Close pointer menu</MenuActionItem>
+        </Menu>
+      )}
+    </>
   );
 }
 
@@ -210,3 +240,5 @@ export const IndependentPreviews: StoryObj<typeof ShadowPreview> = {
     </>
   ),
 };
+
+export const OffsetPortals: StoryObj<typeof ShadowPreview> = { args: { scale: 0.6, portalInset: 40 } };

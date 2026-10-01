@@ -208,3 +208,104 @@ test("restores the clicked opener when the browser leaves it unfocused", () => {
   view.unmount();
   host.remove();
 });
+
+test("an unrelated popup does not disable Tab containment in the modal", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+  const popup = document.createElement("div");
+  popup.setAttribute("data-radix-popper-content-wrapper", "");
+  popup.innerHTML = '<div role="tooltip">Hint</div>';
+  container.append(popup);
+  const view = render(
+    <EmbeddingProvider portalContainer={container} scrollContainer={container}>
+      <Modal isOpen onClose={() => {}}>
+        <button data-testid="first">First</button>
+        <button data-testid="last">Last</button>
+      </Modal>
+    </EmbeddingProvider>,
+  );
+  const first = screen.getByTestId("first");
+  const last = screen.getByTestId("last");
+  const visible = mockVisibleControls();
+  try {
+    last.focus();
+    expect(fireEvent.keyDown(last, { key: "Tab" })).toBe(false);
+    expect(document.activeElement).toBe(first);
+    expect(fireEvent.keyDown(first, { key: "Tab", shiftKey: true })).toBe(false);
+    expect(document.activeElement).toBe(last);
+  } finally {
+    visible.mockRestore();
+    view.unmount();
+    container.remove();
+  }
+});
+
+test("closing a parent preserves the child's focus and restores the original opener after the last close", () => {
+  const container = document.createElement("div");
+  const opener = document.createElement("button");
+  document.body.append(opener, container);
+  opener.focus();
+  const closeChild = jest.fn();
+  const content = (parent: boolean, child: boolean) => (
+    <EmbeddingProvider portalContainer={container} scrollContainer={container}>
+      <Modal isOpen={parent} onClose={() => {}}>
+        <button data-testid="parent">Parent</button>
+      </Modal>
+      <Modal isOpen={child} onClose={closeChild}>
+        <button data-testid="child">Child</button>
+      </Modal>
+    </EmbeddingProvider>
+  );
+  const view = render(content(true, false));
+  view.rerender(content(true, true));
+  const child = screen.getByTestId("child");
+  expect(document.activeElement).toBe(child);
+  view.rerender(content(false, true));
+  expect(document.activeElement).toBe(child);
+  expect(container.style.overflow).toBe("hidden");
+  fireEvent.keyDown(child, { key: "Escape" });
+  expect(closeChild).toHaveBeenCalledTimes(1);
+  view.rerender(content(false, false));
+  expect(document.activeElement).toBe(opener);
+  expect(container.style.overflow).toBe("");
+  view.unmount();
+  opener.remove();
+  container.remove();
+});
+
+test("Tab stays in a focused portaled popup without jumping into its parent dialog", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+  const view = render(
+    <EmbeddingProvider portalContainer={container} scrollContainer={container}>
+      <Modal isOpen onClose={() => {}}>
+        <button>Parent</button>
+      </Modal>
+    </EmbeddingProvider>,
+  );
+  const popup = document.createElement("div");
+  popup.setAttribute("data-radix-popper-content-wrapper", "");
+  const first = document.createElement("button");
+  const last = document.createElement("button");
+  popup.append(first, last);
+  container.append(popup);
+  const visible = mockVisibleControls();
+  try {
+    last.focus();
+    expect(fireEvent.keyDown(last, { key: "Tab" })).toBe(false);
+    expect(document.activeElement).toBe(first);
+    expect(fireEvent.keyDown(first, { key: "Tab", shiftKey: true })).toBe(false);
+    expect(document.activeElement).toBe(last);
+  } finally {
+    visible.mockRestore();
+    view.unmount();
+    container.remove();
+  }
+});
+
+function mockVisibleControls() {
+  const rectangles = [document.body.getBoundingClientRect()];
+  return jest
+    .spyOn(HTMLElement.prototype, "getClientRects")
+    .mockReturnValue(Object.assign(rectangles, { item: (index: number) => rectangles[index] ?? null }));
+}

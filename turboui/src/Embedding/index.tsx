@@ -46,11 +46,10 @@ export function activeElement(root: Document | ShadowRoot): Element | null {
   return element?.shadowRoot ? activeElement(element.shadowRoot) : element;
 }
 
+type Rect = { left: number; top: number; width?: number; height?: number };
+
 /** Convert viewport coordinates to the unscaled coordinates of an embedded portal. */
-export function portalRect(
-  rect: { left: number; top: number; width?: number; height?: number },
-  container?: HTMLElement,
-) {
+export function portalRect(rect: Rect, container?: HTMLElement) {
   if (!container) return rect;
   const bounds = container.getBoundingClientRect();
   const scale = bounds.width / container.offsetWidth || 1;
@@ -62,7 +61,24 @@ export function portalRect(
   };
 }
 
-const overlays = new WeakMap<HTMLElement, React.RefObject<HTMLElement>[]>();
+/** Position a direct child of the portal layer, independent of any fixed containing block. */
+export function portalPosition(rect: Rect, container?: HTMLElement): Rect & { position: "absolute" | "fixed" } {
+  if (!container) return { position: "fixed", ...rect };
+  const position = portalRect(rect, container);
+  return {
+    ...position,
+    position: "absolute",
+    left: position.left - container.clientLeft + container.scrollLeft,
+    top: position.top - container.clientTop + container.scrollTop,
+  };
+}
+
+interface Overlay {
+  element: HTMLElement | null;
+  previousFocus: Element | null;
+}
+
+const overlays = new WeakMap<HTMLElement, Overlay[]>();
 const scrollLocks = new WeakMap<HTMLElement, { count: number; overflow: string }>();
 
 function focusFirstControl(element: HTMLElement | null) {
@@ -99,7 +115,8 @@ export function useEmbeddedOverlay(isOpen: boolean, onClose: () => void, ref: Re
     const previousFocus =
       focused && focused !== container.ownerDocument.body ? focused : embedding.lastPointerTarget.current;
     const stack = overlays.get(container) ?? [];
-    stack.push(ref);
+    const overlay: Overlay = { element: ref.current, previousFocus };
+    stack.push(overlay);
     overlays.set(container, stack);
     const unlock = lockScroll(scroll);
 
@@ -108,7 +125,7 @@ export function useEmbeddedOverlay(isOpen: boolean, onClose: () => void, ref: Re
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (stack[stack.length - 1] !== ref || event.defaultPrevented) return;
+      if (stack[stack.length - 1] !== overlay || event.defaultPrevented) return;
       // The path reveals whether the key came from this preview, even inside Shadow DOM.
       if (!event.composedPath().includes(container)) return;
       if (event.key === "Escape") {
@@ -116,16 +133,22 @@ export function useEmbeddedOverlay(isOpen: boolean, onClose: () => void, ref: Re
         close.current();
       }
       if (event.key === "Tab" && ref.current) {
-        // Radix controls manage their own focus while a nested popup is open.
-        if (container.querySelector("[data-radix-popper-content-wrapper]")) return;
+        const focused = activeElement(root);
+        // A tooltip elsewhere must not disable the trap. Only the focused popup owns Tab.
+        // If Radix already handled the key, event.defaultPrevented above takes precedence.
+        const boundary = focused?.closest<HTMLElement>("[data-radix-popper-content-wrapper]") ?? ref.current;
         const candidates = Array.from(
-          ref.current.querySelectorAll<HTMLElement>(
+          boundary.querySelectorAll<HTMLElement>(
             'button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), [tabindex="0"], [contenteditable="true"]',
           ),
-        ).filter((element) => element.getClientRects().length > 0);
+        ).filter(
+          (element) =>
+            element.getClientRects().length > 0 &&
+            element.getAttribute("tabindex") !== "-1" &&
+            !element.matches(":disabled"),
+        );
         const first = candidates[0];
         const last = candidates[candidates.length - 1];
-        const focused = activeElement(root);
         if (event.shiftKey && focused === first) {
           event.preventDefault();
           last?.focus();
@@ -140,18 +163,27 @@ export function useEmbeddedOverlay(isOpen: boolean, onClose: () => void, ref: Re
     container.ownerDocument.addEventListener("keydown", onKeyDown);
 
     return () => {
-      stack.splice(stack.indexOf(ref), 1);
+      const wasTop = stack[stack.length - 1] === overlay;
+      stack.splice(stack.indexOf(overlay), 1);
       unlock();
       container.ownerDocument.removeEventListener("keydown", onKeyDown);
-      if (
-        previousFocus instanceof HTMLElement &&
-        previousFocus.isConnected &&
-        previousFocus !== container.ownerDocument.body
-      ) {
-        previousFocus.focus({ preventScroll: true });
+
+      // A child may outlive its parent. Keep its eventual return path to the original opener.
+      for (const remaining of stack) {
+        if (remaining.previousFocus && overlay.element?.contains(remaining.previousFocus)) {
+          remaining.previousFocus = overlay.previousFocus;
+        }
+      }
+      const top = stack[stack.length - 1];
+      if (top && !wasTop) return;
+
+      const target = overlay.previousFocus;
+      const canRestore = target instanceof HTMLElement && target.isConnected && target !== container.ownerDocument.body;
+      if (canRestore && (!top || top.element?.contains(target))) {
+        target.focus({ preventScroll: true });
       } else {
-        // WebKit may leave no focused element after a pointer click on the opener.
-        focusFirstControl(stack[stack.length - 1]?.current ?? null);
+        // WebKit may leave no focused opener; keep focus in the remaining dialog instead.
+        focusFirstControl(top?.element ?? null);
       }
     };
   }, [isOpen, embedding, ref]);
