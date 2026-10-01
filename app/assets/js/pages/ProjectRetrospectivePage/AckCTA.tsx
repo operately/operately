@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as React from "react";
@@ -9,6 +10,7 @@ import { compareIds } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
 export function AckCTA() {
+  const { t } = useTranslation();
   const me = useMe();
   const { retrospective } = useLoadedData();
 
@@ -21,7 +23,7 @@ export function AckCTA() {
   return (
     <div className="flex flex-row items-center justify-center mt-4 mb-4">
       <PrimaryButton size="lg" testId="acknowledge-retrospective" onClick={ackHandler}>
-        Acknowledge Retrospective
+        {t("Acknowledge Retrospective")}
       </PrimaryButton>
     </div>
   );

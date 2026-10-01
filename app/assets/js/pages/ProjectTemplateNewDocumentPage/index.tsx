@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useCreateTemplateDocument } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -11,6 +13,7 @@ import React from "react";
 export default { name: "ProjectTemplateNewDocumentPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, parentFolderId } = useLoadedData();
   const createDocumentMutation = useCreateTemplateDocument({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -29,14 +32,14 @@ function Page() {
       navigate(paths.projectTemplateDocumentPath(template.id, result.document.nodeId));
       return true;
     } catch {
-      showErrorToast("Document not created", "Check the form and try again.");
+      showErrorToast(i18n.t("Document not created"), i18n.t("Check the form and try again."));
       return false;
     }
   }
 
   return (
     <NewDocumentPage
-      pageTitle={["New Document", template.name]}
+      pageTitle={[t("New Document"), template.name]}
       navigation={buildProjectTemplateResourceNavigation(template, paths, { parentFolderId })}
       testId="project-template-new-document-page"
       richTextHandlers={richTextHandlers}

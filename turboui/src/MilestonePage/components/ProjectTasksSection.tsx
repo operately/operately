@@ -93,7 +93,7 @@ export function ProjectTasksSection({
       headerActions={
         <>
           {variantFeatures(variant).showKanbanLink && milestone.kanbanLink && (
-            <Tooltip content="View on board" size="sm">
+            <Tooltip content={t("View on board")} size="sm">
               <BlackLink
                 to={milestone.kanbanLink}
                 className="flex items-center text-content-dimmed transition-colors md:hover:text-content-base"

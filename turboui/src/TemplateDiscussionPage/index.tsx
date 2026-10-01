@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Avatar } from "../Avatar";
@@ -29,6 +30,7 @@ export namespace TemplateDiscussionPage {
 }
 
 export function TemplateDiscussionPage(props: TemplateDiscussionPage.Props) {
+  const { t } = useTranslation();
   const options = React.useMemo<Page.Option[]>(
     () =>
       props.editLink
@@ -36,7 +38,7 @@ export function TemplateDiscussionPage(props: TemplateDiscussionPage.Props) {
             {
               type: "link",
               icon: IconEdit,
-              label: "Edit discussion",
+              label: t("Edit discussion"),
               link: props.editLink,
               testId: "edit-template-discussion",
             },
@@ -55,7 +57,7 @@ export function TemplateDiscussionPage(props: TemplateDiscussionPage.Props) {
               <h1 className="text-content-accent text-2xl font-bold leading-tight">{props.discussion.title}</h1>
               <div className="inline-flex items-center gap-1 text-content-dimmed">
                 {props.discussion.author?.fullName && <span>{props.discussion.author.fullName}</span>}
-                {props.discussion.author && <span>on</span>}
+                {props.discussion.author && <span>{t("on")}</span>}
                 <FormattedTime
                   {...props.formattedTimePreferences}
                   time={props.discussion.insertedAt}

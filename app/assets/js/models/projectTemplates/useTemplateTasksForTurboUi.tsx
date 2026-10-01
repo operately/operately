@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import React from "react";
 import { type AccessOptionsInt, type ProjectTemplate } from "@/api";
 import * as Tasks from "@/models/tasks";
@@ -79,7 +80,7 @@ export function useTemplateTasksForTurboUi({
       return true;
     } catch {
       setGraph(graph);
-      showErrorToast(message, "Your last confirmed template is still displayed. Try again.");
+      showErrorToast(message, i18n.t("Your last confirmed template is still displayed. Try again."));
       return false;
     }
   }
@@ -96,7 +97,7 @@ export function useTemplateTasksForTurboUi({
         if (!created) throw new Error("Created task is missing its workflow status");
         setGraph(replaceTaskId(optimistic, tempId, created));
       },
-      "Task not created",
+      i18n.t("Task not created"),
     );
   }
 
@@ -112,7 +113,7 @@ export function useTemplateTasksForTurboUi({
           await updateAssignees.mutateAsync({ templateId, taskId, assigneeIds: activePersonIds(assignees) });
         }
       },
-      "Task not updated",
+      i18n.t("Task not updated"),
     );
   }
 
@@ -120,7 +121,7 @@ export function useTemplateTasksForTurboUi({
     return save(
       applyTaskDeleted(graph, taskId),
       () => deleteTask.mutateAsync({ templateId, taskId }),
-      "Task not deleted",
+      i18n.t("Task not deleted"),
     );
   }
 
@@ -150,7 +151,11 @@ export function useTemplateTasksForTurboUi({
       }),
     };
 
-    return save(next, () => moveTask.mutateAsync({ templateId, taskId, milestoneId, index }), "Tasks not reordered");
+    return save(
+      next,
+      () => moveTask.mutateAsync({ templateId, taskId, milestoneId, index }),
+      i18n.t("Tasks not reordered"),
+    );
   }
 
   function onMilestoneCreate(
@@ -176,7 +181,7 @@ export function useTemplateTasksForTurboUi({
         });
         setGraph(replaceMilestoneId(optimistic, tempId, toTemplateMilestone(created, milestoneLink(created.id))));
       },
-      "Milestone not created",
+      i18n.t("Milestone not created"),
     );
   }
 
@@ -193,7 +198,7 @@ export function useTemplateTasksForTurboUi({
           tasksOrderingState: updates.tasksOrderingState,
           tasksKanbanState: serializeJson(updates.tasksKanbanState),
         }),
-      "Milestone not updated",
+      i18n.t("Milestone not updated"),
     );
   }
 
@@ -201,7 +206,7 @@ export function useTemplateTasksForTurboUi({
     return save(
       applyMilestoneDeleted(graph, milestoneId),
       () => deleteMilestone.mutateAsync({ templateId, milestoneId }),
-      "Milestone not deleted",
+      i18n.t("Milestone not deleted"),
     );
   }
 
@@ -214,7 +219,7 @@ export function useTemplateTasksForTurboUi({
           id: templateId,
           milestonesOrderingState: next.milestonesOrderingState,
         }),
-      "Milestones not reordered",
+      i18n.t("Milestones not reordered"),
     );
   }
 
@@ -243,7 +248,7 @@ export function useTemplateTasksForTurboUi({
         });
         setGraph(replacePersonId(optimistic, tempId, { ...optimisticPerson, id: created.id }));
       },
-      "Contributor not added",
+      i18n.t("Contributor not added"),
     );
   }
 
@@ -262,7 +267,7 @@ export function useTemplateTasksForTurboUi({
           responsibility: updates.responsibility,
           accessLevel: updates.accessLevel as AccessOptionsInt | undefined,
         }),
-      "Contributor not updated",
+      i18n.t("Contributor not updated"),
     );
   }
 
@@ -270,7 +275,7 @@ export function useTemplateTasksForTurboUi({
     return save(
       applyPersonDeleted(graph, templatePersonId),
       () => deletePerson.mutateAsync({ templateId, templatePersonId }),
-      "Contributor not removed",
+      i18n.t("Contributor not removed"),
     );
   }
 
@@ -291,7 +296,7 @@ export function useTemplateTasksForTurboUi({
             ([deletedStatusId, replacementStatusId]) => ({ deletedStatusId, replacementStatusId }),
           ),
         }),
-      "Workflow not updated",
+      i18n.t("Workflow not updated"),
     );
   }
   const kanbanTasks = React.useMemo(

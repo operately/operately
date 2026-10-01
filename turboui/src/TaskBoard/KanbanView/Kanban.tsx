@@ -1,3 +1,4 @@
+import { Trans } from "../../Translate";
 import React, { useMemo } from "react";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 
@@ -218,8 +219,7 @@ function AddStatusButton({ onClick }: AddStatusButtonProps) {
       onClick={onClick}
       data-test-id="add-status"
     >
-      <IconPlus size={16} />
-      Add status
+      <Trans i18nKey="<icon/>Add status" components={{ icon: <IconPlus size={16} /> }} />
     </button>
   );
 }

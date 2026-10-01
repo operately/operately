@@ -1,13 +1,34 @@
 import type { Editor } from "@tiptap/core";
+import i18n from "../../i18n";
 import { closeHistory } from "@tiptap/pm/history";
 import type { Node as DocumentNode } from "@tiptap/pm/model";
 import { CellSelection, TableMap } from "@tiptap/pm/tables";
 
 export const insertionActions = [
-  { label: "Add row above", command: "addRowBefore" },
-  { label: "Add row below", command: "addRowAfter" },
-  { label: "Add column left", command: "addColumnBefore" },
-  { label: "Add column right", command: "addColumnAfter" },
+  {
+    get label() {
+      return i18n.t("Add row above");
+    },
+    command: "addRowBefore",
+  },
+  {
+    get label() {
+      return i18n.t("Add row below");
+    },
+    command: "addRowAfter",
+  },
+  {
+    get label() {
+      return i18n.t("Add column left");
+    },
+    command: "addColumnBefore",
+  },
+  {
+    get label() {
+      return i18n.t("Add column right");
+    },
+    command: "addColumnAfter",
+  },
 ] as const;
 export type TableAction =
   | (typeof insertionActions)[number]["command"]

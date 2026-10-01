@@ -1,3 +1,5 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { PrimaryButton } from "../Button";
@@ -48,6 +50,7 @@ interface GoalSelectorDropdownProps {
 }
 
 function GoalSelectorDropdown(props: GoalSelectorDropdownProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const tree = React.useMemo(() => buildGoalTree(props.goals), [props.goals]);
@@ -76,7 +79,9 @@ function GoalSelectorDropdown(props: GoalSelectorDropdownProps) {
             <IconGoalPlain size={16} /> {props.selected.name}
           </div>
         ) : (
-          <div className="text-content-dimmed">Select a goal &hellip;</div>
+          <div className="text-content-dimmed">
+            <Trans i18nKey="Select a goal …" />
+          </div>
         )}
         <IconChevronDown size={20} />
       </div>
@@ -88,10 +93,10 @@ function GoalSelectorDropdown(props: GoalSelectorDropdownProps) {
               <div className="w-full flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <IconBuildingEstate size={16} />
-                  <span>Company-wide goal</span>
+                  <span>{t("Company-wide goal")}</span>
                 </div>
                 <PrimaryButton onClick={() => handleSelect(null)} size="xxs" testId="select-company-wide-option">
-                  Select
+                  {t("Select")}
                 </PrimaryButton>
               </div>
             </div>
@@ -123,16 +128,14 @@ function GoalNodeView({
   toggleExpanded: (id: string) => void;
   onSelect: (goal: SelectGoalGoal) => void;
 }) {
+  const { t } = useTranslation();
   const hasChildren = node.children.length > 0;
   const isExpanded = Boolean(expanded[node.goal.id]);
 
   return (
     <div>
       <div className="px-2 py-1.5 flex items-center justify-between gap-2 hover:bg-surface-dimmed">
-        <div
-          className="inline-flex items-center gap-1.5 truncate flex-1"
-          style={{ paddingLeft: node.depth * 24 }}
-        >
+        <div className="inline-flex items-center gap-1.5 truncate flex-1" style={{ paddingLeft: node.depth * 24 }}>
           <ExpandToggle
             hasChildren={hasChildren}
             isExpanded={isExpanded}
@@ -147,12 +150,8 @@ function GoalNodeView({
           ) : null}
         </div>
 
-        <PrimaryButton
-          onClick={() => onSelect(node.goal)}
-          size="xxs"
-          testId={createTestId("goal", node.goal.name)}
-        >
-          Select
+        <PrimaryButton onClick={() => onSelect(node.goal)} size="xxs" testId={createTestId("goal", node.goal.name)}>
+          {t("Select")}
         </PrimaryButton>
       </div>
 

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { SecondaryButton } from "../Button";
 import { ContentListSkeleton } from "../ContentListSkeleton";
@@ -14,6 +15,7 @@ export interface InfiniteScrollProps {
 }
 
 export function InfiniteScroll(props: InfiniteScrollProps) {
+  const { t } = useTranslation();
   const [target, setTarget] = React.useState<HTMLDivElement | null>(null);
   const [reachedKey, setReachedKey] = React.useState<string | null>(null);
   const [failedKey, setFailedKey] = React.useState<string | null>(null);
@@ -103,22 +105,22 @@ export function InfiniteScroll(props: InfiniteScrollProps) {
       {(props.isFetchingNextPage || pending) &&
         (props.loadingIndicator ?? (
           <div className="py-4">
-            <ContentListSkeleton label="Loading more activities" testId="feed-loading-more" />
+            <ContentListSkeleton label={t("Loading more activities")} testId="feed-loading-more" />
           </div>
         ))}
       {failed && (
         <div className="py-4 flex items-center gap-3" data-test-id="feed-pagination-error">
           <span role="alert" className="text-sm text-content-dimmed">
-            Couldn’t load more activities.
+            {t("Couldn’t load more activities.")}
           </span>
           <SecondaryButton size="xs" onClick={loadMore} disabled={props.isFetching || pending} testId="feed-retry">
-            Try again
+            {t("Try again")}
           </SecondaryButton>
         </div>
       )}
       {!supportsObserver && props.hasNextPage && !failed && (
         <SecondaryButton size="xs" onClick={loadMore} disabled={props.isFetching || pending} testId="feed-load-more">
-          Load more
+          {t("Load more")}
         </SecondaryButton>
       )}
     </>

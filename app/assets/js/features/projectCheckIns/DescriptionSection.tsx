@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import React from "react";
 
@@ -6,6 +7,7 @@ import { RichContent, shortenContent } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function DescriptionSection({ checkIn, limit }: { checkIn: ProjectCheckIn; limit?: number }) {
+  const { t } = useTranslation();
   const source = JSON.parse(checkIn.description ?? "{}");
   const message = limit ? shortenContent(source, limit, { suffix: "...", skipParse: true }) : source;
   const { mentionedPersonLookup } = useRichEditorHandlers();
@@ -18,7 +20,7 @@ export function DescriptionSection({ checkIn, limit }: { checkIn: ProjectCheckIn
 
   return (
     <div className="my-8">
-      <div className="text-lg font-bold mx-auto">2. What's new since the last check-in?</div>
+      <div className="text-lg font-bold mx-auto">{t("2. What's new since the last check-in?")}</div>
 
       <div className="mt-2 border border-stroke-base rounded p-4">
         <RichContent

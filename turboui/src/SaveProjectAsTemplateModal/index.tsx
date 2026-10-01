@@ -1,3 +1,6 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
+import { Trans } from "../Translate";
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -54,6 +57,7 @@ export namespace SaveProjectAsTemplateModal {
 }
 
 export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Props) {
+  const { t } = useTranslation();
   const [scheduleIssues, setScheduleIssues] = React.useState<SaveProjectAsTemplateModal.ScheduleIssue[]>([]);
   const form = Forms.useForm<SaveProjectAsTemplateModal.Values>({
     fields: initialValues(props),
@@ -67,7 +71,7 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
       }
 
       if (!result.success) {
-        throw new Error(result.error ?? "The template could not be created. Check the project and try again.");
+        throw new Error(result.error ?? i18n.t("The template could not be created. Check the project and try again."));
       }
 
       form.actions.reset();
@@ -83,7 +87,7 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
         form:
           error instanceof Error
             ? error.message
-            : "The template could not be created. Check the project and try again.",
+            : t("The template could not be created. Check the project and try again."),
       }),
   });
 
@@ -98,26 +102,26 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
     <Modal
       isOpen={props.isOpen}
       onClose={() => void form.actions.cancel()}
-      title="Save project as template"
+      title={t("Save project as template")}
       size="large"
     >
       <Forms.Form form={form} className="space-y-5" testId="save-project-as-template-form">
-        <Forms.TextInput field="name" label="Template name" required autoFocus />
+        <Forms.TextInput field="name" label={t("Template name")} required autoFocus />
         <Forms.RichTextArea
           field="description"
-          label="Description"
+          label={t("Description")}
           richTextHandlers={props.richTextHandlers}
           height="min-h-[140px]"
         />
 
         <div className="space-y-4 rounded-lg border border-surface-outline p-4">
           <h3 className="flex items-center gap-2 font-semibold text-content-accent">
-            <span>Include</span>
+            <span>{t("Include")}</span>
             <Tooltip
               content={
                 <div className="max-w-xs">
-                  <div className="font-semibold mb-2">Include in template</div>
-                  <div className="text-sm">Choose which parts of this project to copy into the template.</div>
+                  <div className="font-semibold mb-2">{t("Include in template")}</div>
+                  <div className="text-sm">{t("Choose which parts of this project to copy into the template.")}</div>
                 </div>
               }
             >
@@ -127,12 +131,12 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
           <IncludeSwitch
             form={form}
             field="includePeopleAndAssignments"
-            label="People and assignments"
-            helperText="Copies the project team with their roles and access."
+            label={t("People and assignments")}
+            helperText={t("Copies the project team with their roles and access.")}
           />
-          <IncludeSwitch form={form} field="includeDiscussions" label="Discussions" />
-          <IncludeSwitch form={form} field="includeComments" label="Comments" />
-          <IncludeSwitch form={form} field="includeDocsAndFiles" label="Docs & Files" />
+          <IncludeSwitch form={form} field="includeDiscussions" label={t("Discussions")} />
+          <IncludeSwitch form={form} field="includeComments" label={t("Comments")} />
+          <IncludeSwitch form={form} field="includeDocsAndFiles" label={t("Docs & Files")} />
         </div>
 
         {scheduleIssues.length > 0 && (
@@ -142,7 +146,7 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
 
         <div className="flex justify-end gap-3">
           <SecondaryButton type="button" onClick={() => void form.actions.cancel()} disabled={form.state !== "idle"}>
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton
             type="submit"
@@ -150,7 +154,7 @@ export function SaveProjectAsTemplateModal(props: SaveProjectAsTemplateModal.Pro
             disabled={!props.submissionEnabled}
             testId="save-project-as-template"
           >
-            Save as template
+            {t("Save as template")}
           </PrimaryButton>
         </div>
       </Forms.Form>
@@ -185,21 +189,30 @@ function ScheduleIssues({
   issues: SaveProjectAsTemplateModal.ScheduleIssue[];
   formattedTimePreferences: FormattedTimePreferences;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-lg border border-callout-error-content bg-callout-error-bg p-4" role="alert">
-      <p className="font-semibold text-content-error">Some dates are before the project start date.</p>
-      <p className="mt-1 text-sm text-content-base">Change or remove these dates, then try again.</p>
+      <p className="font-semibold text-content-error">{t("Some dates are before the project start date.")}</p>
+      <p className="mt-1 text-sm text-content-base">{t("Change or remove these dates, then try again.")}</p>
       <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">
         {issues.map((issue) => (
           <li key={`${issue.resourceType}-${issue.resourceId}-${issue.field}`}>
-            <Link to={issue.link}>{issue.resourceName}</Link>
-            {issue.date && (
-              <>
-                {": "}
-                <FormattedTime time={issue.date} format="long-date" {...formattedTimePreferences} />
-              </>
+            {issue.date ? (
+              <Trans
+                i18nKey="<resource>{{name}}</resource>: <date/>"
+                values={{ name: issue.resourceName }}
+                components={{
+                  resource: <Link to={issue.link} />,
+                  date: <FormattedTime time={issue.date} format="long-date" {...formattedTimePreferences} />,
+                }}
+              />
+            ) : (
+              <Trans
+                i18nKey="<resource>{{name}}</resource>: Project start date is missing"
+                values={{ name: issue.resourceName }}
+                components={{ resource: <Link to={issue.link} /> }}
+              />
             )}
-            {!issue.date && ": Project start date is missing"}
           </li>
         ))}
       </ul>

@@ -1,5 +1,6 @@
+import { setupTestCatalog, i18n } from "../../test/i18n";
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { CheckInMetadata, CheckInTitle } from ".";
@@ -155,5 +156,44 @@ describe("CheckInMetadata", () => {
     );
 
     expect(screen.getByText(/Will be posted on July 14th, 2025 at 11:44/)).toBeInTheDocument();
+  });
+});
+
+describe("catalog rendering", () => {
+  afterEach(cleanup);
+  setupTestCatalog();
+
+  it("uses a complete translated title and acknowledgement while preserving the date and author", async () => {
+    i18n.addResourceBundle(
+      "pt-BR",
+      "translation",
+      {
+        "Check-In for <date/>": "Atualização de <date/>",
+        "<label>Acknowledged by</label> <person>{{name}}</person>":
+          "<label>Reconhecido por</label> <person>{{name}}</person>",
+      },
+      true,
+      true,
+    );
+    await i18n.changeLanguage("pt-BR");
+    render(
+      <>
+        <CheckInTitle
+          state="published"
+          timestamp="2025-07-13T12:00:00Z"
+          formattedTimePreferences={formattedTimePreferences}
+        />
+        <CheckInMetadata
+          resourceType="project"
+          state="published"
+          postedAt="2025-07-13T12:00:00Z"
+          acknowledgedBy={{ fullName: "Grace <Admin> & Hopper" }}
+          formattedTimePreferences={formattedTimePreferences}
+        />
+      </>,
+    );
+    expect(screen.getByRole("heading")).toHaveTextContent("Atualização de");
+    expect(screen.getByText("Grace <Admin> & Hopper")).toBeInTheDocument();
+    expect(screen.getByText(/Reconhecido por/)).toBeInTheDocument();
   });
 });

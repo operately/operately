@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { SubscriptionsState } from "@/models/subscriptions";
 import * as Goals from "@/models/goals";
 import { usePaths } from "@/routes/paths";
@@ -13,12 +14,13 @@ export interface FormState {
 }
 
 export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState): FormState {
+  const { t } = useTranslation();
   const paths = usePaths();
   const navigate = useNavigate();
 
   const handlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
   const messageEditor = useEditor({
-    placeholder: "Write here...",
+    placeholder: t("Write here..."),
     className: "min-h-[200px] py-2 font-medium",
     handlers,
     localDraft: { key: `goal:${goal.id}:reopen-message` },

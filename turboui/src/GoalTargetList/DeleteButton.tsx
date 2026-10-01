@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { IconTrash } from "../icons";
 import React from "react";
 import { SecondaryButton } from "../Button";
 import { State, TargetState } from "./useGoalTargetListState";
 
 export function DeleteButton({ state, target }: { state: State; target: TargetState }) {
+  const { t } = useTranslation();
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     state.startDeleting(target.id);
@@ -12,7 +14,7 @@ export function DeleteButton({ state, target }: { state: State; target: TargetSt
   return (
     <div className="mt-px">
       <SecondaryButton size="xxs" onClick={onClick} icon={IconTrash} testId="delete-target">
-        Delete
+        {t("Delete")}
       </SecondaryButton>
     </div>
   );

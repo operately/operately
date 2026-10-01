@@ -1,3 +1,5 @@
+import { Trans } from "turboui";
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
@@ -16,10 +18,11 @@ import { Navigation } from "./navigation";
 export default { name: "GoalCheckInNewPage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={["Check-in", goal.name]} testId="goal-check-in-new-page">
+    <Pages.Page title={[t("Check-in"), goal.name]} testId="goal-check-in-new-page">
       <Paper.Root>
         <Navigation />
 
@@ -33,14 +36,18 @@ function Page() {
 }
 
 function Header() {
+  const { t } = useTranslation();
   const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <div>
       <h1 className="text-content-accent text-xl sm:text-3xl font-extrabold text-center">
-        Check-In for <FormattedTime {...formattedTimePreferences} time={new Date()} format="long-date" />
+        <Trans
+          i18nKey="Check-In for <date/>"
+          components={{ date: <FormattedTime {...formattedTimePreferences} time={new Date()} format="long-date" /> }}
+        />
       </h1>
-      <p className="text-center mt-1">Share the progress with the team</p>
+      <p className="text-center mt-1">{t("Share the progress with the team")}</p>
     </div>
   );
 }

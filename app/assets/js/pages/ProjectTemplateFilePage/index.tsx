@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import { useDeleteTemplateResource } from "@/models/projectTemplates/projectTemplateEditorLifecycle";
 import { loader, useLoadedData } from "./loader";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
@@ -15,6 +17,7 @@ import { useNavigate } from "react-router";
 export default { name: "ProjectTemplateFilePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const { template, node, comments } = useLoadedData();
   const deleteResourceMutation = useDeleteTemplateResource({ templateId: template.id, spaceId: template.space.id });
   const paths = usePaths();
@@ -46,7 +49,7 @@ function Page() {
       await deleteResourceMutation.mutateAsync({ templateId: template.id, nodeId: node.id });
       navigate(docsAndFilesLink);
     } catch {
-      showErrorToast("Resource not deleted", "The file is still on this page. Try again.");
+      showErrorToast(i18n.t("Resource not deleted"), i18n.t("The file is still on this page. Try again."));
     }
   }
 
@@ -58,14 +61,14 @@ function Page() {
         {
           type: "action",
           icon: IconDownload,
-          label: "Download",
+          label: t("Download"),
           onClick: downloadFile,
           testId: "download-file-link",
         },
         {
           type: "link",
           icon: IconEdit,
-          label: "Edit",
+          label: t("Edit"),
           link: paths.projectTemplateEditFilePath(template.id, node.id),
           keepOutsideOnBigScreen: true,
           testId: "edit-file-link",
@@ -73,7 +76,7 @@ function Page() {
         {
           type: "action",
           icon: IconTrash,
-          label: "Delete",
+          label: t("Delete"),
           onClick: toggleDeleteModal,
           hidden: !canEdit,
           testId: "delete-resource-link",

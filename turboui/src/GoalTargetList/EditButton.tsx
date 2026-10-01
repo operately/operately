@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { IconPencil } from "../icons";
 import React from "react";
 import { SecondaryButton } from "../Button";
@@ -5,6 +6,7 @@ import { createTestId } from "../TestableElement";
 import { State, TargetState } from "./useGoalTargetListState";
 
 export function EditButton({ state, target }: { state: State; target: TargetState }) {
+  const { t } = useTranslation();
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     state.startEditing(target.id!);
@@ -13,7 +15,7 @@ export function EditButton({ state, target }: { state: State; target: TargetStat
   return (
     <div className="mt-px">
       <SecondaryButton size="xxs" onClick={onClick} icon={IconPencil} testId={createTestId("edit-target", target.name)}>
-        Edit
+        {t("Edit")}
       </SecondaryButton>
     </div>
   );

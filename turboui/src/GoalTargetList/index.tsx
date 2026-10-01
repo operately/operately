@@ -1,3 +1,5 @@
+import { Trans } from "../Translate";
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
@@ -163,6 +165,7 @@ function TargetList({ state }: { state: State }) {
 }
 
 function TargetListHeader() {
+  const { t } = useTranslation();
   const className = classNames(
     "flex items-center px-2 py-2",
     "border-t border-stroke-base font-semibold text-xs text-content-dimmed uppercase tracking-wider",
@@ -170,8 +173,8 @@ function TargetListHeader() {
 
   return (
     <div className={className}>
-      <div className="flex-1">Name</div>
-      <div className="w-40 text-right">Current value</div>
+      <div className="flex-1">{t("Name")}</div>
+      <div className="w-40 text-right">{t("Current value")}</div>
     </div>
   );
 }
@@ -197,6 +200,7 @@ function TargetCard({ state, target, containerId }: { state: State; target: Targ
 }
 
 function TargetAdd({ state }: { state: State }) {
+  const { t } = useTranslation();
   const [createMore, setCreateMore] = React.useState(false);
 
   const {
@@ -233,49 +237,49 @@ function TargetAdd({ state }: { state: State }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
           testId="target-name"
-          label="Name"
+          label={t("Name")}
           autoFocus
-          placeholder="e.g. Increase monthly signup count"
+          placeholder={t("e.g. Increase monthly signup count")}
           error={errors.name?.message as string}
-          {...register("name", { required: "Can't be empty" })}
+          {...register("name", { required: t("Can't be empty") })}
         />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
             testId={"target-from"}
-            label="Start"
+            label={t("Start")}
             error={errors.from?.message as string}
             {...register("from", {
-              required: "Can't be empty",
-              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+              required: t("Can't be empty"),
+              validate: (v) => !isNaN(Number(v)) || t("Must be a number"),
             })}
-            placeholder="e.g. 10000"
+            placeholder={t("e.g. 10000")}
           />
           <Textfield
             testId={"target-to"}
-            label="Target"
+            label={t("Target")}
             error={errors.to?.message as string}
             {...register("to", {
-              required: "Can't be empty",
-              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+              required: t("Can't be empty"),
+              validate: (v) => !isNaN(Number(v)) || t("Must be a number"),
             })}
-            placeholder="e.g. 15000"
+            placeholder={t("e.g. 15000")}
           />
           <Textfield
             testId={"target-unit"}
-            label="Unit"
+            label={t("Unit")}
             error={errors.unit?.message as string}
-            {...register("unit", { required: "Can't be empty" })}
-            placeholder="e.g. users"
+            {...register("unit", { required: t("Can't be empty") })}
+            placeholder={t("e.g. users")}
           />
         </div>
         <div className="flex items-center gap-2 mt-4">
-          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" />
+          <SwitchToggle value={createMore} setValue={setCreateMore} label={t("Create more")} />
           <div className="flex-1"></div>
           <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button" testId="cancel">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton size="xs" type="submit" testId="save">
-            Add Target
+            {t("Add Target")}
           </PrimaryButton>
         </div>
       </form>
@@ -284,6 +288,7 @@ function TargetAdd({ state }: { state: State }) {
 }
 
 function TargetUpdate({ state, target }: { state: State; target: TargetState }) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -300,27 +305,29 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
 
   return (
     <InlineModal index={target.index}>
-      <p className="mb-4 font-medium">Update {target.name}</p>
+      <p className="mb-4 font-medium">
+        <Trans i18nKey="Update {{name}}" values={{ name: target.name }} />
+      </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           testId="target-value"
           autoFocus
-          label="New Value"
+          label={t("New Value")}
           error={errors.value?.message as string}
           addonRight={target.unit}
           textRight
           {...register("value", {
-            required: "Can't be empty",
-            validate: (v) => !isNaN(Number(v)) || "Must be a number",
+            required: t("Can't be empty"),
+            validate: (v) => !isNaN(Number(v)) || t("Must be a number"),
           })}
         />
         <div className="flex items-center gap-2 justify-end mt-4">
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button" testId="cancel">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton size="xs" type="submit" testId="save">
-            Save
+            {t("Save")}
           </PrimaryButton>
         </div>
       </form>
@@ -329,6 +336,7 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
 }
 
 function TargetEdit({ state, target }: { state: State; target: TargetState }) {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -355,41 +363,41 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
     <InlineModal index={target.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
-          label="Name"
+          label={t("Name")}
           autoFocus
           error={errors.name?.message as string}
-          {...register("name", { required: "Can't be empty" })}
+          {...register("name", { required: t("Can't be empty") })}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
-            label="Start"
+            label={t("Start")}
             error={errors.from?.message as string}
             {...register("from", {
-              required: "Can't be empty",
-              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+              required: t("Can't be empty"),
+              validate: (v) => !isNaN(Number(v)) || t("Must be a number"),
             })}
           />
           <Textfield
-            label="Target"
+            label={t("Target")}
             error={errors.to?.message as string}
             {...register("to", {
-              required: "Can't be empty",
-              validate: (v) => !isNaN(Number(v)) || "Must be a number",
+              required: t("Can't be empty"),
+              validate: (v) => !isNaN(Number(v)) || t("Must be a number"),
             })}
           />
           <Textfield
-            label="Unit"
+            label={t("Unit")}
             error={errors.unit?.message as string}
-            {...register("unit", { required: "Can't be empty" })}
+            {...register("unit", { required: t("Can't be empty") })}
           />
         </div>
         <div className="flex items-center gap-2 justify-end mt-4">
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
-            Cancel
+            {t("Cancel")}
           </SecondaryButton>
           <PrimaryButton size="xs" type="submit">
-            Save
+            {t("Save")}
           </PrimaryButton>
         </div>
       </form>
@@ -398,18 +406,21 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
 }
 
 function TargetDelete({ state, target }: { state: State; target: TargetState }) {
+  const { t } = useTranslation();
   return (
     <InlineModal index={target.index}>
-      <div className="mb-2 font-bold">Delete {target.name} target?</div>
-      <p>This will remove your target and all associated progress tracking.</p>
+      <div className="mb-2 font-bold">
+        <Trans i18nKey="Delete {{name}} target?" values={{ name: target.name }} />
+      </div>
+      <p>{t("This will remove your target and all associated progress tracking.")}</p>
 
       <div className="flex items-center gap-2 justify-end mt-6">
         <SecondaryButton size="xs" onClick={() => state.cancelDelete(target.id)}>
-          Cancel
+          {t("Cancel")}
         </SecondaryButton>
 
         <DangerButton size="xs" onClick={() => state.deleteTarget(target.id)} testId="confirm">
-          Yes, Delete
+          {t("Yes, Delete")}
         </DangerButton>
       </div>
     </InlineModal>
@@ -510,23 +521,42 @@ function TargetValue({ target }: { target: GoalTargetList.Target }) {
 }
 
 function TargetDetails({ state, target }: { state: State; target: TargetState }) {
+  const { t } = useTranslation();
   const { from, to, unit, value } = target;
   const progress = calculateTargetProgress(target, false);
-  const directionText = from! > to! ? "down to" : "to";
+  const decreasing = (from ?? 0) > (to ?? 0);
 
   return (
     <div className="text-sm ml-6 rounded-lg my-2">
       <div className="flex items-center gap-2">
-        <div className="w-20 font-semibold">Target</div>
+        <div className="w-20 font-semibold">{t("Target")}</div>
         <div>
-          From <span className="font-semibold">{formatNumber(from!)}</span> {directionText}{" "}
-          <span className="font-semibold">{formatNumber(to!)}</span>
-          {unit === "%" ? "%" : ` ${unit}`}
+          {decreasing ? (
+            <Trans
+              i18nKey="From <from>{{from}}</from> down to <to>{{to}}</to>{{unit}}"
+              values={{
+                from: formatNumber(from ?? 0),
+                to: formatNumber(to ?? 0),
+                unit: unit === "%" ? "%" : ` ${unit}`,
+              }}
+              components={{ from: <span className="font-semibold" />, to: <span className="font-semibold" /> }}
+            />
+          ) : (
+            <Trans
+              i18nKey="From <from>{{from}}</from> to <to>{{to}}</to>{{unit}}"
+              values={{
+                from: formatNumber(from ?? 0),
+                to: formatNumber(to ?? 0),
+                unit: unit === "%" ? "%" : ` ${unit}`,
+              }}
+              components={{ from: <span className="font-semibold" />, to: <span className="font-semibold" /> }}
+            />
+          )}
         </div>
       </div>
 
       <div className="flex items-center gap-2 mt-1">
-        <div className="w-20 font-semibold">Current</div>
+        <div className="w-20 font-semibold">{t("Current")}</div>
         <div>
           {formatValueAndUnit(value, unit)}{" "}
           <span className={progress < 0 ? "text-red-500" : ""}>({progress.toFixed(1)}%)</span>

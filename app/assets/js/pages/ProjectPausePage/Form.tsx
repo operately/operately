@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Forms, DimmedLink, emptyContent, PrimaryButton, SubscribersSelector } from "turboui";
@@ -9,6 +10,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { usePaths } from "@/routes/paths";
 
 export function Form({ project }: { project: Projects.Project }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const projectId = project.id;
   const potentialSubscribers = project.potentialSubscribers;
@@ -17,7 +19,7 @@ export function Form({ project }: { project: Projects.Project }) {
     return null;
   }
 
-  const projectName = project.name || "this project";
+  const projectName = project.name || t("this project");
   const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
@@ -53,9 +55,9 @@ export function Form({ project }: { project: Projects.Project }) {
       <Forms.FieldGroup>
         <Forms.RichTextArea
           field="message"
-          label="Why are you pausing this project?"
+          label={t("Why are you pausing this project?")}
           richTextHandlers={richTextHandlers}
-          placeholder="Write here..."
+          placeholder={t("Write here...")}
         />
       </Forms.FieldGroup>
 
@@ -65,9 +67,9 @@ export function Form({ project }: { project: Projects.Project }) {
 
       <div className="flex items-center gap-6 mt-8">
         <PrimaryButton onClick={form.actions.submit} testId="pause-project-button" loading={isSubmitting}>
-          Pause project
+          {t("Pause project")}
         </PrimaryButton>
-        <DimmedLink to={paths.projectPath(projectId)}>Keep it active</DimmedLink>
+        <DimmedLink to={paths.projectPath(projectId)}>{t("Keep it active")}</DimmedLink>
       </div>
     </Forms.Form>
   );

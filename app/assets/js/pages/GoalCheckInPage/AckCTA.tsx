@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 import * as GoalCheckIns from "@/models/goalCheckIns";
 import * as Pages from "@/components/Pages";
@@ -27,6 +28,7 @@ import { compareIds } from "@/routes/paths";
 //
 
 export function AckCTA() {
+  const { t } = useTranslation();
   const { update, goal } = useLoadedData();
   const me = useMe();
   const isViewMode = Pages.useIsViewMode();
@@ -42,7 +44,7 @@ export function AckCTA() {
   return (
     <div className="flex flex-row items-center justify-center mt-8 mb-4">
       <PrimaryButton testId="acknowledge-check-in" onClick={ackHandler}>
-        Acknowledge this Check-In
+        {t("Acknowledge this Check-In")}
       </PrimaryButton>
     </div>
   );

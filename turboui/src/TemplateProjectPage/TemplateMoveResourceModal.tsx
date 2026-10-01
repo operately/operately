@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import * as Forms from "../Forms";
@@ -25,6 +27,7 @@ export function TemplateMoveResourceModal({
   hideModal: () => void;
   onMove: (nodeId: string, parentFolderId: string | null) => Promise<boolean>;
 }) {
+  const { t } = useTranslation();
   const blockedFolderIds = React.useMemo(() => blockedDestinationFolderIds(node, resourceNodes), [node, resourceNodes]);
 
   const form = Forms.useForm({
@@ -34,7 +37,7 @@ export function TemplateMoveResourceModal({
     validate: (addError: (field: string, message: string) => void) => {
       const destinationId = (form.values.location as { id: string | null }).id;
       if (destinationId && blockedFolderIds.has(destinationId)) {
-        addError("location", "Folder cannot be moved inside itself.");
+        addError("location", i18n.t("Folder cannot be moved inside itself."));
       }
     },
     cancel: hideModal,
@@ -51,13 +54,13 @@ export function TemplateMoveResourceModal({
   });
 
   return (
-    <Modal title={`Move ${node.name}`} isOpen={isOpen} onClose={hideModal}>
+    <Modal title={t("Move {{name}}", { name: node.name })} isOpen={isOpen} onClose={hideModal}>
       <Forms.Form form={form} testId="move-resource-modal">
         <Forms.FieldGroup>
           <DestinationFolderSelect field="location" nodes={resourceNodes} blockedFolderIds={blockedFolderIds} />
         </Forms.FieldGroup>
 
-        <Forms.Submit saveText="Move Here" cancelText="Cancel" />
+        <Forms.Submit saveText={t("Move Here")} cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );
@@ -72,6 +75,7 @@ function DestinationFolderSelect({
   nodes: ResourceNode[];
   blockedFolderIds: Set<string>;
 }) {
+  const { t } = useTranslation();
   const [location, setLocation] = Forms.useFieldValue<{ id: string | null }>(field);
   const error = Forms.useFieldError(field);
   const currentFolderId = location?.id ?? null;
@@ -80,12 +84,12 @@ function DestinationFolderSelect({
 
   return (
     <FolderSelectField
-      label="Select destination"
+      label={t("Select destination")}
       field={field}
       error={error}
       current={{
         id: currentFolderId ?? "root",
-        name: currentFolder?.name ?? "Documents & Files",
+        name: currentFolder?.name ?? t("Documents & Files"),
       }}
       onGoBack={currentFolder ? () => setLocation({ id: currentFolder.parentFolderId }) : undefined}
       nodes={children.map((child) => toFolderSelectNode(child, blockedFolderIds, setLocation))}

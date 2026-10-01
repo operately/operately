@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { getDateWithoutCurrentYear } from "./utils";
 import { DateField } from ".";
 
@@ -14,8 +15,9 @@ export namespace DateDisplay {
   }
 }
 
-export function DateDisplay({ date, placeholder = "Date" }: DateDisplay.Props) {
-  const displayText = date ? getDateWithoutCurrentYear(date) : placeholder;
-  
+export function DateDisplay({ date, placeholder }: DateDisplay.Props) {
+  const { t } = useTranslation();
+  const displayText = date ? getDateWithoutCurrentYear(date) : (placeholder ?? t("Date"));
+
   return <>{displayText}</>;
 }

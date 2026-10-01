@@ -46,7 +46,7 @@ class ScrollableTableView extends TableView {
     this.dom.prepend(this.settings);
     this.dom.tabIndex = 0;
     this.dom.setAttribute("role", "region");
-    this.dom.setAttribute("aria-label", "Table");
+    this.dom.setAttribute("aria-label", i18n.t("Table"));
     this.layout = new TableLayout(this.dom, this.table, () => this.node);
   }
 
@@ -202,3 +202,4 @@ export const tableExtensions = [
     HTMLAttributes: { scope: "col" },
   }),
 ];
+import i18n from "../../i18n";

@@ -22,6 +22,7 @@ import classNames from "../../utils/classnames";
 import * as Types from "../types";
 import { AvatarWithName } from "../../Avatar";
 import { PrimaryButton, SecondaryButton } from "../../Button";
+import { filterDescription } from "../utils/filterDescription";
 
 // Status configuration helper matching StatusSelector semantics
 function getStatusConfig(status: Types.Status | null | undefined): {
@@ -354,7 +355,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
         type: selectedOption.type,
         operator,
         value: null, // This would be set by a value selector
-        label: `${selectedOption.label} ${operatorLabels[operator]}`,
+        label: filterDescription({ type: selectedOption.type, operator, value: null }),
       };
 
       onFiltersChange([...filters, newFilter]);
@@ -657,7 +658,7 @@ export function FilterBadges({
   filters: Types.FilterCondition[];
   onFiltersChange: (filters: Types.FilterCondition[]) => void;
 }) {
-  useTranslation();
+  const { t } = useTranslation();
   const filterOptions = getFilterOptions();
   const operatorLabels = getOperatorLabels();
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
@@ -670,21 +671,10 @@ export function FilterBadges({
     onFiltersChange(
       filters.map((f) => {
         if (f.id === filterId) {
-          const filterOption = filterOptions.find((opt) => opt.type === f.type);
-          const operatorLabel = operatorLabels[newOperator];
-          let newLabel: string;
-
-          if (f.type === "status") {
-            const statusConfig = getStatusConfig(f.value as Types.Status);
-            newLabel = `Status ${operatorLabel} ${statusConfig.label}`;
-          } else {
-            newLabel = `${filterOption?.label || f.type} ${operatorLabel}`;
-          }
-
           return {
             ...f,
             operator: newOperator,
-            label: newLabel,
+            label: filterDescription({ ...f, operator: newOperator }),
           };
         }
         return f;
@@ -747,6 +737,8 @@ export function FilterBadges({
         return (
           <div
             key={filter.id}
+            role="group"
+            aria-label={filterDescription(filter)}
             className="flex items-center border border-surface-outline rounded-sm bg-surface-base text-sm overflow-hidden"
           >
             {/* Filter type segment */}
@@ -806,6 +798,7 @@ export function FilterBadges({
             <div className="border-l border-surface-outline">
               <button
                 onClick={() => removeFilter(filter.id)}
+                aria-label={t("Remove filter: {{filter}}", { filter: filterDescription(filter) })}
                 className="px-1.5 py-1 bg-surface-base hover:bg-surface-accent-hover text-content-subtle hover:text-content-error"
               >
                 <IconX size={12} />

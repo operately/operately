@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import React, { useEffect } from "react";
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -61,7 +63,12 @@ export function TaskBoard({ props, canEdit }: { props: TemplateProjectPage.Props
     () => props.tasks.map((task) => toBoardTask(task, props.milestones)),
     [props.milestones, props.tasks],
   );
-  const { selectedMilestone, selectedMilestoneId, tasks: boardTasks, onMilestoneFilterChange } = useMilestoneFilter({
+  const {
+    selectedMilestone,
+    selectedMilestoneId,
+    tasks: boardTasks,
+    onMilestoneFilterChange,
+  } = useMilestoneFilter({
     milestones: boardMilestones,
     tasks: allBoardTasks,
   });
@@ -230,6 +237,7 @@ function ListView({
   taskDisplayMode: TaskDisplayMode;
   onDisplayModeChange: (mode: TaskDisplayMode) => void;
 }) {
+  const { t } = useTranslation();
   const [isCreating, setIsCreating] = React.useState(false);
   const [createMilestoneId, setCreateMilestoneId] = React.useState<string | undefined>();
   const [isCreatingMilestone, setIsCreatingMilestone] = React.useState(false);
@@ -283,10 +291,10 @@ function ListView({
           {canEdit && (
             <>
               <PrimaryButton size="xs" onClick={() => openCreateModal()} testId="add-template-task">
-                New task
+                {t("New task")}
               </PrimaryButton>
               <SecondaryButton size="xs" onClick={() => setIsCreatingMilestone(true)} testId="add-template-milestone">
-                New milestone
+                {t("New milestone")}
               </SecondaryButton>
             </>
           )}
@@ -337,7 +345,7 @@ function ListView({
           return (
             <TaskSection
               key={milestone?.id ?? "root"}
-              title={milestone?.title ?? "No milestone"}
+              title={milestone?.title ?? i18n.t("No milestone")}
               link={milestone?.link}
               description={milestone?.description}
               tasks={milestoneTasks}
@@ -358,7 +366,7 @@ function ListView({
         })}
         {tasks.length === 0 && props.milestones.length === 0 && (
           <div className="px-4 py-8 text-center text-sm text-content-dimmed">
-            Add the first task to define the work.
+            {t("Add the first task to define the work.")}
           </div>
         )}
       </div>
@@ -432,9 +440,16 @@ function TaskSection({
   selectedTaskId: string | null;
   onInlineCreateOpen: () => void;
 }) {
+  const { t } = useTranslation();
   const sectionRef = React.useRef<HTMLElement>(null);
   const defaultStatus = props.statuses[0];
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+  const {
+    open: creatorOpen,
+    openCreator,
+    closeCreator,
+    creatorRef,
+    hoverBind,
+  } = useInlineTaskCreator({
     onOpen: onInlineCreateOpen,
   });
   const handleCreateTask = React.useCallback(
@@ -513,9 +528,7 @@ function TaskSection({
               title
             )}
           </div>
-          {milestoneId ? (
-            <DescriptionIndicator hasDescription={!isContentEmpty(description)} iconSize={12} />
-          ) : null}
+          {milestoneId ? <DescriptionIndicator hasDescription={!isContentEmpty(description)} iconSize={12} /> : null}
         </div>
         {canEdit && props.onTaskCreate ? (
           <SecondaryButton
@@ -524,7 +537,7 @@ function TaskSection({
             onClick={openCreator}
             testId={`template-task-section-add-${containerId}`}
           >
-            <span className="sr-only">Add task</span>
+            <span className="sr-only">{t("Add task")}</span>
           </SecondaryButton>
         ) : null}
       </div>

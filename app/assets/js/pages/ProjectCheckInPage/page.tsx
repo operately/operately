@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
@@ -37,6 +39,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 import { usePaths } from "@/routes/paths";
 
 export function Page() {
+  const { t } = useTranslation();
   const { checkIn } = useLoadedData();
   const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
@@ -52,7 +55,7 @@ export function Page() {
   );
 
   return (
-    <Pages.Page title={["Check-In", checkIn.project.name]} testId="project-check-in-page">
+    <Pages.Page title={[t("Check-In"), checkIn.project.name]} testId="project-check-in-page">
       <Paper.Root>
         <Navigation />
 
@@ -132,26 +135,28 @@ function Title() {
 }
 
 function Navigation() {
+  const { t } = useTranslation();
   const { checkIn } = useLoadedData();
   const paths = usePaths();
   const items: Paper.NavigationItem[] = [];
 
   if (checkIn.space) {
     items.push({ to: paths.spacePath(checkIn.space.id), label: checkIn.space.name });
-    items.push({ to: paths.spaceWorkMapPath(checkIn.space.id, "projects" as const), label: "Work Map" });
+    items.push({ to: paths.spaceWorkMapPath(checkIn.space.id, "projects" as const), label: t("Work Map") });
   } else {
-    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+    items.push({ to: paths.workMapPath("projects"), label: t("Work Map") });
   }
 
   if (checkIn.project) {
     items.push({ to: paths.projectPath(checkIn.project.id), label: checkIn.project.name });
-    items.push({ to: paths.projectCheckInsPath(checkIn.project.id), label: "Check-Ins" });
+    items.push({ to: paths.projectCheckInsPath(checkIn.project.id), label: t("Check-Ins") });
   }
 
   return <Paper.Navigation items={items} />;
 }
 
 function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   const { checkIn } = useLoadedData();
 
@@ -166,7 +171,7 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
       {canEdit && (
         <PageOptions.Link
           icon={IconEdit}
-          title={"Edit"}
+          title={t("Edit")}
           to={paths.projectCheckInEditPath(checkIn.id!)}
           testId="edit-check-in"
           keepOutsideOnBigScreen
@@ -175,7 +180,7 @@ function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
       {canDelete && (
         <PageOptions.Action
           icon={IconTrash}
-          title={isUnpublished ? "Discard draft" : "Delete check-in"}
+          title={isUnpublished ? t("Discard draft") : t("Delete check-in")}
           onClick={showDeleteModal}
           testId="delete-check-in"
         />
@@ -190,6 +195,7 @@ interface DeleteCheckInModalProps {
 }
 
 function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { checkIn } = useLoadedData();
   const remove = useDeleteProjectCheckIn();
@@ -203,9 +209,9 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
     submit: async () => {
       await remove.mutateAsync({ checkInId: checkIn.id });
       if (checkIn.state === "draft" || checkIn.state === "scheduled") {
-        showSuccessToast("Draft discarded", "The draft has been discarded.");
+        showSuccessToast(i18n.t("Draft discarded"), i18n.t("The draft has been discarded."));
       } else {
-        showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
+        showSuccessToast(i18n.t("Check-in deleted"), i18n.t("The check-in has been successfully deleted."));
       }
       navigate(paths.projectCheckInsPath(checkIn.project?.id!));
     },
@@ -216,12 +222,12 @@ function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
       <Forms.Form form={form}>
         <p>
           {checkIn.state === "draft" || checkIn.state === "scheduled"
-            ? "Are you sure you want to discard this draft?"
-            : "Are you sure you want to delete this check-in?"}
+            ? t("Are you sure you want to discard this draft?")
+            : t("Are you sure you want to delete this check-in?")}
         </p>
         <Forms.Submit
-          saveText={checkIn.state === "draft" || checkIn.state === "scheduled" ? "Discard draft" : "Delete"}
-          cancelText="Cancel"
+          saveText={checkIn.state === "draft" || checkIn.state === "scheduled" ? t("Discard draft") : t("Delete")}
+          cancelText={t("Cancel")}
         />
       </Forms.Form>
     </Modal>
