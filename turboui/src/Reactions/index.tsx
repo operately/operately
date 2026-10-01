@@ -60,8 +60,11 @@ export function Reactions({
     if (!deleteMode) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      // The composed path identifies this instance even when Shadow DOM retargets the click.
-      if (root.current && !event.composedPath().includes(root.current)) setDeleteMode(null);
+      // Only reaction items in this list count as inside, even when Shadow DOM retargets the click.
+      const path = event.composedPath();
+      const items = root.current?.querySelectorAll("[data-reaction-item]") ?? [];
+      const clickedReaction = Array.from(items).some((item) => path.includes(item));
+      if (!clickedReaction) setDeleteMode(null);
     };
 
     const ownerDocument = root.current?.ownerDocument ?? document;
