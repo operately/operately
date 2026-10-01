@@ -1,3 +1,4 @@
+import { useEmbedding, portalRect } from "../../Embedding";
 import { useLayoutEffect, useRef, useState } from "react";
 
 interface UsePopoverPositioningOptions {
@@ -7,6 +8,8 @@ interface UsePopoverPositioningOptions {
 type PopoverSide = "top" | "bottom" | "left" | "right";
 
 export function usePopoverPositioning({ open }: UsePopoverPositioningOptions) {
+  const embedding = useEmbedding();
+  const container = embedding?.portalContainer;
   const [side, setSide] = useState<PopoverSide>("bottom");
   const [useSidePositioning, setUseSidePositioning] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -16,12 +19,19 @@ export function usePopoverPositioning({ open }: UsePopoverPositioningOptions) {
     const checkViewportSize = () => {
       if (typeof window === "undefined") return;
 
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      const viewportWidth = container?.clientWidth ?? window.innerWidth;
+      const viewportHeight = container?.clientHeight ?? window.innerHeight;
       const triggerElement = triggerRef.current;
       if (!triggerElement || !open) return;
 
-      const triggerRect = triggerElement.getBoundingClientRect();
+      const bounds = triggerElement.getBoundingClientRect();
+      const position = portalRect(bounds, container);
+      const triggerRect = {
+        left: position.left,
+        top: position.top,
+        right: position.left + (position.width ?? 0),
+        bottom: position.top + (position.height ?? 0),
+      };
       const spaceBelow = viewportHeight - triggerRect.bottom;
       const spaceAbove = triggerRect.top;
       const spaceLeft = triggerRect.left;
@@ -51,16 +61,21 @@ export function usePopoverPositioning({ open }: UsePopoverPositioningOptions) {
 
     if (open) {
       checkViewportSize();
+      const observer =
+        container && typeof ResizeObserver !== "undefined" ? new ResizeObserver(checkViewportSize) : null;
+      if (container) observer?.observe(container);
+      const scrollTarget = embedding?.scrollContainer ?? window;
       window.addEventListener("resize", checkViewportSize);
-      window.addEventListener("scroll", checkViewportSize, { passive: true });
+      scrollTarget.addEventListener("scroll", checkViewportSize, { passive: true });
       return () => {
         window.removeEventListener("resize", checkViewportSize);
-        window.removeEventListener("scroll", checkViewportSize);
+        scrollTarget.removeEventListener("scroll", checkViewportSize);
+        observer?.disconnect();
       };
     }
 
     return undefined;
-  }, [open]);
+  }, [open, container, embedding?.scrollContainer]);
 
   return {
     useSidePositioning,

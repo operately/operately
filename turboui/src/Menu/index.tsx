@@ -1,5 +1,7 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useEmbedding, portalPosition } from "../Embedding";
+import * as DropdownMenu from "../Embedding/DropdownMenu";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { IconChevronRight, IconDots } from "../icons";
 
@@ -86,17 +88,19 @@ export function Menu(props: MenuProps) {
 }
 
 function Trigger(props: MenuProps) {
+  const embedding = useEmbedding();
   if (props.anchorPosition) {
     // A noninteractive anchor positions a controlled menu at a context-click location.
-    return (
+    const trigger = (
       <DropdownMenu.Trigger asChild>
         <span
           aria-hidden="true"
           tabIndex={-1}
           style={{
-            position: "fixed",
-            left: props.anchorPosition.x,
-            top: props.anchorPosition.y,
+            ...portalPosition(
+              { left: props.anchorPosition.x, top: props.anchorPosition.y },
+              embedding?.portalContainer,
+            ),
             width: 1,
             height: 1,
             pointerEvents: "none",
@@ -104,6 +108,7 @@ function Trigger(props: MenuProps) {
         />
       </DropdownMenu.Trigger>
     );
+    return embedding ? createPortal(trigger, embedding.portalContainer) : trigger;
   }
   if (props.customTrigger) {
     return (

@@ -68,7 +68,9 @@
     "typescript": "^5.4.3",
     "vite": "6.4.3",
     "wait-on": "^8.0.3",
-    "postcss-import": "^15.1.0"
+    "postcss-import": "^15.1.0",
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0"
   },
   "overrides": {
     "@types/react": "18.3.5",
@@ -122,7 +124,7 @@
     "classnames": "^2.5.1",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React components and pages for Operately",
   "repository": {
     "type": "git",
