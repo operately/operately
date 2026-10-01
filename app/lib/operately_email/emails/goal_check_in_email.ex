@@ -1,11 +1,12 @@
 defmodule OperatelyEmail.Emails.GoalCheckInEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Goals.Update
   alias Operately.ContextualDates.Timeframe
 
   alias OperatelyWeb.Paths
-  alias __MODULE__.OverviewMsg
+  alias OperatelyEmail.CheckInOverview
 
   def send(person, activity) do
     update_id = activity.content["update_id"]
@@ -27,13 +28,13 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "submitted a check-in")
+    |> subject(gettext("(%{goal_name}) %{author} submitted a check-in", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)
     |> assign(:cta_url, cta_url)
     |> assign(:cta_text, cta_text)
-    |> assign(:overview, OverviewMsg.construct(update))
+    |> assign(:overview, CheckInOverview.construct(:goal, update.status, goal.reviewer, Timeframe.end_date(update.timeframe)))
     |> assign(:targets, update.goal.targets)
     |> assign(:checks, sort_by_index(update.checks))
     |> render("goal_check_in")
@@ -47,7 +48,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
       update.author_id,
       [update.goal.reviewer_id, update.goal.champion_id],
       url,
-      "View Check-In"
+      gettext("View Check-In")
     )
   end
 
@@ -62,69 +63,6 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
   defp sort_by_index(checks) do
     Enum.sort_by(checks, & &1.index)
-  end
-
-  defmodule OverviewMsg do
-    import Operately.RichContent.Builder
-    alias Operately.People.Person
-
-    def construct(update) do
-      status = normalize_status(update.status)
-
-      doc([
-        paragraph(
-          status_msg(status) ++
-            reviewer_note(status, update.goal.reviewer) ++
-            due_date(Timeframe.end_date(update.timeframe))
-        )
-      ])
-    end
-
-    defp status_msg(:on_track) do
-      [text("The goal is "), bg_green("on-track"), text(" and progressing as planned.")]
-    end
-
-    defp status_msg(:caution) do
-      [text("The goal "), bg_yellow("needs attention"), text(" due to emerging risks or delays.")]
-    end
-
-    defp status_msg(:off_track) do
-      [text("The goal is "), bg_red("off track"), text(" due to significant problems affecting success.")]
-    end
-
-    def reviewer_note(:on_track, _), do: []
-
-    def reviewer_note(:caution, reviewer),
-      do: [text(" "), text(Person.first_name(reviewer)), text(" should be aware.")]
-
-    def reviewer_note(:off_track, reviewer),
-      do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
-
-    defp due_date(date) do
-      if is_nil(date) do
-        []
-      else
-        days = Date.diff(date, Date.utc_today())
-        duration = human_duration(abs(days))
-
-        cond do
-          days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
-          days == 0 -> [text(" "), text("due today.")]
-          days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
-        end
-      end
-    end
-
-    defp human_duration(n) when n == 1, do: "1 day"
-    defp human_duration(n) when n < 7, do: "#{n} days"
-    defp human_duration(n) when n == 7, do: "1 week"
-    defp human_duration(n) when n < 30, do: "#{div(n, 7)} weeks"
-    defp human_duration(n) when n < 60, do: "1 month"
-    defp human_duration(n), do: "#{div(n, 30)} months"
-
-    defp normalize_status(:on_track), do: :on_track
-    defp normalize_status(:caution), do: :caution
-    defp normalize_status(:off_track), do: :off_track
   end
 
   def buffered_item(person, activity) do

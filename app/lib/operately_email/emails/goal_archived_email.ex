@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalArchivedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
   alias OperatelyWeb.Paths
@@ -13,7 +14,7 @@ defmodule OperatelyEmail.Emails.GoalArchivedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: "archived the #{goal.name} goal")
+    |> subject(gettext("(%{space_name}) %{author} archived the %{goal_name} goal", space_name: space.name, author: Operately.People.Person.short_name(author), goal_name: goal.name))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:cta_url, Paths.goal_path(company, goal) |> Paths.to_url())

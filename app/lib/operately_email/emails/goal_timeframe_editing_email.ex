@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals}
 
@@ -14,7 +15,7 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "edited the timeframe")
+    |> subject(gettext("(%{goal_name}) %{author} edited the timeframe", goal_name: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:old_timeframe, activity.content.old_timeframe)

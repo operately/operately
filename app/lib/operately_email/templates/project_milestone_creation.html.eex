@@ -1,20 +1,20 @@
-<%= title("#{short_name(@author)} created the #{@milestone.title} milestone") %>
+<%= title(gettext("%{author} created the %{milestone_title} milestone", author: short_name(@author), milestone_title: @milestone.title)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  A new milestone was added to <%= @project.name %>.
+  <%= gettext("A new milestone was added to %{project_name}.", project_name: @project.name) %>
 <% end %>
 
 <%= if @due_date do %>
   <%= spacer() %>
   <%= row do %>
-    It is scheduled for <%= @due_date %>.
+    <%= gettext("It is scheduled for %{due_date}.", due_date: @due_date) %>
   <% end %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Milestone") %>
+  <%= cta_button(@cta_url, gettext("View Milestone")) %>
 <% end %>

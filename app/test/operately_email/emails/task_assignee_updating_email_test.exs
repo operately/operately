@@ -22,6 +22,36 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmailTest do
     {:ok, ctx}
   end
 
+  test "renders Portuguese for enabled recipients and English when the flag is disabled", ctx do
+    {:ok, person} = Operately.People.update_person(ctx.assignee, %{language: "pt-BR"})
+    {:ok, enabled_company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    for {company, portuguese?} <- [{enabled_company, true}, {ctx.company, false}] do
+      person = %{person | company: company}
+
+      Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+        flush_emails()
+        TaskAssigneeUpdatingEmail.send(person, assignee_updating_activity(ctx))
+      end)
+
+      assert_email_sent(fn email ->
+        if portuguese? do
+          assert email.subject =~ "atribuiu a você a tarefa Call leads"
+          assert email.html_body =~ "Você agora é responsável por esta tarefa."
+          assert email.text_body =~ "atribuiu a você a tarefa Call leads"
+        else
+          refute email.subject =~ "atribuiu a você a tarefa Call leads"
+          refute email.html_body =~ "Você agora é responsável por esta tarefa."
+        end
+        refute email.html_body =~ "%{"
+        refute email.text_body =~ "%{"
+        true
+      end)
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+    end
+  end
+
   test "tells the new assignee they were assigned the task", ctx do
     activity = activity_fixture(%{
       author_id: ctx.author.id,

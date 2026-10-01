@@ -24,6 +24,35 @@ defmodule OperatelyEmail.Emails.GoalClosingEmailTest do
     {:ok, ctx}
   end
 
+  test "renders Portuguese for enabled recipients and English when the flag is disabled", ctx do
+    {:ok, person} = Operately.People.update_person(ctx.reviewer, %{language: "pt-BR"})
+    {:ok, enabled_company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    for {company, portuguese?} <- [{enabled_company, true}, {ctx.company, false}] do
+      person = %{person | company: company}
+
+      Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+        send_closing_email(ctx, person)
+      end)
+
+      assert_email_sent(fn email ->
+        if portuguese? do
+          assert email.subject =~ "encerrou"
+          assert email.html_body =~ "Confirmar leitura"
+          assert email.text_body =~ "encerrou"
+        else
+          refute email.subject =~ "encerrou"
+          refute email.html_body =~ "Confirmar leitura"
+        end
+        refute email.html_body =~ "%{"
+        refute email.text_body =~ "%{"
+        true
+      end)
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+    end
+  end
+
   test "reviewer gets an Acknowledge CTA with the auto-ack URL", ctx do
     send_closing_email(ctx, ctx.reviewer)
     assert_acknowledge_email()
@@ -65,6 +94,29 @@ defmodule OperatelyEmail.Emails.GoalClosingEmailTest do
   test "space member with edit access gets a View Retrospective CTA", ctx do
     send_closing_email(ctx, ctx.editor)
     assert_view_retrospective_email()
+  end
+
+  test "the worker delivers the same goal event in each recipient's language", ctx do
+    {:ok, _company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, portuguese} = Operately.People.update_person(ctx.reviewer, %{language: "pt-BR"})
+    activity = latest_goal_closing(ctx.goal)
+    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+    flush_emails()
+
+    for person <- [portuguese, ctx.owner] do
+      notification = Operately.NotificationsFixtures.notification_fixture(
+        activity_id: activity.id, person_id: person.id, email_sent: false, email_sent_at: nil
+      )
+      assert {:ok, :sent} = Operately.Notifications.EmailWorker.deliver(notification)
+    end
+
+    assert_email_sent(fn email ->
+      Enum.any?(email.to, fn {_name, address} -> address == portuguese.email end) && String.contains?(email.subject, "encerrou o objetivo")
+    end)
+    assert_email_sent(fn email ->
+      Enum.any?(email.to, fn {_name, address} -> address == ctx.owner.email end) && String.contains?(email.subject, "closed the")
+    end)
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
   end
 
   defp send_closing_email(ctx, person), do: send_closing_email(ctx, person, ctx.goal)
