@@ -8,19 +8,26 @@ import { createTestId } from "../TestableElement";
 import { createMockRichTextHandlers } from "../utils/storybook/richEditor";
 import { SpaceKpisPage } from "./index";
 import type { SpaceKpisPage as SpaceKpisPageNS } from "./types";
-import {
-  mockChampionSearch,
-  mockCurrentUser,
-  mockKpis,
-  mockLongChampionSearch,
-  mockPeople,
-  mockSpace,
-} from "./mockData";
+import { createKpiDemoFixtures } from "../demos";
 import { formatNumber, formatShortDate, formatValue } from "./utils";
 import { assertPresent } from "../utils/assertions";
 import { i18n, setupTestCatalog } from "../../test/i18n";
 
 setupTestCatalog();
+
+const {
+  kpis: mockKpis,
+  people: mockPeople,
+  currentUser: mockCurrentUser,
+  space: mockSpace,
+} = createKpiDemoFixtures({ referenceDate: new Date("2026-07-31T12:00:00Z") });
+const mockChampionSearch = async (query: string) =>
+  mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
+const manyPeople = Array.from({ length: 3 }, (_, group) =>
+  mockPeople.map((person) => ({ ...person, id: `${person.id}-${group}`, fullName: `${person.fullName} ${group + 1}` })),
+).flat();
+const mockLongChampionSearch = async (query: string) =>
+  manyPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 
 test("uses substituted catalog copy for the empty KPI list and create action", async () => {
   i18n.addResourceBundle(
