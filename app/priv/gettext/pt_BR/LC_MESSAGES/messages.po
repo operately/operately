@@ -30,7 +30,7 @@ msgstr " A ajuda de %{name} é necessária."
 #.elixir
 #: lib/operately_email/check_in_overview.ex:45
 msgid " due today."
-msgstr " vence hoje."
+msgstr " A data de conclusão é hoje."
 
 #~ #.frontend
 #~ #: ../turboui/src/AssigneesField/index.tsx:240

@@ -19,7 +19,7 @@ defmodule OperatelyEmail.CheckInOverviewTest do
       assert text =~ "O projeto"
       assert text =~ "precisa de atenção"
       assert text =~ "<Ana> deve ficar ciente."
-      assert text =~ "vence hoje."
+      assert text =~ "A data de conclusão é hoje."
     end)
   end
 
