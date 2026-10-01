@@ -73,7 +73,7 @@ export function FormattedTime(props: FormattedTimeProps): JSX.Element {
           {formatDate(localizedTime, locale, {
             month: "long",
             day: format === "month" ? undefined : "numeric",
-            year: Time.isCurrentYear(localizedTime) ? undefined : "numeric",
+            year: Time.isCurrentYear(parsedTime, timezone) ? undefined : "numeric",
           })}
         </>
       );

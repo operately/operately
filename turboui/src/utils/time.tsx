@@ -1,5 +1,6 @@
 import * as datefsn from "date-fns";
 import i18n, { tn } from "../i18n";
+import { dateInTimezone } from "./timezone";
 
 export function now() {
   return new Date();
@@ -157,8 +158,14 @@ export function toDateWithoutTime(date: Date) {
   return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
 
-export function isCurrentYear(date: Date) {
-  return date.getFullYear() === new Date().getFullYear();
+export function isCurrentYear(date: Date, timezone?: string) {
+  const currentDate = now();
+
+  if (timezone) {
+    return dateInTimezone(date, timezone).getFullYear() === dateInTimezone(currentDate, timezone).getFullYear();
+  }
+
+  return date.getFullYear() === currentDate.getFullYear();
 }
 
 export function weeksBetween(start: Date, end: Date) {

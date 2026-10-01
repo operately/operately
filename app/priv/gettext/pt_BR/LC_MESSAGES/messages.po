@@ -2401,7 +2401,7 @@ msgstr[0] "1 tarefa concluída (clique para recolher)"
 msgstr[1] "%{count} tarefas concluídas (clique para recolher)"
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:207
+#: ../turboui/src/utils/time.tsx:214
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:137
 #: assets/js/utils/time.tsx:143
 msgid "1 day"
@@ -2516,7 +2516,7 @@ msgstr[0] "1 minuto"
 msgstr[1] "%{count} minutos"
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:213
+#: ../turboui/src/utils/time.tsx:220
 #: assets/js/utils/time.tsx:149
 msgid "1 months"
 msgid_plural "%{count} months"
@@ -2709,7 +2709,7 @@ msgstr[0] "1 tarefa"
 msgstr[1] "%{count} tarefas"
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:210
+#: ../turboui/src/utils/time.tsx:217
 #: assets/js/utils/time.tsx:146
 msgid "1 weeks"
 msgid_plural "%{count} weeks"
@@ -2717,7 +2717,7 @@ msgstr[0] "1 semana"
 msgstr[1] "%{count} semanas"
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:216
+#: ../turboui/src/utils/time.tsx:223
 #: assets/js/utils/time.tsx:152
 msgid "1 year"
 msgid_plural "%{count} years"
@@ -3153,7 +3153,7 @@ msgid "Account Owners"
 msgstr "Proprietários da conta"
 
 #.frontend
-#: ../turboui/src/StatusBadge/index.tsx:102
+#: ../turboui/src/StatusBadge/index.tsx:103
 msgid "Achieved"
 msgstr "Alcançado"
 
@@ -4552,7 +4552,7 @@ msgstr "Não encontrou seu código? Verifique a pasta de spam."
 
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:16
-#: ../turboui/src/StatusBadge/index.tsx:134
+#: ../turboui/src/StatusBadge/index.tsx:135
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:26
 msgid "Caution"
 msgstr "Atenção"
@@ -5370,7 +5370,7 @@ msgstr "Concluir “%{name}”?"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
 #: ../turboui/src/SearchPage/index.tsx:340
-#: ../turboui/src/StatusBadge/index.tsx:110
+#: ../turboui/src/StatusBadge/index.tsx:111
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:90
 msgid "Completed"
 msgstr "Concluído"
@@ -8853,7 +8853,7 @@ msgid "Last Used"
 msgstr "Último uso"
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:206
+#: ../turboui/src/utils/time.tsx:213
 #: assets/js/utils/time.tsx:142
 msgid "Last day"
 msgstr "Último dia"
@@ -9380,7 +9380,7 @@ msgid "Minute"
 msgstr "Minuto"
 
 #.frontend
-#: ../turboui/src/StatusBadge/index.tsx:150
+#: ../turboui/src/StatusBadge/index.tsx:151
 msgid "Missed"
 msgstr "Não alcançado"
 
@@ -10272,7 +10272,7 @@ msgid "Off Track"
 msgstr "Fora do planejado"
 
 #.frontend
-#: ../turboui/src/StatusBadge/index.tsx:142
+#: ../turboui/src/StatusBadge/index.tsx:143
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:29
 msgid "Off track"
 msgstr "Fora do planejado"
@@ -10293,7 +10293,7 @@ msgid "On the project start date"
 msgstr "Na data de início do projeto"
 
 #.frontend
-#: ../turboui/src/StatusBadge/index.tsx:94
+#: ../turboui/src/StatusBadge/index.tsx:95
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:23
 msgid "On track"
 msgstr "Em dia"
@@ -10570,7 +10570,7 @@ msgstr "Outras pessoas com acesso"
 
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:25
-#: ../turboui/src/StatusBadge/index.tsx:126
+#: ../turboui/src/StatusBadge/index.tsx:127
 msgid "Outdated"
 msgstr "Desatualizado"
 
@@ -10745,7 +10745,7 @@ msgstr "Pausar este projeto?"
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:344
 #: ../turboui/src/SmallStatusIndicator/constants.ts:22
-#: ../turboui/src/StatusBadge/index.tsx:118
+#: ../turboui/src/StatusBadge/index.tsx:119
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:83
 msgid "Paused"
 msgstr "Pausado"
@@ -10802,7 +10802,7 @@ msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo so
 
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:28
-#: ../turboui/src/StatusBadge/index.tsx:158
+#: ../turboui/src/StatusBadge/index.tsx:159
 msgid "Pending"
 msgstr "Pendente"
 
@@ -14405,12 +14405,12 @@ msgid "This goal is paused"
 msgstr "Este objetivo está pausado"
 
 #.frontend
-#: assets/js/features/goals/GoalPageHeader/Banner.tsx:37
+#: assets/js/features/goals/GoalPageHeader/Banner.tsx:32
 msgid "This goal was archived on <date/>"
 msgstr "Este objetivo foi arquivado em <date/>"
 
 #.frontend
-#: assets/js/features/goals/GoalPageHeader/Banner.tsx:24
+#: assets/js/features/goals/GoalPageHeader/Banner.tsx:19
 msgid "This goal was closed on <date/>"
 msgstr "Este objetivo foi encerrado em <date/>"
 

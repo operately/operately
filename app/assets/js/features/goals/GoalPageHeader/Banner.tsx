@@ -3,8 +3,6 @@ import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 
-import { assertPresent } from "@/utils/assertions";
-
 import { FormattedTime } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
@@ -15,29 +13,26 @@ export function banner(goal: Goals.Goal) {
 function GoalStatusBanner({ goal }: { goal: Goals.Goal }) {
   const formattedTimePreferences = useFormattedTimePreferences();
 
-  assertPresent(goal.isClosed, "isClosed must be present in goal");
-  assertPresent(goal.isArchived, "isArchived must be present in goal");
-
-  if (goal.isClosed) {
+  if (goal.isClosed && goal.closedAt) {
     return (
       <Paper.Banner>
         <Trans
           i18nKey="This goal was closed on <date/>"
           components={{
-            date: <FormattedTime {...formattedTimePreferences} time={goal.closedAt!} format="long-date" />,
+            date: <FormattedTime {...formattedTimePreferences} time={goal.closedAt} format="long-date" />,
           }}
         />
       </Paper.Banner>
     );
   }
 
-  if (goal.isArchived) {
+  if (goal.isArchived && goal.archivedAt) {
     return (
       <Paper.Banner>
         <Trans
           i18nKey="This goal was archived on <date/>"
           components={{
-            date: <FormattedTime {...formattedTimePreferences} time={goal.archivedAt!} format="long-date" />,
+            date: <FormattedTime {...formattedTimePreferences} time={goal.archivedAt} format="long-date" />,
           }}
         />
       </Paper.Banner>
