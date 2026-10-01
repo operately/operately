@@ -27,7 +27,15 @@ const people = [
   { id: "sam", fullName: "Sam Rivera", title: "Engineer", avatarUrl: null, profileLink: "#" },
 ];
 
-function ShadowPreview({ scale = 1, portalInset = 0 }: { scale?: number; portalInset?: number }) {
+function ShadowPreview({
+  scale = 1,
+  portalInset = 0,
+  children,
+}: {
+  scale?: number;
+  portalInset?: number;
+  children?: React.ReactNode;
+}) {
   const [host, setHost] = React.useState<HTMLDivElement | null>(null);
   const [root, setRoot] = React.useState<ShadowRoot | null>(null);
   const [scroll, setScroll] = React.useState<HTMLDivElement | null>(null);
@@ -68,7 +76,7 @@ function ShadowPreview({ scale = 1, portalInset = 0 }: { scale?: number; portalI
                 >
                   {portals && scroll && (
                     <EmbeddingProvider portalContainer={portals} scrollContainer={scroll} manageDocumentTitle={false}>
-                      <Controls />
+                      {children ?? <Controls />}
                     </EmbeddingProvider>
                   )}
                 </div>
@@ -77,7 +85,8 @@ function ShadowPreview({ scale = 1, portalInset = 0 }: { scale?: number; portalI
                   style={{ position: "absolute", inset: portalInset, pointerEvents: "none" }}
                   data-test-id="preview-portals"
                 />
-                <style>{'[data-test-id="preview-portals"] > * { pointer-events: auto; }'}</style>
+                {/* Let noninteractive layers, such as table action highlights, keep pointer-events: none. */}
+                <style>{':where([data-test-id="preview-portals"] > *) { pointer-events: auto; }'}</style>
               </div>
             </CacheProvider>,
             root,
@@ -143,7 +152,6 @@ function Controls() {
         onRemoveReaction={async (id) => setReactions((items) => items.filter((item) => item.id !== id))}
       />
       <Editor editor={editor} />
-      <p>The table right-click focus loop is intentionally tracked in PR 2.</p>
       <div style={{ height: 600 }}>Scrollable preview content</div>
       <Modal isOpen={modal} onClose={() => setModal(false)} title="Embedded modal" testId="embedded-modal">
         <ImagePreview />
@@ -242,3 +250,60 @@ export const IndependentPreviews: StoryObj<typeof ShadowPreview> = {
 };
 
 export const OffsetPortals: StoryObj<typeof ShadowPreview> = { args: { scale: 0.6, portalInset: 40 } };
+
+function TableMenuEditor() {
+  const handlers = React.useMemo(() => createMockRichEditorHandlers(), []);
+  const editor = useEditor({ handlers, content: "<p>Table menu regression</p>" });
+  return (
+    <div className="p-8 space-y-6 text-content-base">
+      <SecondaryButton testId="outside-editor" onClick={() => {}}>
+        Outside editor
+      </SecondaryButton>
+      <Editor editor={editor} />
+    </div>
+  );
+}
+
+export const TableMenus: StoryObj<typeof ShadowPreview> = {
+  tags: ["table-menu-regression"],
+  render: () => (
+    <ShadowPreview>
+      <TableMenuEditor />
+    </ShadowPreview>
+  ),
+};
+export const ScaledTableMenus: StoryObj<typeof ShadowPreview> = {
+  tags: ["table-menu-regression"],
+  render: () => (
+    <ShadowPreview scale={0.6}>
+      <TableMenuEditor />
+    </ShadowPreview>
+  ),
+};
+export const DocumentTableMenus: StoryObj<typeof ShadowPreview> = {
+  tags: ["table-menu-regression"],
+  render: () => <TableMenuEditor />,
+};
+
+function TableMenuDialog() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <SecondaryButton testId="open-table-dialog" onClick={() => setOpen(true)}>
+        Open editor dialog
+      </SecondaryButton>
+      <Modal isOpen={open} onClose={() => setOpen(false)} title="Table editor" testId="table-dialog">
+        <TableMenuEditor />
+      </Modal>
+    </>
+  );
+}
+
+export const DialogTableMenus: StoryObj<typeof ShadowPreview> = {
+  tags: ["table-menu-regression"],
+  render: () => (
+    <ShadowPreview scale={0.6}>
+      <TableMenuDialog />
+    </ShadowPreview>
+  ),
+};

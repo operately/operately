@@ -211,9 +211,11 @@ it("keeps header controls and whole-table deletion in the cog", async () => {
   await user.click(screen.getByTestId("toolbar-button-table-settings"));
   await user.click(screen.getByTestId("table-toggleHeaderRow"));
   expect(editor.state.doc.firstChild?.firstChild?.firstChild?.type.name).toBe("tableCell");
+  await waitFor(() => expect(editor.view.dom).toHaveFocus());
   await user.click(screen.getByTestId("toolbar-button-table-settings"));
   await user.click(screen.getByTestId("table-toggleHeaderRow"));
   expect(editor.state.doc.firstChild?.firstChild?.firstChild?.type.name).toBe("tableHeader");
+  await waitFor(() => expect(editor.view.dom).toHaveFocus());
   await user.click(screen.getByTestId("toolbar-button-table-settings"));
   await user.click(screen.getByTestId("table-deleteTable"));
   expect(editor.view.dom.querySelectorAll("table")).toHaveLength(1);
@@ -228,6 +230,20 @@ it("an outside click dismisses a menu without stealing focus", async () => {
   await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
   expect(screen.getByTestId("outside-editor")).toHaveFocus();
   expect(screen.queryByTestId("toolbar-button-table-settings")).not.toBeInTheDocument();
+});
+
+it("preserves outside focus when focus dismissal unmounts the menu", async () => {
+  const user = userEvent.setup();
+  render(<Harness />);
+  select();
+  await user.click(screen.getByTestId("toolbar-button-table-settings"));
+  act(() => screen.getByTestId("outside-editor").focus());
+  await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+  // Radix restores focus asynchronously after unmounting its focus scope.
+  await act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+  expect(screen.getByTestId("outside-editor")).toHaveFocus();
+  select();
+  expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 });
 
 function mockGeometry() {
