@@ -83,7 +83,7 @@ function ContinueEditingDrafts() {
     const path = paths.discussionEditPath(myDrafts[0].id);
 
     return (
-      <div className="flex justify-center">
+      <div className="mb-4 flex justify-center">
         <Link className="font-medium" to={path} testId="continue-editing-draft">
           {t("Continue writing your draft…")}
         </Link>
@@ -93,7 +93,7 @@ function ContinueEditingDrafts() {
     const path = paths.discussionDraftsPath(space.id);
 
     return (
-      <div className="flex justify-center">
+      <div className="mb-4 flex justify-center">
         <Link className="font-medium" to={path} testId="continue-editing-draft">
           {tn("Continue writing your draft…", "Continue writing your {{count}} drafts…", myDrafts.length)}
         </Link>
@@ -105,7 +105,7 @@ function ContinueEditingDrafts() {
 function ZeroDiscussions() {
   const { t } = useTranslation();
   return (
-    <div className="text-center text-base text-content-dimmed mt-28">
+    <div className="px-4 py-16 text-center text-base text-content-dimmed">
       {t("Post announcements, pitch ideas, and start discussions.")}
     </div>
   );
@@ -115,7 +115,7 @@ function DiscussionList() {
   const { discussions } = useLoadedData();
 
   return (
-    <div className="p-6 flex flex-col">
+    <div className="flex flex-col">
       {discussions.map((discussion) => (
         <DiscussionListItem key={discussion.id} discussion={discussion} />
       ))}
@@ -130,7 +130,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   const formattedTimePreferences = useFormattedTimePreferences();
 
   const className = classNames(
-    "flex gap-4",
+    "flex items-center gap-3 sm:gap-4",
     "py-3",
     "last:border-b not-first:border-t border-stroke-base",
     "cursor-pointer hover:bg-surface-highlight",
@@ -145,16 +145,16 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
         </div>
       )}
 
-      <div className="flex-1 h-full">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="font-semibold leading-none">{discussion.title}</div>
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex min-w-0 items-center gap-2">
+          <div className="truncate font-semibold leading-none">{discussion.title}</div>
           {discussion.state === "scheduled" && <ScheduledPostLabel />}
         </div>
         <div className="break-words">
           <Summary content={discussion.body ?? ""} characterCount={150} mentionedPersonLookup={mentionedPersonLookup} />
         </div>
 
-        <div className="flex gap-1 mt-1 text-xs">
+        <div className="mt-1 flex min-w-0 flex-wrap gap-1 text-xs">
           {discussion.author && (
             <>
               <div className="text-sm text-content-dimmed">{discussion.author.fullName}</div>
@@ -178,7 +178,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
         </div>
       </div>
 
-      <div className="mt-8" data-test-id="discussion-comment-count">
+      <div className="shrink-0" data-test-id="discussion-comment-count">
         <CommentCountIndicator count={discussion.commentsCount || 0} size={28} />
       </div>
     </DivLink>
