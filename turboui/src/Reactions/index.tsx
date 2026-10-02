@@ -5,6 +5,7 @@ import * as React from "react";
 import classNames from "../utils/classnames";
 import { Avatar } from "../Avatar";
 import { IconMoodPlus, IconTrash, IconX } from "../icons";
+import { showErrorToast } from "../Toasts";
 import { compareIds } from "../utils/ids";
 
 export namespace Reactions {
@@ -39,6 +40,7 @@ export function Reactions({
   onAddReaction,
   onRemoveReaction,
 }: Reactions.Props) {
+  const { t } = useTranslation();
   const root = React.useRef<HTMLDivElement>(null);
   const [deleteMode, setDeleteMode] = React.useState<string | null>(null);
 
@@ -47,13 +49,15 @@ export function Reactions({
   }, []);
 
   const handleDeleteClick = React.useCallback(
-    (reactionId: string) => {
-      if (onRemoveReaction) {
-        onRemoveReaction(reactionId);
-      }
+    async (reactionId: string) => {
       setDeleteMode(null);
+      try {
+        await onRemoveReaction?.(reactionId);
+      } catch {
+        showErrorToast(t("Reaction not removed"), t("Please try again."));
+      }
     },
-    [onRemoveReaction],
+    [onRemoveReaction, t],
   );
 
   React.useEffect(() => {
@@ -177,6 +181,7 @@ interface AddReactionProps {
 }
 
 function AddReaction({ size, onAddReaction }: AddReactionProps) {
+  const { t } = useTranslation();
   const dropdownClassName = classNames(
     "rounded-lg border border-surface-outline z-[100] shadow-xl overflow-hidden bg-surface-base",
   );
@@ -194,11 +199,11 @@ function AddReaction({ size, onAddReaction }: AddReactionProps) {
 
       try {
         await onAddReaction(trimmed);
-      } catch (error) {
-        console.error("Failed to add reaction", error);
+      } catch {
+        showErrorToast(t("Reaction not added"), t("Please try again."));
       }
     },
-    [close, onAddReaction],
+    [close, onAddReaction, t],
   );
 
   return (

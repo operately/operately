@@ -1,3 +1,4 @@
+import type { JSONContent } from "@tiptap/core";
 import i18n, { tn } from "../i18n";
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
@@ -7,12 +8,14 @@ import { shortName } from "../Avatar/AvatarWithName";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, CommentNotificationInfo, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
+import { showErrorToast } from "../Toasts";
 import { useDraftActivatedInput } from "./useDraftActivatedInput";
 
 interface CommentInputActiveProps extends CommentInputProps {
   currentUser: Person;
   onBlur: () => void;
-  onPost: () => void;
+  onPost: (content: JSONContent) => Promise<void>;
+  restoredContent?: JSONContent;
 }
 
 interface CommentInputInactiveProps {
@@ -26,22 +29,68 @@ export function CommentInput({
   richTextHandlers,
   notificationInfo,
 }: CommentInputProps & { currentUser: Person }) {
+  const { t } = useTranslation();
   const { active, activate, deactivate } = useDraftActivatedInput(form.commentDraftKey);
+  const composerVersion = React.useRef(0);
+  const [restoredContent, setRestoredContent] = useState<JSONContent>();
+  const mounted = React.useRef(true);
+
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  const startComment = () => {
+    composerVersion.current += 1;
+    activate();
+  };
+
+  const closeInput = () => {
+    setRestoredContent(undefined);
+    deactivate();
+  };
+
+  const postComment = async (content: JSONContent) => {
+    const submittedVersion = composerVersion.current;
+    // Close before the host adds its optimistic row; keep recovery outside the unmounted editor.
+    closeInput();
+    try {
+      if ((await form.postComment(content)) !== false) return;
+    } catch {
+      // Handle false results and rejected requests the same way below.
+    }
+
+    if (!mounted.current) return;
+
+    // Starting another comment discards recovery of this one, even if the newer comment was cancelled.
+    if (composerVersion.current !== submittedVersion) {
+      showErrorToast(t("Comment not posted"), t("Please try again."));
+      return;
+    }
+
+    setRestoredContent(content);
+    startComment();
+    showErrorToast(t("Comment not posted"), t("Your draft has been kept for retry."));
+  };
 
   if (active) {
     return (
       <CommentInputActive
+        key={composerVersion.current}
         form={form}
         currentUser={currentUser}
-        onBlur={deactivate}
-        onPost={deactivate}
+        onBlur={closeInput}
+        onPost={postComment}
+        restoredContent={restoredContent}
         richTextHandlers={richTextHandlers}
         notificationInfo={notificationInfo}
       />
     );
   }
 
-  return <CommentInputInactive currentUser={currentUser} onClick={activate} />;
+  return <CommentInputInactive currentUser={currentUser} onClick={startComment} />;
 }
 
 function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProps) {
@@ -63,11 +112,13 @@ function CommentInputActive({
   currentUser,
   onBlur,
   onPost,
+  restoredContent,
   richTextHandlers,
   notificationInfo,
 }: CommentInputActiveProps) {
   const { t } = useTranslation();
   const [uploading] = useState(false);
+  const restoreOnMount = React.useRef(restoredContent);
 
   const editor = useEditor({
     content: "",
@@ -79,21 +130,19 @@ function CommentInputActive({
     localDraft: { key: form.commentDraftKey },
   });
 
-  const handlePost = async () => {
+  React.useEffect(() => {
+    if (!editor.editor || !restoreOnMount.current) return;
+    // Emit an update so the restored content is also saved by the normal local-draft handler.
+    editor.editor.commands.setContent(restoreOnMount.current, { emitUpdate: true });
+    restoreOnMount.current = undefined;
+  }, [editor.editor]);
+
+  const handlePost = () => {
     const content = editor.getJson();
-    if (!content || editor.empty) return;
-    if (uploading) return;
+    if (!content || editor.empty || uploading || form.submitting) return;
 
-    // Close the composer before the optimistic comment lands so the new row
-    // never appears while the active comment box is still open.
     editor.clearLocalDraft();
-    onPost();
-
-    try {
-      await form.postComment(content);
-    } catch (error) {
-      console.error("Failed to post comment:", error);
-    }
+    void onPost(content);
   };
 
   const handleCancel = () => {

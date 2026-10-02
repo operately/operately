@@ -6,7 +6,12 @@ import userEvent from "@testing-library/user-event";
 
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { CommentItem } from "./CommentItem";
+import { showErrorToast } from "../Toasts";
+
 import type { CommentFormState } from "./types";
+
+jest.mock("../Toasts", () => ({ showErrorToast: jest.fn(), showSuccessToast: jest.fn() }));
+beforeEach(() => jest.clearAllMocks());
 
 const longCodeLine = "const endpoint = 'https://example.com/" + "a".repeat(200) + "';";
 
@@ -240,4 +245,36 @@ describe("CommentItem", () => {
 
     expect(document.querySelector('[data-test-id="edit-comment"]')).not.toBeInTheDocument();
   });
+});
+
+it("reports a rejected deletion and keeps the comment available for retry", async () => {
+  const user = userEvent.setup();
+  const deleteComment = jest.fn().mockRejectedValueOnce(new Error("Deletion failed")).mockResolvedValue(undefined);
+  render(
+    <MemoryRouter>
+      <CommentItem
+        comment={comment}
+        form={{ ...form, deleteComment }}
+        commentParentType="kpi_entry"
+        canComment
+        currentUserId={comment.author.id}
+        appearance="flat"
+        richTextHandlers={{
+          mentionedPersonLookup: async () => null,
+          resolveResourceLinks: null,
+          taskList: { canEdit: false },
+          onCommentTaskItemChange: null,
+        }}
+        formattedTimePreferences={defaultFormattedTimePreferences}
+      />
+    </MemoryRouter>,
+  );
+  await user.click(getByTestId("comment-options"));
+  await user.click(getByTestId("delete-comment"));
+  await waitFor(() => expect(showErrorToast).toHaveBeenCalled());
+  expect(getByTestId(`comment-${comment.id}`)).toBeInTheDocument();
+  await user.click(getByTestId("comment-options"));
+  await user.click(getByTestId("delete-comment"));
+  expect(deleteComment).toHaveBeenCalledTimes(2);
+  expect(deleteComment).toHaveBeenLastCalledWith(comment.id);
 });
