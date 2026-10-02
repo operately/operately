@@ -45,37 +45,36 @@ export function Header(props: Props) {
 
 function HeaderLeft(props: Props & { className: string }) {
   return (
-    <div className={props.className}>
-      <div>
+    <div className={classNames(props.className, "gap-3")}>
+      <div className="min-w-0">
         <Title title={props.title} />
         {props.subtitle && <Subtitle message={props.subtitle} />}
       </div>
 
-      <div>{props.actions}</div>
+      <div className="shrink-0">{props.actions}</div>
     </div>
   );
 }
 
 function HeaderCentered(props: Props & { className: string }) {
   return (
-    <div className={props.className}>
-      {/* allows longer button captions */}
-      <div className="w-[30%]">{props.actions}</div>
+    <div className={classNames(props.className, "gap-3")}>
+      <div className="order-2 shrink-0 whitespace-nowrap sm:order-1 sm:w-[30%]">{props.actions}</div>
 
-      <div className="w-[50%] text-center flex-1">
+      <div className="order-1 min-w-0 flex-1 sm:order-2 sm:w-[50%] sm:text-center">
         <Title title={props.title} />
         {props.subtitle && <Subtitle message={props.subtitle} />}
       </div>
 
-      <div className="w-[30%]" />
+      <div className="hidden sm:order-3 sm:block sm:w-[30%]" />
     </div>
   );
 }
 
-function Title({ title }) {
-  return <div className="text-content-accent text-lg md:text-2xl font-extrabold">{title}</div>;
+function Title({ title }: { title: string }) {
+  return <div className="truncate text-content-accent text-lg md:text-2xl font-extrabold">{title}</div>;
 }
 
-function Subtitle({ message }) {
+function Subtitle({ message }: { message: string }) {
   return <div className="mt-2">{message}</div>;
 }
