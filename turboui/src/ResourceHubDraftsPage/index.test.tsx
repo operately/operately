@@ -23,9 +23,11 @@ import { createMockDraftNode, createMockResourceHub } from "../ResourceHubPage/m
 function ResourceHubDraftsPageHarness({
   nodes,
   onDelete,
+  actions,
 }: {
   nodes: React.ComponentProps<typeof ResourceHubDraftsPage>["nodes"];
   onDelete?: (id: string) => Promise<void>;
+  actions?: React.ReactNode;
 }) {
   const [resourceHub] = React.useState(() => createMockResourceHub());
 
@@ -42,6 +44,7 @@ function ResourceHubDraftsPageHarness({
         formattedTimePreferences={defaultFormattedTimePreferences}
         nodes={nodes}
         getNodePath={(node) => `/resource-hubs/documents/${node.document?.id ?? node.id}/edit`}
+        actions={actions}
       />
     </MemoryRouter>
   );
@@ -63,6 +66,18 @@ describe("ResourceHubDraftsPage", () => {
     expect(container.querySelector('[data-test-id="drafts-empty"]')).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="node-0"]')).not.toBeInTheDocument();
     expect(container.querySelector('[data-test-id="drafts-empty"] a')).toHaveAttribute("href", "/resource-hubs/hub-1");
+  });
+
+  test("keeps header actions at their natural width on mobile", () => {
+    const { container } = render(
+      <ResourceHubDraftsPageHarness nodes={[]} actions={<button type="button">New document</button>} />,
+    );
+    const actions = container.querySelector("button")?.parentElement;
+    const tokens = new Set(actions?.className.split(/\s+/).filter(Boolean));
+
+    expect(tokens.has("shrink-0")).toBe(true);
+    expect(tokens.has("w-[30%]")).toBe(false);
+    expect(tokens.has("sm:w-[30%]")).toBe(true);
   });
 });
 
