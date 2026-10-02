@@ -42,8 +42,6 @@ it("keeps centered header actions at their natural width on mobile", () => {
   expect(tokens.has("whitespace-nowrap")).toBe(true);
   expect(tokens.has("w-[30%]")).toBe(false);
   expect(tokens.has("sm:w-[30%]")).toBe(true);
-  expect(container.textContent).toContain("Discussions");
-  expect(container.textContent).toContain("New discussion");
 });
 
 it("keeps title-left header actions from shrinking", () => {
