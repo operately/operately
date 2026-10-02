@@ -287,3 +287,5 @@ export type {
 export { ContentListSkeleton, type ContentListSkeletonProps } from "./ContentListSkeleton";
 
 export { Trans } from "./Translate";
+
+export * from "./demos";

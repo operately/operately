@@ -171,11 +171,19 @@ interface CommentMenuProps {
   canEdit: boolean;
   appearance: CommentAppearance;
   onEdit: () => void;
-  onDelete?: () => void;
+  onDelete?: () => void | Promise<void>;
 }
 
 function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: CommentMenuProps) {
   const { t } = useTranslation();
+  const handleDelete = async () => {
+    try {
+      await onDelete?.();
+    } catch {
+      showErrorToast(t("Comment not deleted"), t("Please try again."));
+    }
+  };
+
   const handleCopyLink = useCallback(async () => {
     try {
       const url = new URL(window.location.href);
@@ -209,7 +217,7 @@ function CommentMenu({ comment, canEdit, appearance, onEdit, onDelete }: Comment
           </MenuActionItem>
           {onDelete && (
             <MenuActionItem
-              onClick={onDelete}
+              onClick={handleDelete}
               icon={IconTrash}
               danger
               testId={isFlat ? "delete-comment" : createTestId("delete", comment.id)}

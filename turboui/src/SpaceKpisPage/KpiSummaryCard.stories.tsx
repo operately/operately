@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 
 import { KpiSummaryCard } from "./KpiSummaryCard";
-import { mockSingleKpi, mockSummaryKpis } from "./mockData";
+import { createKpiDemoFixtures } from "../demos";
+
+const { kpis } = createKpiDemoFixtures({ referenceDate: new Date("2026-07-31T12:00:00Z") });
+const summaryKpis = kpis.filter((kpi) => kpi.id !== "kpi-uptime");
+const singleKpi = kpis.filter((kpi) => kpi.id === "kpi-uptime");
 
 //
 // KPI summary card — proof of concept (frontend, Storybook only).
@@ -39,14 +43,14 @@ type Story = StoryObj<typeof meta>;
 // no data yet ("No data" row).
 export const MultipleKpis: Story = {
   args: {
-    kpis: mockSummaryKpis,
+    kpis: summaryKpis,
   },
 };
 
 // A space tracking a single KPI.
 export const SingleKpi: Story = {
   args: {
-    kpis: mockSingleKpi,
+    kpis: singleKpi,
   },
 };
 
@@ -69,7 +73,7 @@ export const NoKpisReadOnly: Story = {
 // The card lists up to maxRows KPIs to stay compact within the 380px tool slot.
 export const ManyKpisTruncated: Story = {
   args: {
-    kpis: mockSummaryKpis,
+    kpis: summaryKpis,
     maxRows: 2,
   },
 };

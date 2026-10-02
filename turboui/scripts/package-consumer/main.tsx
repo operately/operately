@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
-import { EmbeddingProvider, Link, Modal, PrimaryButton } from "@operately/turboui";
+import { EmbeddingProvider, Link, Modal, PrimaryButton, createKpiDemoFixtures, useKpiDemo } from "@operately/turboui";
+import type { KpiDemoFixtures } from "@operately/turboui";
 import "@operately/turboui/styles.css";
 
 function App() {
@@ -17,8 +18,34 @@ function App() {
           Project
         </Link>
         <EmbeddedModal />
+        <KpiDemoCheck />
       </div>
     </MemoryRouter>
+  );
+}
+
+function KpiDemoCheck() {
+  const [fixtures] = useState<KpiDemoFixtures>(() => createKpiDemoFixtures({ scenario: "single-entry" }));
+  const demo = useKpiDemo(fixtures);
+  const kpi = demo.kpis[0];
+  if (!kpi) throw new Error("Missing KPI fixture");
+  const entry = kpi.latestEntry;
+  return (
+    <div data-test-id="kpi-demo" data-entry-count={kpi.entries.length} data-comment-count={entry?.commentsCount}>
+      <PrimaryButton
+        testId="demo-record-value"
+        onClick={async () => {
+          await demo.actions.onRecordEntry({
+            kpiId: kpi.id,
+            period: "2099-01-01",
+            value: 42,
+            comment: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Demo note" }] }] },
+          });
+        }}
+      >
+        Log demo value
+      </PrimaryButton>
+    </div>
   );
 }
 

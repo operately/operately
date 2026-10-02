@@ -1,8 +1,12 @@
 import * as React from "react";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Reactions } from ".";
+import { showErrorToast } from "../Toasts";
+
+jest.mock("../Toasts", () => ({ showErrorToast: jest.fn() }));
+beforeEach(() => jest.clearAllMocks());
 
 describe.each([false, true])("removal mode (shadow root: %s)", (shadow) => {
   let host: HTMLDivElement;
@@ -58,6 +62,16 @@ describe.each([false, true])("removal mode (shadow root: %s)", (shadow) => {
     expect(view.queryByTitle("Remove reaction")).toBeNull();
   });
 
+  it("reports rejected removals without removing the reaction", async () => {
+    onRemoveReaction.mockRejectedValueOnce(new Error("Removal failed"));
+    fireEvent.click(view.getByTitle("Remove reaction"));
+    await waitFor(() => expect(showErrorToast).toHaveBeenCalled());
+    expect(reaction).toBeInTheDocument();
+    fireEvent.click(reaction);
+    fireEvent.click(view.getByTitle("Remove reaction"));
+    expect(onRemoveReaction).toHaveBeenCalledTimes(2);
+  });
+
   it("still toggles removal mode and removes the selected reaction", () => {
     fireEvent.click(reaction);
     expect(view.queryByTitle("Remove reaction")).toBeNull();
@@ -77,33 +91,28 @@ it.each(["success", "failure"])(
       finishSave = () => (outcome === "success" ? resolve() : reject(error));
     });
     const onAddReaction = jest.fn(() => saving);
-    const log = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    try {
-      const { container } = render(<Reactions reactions={[]} onAddReaction={onAddReaction} />);
-      const trigger = container.querySelector('[aria-haspopup="dialog"]');
-      if (!trigger) throw new Error("Reaction picker trigger missing");
+    const { container } = render(<Reactions reactions={[]} onAddReaction={onAddReaction} />);
+    const trigger = container.querySelector('[aria-haspopup="dialog"]');
+    if (!trigger) throw new Error("Reaction picker trigger missing");
 
-      fireEvent.click(trigger);
-      fireEvent.click(within(screen.getByRole("dialog")).getByText("👍"));
+    fireEvent.click(trigger);
+    fireEvent.click(within(screen.getByRole("dialog")).getByText("👍"));
 
-      expect(onAddReaction).toHaveBeenCalledWith("👍");
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(onAddReaction).toHaveBeenCalledWith("👍");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-      fireEvent.click(trigger);
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    fireEvent.click(trigger);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
 
-      await act(async () => {
-        finishSave();
-        await saving.catch(() => {});
-      });
+    await act(async () => {
+      finishSave();
+      await saving.catch(() => {});
+    });
 
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
-      if (outcome === "failure") {
-        expect(log).toHaveBeenCalledWith("Failed to add reaction", error);
-      }
-    } finally {
-      log.mockRestore();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    if (outcome === "failure") {
+      expect(showErrorToast).toHaveBeenCalledWith("Reaction not added", "Please try again.");
     }
   },
 );
