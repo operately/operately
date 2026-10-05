@@ -5,10 +5,11 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmail do
   alias OperatelyWeb.Paths
   alias OperatelyEmail.Mailers.NotificationMailer
 
-  def send([], _company, _status), do: {:ok, :no_recipients}
+  def send(recipients, company, status, job \\ nil)
+  def send([], _company, _status, _job), do: {:ok, :no_recipients}
 
-  def send(recipients, company, %LimitStatus{} = status) do
-    OperatelyEmail.Mailers.BillingMailer.deliver(recipients, company, &build(&1, company, status))
+  def send(recipients, company, %LimitStatus{} = status, job) do
+    OperatelyEmail.Mailers.BillingMailer.deliver(recipients, company, &build(&1, company, status), job)
   end
 
   def build(recipients, company, %LimitStatus{} = status) do

@@ -2634,32 +2634,32 @@ msgid "%{company_name} - Your work for today"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:51
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:52
 msgid "%{company_name} has %{usage} of %{limit} active members on the Free plan."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_limit_reached_email.ex:27
+#: lib/operately_email/emails/billing_limit_reached_email.ex:28
 msgid "%{company_name} has reached its Free plan member limit"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_limit_reached_email.ex:46
+#: lib/operately_email/emails/billing_limit_reached_email.ex:47
 msgid "%{company_name} has reached its member limit: %{usage} of %{limit} active members."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:27
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:28
 msgid "%{company_name} is near its Free plan member limit"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:31
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:32
 msgid "%{company_name} is near its Free plan storage limit"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:58
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:59
 msgid "%{company_name} is using %{usage} of %{limit} on the Free plan."
 msgstr ""
 
@@ -4844,12 +4844,12 @@ msgid "Added: %{documentName}"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_limit_reached_email.ex:53
+#: lib/operately_email/emails/billing_limit_reached_email.ex:54
 msgid "Adding or restoring people is blocked until the plan is upgraded."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:65
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:66
 msgid "Adding or restoring people will be blocked once the member limit is reached."
 msgstr ""
 
@@ -13483,8 +13483,8 @@ msgstr ""
 #.elixir
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:44
-#: lib/operately_email/emails/billing_limit_reached_email.ex:35
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:39
+#: lib/operately_email/emails/billing_limit_reached_email.ex:36
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:40
 msgid "Review billing"
 msgstr ""
 
@@ -16695,7 +16695,7 @@ msgid "Uploading file..."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:69
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:70
 msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr ""
 

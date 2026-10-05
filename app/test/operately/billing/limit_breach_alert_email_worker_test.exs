@@ -4,6 +4,7 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import Mock
   import Swoosh.TestAssertions
 
   alias Operately.Access
@@ -101,6 +102,56 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
     end
     assert Enum.any?(emails, &(&1.to == [{ctx.admin.full_name, ctx.admin.email}] and &1.subject =~ "plano Gratuito"))
     assert Enum.any?(emails, &({ctx.owner.full_name, ctx.owner.email} in &1.to and &1.subject =~ "Free plan"))
+  end
+
+  test "retries skip delivered recipients even when preferences or the flag change", ctx do
+    for change <- [:none, :flag_disabled, :preferences_changed] do
+      Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+      Operately.People.update_person(ctx.admin, %{language: "pt-BR"})
+      args = %{company_id: ctx.company.id, limit_key: "member_count", current_usage: 20, limit: 20}
+      job = Oban.Testing.with_testing_mode(:manual, fn ->
+        args |> LimitBreachAlertEmailWorker.new(meta: %{source: "billing-alert"}) |> Oban.insert!() |> Operately.Repo.reload!()
+      end)
+      previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+
+      with_mock OperatelyEmail.Mailers.BaseMailer, deliver_now: fn email ->
+        send(self(), {:billing_attempt, email.to})
+        if Gettext.get_locale(OperatelyWeb.Gettext) == "pt_BR", do: {:error, :smtp_unavailable}, else: {:ok, :delivered}
+      end do
+        assert {:error, :smtp_unavailable} = LimitBreachAlertEmailWorker.perform(job)
+      end
+      assert_receive {:billing_attempt, successful_recipients}
+      assert {ctx.owner.full_name, ctx.owner.email} in successful_recipients
+      assert_receive {:billing_attempt, [{name, email}]}
+      assert {name, email} == {ctx.admin.full_name, ctx.admin.email}
+      refute_receive {:billing_attempt, _}
+
+      retry = Operately.Repo.reload!(job)
+      assert ctx.owner.id in retry.meta["delivered_recipient_ids"]
+      refute ctx.admin.id in retry.meta["delivered_recipient_ids"]
+      assert retry.args == job.args
+      assert retry.meta["source"] == "billing-alert"
+      case change do
+        :none -> :ok
+        :flag_disabled -> Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+        :preferences_changed ->
+          Operately.People.update_person(ctx.owner, %{language: "pt-BR"})
+          Operately.People.update_person(ctx.admin, %{language: "en"})
+      end
+
+      with_mock OperatelyEmail.Mailers.BaseMailer, deliver_now: fn email ->
+        send(self(), {:billing_retry, email.to, Gettext.get_locale(OperatelyWeb.Gettext)})
+        {:ok, :delivered}
+      end do
+        assert :ok = LimitBreachAlertEmailWorker.perform(retry)
+        assert_receive {:billing_retry, [{name, email}], locale}
+        assert {name, email} == {ctx.admin.full_name, ctx.admin.email}
+        assert locale == if(change == :none, do: "pt_BR", else: "en")
+        assert :ok = LimitBreachAlertEmailWorker.perform(Operately.Repo.reload!(job))
+        refute_receive {:billing_retry, _, _}
+      end
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+    end
   end
 
 end

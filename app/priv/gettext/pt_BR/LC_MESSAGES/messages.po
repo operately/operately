@@ -2640,32 +2640,32 @@ msgid "%{company_name} - Your work for today"
 msgstr "%{company_name} - Seu trabalho para hoje"
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:51
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:52
 msgid "%{company_name} has %{usage} of %{limit} active members on the Free plan."
 msgstr "%{company_name} tem %{usage} de %{limit} membros ativos no plano Gratuito."
 
 #.elixir
-#: lib/operately_email/emails/billing_limit_reached_email.ex:27
+#: lib/operately_email/emails/billing_limit_reached_email.ex:28
 msgid "%{company_name} has reached its Free plan member limit"
 msgstr "%{company_name} atingiu o limite de membros do plano Gratuito"
 
 #.elixir
-#: lib/operately_email/emails/billing_limit_reached_email.ex:46
+#: lib/operately_email/emails/billing_limit_reached_email.ex:47
 msgid "%{company_name} has reached its member limit: %{usage} of %{limit} active members."
 msgstr "%{company_name} atingiu o limite de membros: %{usage} de %{limit} membros ativos."
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:27
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:28
 msgid "%{company_name} is near its Free plan member limit"
 msgstr "%{company_name} está perto do limite de membros do plano Gratuito"
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:31
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:32
 msgid "%{company_name} is near its Free plan storage limit"
 msgstr "%{company_name} está perto do limite de armazenamento do plano Gratuito"
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:58
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:59
 msgid "%{company_name} is using %{usage} of %{limit} on the Free plan."
 msgstr "%{company_name} está usando %{usage} de %{limit} no plano Gratuito."
 
@@ -4915,12 +4915,12 @@ msgid "Added: %{documentName}"
 msgstr "Adicionou: %{documentName}"
 
 #.elixir
-#: lib/operately_email/emails/billing_limit_reached_email.ex:53
+#: lib/operately_email/emails/billing_limit_reached_email.ex:54
 msgid "Adding or restoring people is blocked until the plan is upgraded."
 msgstr "A adição ou restauração de pessoas está bloqueada até que o plano seja atualizado."
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:65
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:66
 msgid "Adding or restoring people will be blocked once the member limit is reached."
 msgstr "A adição ou restauração de pessoas será bloqueada quando o limite de membros for atingido."
 
@@ -13748,8 +13748,8 @@ msgstr "Revise e revogue conexões de clientes de IA"
 #.elixir
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:44
-#: lib/operately_email/emails/billing_limit_reached_email.ex:35
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:39
+#: lib/operately_email/emails/billing_limit_reached_email.ex:36
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:40
 msgid "Review billing"
 msgstr "Revisar faturamento"
 
@@ -16992,7 +16992,7 @@ msgid "Uploading file..."
 msgstr "Enviando arquivo..."
 
 #.elixir
-#: lib/operately_email/emails/billing_near_limit_warning_email.ex:69
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:70
 msgid "Uploading files will be blocked once the storage limit is reached."
 msgstr "O envio de arquivos será bloqueado quando o limite de armazenamento for atingido."
 
