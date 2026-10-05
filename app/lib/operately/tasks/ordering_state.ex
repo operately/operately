@@ -3,6 +3,8 @@ defmodule Operately.Tasks.OrderingState do
   Manages the ordering of tasks within a milestone using a simple list of short task IDs.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   def load(nil), do: initialize()
   def load(list) when is_list(list), do: list
   def load(_), do: initialize()
@@ -27,7 +29,7 @@ defmodule Operately.Tasks.OrderingState do
     {:ok, List.insert_at(remaining_ids, destination_index, id)}
   end
 
-  def move_id(_ids, _id, _index), do: {:error, {:validation, "Task index must be zero or greater"}}
+  def move_id(_ids, _id, _index), do: {:error, {:validation, gettext("Task index must be zero or greater")}}
 
   def add_task(ordering_state, task, index \\ nil) do
     task_short_id = OperatelyWeb.Paths.task_id(task)

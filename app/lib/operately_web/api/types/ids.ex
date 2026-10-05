@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Types.Id do
+  use Gettext, backend: OperatelyWeb.Gettext
   def decode(id) when id == nil or id == "" do
     {:ok, nil}
   end
@@ -23,5 +24,5 @@ defmodule OperatelyWeb.Api.Types.Id do
   end
 
   defp handle_error({:ok, id}), do: {:ok, id}
-  defp handle_error({:error, _}), do: {:error, "Invalid id format"}
+  defp handle_error({:error, _}), do: {:error, gettext("Invalid id format")}
 end

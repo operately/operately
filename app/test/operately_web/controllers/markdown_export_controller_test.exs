@@ -11,6 +11,24 @@ defmodule OperatelyWeb.MarkdownExportControllerTest do
 
   setup :register_and_log_in_account
 
+  test "export resolves the URL company language and falls back when its flag is disabled", ctx do
+    ctx = Operately.Support.Factory.enable_feature(ctx, "i18n")
+    {:ok, _} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
+    space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Literal Space")
+    goal = goal_fixture(ctx.person, %{company_id: ctx.company.id, space_id: space.id, name: "Literal Goal <hello>"})
+    conn = delete_req_header(ctx.conn, "x-company-id")
+    response = get(conn, Paths.export_goal_markdown_path(ctx.company, goal))
+    assert response.status == 200
+    assert response.resp_body =~ "# Literal Goal <hello>"
+    assert response.resp_body =~ "Espaço: Literal Space"
+    assert response.resp_body =~ "## Descrição"
+
+    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    response = get(conn, Paths.export_goal_markdown_path(ctx.company, goal))
+    assert response.resp_body =~ "Space: Literal Space"
+    assert response.resp_body =~ "## Description"
+  end
+
   test "project export includes the resources required by the markdown renderer", ctx do
     space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Growth")
     goal = goal_fixture(ctx.person, %{company_id: ctx.company.id, space_id: space.id, name: "Increase Revenue"})

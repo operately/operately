@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.EmailPreview.Previews.CompanyMemberAdded do
-  use Gettext, backend: OperatelyWeb.Gettext
   @moduledoc "Mock data for the company member added email preview."
+
+  use Gettext, backend: OperatelyWeb.Gettext
 
   alias OperatelyEmail.Mailers.ActivityMailer, as: Mailer
   alias OperatelyWeb.EmailPreview.Preview

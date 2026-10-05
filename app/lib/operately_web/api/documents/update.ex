@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Documents.Update do
   Updates a document.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -40,7 +41,7 @@ defmodule OperatelyWeb.Api.Documents.Update do
       {:error, :document, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, %{error: :version_conflict}} ->
-        {:error, :bad_request, "A newer version of this document exists", %{reason: "version_conflict"}}
+        {:error, :bad_request, gettext("A newer version of this document exists"), %{reason: "version_conflict"}}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

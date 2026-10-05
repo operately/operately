@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
   require Logger
@@ -34,10 +35,10 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
         {:error, :forbidden}
 
       {:error, :blob, %{error: :invalid_purpose}} ->
-        {:error, :bad_request, "Import packages must be staged through the company import flow"}
+        {:error, :bad_request, gettext("Import packages must be staged through the company import flow")}
 
       {:error, :blob, %{error: :not_uploaded}} ->
-        {:error, :bad_request, "Import package must finish uploading before the import can start"}
+        {:error, :bad_request, gettext("Import package must finish uploading before the import can start")}
 
       {:error, :import_run, changeset} ->
         {:error, changeset}

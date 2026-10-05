@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -31,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
       {:ok, ctx} -> {:ok, %{blob: Serializer.serialize(ctx.updated_blob)}}
       {:error, :blob, %{error: :not_found}} -> {:error, :not_found}
       {:error, :permissions, %{error: :forbidden}} -> {:error, :forbidden}
-      {:error, :updated_blob, %{error: :invalid_status}} -> {:error, :bad_request, "Blob cannot be marked as uploaded from its current state"}
+      {:error, :updated_blob, %{error: :invalid_status}} -> {:error, :bad_request, gettext("Blob cannot be marked as uploaded from its current state")}
       _ -> {:error, :internal_server_error}
     end
   end

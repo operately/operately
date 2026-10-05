@@ -678,7 +678,7 @@ msgstr "%{author} adicionou você como %{role} em %{project_name}"
 
 #.elixir
 #: lib/operately_email/emails/company_member_added_email.ex:46
-#: lib/operately_web/email_preview/previews/company_member_added.ex:27
+#: lib/operately_web/email_preview/previews/company_member_added.ex:28
 msgid "%{author} added you as a company member"
 msgstr "%{author} adicionou você como membro da empresa"
 
@@ -2962,7 +2962,7 @@ msgstr "%{who} mencionou você na descrição de \"%{task_name}\""
 
 #.elixir
 #: lib/operately_email/emails/company_member_added_email.ex:42
-#: lib/operately_web/email_preview/previews/company_member_added.ex:23
+#: lib/operately_web/email_preview/previews/company_member_added.ex:24
 msgid "(%{company_name}) %{author} added you as a company member"
 msgstr "(%{company_name}) %{author} adicionou você como membro da empresa"
 
@@ -3421,6 +3421,47 @@ msgstr "(%{where}) %{who} mencionou você na descrição de \"%{task_name}\""
 #: assets/js/pages/JoinPage/index.tsx:146
 msgid "* If you sign in with Google, you must use <email>%{email}</email>."
 msgstr "* Se você entrar com o Google, use o e-mail <email>%{email}</email>."
+
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:56
+#: lib/operately/md/project.ex:227
+msgid "**%{author}** on %{date}:"
+msgstr "**%{author}** em %{date}:"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:57
+#: lib/operately/md/project/timeframe.ex:59
+#: lib/operately/md/project/timeframe.ex:91
+msgid "**%{date}** - %{author} changed the due date from %{old_date} to %{new_date}"
+msgstr "**%{date}** - %{author} alterou a data de conclusão de %{old_date} para %{new_date}"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:68
+#: lib/operately/md/project/timeframe.ex:70
+#: lib/operately/md/project/timeframe.ex:88
+msgid "**%{date}** - %{author} changed the start date from %{old_date} to %{new_date}"
+msgstr "**%{date}** - %{author} alterou a data de início de %{old_date} para %{new_date}"
+
+#.elixir
+#: lib/operately/md/project/timeframe.ex:83
+msgid "**%{date}** - %{author} changed the start date from %{old_start} to %{new_start} and due date from %{old_due} to %{new_due}"
+msgstr "**%{date}** - %{author} alterou a data de início de %{old_start} para %{new_start} e a data de conclusão de %{old_due} para %{new_due}"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:75
+#: lib/operately/md/project/timeframe.ex:102
+msgid "**%{date}** - %{author} made a timeframe change"
+msgstr "**%{date}** - %{author} alterou o período"
+
+#.elixir
+#: lib/operately/md/project/timeframe.ex:94
+msgid "**%{date}** - %{author} updated the project timeline"
+msgstr "**%{date}** - %{author} atualizou o cronograma do projeto"
+
+#.elixir
+#: lib/operately/md/workmap.ex:9
+msgid "**Item Format:** Name (Type) [ID: id] | Status | State | Progress | Champion | Space | Timeframe"
+msgstr "**Formato do item:** Nome (Tipo) [ID: id] | Status | Estado | Progresso | Champion | Espaço | Período"
 
 #.frontend
 #: ../turboui/src/LobbyPage/index.tsx:117
@@ -4106,6 +4147,16 @@ msgstr "<bold>O que acontece a seguir?</bold> Operately enviará um código para
 msgid "<bold>What happens next?</bold> You will join the %{company} company."
 msgstr "<bold>O que acontece a seguir?</bold> Você vai entrar para a empresa %{company}."
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:107
+msgid "<client/> is requesting access to your Operately workspace through MCP."
+msgstr "<client/> está solicitando acesso ao seu ambiente de trabalho no Operately via MCP."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/company_picker.html.heex:86
+msgid "<client/> wants to connect to Operately. Choose which company to use for this connection."
+msgstr "<client/> quer se conectar ao Operately. Escolha qual empresa usar nesta conexão."
+
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:70
 msgid "<company>%{companyName}</company> has reached its member limit, so this invite can't be used yet. When more member capacity is available, you can come back and try again."
@@ -4204,6 +4255,11 @@ msgstr "Foi solicitada uma alteração no seu e-mail do Operately. O novo endere
 msgid "A change to your Operately email was requested. The proposed new address is <email/>."
 msgstr "Foi solicitada uma alteração no seu e-mail do Operately. O novo endereço proposto é <email/>."
 
+#.elixir
+#: lib/operately_web/api/project_templates/shared_steps.ex:776
+msgid "A folder cannot be moved into itself"
+msgstr "Uma pasta não pode ser movida para dentro dela mesma"
+
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:35
 msgid "A new invitation URL will be generated for %{name}."
@@ -4223,6 +4279,12 @@ msgstr "Um novo marco foi adicionado a %{project_name}."
 #: lib/operately_email/emails/task_adding_email.ex:84
 msgid "A new task named %{task_name} was created in this project."
 msgstr "Uma nova tarefa chamada %{task_name} foi criada neste projeto."
+
+#.elixir
+#: lib/operately_web/api/documents/restore_version.ex:57
+#: lib/operately_web/api/documents/update.ex:44
+msgid "A newer version of this document exists"
+msgstr "Existe uma versão mais recente deste documento"
 
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:153
@@ -4349,6 +4411,11 @@ msgstr "Conta"
 msgid "Account Owners"
 msgstr "Proprietários da conta"
 
+#.elixir
+#: lib/operately_web/api/invitations.ex:168
+msgid "Account not found"
+msgstr "Conta não encontrada"
+
 #.frontend
 #: ../turboui/src/StatusBadge/index.tsx:103
 msgid "Achieved"
@@ -4393,6 +4460,13 @@ msgstr "Retrospectiva reconhecida"
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:118
 msgid "Actions"
 msgstr "Ações"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:130
+#: lib/operately_web/api/cli_auth.ex:546
+#: lib/operately_web/api/mutations/create_account.ex:44
+msgid "Activation code has expired"
+msgstr "O código de ativação expirou"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:235
@@ -4938,7 +5012,7 @@ msgstr "Ajuste a aparência do Operately para você"
 #.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:36
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:38
+#: lib/operately/i18n/access_labels.ex:14
 msgid "Admin Access"
 msgstr "Acesso de administrador"
 
@@ -4957,6 +5031,11 @@ msgstr "Administradores"
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:49
 msgid "Admins"
 msgstr "Administradores"
+
+#.elixir
+#: lib/operately_web/api/companies/delete_admin.ex:42
+msgid "Admins cannot remove themselves"
+msgstr "Administradores não podem remover a si mesmos"
 
 #.frontend
 #: ../turboui/src/RichContentDiff/index.tsx:146
@@ -5055,6 +5134,11 @@ msgstr "Sempre claro"
 msgid "Always notified"
 msgstr "Sempre notificados"
 
+#.elixir
+#: lib/operately/people/cli_auth_session.ex:176
+msgid "An account already exists for this Google account. Use `operately auth login` or `operately auth join` instead."
+msgstr "Já existe uma conta para esta conta do Google. Use `operately auth login` ou `operately auth join`."
+
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:25
 msgid "An admin or owner needs to choose a plan with more member capacity."
@@ -5069,6 +5153,14 @@ msgstr "É necessária a ajuda de um administrador ou proprietário"
 #: assets/js/pages/InviteLinkFullPage/index.tsx:31
 msgid "An admin or owner needs to review billing or free up member space before anyone else can join."
 msgstr "Um administrador ou proprietário precisa revisar o faturamento ou liberar vagas para membros antes que outras pessoas possam entrar."
+
+#.elixir
+#: lib/turbo_connect/plugs/dispatch.ex:50
+#: lib/turbo_connect/plugs/dispatch.ex:57
+#: lib/turbo_connect/plugs/dispatch.ex:63
+#: lib/turbo_connect/plugs/dispatch.ex:71
+msgid "An unexpected error occurred"
+msgstr "Ocorreu um erro inesperado"
 
 #.frontend
 #: assets/js/features/activities/KpiAnnotationAdded/index.tsx:81
@@ -5163,6 +5255,12 @@ msgstr "Arquivar “%{name}”?"
 #: ../turboui/src/SearchPage/index.tsx:342
 msgid "Archived"
 msgstr "Arquivado"
+
+#.elixir
+#: lib/operately/md/goal.ex:43
+#: lib/operately/md/project.ex:346
+msgid "Archived At"
+msgstr "Arquivado em"
 
 #.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:65
@@ -5278,6 +5376,17 @@ msgstr "Atribuído em"
 msgid "Assigned goals and projects will appear here."
 msgstr "Os objetivos e projetos atribuídos aparecerão aqui."
 
+#.elixir
+#: lib/operately/md/milestone.ex:74
+#: lib/operately/md/project.ex:176
+msgid "Assigned to"
+msgstr "Atribuído a"
+
+#.elixir
+#: lib/operately/md/project.ex:177
+msgid "Assigned to: Unassigned"
+msgstr "Atribuído a: Ninguém"
+
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:75
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:26
@@ -5295,11 +5404,13 @@ msgstr "O responsável é %{name}"
 msgid "Assignee is not %{name}"
 msgstr "Responsável não é %{name}"
 
+#.elixir
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:137
 #: ../turboui/src/TaskCreationModal/index.tsx:339
 #: ../turboui/src/TaskPage/Sidebar.tsx:301
 #: ../turboui/src/TaskPage/Sidebar.tsx:348
+#: lib/operately/md/task.ex:58
 msgid "Assignees"
 msgstr "Responsáveis"
 
@@ -5334,15 +5445,113 @@ msgstr "Pelo menos 1 letra maiúscula"
 msgid "At least 12 characters"
 msgstr "Pelo menos 12 caracteres"
 
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:13
+#: lib/operately_web/api/project_templates/helpers.ex:25
+#: lib/operately_web/api/projects.ex:764
+#: lib/operately_web/api/spaces.ex:363
+msgid "At least one task status is required"
+msgstr "É necessário pelo menos um status de tarefa"
+
+#.elixir
+#: lib/operately_web/api/rich_content/resolve_links.ex:32
+msgid "At most 100 URLs can be resolved at once"
+msgstr "No máximo 100 URLs podem ser resolvidas de uma vez"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:61
+msgid "Authentication Complete"
+msgstr "Autenticação concluída"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:57
+msgid "Authentication Expired"
+msgstr "Autenticação expirada"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:60
+msgid "Authentication Failed"
+msgstr "Falha na autenticação"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:58
+msgid "Authentication In Progress"
+msgstr "Autenticação em andamento"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:71
+msgid "Authentication complete. Return to the CLI to finish the setup."
+msgstr "Autenticação concluída. Volte à CLI para concluir a configuração."
+
+#.elixir
+#: lib/operately_web/controllers/account_oauth_controller.ex:71
+msgid "Authentication failed"
+msgstr "Falha na autenticação"
+
+#.elixir
+#: lib/operately/people/cli_auth_session.ex:185
+msgid "Authentication failed. Please try again from the CLI."
+msgstr "Falha na autenticação. Tente novamente pela CLI."
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:68
+msgid "Authentication is still in progress. Please complete the authentication in your browser."
+msgstr "A autenticação ainda está em andamento. Conclua a autenticação no navegador."
+
+#.elixir
+#: lib/turbo_connect/plugs/dispatch.ex:44
+msgid "Authentication required"
+msgstr "Autenticação necessária"
+
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:26
+#: lib/operately/md/goal/discussions.ex:25
+#: lib/operately/md/project.ex:288
+#: lib/operately/md/project.ex:371
+msgid "Author"
+msgstr "Autor"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
+msgid "Authorization Error"
+msgstr "Erro de autorização"
+
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:55
 msgid "Authorization Header"
 msgstr "Cabeçalho de autorização"
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:154
+msgid "Authorize"
+msgstr "Autorizar"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:177
+msgid "Authorize MCP Client"
+msgstr "Autorizar cliente MCP"
+
+#.elixir
+#: lib/operately_web/api/goals/acknowledge_check_in.ex:58
+#: lib/operately_web/api/projects/acknowledge_check_in.ex:56
+msgid "Authors cannot acknowledge their own check-ins"
+msgstr "Autores não podem confirmar a leitura dos próprios check-ins"
+
+#.elixir
+#: lib/operately_web/api/goals/acknowledge_retrospective.ex:66
+#: lib/operately_web/api/projects/acknowledge_retrospective.ex:61
+msgid "Authors cannot acknowledge their own retrospectives"
+msgstr "Autores não podem confirmar a leitura das próprias retrospectivas"
+
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:167
 msgid "Automatic"
 msgstr "Automático"
+
+#.elixir
+#: lib/operately_web/api/mutations/create_avatar_blob.ex:30
+msgid "Avatar file is too large"
+msgstr "O arquivo do avatar é muito grande"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:95
@@ -5396,6 +5605,11 @@ msgstr "Voltar ao início"
 #: assets/js/pages/NewCompanyPage/index.tsx:51
 msgid "Back to the Lobby"
 msgstr "Voltar à recepção"
+
+#.elixir
+#: lib/operately_web/controllers/error_html.ex:5
+msgid "Bad Request"
+msgstr "Solicitação inválida"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:53
@@ -5489,6 +5703,11 @@ msgstr "Regularize o pagamento até %{date} para evitar que esta empresa fique e
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:311
 msgid "Billing needs attention soon or this company will become read-only."
 msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura."
+
+#.elixir
+#: lib/operately_web/api/mutations/mark_blob_uploaded.ex:35
+msgid "Blob cannot be marked as uploaded from its current state"
+msgstr "O arquivo não pode ser marcado como enviado no estado atual"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:60
@@ -5803,9 +6022,16 @@ msgstr "Ações da célula"
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:205
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:235
 #: assets/js/pages/ProjectAddPage/page.tsx:182
+#: lib/operately/md/goal.ex:130
+#: lib/operately/md/workmap.ex:102
 #: lib/operately_email/emails/project_created_email.ex:50
 msgid "Champion"
 msgstr "Champion"
+
+#.elixir
+#: lib/operately/md/goal.ex:132
+msgid "Champion: Not Assigned"
+msgstr "Champion: Não atribuído"
 
 #.frontend
 #: ../turboui/src/GoalPage/CheckIns.tsx:18
@@ -5933,6 +6159,11 @@ msgstr "Check-in"
 msgid "Check in"
 msgstr "Fazer check-in"
 
+#.elixir
+#: lib/operately_web/api/goal_checks.ex:213
+msgid "Check not found"
+msgstr "Item da lista não encontrado"
+
 #.frontend
 #: assets/js/pages/ProjectCheckInEditPage/page.tsx:86
 #: assets/js/pages/ProjectCheckInNewPage/page.tsx:68
@@ -6026,15 +6257,26 @@ msgstr "Check-in não atualizado"
 msgid "Check-in notes"
 msgstr "Notas do check-in"
 
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:24
+#: lib/operately/md/project.ex:204
+msgid "Check-in on %{date}"
+msgstr "Check-in em %{date}"
+
 #.frontend
 #: ../turboui/src/ProjectPage/CheckInOverdueCallout.tsx:46
 msgid "Check-in overdue"
 msgstr "Check-in atrasado"
 
+#.elixir
 #.frontend
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:40
 #: assets/js/pages/GoalCheckInNewPage/navigation.tsx:21
 #: assets/js/pages/GoalCheckInPage/Navigation.tsx:22
+#: lib/operately/md/goal/check_ins.ex:9
+#: lib/operately/md/goal/check_ins.ex:15
+#: lib/operately/md/project.ex:188
+#: lib/operately/md/project.ex:196
 msgid "Check-ins"
 msgstr "Check-ins"
 
@@ -6043,6 +6285,9 @@ msgstr "Check-ins"
 #: ../turboui/src/Checklist/index.tsx:86
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:82
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:553
+#: lib/operately/md/goal/check_ins.ex:110
+#: lib/operately/md/goal/checklist.ex:6
+#: lib/operately/md/goal/checklist.ex:12
 #: lib/operately_email/templates/goal_check_in.html.eex:28
 msgid "Checklist"
 msgstr "Checklist"
@@ -6087,6 +6332,11 @@ msgstr "Pagamento indisponível"
 #: ../turboui/src/CompanyImportPage/index.tsx:79
 msgid "Choose ZIP"
 msgstr "Selecionar ZIP"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:163
+msgid "Choose a Company"
+msgstr "Escolha uma empresa"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:42
@@ -6135,6 +6385,11 @@ msgstr "Escolha um plano"
 msgid "Choose a plan with more member capacity."
 msgstr "Escolha um plano que permita mais membros."
 
+#.elixir
+#: lib/operately/comments/create_milestone_comment_operation.ex:110
+msgid "Choose a valid open task resolution"
+msgstr "Escolha uma resolução válida para as tarefas abertas"
+
 #.frontend
 #: ../turboui/src/GoalField/index.tsx:205
 msgid "Choose another goal"
@@ -6179,6 +6434,11 @@ msgstr "Escolha entre a aparência clara, escura ou a configuração do seu comp
 #: ../turboui/src/PersonField/index.tsx:370
 msgid "Choose someone else"
 msgstr "Escolher outra pessoa"
+
+#.elixir
+#: lib/operately/comments/create_milestone_comment_operation.ex:92
+msgid "Choose what happens to the open tasks before completing the milestone"
+msgstr "Escolha o que acontece com as tarefas abertas antes de concluir o marco"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:57
@@ -6270,10 +6530,17 @@ msgstr "Clique em + ou pressione 'c' para adicionar uma tarefa, ou arraste uma t
 msgid "Click + or press c to add a task, or drag a task here."
 msgstr "Clique em + ou pressione c para adicionar uma tarefa, ou arraste uma tarefa para cá."
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:150
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:122
 msgid "Client"
 msgstr "Cliente"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:125
+msgid "Client Host"
+msgstr "Host do cliente"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
@@ -6317,6 +6584,13 @@ msgstr "Fechar busca"
 #: ../turboui/src/SearchPage/index.tsx:338
 msgid "Closed"
 msgstr "Fechado"
+
+#.elixir
+#: lib/operately/md/goal.ex:36
+#: lib/operately/md/project.ex:343
+#: lib/operately/md/task.ex:119
+msgid "Closed At"
+msgstr "Concluído em"
 
 #.frontend
 #: assets/js/features/activities/ProjectMilestoneCommented/index.tsx:133
@@ -6394,7 +6668,7 @@ msgstr "Coluna excluída"
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
 #: assets/js/features/Permissions/index.tsx:59
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:36
+#: lib/operately/i18n/access_labels.ex:12
 msgid "Comment Access"
 msgstr "Acesso para comentar"
 
@@ -6404,6 +6678,11 @@ msgstr "Acesso para comentar"
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:249
 msgid "Comment access"
 msgstr "Acesso para comentar"
+
+#.elixir
+#: lib/operately/md/goal/discussions.ex:54
+msgid "Comment by %{author} on %{date}"
+msgstr "Comentário de %{author} em %{date}"
 
 #.frontend
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:70
@@ -6437,9 +6716,13 @@ msgstr "Comentar nesta atualização"
 msgid "Commented on a milestone"
 msgstr "Comentou em um marco"
 
+#.elixir
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:138
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:420
+#: lib/operately/md/goal/check_ins.ex:48
+#: lib/operately/md/goal/discussions.ex:45
+#: lib/operately/md/project.ex:219
 msgid "Comments"
 msgstr "Comentários"
 
@@ -6454,6 +6737,12 @@ msgstr "Comentários & Atividade"
 #: ../turboui/src/Timeline/Timeline.tsx:125
 msgid "Comments and task updates will appear here"
 msgstr "Comentários e atualizações de tarefas aparecerão aqui"
+
+#.elixir
+#: lib/operately/md/space.ex:19
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:131
+msgid "Company"
+msgstr "Empresa"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:50
@@ -6503,6 +6792,16 @@ msgstr "Membros da empresa"
 #: assets/js/pages/CompanyRenamePage/index.tsx:45
 msgid "Company Name"
 msgstr "Nome da empresa"
+
+#.elixir
+#: lib/operately/md/workmap.ex:34
+msgid "Company Work Map"
+msgstr "Mapa de trabalho da empresa"
+
+#.elixir
+#: lib/operately/md/workmap.ex:31
+msgid "Company Work Map\n└── (No items found)"
+msgstr "Mapa de trabalho da empresa\n└── (Nenhum item encontrado)"
 
 #.frontend
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:40
@@ -6605,6 +6904,7 @@ msgstr "Concluir mudança para um plano superior"
 msgid "Complete “%{name}”?"
 msgstr "Concluir “%{name}”?"
 
+#.elixir
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:244
 #: ../turboui/src/CompanyImportPage/index.tsx:424
@@ -6614,6 +6914,8 @@ msgstr "Concluir “%{name}”?"
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:90
+#: lib/operately/md/goal/checklist.ex:22
+#: lib/operately/md/project.ex:131
 msgid "Completed"
 msgstr "Concluído"
 
@@ -6621,6 +6923,11 @@ msgstr "Concluído"
 #: ../turboui/src/TaskBoard/components/CompletedMilestonesSection.tsx:101
 msgid "Completed <date/>"
 msgstr "Concluído em <date/>"
+
+#.elixir
+#: lib/operately/md/milestone.ex:29
+msgid "Completed At"
+msgstr "Concluído em"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:97
@@ -6798,6 +7105,16 @@ msgstr "O conteúdo não contém \"%{query}\""
 msgid "Content is required"
 msgstr "O conteúdo é obrigatório"
 
+#.elixir
+#: lib/operately_web/api/types/json.ex:15
+msgid "Content must be a string or nil"
+msgstr "O conteúdo deve ser uma string ou nil"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/company_picker.html.heex:105
+msgid "Continue"
+msgstr "Continuar"
+
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:168
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:221
@@ -6848,9 +7165,11 @@ msgstr "O contribuidor não foi removido"
 msgid "Contributor not updated"
 msgstr "O contribuidor não foi atualizado"
 
+#.elixir
 #.frontend
 #: ../turboui/src/ContributorsSection/index.tsx:49
 #: ../turboui/src/GoalPage/Contributors.tsx:19
+#: lib/operately/md/project.ex:257
 msgid "Contributors"
 msgstr "Contribuidores"
 
@@ -7122,10 +7441,21 @@ msgstr "Criar template"
 msgid "Create your first project template"
 msgstr "Crie seu primeiro template de projeto"
 
+#.elixir
+#: lib/operately/mcp/resources.ex:11
+msgid "Create, update, delete, and archive workspace content"
+msgstr "Criar, atualizar, excluir e arquivar conteúdo do ambiente de trabalho"
+
+#.elixir
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:252
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:196
 #: ../turboui/src/TaskPage/Sidebar.tsx:388
+#: lib/operately/md/goal.ex:31
+#: lib/operately/md/milestone.ex:23
+#: lib/operately/md/project.ex:46
+#: lib/operately/md/space.ex:22
+#: lib/operately/md/task.ex:28
 msgid "Created"
 msgstr "Criado"
 
@@ -7184,8 +7514,11 @@ msgstr "Data de criação entre"
 #~ msgid "Created folder: a folder"
 #~ msgstr "Criou a pasta: uma pasta"
 
+#.elixir
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:82
+#: lib/operately/md/milestone.ex:22
+#: lib/operately/md/task.ex:23
 msgid "Creator"
 msgstr "Criador"
 
@@ -7225,6 +7558,11 @@ msgstr "Senha atual"
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:183
 msgid "Current Team Members"
 msgstr "Membros atuais da equipe"
+
+#.elixir
+#: lib/operately/md/goal.ex:95
+msgid "Current Value"
+msgstr "Valor atual"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:34
@@ -7629,6 +7967,11 @@ msgstr "Excluindo..."
 msgid "Delivery time"
 msgstr "Horário de envio"
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:153
+msgid "Deny"
+msgstr "Negar"
+
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:360
 msgid "Describe key wins, obstacles and needs"
@@ -7664,11 +8007,19 @@ msgstr "Descreva este KPI..."
 msgid "Describe..."
 msgstr "Descreva..."
 
+#.elixir
 #.frontend
 #: ../turboui/src/ProjectPage/Overview.tsx:52
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:112
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:86
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:31
+#: lib/operately/md/goal.ex:61
+#: lib/operately/md/goal.ex:67
+#: lib/operately/md/milestone.ex:42
+#: lib/operately/md/milestone.ex:48
+#: lib/operately/md/project.ex:60
+#: lib/operately/md/task.ex:41
+#: lib/operately/md/task.ex:47
 msgid "Description"
 msgstr "Descrição"
 
@@ -7775,11 +8126,17 @@ msgstr "Discussão"
 msgid "Discussion not created"
 msgstr "Discussão não criada"
 
+#.elixir
+#: lib/operately_web/api/projects/discussions.ex:214
+msgid "Discussion not found"
+msgstr "Discussão não encontrada"
+
 #.frontend
 #: assets/js/pages/ProjectTemplateDiscussionEditPage/index.tsx:42
 msgid "Discussion not updated"
 msgstr "Discussão não atualizada"
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Discussions.tsx:28
 #: ../turboui/src/GoalPage/index.tsx:243
@@ -7806,6 +8163,10 @@ msgstr "Discussão não atualizada"
 #: assets/js/pages/ProjectTemplateDiscussionPage/index.tsx:58
 #: assets/js/pages/SpaceDiscussionsPage/page.tsx:35
 #: assets/js/pages/SpaceDiscussionsPage/page.tsx:53
+#: lib/operately/md/goal/discussions.ex:6
+#: lib/operately/md/goal/discussions.ex:12
+#: lib/operately/md/project.ex:271
+#: lib/operately/md/project.ex:277
 msgid "Discussions"
 msgstr "Discussões"
 
@@ -7890,6 +8251,11 @@ msgstr "O documento não foi atualizado"
 #: assets/js/features/activities/ResourceHubDocumentPublicSharingChanged/index.tsx:20
 msgid "Document public sharing"
 msgstr "Compartilhamento público do documento"
+
+#.elixir
+#: lib/operately_web/controllers/public_document_controller.ex:22
+msgid "Document unavailable"
+msgstr "Documento indisponível"
 
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:19
@@ -7989,6 +8355,16 @@ msgstr "Rascunhos"
 msgid "Drop files here to upload them"
 msgstr "Solte os arquivos aqui para enviá-los"
 
+#.elixir
+#: lib/operately/md/milestone.ex:25
+#: lib/operately/md/milestone.ex:74
+#: lib/operately/md/project.ex:121
+#: lib/operately/md/project.ex:170
+#: lib/operately/md/task.ex:22
+#: lib/operately/md/workmap.ex:131
+msgid "Due"
+msgstr "Data de conclusão"
+
 #.frontend
 #: ../turboui/src/WorkMap/utils/timeline.ts:104
 msgid "Due %{date}"
@@ -8000,11 +8376,14 @@ msgstr "Data de conclusão: %{date}"
 msgid "Due <date/>"
 msgstr "Prazo: <date/>"
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+#: lib/operately/md/goal/timeframe.ex:10
+#: lib/operately/md/project/timeframe.ex:11
 msgid "Due Date"
 msgstr "Data de conclusão"
 
@@ -8144,7 +8523,7 @@ msgstr "Editar"
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
 #: assets/js/features/Permissions/index.tsx:58
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:37
+#: lib/operately/i18n/access_labels.ex:13
 msgid "Edit Access"
 msgstr "Acesso de edição"
 
@@ -8348,15 +8727,52 @@ msgstr "Vigente a partir de: %{date}."
 msgid "Email"
 msgstr "E-mail"
 
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:40
+msgid "Email can't be blank"
+msgstr "O e-mail não pode ficar em branco"
+
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:13
 msgid "Email changed"
 msgstr "E-mail alterado"
 
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:839
+msgid "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
+msgstr "O login com código por e-mail não está disponível porque o envio de e-mails não foi configurado. Entre em contato com o administrador da sua organização."
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:814
+msgid "Email code login isn't available for first-time invites. Set a password or use Google OAuth instead."
+msgstr "O login com código por e-mail não está disponível para novos convites. Defina uma senha ou use o Google OAuth."
+
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:92
 msgid "Email delivery isn’t configured. Contact your organization administrator for help."
 msgstr "O envio de e-mails não está configurado. Entre em contato com o administrador da sua empresa para obter ajuda."
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:15
+#: lib/operately/i18n/validation_errors.ex:41
+msgid "Email has already been taken"
+msgstr "O e-mail já está em uso"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:537
+#: lib/operately_web/api/mutations/create_account.ex:35
+msgid "Email is already registered"
+msgstr "O e-mail já está cadastrado"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:42
+msgid "Email is invalid"
+msgstr "O e-mail é inválido"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:43
+msgid "Email is not valid"
+msgstr "O e-mail não é válido"
 
 #.frontend
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:232
@@ -8367,6 +8783,28 @@ msgstr "O e-mail é obrigatório"
 #: assets/js/pages/SetupPage/page.tsx:59
 msgid "Email must be a valid email address"
 msgstr "Informe um endereço de e-mail válido"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:44
+msgid "Email must have the @ sign and no spaces"
+msgstr "O e-mail deve conter @ e não pode ter espaços"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:53
+msgid "Email should be at most %{count} character(s)"
+msgid_plural "Email should be at most %{count} character(s)"
+msgstr[0] "O e-mail deve ter no máximo %{count} caractere"
+msgstr[1] "O e-mail deve ter no máximo %{count} caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:51
+msgid "Email should be at most 0 character(s)"
+msgstr "O e-mail deve ter no máximo 0 caracteres"
+
+#.elixir
+#: lib/operately_web/api/mutations/create_email_activation_code.ex:34
+msgid "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
+msgstr "O cadastro por e-mail não está disponível porque o envio de e-mails não foi configurado. Entre em contato com o administrador da sua organização."
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:108
@@ -8569,6 +9007,11 @@ msgstr "Erro: %{message}"
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:98
 msgid "Esc"
 msgstr "Esc"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:55
+msgid "Every deleted task status in use requires a replacement"
+msgstr "Cada status de tarefa em uso que for excluído precisa de um substituto"
 
 #.frontend
 #: ../turboui/src/PrivacyField/index.tsx:170
@@ -8852,6 +9295,11 @@ msgstr "Tokens existentes"
 msgid "Expand"
 msgstr "Expandir"
 
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:160
+msgid "Expected a list"
+msgstr "Era esperada uma lista"
+
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonRow.tsx:115
 msgid "Expires in %{duration}"
@@ -8959,6 +9407,11 @@ msgstr "Não foi possível alterar o plano"
 #: ../turboui/src/CommentSection/CommentItem.tsx:194
 msgid "Failed to copy comment link to clipboard"
 msgstr "Não foi possível copiar o link do comentário para a área de transferência"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:550
+msgid "Failed to create account"
+msgstr "Não foi possível criar a conta"
 
 #.frontend
 #: assets/js/pages/ProjectPage/index.tsx:788
@@ -9287,9 +9740,17 @@ msgstr "Não foi possível enviar a foto de perfil. Tente novamente."
 msgid "Feed item actions"
 msgstr "Ações do item do feed"
 
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:69
+msgid "Field '%{field_name}' cannot be null"
+msgstr "O campo '%{field_name}' não pode ser nulo"
+
+#.elixir
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:311
 #: assets/js/pages/ResourceHubEditFilePage/navigation.tsx:22
+#: lib/operately/md/richtext.ex:81
+#: lib/operately/md/table.ex:63
 msgid "File"
 msgstr "Arquivo"
 
@@ -9298,6 +9759,11 @@ msgstr "Arquivo"
 #: assets/js/pages/ResourceHubEditFilePage/page.tsx:47
 msgid "File not updated"
 msgstr "O arquivo não foi atualizado"
+
+#.elixir
+#: lib/operately_web/api/mutations/create_blob.ex:30
+msgid "File size must be a non-negative integer"
+msgstr "O tamanho do arquivo deve ser um número inteiro não negativo"
 
 #.frontend
 #: ../turboui/src/ResourceHub/AddFileWidget.tsx:191
@@ -9408,6 +9874,11 @@ msgstr "Para objetivos: a primeira meta ou item da checklist que ainda não foi 
 msgid "For projects: The upcoming milestone (by due date)"
 msgstr "Para projetos: o próximo marco (pela data de conclusão)"
 
+#.elixir
+#: lib/operately_web/controllers/error_html.ex:7
+msgid "Forbidden"
+msgstr "Acesso negado"
+
 #.frontend
 #: assets/js/pages/ForgotPasswordPage/index.tsx:34
 msgid "Forgot Password"
@@ -9451,6 +9922,11 @@ msgstr "Limite de membros do plano Gratuito"
 msgid "Free plan storage limit"
 msgstr "Limite de armazenamento do plano Gratuito"
 
+#.elixir
+#: lib/operately/md/workmap.ex:130
+msgid "From"
+msgstr "De"
+
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:535
 #: assets/js/features/goals/GoalTargetsV2/components/TargetDetails.tsx:28
@@ -9469,6 +9945,11 @@ msgid "From <old>%{oldName}</old> to <new>%{newName}</new>"
 msgstr "De <old>%{oldName}</old> para <new>%{newName}</new>"
 
 #.elixir
+#: lib/operately/md/workmap.ex:132
+msgid "From: %{start_date} to %{end_date}"
+msgstr "De: %{start_date} a %{end_date}"
+
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:34
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
@@ -9478,7 +9959,7 @@ msgstr "De <old>%{oldName}</old> para <new>%{newName}</new>"
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
 #: assets/js/features/Permissions/index.tsx:57
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:39
+#: lib/operately/i18n/access_labels.ex:15
 msgid "Full Access"
 msgstr "Acesso total"
 
@@ -9515,6 +9996,11 @@ msgstr "OBJETIVOS"
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:86
 msgid "General Access"
 msgstr "Acesso geral"
+
+#.elixir
+#: lib/operately/md/space.ex:80
+msgid "General Space"
+msgstr "Espaço geral"
 
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:161
@@ -9620,6 +10106,13 @@ msgstr "Descrição do objetivo"
 #: assets/js/pages/GoalPage/index.tsx:75
 msgid "Goal name cannot be empty"
 msgstr "O nome do objetivo não pode ficar em branco"
+
+#.elixir
+#: lib/operately_web/api/goal_checks.ex:188
+#: lib/operately_web/api/goals.ex:733
+#: lib/operately_web/api/queries/list_goal_check_ins.ex:26
+msgid "Goal not found"
+msgstr "Objetivo não encontrado"
 
 #.frontend
 #: assets/js/features/activities/GoalReopening/index.tsx:15
@@ -9830,6 +10323,16 @@ msgstr "Importar empresa"
 msgid "Import company"
 msgstr "Importar empresa"
 
+#.elixir
+#: lib/operately_web/api/company_transfers/start_import.ex:41
+msgid "Import package must finish uploading before the import can start"
+msgstr "O envio do pacote deve terminar antes que a importação possa começar"
+
+#.elixir
+#: lib/operately_web/api/company_transfers/start_import.ex:38
+msgid "Import packages must be staged through the company import flow"
+msgstr "Os pacotes de importação devem ser enviados pelo fluxo de importação de empresas"
+
 #.frontend
 #: assets/js/pages/CompanyImportPage/index.tsx:69
 msgid "Import started"
@@ -9860,21 +10363,178 @@ msgstr "Incluir"
 msgid "Include in template"
 msgstr "Incluir no template"
 
+#.elixir
+#: lib/operately_web/controllers/error_html.ex:9
+msgid "Internal Server Error"
+msgstr "Erro interno do servidor"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+msgid "Invalid Client"
+msgstr "Cliente inválido"
+
+#.elixir
+#: lib/operately_web/api/types/json.ex:6
+msgid "Invalid JSON format"
+msgstr "Formato JSON inválido"
+
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:126
 msgid "Invalid Link"
 msgstr "Link inválido"
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:194
+msgid "Invalid Redirect URI"
+msgstr "URI de redirecionamento inválida"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
+msgid "Invalid Request"
+msgstr "Solicitação inválida"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
+msgid "Invalid Resource"
+msgstr "Recurso inválido"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
+msgid "Invalid Scope"
+msgstr "Escopo inválido"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:124
+#: lib/operately_web/api/cli_auth.ex:127
+#: lib/operately_web/api/cli_auth.ex:540
+#: lib/operately_web/api/cli_auth.ex:543
+#: lib/operately_web/api/mutations/create_account.ex:38
+#: lib/operately_web/api/mutations/create_account.ex:41
+msgid "Invalid activation code"
+msgstr "Código de ativação inválido"
+
+#.elixir
+#: lib/operately_web/api/companies/list_activities.ex:166
+msgid "Invalid activity cursor"
+msgstr "Cursor de atividade inválido"
+
+#.elixir
+#: lib/operately/operations/company_adding.ex:238
+msgid "Invalid billing intent"
+msgstr "Intenção de faturamento inválida"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:115
+msgid "Invalid date: %{value}"
+msgstr "Data inválida: %{value}"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:122
+msgid "Invalid datetime: %{value}"
+msgstr "Data e hora inválidas: %{value}"
+
+#.elixir
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:41
+#: lib/operately_web/api/cli_auth.ex:36
 msgid "Invalid email or password"
 msgstr "E-mail ou senha inválidos"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:108
+msgid "Invalid float: %{value}"
+msgstr "Número decimal inválido: %{value}"
+
+#.elixir
+#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:67
+msgid "Invalid folder move"
+msgstr "Movimentação de pasta inválida"
+
+#.elixir
+#: lib/operately_web/api/types/company_id.ex:18
+#: lib/operately_web/api/types/ids.ex:27
+msgid "Invalid id format"
+msgstr "Formato de ID inválido"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:98
+msgid "Invalid integer: %{value}"
+msgstr "Número inteiro inválido: %{value}"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:738
+#: lib/operately_web/api/cli_auth.ex:811
+#: lib/operately_web/api/cli_auth.ex:821
+#: lib/operately_web/api/cli_auth.ex:907
+#: lib/operately_web/api/invitations.ex:171
+msgid "Invalid invite link"
+msgstr "Link de convite inválido"
 
 #.frontend
 #: ../turboui/src/LinkEditPage/index.tsx:30
 #: ../turboui/src/LinkNewPage/index.tsx:31
 msgid "Invalid link"
 msgstr "Link inválido"
+
+#.elixir
+#: lib/operately_web/api/people/update.ex:137
+msgid "Invalid profile update"
+msgstr "Atualização de perfil inválida"
+
+#.elixir
+#: lib/operately_web/api/tasks.ex:743
+#: lib/operately_web/api/tasks.ex:749
+msgid "Invalid reminders"
+msgstr "Lembretes inválidos"
+
+#.elixir
+#: lib/operately/operations/kanban_state_updating.ex:57
+#: lib/operately/operations/kanban_state_updating.ex:69
+#: lib/operately_web/api/tasks.ex:1099
+msgid "Invalid status"
+msgstr "Status inválido"
+
+#.elixir
+#: lib/operately/operations/kanban_state_updating.ex:185
+msgid "Invalid status %{status}"
+msgstr "Status inválido %{status}"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:34
+msgid "Invalid task status"
+msgstr "Status de tarefa inválido"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:47
+msgid "Invalid task status replacement"
+msgstr "Substituição de status de tarefa inválida"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:129
+msgid "Invalid time: %{value}"
+msgstr "Hora inválida: %{value}"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:304
+#: lib/operately_web/api/mutations/join_company.ex:38
+msgid "Invalid token"
+msgstr "Token inválido"
+
+#.elixir
+#: lib/operately_web/api/spaces.ex:496
+msgid "Invalid tools"
+msgstr "Ferramentas inválidas"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:221
+#: lib/turbo_connect/plugs/parse_inputs.ex:226
+msgid "Invalid value for enum %{type}: %{value}. Allowed values: %{allowed_values}"
+msgstr "Valor inválido para o enum %{type}: %{value}. Valores permitidos: %{allowed_values}"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:237
+msgid "Invalid value for int enum %{type}: %{parsed_value}. Allowed values: %{allowed_values}"
+msgstr "Valor inválido para o enum inteiro %{type}: %{parsed_value}. Valores permitidos: %{allowed_values}"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonRow.tsx:109
@@ -10008,6 +10668,41 @@ msgstr "Ele está disponível novamente para criar projetos."
 msgid "Italic"
 msgstr "Itálico"
 
+#.elixir
+#: lib/operately/md/workmap.ex:20
+msgid "Item has been finished"
+msgstr "O item foi concluído"
+
+#.elixir
+#: lib/operately/md/workmap.ex:14
+msgid "Item has significant problems or blockers"
+msgstr "O item tem problemas ou impedimentos significativos"
+
+#.elixir
+#: lib/operately/md/workmap.ex:15
+msgid "Item information is stale and needs updating"
+msgstr "As informações do item estão desatualizadas e precisam ser atualizadas"
+
+#.elixir
+#: lib/operately/md/workmap.ex:18
+msgid "Item is currently being worked on"
+msgstr "O item está em andamento"
+
+#.elixir
+#: lib/operately/md/workmap.ex:12
+msgid "Item is progressing as planned"
+msgstr "O item está progredindo conforme o planejado"
+
+#.elixir
+#: lib/operately/md/workmap.ex:19
+msgid "Item is temporarily stopped"
+msgstr "O item está temporariamente pausado"
+
+#.elixir
+#: lib/operately/md/workmap.ex:13
+msgid "Item needs attention or has minor issues"
+msgstr "O item precisa de atenção ou tem pequenos problemas"
+
 #.frontend
 #: assets/js/features/activities/GoalCheckAdding/index.tsx:53
 #: assets/js/features/activities/GoalCheckRemoving/index.tsx:50
@@ -10086,6 +10781,36 @@ msgstr "KPI: %{value}"
 msgid "KPIs"
 msgstr "Indicadores (KPIs)"
 
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:138
+msgid "Kanban state contains IDs from another template container"
+msgstr "O estado do Kanban contém IDs de outro contêiner de modelo"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:85
+msgid "Kanban state contains an unknown status"
+msgstr "O estado do Kanban contém um status desconhecido"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:137
+msgid "Kanban state contains duplicate task IDs"
+msgstr "O estado do Kanban contém IDs de tarefas duplicados"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:91
+msgid "Kanban state must be an object"
+msgstr "O estado do Kanban deve ser um objeto"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:86
+msgid "Kanban state must contain task ID lists"
+msgstr "O estado do Kanban deve conter listas de IDs de tarefas"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:139
+msgid "Kanban task status does not match its column"
+msgstr "O status da tarefa no Kanban não corresponde à coluna"
+
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:164
 msgid "Keep active"
@@ -10131,6 +10856,7 @@ msgstr "Manter atualização"
 #.elixir
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:346
+#: lib/operately/md/goal/check_ins.ex:34
 #: lib/operately_email/templates/goal_check_in.html.eex:43
 msgid "Key wins, obstacles and needs"
 msgstr "Principais conquistas, obstáculos e necessidades"
@@ -10174,6 +10900,15 @@ msgstr "Últimos 7 dias"
 #: ../turboui/src/SearchPage/filterOptions.ts:30
 msgid "Last 90 days"
 msgstr "Últimos 90 dias"
+
+#.elixir
+#: lib/operately/md/goal.ex:32
+#: lib/operately/md/milestone.ex:24
+#: lib/operately/md/project.ex:47
+#: lib/operately/md/space.ex:23
+#: lib/operately/md/task.ex:29
+msgid "Last Updated"
+msgstr "Última atualização"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:253
@@ -10456,7 +11191,7 @@ msgstr "Sair"
 #: lib/operately_email/emails/company_member_added_email.ex:49
 #: lib/operately_email/templates/company_member_converted_to_guest.html.eex:12
 #: lib/operately_email/templates/guest_invited.html.eex:12
-#: lib/operately_web/email_preview/previews/company_member_added.ex:29
+#: lib/operately_web/email_preview/previews/company_member_added.ex:30
 msgid "Log in to Operately"
 msgstr "Entrar no Operately"
 
@@ -10694,18 +11429,25 @@ msgstr "Membro"
 msgid "Member limit reached"
 msgstr "Limite de membros atingido"
 
+#.elixir
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:48
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:132
+#: lib/operately/md/space.ex:21
+#: lib/operately/md/space.ex:46
+#: lib/operately/md/space.ex:54
 msgid "Members"
 msgstr "Membros"
 
+#.elixir
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:319
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:89
 #: ../turboui/src/TaskCreationModal/index.tsx:161
 #: ../turboui/src/TaskCreationModal/index.tsx:319
 #: ../turboui/src/TaskPage/Sidebar.tsx:368
+#: lib/operately/md/task.ex:106
+#: lib/operately/md/task.ex:113
 msgid "Milestone"
 msgstr "Marco"
 
@@ -10740,6 +11482,13 @@ msgstr "O marco é %{name}"
 msgid "Milestone is not %{name}"
 msgstr "Marco não é %{name}"
 
+#.elixir
+#: lib/operately/operations/milestone_ordering_state_updating.ex:55
+#: lib/operately_web/api/tasks.ex:883
+#: lib/operately_web/api/tasks.ex:903
+msgid "Milestone must belong to the same project as the task"
+msgstr "O marco deve pertencer ao mesmo projeto que a tarefa"
+
 #.frontend
 #: ../turboui/src/MilestoneList/AddMilestoneForm.tsx:79
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:83
@@ -10762,10 +11511,24 @@ msgstr "Marco não criado"
 msgid "Milestone not deleted"
 msgstr "Marco não excluído"
 
+#.elixir
+#: lib/operately/operations/milestone_ordering_state_updating.ex:49
+#: lib/operately_web/api/projects.ex:633
+#: lib/operately_web/api/projects.ex:648
+#: lib/operately_web/api/projects/milestones.ex:285
+#: lib/operately_web/api/tasks.ex:671
+msgid "Milestone not found"
+msgstr "Marco não encontrado"
+
 #.frontend
 #: assets/js/models/projectTemplates/useTemplateTasksForTurboUi.tsx:201
 msgid "Milestone not updated"
 msgstr "Marco não atualizado"
+
+#.elixir
+#: lib/operately_web/api/project_templates/shared_steps.ex:563
+msgid "Milestone ordering contains IDs from another template"
+msgstr "A ordenação dos marcos contém IDs de outro modelo"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/MilestoneCard.tsx:86
@@ -10784,10 +11547,13 @@ msgstr "Status do marco"
 msgid "Milestone was renamed to \"%{newTitle}\""
 msgstr "O marco foi renomeado para \"%{newTitle}\""
 
+#.elixir
 #.frontend
 #: ../turboui/src/MilestoneList/index.tsx:119
 #: ../turboui/src/SearchPage/filterOptions.ts:12
 #: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:33
+#: lib/operately/md/project.ex:77
+#: lib/operately/md/project.ex:104
 msgid "Milestones"
 msgstr "Marcos"
 
@@ -10805,6 +11571,22 @@ msgstr "Minuto"
 #: ../turboui/src/StatusBadge/index.tsx:151
 msgid "Missed"
 msgstr "Não alcançado"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+msgid "Missing PKCE Challenge"
+msgstr "Desafio PKCE ausente"
+
+#.elixir
+#: lib/turbo_connect/plugs/required_field_validator.ex:24
+msgid "Missing required fields: %{missing_fields_str}"
+msgstr "Campos obrigatórios ausentes: %{missing_fields_str}"
+
+#.elixir
+#: lib/operately/md/space.ex:31
+#: lib/operately/md/space.ex:37
+msgid "Mission"
+msgstr "Missão"
 
 #.frontend
 #: ../turboui/src/DateField/index.tsx:30
@@ -10982,6 +11764,26 @@ msgstr "Pontuação NPS"
 msgid "Name"
 msgstr "Nome"
 
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:45
+msgid "Name can't be blank"
+msgstr "O nome não pode ficar em branco"
+
+#~ #.elixir
+#~ #: lib/operately/i18n/validation_errors.ex:30
+#~ msgid "Name has already been taken"
+#~ msgstr "O nome já está em uso"
+
+#~ #.elixir
+#~ #: lib/operately/i18n/validation_errors.ex:31
+#~ msgid "Name is invalid"
+#~ msgstr "O nome é inválido"
+
+#~ #.elixir
+#~ #: lib/operately/i18n/validation_errors.ex:32
+#~ msgid "Name is not valid"
+#~ msgstr "O nome não é válido"
+
 #.frontend
 #: ../turboui/src/ResourceHub/AddFileWidget.tsx:68
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:25
@@ -10990,6 +11792,11 @@ msgstr "Nome"
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:228
 msgid "Name is required"
 msgstr "O nome é obrigatório"
+
+#~ #.elixir
+#~ #: lib/operately/i18n/validation_errors.ex:33
+#~ msgid "Name must have the @ sign and no spaces"
+#~ msgstr "O nome deve conter @ e não pode ter espaços"
 
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:59
@@ -11226,10 +12033,16 @@ msgstr "Nenhum token de API criado ainda."
 #: assets/js/components/Badges/AccessLevelBadges.tsx:147
 #: assets/js/features/Permissions/index.tsx:19
 #: assets/js/features/Permissions/index.tsx:61
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:31
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:34
+#: lib/operately/i18n/access_labels.ex:6
+#: lib/operately/i18n/access_labels.ex:10
 msgid "No Access"
 msgstr "Sem acesso"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:59
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:19
+msgid "No Companies Found"
+msgstr "Nenhuma empresa encontrada"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:102
@@ -11240,6 +12053,16 @@ msgstr "Nenhum KPI ainda"
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:75
 msgid "No MCP connections yet."
 msgstr "Nenhuma conexão MCP ainda."
+
+#.elixir
+#: lib/operately/md/workmap.ex:114
+msgid "No Space"
+msgstr "Sem espaço"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:835
+msgid "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
+msgstr "Não existe uma conta para este e-mail. Use `operately auth signup` ou `operately auth join`."
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:267
@@ -11278,6 +12101,17 @@ msgstr "Nenhum champion"
 #: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:25
 msgid "No change"
 msgstr "Nenhuma alteração"
+
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:11
+#: lib/operately/md/project.ex:190
+msgid "No check-ins yet."
+msgstr "Ainda não há check-ins."
+
+#.elixir
+#: lib/operately/md/goal/checklist.ex:8
+msgid "No checklist items."
+msgstr "Nenhum item na lista."
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:568
@@ -11325,6 +12159,13 @@ msgstr "Nenhum membro da equipe desativado"
 msgid "No description"
 msgstr "Sem descrição"
 
+#.elixir
+#: lib/operately/md/goal.ex:69
+#: lib/operately/md/milestone.ex:44
+#: lib/operately/md/task.ex:43
+msgid "No description provided."
+msgstr "Nenhuma descrição informada."
+
 #.frontend
 #: ../turboui/src/GoalPage/Discussions.tsx:84
 msgid "No discussions"
@@ -11336,6 +12177,12 @@ msgstr "Nenhuma discussão"
 #: ../turboui/src/TemplateProjectPage/Discussions.tsx:27
 msgid "No discussions yet"
 msgstr "Nenhuma discussão ainda"
+
+#.elixir
+#: lib/operately/md/goal/discussions.ex:8
+#: lib/operately/md/project.ex:273
+msgid "No discussions yet."
+msgstr "Ainda não há discussões."
 
 #.elixir
 #: lib/operately_email/emails/assignments_email.ex:198
@@ -11394,6 +12241,11 @@ msgstr "Nenhum item correspondente. Tente outras palavras-chave."
 msgid "No matching templates."
 msgstr "Nenhum template encontrado."
 
+#.elixir
+#: lib/operately/md/space.ex:48
+msgid "No members listed."
+msgstr "Nenhum membro listado."
+
 #.frontend
 #: ../turboui/src/MilestoneField/index.tsx:96
 #: ../turboui/src/TaskBoard/components/index.tsx:385
@@ -11408,6 +12260,11 @@ msgstr "Sem marco"
 msgid "No milestones"
 msgstr "Nenhum marco"
 
+#.elixir
+#: lib/operately/md/project.ex:79
+msgid "No milestones defined."
+msgstr "Nenhum marco definido."
+
 #.frontend
 #: ../turboui/src/MilestoneField/index.tsx:459
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:572
@@ -11418,6 +12275,11 @@ msgstr "Nenhum marco encontrado"
 #: ../turboui/src/MilestoneList/EmptyState.tsx:19
 msgid "No milestones yet"
 msgstr "Nenhum marco ainda"
+
+#.elixir
+#: lib/operately/md/space.ex:33
+msgid "No mission provided."
+msgstr "Nenhuma missão informada."
 
 #.elixir
 #: lib/operately_email/mailers/digest_mailer.ex:57
@@ -11582,13 +12444,20 @@ msgstr "Sem status"
 msgid "No support materials yet."
 msgstr "Nenhum material de apoio ainda."
 
+#.elixir
+#: lib/operately/md/goal.ex:82
+msgid "No targets defined."
+msgstr "Nenhuma meta definida."
+
 #.frontend
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:23
 msgid "No targets or checklist"
 msgstr "Nenhuma meta ou checklist"
 
+#.elixir
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionEmptyState.tsx:21
+#: lib/operately/md/milestone.ex:59
 msgid "No tasks yet."
 msgstr "Nenhuma tarefa ainda."
 
@@ -11612,6 +12481,36 @@ msgstr "Nenhum domínio de e-mail confiável. Somente membros adicionados manual
 msgid "No work to show."
 msgstr "Nenhum trabalho para mostrar."
 
+#.elixir
+#: lib/operately/md/milestone.ex:105
+#: lib/operately/md/milestone.ex:108
+#: lib/operately/md/space.ex:89
+#: lib/operately/md/space.ex:92
+#: lib/operately/md/task.ex:149
+#: lib/operately/md/task.ex:152
+msgid "None"
+msgstr "Nenhum"
+
+#.elixir
+#: lib/operately/md/project.ex:332
+msgid "None (Company-wide project)"
+msgstr "Nenhum (projeto de toda a empresa)"
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:147
+#: lib/operately_web/controllers/error_html.ex:8
+msgid "Not Found"
+msgstr "Não encontrado"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:18
+#: lib/operately/md/goal/timeframe.ex:78
+#: lib/operately/md/project.ex:112
+#: lib/operately/md/project/timeframe.ex:19
+#: lib/operately/md/project/timeframe.ex:105
+msgid "Not Set"
+msgstr "Não definida"
+
 #.frontend
 #: ../turboui/src/PersonField/index.tsx:124
 msgid "Not assigned"
@@ -11622,6 +12521,17 @@ msgstr "Não atribuído"
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:216
 msgid "Not available"
 msgstr "Indisponível"
+
+#.elixir
+#: lib/operately/md/milestone.ex:72
+#: lib/operately/md/milestone.ex:83
+#: lib/operately/md/milestone.ex:88
+#: lib/operately/md/project.ex:180
+#: lib/operately/md/task.ex:72
+#: lib/operately/md/task.ex:74
+#: lib/operately/md/task.ex:77
+msgid "Not set"
+msgstr "Não definido"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:24
@@ -11764,6 +12674,11 @@ msgstr "Não foi possível carregar uma das versões selecionadas. Tente novamen
 msgid "One of the snapshots could not be parsed with the current editor schema."
 msgstr "Não foi possível processar um dos conteúdos com o formato atual do editor."
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:239
+msgid "One or more redirect URIs are not allowed for this MCP server."
+msgstr "Uma ou mais URIs de redirecionamento não são permitidas neste servidor MCP."
+
 #.frontend
 #: ../turboui/src/PrivacyField/index.tsx:161
 msgid "Only assigned people have access"
@@ -11824,6 +12739,12 @@ msgstr "Somente as pessoas que você adicionar ao espaço podem visualizá-lo."
 msgid "Only people you add to the space will be able to view it."
 msgstr "Somente as pessoas que você adicionar ao espaço poderão visualizá-lo."
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:242
+msgid "Only public OAuth clients using token_endpoint_auth_method=none are supported."
+msgstr "Somente clientes OAuth públicos que usam token_endpoint_auth_method=none são compatíveis."
+
 #.frontend
 #: ../turboui/src/PrivacyField/index.tsx:163
 msgid "Only space members can comment"
@@ -11838,6 +12759,11 @@ msgstr "Somente membros do espaço podem editar"
 #: ../turboui/src/PrivacyField/index.tsx:162
 msgid "Only space members can view"
 msgstr "Somente membros do espaço podem visualizar"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
+msgid "Only the S256 PKCE challenge method is supported."
+msgstr "Somente o método de desafio PKCE S256 é compatível."
 
 #.frontend
 #: ../turboui/src/Subscriptions/SubscribersSelector.tsx:58
@@ -11936,6 +12862,11 @@ msgstr "Operately %{version} está disponível. Esta instância usa uma versão 
 #: lib/operately_email/emails/email_activation_code_email.ex:17
 msgid "Operately confirmation code: %{code}"
 msgstr "Código de confirmação do Operately: %{code}"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:202
+msgid "Operately couldn't complete this authorization request."
+msgstr "O Operately não conseguiu concluir esta solicitação de autorização."
 
 #.elixir
 #: lib/operately_email/emails/current_email_verification_email.ex:14
@@ -12086,6 +13017,7 @@ msgstr[1] "Atrasado em %{count} dias"
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:31
 #: ../turboui/src/TemplateProjectPage/index.tsx:30
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:203
+#: lib/operately/md/goal/check_ins.ex:72
 #: lib/operately_email/templates/goal_check_in.html.eex:5
 #: lib/operately_email/templates/project_check_in_submitted.html.eex:5
 msgid "Overview"
@@ -12131,8 +13063,11 @@ msgstr "Acesso pago até"
 msgid "Paid plan"
 msgstr "Plano pago"
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:122
+#: lib/operately/md/goal.ex:50
+#: lib/operately/md/project.ex:338
 msgid "Parent Goal"
 msgstr "Objetivo superior"
 
@@ -12140,6 +13075,11 @@ msgstr "Objetivo superior"
 #: assets/js/pages/GoalPage/index.tsx:130
 msgid "Parent Goal Updated"
 msgstr "Objetivo superior atualizado"
+
+#.elixir
+#: lib/operately/md/goal.ex:52
+msgid "Parent Goal: None (Top Level Goal)"
+msgstr "Objetivo superior: Nenhum (objetivo de nível superior)"
 
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:115
@@ -12188,6 +13128,11 @@ msgstr "A senha deve ter pelo menos 12 caracteres e incluir um número, uma letr
 msgid "Password reset instructions have been sent to your email."
 msgstr "As instruções para redefinir sua senha foram enviadas para seu e-mail."
 
+#.elixir
+#: lib/operately_web/api/mutations/join_company.ex:20
+msgid "Password successfully changed"
+msgstr "Senha alterada com sucesso"
+
 #.frontend
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:27
 #: assets/js/pages/JoinPage/index.tsx:93
@@ -12196,6 +13141,12 @@ msgstr "As instruções para redefinir sua senha foram enviadas para seu e-mail.
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:54
 msgid "Passwords do not match"
 msgstr "As senhas não são iguais"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:294
+#: lib/operately_web/api/mutations/join_company.ex:29
+msgid "Passwords don't match"
+msgstr "As senhas não coincidem"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:236
@@ -12282,12 +13233,19 @@ msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo so
 msgid "Pending"
 msgstr "Pendente"
 
+#.elixir
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
 #: ../turboui/src/CompanyNavigation/index.tsx:101
 #: ../turboui/src/SearchPage/filterOptions.ts:14
+#: lib/operately/md/task.ex:56
 msgid "People"
 msgstr "Pessoas"
+
+#.elixir
+#: lib/operately/md/goal.ex:125
+msgid "People Involved"
+msgstr "Pessoas envolvidas"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:134
@@ -12324,8 +13282,10 @@ msgstr "Permissão"
 msgid "Permission Breakdown"
 msgstr "Detalhamento das permissões"
 
+#.elixir
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:16
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:134
 msgid "Permissions"
 msgstr "Permissões"
 
@@ -12335,6 +13295,17 @@ msgstr "Permissões"
 #: assets/js/pages/GoalAccessAddPage/index.tsx:113
 msgid "Person"
 msgstr "Pessoa"
+
+#.elixir
+#: lib/operately_web/api/project_templates/shared_steps.ex:813
+#: lib/operately_web/api/project_templates/shared_steps.ex:833
+msgid "Person is already part of this template"
+msgstr "Esta pessoa já faz parte deste modelo"
+
+#.elixir
+#: lib/operately/md/milestone.ex:19
+msgid "Phase"
+msgstr "Fase"
 
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:162
@@ -12533,6 +13504,12 @@ msgstr "Publicado como o primeiro comentário nesta atualização."
 msgid "Posted by %{author} on <date/>"
 msgstr "Publicado por %{author} em <date/>"
 
+#.elixir
+#: lib/operately/md/goal/discussions.ex:26
+#: lib/operately/md/project.ex:289
+msgid "Posted on"
+msgstr "Publicado em"
+
 #.frontend
 #: assets/js/features/activities/DiscussionPosting/index.tsx:80
 #: assets/js/features/activities/GoalDiscussionCreation/index.tsx:125
@@ -12673,6 +13650,11 @@ msgstr "Anteriormente, a tarefa estava %{oldStatus}. Agora está %{newStatus}."
 msgid "Previously, the task was named \"%{oldName}\"."
 msgstr "Antes, a tarefa se chamava \"%{oldName}\"."
 
+#.elixir
+#: lib/operately/md/task.ex:20
+msgid "Priority"
+msgstr "Prioridade"
+
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:117
 #: ../turboui/src/GoalPage/Sidebar.tsx:348
@@ -12702,8 +13684,13 @@ msgstr "Lançamento de produto"
 msgid "Profile"
 msgstr "Perfil"
 
+#.elixir
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:187
+#: lib/operately/md/goal.ex:29
+#: lib/operately/md/goal.ex:98
+#: lib/operately/md/project.ex:319
+#: lib/operately/md/workmap.ex:102
 msgid "Progress"
 msgstr "Progresso"
 
@@ -12727,6 +13714,9 @@ msgstr "Progredindo conforme o planejado. Sem impedimentos."
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:202
 #: assets/js/features/activities/ProjectContributorsAddition/index.tsx:87
+#: lib/operately/md/milestone.ex:20
+#: lib/operately/md/task.ex:105
+#: lib/operately/md/task.ex:112
 #: lib/operately_email/templates.ex:31
 msgid "Project"
 msgstr "Projeto"
@@ -12760,6 +13750,11 @@ msgstr "Nome do projeto"
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:106
 msgid "Project Retrospective"
 msgstr "Retrospectiva do projeto"
+
+#.elixir
+#: lib/operately/md/task.ex:64
+msgid "Project Task"
+msgstr "Tarefa de projeto"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
@@ -12814,6 +13809,18 @@ msgstr "Nome do projeto"
 #: assets/js/pages/TaskPage/index.tsx:65
 msgid "Project name cannot be empty"
 msgstr "O nome do projeto não pode ficar em branco"
+
+#.elixir
+#: lib/operately_web/api/projects.ex:594
+#: lib/operately_web/api/projects.ex:609
+#: lib/operately_web/api/projects.ex:639
+#: lib/operately_web/api/projects/discussions.ex:205
+#: lib/operately_web/api/projects/milestones.ex:276
+#: lib/operately_web/api/tasks.ex:623
+#: lib/operately_web/api/tasks.ex:662
+#: lib/operately_web/api/tasks.ex:677
+msgid "Project not found"
+msgstr "Projeto não encontrado"
 
 #.frontend
 #: assets/js/features/activities/ProjectPausing/index.tsx:15
@@ -12910,6 +13917,11 @@ msgstr "Publicar agora"
 msgid "Publish now"
 msgstr "Publicar agora"
 
+#.elixir
+#: lib/operately_web/api/documents/update_public_sharing.ex:28
+msgid "Publish the document before sharing it publicly"
+msgstr "Publique o documento antes de compartilhá-lo publicamente"
+
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:242
 msgid "Publishing Artifacts"
@@ -12961,6 +13973,11 @@ msgstr "Resultados da busca rápida"
 #: ../turboui/src/RichEditor/components/BlockquoteButton.tsx:13
 msgid "Quote"
 msgstr "Citação"
+
+#.elixir
+#: lib/operately_web/mcp/plugs/rate_limit_oauth.ex:58
+msgid "Rate limit exceeded."
+msgstr "Limite de solicitações excedido."
 
 #.frontend
 #: ../turboui/src/CommentSection/FeedRows.tsx:72
@@ -13078,6 +14095,11 @@ msgstr "Reação não adicionada"
 msgid "Reaction not removed"
 msgstr "Reação não removida"
 
+#.elixir
+#: lib/operately/md/goal/discussions.ex:65
+msgid "Reactions"
+msgstr "Reações"
+
 #.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:191
 msgid "Reactivate Account"
@@ -13113,6 +14135,11 @@ msgstr "Somente leitura"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:175
 msgid "Read-only (queries only)"
 msgstr "Somente leitura (apenas consultas)"
+
+#.elixir
+#: lib/operately_web/api/plugs/enforce_token_access_mode.ex:10
+msgid "Read-only API tokens cannot execute mutations"
+msgstr "Tokens de API de somente leitura não podem executar mutações"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:71
@@ -13170,6 +14197,11 @@ msgstr "Registrado por"
 msgid "Recorded updates"
 msgstr "Atualizações registradas"
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:128
+msgid "Redirect Host"
+msgstr "Host de redirecionamento"
+
 #.frontend
 #: ../turboui/src/RichEditor/components/RedoButton.tsx:14
 msgid "Redo"
@@ -13189,6 +14221,11 @@ msgstr "Gerar novamente a URL de convite"
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:112
 msgid "Reissue Invitation"
 msgstr "Reenviar convite"
+
+#.elixir
+#: lib/operately/md/goal.ex:149
+msgid "Related Projects"
+msgstr "Projetos relacionados"
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:66
@@ -13447,6 +14484,12 @@ msgstr "Substituído em <date>%{date}</date>"
 msgid "Replacement"
 msgstr "Substituto"
 
+#.elixir
+#: lib/operately_web/api/projects.ex:792
+#: lib/operately_web/api/spaces.ex:397
+msgid "Replacement statuses must be existing statuses that are not being deleted"
+msgstr "Os status substitutos devem existir e não podem estar sendo excluídos"
+
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:109
 msgid "Requested plan"
@@ -13631,10 +14674,13 @@ msgstr "Retomou o projeto %{projectName}"
 msgid "Resuming will:"
 msgstr "Retomar vai:"
 
+#.elixir
 #.frontend
 #: assets/js/pages/GoalActivityPage/index.tsx:168
 #: assets/js/pages/ProjectRetrospectivePage/Comments.tsx:33
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:52
+#: lib/operately/md/goal.ex:114
+#: lib/operately/md/project.ex:240
 msgid "Retrospective"
 msgstr "Retrospectiva"
 
@@ -13659,6 +14705,11 @@ msgstr "Tentar novamente"
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:94
 msgid "Return"
 msgstr "Return"
+
+#.elixir
+#: lib/operately/md/workmap.ex:7
+msgid "Returning a hierarchical view of all goals and projects in your company."
+msgstr "Exibindo uma visão hierárquica de todos os objetivos e projetos da sua empresa."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:88
@@ -13797,9 +14848,15 @@ msgstr "Revisar check-in semanal"
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:63
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:236
 #: assets/js/pages/ProjectAddPage/page.tsx:189
+#: lib/operately/md/goal.ex:137
 #: lib/operately_email/emails/project_created_email.ex:51
 msgid "Reviewer"
 msgstr "Revisor"
+
+#.elixir
+#: lib/operately/md/goal.ex:139
+msgid "Reviewer: Not Assigned"
+msgstr "Revisor: Não atribuído"
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:238
@@ -14018,6 +15075,16 @@ msgstr "Agendado"
 msgid "Scheduled plan change"
 msgstr "Alteração de plano agendada"
 
+#.elixir
+#: lib/operately_web/api/goals/create_check_in.ex:59
+#: lib/operately_web/api/goals/update_check_in.ex:51
+#: lib/operately_web/api/projects/create_check_in.ex:46
+#: lib/operately_web/api/projects/update_check_in.ex:48
+#: lib/operately_web/api/spaces/create_discussion.ex:47
+#: lib/operately_web/api/spaces/update_discussion.ex:57
+msgid "Scheduled time must be in the future"
+msgstr "O horário agendado deve estar no futuro"
+
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:59
 #: ../turboui/src/SearchPage/index.tsx:61
@@ -14163,6 +15230,11 @@ msgstr "Selecionar"
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:383
 msgid "Select a Space"
 msgstr "Selecione um espaço"
+
+#.elixir
+#: lib/operately/comments/create_milestone_comment_operation.ex:105
+msgid "Select a closed task status"
+msgstr "Selecione um status de tarefa concluída"
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:39
@@ -14655,6 +15727,11 @@ msgstr "Problemas significativos afetam o sucesso. A ajuda da pessoa responsáve
 msgid "Signing in after the change"
 msgstr "Como entrar após a alteração"
 
+#.elixir
+#: lib/operately/md/task.ex:21
+msgid "Size"
+msgstr "Tamanho"
+
 #.frontend
 #: ../turboui/src/ResourceHub/AddFileWidget.tsx:195
 msgid "Size:"
@@ -14670,6 +15747,11 @@ msgstr "Apresentação"
 msgid "Some dates are before the project start date."
 msgstr "Algumas datas são anteriores à data de início do projeto."
 
+#.elixir
+#: lib/operately_web/api/projects/milestones.ex:347
+msgid "Some milestone IDs do not belong to this project"
+msgstr "Alguns IDs de marcos não pertencem a este projeto"
+
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:395
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:463
@@ -14684,6 +15766,13 @@ msgstr "Algo deu errado"
 #: assets/js/pages/LoginPage/index.tsx:63
 msgid "Something went wrong while joining. Please try again."
 msgstr "Ocorreu um erro ao participar. Tente novamente."
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:753
+#: lib/operately_web/api/cli_auth.ex:912
+#: lib/operately_web/api/invitations.ex:186
+msgid "Something went wrong while using this invite link."
+msgstr "Algo deu errado ao usar este link de convite."
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:55
@@ -14715,6 +15804,12 @@ msgstr "Ordenar resultados"
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:132
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:199
 #: assets/js/pages/ProjectAddPage/page.tsx:147
+#: lib/operately/md/goal.ex:30
+#: lib/operately/md/milestone.ex:21
+#: lib/operately/md/project.ex:328
+#: lib/operately/md/space.ex:81
+#: lib/operately/md/task.ex:24
+#: lib/operately/md/workmap.ex:102
 #: lib/operately_email/templates.ex:32
 msgid "Space"
 msgstr "Espaço"
@@ -14733,6 +15828,11 @@ msgstr "Membros do espaço"
 #: assets/js/pages/SpaceAddPage/index.tsx:98
 msgid "Space Name"
 msgstr "Nome do espaço"
+
+#.elixir
+#: lib/operately/md/task.ex:65
+msgid "Space Task"
+msgstr "Tarefa de espaço"
 
 #.frontend
 #: assets/js/pages/SpacePage/page.tsx:182
@@ -14785,6 +15885,11 @@ msgstr "Os membros do espaço terão acesso de edição."
 msgid "Space members will have full access."
 msgstr "Os membros do espaço terão acesso total."
 
+#.elixir
+#: lib/operately_web/api/tasks.ex:632
+msgid "Space not found"
+msgstr "Espaço não encontrado"
+
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:66
 msgid "Space-wide Access"
@@ -14813,8 +15918,11 @@ msgstr "Os espaços ajudam a organizar projetos, objetivos e membros da equipe e
 msgid "Start"
 msgstr "Início"
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:58
+#: lib/operately/md/goal/timeframe.ex:9
+#: lib/operately/md/project/timeframe.ex:10
 msgid "Start Date"
 msgstr "Data de início"
 
@@ -14914,12 +16022,31 @@ msgstr "Data de início anterior a"
 msgid "Started date between"
 msgstr "Data de início entre"
 
+#.elixir
+#: lib/operately/md/goal.ex:97
+msgid "Starting From"
+msgstr "Valor inicial"
+
+#.elixir
+#: lib/operately/md/workmap.ex:102
+msgid "State"
+msgstr "Estado"
+
+#.elixir
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:110
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:68
 #: ../turboui/src/TaskCreationModal/index.tsx:307
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:184
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:325
+#: lib/operately/md/goal.ex:28
+#: lib/operately/md/goal/check_ins.ex:68
+#: lib/operately/md/milestone.ex:18
+#: lib/operately/md/milestone.ex:74
+#: lib/operately/md/project.ex:43
+#: lib/operately/md/project.ex:119
+#: lib/operately/md/task.ex:19
+#: lib/operately/md/workmap.ex:102
 msgid "Status"
 msgstr "Status"
 
@@ -15080,6 +16207,11 @@ msgstr "Sucesso"
 msgid "Suspend all associated milestones and tasks"
 msgstr "Suspender todos os marcos e tarefas associados"
 
+#.elixir
+#: lib/operately_web/api/companies/convert_member_to_guest.ex:50
+msgid "Suspended accounts can't be converted to outside collaborator"
+msgstr "Contas suspensas não podem ser convertidas em colaboradores externos"
+
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:53
 #: ../turboui/src/CompanyNavigation/index.tsx:117
@@ -15124,6 +16256,7 @@ msgstr "Tabelas: %{count}"
 msgid "Tap + to add a task."
 msgstr "Toque em + para adicionar uma tarefa."
 
+#.elixir
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:259
 #: ../turboui/src/GoalTargetList/index.tsx:382
@@ -15131,20 +16264,31 @@ msgstr "Toque em + para adicionar uma tarefa."
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:490
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:64
 #: assets/js/features/goals/GoalTargetsV2/components/TargetDetails.tsx:25
+#: lib/operately/md/goal.ex:96
 msgid "Target"
 msgstr "Meta"
+
+#.elixir
+#: lib/operately_web/api/goals.ex:973
+msgid "Target not found"
+msgstr "Meta não encontrada"
 
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:16
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:45
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:492
+#: lib/operately/md/goal.ex:80
+#: lib/operately/md/goal.ex:88
+#: lib/operately/md/goal/check_ins.ex:90
 #: lib/operately_email/templates/goal_check_in.html.eex:14
 msgid "Targets"
 msgstr "Metas"
 
+#.elixir
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:321
+#: lib/operately/md/task.ex:66
 msgid "Task"
 msgstr "Tarefa"
 
@@ -15184,10 +16328,22 @@ msgstr "A tarefa \"%{taskName}\" ficou sem responsável"
 msgid "Task \"%{taskName}\" was updated with new assignees"
 msgstr "A tarefa \"%{taskName}\" foi atualizada com novos responsáveis"
 
+#.elixir
+#: lib/operately/md/space.ex:64
+msgid "Task Statuses"
+msgstr "Status das tarefas"
+
 #.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:413
 msgid "Task URL copied to clipboard"
 msgstr "URL da tarefa copiada"
+
+#.elixir
+#: lib/operately/operations/milestone_ordering_state_updating.ex:34
+#: lib/operately/operations/project_template_milestone_ordering_updating.ex:32
+#: lib/operately/tasks/ordering_state.ex:32
+msgid "Task index must be zero or greater"
+msgstr "O índice da tarefa deve ser zero ou maior"
 
 #.frontend
 #: ../turboui/src/RichEditor/extensions/TaskItem.tsx:44
@@ -15230,15 +16386,40 @@ msgstr "Tarefa não criada"
 msgid "Task not deleted"
 msgstr "Tarefa não excluída"
 
+#.elixir
+#: lib/operately_web/api/projects.ex:603
+#: lib/operately_web/api/projects.ex:618
+#: lib/operately_web/api/projects/milestones.ex:297
+#: lib/operately_web/api/spaces.ex:313
+#: lib/operately_web/api/tasks.ex:644
+#: lib/operately_web/api/tasks.ex:656
+msgid "Task not found"
+msgstr "Tarefa não encontrada"
+
 #.frontend
 #: assets/js/models/projectTemplates/useTemplateTasksForTurboUi.tsx:116
 msgid "Task not updated"
 msgstr "Tarefa não atualizada"
 
+#.elixir
+#: lib/operately_web/api/project_templates/shared_steps.ex:573
+msgid "Task ordering contains IDs from another template container"
+msgstr "A ordenação das tarefas contém IDs de outro contêiner de modelo"
+
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:103
 msgid "Task status"
 msgstr "Status da tarefa"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:14
+msgid "Task status IDs must be unique"
+msgstr "Os IDs dos status de tarefas devem ser únicos"
+
+#.elixir
+#: lib/operately_web/api/project_templates/helpers.ex:15
+msgid "Task status values must be unique"
+msgstr "Os valores dos status de tarefas devem ser únicos"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:115
@@ -15261,6 +16442,7 @@ msgstr "A tarefa foi movida do marco \"%{oldTitle}\" para \"%{newTitle}\""
 msgid "Task was removed from milestone \"%{title}\""
 msgstr "A tarefa foi removida do marco \"%{title}\""
 
+#.elixir
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
@@ -15271,8 +16453,16 @@ msgstr "A tarefa foi removida do marco \"%{title}\""
 #: ../turboui/src/TemplateProjectPage/index.tsx:31
 #: assets/js/features/SpaceTools/Tasks/RegularState.tsx:24
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:20
+#: lib/operately/md/milestone.ex:57
+#: lib/operately/md/milestone.ex:65
+#: lib/operately/md/project.ex:144
 msgid "Tasks"
 msgstr "Tarefas"
+
+#.elixir
+#: lib/operately/md/project.ex:155
+msgid "Tasks Without Milestone"
+msgstr "Tarefas sem marco"
 
 #.frontend
 #: assets/js/models/projectTemplates/useTemplateTasksForTurboUi.tsx:157
@@ -15297,6 +16487,16 @@ msgstr "Equipe e acesso"
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:35
 msgid "Team member"
 msgstr "Membro da equipe"
+
+#.elixir
+#: lib/operately_web/api/mutations/new_invitation_token.ex:48
+msgid "Team member doesn't have an open invitation."
+msgstr "O membro da equipe não tem um convite em aberto."
+
+#.elixir
+#: lib/operately_web/api/mutations/new_invitation_token.ex:45
+msgid "Team member not found."
+msgstr "Membro da equipe não encontrado."
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
@@ -15404,6 +16604,11 @@ msgstr "A data de conclusão do marco \"%{title}\" foi removida"
 msgid "The \"%{title}\" milestone due date was updated"
 msgstr "A data de conclusão do marco \"%{title}\" foi atualizada"
 
+#.elixir
+#: lib/operately_web/mcp/executor.ex:74
+msgid "The %{name} tool is not implemented yet."
+msgstr "A ferramenta %{name} ainda não foi implementada."
+
 #.frontend
 #: assets/js/models/subscriptions/useSubscriptionsAdapter.tsx:122
 msgid "The 1 person contributing to %{name}"
@@ -15436,6 +16641,11 @@ msgid "The MCP client can no longer access your account."
 msgstr "O cliente MCP não pode mais acessar sua conta."
 
 #.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:200
+msgid "The OAuth client is not registered for this Operately MCP server."
+msgstr "O cliente OAuth não está registrado neste servidor MCP do Operately."
+
+#.elixir
 #: lib/operately_email/templates/task_assignee_updating.html.eex:34
 msgid "The assignee is now %{new_assignee}"
 msgstr "O responsável agora é %{new_assignee}"
@@ -15449,6 +16659,21 @@ msgstr "O responsável foi alterado de %{old_assignee} para %{new_assignee}"
 #: lib/operately_email/templates/task_assignee_updating.html.eex:40
 msgid "The assignee was removed. Previously it was %{old_assignee}"
 msgstr "O responsável foi removido. Antes, era %{old_assignee}"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:196
+msgid "The authorization request contains an unsupported scope."
+msgstr "A solicitação de autorização contém um escopo incompatível."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:201
+msgid "The authorization request is missing required parameters or contains invalid values."
+msgstr "A solicitação de autorização não contém parâmetros obrigatórios ou contém valores inválidos."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:195
+msgid "The authorization request must target this server's canonical MCP endpoint."
+msgstr "A solicitação de autorização deve apontar para o endpoint MCP canônico deste servidor."
 
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:30
@@ -15475,6 +16700,21 @@ msgstr "O champion foi alterado para %{personName}."
 msgid "The check-in has been successfully deleted."
 msgstr "O check-in foi excluído com sucesso."
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:216
+msgid "The client could not be authenticated."
+msgstr "Não foi possível autenticar o cliente."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:248
+msgid "The client registration request could not be completed."
+msgstr "Não foi possível concluir a solicitação de registro do cliente."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:245
+msgid "The client registration request is missing required fields or contains invalid values."
+msgstr "A solicitação de registro do cliente não contém campos obrigatórios ou contém valores inválidos."
+
 #.frontend
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:93
 msgid "The comment is still on this page. Try again."
@@ -15495,6 +16735,11 @@ msgstr "O comentário não foi salvo. Tente novamente."
 #: assets/js/pages/CompanyImportPage/index.tsx:69
 msgid "The company is being imported in the background."
 msgstr "A empresa está sendo importada em segundo plano."
+
+#.elixir
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:51
+msgid "The content has changed. Refresh and try again."
+msgstr "O conteúdo foi alterado. Atualize a página e tente novamente."
 
 #~ #.frontend
 #~ #: ../turboui/src/CompanyBillingPage/viewModel.ts:155
@@ -15756,10 +17001,37 @@ msgstr "O projeto está <highlight>em dia</highlight> e progredindo conforme o p
 msgid "The project owner accountable for completion. Plans, assigns responsibilities, and submits weekly check-ins."
 msgstr "O responsável pelo projeto, encarregado da conclusão. Planeja, atribui responsabilidades e envia check-ins semanais."
 
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:328
+#: lib/turbo_connect/plugs/dispatch.ex:29
+msgid "The request was malformed"
+msgstr "A solicitação está malformada"
+
 #.frontend
 #: ../turboui/src/CompanyBilling/state.ts:99
 msgid "The requested billing option is not currently available. Showing the closest available plan instead."
 msgstr "A opção de faturamento solicitada não está disponível no momento. Estamos exibindo o plano disponível mais próximo."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:194
+msgid "The requested redirect URI is not registered for this client."
+msgstr "A URI de redirecionamento solicitada não está registrada para este cliente."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:217
+msgid "The requested resource does not match this MCP server."
+msgstr "O recurso solicitado não corresponde a este servidor MCP."
+
+#.elixir
+#: lib/turbo_connect/plugs/dispatch.ex:23
+#: lib/turbo_connect/plugs/parse_inputs.ex:186
+msgid "The requested resource was not found"
+msgstr "O recurso solicitado não foi encontrado"
+
+#.elixir
+#: lib/operately_web/mcp/executor.ex:81
+msgid "The requested resource was not found or is not accessible."
+msgstr "O recurso solicitado não foi encontrado ou não está acessível."
 
 #.elixir
 #: lib/operately_email/templates/goal_editing.html.eex:25
@@ -15771,6 +17043,21 @@ msgstr "O revisor foi alterado de %{old_reviewer} para %{new_reviewer}"
 msgid "The reviewer was changed to %{personName}."
 msgstr "O revisor foi alterado para %{personName}."
 
+#.elixir
+#: lib/operately_web/api/goals/create.ex:50
+msgid "The selected champion doesn't have access to the selected space"
+msgstr "O champion selecionado não tem acesso ao espaço selecionado"
+
+#.elixir
+#: lib/operately_web/api/goals/create.ex:51
+msgid "The selected reviewer doesn't have access to the selected space"
+msgstr "O revisor selecionado não tem acesso ao espaço selecionado"
+
+#.elixir
+#: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
+msgid "The selected task item no longer exists"
+msgstr "O item de tarefa selecionado não existe mais"
+
 #.frontend
 #: assets/js/pages/SpacePage/page.tsx:182
 msgid "The space and its content were deleted."
@@ -15780,6 +17067,11 @@ msgstr "O espaço e o conteúdo foram excluídos."
 #: assets/js/features/activities/ProjectTimelineEdited/index.tsx:101
 msgid "The start date was set to <date/>."
 msgstr "A data de início foi definida para <date/>."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:218
+msgid "The supplied authorization grant is invalid, expired, or has already been used."
+msgstr "A concessão de autorização fornecida é inválida, expirou ou já foi usada."
 
 #.elixir
 #: lib/operately_email/templates/task_assignee_updating.html.eex:42
@@ -15863,6 +17155,36 @@ msgstr "O período foi alterado de %{content_old_timeframe} para %{content_new_t
 msgid "The timeframe was changed to %{timeframe}."
 msgstr "O período foi alterado para %{timeframe}."
 
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:219
+msgid "The token endpoint only supports authorization_code and refresh_token grants."
+msgstr "O endpoint de token aceita apenas concessões authorization_code e refresh_token."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:221
+msgid "The token request could not be completed."
+msgstr "Não foi possível concluir a solicitação de token."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:220
+msgid "The token request is missing required parameters or contains invalid values."
+msgstr "A solicitação de token não contém parâmetros obrigatórios ou contém valores inválidos."
+
+#.elixir
+#: lib/operately_web/mcp/executor.ex:95
+msgid "The tool could not complete the request with the provided data."
+msgstr "A ferramenta não conseguiu concluir a solicitação com os dados fornecidos."
+
+#.elixir
+#: lib/operately_web/mcp/executor.ex:102
+msgid "The tool could not complete the request."
+msgstr "A ferramenta não conseguiu concluir a solicitação."
+
+#.elixir
+#: lib/operately_web/api/project_templates/shared_steps.ex:801
+msgid "The uploaded file is unavailable"
+msgstr "O arquivo enviado está indisponível"
+
 #.frontend
 #: assets/js/pages/SpaceKpisPage/page.tsx:130
 msgid "The value was recorded, but the note wasn't saved."
@@ -15935,6 +17257,16 @@ msgstr "Não havia revisor anterior."
 msgid "They've received an email with this link. You can copy it here to share again if they didn't get the email or prefer another channel."
 msgstr "Enviamos um e-mail com este link. Você pode copiá-lo aqui para compartilhar novamente, caso a pessoa não tenha recebido o e-mail ou prefira outro canal."
 
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:17
+msgid "This ZIP file looks incomplete or damaged. Export the company again and try again."
+msgstr "Este arquivo ZIP parece incompleto ou danificado. Exporte a empresa novamente e tente outra vez."
+
+#.elixir
+#: lib/operately/people/cli_auth_session.ex:175
+msgid "This account is not a member of any companies. Use `operately auth create-company` to create one or `operately auth join` to join an existing company."
+msgstr "Esta conta não é membro de nenhuma empresa. Use `operately auth create-company` para criar uma ou `operately auth join` para entrar em uma empresa existente."
+
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:66
 #: ../turboui/src/MilestonePage/components/DeleteModal.tsx:40
@@ -15950,6 +17282,21 @@ msgstr "Esta ação não pode ser desfeita"
 msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:67
+msgid "This authentication session has expired. Please return to the CLI and try again."
+msgstr "Esta sessão de autenticação expirou. Volte à CLI e tente novamente."
+
+#.elixir
+#: lib/operately/people/cli_auth_session.ex:177
+msgid "This authentication session has expired. Please start again from the CLI."
+msgstr "Esta sessão de autenticação expirou. Comece novamente pela CLI."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:197
+msgid "This authorization request must include a PKCE code challenge."
+msgstr "Esta solicitação de autorização deve incluir um desafio de código PKCE."
+
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:194
 msgid "This billing interval is not available right now"
@@ -15960,6 +17307,11 @@ msgstr "Esta periodicidade de faturamento não está disponível no momento"
 #: lib/operately_email/templates/email_changed.text.eex:2
 msgid "This change applies to all your companies. Your existing sessions remain signed in."
 msgstr "Esta alteração se aplica a todas as suas empresas. Suas sessões existentes continuam conectadas."
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:111
+msgid "This client uses a localhost redirect URI. Confirm that you trust the local application before approving."
+msgstr "Este cliente usa uma URI de redirecionamento localhost. Confirme que você confia no aplicativo local antes de aprovar."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:40
@@ -16017,6 +17369,16 @@ msgstr "Esta empresa atingiu o limite de membros"
 msgid "This company has reached its member limit, so this invite can't be used yet. When more member capacity is available, you can come back and try again."
 msgstr "Esta empresa atingiu o limite de membros, por isso este convite ainda não pode ser usado. Quando houver vagas para novos membros, você poderá voltar e tentar novamente."
 
+#.elixir
+#: lib/operately/billing/enforce_limits.ex:50
+msgid "This company has reached its member limit: %{current_usage} of %{limit} active members. Adding or restoring people is blocked until this company is back within its plan limits."
+msgstr "Esta empresa atingiu o limite de membros: %{current_usage} de %{limit} membros ativos. Adicionar ou reativar pessoas está bloqueado até que a empresa volte a ficar dentro dos limites do plano."
+
+#.elixir
+#: lib/operately/billing/enforce_limits.ex:54
+msgid "This company has reached its storage limit: %{current_usage} of %{limit} used. Uploading files is blocked until this company is back within its plan limits."
+msgstr "Esta empresa atingiu o limite de armazenamento: %{current_usage} de %{limit} usados. O envio de arquivos está bloqueado até que a empresa volte a ficar dentro dos limites do plano."
+
 #.frontend
 #: assets/js/models/blobs/uploadFile.ts:57
 msgid "This company has reached its storage limit: %{used} of %{limit} used. Uploading files is blocked until this company is back within its plan limits."
@@ -16041,6 +17403,11 @@ msgstr "Esta empresa ultrapassou o limite de armazenamento do plano Gratuito"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:207
 msgid "This company is currently using the free plan."
 msgstr "Esta empresa está usando o plano Gratuito."
+
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:15
+msgid "This company is no longer available to export."
+msgstr "Esta empresa não está mais disponível para exportação."
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:199
@@ -16079,6 +17446,11 @@ msgstr "Esta empresa continuará no plano pago atual até o final do ciclo de fa
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
 msgid "This email is already registered. Use a different address."
 msgstr "Este e-mail já está cadastrado. Use outro endereço."
+
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:19
+msgid "This export package is missing some people data and can't be imported."
+msgstr "Faltam dados de algumas pessoas neste pacote de exportação e ele não pode ser importado."
 
 #.frontend
 #: ../turboui/src/DocsAndFiles/index.tsx:436
@@ -16154,6 +17526,27 @@ msgstr "Este objetivo foi encerrado em <date/>."
 msgid "This goal was closed on an unknown date."
 msgstr "Este objetivo foi encerrado em uma data desconhecida."
 
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:741
+#: lib/operately_web/api/cli_auth.ex:747
+#: lib/operately_web/api/cli_auth.ex:897
+#: lib/operately_web/api/cli_auth.ex:900
+#: lib/operately_web/api/cli_auth.ex:901
+#: lib/operately_web/api/cli_auth.ex:908
+#: lib/operately_web/api/cli_auth.ex:910
+#: lib/operately_web/api/invitations.ex:174
+#: lib/operately_web/api/invitations.ex:180
+msgid "This invite link is no longer valid"
+msgstr "Este link de convite não é mais válido"
+
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:744
+#: lib/operately_web/api/cli_auth.ex:898
+#: lib/operately_web/api/cli_auth.ex:909
+#: lib/operately_web/api/invitations.ex:177
+msgid "This invite link is restricted to specific email domains"
+msgstr "Este link de convite é restrito a domínios de e-mail específicos"
+
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:86
 msgid "This is already your current email. Enter a different address."
@@ -16174,6 +17567,11 @@ msgstr "Esta é a página de administração da empresa, onde proprietários e a
 msgid "This is the only time this value will be shown. Copy and store it securely."
 msgstr "Este valor será exibido apenas uma vez. Copie-o e guarde-o em um local seguro."
 
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:14
+msgid "This item can't be moved into one of its subfolders"
+msgstr "Este item não pode ser movido para uma de suas subpastas"
+
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:26
 msgid "This link (including the one in their email) expires in 24 hours."
@@ -16186,6 +17584,16 @@ msgid_plural "This milestone has %{count} open tasks. Choose what happens to the
 msgstr[0] "Este marco tem 1 tarefa aberta. Escolha o que fazer com ela antes de concluí-lo."
 msgstr[1] "Este marco tem %{count} tarefas abertas. Escolha o que fazer com elas antes de concluí-lo."
 
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:18
+msgid "This package contains duplicate email addresses and can't be imported until that is fixed."
+msgstr "Este pacote contém endereços de e-mail duplicados e não pode ser importado até que isso seja corrigido."
+
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:20
+msgid "This package is too large to import here."
+msgstr "Este pacote é grande demais para ser importado aqui."
+
 #.frontend
 #: assets/js/models/companyExports/index.tsx:54
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
@@ -16195,6 +17603,12 @@ msgstr "Este pacote foi exportado do Operately %{manifestVersion}, mas esta inst
 #: lib/operately_email/templates/reset_password.text.eex:6
 msgid "This password reset link will expire in 24 hours for security reasons."
 msgstr "Este link de redefinição de senha expira em 24 horas por motivos de segurança."
+
+#.elixir
+#: lib/operately_web/api/projects/create_contributor.ex:87
+#: lib/operately_web/api/projects/create_contributors.ex:53
+msgid "This person is already a contributor on this project"
+msgstr "Esta pessoa já é colaboradora deste projeto"
 
 #.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:44
@@ -16317,6 +17731,11 @@ msgstr "Isso removerá sua meta e todo o acompanhamento de progresso associado."
 msgid "This will revoke %{name}'s invitation. You can create a new invitation later if needed."
 msgstr "Isso revogará o convite para %{name}. Você poderá criar um novo convite depois, se necessário."
 
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:13
+msgid "This would create a circular reporting relationship"
+msgstr "Isso criaria uma relação de subordinação circular"
+
 #.frontend
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:76
 msgid "Time"
@@ -16336,6 +17755,18 @@ msgstr "O horário deve ser no futuro"
 #: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:121
 msgid "Time unavailable"
 msgstr "Horário indisponível"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:7
+#: lib/operately/md/project/timeframe.ex:8
+msgid "Timeframe"
+msgstr "Período"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:12
+#: lib/operately/md/project/timeframe.ex:13
+msgid "Timeframe History"
+msgstr "Histórico do período"
 
 #.frontend
 #: assets/js/features/activities/GoalTimeframeEditing/index.tsx:30
@@ -16386,6 +17817,11 @@ msgstr "Dica: Inscreva-se se também quiser receber notificações."
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgid "Title"
 msgstr "Cargo"
+
+#.elixir
+#: lib/operately_web/api/projects/milestones.ex:364
+msgid "Title cannot be empty"
+msgstr "O título não pode ficar vazio"
 
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:124
@@ -16482,6 +17918,18 @@ msgstr "O token agora tem acesso total."
 msgid "Tomorrow"
 msgstr "Amanhã"
 
+#.elixir
+#: lib/operately_web/mcp/plugs/rate_limit_oauth.ex:48
+msgid "Too Many Requests"
+msgstr "Muitas solicitações"
+
+#.elixir
+#: lib/operately_web/mcp/plugs/rate_limit_oauth.ex:49
+msgid "Too many authorization requests. Try again in %{count} seconds."
+msgid_plural "Too many authorization requests. Try again in %{count} seconds."
+msgstr[0] "Muitas solicitações de autorização. Tente novamente em %{count} segundo."
+msgstr[1] "Muitas solicitações de autorização. Tente novamente em %{count} segundos."
+
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:38
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:104
@@ -16567,8 +18015,11 @@ msgstr "Tente novamente mais tarde"
 msgid "Try loading them again."
 msgstr "Tente carregá-los novamente."
 
+#.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
+#: lib/operately/md/space.ex:20
+#: lib/operately/md/task.ex:18
 msgid "Type"
 msgstr "Tipo"
 
@@ -16593,6 +18044,13 @@ msgstr "URL"
 msgid "Unable to add team member"
 msgstr "Não foi possível adicionar o membro da equipe"
 
+#.elixir
+#: lib/operately_web/api/cli_auth.ex:750
+#: lib/operately_web/api/cli_auth.ex:911
+#: lib/operately_web/api/invitations.ex:183
+msgid "Unable to add you to this company."
+msgstr "Não foi possível adicionar você a esta empresa."
+
 #.frontend
 #: ../turboui/src/RichContentDiff/index.tsx:158
 msgid "Unable to compare these versions"
@@ -16615,6 +18073,11 @@ msgstr "Não foi possível copiar"
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:196
 msgid "Unable to invite collaborator"
 msgstr "Não foi possível convidar o colaborador"
+
+#.elixir
+#: lib/operately_web/controllers/public_document_controller.ex:47
+msgid "Unable to load attachment"
+msgstr "Não foi possível carregar o anexo"
 
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:19
@@ -16651,10 +18114,19 @@ msgstr "Não foi possível carregar esta comparação"
 msgid "Unable to restore member"
 msgstr "Não foi possível reativar o membro"
 
+#.elixir
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:70
+#: lib/operately/md/milestone.ex:81
+#: lib/operately/md/task.ex:139
+#: lib/operately/md/workmap.ex:107
 msgid "Unassigned"
 msgstr "Sem responsável"
+
+#.elixir
+#: lib/operately_web/controllers/error_html.ex:6
+msgid "Unauthorized"
+msgstr "Não autorizado"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:50
@@ -16706,10 +18178,39 @@ msgstr "A unidade é obrigatória"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:166
+#: lib/operately/md/space.ex:79
+#: lib/operately/md/task.ex:93
+#: lib/operately/md/task.ex:124
+#: lib/operately/md/task.ex:131
 #: lib/operately_email/emails/task_adding_email.ex:109
 #: lib/operately_email/emails/task_description_change_email.ex:55
 msgid "Unknown"
 msgstr "Desconhecido"
+
+#.elixir
+#: lib/operately/md/workmap.ex:108
+msgid "Unknown Champion"
+msgstr "Champion desconhecido"
+
+#.elixir
+#: lib/operately/md/workmap.ex:115
+msgid "Unknown Space"
+msgstr "Espaço desconhecido"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:179
+msgid "Unknown decoder for primitive type: %{type}"
+msgstr "Decodificador desconhecido para o tipo primitivo: %{type}"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:77
+msgid "Unknown input field: %{field_name}"
+msgstr "Campo de entrada desconhecido: %{field_name}"
+
+#.elixir
+#: lib/turbo_connect/plugs/parse_inputs.ex:241
+msgid "Unknown input type: %{type}"
+msgstr "Tipo de entrada desconhecido: %{type}"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:4
@@ -16740,10 +18241,25 @@ msgstr "Armazenamento ilimitado"
 msgid "Unlink"
 msgstr "Remover link"
 
+#.elixir
+#: lib/operately/md/workmap.ex:92
+msgid "Unnamed"
+msgstr "Sem nome"
+
 #.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:279
 msgid "Unsubscribe me"
 msgstr "Cancelar minha inscrição"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:199
+msgid "Unsupported Client Authentication"
+msgstr "Autenticação de cliente incompatível"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:198
+msgid "Unsupported PKCE Method"
+msgstr "Método PKCE incompatível"
 
 #.frontend
 #: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:180
@@ -17062,6 +18578,16 @@ msgstr "Use esta URL para criar uma conexão no seu cliente de IA."
 msgid "Use your work email — keep work and life separate."
 msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
 
+#.elixir
+#: lib/operately/md/workmap.ex:17
+msgid "Valid States"
+msgstr "Estados válidos"
+
+#.elixir
+#: lib/operately/md/workmap.ex:11
+msgid "Valid Statuses"
+msgstr "Status válidos"
+
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:418
 msgid "Validating Package"
@@ -17150,7 +18676,7 @@ msgstr "Ver instruções de uso da API"
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
 #: assets/js/features/Permissions/index.tsx:60
-#: lib/operately_email/emails/company_members_permissions_edited_email.ex:35
+#: lib/operately/i18n/access_labels.ex:11
 msgid "View Access"
 msgstr "Somente leitura"
 
@@ -17415,6 +18941,11 @@ msgid "View update"
 msgstr "Ver atualização"
 
 #.elixir
+#: lib/operately/mcp/resources.ex:10
+msgid "View workspace data"
+msgstr "Visualizar dados do ambiente de trabalho"
+
+#.elixir
 #: lib/operately_email/templates/goal_timeframe_editing.html.eex:22
 msgid "View/Comment"
 msgstr "Ver/comentar"
@@ -17465,6 +18996,16 @@ msgstr "Não foi possível confirmar o pagamento. Você pode voltar à seleção
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 msgid "We couldn't copy the invite link automatically."
 msgstr "Não foi possível copiar o link de convite automaticamente."
+
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:16
+msgid "We couldn't create the export package. Please try again. If it keeps failing, contact support."
+msgstr "Não foi possível criar o pacote de exportação. Tente novamente. Se o problema continuar, entre em contato com o suporte."
+
+#.elixir
+#: lib/operately/company_transfers/public_error_message.ex:21
+msgid "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
+msgstr "Não foi possível importar esta empresa. Tente novamente com um novo pacote de exportação. Se o problema continuar, entre em contato com o suporte."
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:240
@@ -17756,6 +19297,11 @@ msgstr "E-mail profissional"
 msgid "Work Map"
 msgstr "Mapa de trabalho"
 
+#.elixir
+#: lib/operately/md/workmap.ex:5
+msgid "Work Map Legend"
+msgstr "Legenda do mapa de trabalho"
+
 #.frontend
 #: ../turboui/src/Forms/SelectStatus.tsx:175
 #: assets/js/components/status/Status.tsx:65
@@ -17787,6 +19333,11 @@ msgstr "Escreva um comentário aqui..."
 #: assets/js/features/SpaceTools/Discussions/ZeroState.tsx:27
 msgid "Write a new post"
 msgstr "Escrever um novo post"
+
+#.elixir
+#: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:117
+msgid "Write access lets this client create, update, delete, and archive content in your workspace."
+msgstr "O acesso de escrita permite que este cliente crie, atualize, exclua e arquive conteúdo no seu ambiente de trabalho."
 
 #.frontend
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:35
@@ -17900,10 +19451,30 @@ msgstr[1] "Você pode solicitar outro código em %{count} segundos."
 msgid "You can start checkout again for %{plan}."
 msgstr "Você pode iniciar novamente o pagamento do plano %{plan}."
 
+#.elixir
+#: lib/operately_web/api/companies/convert_member_to_guest.ex:49
+msgid "You can't convert your own account to outside collaborator"
+msgstr "Você não pode converter sua própria conta em colaborador externo"
+
+#.elixir
+#: lib/operately_web/api/spaces/delete.ex:41
+msgid "You cannot delete the general space"
+msgstr "Você não pode excluir o espaço geral"
+
+#.elixir
+#: lib/operately_web/mcp/executor.ex:88
+msgid "You do not have permission to perform this operation, or the company is read-only."
+msgstr "Você não tem permissão para realizar esta operação ou a empresa está no modo somente leitura."
+
 #.frontend
 #: assets/js/pages/DiscussionDraftsPage/index.tsx:92
 msgid "You don't have any drafts."
 msgstr "Você não tem rascunhos."
+
+#.elixir
+#: lib/turbo_connect/plugs/dispatch.ex:38
+msgid "You don't have permission to perform this action"
+msgstr "Você não tem permissão para realizar esta ação"
 
 #.frontend
 #: ../turboui/src/ResourceHubDraftsPage/index.tsx:26
@@ -18121,6 +19692,16 @@ msgid "Your account has been restored as a company member by %{author}."
 msgstr "Sua conta foi restaurada como membro da empresa por %{author}."
 
 #.elixir
+#: lib/operately_web/controllers/mcp_oauth_controller.ex:19
+msgid "Your account is not associated with any active companies."
+msgstr "Sua conta não está associada a nenhuma empresa ativa."
+
+#.elixir
+#: lib/operately_web/controllers/cli_login_controller.ex:69
+msgid "Your account is not associated with any companies. Please contact your administrator."
+msgstr "Sua conta não está associada a nenhuma empresa. Entre em contato com seu administrador."
+
+#.elixir
 #: lib/operately_email/templates/company_admin_removed.html.eex:1
 msgid "Your admin privileges have been revoked by %{author}"
 msgstr "Seus privilégios de administrador foram revogados por %{author}"
@@ -18220,6 +19801,22 @@ msgstr "Sua verificação expirou. Recomece para verificar seu e-mail atual."
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:44
 msgid "You’ll need access to both inboxes. Your email won’t change until both are verified. This change applies to all your companies."
 msgstr "Você precisará acessar as duas caixas de entrada. Seu e-mail só será alterado após a verificação de ambas. Esta alteração vale para todas as suas empresas."
+
+#.elixir
+#: lib/operately/md/goal/discussions.ex:42
+msgid "_No comments yet._"
+msgstr "_Ainda não há comentários._"
+
+#.elixir
+#: lib/operately/md/project.ex:349
+msgid "_No contributors listed._"
+msgstr "_Nenhum colaborador listado._"
+
+#.elixir
+#: lib/operately/md/goal/timeframe.ex:40
+#: lib/operately/md/project/timeframe.ex:42
+msgid "_No timeframe changes recorded._"
+msgstr "_Nenhuma alteração de período registrada._"
 
 #.frontend
 #: assets/js/features/activities/ProjectContributorAddition/index.tsx:35
@@ -18397,6 +19994,11 @@ msgstr "atribuiu a função de revisor do projeto a %{reviewer_full_name}"
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:97
 msgid "big-picture outcome"
 msgstr "resultado de visão geral"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:6
+msgid "can't be blank"
+msgstr "não pode ficar em branco"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:223
@@ -18674,15 +20276,30 @@ msgstr "excluiu o arquivo \"%{file_name}\""
 msgid "deleted the link \"%{link_name}\""
 msgstr "excluiu o link \"%{link_name}\""
 
+#.elixir
+#: lib/operately_web/api/mutations/complete_company_setup.ex:140
+msgid "description can't be blank"
+msgstr "a descrição não pode ficar em branco"
+
 #~ #.frontend
 #~ #: ../turboui/src/Timeline/TaskActivities.tsx:196
 #~ msgid "detached %{taskName} from milestone <text>%{name}</text>"
 #~ msgstr ""
 
 #.elixir
+#: lib/operately/i18n/validation_errors.ex:12
+msgid "did not change"
+msgstr "não foi alterado"
+
+#.elixir
 #: lib/operately_email/emails/project_goal_disconnection_email.ex:45
 msgid "disconnected the project from the goal \"%{goal_name}\""
 msgstr "desconectou o projeto do objetivo \"%{goal_name}\""
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:11
+msgid "does not match password"
+msgstr "não coincide com a senha"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:113
@@ -18854,6 +20471,21 @@ msgstr "ex.: https://example.com"
 msgid "failed"
 msgstr "falhou"
 
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:7
+msgid "has already been taken"
+msgstr "já está em uso"
+
+#.elixir
+#: lib/operately_web/api/projects/get.ex:107
+msgid "id is required"
+msgstr "id é obrigatório"
+
+#.elixir
+#: lib/operately_web/api/projects/get.ex:113
+msgid "include_contributors_access_levels requires include_contributors"
+msgstr "include_contributors_access_levels requer include_contributors"
+
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeTime.tsx:48
 #: ../turboui/src/FormattedTime/RelativeTime.tsx:54
@@ -18864,6 +20496,16 @@ msgstr "falhou"
 #: ../turboui/src/FormattedTime/RelativeTime.tsx:64
 msgid "intlRelativeDateTime"
 msgstr ""
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:8
+msgid "is invalid"
+msgstr "é inválido"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:9
+msgid "is not valid"
+msgstr "não é válido"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/feedback.ts:87
@@ -18910,10 +20552,20 @@ msgstr "minutos"
 msgid "moved the task \"%{task_name}\""
 msgstr "moveu a tarefa \"%{task_name}\""
 
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:10
+msgid "must have the @ sign and no spaces"
+msgstr "deve conter @ e não pode ter espaços"
+
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:206
 msgid "name"
 msgstr "nome"
+
+#.elixir
+#: lib/operately_web/api/mutations/complete_company_setup.ex:137
+msgid "name can't be blank"
+msgstr "o nome não pode ficar em branco"
 
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:130
@@ -19067,6 +20719,42 @@ msgstr "definiu a data de conclusão da tarefa \"%{task_name}\" para %{date}"
 #: lib/operately_email/emails/project_due_date_updating_email.ex:67
 msgid "set the project's due date to %{date}"
 msgstr "definiu a data de conclusão do projeto para %{date}"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:29
+msgid "should be %{count} character(s)"
+msgid_plural "should be %{count} character(s)"
+msgstr[0] "deve ter %{count} caractere"
+msgstr[1] "deve ter %{count} caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:29
+msgid "should be 0 character(s)"
+msgstr "deve ter 0 caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:19
+msgid "should be at least %{count} character(s)"
+msgid_plural "should be at least %{count} character(s)"
+msgstr[0] "deve ter pelo menos %{count} caractere"
+msgstr[1] "deve ter pelo menos %{count} caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:19
+msgid "should be at least 0 character(s)"
+msgstr "deve ter pelo menos 0 caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:24
+msgid "should be at most %{count} character(s)"
+msgid_plural "should be at most %{count} character(s)"
+msgstr[0] "deve ter no máximo %{count} caractere"
+msgstr[1] "deve ter no máximo %{count} caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:24
+msgid "should be at most 0 character(s)"
+msgstr "deve ter no máximo 0 caracteres"
 
 #.frontend
 #: assets/js/pages/GoalAccessManagementPage/OtherPeople.tsx:59
@@ -19264,6 +20952,21 @@ msgstr "seu@email.com"
 #: ../turboui/src/Forms/SelectPerson.tsx:189
 msgid "· %{title}"
 msgstr "· %{title}"
+
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:67
+msgid "🔴 **Off Track** - The goal is off track due to significant problems affecting success."
+msgstr "🔴 **Fora do planejado** - O objetivo está fora do planejado devido a problemas significativos que afetam seu sucesso."
+
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:66
+msgid "🟡 **Needs Attention** - The goal needs attention due to emerging risks or delays."
+msgstr "🟡 **Precisa de atenção** - O objetivo precisa de atenção devido a novos riscos ou atrasos."
+
+#.elixir
+#: lib/operately/md/goal/check_ins.ex:65
+msgid "🟢 **On Track** - The goal is progressing as planned."
+msgstr "🟢 **Dentro do planejado** - O objetivo está progredindo conforme o planejado."
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:140

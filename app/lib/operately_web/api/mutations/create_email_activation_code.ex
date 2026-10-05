@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -30,6 +31,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
   end
 
   defp email_delivery_not_configured_message do
-    "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
+    gettext("Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator.")
   end
 end

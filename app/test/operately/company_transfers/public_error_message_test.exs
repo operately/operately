@@ -3,6 +3,19 @@ defmodule Operately.CompanyTransfers.PublicErrorMessageTest do
 
   alias Operately.CompanyTransfers.{ExportRun, ImportRun, PublicErrorMessage}
 
+  test "translates sanitized failures without changing stored diagnostics" do
+    run = %ImportRun{status: :failed, error_message: "private diagnostic", validation_errors: [%{"code" => "duplicate_account_emails"}, %{"code" => "invalid_company_count"}]}
+    english = PublicErrorMessage.for_import(run)
+    portuguese = Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert PublicErrorMessage.for_import(run) == english
+      PublicErrorMessage.translate(english)
+    end)
+    assert portuguese =~ "endereços de e-mail duplicados"
+    assert portuguese =~ "Este arquivo ZIP"
+    refute portuguese =~ "private diagnostic"
+    assert Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> PublicErrorMessage.translate(english) end) == english
+  end
+
   test "maps import validation errors to public messages and deduplicates them" do
     reason =
       {:validation_failed, "raw validation message",

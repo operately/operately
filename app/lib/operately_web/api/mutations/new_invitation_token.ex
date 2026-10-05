@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -41,10 +42,10 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
 
     cond do
       is_nil(person) ->
-        {:error, message: "Team member not found."}
+        {:error, message: gettext("Team member not found.")}
 
       not open_invitation?(person) ->
-        {:error, message: "Team member doesn't have an open invitation."}
+        {:error, message: gettext("Team member doesn't have an open invitation.")}
 
       true ->
         create_token(admin, person)

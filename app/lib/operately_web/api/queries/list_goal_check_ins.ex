@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
   Lists check-ins for a goal.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
   alias Operately.Repo
@@ -22,7 +23,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
       check_ins = load(inputs.goal_id, me(conn))
       {:ok, %{check_ins: Serializer.serialize(check_ins, level: :full)}}
     else
-      {:error, :not_found} -> {:error, :not_found, "Goal not found"}
+      {:error, :not_found} -> {:error, :not_found, gettext("Goal not found")}
       {:error, :invalid_requester} -> {:error, :unauthorized}
     end
   end

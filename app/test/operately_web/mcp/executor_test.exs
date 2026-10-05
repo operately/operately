@@ -71,6 +71,18 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     assert Jason.decode!(text) == result["structuredContent"]
   end
 
+  test "localized tool errors retain protocol fields and literal tool names", %{conn: conn} do
+    definition = Definition.new!(name: "literal_tool", implementation: StubTool, input_schema: %{"type" => "object", "properties" => %{}})
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert {:ok, result} = Executor.execute(conn, definition, %{})
+      assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => "A ferramenta literal_tool ainda não foi implementada."}]}
+    end)
+    Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn ->
+      assert {:ok, result} = Executor.execute(conn, definition, %{})
+      assert hd(result["content"])["text"] == "The literal_tool tool is not implemented yet."
+    end)
+  end
+
   test "returns a tool-level error for stubbed wrappers", %{conn: conn} do
     definition =
       Definition.new!(

@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
   Retrieves a project by ID with optional includes for related data.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -103,13 +104,13 @@ defmodule OperatelyWeb.Api.Projects.Get do
   defp check_inputs(inputs) do
     cond do
       inputs[:id] == nil ->
-        {:error, :bad_request, "id is required"}
+        {:error, :bad_request, gettext("id is required")}
 
       inputs[:include_contributors_access_levels] ->
         if inputs[:include_contributors] do
           :ok
         else
-          {:error, :bad_request, "include_contributors_access_levels requires include_contributors"}
+          {:error, :bad_request, gettext("include_contributors_access_levels requires include_contributors")}
         end
 
       true ->

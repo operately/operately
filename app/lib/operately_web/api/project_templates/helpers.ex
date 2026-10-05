@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Tasks.Status
   alias OperatelyWeb.Paths
 
@@ -9,9 +10,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
       values = Enum.map(statuses, &(Map.get(&1, :value) || Map.get(&1, "value")))
 
       cond do
-        statuses == [] -> {:error, {:validation, "At least one task status is required"}}
-        Enum.uniq(ids) != ids -> {:error, {:validation, "Task status IDs must be unique"}}
-        Enum.uniq(values) != values -> {:error, {:validation, "Task status values must be unique"}}
+        statuses == [] -> {:error, {:validation, gettext("At least one task status is required")}}
+        Enum.uniq(ids) != ids -> {:error, {:validation, gettext("Task status IDs must be unique")}}
+        Enum.uniq(values) != values -> {:error, {:validation, gettext("Task status values must be unique")}}
         true -> :ok
       end
     else
@@ -21,7 +22,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
 
   def canonical_status(template, nil) do
     case List.first(template.task_statuses) do
-      nil -> {:error, {:validation, "At least one task status is required"}}
+      nil -> {:error, {:validation, gettext("At least one task status is required")}}
       status -> {:ok, status}
     end
   end
@@ -30,7 +31,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
     status_id = Map.get(status, :id) || Map.get(status, "id")
 
     case Enum.find(template.task_statuses, &(&1.id == status_id)) do
-      nil -> {:error, {:validation, "Invalid task status"}}
+      nil -> {:error, {:validation, gettext("Invalid task status")}}
       status -> {:ok, status}
     end
   end
@@ -43,7 +44,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
         MapSet.member?(deleted_ids, deleted_id) and MapSet.member?(new_ids, replacement_id)
       end)
 
-    if valid?, do: {:ok, replacement_map}, else: {:error, {:validation, "Invalid task status replacement"}}
+    if valid?, do: {:ok, replacement_map}, else: {:error, {:validation, gettext("Invalid task status replacement")}}
   end
 
   def replacement_status(old_status_id, replacement_map, statuses_by_id) do
@@ -51,7 +52,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
          {:ok, status} <- Map.fetch(statuses_by_id, replacement_id) do
       {:ok, status}
     else
-      _ -> {:error, {:validation, "Every deleted task status in use requires a replacement"}}
+      _ -> {:error, {:validation, gettext("Every deleted task status in use requires a replacement")}}
     end
   end
 
@@ -81,13 +82,13 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
     normalized = stringify_keys(state)
 
     cond do
-      not Enum.all?(Map.keys(normalized), &(&1 in allowed_keys)) -> {:error, {:validation, "Kanban state contains an unknown status"}}
-      not Enum.all?(Map.values(normalized), &is_list/1) -> {:error, {:validation, "Kanban state must contain task ID lists"}}
+      not Enum.all?(Map.keys(normalized), &(&1 in allowed_keys)) -> {:error, {:validation, gettext("Kanban state contains an unknown status")}}
+      not Enum.all?(Map.values(normalized), &is_list/1) -> {:error, {:validation, gettext("Kanban state must contain task ID lists")}}
       true -> validate_kanban_tasks(normalized, tasks, statuses)
     end
   end
 
-  def validate_kanban(_state, _tasks, _statuses), do: {:error, {:validation, "Kanban state must be an object"}}
+  def validate_kanban(_state, _tasks, _statuses), do: {:error, {:validation, gettext("Kanban state must be an object")}}
 
   @doc "Drops foreign IDs, appends missing tasks, and rebuilds columns from each task's status while preserving relative order."
   def normalize_kanban(state, tasks, statuses) do
@@ -133,9 +134,9 @@ defmodule OperatelyWeb.Api.ProjectTemplates.Helpers do
     provided_ids = state |> Map.values() |> List.flatten()
 
     cond do
-      Enum.uniq(provided_ids) != provided_ids -> {:error, {:validation, "Kanban state contains duplicate task IDs"}}
-      not Enum.all?(provided_ids, &(&1 in valid_ids)) -> {:error, {:validation, "Kanban state contains IDs from another template container"}}
-      tasks_in_wrong_columns?(state, tasks) -> {:error, {:validation, "Kanban task status does not match its column"}}
+      Enum.uniq(provided_ids) != provided_ids -> {:error, {:validation, gettext("Kanban state contains duplicate task IDs")}}
+      not Enum.all?(provided_ids, &(&1 in valid_ids)) -> {:error, {:validation, gettext("Kanban state contains IDs from another template container")}}
+      tasks_in_wrong_columns?(state, tasks) -> {:error, {:validation, gettext("Kanban task status does not match its column")}}
       true -> {:ok, normalize_kanban(state, tasks, statuses)}
     end
   end

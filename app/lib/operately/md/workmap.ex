@@ -1,22 +1,23 @@
 defmodule Operately.MD.Workmap do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(work_map) do
     legend = """
-    # Work Map Legend
+    # #{gettext("Work Map Legend")}
 
-    Returning a hierarchical view of all goals and projects in your company.
+    #{gettext("Returning a hierarchical view of all goals and projects in your company.")}
 
-    **Item Format:** Name (Type) [ID: id] | Status | State | Progress | Champion | Space | Timeframe
+    #{gettext("**Item Format:** Name (Type) [ID: id] | Status | State | Progress | Champion | Space | Timeframe")}
 
-    **Valid Statuses:**
-    - on_track: Item is progressing as planned
-    - caution: Item needs attention or has minor issues
-    - issue: Item has significant problems or blockers
-    - outdated: Item information is stale and needs updating
+    **#{gettext("Valid Statuses")}:**
+    - on_track: #{gettext("Item is progressing as planned")}
+    - caution: #{gettext("Item needs attention or has minor issues")}
+    - issue: #{gettext("Item has significant problems or blockers")}
+    - outdated: #{gettext("Item information is stale and needs updating")}
 
-    **Valid States:**
-    - active: Item is currently being worked on
-    - paused: Item is temporarily stopped
-    - completed: Item has been finished
+    **#{gettext("Valid States")}:**
+    - active: #{gettext("Item is currently being worked on")}
+    - paused: #{gettext("Item is temporarily stopped")}
+    - completed: #{gettext("Item has been finished")}
 
     ---
     """
@@ -27,10 +28,10 @@ defmodule Operately.MD.Workmap do
     tree_content =
       case filtered_work_map do
         [] ->
-          "Company Work Map\n└── (No items found)"
+          gettext("Company Work Map\n└── (No items found)")
 
         items ->
-          root_header = "Company Work Map"
+          root_header = gettext("Company Work Map")
 
           formatted_items =
             items
@@ -88,7 +89,7 @@ defmodule Operately.MD.Workmap do
 
   defp format_item_details(item) do
     id = Map.get(item, :id, "unknown")
-    name = Map.get(item, :name, "Unnamed")
+    name = Map.get(item, :name, gettext("Unnamed"))
     type = Map.get(item, :type, "unknown")
     status = Map.get(item, :status, "unknown")
     state = Map.get(item, :state, "unknown")
@@ -98,20 +99,20 @@ defmodule Operately.MD.Workmap do
     space_name = space_name(item)
     timeframe = format_timeframe(item)
 
-    "#{name} (#{type}) [ID: #{id}] | Status: #{status} | State: #{state} | Progress: #{round(progress)}% | Champion: #{champion_name} | Space: #{space_name}#{timeframe}"
+    "#{name} (#{type}) [ID: #{id}] | #{gettext("Status")}: #{status} | #{gettext("State")}: #{state} | #{gettext("Progress")}: #{round(progress)}% | #{gettext("Champion")}: #{champion_name} | #{gettext("Space")}: #{space_name}#{timeframe}"
   end
 
   defp champion_name(item) do
     case Map.get(item, :owner) do
-      nil -> "Unassigned"
-      champion -> Map.get(champion, :full_name, "Unknown Champion")
+      nil -> gettext("Unassigned")
+      champion -> Map.get(champion, :full_name, gettext("Unknown Champion"))
     end
   end
 
   defp space_name(item) do
     case Map.get(item, :space) do
-      nil -> "No Space"
-      space -> Map.get(space, :name, "Unknown Space")
+      nil -> gettext("No Space")
+      space -> Map.get(space, :name, gettext("Unknown Space"))
     end
   end
 
@@ -126,9 +127,9 @@ defmodule Operately.MD.Workmap do
 
         case {start_date, end_date} do
           {nil, nil} -> ""
-          {start_date, nil} -> " | From: #{start_date}"
-          {nil, end_date} -> " | Due: #{end_date}"
-          {start_date, end_date} -> " | From: #{start_date} to #{end_date}"
+          {start_date, nil} -> " | #{gettext("From")}: #{start_date}"
+          {nil, end_date} -> " | #{gettext("Due")}: #{end_date}"
+          {start_date, end_date} -> " | " <> gettext("From: %{start_date} to %{end_date}", start_date: start_date, end_date: end_date)
         end
     end
   end

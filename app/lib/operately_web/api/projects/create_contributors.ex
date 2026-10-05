@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
   Adds multiple contributors to a project.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -49,7 +50,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributors do
 
   defp map_changeset_error(changeset) do
     if unique_person_project_error?(changeset) do
-      {:error, :bad_request, "This person is already a contributor on this project"}
+      {:error, :bad_request, gettext("This person is already a contributor on this project")}
     else
       {:error, :bad_request}
     end

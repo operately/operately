@@ -182,11 +182,11 @@ function useInviteSubmit(
       const data = (e as any)?.response?.data;
       const message = typeof data?.message === "string" ? data.message : null;
       if (message) {
-        const lower = message.toLowerCase();
+        const field = data?.details?.field;
         const nextErrors: InviteMemberForm.Errors = {};
 
-        if (lower.includes("email")) nextErrors.email = message;
-        if (lower.includes("name")) nextErrors.fullName = message;
+        if (field === "email") nextErrors.email = message;
+        if (field === "full_name") nextErrors.fullName = message;
 
         if (Object.keys(nextErrors).length > 0) {
           setErrors(nextErrors);

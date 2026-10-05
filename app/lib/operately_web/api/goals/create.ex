@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Goals.Create do
   Creates a new goal in a space.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -46,8 +47,8 @@ defmodule OperatelyWeb.Api.Goals.Create do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
-      {:error, :champion_validation, _} -> {:error, :bad_request, "The selected champion doesn't have access to the selected space"}
-      {:error, :reviewer_validation, _} -> {:error, :bad_request, "The selected reviewer doesn't have access to the selected space"}
+      {:error, :champion_validation, _} -> {:error, :bad_request, gettext("The selected champion doesn't have access to the selected space")}
+      {:error, :reviewer_validation, _} -> {:error, :bad_request, gettext("The selected reviewer doesn't have access to the selected space")}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

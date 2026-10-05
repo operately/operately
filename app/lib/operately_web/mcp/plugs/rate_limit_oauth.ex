@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Mcp.Plugs.RateLimitOAuth do
   @moduledoc false
 
+  use Gettext, backend: OperatelyWeb.Gettext
   import Plug.Conn
   import Phoenix.Controller, only: [json: 2, put_view: 2, render: 3]
 
@@ -44,8 +45,8 @@ defmodule OperatelyWeb.Mcp.Plugs.RateLimitOAuth do
     |> put_status(429)
     |> put_view(OperatelyWeb.McpOAuthHTML)
     |> render(:error,
-      title: "Too Many Requests",
-      message: "Too many authorization requests. Try again in #{retry_after} seconds."
+      title: gettext("Too Many Requests"),
+      message: ngettext("Too many authorization requests. Try again in %{count} seconds.", "Too many authorization requests. Try again in %{count} seconds.", retry_after)
     )
   end
 
@@ -54,7 +55,7 @@ defmodule OperatelyWeb.Mcp.Plugs.RateLimitOAuth do
     |> put_status(429)
     |> json(%{
       error: "temporarily_unavailable",
-      error_description: "Rate limit exceeded."
+      error_description: gettext("Rate limit exceeded.")
     })
   end
 end

@@ -1,4 +1,5 @@
 defmodule Operately.CompanyTransfers.PublicErrorMessage do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.CompanyTransfers.{ExportRun, ImportRun}
 
   @export_company_missing "This company is no longer available to export."
@@ -9,6 +10,22 @@ defmodule Operately.CompanyTransfers.PublicErrorMessage do
   @import_missing_people_data "This export package is missing some people data and can't be imported."
   @import_too_large "This package is too large to import here."
   @import_generic "We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support."
+
+  # Workers retain stable diagnostics; serializers localize the sanitized messages at read time.
+  def translate(@export_company_missing), do: gettext("This company is no longer available to export.")
+  def translate(@export_generic), do: gettext("We couldn't create the export package. Please try again. If it keeps failing, contact support.")
+  def translate(@import_damaged_zip), do: gettext("This ZIP file looks incomplete or damaged. Export the company again and try again.")
+  def translate(@import_duplicate_emails), do: gettext("This package contains duplicate email addresses and can't be imported until that is fixed.")
+  def translate(@import_missing_people_data), do: gettext("This export package is missing some people data and can't be imported.")
+  def translate(@import_too_large), do: gettext("This package is too large to import here.")
+  def translate(@import_generic), do: gettext("We couldn't import this company. Please try again with a new export package. If it keeps failing, contact support.")
+  def translate(nil), do: nil
+
+  def translate(message) do
+    Enum.reduce([@export_company_missing, @export_generic, @import_damaged_zip, @import_duplicate_emails, @import_missing_people_data, @import_too_large, @import_generic], message, fn source, text ->
+      String.replace(text, source, translate(source))
+    end)
+  end
 
   def for_export(%ExportRun{} = run) do
     if failed_status?(run.status) do

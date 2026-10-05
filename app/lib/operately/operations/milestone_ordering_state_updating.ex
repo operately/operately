@@ -1,4 +1,5 @@
 defmodule Operately.Operations.MilestoneOrderingStateUpdating do
+  use Gettext, backend: OperatelyWeb.Gettext
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Multi
@@ -30,7 +31,7 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
   end
 
   defp validate_index(index) when is_integer(index) and index >= 0, do: {:ok, index}
-  defp validate_index(_index), do: {:error, {:validation, "Task index must be zero or greater"}}
+  defp validate_index(_index), do: {:error, {:validation, gettext("Task index must be zero or greater")}}
 
   defp validate_task_parent(project, task) do
     if task.project_id == project.id do
@@ -45,13 +46,13 @@ defmodule Operately.Operations.MilestoneOrderingStateUpdating do
   defp validate_milestone(project, milestone_id) do
     case Repo.get(Milestone, milestone_id) do
       nil ->
-        {:error, {:not_found, "Milestone not found"}}
+        {:error, {:not_found, gettext("Milestone not found")}}
 
       milestone ->
         if milestone.project_id == project.id do
           {:ok, milestone}
         else
-          {:error, {:bad_request, "Milestone must belong to the same project as the task"}}
+          {:error, {:bad_request, gettext("Milestone must belong to the same project as the task")}}
         end
     end
   end

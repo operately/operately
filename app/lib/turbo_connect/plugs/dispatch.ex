@@ -5,6 +5,7 @@ defmodule TurboConnect.Plugs.Dispatch do
   resolved request.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   require Logger
   import Plug.Conn
 
@@ -19,13 +20,13 @@ defmodule TurboConnect.Plugs.Dispatch do
         ok(conn, conn.assigns.turbo_api.prepare_response(conn, result))
 
       {:error, :not_found} ->
-        not_found(conn, "The requested resource was not found")
+        not_found(conn, gettext("The requested resource was not found"))
 
       {:error, :not_found, message} ->
         not_found(conn, message)
 
       {:error, :bad_request} ->
-        bad_request(conn, "The request was malformed")
+        bad_request(conn, gettext("The request was malformed"))
 
       {:error, :bad_request, message} ->
         bad_request(conn, message)
@@ -34,32 +35,32 @@ defmodule TurboConnect.Plugs.Dispatch do
         bad_request(conn, message, details)
 
       {:error, :forbidden} ->
-        forbidden(conn, "You don't have permission to perform this action")
+        forbidden(conn, gettext("You don't have permission to perform this action"))
 
       {:error, :forbidden, message} ->
         forbidden(conn, message)
 
       {:error, :unauthorized} ->
-        unauthorized(conn, "Authentication required")
+        unauthorized(conn, gettext("Authentication required"))
 
       {:error, :unauthorized, message} ->
         unauthorized(conn, message)
 
       {:error, :internal_server_error} ->
-        internal_server_error(conn, "An unexpected error occurred")
+        internal_server_error(conn, gettext("An unexpected error occurred"))
 
       {:error, message} ->
         Logger.error("\n")
         Logger.error("Unexpected result from #{conn.assigns.turbo_req_name}: {:error, #{inspect(message)}}")
         Logger.error("Did you maybe want to use {:error, :not_found, message} or {:error, :bad_request, message} instead?")
 
-        internal_server_error(conn, "An unexpected error occurred")
+        internal_server_error(conn, gettext("An unexpected error occurred"))
 
       e ->
         Logger.error("\n")
         Logger.error("Unexpected return value from #{conn.assigns.turbo_req_name} handler: #{inspect(e)}\n")
 
-        internal_server_error(conn, "An unexpected error occurred")
+        internal_server_error(conn, gettext("An unexpected error occurred"))
     end
   rescue
     e ->
@@ -67,7 +68,7 @@ defmodule TurboConnect.Plugs.Dispatch do
       Logger.error(Exception.format_banner(:error, e))
       Logger.error(Exception.format_stacktrace(__STACKTRACE__))
 
-      internal_server_error(conn, "An unexpected error occurred")
+      internal_server_error(conn, gettext("An unexpected error occurred"))
   end
 
   defp ok(conn, result) do

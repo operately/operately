@@ -599,6 +599,7 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule SharedMultiSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     require Logger
     import Ecto.Query, only: [from: 2]
     use OperatelyWeb.Api.Helpers
@@ -619,7 +620,7 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.run(multi, :project, fn _repo, %{me: me} ->
         case Operately.Projects.Project.get(me, id: project_id, opts: [preload: [:access_context]]) do
           {:ok, project} -> {:ok, project}
-          {:error, _} -> {:error, {:not_found, "Project not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -628,7 +629,7 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.run(multi, :space, fn _repo, %{me: me} ->
         case Operately.Groups.Group.get(me, id: space_id, opts: [preload: [:access_context]]) do
           {:ok, space} -> {:ok, space}
-          {:error, _} -> {:error, {:not_found, "Space not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Space not found")}}
         end
       end)
     end
@@ -640,7 +641,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: preloads]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Task not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
         end
       end)
       |> Ecto.Multi.run(type, fn _repo, %{task: task} ->
@@ -652,13 +653,13 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Task not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
         case task.project do
           %Operately.Projects.Project{} = project -> {:ok, project}
-          _ -> {:error, {:not_found, "Project not found"}}
+          _ -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -667,13 +668,13 @@ defmodule OperatelyWeb.Api.Tasks do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
         case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
           {:ok, milestone} -> {:ok, milestone}
-          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Milestone not found")}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
         case milestone.project do
           %Operately.Projects.Project{} = project -> {:ok, project}
-          _ -> {:error, {:not_found, "Project not found"}}
+          _ -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -739,13 +740,13 @@ defmodule OperatelyWeb.Api.Tasks do
 
         cond do
           due_relative_reminders_without_due_date?(task, reminders) ->
-            {:error, {:bad_request, "Invalid reminders"}}
+            {:error, {:bad_request, gettext("Invalid reminders")}}
 
           changeset.valid? ->
             Operately.Repo.update(changeset)
 
           true ->
-            {:error, {:bad_request, "Invalid reminders"}}
+            {:error, {:bad_request, gettext("Invalid reminders")}}
         end
       end)
     end
@@ -879,7 +880,7 @@ defmodule OperatelyWeb.Api.Tasks do
             if milestone.project_id == project.id do
               {:ok, milestone}
             else
-              {:error, "Milestone must belong to the same project as the task"}
+              {:error, gettext("Milestone must belong to the same project as the task")}
             end
         end
       end)
@@ -899,7 +900,7 @@ defmodule OperatelyWeb.Api.Tasks do
               if milestone.project_id == project.id do
                 {:ok, milestone}
               else
-                {:error, "Milestone must belong to the same project as the task"}
+                {:error, gettext("Milestone must belong to the same project as the task")}
               end
           end
         else
@@ -1095,7 +1096,7 @@ defmodule OperatelyWeb.Api.Tasks do
       if Enum.any?(context.task_statuses, fn s -> s.id == status.id end) do
         {:ok, status}
       else
-        {:error, {:bad_request, "Invalid status"}}
+        {:error, {:bad_request, gettext("Invalid status")}}
       end
     end
 

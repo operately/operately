@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -47,8 +48,8 @@ defmodule OperatelyWeb.Api.RichContent.SetTaskItemChecked do
   end
 
   defp respond({:ok, result}), do: {:ok, result}
-  defp respond({:error, {:error, :content_conflict}}), do: {:error, :bad_request, "The content has changed. Refresh and try again.", %{reason: "content_conflict"}}
-  defp respond({:error, {:error, :invalid_task_item}}), do: {:error, :bad_request, "The selected task item no longer exists"}
+  defp respond({:error, {:error, :content_conflict}}), do: {:error, :bad_request, gettext("The content has changed. Refresh and try again."), %{reason: "content_conflict"}}
+  defp respond({:error, {:error, :invalid_task_item}}), do: {:error, :bad_request, gettext("The selected task item no longer exists")}
   defp respond({:error, {:error, :unauthorized}}), do: {:error, :forbidden}
   defp respond({:error, {:error, reason}}) when reason in [:not_found, :forbidden, :bad_request], do: {:error, reason}
   defp respond({:error, {:error, reason, message}}), do: {:error, reason, message}
