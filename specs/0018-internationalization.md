@@ -203,11 +203,16 @@ Billing messages and announcement controls now use the shared catalog, with 15 P
 
 Validation passes: 44 component/app tests, 18 browser workflows, TypeScript checks, builds, catalog integrity/determinism, and Portuguese/expanded-text review at 375px. One cancellation-page browser test still fails in isolation, redirecting to a Free-plan billing overview; this route hides the banner and needs separate billing-fixture investigation.
 
+### Error and public pages — implemented locally
+
+ErrorPage, NotFoundPage, BillingPickCompanyPage, and PublicDocumentPage now use the shared catalog, with 20 Portuguese drafts. Error and picker presentation lives in TurboUI. Literal content, billing destinations, diagnostics visibility, and public-document refresh/access rules are preserved; 404 recovery now uses the current company-loader metadata.
+
+Validation passes: 35 component/app tests, 11 catalog tests, billing-picker and anonymous sharing/revocation browser workflows, both TypeScript checks, and builds. Catalog generation is deterministic and preserves existing translations. Narrow-screen/expanded-text review remains pending because the local review browser stalled. Native-speaker review remains PR 8; not merged or deployed.
+
 ### Additional extraction gaps
 
 The source audit confirmed these remaining surfaces:
 
-- Error/public pages: ErrorPage, NotFoundPage, BillingPickCompanyPage, and PublicDocumentPage.
 - Shared controls: OtherPeopleWithAccess, SidebarSection notifications, WorkMapTable next-step heading, SortControl, and ContinueEditingDrafts counts.
 - Dates: TimeframeSelectorDialog labels and RelativeWeekdayOrDate’s assembled “this” + weekday phrase.
 
