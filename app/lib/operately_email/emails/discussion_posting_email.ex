@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: "posted: #{title}")
+    |> subject(gettext("(%{location}) %{author} posted: %{title}", location: space.name, author: Operately.People.Person.short_name(author), title: title))
     |> assign(:author, author)
     |> assign(:message, message)
     |> assign(:title, title)

@@ -60,6 +60,19 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmailTest do
     end)
   end
 
+  test "comment and status-change subjects translate with unchanged action identifiers", ctx do
+    for {action, english, portuguese} <- [
+          {"none", "commented on the Important Work milestone", "comentou no marco Important Work"},
+          {"complete", "completed the Important Work milestone", "concluiu o marco Important Work"},
+          {"reopen", "re-opened the Important Work milestone", "reabriu o marco Important Work"}
+        ], {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
+        assert ProjectMilestoneCommentedEmail.subject_text(ctx.author, ctx.project, ctx.milestone, action) ==
+          "(#{ctx.project.name}) Michael S. #{expected}"
+      end)
+    end
+  end
+
   defp flush_emails do
     receive do
       {:email, _email} -> flush_emails()

@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Repo
   alias OperatelyEmail.Emails.ResourceHubEmail
   alias OperatelyWeb.Paths
@@ -12,19 +13,37 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
 
     first_file = hd(files)
     parent = ResourceHubEmail.parent(first_file)
-    action = find_action(files)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: action)
-    |> assign(:action, action)
+    |> subject(subject_text(author, parent, files))
     |> assign(:author, author)
     |> assign(:files, files)
     |> assign(:file_url, OperatelyWeb.Paths.file_path(company, first_file) |> OperatelyWeb.Paths.to_url())
     |> assign(:cta_url, resource_hub_or_folder_path(company, first_file) |> OperatelyWeb.Paths.to_url())
     |> render("resource_hub_file_created")
+  end
+
+  def subject_text(author, parent, files) do
+    case files do
+      [file] ->
+        gettext("(%{location}) %{author} uploaded the file \"%{file_name}\"", location: parent.name, author: Operately.People.Person.short_name(author), file_name: file.name)
+
+      _ ->
+        ngettext("(%{location}) %{author} uploaded 1 file", "(%{location}) %{author} uploaded %{count} files", length(files), location: parent.name, author: Operately.People.Person.short_name(author))
+    end
+  end
+
+  def heading(author, files) do
+    case files do
+      [file] ->
+        gettext("%{author} uploaded the file \"%{file_name}\"", author: Operately.People.Person.short_name(author), file_name: file.name)
+
+      _ ->
+        ngettext("%{author} uploaded 1 file", "%{author} uploaded %{count} files", length(files), author: Operately.People.Person.short_name(author))
+    end
   end
 
   defp get_files(activity) do

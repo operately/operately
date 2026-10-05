@@ -1,7 +1,7 @@
 <%= if @copied_document do %>
-  <%= title("#{short_name(@author)} created a copy of #{@copied_document.name} and named it #{@document.name}") %>
+  <%= title(gettext("%{author} created a copy of %{original_name} and named it %{document_name}", author: short_name(@author), original_name: @copied_document.name, document_name: @document.name)) %>
 <% else %>
-  <%= title("#{short_name(@author)} added a document: #{@document.name}") %>
+  <%= title(gettext("%{author} added a document: %{document_name}", author: short_name(@author), document_name: @document.name)) %>
 <% end %>
 
 <%= spacer() %>
@@ -14,5 +14,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Document") %>
+  <%= cta_button(@cta_url, gettext("View Document")) %>
 <% end %>

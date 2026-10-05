@@ -1,3 +1,3 @@
-<%= short_name(@author) %> added you to the <%= @space.name %> space.
+<%= gettext("%{author} added you to the %{space_name} space.", author: short_name(@author), space_name: @space.name) %>
 
-Link: <%= @link %>
+<%= gettext("Link:") %> <%= @link %>

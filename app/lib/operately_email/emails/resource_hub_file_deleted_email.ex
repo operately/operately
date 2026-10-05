@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ResourceHubFileDeletedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyEmail.Emails.ResourceHubEmail
@@ -15,7 +16,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileDeletedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "deleted a file: #{file.name}")
+    |> subject(gettext("(%{location}) %{author} deleted a file: %{file_name}", location: parent.name, author: Operately.People.Person.short_name(author), file_name: file.name))
     |> assign(:author, author)
     |> assign(:file, file)
     |> assign(:cta_url, OperatelyWeb.Paths.resource_hub_path(company, file.resource_hub) |> OperatelyWeb.Paths.to_url())

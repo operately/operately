@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} #{@action}") %>
+<%= title(OperatelyEmail.Emails.CommentAddedEmail.heading(@author, @comment_context)) %>
 
 <%= spacer() %>
 
@@ -10,5 +10,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Comment") %>
+  <%= cta_button(@link, gettext("View Comment")) %>
 <% end %>

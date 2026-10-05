@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyEmail.Emails.ResourceHubEmail
@@ -15,7 +16,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "edited a link: #{link.name}")
+    |> subject(gettext("(%{location}) %{author} edited a link: %{link_name}", location: parent.name, author: Operately.People.Person.short_name(author), link_name: link.name))
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:cta_url, OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url())

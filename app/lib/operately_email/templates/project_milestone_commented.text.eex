@@ -1,3 +1,3 @@
-<%= "#{short_name(@author)} #{@action_text}" %>
+<%= OperatelyEmail.Emails.ProjectMilestoneCommentedEmail.heading(@author, @milestone, @comment_action) %>
 
-Link: <%= @link %>
+<%= gettext("Link:") %> <%= @link %>

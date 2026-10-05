@@ -1,13 +1,13 @@
-<%= title("#{short_name(@author)} #{@action}") %>
+<%= title(OperatelyEmail.Emails.ResourceHubFileCreatedEmail.heading(@author, @files)) %>
 
 <%= spacer() %>
 
 <%= if length(@files) == 1 do %>
   <%= row do %>
-    <%= cta_button(@file_url, "View File") %>
+    <%= cta_button(@file_url, gettext("View File")) %>
   <% end %>
 <% else %>
   <%= row do %>
-    <%= cta_button(@cta_url, "View Files") %>
+    <%= cta_button(@cta_url, gettext("View Files")) %>
   <% end %>
 <% end %>

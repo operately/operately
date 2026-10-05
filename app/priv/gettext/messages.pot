@@ -422,6 +422,12 @@ msgstr ""
 msgid "%{author} added <person>%{personName}</person> as a company member"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_created.html.eex:4
+#: lib/operately_email/templates/resource_hub_document_created.text.eex:1
+msgid "%{author} added a document: %{document_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ResourceHubFileCreated/index.tsx:86
 msgid "%{author} added a file in the <parent>%{parentName}</parent> goal: <file>%{fileName}</file>"
@@ -470,6 +476,12 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectKeyResourceAdded/index.tsx:34
 msgid "%{author} added a key resource to the project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_link_created.html.eex:1
+#: lib/operately_email/templates/resource_hub_link_created.text.eex:1
+msgid "%{author} added a link"
 msgstr ""
 
 #.frontend
@@ -662,6 +674,16 @@ msgstr ""
 #: lib/operately_email/templates/project_contributors_addition.html.eex:1
 #: lib/operately_email/templates/project_contributors_addition.text.eex:1
 msgid "%{author} added you as a contributor on %{project_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/space_members_added.html.eex:1
+msgid "%{author} added you to the %{space_name} space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/space_members_added.text.eex:1
+msgid "%{author} added you to the %{space_name} space."
 msgstr ""
 
 #.elixir
@@ -1036,6 +1058,26 @@ msgstr ""
 msgid "%{author} commented"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/project_check_in_commented.html.eex:1
+msgid "%{author} commented on a Check-in for the %{project_name} project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/kpi_entry_commented.html.eex:1
+msgid "%{author} commented on a KPI update for %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/kpi_entry_commented.text.eex:1
+msgid "%{author} commented on a KPI update for %{name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_check_in_commented.text.eex:1
+msgid "%{author} commented on a check-in for %{project_name}."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:57
 msgid "%{author} commented on a message"
@@ -1044,6 +1086,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/DiscussionCommentSubmitted/index.tsx:67
 msgid "%{author} commented on a message in %{spaceName} space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_retrospective_commented.text.eex:1
+msgid "%{author} commented on a retrospective for %{project_name}."
 msgstr ""
 
 #.frontend
@@ -1060,6 +1107,81 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/SpaceTaskCommented/index.tsx:71
 msgid "%{author} commented on a task in the <space>%{spaceName}</space> space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:63
+msgid "%{author} commented on the %{milestone_name} milestone"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_task_commented.html.eex:1
+#: lib/operately_email/templates/space_task_commented.html.eex:1
+msgid "%{author} commented on the %{name} task"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/goal_check_in_commented.html.eex:1
+#: lib/operately_email/templates/goal_check_in_commented.text.eex:1
+msgid "%{author} commented on the check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_task_commented.text.eex:1
+#: lib/operately_email/templates/space_task_commented.text.eex:1
+msgid "%{author} commented on the following task: %{name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:88
+msgid "%{author} commented on the goal closing"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:91
+msgid "%{author} commented on the goal reopening"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:85
+msgid "%{author} commented on the goal timeframe change"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:97
+msgid "%{author} commented on the project pausing"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:94
+msgid "%{author} commented on the project resumption"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/project_retrospective_commented.html.eex:1
+msgid "%{author} commented on the retrospective for the %{project_name} project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_commented.html.eex:1
+#: lib/operately_email/templates/resource_hub_document_commented.text.eex:1
+#: lib/operately_email/templates/resource_hub_file_commented.html.eex:1
+#: lib/operately_email/templates/resource_hub_file_commented.text.eex:1
+#: lib/operately_email/templates/resource_hub_link_commented.html.eex:1
+#: lib/operately_email/templates/resource_hub_link_commented.text.eex:1
+msgid "%{author} commented on: %{name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:100
+#: lib/operately_email/templates/discussion_comment_submitted.html.eex:1
+#: lib/operately_email/templates/discussion_comment_submitted.text.eex:1
+msgid "%{author} commented on: %{title}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:66
+msgid "%{author} completed the %{milestone_name} milestone"
 msgstr ""
 
 #.frontend
@@ -1111,6 +1233,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:47
 msgid "%{author} created a KPI in the <space>%{spaceName}</space> space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_created.html.eex:2
+msgid "%{author} created a copy of %{original_name} and named it %{document_name}"
 msgstr ""
 
 #.frontend
@@ -1279,6 +1406,18 @@ msgstr ""
 msgid "%{author} deleted a comment on <task>%{taskName}</task> in the <space>%{spaceName}</space> space"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_deleted.html.eex:1
+#: lib/operately_email/templates/resource_hub_document_deleted.text.eex:1
+msgid "%{author} deleted a document: %{document_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_file_deleted.html.eex:1
+#: lib/operately_email/templates/resource_hub_file_deleted.text.eex:1
+msgid "%{author} deleted a file: %{file_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:42
 msgid "%{author} deleted a key resource from the <project>%{projectName}</project> project"
@@ -1287,6 +1426,12 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectKeyResourceDeleted/index.tsx:34
 msgid "%{author} deleted a key resource from the project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_link_deleted.html.eex:1
+#: lib/operately_email/templates/resource_hub_link_deleted.text.eex:1
+msgid "%{author} deleted a link: %{link_name}"
 msgstr ""
 
 #.frontend
@@ -1520,6 +1665,12 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:54
 msgid "%{author} edited a link: %{linkName}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_link_edited.html.eex:1
+#: lib/operately_email/templates/resource_hub_link_edited.text.eex:1
+msgid "%{author} edited a link: %{link_name}"
 msgstr ""
 
 #.elixir
@@ -1772,9 +1923,24 @@ msgstr ""
 msgid "%{author} posted <discussion>%{title}</discussion> on the <project>%{projectName}</project> project"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/discussion_posting.html.eex:1
+#: lib/operately_email/templates/discussion_posting.text.eex:1
+#: lib/operately_email/templates/goal_discussion_creation.html.eex:1
+#: lib/operately_email/templates/goal_discussion_creation.text.eex:1
+#: lib/operately_email/templates/project_discussion_submitted.html.eex:1
+#: lib/operately_email/templates/project_discussion_submitted.text.eex:1
+msgid "%{author} posted: %{title}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/CompanyOwnersAdding/index.tsx:37
 msgid "%{author} promoted %{names} to account owner"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:69
+msgid "%{author} re-opened the %{milestone_name} milestone"
 msgstr ""
 
 #.frontend
@@ -2337,6 +2503,12 @@ msgstr ""
 msgid "%{author} updated the description of a task in %{context}"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_edited.html.eex:1
+#: lib/operately_email/templates/resource_hub_document_edited.text.eex:1
+msgid "%{author} updated the document: %{document_name}"
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/MilestoneDueDateUpdating/index.tsx:40
 msgid "%{author} updated the due date for the <milestone>%{title}</milestone> milestone"
@@ -2395,6 +2567,18 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/GroupEdited/index.tsx:43
 msgid "%{author} updated this space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_file_created_email.ex:45
+msgid "%{author} uploaded 1 file"
+msgid_plural "%{author} uploaded %{count} files"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_file_created_email.ex:42
+msgid "%{author} uploaded the file \"%{file_name}\""
 msgstr ""
 
 #.frontend
@@ -2750,6 +2934,147 @@ msgid "(%{goal_name}) %{author} updated the goal description"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/emails/resource_hub_document_created_email.ex:34
+msgid "(%{location}) %{author} added a document: %{document_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_link_created_email.ex:19
+msgid "(%{location}) %{author} added a link"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/space_members_added_email.ex:16
+msgid "(%{location}) %{author} added you to the %{space_name} space"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/kpi_entry_commented_email.ex:19
+msgid "(%{location}) %{author} commented on a KPI update: %{kpi_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_check_in_commented_email.ex:18
+msgid "(%{location}) %{author} commented on a check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/goal_check_in_commented_email.ex:19
+msgid "(%{location}) %{author} commented on the check-in"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:66
+msgid "(%{location}) %{author} commented on the goal closing"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:69
+msgid "(%{location}) %{author} commented on the goal reopening"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:63
+msgid "(%{location}) %{author} commented on the goal timeframe change"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:75
+msgid "(%{location}) %{author} commented on the project pausing"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:72
+msgid "(%{location}) %{author} commented on the project resumption"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_retrospective_commented_email.ex:20
+msgid "(%{location}) %{author} commented on the project retrospective"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_document_commented_email.ex:19
+msgid "(%{location}) %{author} commented on: %{document_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_file_commented_email.ex:19
+msgid "(%{location}) %{author} commented on: %{file_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_link_commented_email.ex:20
+msgid "(%{location}) %{author} commented on: %{link_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_task_commented_email.ex:22
+#: lib/operately_email/emails/space_task_commented_email.ex:22
+msgid "(%{location}) %{author} commented on: %{task_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/comment_added_email.ex:78
+#: lib/operately_email/emails/discussion_comment_submitted_email.ex:22
+msgid "(%{location}) %{author} commented on: %{title}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_document_created_email.ex:32
+msgid "(%{location}) %{author} copied a document: %{document_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_document_deleted_email.ex:19
+msgid "(%{location}) %{author} deleted a document: %{document_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_file_deleted_email.ex:19
+msgid "(%{location}) %{author} deleted a file: %{file_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_link_deleted_email.ex:19
+msgid "(%{location}) %{author} deleted a link: %{link_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_link_edited_email.ex:19
+msgid "(%{location}) %{author} edited a link: %{link_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_document_edited_email.ex:53
+msgid "(%{location}) %{author} mentioned you in the document \"%{document_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/discussion_posting_email.ex:20
+#: lib/operately_email/emails/goal_discussion_creation_email.ex:22
+#: lib/operately_email/emails/project_discussion_submitted_email.ex:25
+msgid "(%{location}) %{author} posted: %{title}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_document_edited_email.ex:55
+msgid "(%{location}) %{author} updated the document \"%{document_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_file_created_email.ex:35
+msgid "(%{location}) %{author} uploaded 1 file"
+msgid_plural "(%{location}) %{author} uploaded %{count} files"
+msgstr[0] ""
+msgstr[1] ""
+
+#.elixir
+#: lib/operately_email/emails/resource_hub_file_created_email.ex:32
+msgid "(%{location}) %{author} uploaded the file \"%{file_name}\""
+msgstr ""
+
+#.elixir
 #: lib/operately_email/emails/milestone_due_date_updating_email.ex:23
 msgid "(%{milestone_project_name}) %{author} changed the due date for \"%{milestone_title}\""
 msgstr ""
@@ -2780,6 +3105,16 @@ msgid "(%{project_name}) %{author} closed the project and submitted a retrospect
 msgstr ""
 
 #.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:35
+msgid "(%{project_name}) %{author} commented on the %{milestone_name} milestone"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:42
+msgid "(%{project_name}) %{author} completed the %{milestone_name} milestone"
+msgstr ""
+
+#.elixir
 #: lib/operately_email/emails/project_goal_connection_email.ex:21
 msgid "(%{project_name}) %{author} connected the project to the %{goal_name} goal"
 msgstr ""
@@ -2802,6 +3137,11 @@ msgstr ""
 #.elixir
 #: lib/operately_email/emails/project_pausing_email.ex:16
 msgid "(%{project_name}) %{author} paused the project"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:49
+msgid "(%{project_name}) %{author} re-opened the %{milestone_name} milestone"
 msgstr ""
 
 #.elixir
@@ -2977,7 +3317,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:114
+#: ../turboui/src/RichEditor/components/TableControls.tsx:119
 msgid "1 column"
 msgid_plural "%{count} columns"
 msgstr[0] ""
@@ -3322,7 +3662,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:107
+#: ../turboui/src/RichEditor/components/TableControls.tsx:112
 msgid "1 row"
 msgid_plural "%{count} rows"
 msgstr[0] ""
@@ -3984,7 +4324,7 @@ msgid "Add Project"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:441
+#: ../turboui/src/Reactions/index.tsx:451
 msgid "Add Reaction"
 msgstr ""
 
@@ -4081,7 +4421,7 @@ msgid "Add column left"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:116
+#: ../turboui/src/RichEditor/components/TableControls.tsx:121
 #: ../turboui/src/RichEditor/components/tableActions.ts:28
 msgid "Add column right"
 msgstr ""
@@ -4119,7 +4459,7 @@ msgid "Add goals"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:71
+#: ../turboui/src/RichEditor/components/TableControls.tsx:76
 msgid "Add header row"
 msgstr ""
 
@@ -4211,7 +4551,7 @@ msgid "Add row above"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:109
+#: ../turboui/src/RichEditor/components/TableControls.tsx:114
 #: ../turboui/src/RichEditor/components/tableActions.ts:16
 msgid "Add row below"
 msgstr ""
@@ -5061,12 +5401,12 @@ msgstr ""
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:151
 #: ../turboui/src/Checklist/index.tsx:329
 #: ../turboui/src/Checklist/index.tsx:377
-#: ../turboui/src/CommentSection/CommentInput.tsx:137
-#: ../turboui/src/CommentSection/CommentItem.tsx:308
+#: ../turboui/src/CommentSection/CommentInput.tsx:186
+#: ../turboui/src/CommentSection/CommentItem.tsx:316
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ConvertToGuestModal.tsx:37
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/RemovePersonModal.tsx:46
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
-#: ../turboui/src/ConfirmDialog/index.tsx:48
+#: ../turboui/src/ConfirmDialog/index.tsx:59
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:176
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
@@ -5217,7 +5557,7 @@ msgid "Celebrate the win..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:157
+#: ../turboui/src/RichEditor/components/TableControls.tsx:158
 msgid "Cell actions"
 msgstr ""
 
@@ -5704,9 +6044,9 @@ msgstr ""
 #: ../turboui/src/AccountApiTokensPage/index.tsx:197
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:63
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/LegacyModal.tsx:66
-#: ../turboui/src/Modal/index.tsx:137
-#: ../turboui/src/SlideIn/index.tsx:114
-#: ../turboui/src/SlideIn/index.tsx:116
+#: ../turboui/src/Modal/index.tsx:143
+#: ../turboui/src/SlideIn/index.tsx:120
+#: ../turboui/src/SlideIn/index.tsx:122
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:134
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:55
 msgid "Close"
@@ -5724,7 +6064,7 @@ msgid "Close Project"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:362
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:368
 msgid "Close image preview"
 msgstr ""
 
@@ -5805,7 +6145,7 @@ msgid "Color Mode"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/useTableControls.ts:161
+#: ../turboui/src/RichEditor/components/useTableControls.ts:203
 msgid "Column deleted"
 msgstr ""
 
@@ -5834,8 +6174,15 @@ msgid "Comment not added"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CommentSection/CommentItem.tsx:183
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:93
 msgid "Comment not deleted"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CommentSection/CommentInput.tsx:69
+#: ../turboui/src/CommentSection/CommentInput.tsx:75
+msgid "Comment not posted"
 msgstr ""
 
 #.frontend
@@ -6108,7 +6455,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:42
-#: ../turboui/src/ConfirmDialog/index.tsx:47
+#: ../turboui/src/ConfirmDialog/index.tsx:58
 #: ../turboui/src/DateField/components/ActionButtons.tsx:26
 #: ../turboui/src/SchedulePosting/useScheduleFlowState.ts:46
 #: assets/js/hooks/useScheduleFlow.ts:64
@@ -6322,7 +6669,7 @@ msgid "Copy failed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:199
+#: ../turboui/src/CommentSection/CommentItem.tsx:207
 msgid "Copy link"
 msgstr ""
 
@@ -6726,7 +7073,7 @@ msgstr ""
 #: ../turboui/src/AccountApiTokensPage/index.tsx:398
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:516
-#: ../turboui/src/CommentSection/CommentItem.tsx:217
+#: ../turboui/src/CommentSection/CommentItem.tsx:225
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
 #: ../turboui/src/GoalTargetList/DeleteButton.tsx:17
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:227
@@ -6827,8 +7174,8 @@ msgid "Delete check-in"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:67
-#: ../turboui/src/RichEditor/components/TableControls.tsx:112
+#: ../turboui/src/RichEditor/components/TableControls.tsx:72
+#: ../turboui/src/RichEditor/components/TableControls.tsx:117
 msgid "Delete column"
 msgstr ""
 
@@ -6854,8 +7201,8 @@ msgid "Delete forever"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:66
-#: ../turboui/src/RichEditor/components/TableControls.tsx:105
+#: ../turboui/src/RichEditor/components/TableControls.tsx:71
+#: ../turboui/src/RichEditor/components/TableControls.tsx:110
 msgid "Delete row"
 msgstr ""
 
@@ -6865,7 +7212,7 @@ msgid "Delete space"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:72
+#: ../turboui/src/RichEditor/components/TableControls.tsx:77
 msgid "Delete table"
 msgstr ""
 
@@ -7291,8 +7638,8 @@ msgstr ""
 #: ../turboui/src/CompanyExportPage/index.tsx:137
 #: ../turboui/src/FilePage/index.tsx:166
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:67
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:269
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:418
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:270
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:424
 #: assets/js/pages/ProjectTemplateFilePage/index.tsx:64
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:30
 msgid "Download"
@@ -7439,7 +7786,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:506
-#: ../turboui/src/CommentSection/CommentItem.tsx:208
+#: ../turboui/src/CommentSection/CommentItem.tsx:216
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -7579,7 +7926,7 @@ msgid "Edit update — %{name}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:281
+#: ../turboui/src/CommentSection/CommentItem.tsx:289
 msgid "Edit your comment..."
 msgstr ""
 
@@ -8194,7 +8541,7 @@ msgid "Failed to change plan"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:186
+#: ../turboui/src/CommentSection/CommentItem.tsx:194
 msgid "Failed to copy comment link to clipboard"
 msgstr ""
 
@@ -8944,7 +9291,7 @@ msgid "Hide completed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:168
+#: ../turboui/src/CommentSection/CommentInput.tsx:217
 msgid "Hide list"
 msgstr ""
 
@@ -9033,7 +9380,7 @@ msgid "If you sign in with Google, you’ll need to use a Google account with th
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:349
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:355
 msgid "Image preview"
 msgstr ""
 
@@ -9516,6 +9863,35 @@ msgstr ""
 #: assets/js/pages/ProjectTemplateEditLinkPage/index.tsx:42
 #: assets/js/pages/ResourceHubEditLinkPage/page.tsx:49
 msgid "Link not updated"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/comment_added.text.eex:3
+#: lib/operately_email/templates/discussion_comment_submitted.text.eex:3
+#: lib/operately_email/templates/discussion_posting.text.eex:3
+#: lib/operately_email/templates/goal_check_in_commented.text.eex:3
+#: lib/operately_email/templates/goal_discussion_creation.text.eex:3
+#: lib/operately_email/templates/kpi_entry_commented.text.eex:3
+#: lib/operately_email/templates/project_check_in_commented.text.eex:3
+#: lib/operately_email/templates/project_discussion_submitted.text.eex:3
+#: lib/operately_email/templates/project_milestone_commented.text.eex:3
+#: lib/operately_email/templates/project_retrospective_commented.text.eex:3
+#: lib/operately_email/templates/project_task_commented.text.eex:3
+#: lib/operately_email/templates/resource_hub_document_commented.text.eex:3
+#: lib/operately_email/templates/resource_hub_document_created.text.eex:3
+#: lib/operately_email/templates/resource_hub_document_deleted.text.eex:3
+#: lib/operately_email/templates/resource_hub_document_edited.text.eex:3
+#: lib/operately_email/templates/resource_hub_file_commented.text.eex:3
+#: lib/operately_email/templates/resource_hub_file_created.text.eex:4
+#: lib/operately_email/templates/resource_hub_file_created.text.eex:6
+#: lib/operately_email/templates/resource_hub_file_deleted.text.eex:3
+#: lib/operately_email/templates/resource_hub_link_commented.text.eex:3
+#: lib/operately_email/templates/resource_hub_link_created.text.eex:3
+#: lib/operately_email/templates/resource_hub_link_deleted.text.eex:3
+#: lib/operately_email/templates/resource_hub_link_edited.text.eex:3
+#: lib/operately_email/templates/space_members_added.text.eex:3
+#: lib/operately_email/templates/space_task_commented.text.eex:3
+msgid "Link:"
 msgstr ""
 
 #.elixir
@@ -10487,7 +10863,7 @@ msgid "No due date set."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:478
+#: ../turboui/src/Reactions/index.tsx:488
 msgid "No emojis found"
 msgstr ""
 
@@ -10979,8 +11355,8 @@ msgid "Ooops, something went wrong while loading the feed"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:110
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:239
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:240
 msgid "Open %{name} preview"
 msgstr ""
 
@@ -11010,8 +11386,8 @@ msgid "Open global search"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:110
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:240
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:241
 msgid "Open image preview"
 msgstr ""
 
@@ -11531,6 +11907,10 @@ msgid "Please try again"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CommentSection/CommentInput.tsx:69
+#: ../turboui/src/CommentSection/CommentItem.tsx:183
+#: ../turboui/src/Reactions/index.tsx:57
+#: ../turboui/src/Reactions/index.tsx:203
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
 #: assets/js/pages/AccountApiTokensPage/index.tsx:84
 #: assets/js/pages/AccountApiTokensPage/index.tsx:113
@@ -11554,7 +11934,7 @@ msgid "Please wait…"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:133
+#: ../turboui/src/CommentSection/CommentInput.tsx:182
 #: assets/js/pages/DiscussionNewPage/index.tsx:56
 msgid "Post"
 msgstr ""
@@ -12149,6 +12529,16 @@ msgid "Re: timeframe change"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/Reactions/index.tsx:203
+msgid "Reaction not added"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:57
+msgid "Reaction not removed"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:191
 msgid "Reactivate Account"
 msgstr ""
@@ -12321,7 +12711,7 @@ msgid "Remove from space"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:71
+#: ../turboui/src/RichEditor/components/TableControls.tsx:76
 msgid "Remove header row"
 msgstr ""
 
@@ -12342,7 +12732,7 @@ msgid "Remove photo"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:160
+#: ../turboui/src/Reactions/index.tsx:169
 msgid "Remove reaction"
 msgstr ""
 
@@ -12871,7 +13261,7 @@ msgid "Role"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/useTableControls.ts:161
+#: ../turboui/src/RichEditor/components/useTableControls.ts:203
 msgid "Row deleted"
 msgstr ""
 
@@ -12916,7 +13306,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
-#: ../turboui/src/CommentSection/CommentItem.tsx:305
+#: ../turboui/src/CommentSection/CommentItem.tsx:313
 #: ../turboui/src/DocumentEditPage/index.tsx:83
 #: ../turboui/src/ProfileEditPage/index.tsx:195
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
@@ -13062,7 +13452,7 @@ msgid "Search documents and files…"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:451
+#: ../turboui/src/Reactions/index.tsx:461
 msgid "Search emojis..."
 msgstr ""
 
@@ -13082,7 +13472,7 @@ msgid "Search for people to promote to owner"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Forms/SelectPerson.tsx:65
+#: ../turboui/src/Forms/SelectPerson.tsx:66
 msgid "Search for person..."
 msgstr ""
 
@@ -14068,7 +14458,7 @@ msgid "Subscription ended"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:184
+#: ../turboui/src/CommentSection/CommentItem.tsx:192
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:326
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:271
@@ -14101,13 +14491,13 @@ msgid "Table"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:93
+#: ../turboui/src/RichEditor/components/TableControls.tsx:98
 msgid "Table controls"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/RichEditor/components/TableControls.tsx:135
 #: ../turboui/src/RichEditor/components/TableControls.tsx:136
+#: ../turboui/src/RichEditor/components/TableControls.tsx:137
 msgid "Table settings"
 msgstr ""
 
@@ -14476,7 +14866,7 @@ msgid "The comment is still on this page. Try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:184
+#: ../turboui/src/CommentSection/CommentItem.tsx:192
 msgid "The comment link has been copied to your clipboard"
 msgstr ""
 
@@ -14942,19 +15332,19 @@ msgid "This code has expired. Request a new code to continue."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:211
+#: ../turboui/src/CommentSection/CommentInput.tsx:260
 msgid "This comment will notify %{first} and %{second}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:223
+#: ../turboui/src/CommentSection/CommentInput.tsx:272
 msgid "This comment will notify %{first}, %{second}, and 1 other."
 msgid_plural "This comment will notify %{first}, %{second}, and %{count} others."
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:202
+#: ../turboui/src/CommentSection/CommentInput.tsx:251
 msgid "This comment will notify %{name}"
 msgstr ""
 
@@ -15314,17 +15704,17 @@ msgid "Timezone"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:194
+#: ../turboui/src/CommentSection/CommentInput.tsx:243
 msgid "Tip: @-mention someone to notify them about this milestone."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:193
+#: ../turboui/src/CommentSection/CommentInput.tsx:242
 msgid "Tip: @-mention someone to notify them about this task."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:176
+#: ../turboui/src/CommentSection/CommentInput.tsx:225
 msgid "Tip: Subscribe if you want notifications too."
 msgstr ""
 
@@ -15623,12 +16013,12 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/RichEditor/components/UndoButton.tsx:14
-#: ../turboui/src/RichEditor/components/useTableControls.ts:164
+#: ../turboui/src/RichEditor/components/useTableControls.ts:206
 msgid "Undo"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentItem.tsx:186
+#: ../turboui/src/CommentSection/CommentItem.tsx:194
 msgid "Unexpected error"
 msgstr ""
 
@@ -15939,7 +16329,7 @@ msgid "Uploading file..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:133
+#: ../turboui/src/CommentSection/CommentInput.tsx:182
 #: ../turboui/src/Forms/Submit.tsx:26
 msgid "Uploading..."
 msgstr ""
@@ -16107,6 +16497,51 @@ msgid "View Check-In"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/emails/project_check_in_commented_email.ex:23
+#: lib/operately_email/emails/project_milestone_commented_email.ex:79
+#: lib/operately_email/templates/comment_added.html.eex:13
+#: lib/operately_email/templates/discussion_comment_submitted.html.eex:13
+#: lib/operately_email/templates/goal_check_in_commented.html.eex:13
+#: lib/operately_email/templates/kpi_entry_commented.html.eex:12
+#: lib/operately_email/templates/project_task_commented.html.eex:12
+#: lib/operately_email/templates/resource_hub_document_commented.html.eex:13
+#: lib/operately_email/templates/resource_hub_file_commented.html.eex:13
+#: lib/operately_email/templates/resource_hub_link_commented.html.eex:13
+#: lib/operately_email/templates/space_task_commented.html.eex:12
+msgid "View Comment"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/discussion_posting.html.eex:13
+#: lib/operately_email/templates/goal_discussion_creation.html.eex:12
+#: lib/operately_email/templates/project_discussion_submitted.html.eex:12
+msgid "View Discussion"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_deleted.html.eex:6
+#: lib/operately_email/templates/resource_hub_file_deleted.html.eex:6
+#: lib/operately_email/templates/resource_hub_link_deleted.html.eex:6
+msgid "View Docs & Files"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_document_created.html.eex:17
+#: lib/operately_email/templates/resource_hub_document_edited.html.eex:13
+msgid "View Document"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_file_created.html.eex:7
+msgid "View File"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/resource_hub_file_created.html.eex:11
+msgid "View Files"
+msgstr ""
+
+#.elixir
 #: lib/operately_email/templates/goal_champion_updating.html.eex:6
 #: lib/operately_email/templates/goal_created.html.eex:6
 #: lib/operately_email/templates/goal_description_changed.html.eex:18
@@ -16127,6 +16562,13 @@ msgid "View Invitation Link"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/templates/resource_hub_link_created.html.eex:16
+#: lib/operately_email/templates/resource_hub_link_edited.html.eex:16
+msgid "View Link"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/project_milestone_commented_email.ex:81
 #: lib/operately_email/templates/milestone_description_updating.html.eex:18
 #: lib/operately_email/templates/project_milestone_creation.html.eex:19
 msgid "View Milestone"
@@ -16168,6 +16610,7 @@ msgstr ""
 #: lib/operately_email/emails/goal_closing_email.ex:41
 #: lib/operately_email/emails/project_closed_email.ex:40
 #: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:20
+#: lib/operately_email/emails/project_retrospective_commented_email.ex:24
 #: lib/operately_email/templates/goal_retrospective_acknowledged.html.eex:6
 msgid "View Retrospective"
 msgstr ""
@@ -16175,6 +16618,11 @@ msgstr ""
 #.elixir
 #: lib/operately_email/templates/goal_retrospective_acknowledged.text.eex:3
 msgid "View Retrospective: %{url}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/space_members_added.html.eex:6
+msgid "View Space"
 msgstr ""
 
 #.elixir
@@ -16194,7 +16642,7 @@ msgid "View access"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:168
+#: ../turboui/src/CommentSection/CommentInput.tsx:217
 msgid "View all"
 msgstr ""
 
@@ -16241,7 +16689,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:358
-#: ../turboui/src/RichEditor/Blob/BlobView.tsx:277
+#: ../turboui/src/RichEditor/Blob/BlobView.tsx:278
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:418
 msgid "View original"
 msgstr ""
@@ -16622,8 +17070,8 @@ msgid "Workflow not updated"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CommentSection/CommentInput.tsx:56
-#: ../turboui/src/CommentSection/CommentInput.tsx:75
+#: ../turboui/src/CommentSection/CommentInput.tsx:105
+#: ../turboui/src/CommentSection/CommentInput.tsx:126
 msgid "Write a comment here..."
 msgstr ""
 
@@ -16885,6 +17333,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerifyNewEmailStep.tsx:17
 msgid "Your current email stays active until you confirm this code."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CommentSection/CommentInput.tsx:75
+msgid "Your draft has been kept for retry."
 msgstr ""
 
 #.frontend
@@ -17410,7 +17863,7 @@ msgid "your@email.com"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Forms/SelectPerson.tsx:184
+#: ../turboui/src/Forms/SelectPerson.tsx:189
 msgid "· %{title}"
 msgstr ""
 

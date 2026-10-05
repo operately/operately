@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.CommentAddedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.Repo
   alias OperatelyWeb.Paths
@@ -9,19 +10,95 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
 
     where = get_where(activity)
-    action = get_action(activity)
+    context = comment_context(activity)
     link = get_link(company, activity, comment)
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: where, who: author, action: action)
+    |> subject(subject_text(author, where, context))
     |> assign(:author, author)
     |> assign(:comment, comment)
-    |> assign(:action, action)
+    |> assign(:comment_context, context)
     |> assign(:link, link)
     |> render("comment_added")
+  end
+
+  defp comment_context(activity) do
+    thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
+    parent_activity = Repo.preload(thread, :activity).activity
+
+    case parent_activity.action do
+      "goal_discussion_creation" ->
+        parent_thread = Operately.Comments.get_thread!(parent_activity.comment_thread_id)
+        {:discussion, parent_thread.title}
+
+      "project_discussion_submitted" ->
+        {:discussion, thread.title}
+
+      "goal_timeframe_editing" ->
+        {:goal_timeframe_editing, nil}
+
+      "goal_closing" ->
+        {:goal_closing, nil}
+
+      "goal_reopening" ->
+        {:goal_reopening, nil}
+
+      "project_resuming" ->
+        {:project_resuming, nil}
+
+      "project_pausing" ->
+        {:project_pausing, nil}
+
+      _ ->
+        raise "Unsupported action: #{parent_activity.action}"
+    end
+  end
+
+  def subject_text(author, location, context) do
+    case context do
+      {:goal_timeframe_editing, _} ->
+        gettext("(%{location}) %{author} commented on the goal timeframe change", location: location, author: Operately.People.Person.short_name(author))
+
+      {:goal_closing, _} ->
+        gettext("(%{location}) %{author} commented on the goal closing", location: location, author: Operately.People.Person.short_name(author))
+
+      {:goal_reopening, _} ->
+        gettext("(%{location}) %{author} commented on the goal reopening", location: location, author: Operately.People.Person.short_name(author))
+
+      {:project_resuming, _} ->
+        gettext("(%{location}) %{author} commented on the project resumption", location: location, author: Operately.People.Person.short_name(author))
+
+      {:project_pausing, _} ->
+        gettext("(%{location}) %{author} commented on the project pausing", location: location, author: Operately.People.Person.short_name(author))
+
+      {:discussion, title} ->
+        gettext("(%{location}) %{author} commented on: %{title}", location: location, author: Operately.People.Person.short_name(author), title: title)
+    end
+  end
+
+  def heading(author, context) do
+    case context do
+      {:goal_timeframe_editing, _} ->
+        gettext("%{author} commented on the goal timeframe change", author: Operately.People.Person.short_name(author))
+
+      {:goal_closing, _} ->
+        gettext("%{author} commented on the goal closing", author: Operately.People.Person.short_name(author))
+
+      {:goal_reopening, _} ->
+        gettext("%{author} commented on the goal reopening", author: Operately.People.Person.short_name(author))
+
+      {:project_resuming, _} ->
+        gettext("%{author} commented on the project resumption", author: Operately.People.Person.short_name(author))
+
+      {:project_pausing, _} ->
+        gettext("%{author} commented on the project pausing", author: Operately.People.Person.short_name(author))
+
+      {:discussion, title} ->
+        gettext("%{author} commented on: %{title}", author: Operately.People.Person.short_name(author), title: title)
+    end
   end
 
   def get_where(activity) do
