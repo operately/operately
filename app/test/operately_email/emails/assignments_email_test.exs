@@ -274,7 +274,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     assert Enum.any?(emails, fn email ->
       email.to == [{"", ctx.first_assignee.email}] and
         email.subject == "#{ctx.company.name}: Seu trabalho para hoje" and
-        email.html_body =~ "Vence amanhã" and email.text_body =~ "Vence amanhã" and
+        email.html_body =~ "Data de conclusão: amanhã" and email.text_body =~ "Data de conclusão: amanhã" and
         email.text_body =~ "Shared urgent task" and email.text_body =~ "Espaço: Product"
     end)
     assert Enum.any?(emails, fn email ->
@@ -337,9 +337,9 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     for {days, english, portuguese} <- [
           {-1, "Overdue by 1 day", "Atrasado em 1 dia"},
           {-3, "Overdue by 3 days", "Atrasado em 3 dias"},
-          {0, "Due today", "Vence hoje"},
-          {1, "Due tomorrow", "Vence amanhã"},
-          {3, "Due in 3 days", "Vence em 3 dias"},
+          {0, "Due today", "Data de conclusão: hoje"},
+          {1, "Due tomorrow", "Data de conclusão: amanhã"},
+          {3, "Due in 3 days", "Data de conclusão em 3 dias"},
           {nil, "No due date", "Sem data de conclusão"}
         ] do
       due_date = if days, do: Date.utc_today() |> Date.add(days) |> ContextualDate.create_day_date() |> Map.from_struct()

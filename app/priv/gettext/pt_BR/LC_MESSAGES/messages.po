@@ -7913,18 +7913,18 @@ msgstr "A data de conclusão foi atualizada."
 #: lib/operately_email/emails/assignments_email.ex:220
 msgid "Due in 1 day"
 msgid_plural "Due in %{count} days"
-msgstr[0] "Vence em 1 dia"
-msgstr[1] "Vence em %{count} dias"
+msgstr[0] "Data de conclusão em 1 dia"
+msgstr[1] "Data de conclusão em %{count} dias"
 
 #.elixir
 #: lib/operately_email/emails/assignments_email.ex:211
 msgid "Due today"
-msgstr "Vence hoje"
+msgstr "Data de conclusão: hoje"
 
 #.elixir
 #: lib/operately_email/emails/assignments_email.ex:214
 msgid "Due tomorrow"
-msgstr "Vence amanhã"
+msgstr "Data de conclusão: amanhã"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:41
