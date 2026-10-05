@@ -1,3 +1,3 @@
-<%= short_name(@author) %> deleted a link: <%= @link.name %>
+<%= gettext("%{author} deleted a link: %{link_name}", author: short_name(@author), link_name: @link.name) %>
 
-Link: <%= @cta_url %>
+<%= gettext("Link:") %> <%= @cta_url %>

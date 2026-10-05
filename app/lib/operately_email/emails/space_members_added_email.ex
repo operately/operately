@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.SpaceMembersAddedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Groups}
 
@@ -12,7 +13,7 @@ defmodule OperatelyEmail.Emails.SpaceMembersAddedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: "added you to the #{space.name} space")
+    |> subject(gettext("(%{location}) %{author} added you to the %{space_name} space", location: space.name, author: Operately.People.Person.short_name(author), space_name: space.name))
     |> assign(:author, author)
     |> assign(:space, space)
     |> assign(:link, link)

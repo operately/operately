@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects, Updates}
 
@@ -15,13 +16,12 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: action_text(milestone, action))
+    |> subject(subject_text(author, project, milestone, action))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:content, comment_content(action, comment.content))
     |> assign(:milestone, milestone)
-    |> assign(:action_text, action_text(milestone, action))
-    |> assign(:button_text, button_text(action))
+    |> assign(:comment_action, action)
     |> assign(:link, link)
     |> render("project_milestone_commented")
   end
@@ -29,19 +29,56 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
   defp comment_content("none", %{} = content) when map_size(content) > 0, do: content
   defp comment_content(_, _), do: nil
 
-  def action_text(milestone, action) do
+  def subject_text(author, project, milestone, action) do
     case action do
-      "none" -> "commented on the #{milestone.title} milestone"
-      "complete" -> "completed the #{milestone.title} milestone"
-      "reopen" -> "re-opened the #{milestone.title} milestone"
-      _ -> raise "Unknown action: #{action}"
+      "none" ->
+        gettext("(%{project_name}) %{author} commented on the %{milestone_name} milestone",
+          project_name: project.name,
+          author: Operately.People.Person.short_name(author),
+          milestone_name: milestone.title
+        )
+
+      "complete" ->
+        gettext("(%{project_name}) %{author} completed the %{milestone_name} milestone",
+          project_name: project.name,
+          author: Operately.People.Person.short_name(author),
+          milestone_name: milestone.title
+        )
+
+      "reopen" ->
+        gettext("(%{project_name}) %{author} re-opened the %{milestone_name} milestone",
+          project_name: project.name,
+          author: Operately.People.Person.short_name(author),
+          milestone_name: milestone.title
+        )
+
+      _ ->
+        raise "Unknown action: #{action}"
+    end
+  end
+
+  def heading(author, milestone, action) do
+    case action do
+      "none" ->
+        gettext("%{author} commented on the %{milestone_name} milestone", author: Operately.People.Person.short_name(author), milestone_name: milestone.title)
+
+      "complete" ->
+        gettext("%{author} completed the %{milestone_name} milestone", author: Operately.People.Person.short_name(author), milestone_name: milestone.title)
+
+      "reopen" ->
+        gettext("%{author} re-opened the %{milestone_name} milestone", author: Operately.People.Person.short_name(author), milestone_name: milestone.title)
+
+      _ ->
+        raise "Unknown action: #{action}"
     end
   end
 
   def button_text(action) do
     case action do
-      "none" -> "View Comment"
-      _ -> "View Milestone"
+      "none" ->
+        gettext("View Comment")
+      _ ->
+        gettext("View Milestone")
     end
   end
 

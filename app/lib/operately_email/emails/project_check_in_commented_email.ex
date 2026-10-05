@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectCheckInCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects, Updates}
 
@@ -14,12 +15,12 @@ defmodule OperatelyEmail.Emails.ProjectCheckInCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "commented on a check-in")
+    |> subject(gettext("(%{location}) %{author} commented on a check-in", location: project.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:check_in, check_in)
     |> assign(:comment, comment)
-    |> assign(:cta_text, "View Comment")
+    |> assign(:cta_text, gettext("View Comment"))
     |> assign(:cta_url, link)
     |> render("project_check_in_commented")
   end

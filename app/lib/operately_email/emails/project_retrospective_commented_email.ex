@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.{Repo, Updates}
@@ -11,17 +12,16 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
       preload: [:group, :company]
     ])
     comment = Updates.get_comment!(activity.content["comment_id"])
-    action = "commented on the project retrospective"
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: space.name, who: author, action: action)
+    |> subject(gettext("(%{location}) %{author} commented on the project retrospective", location: space.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:comment, comment)
-    |> assign(:cta_text, "View Retrospective")
+    |> assign(:cta_text, gettext("View Retrospective"))
     |> assign(:cta_url, Paths.project_retrospective_path(company, project, comment) |> Paths.to_url())
     |> render("project_retrospective_commented")
   end

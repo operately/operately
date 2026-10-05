@@ -15,6 +15,42 @@ defmodule OperatelyEmail.TemplatesTest do
     project_timeline_edited task_assignee_updating task_description_change task_due_date_updating task_moving
   )
 
+  @discussion_emails ~w(
+    discussion_posting discussion_comment_submitted goal_discussion_creation project_discussion_submitted
+    comment_added goal_check_in_commented project_check_in_commented project_retrospective_commented
+    project_milestone_commented project_task_commented space_task_commented kpi_entry_commented
+    resource_hub_document_created resource_hub_document_edited resource_hub_document_deleted
+    resource_hub_document_commented resource_hub_file_created resource_hub_file_deleted resource_hub_file_commented
+    resource_hub_link_created resource_hub_link_edited resource_hub_link_deleted resource_hub_link_commented
+    space_members_added
+  )
+
+  for template <- @discussion_emails do
+    @template template
+    test "#{template} translates complete headings and actions with literal user content" do
+      assigns = discussion_assigns(@template)
+      {english_html, english_text} = render(@template, assigns, "en")
+      {portuguese_html, portuguese_text} = render(@template, assigns, "pt_BR")
+
+      assert english_html != portuguese_html
+      assert english_text != portuguese_text
+      assert render(@template, assigns, "fr") == {english_html, english_text}
+
+      for body <- [english_html, portuguese_html] do
+        assert body =~ "&lt;Ana&gt; S."
+        assert body =~ assigns.cta_url
+        refute body =~ "<script>"
+        refute body =~ "%{"
+      end
+
+      for body <- [english_text, portuguese_text] do
+        assert body =~ "<Ana> S."
+        assert body =~ assigns.cta_url
+        refute body =~ "%{"
+      end
+    end
+  end
+
   for template <- @work_emails do
     @template template
     test "#{template} translates HTML and plain text while preserving names and links" do
@@ -70,6 +106,83 @@ defmodule OperatelyEmail.TemplatesTest do
       {html, _} = render(template, assigns, "pt_BR")
       assert html =~ expected
     end
+  end
+
+  test "document copies preserve original and new names without changing legacy plain text" do
+    assigns = discussion_assigns("resource_hub_document_created")
+    assigns = %{assigns | copied_document: %{name: "Original <literal>"}}
+    {html, text} = render("resource_hub_document_created", assigns, "pt_BR")
+
+    assert html =~ "criou uma cópia de Original &lt;literal&gt; e a nomeou Launch &lt;script&gt;"
+    assert text =~ "adicionou um documento: Launch <script>"
+    assert html =~ "User-written update"
+  end
+
+  test "file uploads translate counts and retain single-file and multi-file destinations" do
+    for count <- [1, 2, 5] do
+      assigns = discussion_assigns("resource_hub_file_created")
+      assigns = %{assigns | files: List.duplicate(assigns.file, count), file_url: "https://example.com/file"}
+      {html, text} = render("resource_hub_file_created", assigns, "pt_BR")
+      {english_html, english_text} = render("resource_hub_file_created", assigns, "en")
+      assert render("resource_hub_file_created", assigns, "fr") == {english_html, english_text}
+
+      if count == 1 do
+        assert html =~ "enviou o arquivo &quot;Launch &lt;script&gt;&quot;"
+        assert text =~ ~s(enviou o arquivo "Launch <script>")
+        assert html =~ assigns.file_url
+        assert text =~ assigns.file_url
+        assert html =~ "Ver arquivo"
+      else
+        assert html =~ "enviou #{count} arquivos"
+        assert text =~ "enviou #{count} arquivos"
+        assert english_text =~ "uploaded #{count} files"
+        assert html =~ assigns.cta_url
+        assert text =~ assigns.cta_url
+        assert html =~ "Ver arquivos"
+      end
+    end
+  end
+
+  test "milestone comment, complete and reopen branches translate without translating action identifiers" do
+    for {action, english, portuguese} <- [
+          {"none", "commented on", "comentou no"},
+          {"complete", "completed", "concluiu o"},
+          {"reopen", "re-opened", "reabriu o"}
+        ] do
+      assigns = %{discussion_assigns("project_milestone_commented") | comment_action: action}
+      assigns = if action == "none", do: assigns, else: %{assigns | content: nil}
+      {html, text} = render("project_milestone_commented", assigns, "pt_BR")
+      {english_html, english_text} = render("project_milestone_commented", assigns, "en")
+      assert render("project_milestone_commented", assigns, "fr") == {english_html, english_text}
+      assert html =~ portuguese
+      assert text =~ portuguese
+      assert english_text =~ english
+      assert text =~ "Launch <script>"
+      assert html =~ if(action == "none", do: "Ver comentário", else: "Ver marco")
+      assert (html =~ "User-written update") == (action == "none")
+    end
+  end
+
+  defp discussion_assigns(template) do
+    assigns = assigns()
+    resource = %{name: "Launch <script>", content: assigns.message, url: assigns.cta_url}
+
+    assigns = Map.merge(assigns, %{
+      title: resource.name,
+      space: resource,
+      document: resource,
+      copied_document: nil,
+      file: resource,
+      files: [resource],
+      file_url: assigns.cta_url,
+      comment: %{content: assigns.message},
+      content: assigns.message,
+      comment_action: "none",
+      comment_context: {:goal_closing, nil}
+    })
+
+    assigns = if template == "discussion_posting", do: %{assigns | message: %{body: assigns.message}}, else: assigns
+    if template in ~w(resource_hub_link_created resource_hub_link_edited resource_hub_link_deleted), do: %{assigns | link: resource}, else: assigns
   end
 
   defp render(template, assigns, locale) do

@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyWeb.Paths
@@ -18,7 +19,7 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: task.project.name, who: author, action: "commented on: #{task.name}")
+    |> subject(gettext("(%{location}) %{author} commented on: %{task_name}", location: task.project.name, author: Operately.People.Person.short_name(author), task_name: task.name))
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, task.name)
