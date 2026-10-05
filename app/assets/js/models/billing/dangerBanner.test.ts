@@ -46,11 +46,9 @@ describe("billing danger banner helpers", () => {
     expect(banner).toEqual({
       kind: "payment_default",
       mode: "payment_grace",
-      title: "Payment issue requires attention",
       deadline: "2026-06-15T00:00:00Z",
       shouldContactAdmin: false,
       cta: {
-        label: "Review billing",
         to: "/acme/admin/billing",
       },
     });
@@ -72,7 +70,6 @@ describe("billing danger banner helpers", () => {
     expect(banner).toEqual({
       kind: "payment_default",
       mode: "read_only",
-      title: "This company is read-only",
       deadline: null,
       shouldContactAdmin: true,
       cta: null,
@@ -109,13 +106,12 @@ describe("billing danger banner helpers", () => {
     expect(banner).toEqual({
       kind: "over_limit",
       mode: "over_limit",
-      title: "This company is over its plan limits",
       blockedLimitKeys: ["member_count"],
       shouldContactAdmin: true,
       cta: null,
       usageRows: [
-        { label: "Active members", value: "21 / 20", state: "blocked" },
-        { label: "Storage used", value: "950 MB / 1 GB", state: "near_limit" },
+        { limitKey: "member_count", value: "21 / 20", state: "blocked" },
+        { limitKey: "storage_bytes", value: "950 MB / 1 GB", state: "near_limit" },
       ],
     });
   });
@@ -151,16 +147,14 @@ describe("billing danger banner helpers", () => {
     expect(banner).toEqual({
       kind: "over_limit",
       mode: "over_limit",
-      title: "This company is over its plan limits",
       blockedLimitKeys: ["member_count", "storage_bytes"],
       shouldContactAdmin: false,
       cta: {
-        label: "Review billing",
         to: "/acme/admin/billing/plans",
       },
       usageRows: [
-        { label: "Active members", value: "21 / 20", state: "blocked" },
-        { label: "Storage used", value: "1.1 GB / 1 GB", state: "blocked" },
+        { limitKey: "member_count", value: "21 / 20", state: "blocked" },
+        { limitKey: "storage_bytes", value: "1.1 GB / 1 GB", state: "blocked" },
       ],
     });
   });

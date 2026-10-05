@@ -4,7 +4,7 @@ import * as Billing from "@/models/billing";
 import { useHasSupportSessionCookie } from "@/features/SupportSessions";
 import { usePaths } from "@/routes/paths";
 import { useLocation } from "react-router";
-import { FormattedTime, IconAlertTriangleFilled, SecondaryButton } from "turboui";
+import { BillingDangerBanner as BillingDangerBannerUI } from "turboui";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
@@ -34,100 +34,11 @@ export function BillingDangerBanner() {
     return null;
   }
 
-  const testId = banner.kind === "payment_default" ? "payment-default-banner" : "company-billing-danger-banner";
-  const ctaTestId =
-    banner.kind === "payment_default" ? "payment-default-banner-cta" : "company-billing-danger-banner-cta";
-
   return (
-    <div
-      className={`fixed left-0 right-0 z-[999] border-t-2 border-red-950/40 bg-red-700 shadow-2xl ${hasSupportSession ? "bottom-14 sm:bottom-12" : "bottom-0"}`}
-      data-test-id={testId}
-      role="alert"
-      aria-live="assertive"
-    >
-      <div className="mx-auto flex max-w-7xl items-start justify-between gap-3 px-4 py-3.5">
-        <div className="min-w-0 flex flex-1 items-start gap-3">
-          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white-1 shadow-sm">
-            <IconAlertTriangleFilled size={18} />
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-white-1">{banner.title}</div>
-            <p className="mt-1 text-sm text-white-1">{renderDescription(banner, formattedTimePreferences)}</p>
-
-            {banner.kind === "over_limit" && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {banner.usageRows.map((row) => (
-                  <div
-                    key={row.label}
-                    className={`rounded-full border px-3 py-1 text-sm ${
-                      row.state === "blocked"
-                        ? "border-white/20 bg-white/15 font-semibold text-white-1"
-                        : "border-white/20 bg-white/10 text-white-1/90"
-                    }`}
-                  >
-                    <span className="font-semibold text-white-1">{row.label}:</span> {row.value}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {banner.cta && (
-          <div className="flex shrink-0 items-start gap-2">
-            <SecondaryButton
-              linkTo={banner.cta.to}
-              size="sm"
-              testId={ctaTestId}
-              className="!border-white/20 !bg-white !text-callout-error-content shadow-sm hover:!bg-red-50 hover:!text-callout-error-content"
-            >
-              {banner.cta.label}
-            </SecondaryButton>
-          </div>
-        )}
-      </div>
-    </div>
+    <BillingDangerBannerUI
+      banner={banner}
+      formattedTimePreferences={formattedTimePreferences}
+      hasSupportSession={hasSupportSession}
+    />
   );
-}
-
-import type { FormattedTimePreferences } from "turboui";
-
-function renderDescription(
-  banner: ReturnType<typeof Billing.buildBillingDangerBanner>,
-  formattedTimePreferences: FormattedTimePreferences,
-) {
-  if (!banner) return null;
-
-  if (banner.kind === "payment_default") {
-    if (banner.mode === "payment_grace") {
-      return (
-        <>
-          Billing needs attention
-          {banner.deadline ? (
-            <>
-              {" by "}
-              <FormattedTime {...formattedTimePreferences} time={banner.deadline} format="long-date" />
-            </>
-          ) : (
-            " soon"
-          )}{" "}
-          or this company will become read-only.
-          {banner.shouldContactAdmin && " Contact an admin or owner."}
-        </>
-      );
-    }
-
-    return banner.shouldContactAdmin
-      ? "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until an admin or owner updates billing."
-      : "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated.";
-  }
-
-  const blockedMemberLimit = banner.blockedLimitKeys.includes("member_count");
-  const blockedStorageLimit = banner.blockedLimitKeys.includes("storage_bytes");
-  const blockedActions = Billing.describeBlockedActions(blockedMemberLimit, blockedStorageLimit);
-
-  return banner.shouldContactAdmin
-    ? `${blockedActions.subject} ${blockedActions.verb} paused until this company is back within its plan limits. Contact an admin or owner.`
-    : `${blockedActions.subject} ${blockedActions.verb} paused until this company is back within its plan limits. Review billing to change the plan or reduce usage.`;
 }

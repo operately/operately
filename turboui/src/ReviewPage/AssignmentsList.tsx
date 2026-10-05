@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import { tn } from "../i18n";
 
 import { BlackLink, DivLink } from "../Link";
 import { FormattedTime, type FormattedTimePreferences } from "../FormattedTime";
@@ -59,7 +62,8 @@ function AssignmentGroup({
   group: ReviewPageV2.AssignmentGroup;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
-  const relationship = getGroupRelationshipLabel(group.assignments);
+  const { t } = useTranslation();
+  const relationship = getGroupRelationshipLabel(group.assignments, t);
 
   return (
     <div className="flex flex-col">
@@ -67,7 +71,11 @@ function AssignmentGroup({
 
       <div className="flex flex-col gap-1">
         {group.assignments.map((assignment) => (
-          <AssignmentItem key={assignment.resourceId} assignment={assignment} formattedTimePreferences={formattedTimePreferences} />
+          <AssignmentItem
+            key={assignment.resourceId}
+            assignment={assignment}
+            formattedTimePreferences={formattedTimePreferences}
+          />
         ))}
       </div>
     </div>
@@ -104,8 +112,9 @@ function AssignmentItem({
   assignment: ReviewPageV2.Assignment;
   formattedTimePreferences: FormattedTimePreferences;
 }) {
-  const displayLabel = assignment.actionLabel ?? assignment.name;
-  const urgencyDetails = getUrgencyDetails(assignment.dueStatus, assignment.dueDate);
+  const { t } = useTranslation();
+  const displayLabel = getAssignmentLabel(assignment, t);
+  const urgencyDetails = getUrgencyDetails(assignment.dueStatus, assignment.dueDate, t);
 
   return (
     <DivLink
@@ -140,7 +149,7 @@ function renderLeadingIndicator(assignment: ReviewPageV2.Assignment) {
   return <Icon size={16} className="text-content-base" />;
 }
 
-function getUrgencyDetails(status: ReviewPageV2.DueStatus | null, dueDate: string | null) {
+function getUrgencyDetails(status: ReviewPageV2.DueStatus | null, dueDate: string | null, t: TFunction) {
   if (!status || !dueDate || (status !== "overdue" && status !== "due_today" && status !== "due_soon")) {
     return null;
   }
@@ -148,12 +157,12 @@ function getUrgencyDetails(status: ReviewPageV2.DueStatus | null, dueDate: strin
   switch (status) {
     case "overdue":
       const daysOverdue = calculateDaysOverdue(dueDate);
-      const overdueText = daysOverdue === 1 ? "1 day overdue" : `${daysOverdue} days overdue`;
+      const overdueText = tn("1 day overdue", "{{count}} days overdue", daysOverdue);
       return { label: overdueText, className: "text-callout-error-content" };
     case "due_today":
-      return { label: "Due today", className: "text-callout-warning-content" };
+      return { label: t("Due today"), className: "text-callout-warning-content" };
     case "due_soon":
-      return { label: "Due tomorrow", className: "text-content-dimmed" };
+      return { label: t("Due tomorrow"), className: "text-content-dimmed" };
     default:
       return null;
   }
@@ -172,7 +181,7 @@ function calculateDaysOverdue(dueDate: string): number {
   return Math.max(1, diffDays); // At least 1 day overdue
 }
 
-function getGroupRelationshipLabel(assignments: ReviewPageV2.Assignment[]): string | null {
+function getGroupRelationshipLabel(assignments: ReviewPageV2.Assignment[], t: TFunction): string | null {
   let label: string | null = null;
 
   assignments.forEach((assignment) => {
@@ -181,17 +190,35 @@ function getGroupRelationshipLabel(assignments: ReviewPageV2.Assignment[]): stri
     }
 
     if (assignment.role === "reviewer") {
-      label = "REVIEWER";
+      label = t("REVIEWER");
       return;
     }
 
     if (assignment.type === "project_task") {
-      label = "CONTRIBUTOR";
+      label = t("CONTRIBUTOR");
       return;
     }
 
-    label = "CHAMPION";
+    label = t("CHAMPION");
   });
 
   return label;
+}
+
+// Translate system actions by their stable type and role; task and milestone names stay literal.
+function getAssignmentLabel(assignment: ReviewPageV2.Assignment, t: TFunction): string {
+  switch (assignment.type) {
+    case "check_in":
+      return assignment.role === "reviewer" ? t("Review weekly check-in") : t("Submit weekly check-in");
+    case "goal_update":
+      return assignment.role === "reviewer" ? t("Review goal progress update") : t("Submit goal progress update");
+    case "project_retrospective":
+      return t("Review project retrospective");
+    case "goal_retrospective":
+      return t("Review goal retrospective");
+    case "kpi_update":
+      return t("Log update for {{name}}", { name: assignment.name });
+    default:
+      return assignment.actionLabel ?? assignment.name;
+  }
 }

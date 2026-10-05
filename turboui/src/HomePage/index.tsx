@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { GhostButton, PrimaryButton } from "../Button";
 import { PageOpen } from "../Page";
@@ -14,8 +15,9 @@ export namespace HomePage {
 }
 
 export function HomePage(props: HomePage.Props) {
+  const { t } = useTranslation();
   return (
-    <PageOpen title="Home" size="medium" testId="company-home" className="px-4 sm:px-0">
+    <PageOpen title={t("Home")} size="medium" testId="company-home" className="px-4 sm:px-0">
       <Greeting firstName={props.firstName} now={props.now} />
       <SpacesSection
         spaces={props.spaces}
@@ -30,22 +32,19 @@ export function HomePage(props: HomePage.Props) {
 }
 
 function Greeting({ firstName, now }: { firstName: string; now?: Date }) {
+  const { t } = useTranslation();
   let hour = (now ?? new Date()).getHours();
   let greeting = "";
 
   if (hour < 12) {
-    greeting = "Good morning";
+    greeting = t("Good morning, {{name}}!", { name: firstName });
   } else if (hour < 18) {
-    greeting = "Good afternoon";
+    greeting = t("Good afternoon, {{name}}!", { name: firstName });
   } else {
-    greeting = "Good evening";
+    greeting = t("Good evening, {{name}}!", { name: firstName });
   }
 
-  return (
-    <p className="font-bold text-3xl mt-20">
-      {greeting}, {firstName}!
-    </p>
-  );
+  return <p className="font-bold text-3xl mt-20">{greeting}</p>;
 }
 
 function SpacesSection({
@@ -61,13 +60,14 @@ function SpacesSection({
   newSpacePath: string;
   invitePeoplePath: string;
 }) {
+  const { t } = useTranslation();
   const isEmpty = spaces.length === 0;
 
   return (
     <div className="mt-8">
       <PageSection
-        title="Your Operately Spaces"
-        subtitle="Manage projects, track goals, and organize your team's work."
+        title={t("Your Operately Spaces")}
+        subtitle={t("Manage projects, track goals, and organize your team's work.")}
         actions={
           <div className="flex flex-wrap gap-2 justify-start sm:justify-end sm:flex-nowrap">
             <InvitePeopleButton canInviteMembers={canInviteMembers} invitePeoplePath={invitePeoplePath} />
@@ -82,9 +82,10 @@ function SpacesSection({
 }
 
 function FeedSection({ activityFeed }: { activityFeed: HomePageProps["activityFeed"] }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-8">
-      <PageSection title="What's new?" subtitle="Stay up to date with your team's progress.">
+      <PageSection title={t("What's new?")} subtitle={t("Stay up to date with your team's progress.")}>
         <div className="bg-surface-base shadow rounded-2xl">{activityFeed}</div>
       </PageSection>
     </div>
@@ -92,13 +93,14 @@ function FeedSection({ activityFeed }: { activityFeed: HomePageProps["activityFe
 }
 
 function AddSpaceButton({ canCreateSpace, newSpacePath }: { canCreateSpace: boolean; newSpacePath: string }) {
+  const { t } = useTranslation();
   if (!canCreateSpace) {
     return null;
   }
 
   return (
     <PrimaryButton linkTo={newSpacePath} testId="add-space" size="sm">
-      Add Space
+      {t("Add Space")}
     </PrimaryButton>
   );
 }
@@ -110,13 +112,14 @@ function InvitePeopleButton({
   canInviteMembers: boolean;
   invitePeoplePath: string;
 }) {
+  const { t } = useTranslation();
   if (!canInviteMembers) {
     return null;
   }
 
   return (
     <GhostButton linkTo={invitePeoplePath} testId="invite-people" size="sm">
-      Invite People
+      {t("Invite People")}
     </GhostButton>
   );
 }

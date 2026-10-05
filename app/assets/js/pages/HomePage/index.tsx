@@ -1,5 +1,6 @@
 import { useDeleteFeedActivity } from "@/models/activities/activityLifecycle";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Activity } from "@/api";
 import { PageModule } from "@/routes/types";
@@ -53,6 +54,7 @@ function Page() {
 }
 
 function ActivityFeed() {
+  const { t } = useTranslation();
   const { company } = useLoadedData();
   const { data, loading, error, pagination } = useFeedItemsQuery("company", company.id!);
   const canDeleteFeedItems = useCanDeleteFeedItems();
@@ -64,12 +66,12 @@ function ActivityFeed() {
     try {
       await deleteActivity({ activityId: activity.id });
     } catch {
-      showErrorToast("Could not delete feed item", "Please try again.");
+      showErrorToast(t("Could not delete feed item"), t("Please try again."));
     }
   };
 
   if (loading) return <ActivityFeedSkeleton />;
-  if (error) return <div>Error</div>;
+  if (error) return <div>{t("Error")}</div>;
 
   return (
     <Feed
