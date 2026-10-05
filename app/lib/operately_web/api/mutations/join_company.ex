@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.JoinCompany do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -16,7 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
     case validate(inputs) do
       {:ok, invite_link} ->
         Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link)
-        {:ok, %{result: "Password successfully changed"}}
+        {:ok, %{result: gettext("Password successfully changed")}}
       {:error, reason} ->
         {:error, :bad_request, reason}
     end
@@ -25,7 +26,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
   defp validate(inputs) do
     cond do
       inputs.password != inputs.password_confirmation ->
-        {:error, "Passwords don't match"}
+        {:error, gettext("Passwords don't match")}
       true ->
         with(
           {:ok, invite_link} <- Operately.InviteLinks.get_personal_invite_link_by_token(inputs.token, preload: [person: [:account]]),
@@ -34,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
         ) do
           {:ok, invite_link}
         else
-          _ -> {:error, "Invalid token"}
+          _ -> {:error, gettext("Invalid token")}
         end
     end
   end

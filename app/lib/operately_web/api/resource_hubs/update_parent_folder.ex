@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
   Updates the parent folder of a Docs & Files item.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -63,8 +64,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
            {:parent_folder_id, {message, _}} -> message
            _ -> nil
          end) do
-      nil -> "Invalid folder move"
-      message -> message
+      nil -> gettext("Invalid folder move")
+      message -> Operately.I18n.ValidationErrors.translate({message, []})
     end
   end
 end

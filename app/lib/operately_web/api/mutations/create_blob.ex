@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.CreateBlob do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -26,7 +27,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   def respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :blobs, %{error: :invalid_file_size}} -> {:error, :bad_request, "File size must be a non-negative integer"}
+      {:error, :blobs, %{error: :invalid_file_size}} -> {:error, :bad_request, gettext("File size must be a non-negative integer")}
       {:error, :blobs, %{error: %LimitError{} = error}} -> EnforceLimits.to_api_error(error)
       {:error, :blobs, %LimitError{} = error} -> EnforceLimits.to_api_error(error)
       {:error, :blobs, _} -> {:error, :bad_request}

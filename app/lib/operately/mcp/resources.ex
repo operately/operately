@@ -1,4 +1,5 @@
 defmodule Operately.Mcp.Resources do
+  use Gettext, backend: OperatelyWeb.Gettext
   @supported_scopes ~w(mcp:read mcp:write)
   @default_scopes ~w(mcp:read)
 
@@ -6,8 +7,8 @@ defmodule Operately.Mcp.Resources do
 
   def default_scopes, do: @default_scopes
 
-  def scope_label("mcp:read"), do: "View workspace data"
-  def scope_label("mcp:write"), do: "Create, update, delete, and archive workspace content"
+  def scope_label("mcp:read"), do: gettext("View workspace data")
+  def scope_label("mcp:write"), do: gettext("Create, update, delete, and archive workspace content")
   def scope_label(scope) when is_binary(scope), do: scope
 
   def canonical_resource_uri do

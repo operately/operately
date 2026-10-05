@@ -3,6 +3,8 @@ defmodule Operately.MD.RichText do
   Serializes Operately rich text data (ProseMirror-like JSON) to GitHub Flavored Markdown.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   def render(%{"type" => "doc", "content" => blocks}) when is_list(blocks) do
     blocks
     |> Enum.map(&render_block/1)
@@ -76,7 +78,7 @@ defmodule Operately.MD.RichText do
     filetype = Map.get(attrs, "filetype", "")
 
     if filetype != "" and not String.starts_with?(filetype, "image/") do
-      "[#{alt || "File"}](#{src}#{if title, do: " \"#{title}\"", else: ""})"
+      "[#{alt || gettext("File")}](#{src}#{if title, do: " \"#{title}\"", else: ""})"
     else
       "![#{alt}](#{src}#{if title, do: " \"#{title}\"", else: ""})"
     end

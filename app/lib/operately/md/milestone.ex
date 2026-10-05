@@ -1,4 +1,5 @@
 defmodule Operately.MD.Milestone do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(milestone) do
     milestone = Operately.Repo.preload(milestone, [:project, :creator, :space, [tasks: [:assigned_people]]])
 
@@ -14,18 +15,18 @@ defmodule Operately.MD.Milestone do
 
   defp render_overview_info(milestone) do
     """
-    Status: #{milestone.status}
-    Phase: #{milestone.phase}
-    Project: #{render_project(milestone)}
-    Space: #{render_space(milestone)}
-    Creator: #{render_creator(milestone)}
-    Created: #{render_date(milestone.inserted_at)}
-    Last Updated: #{render_date(milestone.updated_at)}
-    Due: #{render_due_date(milestone)}
+    #{gettext("Status")}: #{milestone.status}
+    #{gettext("Phase")}: #{milestone.phase}
+    #{gettext("Project")}: #{render_project(milestone)}
+    #{gettext("Space")}: #{render_space(milestone)}
+    #{gettext("Creator")}: #{render_creator(milestone)}
+    #{gettext("Created")}: #{render_date(milestone.inserted_at)}
+    #{gettext("Last Updated")}: #{render_date(milestone.updated_at)}
+    #{gettext("Due")}: #{render_due_date(milestone)}
     """
     |> then(fn info ->
       if milestone.completed_at do
-        info <> "Completed At: #{render_date(milestone.completed_at)}"
+        info <> "#{gettext("Completed At")}: #{render_date(milestone.completed_at)}"
       else
         info
       end
@@ -38,13 +39,13 @@ defmodule Operately.MD.Milestone do
 
     if description == "" do
       """
-      ## Description
+      ## #{gettext("Description")}
 
-      _No description provided._
+      _#{gettext("No description provided.")}_
       """
     else
       """
-      ## Description
+      ## #{gettext("Description")}
 
       #{description}
       """
@@ -53,38 +54,38 @@ defmodule Operately.MD.Milestone do
 
   defp render_tasks([]) do
     """
-    ## Tasks
+    ## #{gettext("Tasks")}
 
-    _No tasks yet._
+    _#{gettext("No tasks yet.")}_
     """
   end
 
   defp render_tasks(tasks) do
     """
-    ## Tasks
+    ## #{gettext("Tasks")}
 
     #{tasks |> Enum.sort_by(&(&1.inserted_at || ~N[0001-01-01 00:00:00])) |> Enum.map_join("\n", &render_task_line/1)}
     """
   end
 
   defp render_task_line(task) do
-    status = (task.task_status && (task.task_status.label || task.task_status.value)) || "Not set"
+    status = (task.task_status && (task.task_status.label || task.task_status.value)) || gettext("Not set")
 
-    "- #{task.name} | Status: #{status} | Assigned to: #{render_task_assignees(task.assigned_people)} | Due: #{render_task_due_date(task.due_date)}"
+    "- #{task.name} | #{gettext("Status")}: #{status} | #{gettext("Assigned to")}: #{render_task_assignees(task.assigned_people)} | #{gettext("Due")}: #{render_task_due_date(task.due_date)}"
   end
 
   defp render_task_assignees(people) when is_list(people) and length(people) > 0 do
     people |> Enum.map(& &1.full_name) |> Enum.join(", ")
   end
 
-  defp render_task_assignees(people) when is_list(people), do: "Unassigned"
+  defp render_task_assignees(people) when is_list(people), do: gettext("Unassigned")
 
-  defp render_task_due_date(nil), do: "Not set"
+  defp render_task_due_date(nil), do: gettext("Not set")
   defp render_task_due_date(%Operately.ContextualDates.ContextualDate{date: date}), do: render_date(date)
 
   defp render_due_date(milestone) do
     case Operately.ContextualDates.Timeframe.end_date(milestone.timeframe) do
-      nil -> "Not set"
+      nil -> gettext("Not set")
       date -> render_date(date)
     end
   end
@@ -101,10 +102,10 @@ defmodule Operately.MD.Milestone do
     render_association(milestone.creator_id, milestone.creator, & &1.full_name)
   end
 
-  defp render_association(nil, _association, _formatter), do: "None"
+  defp render_association(nil, _association, _formatter), do: gettext("None")
 
   defp render_association(_id, association, formatter) do
-    if is_nil(association), do: "None", else: formatter.(association)
+    if is_nil(association), do: gettext("None"), else: formatter.(association)
   end
 
   defp render_date(d), do: Operately.Time.as_date(d) |> Date.to_iso8601()

@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.CreateAvatarBlob do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -26,7 +27,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAvatarBlob do
         {:ok, ctx.serialized}
 
       {:error, :blobs, %{error: :file_too_large}} ->
-        {:error, :bad_request, "Avatar file is too large"}
+        {:error, :bad_request, gettext("Avatar file is too large")}
 
       {:error, :blobs, _reason} ->
         {:error, :bad_request}

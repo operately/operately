@@ -126,10 +126,11 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
   defp format_errors(changeset) do
     changeset.errors
-    |> Enum.map(fn {field, {message, _opts}} ->
+    |> Enum.map(fn {field, {message, opts}} ->
       %{
         field: field,
         message: message,
+        opts: opts,
       }
     end)
   end

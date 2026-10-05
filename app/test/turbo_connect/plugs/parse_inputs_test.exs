@@ -3,6 +3,15 @@ defmodule TurboConnect.Plugs.ParseInputsTest do
 
   alias TurboConnect.Plugs.ParseInputs
 
+  test "translated input errors preserve field names and invalid enum values" do
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert {:error, 400, "Campo de entrada desconhecido: unknown_field"} = ParseInputs.find_field([], "unknown_field")
+      types = %{primitives: %{}, objects: %{}, enums: %{example: [:one]}, int_enums: %{}}
+      assert {:error, 400, message} = ParseInputs.parse_input(:example, types, "literal-invalid-value", true)
+      assert message == "Valor inválido para o enum example: literal-invalid-value. Valores permitidos: one"
+    end)
+  end
+
   test "rejects malformed lists in queries and mutations" do
     for strict <- [false, true], value <- ["not-a-list", %{"url" => "/bad"}, 123, false] do
       assert {:error, 400, _} = ParseInputs.parse_input({:list, :string}, %{}, value, strict)

@@ -1,20 +1,21 @@
 defmodule Operately.MD.Goal.Timeframe do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(goal) do
     timeframe_activities = load_timeframe_activities(goal.id)
 
     """
-    ## Timeframe
+    ## #{gettext("Timeframe")}
 
-    Start Date: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_start_date)}
-    Due Date: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_end_date)}
+    #{gettext("Start Date")}: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_start_date)}
+    #{gettext("Due Date")}: #{render_contextual_date(goal.timeframe && goal.timeframe.contextual_end_date)}
 
-    ### Timeframe History
+    ### #{gettext("Timeframe History")}
 
     #{render_timeframe_history(timeframe_activities)}
     """
   end
 
-  defp render_contextual_date(nil), do: "Not Set"
+  defp render_contextual_date(nil), do: gettext("Not Set")
   defp render_contextual_date(date), do: date.value
 
   defp load_timeframe_activities(goal_id) do
@@ -36,7 +37,7 @@ defmodule Operately.MD.Goal.Timeframe do
   end
 
   defp render_timeframe_history([]) do
-    "_No timeframe changes recorded._"
+    gettext("_No timeframe changes recorded._")
   end
 
   defp render_timeframe_history(activities) do
@@ -53,7 +54,7 @@ defmodule Operately.MD.Goal.Timeframe do
     old_date = render_activity_date(content.old_due_date)
     new_date = render_activity_date(content.new_due_date)
 
-    "**#{date}** - #{author} changed the due date from #{old_date} to #{new_date}"
+    gettext("**%{date}** - %{author} changed the due date from %{old_date} to %{new_date}", date: date, author: author, old_date: old_date, new_date: new_date)
   end
 
   defp render_timeframe_activity(%{action: "goal_start_date_updating"} = activity) do
@@ -64,17 +65,17 @@ defmodule Operately.MD.Goal.Timeframe do
     old_date = render_activity_date(content.old_start_date)
     new_date = render_activity_date(content.new_start_date)
 
-    "**#{date}** - #{author} changed the start date from #{old_date} to #{new_date}"
+    gettext("**%{date}** - %{author} changed the start date from %{old_date} to %{new_date}", date: date, author: author, old_date: old_date, new_date: new_date)
   end
 
   defp render_timeframe_activity(activity) do
     # Fallback for any other timeframe-related activities
     author = activity.author.full_name
     date = render_date(activity.inserted_at)
-    "**#{date}** - #{author} made a timeframe change"
+    gettext("**%{date}** - %{author} made a timeframe change", date: date, author: author)
   end
 
-  defp render_activity_date(nil), do: "Not Set"
+  defp render_activity_date(nil), do: gettext("Not Set")
 
   defp render_activity_date(%Date{} = date), do: Date.to_iso8601(date)
 

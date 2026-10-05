@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
   Acknowledges a project check-in.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -52,7 +53,7 @@ defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
         {:error, :internal_server_error}
 
       {:error, :check_not_the_author, _} ->
-        {:error, :bad_request, "Authors cannot acknowledge their own check-ins"}
+        {:error, :bad_request, gettext("Authors cannot acknowledge their own check-ins")}
 
       e ->
         Logger.error("AcknowledgeProjectCheckIn mutation failed: #{inspect(e)}")

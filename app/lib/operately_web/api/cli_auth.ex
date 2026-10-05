@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.CliAuth do
   alias OperatelyWeb.Api.CliAuth.SharedSteps, as: Steps
   defmodule AuthPassword do
+    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -32,7 +33,7 @@ defmodule OperatelyWeb.Api.CliAuth do
 
         {:error, :unauthorized} ->
           Logger.info("CLI password authentication failed for #{inputs.email}")
-          {:error, :unauthorized, "Invalid email or password"}
+          {:error, :unauthorized, gettext("Invalid email or password")}
 
         {:error, {message, details}} ->
           {:error, :bad_request, message, details}
@@ -85,6 +86,7 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule AuthEmailCode do
+    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -119,13 +121,13 @@ defmodule OperatelyWeb.Api.CliAuth do
           {:error, :bad_request, Steps.account_not_found_message()}
 
         {:error, :not_found} ->
-          {:error, :bad_request, "Invalid activation code"}
+          {:error, :bad_request, gettext("Invalid activation code")}
 
         {:error, :invalid_code} ->
-          {:error, :bad_request, "Invalid activation code"}
+          {:error, :bad_request, gettext("Invalid activation code")}
 
         {:error, :invalid} ->
-          {:error, :bad_request, "Activation code has expired"}
+          {:error, :bad_request, gettext("Activation code has expired")}
 
         {:error, {message, details}} ->
           {:error, :bad_request, message, details}
@@ -244,6 +246,7 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule JoinCompany do
+    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -288,7 +291,7 @@ defmodule OperatelyWeb.Api.CliAuth do
     defp validate(inputs) do
       cond do
         inputs.password != inputs.password_confirmation ->
-          {:error, "Passwords don't match"}
+          {:error, gettext("Passwords don't match")}
 
         true ->
           with(
@@ -298,7 +301,7 @@ defmodule OperatelyWeb.Api.CliAuth do
           ) do
             {:ok, invite_link}
           else
-            _ -> {:error, "Invalid token"}
+            _ -> {:error, gettext("Invalid token")}
           end
       end
     end
@@ -320,15 +323,9 @@ defmodule OperatelyWeb.Api.CliAuth do
 
     defp format_changeset_error(changeset) do
       changeset
-      |> Ecto.Changeset.traverse_errors(fn {message, opts} ->
-        Regex.replace(~r"%{(\w+)}", message, fn _, key ->
-          opts
-          |> Keyword.get(String.to_existing_atom(key), key)
-          |> to_string()
-        end)
-      end)
+      |> Ecto.Changeset.traverse_errors(&Operately.I18n.ValidationErrors.translate/1)
       |> Enum.flat_map(fn {_field, messages} -> messages end)
-      |> Enum.at(0, "The request was malformed")
+      |> Enum.at(0, gettext("The request was malformed"))
     end
   end
 
@@ -505,6 +502,7 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule Signup do
+    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -536,20 +534,20 @@ defmodule OperatelyWeb.Api.CliAuth do
           {:error, :forbidden}
 
         {:error, :email_taken} ->
-          {:error, :bad_request, "Email is already registered"}
+          {:error, :bad_request, gettext("Email is already registered")}
 
         {:error, :invalid_code} ->
-          {:error, :bad_request, "Invalid activation code"}
+          {:error, :bad_request, gettext("Invalid activation code")}
 
         {:error, :not_found} ->
-          {:error, :bad_request, "Invalid activation code"}
+          {:error, :bad_request, gettext("Invalid activation code")}
 
         {:error, :invalid} ->
-          {:error, :bad_request, "Activation code has expired"}
+          {:error, :bad_request, gettext("Activation code has expired")}
 
         {:error, %Ecto.Changeset{} = changeset} ->
           Logger.error("Failed to create account: #{inspect(changeset)}")
-          {:error, :internal_server_error, "Failed to create account"}
+          {:error, :internal_server_error, gettext("Failed to create account")}
 
         {:error, error} ->
           Logger.error("Failed to sign up: #{inspect(error)}")
@@ -699,6 +697,7 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule JoinWithInvite do
+    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -736,22 +735,22 @@ defmodule OperatelyWeb.Api.CliAuth do
           {:error, :unauthorized}
 
         {:error, :invite_token_not_found} ->
-          {:error, :bad_request, "Invalid invite link"}
+          {:error, :bad_request, gettext("Invalid invite link")}
 
         {:error, :invite_token_inactive} ->
-          {:error, :bad_request, "This invite link is no longer valid"}
+          {:error, :bad_request, gettext("This invite link is no longer valid")}
 
         {:error, :invite_token_domain_not_allowed} ->
-          {:error, :bad_request, "This invite link is restricted to specific email domains"}
+          {:error, :bad_request, gettext("This invite link is restricted to specific email domains")}
 
         {:error, :invite_token_invalid} ->
-          {:error, :bad_request, "This invite link is no longer valid"}
+          {:error, :bad_request, gettext("This invite link is no longer valid")}
 
         {:error, :person_creation_failed} ->
-          {:error, :bad_request, "Unable to add you to this company."}
+          {:error, :bad_request, gettext("Unable to add you to this company.")}
 
         {:error, :invite_link_update_failed} ->
-          {:error, :bad_request, "Something went wrong while using this invite link."}
+          {:error, :bad_request, gettext("Something went wrong while using this invite link.")}
 
         {:error, %LimitError{} = error} ->
           EnforceLimits.to_api_error(error)
@@ -760,6 +759,7 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule SharedSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     alias Operately.Billing.EnforceLimits
     alias Operately.Billing.EnforceLimits.LimitError
     alias Operately.InviteLinks
@@ -808,17 +808,17 @@ defmodule OperatelyWeb.Api.CliAuth do
             {:ok, account}
           else
             {:error, :invite_link_not_for_person} ->
-              {:error, "Invalid invite link"}
+              {:error, gettext("Invalid invite link")}
 
             {:error, :first_time_invite} ->
-              {:error, "Email code login isn't available for first-time invites. Set a password or use Google OAuth instead."}
+              {:error, gettext("Email code login isn't available for first-time invites. Set a password or use Google OAuth instead.")}
 
             {:error, reason} ->
               map_personal_invite_validation_error(reason)
           end
 
         {:error, :not_found} ->
-          {:error, "Invalid invite link"}
+          {:error, gettext("Invalid invite link")}
       end
     end
 
@@ -832,11 +832,11 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
 
     def account_not_found_message do
-      "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
+      gettext("No account exists for this email. Use `operately auth signup` or `operately auth join` instead.")
     end
 
     def email_delivery_not_configured_message do
-      "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
+      gettext("Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator.")
     end
 
     defp validate_personal_invite_account(account, invite_link) do
@@ -894,22 +894,22 @@ defmodule OperatelyWeb.Api.CliAuth do
       end
     end
 
-    defp map_company_wide_invite_validation_error(:invite_link_inactive), do: {:error, "This invite link is no longer valid"}
-    defp map_company_wide_invite_validation_error(:invite_link_domain_not_allowed), do: {:error, "This invite link is restricted to specific email domains"}
+    defp map_company_wide_invite_validation_error(:invite_link_inactive), do: {:error, gettext("This invite link is no longer valid")}
+    defp map_company_wide_invite_validation_error(:invite_link_domain_not_allowed), do: {:error, gettext("This invite link is restricted to specific email domains")}
 
-    defp map_personal_invite_validation_error(:invite_link_inactive), do: {:error, "This invite link is no longer valid"}
-    defp map_personal_invite_validation_error(:invite_link_expired), do: {:error, "This invite link is no longer valid"}
+    defp map_personal_invite_validation_error(:invite_link_inactive), do: {:error, gettext("This invite link is no longer valid")}
+    defp map_personal_invite_validation_error(:invite_link_expired), do: {:error, gettext("This invite link is no longer valid")}
 
     defp map_join_invite_error(%LimitError{} = error) do
       {:error, {EnforceLimits.public_message(error), EnforceLimits.public_details(error)}}
     end
 
-    defp map_join_invite_error(:invite_token_not_found), do: {:error, "Invalid invite link"}
-    defp map_join_invite_error(:invite_token_inactive), do: {:error, "This invite link is no longer valid"}
-    defp map_join_invite_error(:invite_token_domain_not_allowed), do: {:error, "This invite link is restricted to specific email domains"}
-    defp map_join_invite_error(:invite_token_invalid), do: {:error, "This invite link is no longer valid"}
-    defp map_join_invite_error(:person_creation_failed), do: {:error, "Unable to add you to this company."}
-    defp map_join_invite_error(:invite_link_update_failed), do: {:error, "Something went wrong while using this invite link."}
+    defp map_join_invite_error(:invite_token_not_found), do: {:error, gettext("Invalid invite link")}
+    defp map_join_invite_error(:invite_token_inactive), do: {:error, gettext("This invite link is no longer valid")}
+    defp map_join_invite_error(:invite_token_domain_not_allowed), do: {:error, gettext("This invite link is restricted to specific email domains")}
+    defp map_join_invite_error(:invite_token_invalid), do: {:error, gettext("This invite link is no longer valid")}
+    defp map_join_invite_error(:person_creation_failed), do: {:error, gettext("Unable to add you to this company.")}
+    defp map_join_invite_error(:invite_link_update_failed), do: {:error, gettext("Something went wrong while using this invite link.")}
 
     def validate_token_creation_session(session) do
       cond do

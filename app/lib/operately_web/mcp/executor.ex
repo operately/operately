@@ -3,6 +3,8 @@ defmodule OperatelyWeb.Mcp.Executor do
   Resolves catalog entries, validates arguments, and executes MCP tool wrappers.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   alias OperatelyWeb.Api.RichContent.Preparation
   alias Jason.EncodeError
   alias Plug.Conn
@@ -69,35 +71,35 @@ defmodule OperatelyWeb.Mcp.Executor do
   defp not_implemented_result(name) do
     %{
       "isError" => true,
-      "content" => [text_content("The #{name} tool is not implemented yet.")]
+      "content" => [text_content(gettext("The %{name} tool is not implemented yet.", name: name))]
     }
   end
 
   defp not_found_result do
     %{
       "isError" => true,
-      "content" => [text_content("The requested resource was not found or is not accessible.")]
+      "content" => [text_content(gettext("The requested resource was not found or is not accessible."))]
     }
   end
 
   defp forbidden_result do
     %{
       "isError" => true,
-      "content" => [text_content("You do not have permission to perform this operation, or the company is read-only.")]
+      "content" => [text_content(gettext("You do not have permission to perform this operation, or the company is read-only."))]
     }
   end
 
   defp bad_request_result do
     %{
       "isError" => true,
-      "content" => [text_content("The tool could not complete the request with the provided data.")]
+      "content" => [text_content(gettext("The tool could not complete the request with the provided data."))]
     }
   end
 
   defp internal_error_result do
     %{
       "isError" => true,
-      "content" => [text_content("The tool could not complete the request.")]
+      "content" => [text_content(gettext("The tool could not complete the request."))]
     }
   end
 

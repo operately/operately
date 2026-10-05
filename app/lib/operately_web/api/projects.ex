@@ -569,6 +569,7 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule SharedMultiSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     require Logger
     import Ecto.Query, only: [from: 2]
     alias Operately.Projects.{Contributor, OrderingState}
@@ -590,7 +591,7 @@ defmodule OperatelyWeb.Api.Projects do
 
         case Operately.Projects.Project.get(me, id: project_id, opts: [preload: preloads]) do
           {:ok, project} -> {:ok, project}
-          {:error, _} -> {:error, {:not_found, "Project not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -599,13 +600,13 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Task not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
         case task.project do
           %Operately.Projects.Project{} = project -> {:ok, project}
-          _ -> {:error, {:not_found, "Project not found"}}
+          _ -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -614,7 +615,7 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Task not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
         end
       end)
     end
@@ -629,13 +630,13 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
         case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
           {:ok, milestone} -> {:ok, milestone}
-          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Milestone not found")}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
         case milestone.project do
           %Operately.Projects.Project{} = project -> {:ok, project}
-          _ -> {:error, {:not_found, "Project not found"}}
+          _ -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -644,7 +645,7 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
         case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
           {:ok, milestone} -> {:ok, milestone}
-          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Milestone not found")}}
         end
       end)
     end
@@ -760,7 +761,7 @@ defmodule OperatelyWeb.Api.Projects do
       case task_statuses do
         [] ->
           Ecto.Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
-            {:error, "At least one task status is required"}
+            {:error, gettext("At least one task status is required")}
           end)
 
         _ ->
@@ -788,7 +789,7 @@ defmodule OperatelyWeb.Api.Projects do
         if Enum.empty?(invalid_replacements) do
           {:ok, :valid}
         else
-          {:error, "Replacement statuses must be existing statuses that are not being deleted"}
+          {:error, gettext("Replacement statuses must be existing statuses that are not being deleted")}
         end
       end)
     end

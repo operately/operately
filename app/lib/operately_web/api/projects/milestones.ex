@@ -254,6 +254,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
   end
 
   defmodule SharedMultiSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     import Ecto.Query, only: [from: 2]
     require Logger
     alias Operately.Projects.OrderingState
@@ -272,7 +273,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       Ecto.Multi.run(multi, :project, fn _repo, %{me: me} ->
         case Operately.Projects.Project.get(me, id: project_id, opts: [preload: [:access_context, :milestones]]) do
           {:ok, project} -> {:ok, project}
-          {:error, _} -> {:error, {:not_found, "Project not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -281,7 +282,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
         case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [project: :champion]]) do
           {:ok, milestone} -> {:ok, milestone}
-          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Milestone not found")}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
@@ -293,7 +294,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Task not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
         end
       end)
     end
@@ -343,7 +344,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
             {:ok, completed_state}
 
           _invalid ->
-            {:error, {:bad_request, "Some milestone IDs do not belong to this project"}}
+            {:error, {:bad_request, gettext("Some milestone IDs do not belong to this project")}}
         end
       end)
     end
@@ -360,7 +361,7 @@ defmodule OperatelyWeb.Api.Projects.Milestones do
     def update_milestone_title(multi, new_title) do
       Ecto.Multi.run(multi, :validate_title, fn _repo, _changes ->
         if String.trim(new_title) == "" do
-          {:error, "Title cannot be empty"}
+          {:error, gettext("Title cannot be empty")}
         else
           {:ok, new_title}
         end

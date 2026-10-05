@@ -45,6 +45,7 @@ Use these Brazilian Portuguese terms in the pilot and later translations:
 | --- | --- |
 | company | empresa |
 | member | membro |
+| email / emails | e-mail / e-mails |
 | space | espaço |
 | project | projeto |
 | goal | objetivo |

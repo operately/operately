@@ -169,6 +169,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
   end
 
   defmodule SharedMultiSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     require Logger
 
     def start_transaction(conn) do
@@ -184,7 +185,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
       Ecto.Multi.run(multi, :goal, fn _repo, %{me: me} ->
         case Operately.Goals.Goal.get(me, id: goal_id, opts: [preload: [:access_context]]) do
           {:ok, goal} -> {:ok, goal}
-          {:error, _} -> {:error, {:not_found, "Goal not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Goal not found")}}
         end
       end)
     end
@@ -209,7 +210,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
     def find_check(multi, check_id) do
       Ecto.Multi.run(multi, :check, fn _repo, _ ->
         case Operately.Repo.get(Operately.Goals.Check, check_id) do
-          nil -> {:error, {:not_found, "Check not found"}}
+          nil -> {:error, {:not_found, gettext("Check not found")}}
           check -> {:ok, check}
         end
       end)

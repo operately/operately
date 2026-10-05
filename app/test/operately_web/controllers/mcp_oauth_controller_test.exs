@@ -32,6 +32,42 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     %{client: client}
   end
 
+  test "consent uses the selected company's language and preserves protocol fields", %{conn: conn, client: client} do
+    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
+    account = Repo.preload(person, :account).account
+    conn = log_in_account(conn, account)
+    params = authorize_params(client, hd(client.redirect_uris), "mcp:read mcp:write")
+
+    response = get(conn, "/oauth/authorize", params)
+    body = html_response(response, 200)
+    assert body =~ "Autorizar cliente MCP"
+    assert body =~ ~s(lang="pt-BR")
+    assert body =~ "Visualizar dados do ambiente de trabalho"
+    assert body =~ "mcp:read mcp:write"
+    assert body =~ client.client_name
+    assert body =~ ctx.company.name
+
+    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    body = conn |> get("/oauth/authorize", params) |> html_response(200)
+    assert body =~ "Authorize MCP Client"
+    assert body =~ ~s(lang="en")
+  end
+
+  test "company selection overrides conflicting account languages", %{conn: conn, client: client} do
+    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
+    account = Repo.preload(person, :account).account
+    company_fixture(%{company_name: "English Company"}, account)
+    params = authorize_params(client, hd(client.redirect_uris))
+    picker = conn |> log_in_account(account, ctx.company) |> delete_req_header("x-company-id") |> get("/oauth/authorize", params)
+    assert html_response(picker, 200) =~ "Choose a Company"
+    response = picker |> recycle() |> post("/oauth/authorize", Map.merge(params, %{
+      "decision" => "select_company", "selected_company_id" => ctx.company.id, "_csrf_token" => csrf_token(picker)
+    }))
+    assert html_response(response, 200) =~ "Autorizar cliente MCP"
+  end
+
   test "redirects unauthenticated users to log in", %{conn: conn, client: client} do
     params = authorize_params(client, client.redirect_uris |> hd())
 

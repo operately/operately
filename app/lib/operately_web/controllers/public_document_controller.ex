@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.PublicDocumentController do
+  use Gettext, backend: OperatelyWeb.Gettext
   use OperatelyWeb, :controller
 
   alias Operately.Blobs
@@ -18,7 +19,7 @@ defmodule OperatelyWeb.PublicDocumentController do
          true <- same_company?(document, blob) do
       send_blob(conn, blob, params["disposition"])
     else
-      _ -> send_resp(conn, 404, "Document unavailable")
+      _ -> send_resp(conn, 404, gettext("Document unavailable"))
     end
   end
 
@@ -43,7 +44,7 @@ defmodule OperatelyWeb.PublicDocumentController do
         :ok ->
           stream_blob(conn, blob, path, disposition)
 
-        {:error, _} -> send_resp(conn, 502, "Unable to load attachment")
+        {:error, _} -> send_resp(conn, 502, gettext("Unable to load attachment"))
       end
     after
       File.rm(path)
