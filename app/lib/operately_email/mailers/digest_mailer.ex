@@ -60,6 +60,8 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     }
   end
 
+  defp new_updates_copy(0), do: gettext("You have 0 new updates")
+
   defp new_updates_copy(count) do
     ngettext("You have 1 new update", "You have %{count} new updates", count)
   end

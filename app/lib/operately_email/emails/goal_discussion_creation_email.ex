@@ -40,7 +40,7 @@ defmodule OperatelyEmail.Emails.GoalDiscussionCreationEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "started a goal discussion: #{discussion.title}",
+      headline: gettext("started a goal discussion: %{discussion_title}", discussion_title: discussion.title),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.goal_activity_path(company, activity) |> Paths.to_url(),

@@ -31,7 +31,7 @@ defmodule OperatelyEmail.Emails.GoalRetrospectiveAcknowledgedEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "acknowledged a goal retrospective",
+      headline: gettext("acknowledged a goal retrospective"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: Paths.goal_activity_path(company, retrospective_activity) |> Paths.to_url(),

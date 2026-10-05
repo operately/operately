@@ -40,8 +40,8 @@ defmodule OperatelyEmail.Emails.GoalReviewerUpdatingEmail do
     }
   end
 
-  defp buffered_headline(nil), do: "removed the goal reviewer"
-  defp buffered_headline(reviewer), do: "assigned #{reviewer.full_name} as the goal reviewer"
+  defp buffered_headline(nil), do: gettext("removed the goal reviewer")
+  defp buffered_headline(reviewer), do: gettext("assigned %{reviewer_full_name} as the goal reviewer", reviewer_full_name: reviewer.full_name)
 
   defp get_reviewer(nil), do: nil
   defp get_reviewer(id), do: Operately.People.get_person!(id)

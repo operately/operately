@@ -63,7 +63,7 @@ defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the description of the milestone \"#{milestone.title}\"",
+      headline: gettext("updated the description of the milestone \"%{milestone_title}\"", milestone_title: milestone.title),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),

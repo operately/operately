@@ -51,7 +51,7 @@ defmodule OperatelyEmail.Emails.GoalClosingEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "closed this goal",
+      headline: gettext("closed this goal"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: Paths.goal_activity_path(company, activity) |> Paths.to_url(),

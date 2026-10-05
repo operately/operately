@@ -30,7 +30,7 @@ defmodule OperatelyEmail.Emails.ProjectArchivedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "archived the project",
+      headline: gettext("archived the project"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),

@@ -74,7 +74,7 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the description of the task \"#{task.name}\"",
+      headline: gettext("updated the description of the task \"%{task_name}\"", task_name: task.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),

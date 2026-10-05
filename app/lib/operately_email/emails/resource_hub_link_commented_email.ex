@@ -37,7 +37,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on the link \"#{link.name}\"",
+      headline: gettext("commented on the link \"%{link_name}\"", link_name: link.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.link_path(company, link, comment) |> Paths.to_url(),

@@ -57,6 +57,6 @@ defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
     }
   end
 
-  defp buffered_headline(nil), do: "removed the project reviewer"
-  defp buffered_headline(reviewer), do: "assigned #{reviewer.full_name} as the project reviewer"
+  defp buffered_headline(nil), do: gettext("removed the project reviewer")
+  defp buffered_headline(reviewer), do: gettext("assigned %{reviewer_full_name} as the project reviewer", reviewer_full_name: reviewer.full_name)
 end

@@ -34,7 +34,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkDeletedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "deleted the link \"#{link.name}\"",
+      headline: gettext("deleted the link \"%{link_name}\"", link_name: link.name),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.resource_hub_path(company, link.resource_hub) |> OperatelyWeb.Paths.to_url(),

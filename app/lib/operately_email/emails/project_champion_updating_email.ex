@@ -58,6 +58,6 @@ defmodule OperatelyEmail.Emails.ProjectChampionUpdatingEmail do
     }
   end
 
-  defp buffered_headline(nil), do: "removed the project champion"
-  defp buffered_headline(champion), do: "assigned #{champion.full_name} as the project champion"
+  defp buffered_headline(nil), do: gettext("removed the project champion")
+  defp buffered_headline(champion), do: gettext("assigned %{champion_full_name} as the project champion", champion_full_name: champion.full_name)
 end

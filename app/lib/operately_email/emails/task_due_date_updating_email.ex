@@ -71,7 +71,7 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
     }
   end
 
-  defp buffered_headline(task_name, _old_date, nil), do: "removed the due date from the task \"#{task_name}\""
-  defp buffered_headline(task_name, nil, new_date), do: "set the due date of the task \"#{task_name}\" to #{new_date}"
-  defp buffered_headline(task_name, _old_date, new_date), do: "changed the due date of the task \"#{task_name}\" to #{new_date}"
+  defp buffered_headline(task_name, _old_date, nil), do: gettext("removed the due date from the task \"%{task_name}\"", task_name: task_name)
+  defp buffered_headline(task_name, nil, new_date), do: gettext("set the due date of the task \"%{task_name}\" to %{date}", task_name: task_name, date: new_date)
+  defp buffered_headline(task_name, _old_date, new_date), do: gettext("changed the due date of the task \"%{task_name}\" to %{date}", task_name: task_name, date: new_date)
 end
