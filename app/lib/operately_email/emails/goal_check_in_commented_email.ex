@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Goals, Updates}
   alias Operately.Goals.Update
@@ -10,14 +11,12 @@ defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
     goal = Goals.get_goal!(activity.content["goal_id"])
     {:ok, update} = Update.get(:system, id: activity.content["goal_check_in_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
-    action = "commented on the check-in"
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: action)
-    |> assign(:action, action)
+    |> subject(gettext("(%{location}) %{author} commented on the check-in", location: goal.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:update, update)

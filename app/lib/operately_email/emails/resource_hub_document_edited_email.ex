@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Activities.Notifications.MentionedPeople
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: action(person, document, content))
+    |> subject(subject_text(author, parent, person, document, content))
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:content, content)
@@ -47,11 +48,11 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
     }
   end
 
-  defp action(person, document, content) do
+  def subject_text(author, parent, person, document, content) do
     if person.id in MentionedPeople.ids(content) do
-      "mentioned you in the document \"#{document.name}\""
+      gettext("(%{location}) %{author} mentioned you in the document \"%{document_name}\"", location: parent.name, author: Operately.People.Person.short_name(author), document_name: document.name)
     else
-      "updated the document \"#{document.name}\""
+      gettext("(%{location}) %{author} updated the document \"%{document_name}\"", location: parent.name, author: Operately.People.Person.short_name(author), document_name: document.name)
     end
   end
 end

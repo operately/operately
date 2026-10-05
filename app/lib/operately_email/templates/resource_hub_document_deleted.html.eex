@@ -1,7 +1,7 @@
-<%= title("#{short_name(@author)} deleted a document: #{@document.name}") %>
+<%= title(gettext("%{author} deleted a document: %{document_name}", author: short_name(@author), document_name: @document.name)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Resource Hub") %>
+  <%= cta_button(@cta_url, gettext("View Docs & Files")) %>
 <% end %>

@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} updated the document: #{@document.name}") %>
+<%= title(gettext("%{author} updated the document: %{document_name}", author: short_name(@author), document_name: @document.name)) %>
 
 <%= spacer() %>
 
@@ -10,5 +10,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Document") %>
+  <%= cta_button(@cta_url, gettext("View Document")) %>
 <% end %>

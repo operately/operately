@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} commented on a KPI update for #{@name}") %>
+<%= title(gettext("%{author} commented on a KPI update for %{name}", author: short_name(@author), name: @name)) %>
 
 <%= spacer() %>
 
@@ -9,5 +9,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View Comment") %>
+  <%= cta_button(@cta_url, gettext("View Comment")) %>
 <% end %>

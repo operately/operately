@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.KpiEntryCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyWeb.Paths
@@ -15,7 +16,7 @@ defmodule OperatelyEmail.Emails.KpiEntryCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: kpi.space.name, who: author, action: "commented on a KPI update: #{kpi.name}")
+    |> subject(gettext("(%{location}) %{author} commented on a KPI update: %{kpi_name}", location: kpi.space.name, author: Operately.People.Person.short_name(author), kpi_name: kpi.name))
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, kpi.name)

@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyEmail.Emails.ResourceHubEmail
@@ -15,7 +16,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "commented on: #{file.name}")
+    |> subject(gettext("(%{location}) %{author} commented on: %{file_name}", location: parent.name, author: Operately.People.Person.short_name(author), file_name: file.name))
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, file.name)
