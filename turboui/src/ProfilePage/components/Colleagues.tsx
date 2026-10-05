@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import { PersonCard } from "../../PersonCard";
@@ -7,6 +8,7 @@ import classNames from "../../utils/classnames";
 import { ProfilePage } from "..";
 
 export function Colleagues(props: ProfilePage.Props) {
+  const { t } = useTranslation();
   const [allPeersVisible, setAllPeersVisible] = React.useState(false);
   const [allReportsVisible, setAllReportsVisible] = React.useState(false);
   const location = useLocation();
@@ -28,19 +30,19 @@ export function Colleagues(props: ProfilePage.Props) {
 
   return (
     <div className="py-6">
-      <div className="text-xs mb-2 uppercase font-bold">Colleagues</div>
+      <div className="text-xs mb-2 uppercase font-bold">{t("Colleagues")}</div>
 
       <div className="overflow-x-auto">
         <div className={getGridColumnsClass(hasManager, hasReportsColumn)}>
           {hasManager && (
             <div className="w-full">
-              <div className="text-xs font-medium text-content-dimmed mb-2">Manager</div>
+              <div className="text-xs font-medium text-content-dimmed mb-2">{t("Manager")}</div>
               <PersonCard person={props.manager!} link />
             </div>
           )}
 
           <div className="w-full">
-            <div className="text-xs font-medium text-content-dimmed mb-2">Peers</div>
+            <div className="text-xs font-medium text-content-dimmed mb-2">{t("Peers")}</div>
 
             <div className="flex flex-col gap-2 w-full">
               <div ref={mainPersonRef}>
@@ -67,7 +69,7 @@ export function Colleagues(props: ProfilePage.Props) {
             {!allPeersVisible && props.peers.length > visiblePeers.length && (
               <div className="mt-2 flex items-center justify-center">
                 <SecondaryButton size="xxs" onClick={() => setAllPeersVisible(true)}>
-                  Show all
+                  {t("Show all")}
                 </SecondaryButton>
               </div>
             )}
@@ -75,7 +77,7 @@ export function Colleagues(props: ProfilePage.Props) {
 
           {hasReportsColumn && (
             <div className="w-full">
-              <div className="text-xs font-medium text-content-dimmed mb-2">Reports</div>
+              <div className="text-xs font-medium text-content-dimmed mb-2">{t("Reports", { context: "people" })}</div>
 
               <div className="flex flex-col gap-2 w-full">
                 {visibleReports.map((person, index) => (
@@ -92,7 +94,7 @@ export function Colleagues(props: ProfilePage.Props) {
               {!allReportsVisible && props.reports.length > visibleReports.length && (
                 <div className="mt-2 flex items-center justify-center">
                   <SecondaryButton size="xxs" onClick={() => setAllReportsVisible(true)}>
-                    Show all
+                    {t("Show all")}
                   </SecondaryButton>
                 </div>
               )}
