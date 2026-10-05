@@ -63,7 +63,7 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
       assert {200, _} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
       assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
 
-      assert res == %{:error => "Bad request", :message => "Email has already been taken"}
+      assert res == %{:error => "Bad request", :message => "Email has already been taken", :details => %{field: "email"}}
     end
 
     test "returns a billing limit error when the company is already full", ctx do
@@ -85,14 +85,14 @@ defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
       input = put_in(@invite_guest_input, [:email], "")
 
       assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], input)
-      assert res == %{:error => "Bad request", :message => "Email can't be blank"}
+      assert res == %{:error => "Bad request", :message => "Email can't be blank", :details => %{field: "email"}}
     end
 
     test "full_name can't be blank", ctx do
       input = put_in(@invite_guest_input, [:full_name], "")
 
       assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], input)
-      assert res == %{:error => "Bad request", :message => "Name can't be blank"}
+      assert res == %{:error => "Bad request", :message => "Name can't be blank", :details => %{field: "full_name"}}
     end
   end
 

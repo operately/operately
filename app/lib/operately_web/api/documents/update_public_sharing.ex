@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Documents.UpdatePublicSharing do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -24,7 +25,7 @@ defmodule OperatelyWeb.Api.Documents.UpdatePublicSharing do
       {:ok, ctx} -> {:ok, %{public_url: PublicDocument.url(ctx.operation)}}
       {:error, :document, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
-      {:error, :operation, %{error: :draft}} -> {:error, :bad_request, "Publish the document before sharing it publicly"}
+      {:error, :operation, %{error: :draft}} -> {:error, :bad_request, gettext("Publish the document before sharing it publicly")}
       _ -> {:error, :internal_server_error}
     end
   end

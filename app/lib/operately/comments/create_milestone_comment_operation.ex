@@ -1,4 +1,5 @@
 defmodule Operately.Comments.CreateMilestoneCommentOperation do
+  use Gettext, backend: OperatelyWeb.Gettext
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
@@ -88,7 +89,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   defp validate_resolution(_project, [], _resolution), do: {:ok, nil}
 
   defp validate_resolution(_project, _open_tasks, nil) do
-    {:error, {:bad_request, "Choose what happens to the open tasks before completing the milestone"}}
+    {:error, {:bad_request, gettext("Choose what happens to the open tasks before completing the milestone")}}
   end
 
   defp validate_resolution(_project, _open_tasks, %{action: action}) when action in [:move_to_no_milestone, "move_to_no_milestone"] do
@@ -101,12 +102,12 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     if status && status.closed do
       {:ok, %{action: :set_status, status: status}}
     else
-      {:error, {:bad_request, "Select a closed task status"}}
+      {:error, {:bad_request, gettext("Select a closed task status")}}
     end
   end
 
   defp validate_resolution(_project, _open_tasks, _resolution) do
-    {:error, {:bad_request, "Choose a valid open task resolution"}}
+    {:error, {:bad_request, gettext("Choose a valid open task resolution")}}
   end
 
   defp resolve_open_tasks(multi, action) when action != "complete" do

@@ -10,6 +10,18 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
     :title => "Developer",
   }
 
+  test "localized validation retains its field and machine error category", ctx do
+    ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
+    {:ok, _} = People.update_person(ctx.creator, %{language: "pt-BR"})
+    input = Map.put(@add_company_member_input, :full_name, "")
+    assert {400, %{error: "Bad request", details: %{field: "full_name"}, message: "O nome não pode ficar em branco"}} =
+             mutation(ctx.conn, [:companies, :create_member], input)
+
+    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    assert {400, %{error: "Bad request", details: %{field: "full_name"}, message: "Name can't be blank"}} =
+             mutation(ctx.conn, [:companies, :create_member], input)
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:companies, :create_member], %{})
@@ -68,7 +80,7 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
       assert {200, _} = mutation(ctx.conn, [:companies, :create_member], @add_company_member_input)
       assert {400, res} = mutation(ctx.conn, [:companies, :create_member], @add_company_member_input)
 
-      assert res == %{:error => "Bad request", :message => "Email has already been taken"}
+      assert res == %{:error => "Bad request", :message => "Email has already been taken", :details => %{field: "email"}}
     end
 
     test "returns a billing limit error when the company is already full", ctx do
@@ -90,14 +102,14 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
       input = put_in(@add_company_member_input, [:email], "")
 
       assert {400, res} = mutation(ctx.conn, [:companies, :create_member], input)
-      assert res == %{:error => "Bad request", :message => "Email can't be blank"}
+      assert res == %{:error => "Bad request", :message => "Email can't be blank", :details => %{field: "email"}}
     end
 
     test "full_name can't be blank", ctx do
       input = put_in(@add_company_member_input, [:full_name], "")
 
       assert {400, res} = mutation(ctx.conn, [:companies, :create_member], input)
-      assert res == %{:error => "Bad request", :message => "Name can't be blank"}
+      assert res == %{:error => "Bad request", :message => "Name can't be blank", :details => %{field: "full_name"}}
     end
 
     test "email can be used to create one and only one account per company", ctx do
@@ -114,9 +126,9 @@ defmodule OperatelyWeb.Api.Companies.CreateMemberTest do
       refute res.invite_link
 
       assert {400, res} = mutation(ctx.conn, [:companies, :create_member], @add_company_member_input)
-      assert res == %{:error => "Bad request", :message => "Email has already been taken"}
+      assert res == %{:error => "Bad request", :message => "Email has already been taken", :details => %{field: "email"}}
       assert {400, res} = mutation(other_ctx.conn, [:companies, :create_member], @add_company_member_input)
-      assert res == %{:error => "Bad request", :message => "Email has already been taken"}
+      assert res == %{:error => "Bad request", :message => "Email has already been taken", :details => %{field: "email"}}
     end
   end
 

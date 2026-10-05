@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang={@conn.assigns[:locale] || "en"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -83,7 +83,7 @@
   <body>
     <div class="card">
       <._logo />
-      <p class="description"><strong><%= @request.client.client_name %></strong> wants to connect to Operately. Choose which company to use for this connection.</p>
+      <p class="description"><%= client_sentence(gettext("<client/> wants to connect to Operately. Choose which company to use for this connection."), @request.client.client_name) %></p>
 
       <form method="post" action="/oauth/authorize">
         <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
@@ -102,7 +102,7 @@
         <% end %>
 
         <div class="actions">
-          <button class="primary" type="submit">Continue</button>
+          <button class="primary" type="submit"><%= gettext("Continue") %></button>
         </div>
       </form>
     </div>

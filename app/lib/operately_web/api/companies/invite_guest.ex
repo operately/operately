@@ -55,13 +55,16 @@ defmodule OperatelyWeb.Api.Companies.InviteGuest do
          }}
 
       {:error, [%{field: :email, message: message}]} ->
-        {:error, :bad_request, "Email " <> message}
+        {:error, :bad_request, Operately.I18n.ValidationErrors.member(:email, message), %{field: "email"}}
 
       {:error, [%{field: :full_name, message: message}]} ->
-        {:error, :bad_request, "Name " <> message}
+        {:error, :bad_request, Operately.I18n.ValidationErrors.member(:full_name, message), %{field: "full_name"}}
+
+      {:error, [%{message: "Email has already been taken"}]} ->
+        {:error, :bad_request, Operately.I18n.ValidationErrors.translate({"Email has already been taken", []}), %{field: "email"}}
 
       {:error, [%{message: message}]} ->
-        {:error, :bad_request, message}
+        {:error, :bad_request, Operately.I18n.ValidationErrors.translate({message, []})}
 
       {:error, %LimitError{} = error} ->
         EnforceLimits.to_api_error(error)

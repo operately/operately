@@ -286,6 +286,7 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule SharedMultiSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     alias Ecto.Multi
     alias Operately.Repo
     import Ecto.Query, only: [from: 2]
@@ -309,7 +310,7 @@ defmodule OperatelyWeb.Api.Spaces do
       Multi.run(multi, :task, fn _repo, %{me: me} ->
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Task not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Task not found")}}
         end
       end)
     end
@@ -359,7 +360,7 @@ defmodule OperatelyWeb.Api.Spaces do
       case task_statuses do
         [] ->
           Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
-            {:error, "At least one task status is required"}
+            {:error, gettext("At least one task status is required")}
           end)
 
         _ ->
@@ -393,7 +394,7 @@ defmodule OperatelyWeb.Api.Spaces do
         if Enum.empty?(invalid_replacements) do
           {:ok, :valid}
         else
-          {:error, "Replacement statuses must be existing statuses that are not being deleted"}
+          {:error, gettext("Replacement statuses must be existing statuses that are not being deleted")}
         end
       end)
     end
@@ -492,7 +493,7 @@ defmodule OperatelyWeb.Api.Spaces do
           {:error, :forbidden}
 
         {:error, :updated_space, %Ecto.Changeset{}, _changes} ->
-          {:error, :bad_request, "Invalid tools"}
+          {:error, :bad_request, gettext("Invalid tools")}
 
         {:error, :validate_task_statuses, message, _changes} ->
           {:error, :bad_request, message}

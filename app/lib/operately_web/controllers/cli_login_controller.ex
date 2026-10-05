@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.CliLoginController do
+  use Gettext, backend: OperatelyWeb.Gettext
   use OperatelyWeb, :controller
 
   alias Operately.People.CliAuthSession
@@ -47,34 +48,36 @@ defmodule OperatelyWeb.CliLoginController do
       session ->
         conn
         |> put_resp_content_type("text/html")
-        |> send_resp(200, html_page(title(session), body(session)))
+        |> send_resp(200, html_page(title(session), body(session), conn.assigns[:locale] || "en"))
     end
   end
 
   defp title(session) do
     cond do
-      CliAuthSession.expired?(session) -> "Authentication Expired"
-      session.status == :pending -> "Authentication In Progress"
-      CliAuthSession.no_companies?(session) -> "No Companies Found"
-      session.status == :failed -> "Authentication Failed"
-      true -> "Authentication Complete"
+      CliAuthSession.expired?(session) -> gettext("Authentication Expired")
+      session.status == :pending -> gettext("Authentication In Progress")
+      CliAuthSession.no_companies?(session) -> gettext("No Companies Found")
+      session.status == :failed -> gettext("Authentication Failed")
+      true -> gettext("Authentication Complete")
     end
   end
 
   defp body(session) do
     cond do
-      CliAuthSession.expired?(session) -> "This authentication session has expired. Please return to the CLI and try again."
-      session.status == :pending -> "Authentication is still in progress. Please complete the authentication in your browser."
-      CliAuthSession.no_companies?(session) -> "Your account is not associated with any companies. Please contact your administrator."
+      CliAuthSession.expired?(session) -> gettext("This authentication session has expired. Please return to the CLI and try again.")
+      session.status == :pending -> gettext("Authentication is still in progress. Please complete the authentication in your browser.")
+      CliAuthSession.no_companies?(session) -> gettext("Your account is not associated with any companies. Please contact your administrator.")
       session.status == :failed -> CliAuthSession.failure_message(session)
-      true -> "Authentication complete. Return to the CLI to finish the setup."
+      true -> gettext("Authentication complete. Return to the CLI to finish the setup.")
     end
   end
 
-  defp html_page(title, body) do
+  defp html_page(title, body, locale) do
+    title = title |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
+    body = body |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
     """
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="#{locale}">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -141,7 +144,7 @@ defmodule OperatelyWeb.CliLoginController do
 
   defp send_not_found(conn) do
     conn
-    |> send_resp(404, "Not Found")
+    |> send_resp(404, gettext("Not Found"))
   end
 
   if Application.compile_env(:operately, :test_routes) do

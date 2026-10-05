@@ -6,6 +6,7 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdating do
   only updates membership and the source list.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   import Ecto.Query, only: [from: 2]
 
   alias Ecto.Multi
@@ -28,7 +29,7 @@ defmodule Operately.Operations.ProjectTemplateMilestoneOrderingUpdating do
   end
 
   defp validate_index(index) when is_integer(index) and index >= 0, do: {:ok, index}
-  defp validate_index(_index), do: {:error, {:validation, "Task index must be zero or greater"}}
+  defp validate_index(_index), do: {:error, {:validation, gettext("Task index must be zero or greater")}}
 
   defp validate_milestone(_template, nil), do: {:ok, nil}
 

@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Companies.ConvertMemberToGuest do
   Converts a company member to a guest.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -45,8 +46,8 @@ defmodule OperatelyWeb.Api.Companies.ConvertMemberToGuest do
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :person, _} -> {:error, :not_found}
       {:error, :operation, %{error: :invalid_company}} -> {:error, :not_found}
-      {:error, :operation, %{error: :cannot_convert_self}} -> {:error, :bad_request, "You can't convert your own account to outside collaborator"}
-      {:error, :operation, %{error: :person_suspended}} -> {:error, :bad_request, "Suspended accounts can't be converted to outside collaborator"}
+      {:error, :operation, %{error: :cannot_convert_self}} -> {:error, :bad_request, gettext("You can't convert your own account to outside collaborator")}
+      {:error, :operation, %{error: :person_suspended}} -> {:error, :bad_request, gettext("Suspended accounts can't be converted to outside collaborator")}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end

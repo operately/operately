@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.CreateAccount do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -31,16 +32,16 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
         {:error, :forbidden}
 
       {:error, :email_taken} ->
-        {:error, :bad_request, "Email is already registered"}
+        {:error, :bad_request, gettext("Email is already registered")}
 
       {:error, :invalid_code} ->
-        {:error, :bad_request, "Invalid activation code"}
+        {:error, :bad_request, gettext("Invalid activation code")}
 
       {:error, :not_found} ->
-        {:error, :bad_request, "Invalid activation code"}
+        {:error, :bad_request, gettext("Invalid activation code")}
 
       {:error, :invalid} ->
-        {:error, :bad_request, "Activation code has expired"}
+        {:error, :bad_request, gettext("Activation code has expired")}
 
       {:error, error} ->
         Logger.error("Failed to create account. error: #{inspect(error)}")

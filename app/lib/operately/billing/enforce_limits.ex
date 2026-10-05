@@ -1,4 +1,5 @@
 defmodule Operately.Billing.EnforceLimits do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Billing
   alias Operately.Billing.CompanyBillingAccount
   alias Operately.Billing.Plans
@@ -46,11 +47,11 @@ defmodule Operately.Billing.EnforceLimits do
   end
 
   def public_message(%LimitError{code: :member_count_limit_exceeded} = error) do
-    "This company has reached its member limit: #{error.current_usage} of #{error.limit} active members. Adding or restoring people is blocked until this company is back within its plan limits."
+    gettext("This company has reached its member limit: %{current_usage} of %{limit} active members. Adding or restoring people is blocked until this company is back within its plan limits.", current_usage: error.current_usage, limit: error.limit)
   end
 
   def public_message(%LimitError{code: :storage_limit_exceeded} = error) do
-    "This company has reached its storage limit: #{format_storage_bytes(error.current_usage)} of #{format_storage_bytes(error.limit)} used. Uploading files is blocked until this company is back within its plan limits."
+    gettext("This company has reached its storage limit: %{current_usage} of %{limit} used. Uploading files is blocked until this company is back within its plan limits.", current_usage: format_storage_bytes(error.current_usage), limit: format_storage_bytes(error.limit))
   end
 
   def to_api_error(%LimitError{} = error) do

@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -133,10 +134,10 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
   defp validate_spaces([space | spaces]) do
     cond do
       is_nil(space.name) or String.trim(space.name) == "" ->
-        {:error, :invalid_space, "name can't be blank"}
+        {:error, :invalid_space, gettext("name can't be blank")}
 
       is_nil(space.description) or String.trim(space.description) == "" ->
-        {:error, :invalid_space, "description can't be blank"}
+        {:error, :invalid_space, gettext("description can't be blank")}
 
       true ->
         validate_spaces(spaces)

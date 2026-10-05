@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.RichContent.ResolveLinks do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -28,7 +29,7 @@ defmodule OperatelyWeb.Api.RichContent.ResolveLinks do
     if length(urls) <= ResourceLinkResolver.max_unique_refs() do
       :ok
     else
-      {:error, :bad_request, "At most 100 URLs can be resolved at once"}
+      {:error, :bad_request, gettext("At most 100 URLs can be resolved at once")}
     end
   end
 end

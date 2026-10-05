@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
+  use Gettext, backend: OperatelyWeb.Gettext
   require Logger
   import Ecto.Query, only: [from: 2]
 
@@ -559,7 +560,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     tasks = all_tasks_for(template.id)
 
     changes = %{}
-    changes = maybe_put_ordering(changes, attrs, :milestones_ordering_state, milestones, &Paths.project_template_milestone_id/1, "Milestone ordering contains IDs from another template")
+    changes = maybe_put_ordering(changes, attrs, :milestones_ordering_state, milestones, &Paths.project_template_milestone_id/1, gettext("Milestone ordering contains IDs from another template"))
     changes = maybe_put_kanban(changes, attrs, tasks, template.task_statuses)
 
     if changes == %{}, do: template, else: persist!(ProjectTemplate.changeset(template, changes))
@@ -569,7 +570,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
     tasks = tasks_for(template.id, milestone.id)
 
     changes = %{}
-    changes = maybe_put_ordering(changes, attrs, :tasks_ordering_state, tasks, &Paths.project_template_task_id/1, "Task ordering contains IDs from another template container")
+    changes = maybe_put_ordering(changes, attrs, :tasks_ordering_state, tasks, &Paths.project_template_task_id/1, gettext("Task ordering contains IDs from another template container"))
     changes = maybe_put_kanban(changes, attrs, tasks, template.task_statuses)
 
     if changes == %{}, do: milestone, else: persist!(Milestone.changeset(milestone, changes))
@@ -772,7 +773,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
 
   defp ensure_not_descendant!(%{type: :folder, id: node_id}, parent_folder_id) when not is_nil(parent_folder_id) do
     folder = Repo.get_by!(ResourceFolder, node_id: node_id)
-    if descendant_folder?(folder.id, parent_folder_id), do: fail!({:validation, "A folder cannot be moved into itself"})
+    if descendant_folder?(folder.id, parent_folder_id), do: fail!({:validation, gettext("A folder cannot be moved into itself")})
   end
 
   defp ensure_not_descendant!(_node, _parent_folder_id), do: :ok
@@ -797,7 +798,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp validate_blob!(blob_id, company_id) do
     case Repo.get(Operately.Blobs.Blob, blob_id) do
       %{company_id: ^company_id, status: :uploaded} -> :ok
-      _ -> fail!({:validation, "The uploaded file is unavailable"})
+      _ -> fail!({:validation, gettext("The uploaded file is unavailable")})
     end
   end
 
@@ -809,7 +810,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   defp ensure_person_is_not_represented!(template, person_id, except_id \\ nil) do
     query = from p in Person, where: p.project_template_id == ^template.id and p.person_id == ^person_id
     query = if except_id, do: from(p in query, where: p.id != ^except_id), else: query
-    if Repo.exists?(query), do: fail!({:validation, "Person is already part of this template"})
+    if Repo.exists?(query), do: fail!({:validation, gettext("Person is already part of this template")})
   end
 
   defp prepare_person_update!(template, template_person, attrs, role) do
@@ -829,7 +830,7 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
             {existing, Map.delete(attrs, :person_id)}
 
           _existing ->
-            fail!({:validation, "Person is already part of this template"})
+            fail!({:validation, gettext("Person is already part of this template")})
         end
 
       :error ->

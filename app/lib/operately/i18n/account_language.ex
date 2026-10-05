@@ -1,6 +1,6 @@
 defmodule Operately.I18n.AccountLanguage do
   @moduledoc """
-  Account emails have no company context. Use a language only when all active
+  Account-level emails and pages have no company context. Use a language only when all active
   memberships resolve to it; new accounts and conflicting preferences use English.
   """
 

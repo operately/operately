@@ -1,17 +1,18 @@
 defmodule Operately.MD.Goal.CheckIns do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Drafts
   def render(check_ins) do
     check_ins_with_comments = load_check_ins_with_comments(check_ins)
 
     if Enum.empty?(check_ins_with_comments) do
       """
-      ## Check-ins
+      ## #{gettext("Check-ins")}
 
-      _No check-ins yet._
+      _#{gettext("No check-ins yet.")}_
       """
     else
       """
-      ## Check-ins
+      ## #{gettext("Check-ins")}
 
       #{Enum.map_join(check_ins_with_comments, "\n\n", &render_check_in/1)}
       """
@@ -20,9 +21,9 @@ defmodule Operately.MD.Goal.CheckIns do
 
   defp render_check_in(check_in) do
     """
-    ### Check-in on #{render_date(Drafts.display_date(check_in))}
+    ### #{gettext("Check-in on %{date}", date: render_date(Drafts.display_date(check_in)))}
 
-    Author: #{check_in.author.full_name}
+    #{gettext("Author")}: #{check_in.author.full_name}
 
     #{render_status_overview(check_in)}
 
@@ -30,7 +31,7 @@ defmodule Operately.MD.Goal.CheckIns do
 
     #{render_checklist(check_in.checks || [])}
 
-    #### Key wins, obstacles and needs
+    #### #{gettext("Key wins, obstacles and needs")}
 
     #{Operately.MD.RichText.render(check_in.message)}
 
@@ -44,7 +45,7 @@ defmodule Operately.MD.Goal.CheckIns do
 
   defp render_check_in_comments(comments) do
     """
-    #### Comments
+    #### #{gettext("Comments")}
 
     #{Enum.map_join(comments, "\n\n", &render_check_in_comment/1)}
     """
@@ -52,7 +53,7 @@ defmodule Operately.MD.Goal.CheckIns do
 
   defp render_check_in_comment(comment) do
     """
-    **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}:
+    #{gettext("**%{author}** on %{date}:", author: comment.author.full_name, date: render_date(comment.inserted_at))}
 
     #{Operately.MD.RichText.render(comment.content)}
     """
@@ -61,14 +62,14 @@ defmodule Operately.MD.Goal.CheckIns do
   defp render_status_overview(check_in) do
     status_text =
       case to_string(check_in.status) do
-        "on_track" -> "🟢 **On Track** - The goal is progressing as planned."
-        "caution" -> "🟡 **Needs Attention** - The goal needs attention due to emerging risks or delays."
-        "off_track" -> "🔴 **Off Track** - The goal is off track due to significant problems affecting success."
-        _ -> "**Status**: #{check_in.status}"
+        "on_track" -> gettext("🟢 **On Track** - The goal is progressing as planned.")
+        "caution" -> gettext("🟡 **Needs Attention** - The goal needs attention due to emerging risks or delays.")
+        "off_track" -> gettext("🔴 **Off Track** - The goal is off track due to significant problems affecting success.")
+        _ -> "**#{gettext("Status")}**: #{check_in.status}"
       end
 
     """
-    #### Overview
+    #### #{gettext("Overview")}
 
     #{status_text}
     """
@@ -86,7 +87,7 @@ defmodule Operately.MD.Goal.CheckIns do
       end)
 
     """
-    #### Targets
+    #### #{gettext("Targets")}
 
     #{target_list}
     """
@@ -106,7 +107,7 @@ defmodule Operately.MD.Goal.CheckIns do
       end)
 
     """
-    #### Checklist
+    #### #{gettext("Checklist")}
 
     #{checklist_items}
     """

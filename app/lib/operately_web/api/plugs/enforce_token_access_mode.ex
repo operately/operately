@@ -1,14 +1,13 @@
 defmodule OperatelyWeb.Api.Plugs.EnforceTokenAccessMode do
+  use Gettext, backend: OperatelyWeb.Gettext
   import Plug.Conn
-
-  @forbidden_message "Read-only API tokens cannot execute mutations"
 
   def init(opts), do: opts
 
   def call(conn, _opts) do
     if block_request?(conn) do
       conn
-      |> send_resp(403, @forbidden_message)
+      |> send_resp(403, gettext("Read-only API tokens cannot execute mutations"))
       |> halt()
     else
       conn

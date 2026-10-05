@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Spaces.Delete do
   Deletes a space.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -37,7 +38,7 @@ defmodule OperatelyWeb.Api.Spaces.Delete do
       {:error, :check_permissions, _} -> {:error, :forbidden}
 
       {:error, :operation, %{error: :cannot_delete_general_space}} ->
-        {:error, :bad_request, "You cannot delete the general space"}
+        {:error, :bad_request, gettext("You cannot delete the general space")}
 
       {:error, :operation, _} -> {:error, :internal_server_error}
 

@@ -1,14 +1,15 @@
 defmodule Operately.MD.Goal.Checklist do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(goal) do
     if goal.checks == [] do
       """
-      ## Checklist
+      ## #{gettext("Checklist")}
 
-      _No checklist items._
+      _#{gettext("No checklist items.")}_
       """
     else
       """
-      ## Checklist
+      ## #{gettext("Checklist")}
 
       #{Enum.map_join(goal.checks, "\n", &render_item/1)}
       """
@@ -18,7 +19,7 @@ defmodule Operately.MD.Goal.Checklist do
   defp render_item(item) do
     completion_info =
       if item.completed && item.completed_at do
-        " (Completed: #{render_date(item.completed_at)})"
+        " (#{gettext("Completed")}: #{render_date(item.completed_at)})"
       else
         ""
       end

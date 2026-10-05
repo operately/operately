@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
   Adds a contributor to a project.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -83,5 +84,5 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
     end
   end
 
-  defp already_contributor_message, do: "This person is already a contributor on this project"
+  defp already_contributor_message, do: gettext("This person is already a contributor on this project")
 end

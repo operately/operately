@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteAdmin do
   Removes an admin from a company.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -38,7 +39,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteAdmin do
       Operately.Repo.one(query)
     else
       if author.id == person_id do
-        {:error, :bad_request, "Admins cannot remove themselves"}
+        {:error, :bad_request, gettext("Admins cannot remove themselves")}
       else
         query = from(p in Operately.People.Person, where: p.id == ^person_id)
 

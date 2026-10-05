@@ -1,4 +1,5 @@
 defmodule Operately.Operations.KanbanStateUpdating do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Ecto.Multi
   alias Operately.Activities
   alias Operately.Repo
@@ -53,7 +54,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
     end
   end
 
-  defp validate_status(_scope, status) when is_nil(status), do: {:error, {:bad_request, "Invalid status"}}
+  defp validate_status(_scope, status) when is_nil(status), do: {:error, {:bad_request, gettext("Invalid status")}}
 
   defp validate_status(scope, status) do
     statuses = case scope do
@@ -65,7 +66,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
     if Enum.any?(statuses || [], fn s -> s.id == status.id end) do
       {:ok, status}
     else
-      {:error, {:bad_request, "Invalid status"}}
+      {:error, {:bad_request, gettext("Invalid status")}}
     end
   end
 
@@ -181,7 +182,7 @@ defmodule Operately.Operations.KanbanStateUpdating do
 
     case Enum.find(Map.keys(state), fn status -> not MapSet.member?(allowed, status) end) do
       nil -> :ok
-      invalid -> {:error, {:bad_request, "Invalid status #{invalid}"}}
+      invalid -> {:error, {:bad_request, gettext("Invalid status %{status}", status: invalid)}}
     end
   end
 end

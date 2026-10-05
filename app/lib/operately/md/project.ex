@@ -1,4 +1,5 @@
 defmodule Operately.MD.Project do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Drafts
 
   def render(project) do
@@ -39,11 +40,11 @@ defmodule Operately.MD.Project do
 
   defp render_overview_info(project) do
     [
-      "Status: #{Operately.Projects.Project.status(project)}",
+      "#{gettext("Status")}: #{Operately.Projects.Project.status(project)}",
       render_progress_line(project),
       render_space_line(project),
-      "Created: #{render_date(project.inserted_at)}",
-      "Last Updated: #{render_date(project.updated_at)}",
+      "#{gettext("Created")}: #{render_date(project.inserted_at)}",
+      "#{gettext("Last Updated")}: #{render_date(project.updated_at)}",
       render_closed_at_line(project),
       render_archived_at_line(project),
       render_parent_goal_line(project)
@@ -56,7 +57,7 @@ defmodule Operately.MD.Project do
   defp render_description(project) do
     if project.description do
       """
-      ## Description
+      ## #{gettext("Description")}
 
       #{Operately.MD.RichText.render(project.description)}
       """
@@ -73,9 +74,9 @@ defmodule Operately.MD.Project do
 
   defp render_milestones([], tasks) do
     base = """
-    ## Milestones
+    ## #{gettext("Milestones")}
 
-    _No milestones defined._
+    _#{gettext("No milestones defined.")}_
     """
 
     case render_unassigned_tasks_section(tasks) do
@@ -100,7 +101,7 @@ defmodule Operately.MD.Project do
       end
 
     """
-    ## Milestones
+    ## #{gettext("Milestones")}
 
     #{Enum.join(sections, "\n\n")}
     """
@@ -108,16 +109,16 @@ defmodule Operately.MD.Project do
 
   defp render_milestone_due(milestone) do
     case Operately.ContextualDates.Timeframe.end_date(milestone.timeframe) do
-      nil -> "Not Set"
+      nil -> gettext("Not Set")
       date -> render_date(date)
     end
   end
 
   defp render_milestone_entry(milestone, tasks, tasks_loaded?) do
     [
-      "  - #{milestone.title} (Status: #{milestone.status})",
+      "  - #{milestone.title} (#{gettext("Status")}: #{milestone.status})",
       "",
-      "    Due: #{render_milestone_due(milestone)}",
+      "    #{gettext("Due")}: #{render_milestone_due(milestone)}",
       render_milestone_completion_line(milestone),
       render_milestone_tasks_block(tasks, tasks_loaded?)
     ]
@@ -127,7 +128,7 @@ defmodule Operately.MD.Project do
 
   defp render_milestone_completion_line(milestone) do
     if milestone.status == :done && milestone.completed_at do
-      "    Completed: #{render_date(milestone.completed_at)}"
+      "    #{gettext("Completed")}: #{render_date(milestone.completed_at)}"
     else
       nil
     end
@@ -140,7 +141,7 @@ defmodule Operately.MD.Project do
   defp render_milestone_tasks_block(tasks, true) do
     [
       "",
-      "    Tasks:",
+      "    #{gettext("Tasks")}:",
       render_task_lines(tasks, "      ")
     ]
     |> Enum.join("\n")
@@ -151,7 +152,7 @@ defmodule Operately.MD.Project do
 
   defp render_unassigned_tasks_section(tasks) do
     """
-    ### Tasks Without Milestone
+    ### #{gettext("Tasks Without Milestone")}
 
     #{render_task_lines(tasks)}
     """
@@ -166,17 +167,17 @@ defmodule Operately.MD.Project do
     [
       "- #{task.name}",
       render_task_assignees_part(task.assigned_people),
-      "Due: #{render_task_due_date(task.due_date)}"
+      "#{gettext("Due")}: #{render_task_due_date(task.due_date)}"
     ]
     |> Enum.reject(&is_nil/1)
     |> Enum.join(" | ")
   end
 
-  defp render_task_assignees_part(people) when is_list(people) and length(people) > 0, do: "Assigned to: #{Enum.map(people, & &1.full_name) |> Enum.join(", ")}"
-  defp render_task_assignees_part(people) when is_list(people), do: "Assigned to: Unassigned"
+  defp render_task_assignees_part(people) when is_list(people) and length(people) > 0, do: "#{gettext("Assigned to")}: #{Enum.map(people, & &1.full_name) |> Enum.join(", ")}"
+  defp render_task_assignees_part(people) when is_list(people), do: "#{gettext("Assigned to: Unassigned")}"
   defp render_task_assignees_part(_), do: nil
 
-  defp render_task_due_date(nil), do: "Not set"
+  defp render_task_due_date(nil), do: gettext("Not set")
 
   defp render_task_due_date(%Operately.ContextualDates.ContextualDate{date: date}) do
     render_date(date)
@@ -184,15 +185,15 @@ defmodule Operately.MD.Project do
 
   defp render_check_ins([]) do
     """
-    ## Check-ins
+    ## #{gettext("Check-ins")}
 
-    _No check-ins yet._
+    _#{gettext("No check-ins yet.")}_
     """
   end
 
   defp render_check_ins(check_ins) do
     """
-    ## Check-ins
+    ## #{gettext("Check-ins")}
 
     #{Enum.map_join(check_ins, "\n\n", &render_check_in/1)}
     """
@@ -200,7 +201,7 @@ defmodule Operately.MD.Project do
 
   defp render_check_in(check_in) do
     [
-      "### Check-in on #{render_date(Drafts.display_date(check_in))}",
+      "### " <> gettext("Check-in on %{date}", date: render_date(Drafts.display_date(check_in))),
       render_check_in_author_line(check_in.author),
       Operately.MD.RichText.render(check_in.description),
       render_check_in_comments(check_in.comments || [])
@@ -215,7 +216,7 @@ defmodule Operately.MD.Project do
 
   defp render_check_in_comments(comments) do
     """
-    #### Comments
+    #### #{gettext("Comments")}
 
     #{Enum.map_join(comments, "\n\n", &render_check_in_comment/1)}
     """
@@ -223,7 +224,7 @@ defmodule Operately.MD.Project do
 
   defp render_check_in_comment(comment) do
     """
-    **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}:
+    #{gettext("**%{author}** on %{date}:", author: comment.author.full_name, date: render_date(comment.inserted_at))}
 
     #{Operately.MD.RichText.render(comment.content)}
     """
@@ -236,7 +237,7 @@ defmodule Operately.MD.Project do
 
       retrospective ->
         """
-        ## Retrospective
+        ## #{gettext("Retrospective")}
 
         #{Operately.MD.RichText.render(retrospective.content)}
         """
@@ -253,7 +254,7 @@ defmodule Operately.MD.Project do
 
       contributors ->
         """
-        ## Contributors
+        ## #{gettext("Contributors")}
 
         #{contributors}
         """
@@ -267,13 +268,13 @@ defmodule Operately.MD.Project do
   defp render_discussions(discussions) when is_list(discussions) do
     if Enum.empty?(discussions) do
       """
-      ## Discussions
+      ## #{gettext("Discussions")}
 
-      _No discussions yet._
+      _#{gettext("No discussions yet.")}_
       """
     else
       """
-      ## Discussions
+      ## #{gettext("Discussions")}
 
       #{Enum.map_join(discussions, "\n\n", &render_discussion/1)}
       """
@@ -284,8 +285,8 @@ defmodule Operately.MD.Project do
     """
     ### #{discussion.title}
 
-    Author: #{discussion.author.full_name}
-    Posted on: #{render_date(discussion.inserted_at)}
+    #{gettext("Author")}: #{discussion.author.full_name}
+    #{gettext("Posted on")}: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
     """
@@ -315,7 +316,7 @@ defmodule Operately.MD.Project do
   defp render_progress_line(project) do
     case render_progress(project) do
       nil -> nil
-      progress -> "Progress: #{progress}"
+      progress -> "#{gettext("Progress")}: #{progress}"
     end
   end
 
@@ -324,28 +325,28 @@ defmodule Operately.MD.Project do
   defp render_space_line(project) do
     case render_space(project) do
       nil -> nil
-      space -> "Space: #{space}"
+      space -> "#{gettext("Space")}: #{space}"
     end
   end
 
-  defp render_parent_goal(%{goal_id: nil}), do: "None (Company-wide project)"
+  defp render_parent_goal(%{goal_id: nil}), do: gettext("None (Company-wide project)")
   defp render_parent_goal(project), do: render_loaded_association(project.goal, & &1.name)
 
   defp render_parent_goal_line(project) do
     case render_parent_goal(project) do
       nil -> nil
-      goal -> "Parent Goal: #{goal}"
+      goal -> "#{gettext("Parent Goal")}: #{goal}"
     end
   end
 
   defp render_closed_at_line(%{closed_at: nil}), do: nil
-  defp render_closed_at_line(project), do: "Closed At: #{render_date(project.closed_at)}"
+  defp render_closed_at_line(project), do: "#{gettext("Closed At")}: #{render_date(project.closed_at)}"
 
   defp render_archived_at_line(%{deleted_at: nil}), do: nil
-  defp render_archived_at_line(project), do: "Archived At: #{render_date(project.deleted_at)}"
+  defp render_archived_at_line(project), do: "#{gettext("Archived At")}: #{render_date(project.deleted_at)}"
 
   defp render_contributors(contributors) when not is_list(contributors), do: nil
-  defp render_contributors([]), do: "_No contributors listed._"
+  defp render_contributors([]), do: gettext("_No contributors listed._")
 
   defp render_contributors(contributors) do
     contributors
@@ -367,7 +368,7 @@ defmodule Operately.MD.Project do
   defp render_check_in_author_line(author) do
     case render_loaded_association(author, & &1.full_name) do
       nil -> nil
-      author -> "Author: #{author}"
+      author -> "#{gettext("Author")}: #{author}"
     end
   end
 

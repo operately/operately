@@ -1,4 +1,5 @@
 defmodule Operately.MD.Space do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(space) do
     space = Operately.Repo.preload(space, [:company, :members])
 
@@ -15,11 +16,11 @@ defmodule Operately.MD.Space do
 
   defp render_overview_info(space) do
     """
-    Company: #{render_company(space)}
-    Type: #{render_space_type(space)}
-    Members: #{length(space.members)}
-    Created: #{render_date(space.inserted_at)}
-    Last Updated: #{render_date(space.updated_at)}
+    #{gettext("Company")}: #{render_company(space)}
+    #{gettext("Type")}: #{render_space_type(space)}
+    #{gettext("Members")}: #{length(space.members)}
+    #{gettext("Created")}: #{render_date(space.inserted_at)}
+    #{gettext("Last Updated")}: #{render_date(space.updated_at)}
     """
     |> then(fn info -> info <> "\n\n" end)
   end
@@ -27,13 +28,13 @@ defmodule Operately.MD.Space do
   defp render_mission(space) do
     if blank?(space.mission) do
       """
-      ## Mission
+      ## #{gettext("Mission")}
 
-      _No mission provided._
+      _#{gettext("No mission provided.")}_
       """
     else
       """
-      ## Mission
+      ## #{gettext("Mission")}
 
       #{space.mission}
       """
@@ -42,15 +43,15 @@ defmodule Operately.MD.Space do
 
   defp render_members([]) do
     """
-    ## Members
+    ## #{gettext("Members")}
 
-    _No members listed._
+    _#{gettext("No members listed.")}_
     """
   end
 
   defp render_members(members) do
     """
-    ## Members
+    ## #{gettext("Members")}
 
     #{members |> Enum.sort_by(& &1.full_name) |> Enum.map_join("\n", fn member -> "- #{member.full_name}#{render_member_title(member)}" end)}
     """
@@ -60,7 +61,7 @@ defmodule Operately.MD.Space do
 
   defp render_task_statuses(statuses) do
     """
-    ## Task Statuses
+    ## #{gettext("Task Statuses")}
 
     #{statuses |> Enum.sort_by(& &1.index) |> Enum.map_join("\n", fn status ->
       value = status.value || "unknown"
@@ -75,9 +76,9 @@ defmodule Operately.MD.Space do
 
   defp render_space_type(space) do
     cond do
-      is_nil(space.company) -> "Unknown"
-      space.company.company_space_id == space.id -> "General Space"
-      true -> "Space"
+      is_nil(space.company) -> gettext("Unknown")
+      space.company.company_space_id == space.id -> gettext("General Space")
+      true -> gettext("Space")
     end
   end
 
@@ -85,10 +86,10 @@ defmodule Operately.MD.Space do
   defp render_member_title(%{title: ""}), do: ""
   defp render_member_title(member), do: " (#{member.title})"
 
-  defp render_association(nil, _association, _formatter), do: "None"
+  defp render_association(nil, _association, _formatter), do: gettext("None")
 
   defp render_association(_id, association, formatter) do
-    if is_nil(association), do: "None", else: formatter.(association)
+    if is_nil(association), do: gettext("None"), else: formatter.(association)
   end
 
   defp render_date(d), do: Operately.Time.as_date(d) |> Date.to_iso8601()

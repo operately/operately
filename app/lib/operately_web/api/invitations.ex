@@ -139,6 +139,7 @@ defmodule OperatelyWeb.Api.Invitations do
   end
 
   defmodule JoinCompanyViaInviteLink do
+    use Gettext, backend: OperatelyWeb.Gettext
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -164,25 +165,25 @@ defmodule OperatelyWeb.Api.Invitations do
         {:ok, response}
       else
         {:error, :not_found} ->
-          {:error, :unauthorized, "Account not found"}
+          {:error, :unauthorized, gettext("Account not found")}
 
         {:error, :invite_token_not_found} ->
-          {:error, :bad_request, "Invalid invite link"}
+          {:error, :bad_request, gettext("Invalid invite link")}
 
         {:error, :invite_token_inactive} ->
-          {:error, :bad_request, "This invite link is no longer valid"}
+          {:error, :bad_request, gettext("This invite link is no longer valid")}
 
         {:error, :invite_token_domain_not_allowed} ->
-          {:error, :bad_request, "This invite link is restricted to specific email domains"}
+          {:error, :bad_request, gettext("This invite link is restricted to specific email domains")}
 
         {:error, :invite_token_invalid} ->
-          {:error, :bad_request, "This invite link is no longer valid"}
+          {:error, :bad_request, gettext("This invite link is no longer valid")}
 
         {:error, :person_creation_failed} ->
-          {:error, :bad_request, "Unable to add you to this company."}
+          {:error, :bad_request, gettext("Unable to add you to this company.")}
 
         {:error, :invite_link_update_failed} ->
-          {:error, :bad_request, "Something went wrong while using this invite link."}
+          {:error, :bad_request, gettext("Something went wrong while using this invite link.")}
 
         {:error, %LimitError{} = error} ->
           EnforceLimits.to_api_error(error)

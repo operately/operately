@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospective do
   Acknowledges a goal retrospective by goal ID.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -62,7 +63,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeRetrospective do
         {:error, :forbidden}
 
       {:error, :check_not_the_author, _} ->
-        {:error, :bad_request, "Authors cannot acknowledge their own retrospectives"}
+        {:error, :bad_request, gettext("Authors cannot acknowledge their own retrospectives")}
 
       {:error, :operation, _} ->
         {:error, :internal_server_error}
