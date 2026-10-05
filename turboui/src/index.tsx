@@ -292,3 +292,6 @@ export * from "./demos";
 
 export { PeoplePage } from "./PeoplePage";
 export { PeopleOrgChartPage } from "./PeopleOrgChartPage";
+
+export { BillingDangerBanner, type BillingDangerBannerViewModel } from "./BillingDangerBanner";
+export { SiteMessageBanner } from "./SiteMessageBanner";

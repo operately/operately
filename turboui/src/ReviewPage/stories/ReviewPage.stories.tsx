@@ -1,4 +1,6 @@
 import React from "react";
+import { createInstance } from "i18next";
+import { I18nextProvider } from "react-i18next";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -76,4 +78,32 @@ export const WithUpcoming: Story = {
     needsReview: data.reviewGroups,
     upcoming: data.upcomingGroups,
   },
+};
+
+const expanded = createInstance();
+void expanded.init({
+  lng: "en",
+  keySeparator: false,
+  interpolation: { escapeValue: false },
+  resources: {
+    en: {
+      translation: {
+        Review: "Review your team's outstanding work",
+        "All caught up": "All of your work is currently up to date",
+        "You're all caught up": "You have caught up with all outstanding work",
+      },
+    },
+  },
+});
+export const ExpandedText: Story = {
+  args: { dueSoon: [], needsReview: [], upcoming: [] },
+  decorators: [
+    (Story) => (
+      <I18nextProvider i18n={expanded}>
+        <div style={{ width: 375 }}>
+          <Story />
+        </div>
+      </I18nextProvider>
+    ),
+  ],
 };

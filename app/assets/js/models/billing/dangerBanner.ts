@@ -1,5 +1,5 @@
 import * as api from "@/api";
-import { formatStorageBytes } from "turboui";
+import { formatStorageBytes, type BillingDangerBannerViewModel } from "turboui";
 
 import { isPaymentRecoveryAccessState } from "./paymentDefaultBanner";
 
@@ -11,44 +11,13 @@ interface BillingDangerBannerRoutes {
   companyBillingPlansPath: (opts?: { plan?: string | null; billingPeriod?: string | null }) => string;
 }
 
-type BillingDangerUsageRowState = "blocked" | "near_limit";
-
-interface BillingDangerUsageRow {
-  label: string;
-  value: string;
-  state: BillingDangerUsageRowState;
-}
-
-type PaymentDefaultMode = "payment_grace" | "read_only";
-
-interface PaymentDefaultDangerBannerViewModel {
-  kind: "payment_default";
-  mode: PaymentDefaultMode;
-  title: string;
-  deadline: string | null;
-  shouldContactAdmin: boolean;
-  cta: { label: string; to: string } | null;
-}
-
-interface OverLimitDangerBannerViewModel {
-  kind: "over_limit";
-  mode: "over_limit";
-  title: string;
-  blockedLimitKeys: string[];
-  usageRows: BillingDangerUsageRow[];
-  shouldContactAdmin: boolean;
-  cta: { label: string; to: string } | null;
-}
-
-type BillingDangerBannerViewModel = PaymentDefaultDangerBannerViewModel | OverLimitDangerBannerViewModel;
-
 export function buildBillingDangerBanner(
   accessState: BillingCompanyAccessState | null | undefined,
   canManageBilling: boolean,
   routes: BillingDangerBannerRoutes,
 ): BillingDangerBannerViewModel | null {
   if (accessState && isPaymentRecoveryAccessState(accessState)) {
-    const mode: PaymentDefaultMode = accessState.accessState === "read_only" ? "read_only" : "payment_grace";
+    const mode: "payment_grace" | "read_only" = accessState.accessState === "read_only" ? "read_only" : "payment_grace";
 
     return {
       kind: "payment_default",
@@ -98,9 +67,9 @@ function dangerStatuses(statuses: BillingLimitSnapshot[]): BillingLimitSnapshot[
   return [...blockedStatuses, ...nearLimitStatuses];
 }
 
-function usageRows(activeStatuses: BillingLimitSnapshot[]): BillingDangerUsageRow[] {
+function usageRows(activeStatuses: BillingLimitSnapshot[]) {
   return activeStatuses.map((status) => {
-    const state: BillingDangerUsageRowState = status.blocked ? "blocked" : "near_limit";
+    const state: "blocked" | "near_limit" = status.blocked ? "blocked" : "near_limit";
 
     if (status.limitKey === "member_count") {
       return {
@@ -120,16 +89,4 @@ function usageRows(activeStatuses: BillingLimitSnapshot[]): BillingDangerUsageRo
 
 export function isBillingManagementPath(pathname: string, billingPath: string) {
   return pathname === billingPath || pathname.startsWith(`${billingPath}/`);
-}
-
-export function describeBlockedActions(blockedMemberLimit: boolean, blockedStorageLimit: boolean) {
-  if (blockedMemberLimit && blockedStorageLimit) {
-    return { subject: "Adding or restoring people and uploading files", verb: "are" as const };
-  }
-
-  if (blockedMemberLimit) {
-    return { subject: "Adding or restoring people", verb: "is" as const };
-  }
-
-  return { subject: "Uploading files", verb: "is" as const };
 }

@@ -6,6 +6,9 @@ import { MemoryRouter } from "react-router";
 
 import { ProductReleaseAnnouncement, PRODUCT_RELEASES_PAGE_URL } from "./index";
 import { v18ProductRelease } from "./mockData";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
 
 function renderAnnouncement(props: Partial<ProductReleaseAnnouncement.Props> = {}) {
   const onDismiss = props.onDismiss ?? jest.fn();
@@ -45,4 +48,39 @@ describe("ProductReleaseAnnouncement", () => {
 
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
+});
+
+test("looks up announcement controls while preserving the release title", async () => {
+  i18n.addResourceBundle(
+    "en",
+    "translation",
+    { "New release": "Translated release", "View release": "Translated action", Dismiss: "Translated dismiss" },
+    true,
+    true,
+  );
+
+  const user = userEvent.setup();
+  const { onDismiss } = renderAnnouncement({ release: { ...v18ProductRelease, title: "Literal <b> & title" } });
+
+  expect(screen.getByText("Translated release")).toBeInTheDocument();
+  expect(screen.getByText("Literal <b> & title")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Translated action" })).toHaveAttribute("href", PRODUCT_RELEASES_PAGE_URL);
+
+  await user.click(screen.getByRole("button", { name: "Translated dismiss" }));
+
+  expect(onDismiss).toHaveBeenCalledTimes(1);
+  expect(document.querySelector("b")).toBeNull();
+});
+
+test.each(["pt-BR", "missing"])("Portuguese controls and fallback: %s", async (language) => {
+  if (language === "missing") i18n.removeResourceBundle("pt-BR", "translation");
+  await i18n.changeLanguage("pt-BR");
+  renderAnnouncement();
+
+  expect(screen.getByText(language === "pt-BR" ? "Nova versão" : "New release")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: language === "pt-BR" ? "Ver versão" : "View release" })).toHaveAttribute(
+    "href",
+    PRODUCT_RELEASES_PAGE_URL,
+  );
+  expect(screen.getByRole("button", { name: language === "pt-BR" ? "Dispensar" : "Dismiss" })).toBeInTheDocument();
 });
