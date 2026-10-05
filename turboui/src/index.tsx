@@ -289,3 +289,6 @@ export { ContentListSkeleton, type ContentListSkeletonProps } from "./ContentLis
 export { Trans } from "./Translate";
 
 export * from "./demos";
+
+export { PeoplePage } from "./PeoplePage";
+export { PeopleOrgChartPage } from "./PeopleOrgChartPage";

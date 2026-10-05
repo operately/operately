@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { Avatar } from "../../Avatar";
@@ -9,6 +10,7 @@ export { AboutMe } from "./AboutMe";
 export { Colleagues } from "./Colleagues";
 
 export function PageHeader(props: ProfilePage.Props) {
+  const { t } = useTranslation();
   return (
     <div className="my-5 px-4 mr-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -22,7 +24,7 @@ export function PageHeader(props: ProfilePage.Props) {
 
       {props.canEditProfile && (
         <SecondaryButton size="sm" linkTo={props.editProfilePath}>
-          Edit Profile
+          {t("Edit Profile")}
         </SecondaryButton>
       )}
     </div>
@@ -30,9 +32,10 @@ export function PageHeader(props: ProfilePage.Props) {
 }
 
 export function Contact({ person }: { person: ProfilePage.Person }) {
+  const { t } = useTranslation();
   return (
     <div>
-      <div className="text-xs mb-2 uppercase font-bold">Contact</div>
+      <div className="text-xs mb-2 uppercase font-bold">{t("Contact")}</div>
       <div className="flex items-center gap-1 font-medium">
         <IconMail size={20} className="text-content-dimmed" />
         {person.email}

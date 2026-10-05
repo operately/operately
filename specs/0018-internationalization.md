@@ -125,7 +125,7 @@ Validation covers English regressions, Portuguese rendering, missing-locale fall
 
 Pilot audit notes (after PR 3): task create/rename failure toasts, the modal Close accessible label, task notes/activity headings and fallback, the task email's plain-text link label, and digest resource labels are cataloged. Toast and modal tests use substituted translations to verify catalog lookup as well as unchanged English. Shared navigation chrome beyond the listed labels is deferred to PR 5. Remaining project/task operation copy is deferred to PR 6. Non-pilot emails are deferred to PR 7.
 
-PR 5 extraction is complete across shared controls, navigation chrome, account/onboarding, and company/space administration. The work was delivered through #5357 (shared, account, and administration extraction), #5362 (remaining account/onboarding copy), #5366 (remaining company/space administration copy), and the space administration follow-up below. Company administration includes billing, export, and import. People directory and org-chart page copy remain explicitly tracked gaps. The Portuguese pilot and gated language selector are complete in production (PR 4). FormattedTime weekday/relative labels and selector behavior remain from earlier PRs.
+PR 5 extraction is complete across shared controls, navigation chrome, account/onboarding, and company/space administration. The work was delivered through #5357 (shared, account, and administration extraction), #5362 (remaining account/onboarding copy), #5366 (remaining company/space administration copy), and the space administration follow-up below. Company administration includes billing, export, and import. The People directory, org chart, and linked profiles are covered by the follow-up below. Additional extraction gaps are tracked in the repository audit below. The Portuguese pilot and gated language selector are complete in production (PR 4). FormattedTime weekday/relative labels and selector behavior remain from earlier PRs.
 
 ### Space administration extraction — complete
 
@@ -156,7 +156,7 @@ Existing catalog entries and TurboUI primitives are reused. Resource names stay 
 
 Verification covers substituted translations in components and app bridges, success/empty/error states, saved Portuguese preferences with the flag off, and missing-Portuguese fallback including zero/singular/plural folder counts and upload/progress states. An expanded-catalog document-history Storybook interaction checks heading/confirmation layout and restore controls. Catalog generation, targeted Jest, TurboUI tests/build, and TypeScript checks are required for the slice.
 
-The final PR 6 implementation above also catalogs project-template workflows and the remaining shared work-management presentation. People directory/org-chart copy, Portuguese/native-speaker review, remaining backend/email/digest/server-rendered copy, formatting follow-ups, and language-selection rollout remain separate work. Earlier extraction remains intact.
+The final PR 6 implementation above also catalogs project-template workflows and the remaining shared work-management presentation. People directory/org-chart/profile extraction is covered by the follow-up below. Portuguese/native-speaker review, additional audit findings, formatting follow-ups, and language-selection rollout remain separate work. Earlier extraction remains intact.
 
 ### Remaining activity-feed extraction — cataloged
 
@@ -180,7 +180,25 @@ Remaining gaps before general availability:
 
 - Review and merge the local PR 6 implementation. Full-product acceptance with selected companies remains PR 8 work.
 - PR 7: review and merge the local 7a–7e implementations. Audit the external SendGrid onboarding campaign and locale routing to close 7d’s external coverage gap.
-- People directory and org-chart page copy still need extraction.
+- Close the remaining product-copy gaps identified in the repository audit below. People directory, org-chart, and profile extraction is implemented locally.
 - PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted translations, and coverage checks.
 
 Operator SaaS administration is outside PR 5's scope. User-authored content (including names and emails) and machine identifiers are not translated.
+
+### People directory, org chart, and profiles — implemented locally
+
+These surfaces now use the shared catalog, with 14 Brazilian Portuguese drafts and contextual translation of “Reports”. Directory/chart presentation uses TurboUI; user content, navigation, and existing behavior are preserved. Native-speaker review remains PR 8; not merged or deployed.
+
+Validation passes: 14 component tests, 30 app tests, 29 browser tests, TypeScript checks, builds, catalog integrity/determinism, and 375px layout review. Coverage includes English/Portuguese, fallback, plurals, flag rollback, and literal user content.
+
+### Additional extraction gaps
+
+The source audit confirmed these remaining surfaces:
+
+- Home and Review: headings, actions, empty/error states, relationship and due-date labels.
+- Company banners and release announcements: billing copy, dismiss labels, and actions.
+- Error/public pages: ErrorPage, NotFoundPage, BillingPickCompanyPage, and PublicDocumentPage.
+- Shared controls: OtherPeopleWithAccess, SidebarSection notifications, WorkMapTable next-step heading, SortControl, and ContinueEditingDrafts counts.
+- Dates: TimeframeSelectorDialog labels and RelativeWeekdayOrDate’s assembled “this” + weekday phrase.
+
+This inventory is not exhaustive runtime coverage. PR 8 acceptance, external SendGrid onboarding, formatting follow-ups, and older activity rich-text escaping remain open. User content and operator SaaS administration remain excluded.

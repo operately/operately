@@ -1,6 +1,7 @@
 import { useTaskList } from "@/models/richContent/taskListLifecycle";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import * as People from "@/models/people";
 
@@ -19,6 +20,7 @@ import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences
 export default { name: "ProfilePage", loader, Page } as PageModule;
 
 function Page() {
+  const { t } = useTranslation();
   const paths = usePaths();
   const me = useMe();
   const { mentionedPersonLookup } = useRichEditorHandlers();
@@ -38,7 +40,7 @@ function Page() {
   assertPresentOr404(parsedPerson);
 
   const props = {
-    title: [person.fullName, "Profile"],
+    title: [person.fullName, t("Profile")],
 
     viewer,
     person: parsedPerson,
@@ -63,10 +65,11 @@ function Page() {
 }
 
 function ActivityFeed({ personId }: { personId: string }) {
+  const { t } = useTranslation();
   const { data, loading, error, pagination } = useFeedItemsQuery("person", personId);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
+  if (loading) return <div>{t("Loading...")}</div>;
+  if (error) return <div>{t("Error")}</div>;
 
   return <Feed pagination={pagination} items={data?.activities || []} testId="profile-feed" page="profile" />;
 }

@@ -6,13 +6,13 @@ type ExpandNodeFn = (personId: string) => void;
 type CollapseNodeFn = (personId: string) => void;
 type ToggleNodeFn = (personId: string) => void;
 
-export interface OrgChartNode {
+interface OrgChartNode {
   person: Person;
   directReports: number;
   totalReports: number;
 }
 
-export interface OrgChart {
+interface OrgChart {
   root: OrgChartNode[];
   nodes: OrgChartNode[];
 
