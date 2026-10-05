@@ -195,4 +195,31 @@ defmodule Operately.Notifications.EmailWorkerTest do
       0 -> :ok
     end
   end
+  test "company and guest activity deliveries scope each recipient and honor flag rollback" do
+    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
+    actions = ~w(company_admin_added company_admin_removed company_owner_removing company_owners_adding
+      company_member_restoring company_member_converted_to_guest company_members_permissions_edited guest_invited company_member_added)
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    for action <- actions do
+      activity = Operately.ActivitiesFixtures.activity_fixture(author_id: person.id, action: action,
+        content: %{"members" => [%{"person_id" => person.id, "previous_access_level" => 10, "updated_access_level" => 70}]})
+      {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+      notification = Operately.NotificationsFixtures.notification_fixture(person_id: person.id, activity_id: activity.id)
+      assert {:ok, :sent} = EmailWorker.deliver(notification)
+      assert_receive {:email, portuguese}
+      {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+      notification = Operately.NotificationsFixtures.notification_fixture(person_id: person.id, activity_id: activity.id)
+      assert {:ok, :sent} = EmailWorker.deliver(notification)
+      assert_receive {:email, english}
+      assert portuguese.subject != english.subject, action
+      assert portuguese.html_body != english.html_body, action
+      assert portuguese.text_body != english.text_body, action
+      assert portuguese.to == english.to
+      assert portuguese.from == english.from
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
+    end
+  end
+
 end

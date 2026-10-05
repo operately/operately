@@ -28,7 +28,7 @@ defmodule Operately.People.EmailChange.DeliverCode do
       delivery =
         case stage do
           :current_email -> CurrentEmailVerificationEmail.send(account.email, email, code)
-          :new_email -> EmailChangeCodeEmail.send(email, code)
+          :new_email -> EmailChangeCodeEmail.send(email, code, account)
         end
 
       case delivery do

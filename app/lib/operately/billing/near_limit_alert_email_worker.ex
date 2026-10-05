@@ -8,7 +8,7 @@ defmodule Operately.Billing.NearLimitAlertEmailWorker do
   alias Operately.Companies
   alias OperatelyEmail.Emails.BillingNearLimitWarningEmail
 
-  def perform(%Oban.Job{args: %{"company_id" => company_id, "limit_key" => limit_key, "current_usage" => current_usage, "limit" => limit}}) do
+  def perform(%Oban.Job{args: %{"company_id" => company_id, "limit_key" => limit_key, "current_usage" => current_usage, "limit" => limit}} = job) do
     with {:ok, limit_key} <- NearLimitAlert.parse_limit_key(limit_key),
          {:ok, current_usage} <- parse_integer(current_usage),
          {:ok, limit} <- parse_integer(limit) do
@@ -16,7 +16,7 @@ defmodule Operately.Billing.NearLimitAlertEmailWorker do
 
       company
       |> NearLimitAlerting.recipients()
-      |> BillingNearLimitWarningEmail.send(company, NearLimitAlerting.snapshot(limit_key, current_usage, limit))
+      |> BillingNearLimitWarningEmail.send(company, NearLimitAlerting.snapshot(limit_key, current_usage, limit), job)
       |> case do
         {:ok, _result} -> :ok
         {:error, reason} -> {:error, reason}

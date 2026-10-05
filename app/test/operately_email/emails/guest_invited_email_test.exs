@@ -38,15 +38,17 @@ defmodule OperatelyEmail.Emails.GuestInvitedEmailTest do
       from(a in Activity, where: a.action == "guest_invited" and a.content["person_id"] == ^person.id)
       |> Repo.one()
 
-    GuestInvitedEmail.send(person, activity)
-
     invite_url = Paths.join_path(invite_link.token) |> Paths.to_url()
 
-    assert_email_sent(fn email ->
-      assert email.html_body =~ invite_url
-      assert email.text_body =~ invite_url
-      true
-    end)
+    for {locale, action} <- [{"en", "invited you as an outside collaborator"}, {"pt_BR", "convidou você como colaborador externo"}, {"fr", "invited you as an outside collaborator"}] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> GuestInvitedEmail.send(person, activity) end)
+      assert_email_sent(fn email ->
+        assert email.subject =~ action
+        assert email.html_body =~ invite_url
+        assert email.text_body =~ invite_url
+        true
+      end)
+    end
   end
 
   test "omits invite link when account already used", ctx do

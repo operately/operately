@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.CompanyMemberAddedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Repo
   alias OperatelyWeb.Paths
   alias Operately.InviteLinks.InviteLink
@@ -11,7 +12,7 @@ defmodule OperatelyEmail.Emails.CompanyMemberAddedEmail do
     company = author.company
     invite_link = get_invite_link(company, person)
 
-    action = get_action(invite_link, company)
+    headline = get_headline(invite_link, company, author)
     button_text = get_button_text(invite_link, company)
     button_url = get_url(invite_link)
 
@@ -19,11 +20,11 @@ defmodule OperatelyEmail.Emails.CompanyMemberAddedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: action)
+    |> subject(get_subject(invite_link, company, author))
     |> assign(:author, author)
     |> assign(:company, company)
     |> assign(:person, person)
-    |> assign(:action, action)
+    |> assign(:headline, headline)
     |> assign(:button_url, button_url)
     |> assign(:button_text, button_text)
     |> render("company_member_added")
@@ -38,11 +39,15 @@ defmodule OperatelyEmail.Emails.CompanyMemberAddedEmail do
     |> Repo.one()
   end
 
-  defp get_action(nil, _company), do: "added you as a company member"
-  defp get_action(_ = %InviteLink{}, company), do: "invited you to join #{company.name}"
+  defp get_subject(nil, company, author), do: gettext("(%{company_name}) %{author} added you as a company member", company_name: company.name, author: Operately.People.Person.short_name(author))
+  defp get_subject(%InviteLink{}, company, author) do
+    gettext("(%{company_name}) %{author} invited you to join %{company_name}", company_name: company.name, author: Operately.People.Person.short_name(author))
+  end
+  defp get_headline(nil, _company, author), do: gettext("%{author} added you as a company member", author: Operately.People.Person.short_name(author))
+  defp get_headline(%InviteLink{}, company, author), do: gettext("%{author} invited you to join %{company_name}", company_name: company.name, author: Operately.People.Person.short_name(author))
 
-  defp get_button_text(nil, _company), do: "Log in to Operately"
-  defp get_button_text(_ = %InviteLink{}, company), do: "Join #{company.name}"
+  defp get_button_text(nil, _company), do: gettext("Log in to Operately")
+  defp get_button_text(%InviteLink{}, company), do: gettext("Join %{company_name}", company_name: company.name)
 
   defp get_url(nil), do: Paths.to_url(Paths.login_path())
   defp get_url(invite_link), do: Paths.to_url(Paths.join_path(invite_link.token))
