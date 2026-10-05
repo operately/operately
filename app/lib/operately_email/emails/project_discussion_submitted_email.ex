@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Comments.CommentThread
@@ -21,7 +22,7 @@ defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "posted: #{title}")
+    |> subject(gettext("(%{location}) %{author} posted: %{title}", location: project.name, author: Operately.People.Person.short_name(author), title: title))
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:title, title)

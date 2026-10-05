@@ -1,7 +1,7 @@
-<%= short_name(@author) %> <%= @action %>
+<%= OperatelyEmail.Emails.ResourceHubFileCreatedEmail.heading(@author, @files) %>
 
 <%= if length(@files) == 1 do %>
-    Link: <%= @file_url %>
+    <%= gettext("Link:") %> <%= @file_url %>
 <% else %>
-    Link: <%= @cta_url %>
+    <%= gettext("Link:") %> <%= @cta_url %>
 <% end %>

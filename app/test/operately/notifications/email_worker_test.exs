@@ -1,6 +1,7 @@
 defmodule Operately.Notifications.EmailWorkerTest do
   use Operately.DataCase
 
+  import Swoosh.TestAssertions
   import Mock
 
   import Operately.ActivitiesFixtures
@@ -120,5 +121,78 @@ defmodule Operately.Notifications.EmailWorkerTest do
 
     refute notification.email_sent
     assert is_nil(notification.email_sent_at)
+  end
+
+  test "discussion and document deliveries scope language per recipient and honor flag rollback" do
+    ctx =
+      %{}
+      |> Factory.setup()
+      |> Factory.add_company_member(:portuguese, name: "Portuguese Reader")
+      |> Factory.add_company_member(:english, name: "English Reader")
+      |> Factory.add_space(:space, name: "Space <literal>")
+      |> Factory.add_messages_board(:board, :space)
+      |> Factory.add_message(:discussion, :board, title: "Discussion <literal>")
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_document(:document, :hub, name: "Document <literal>")
+      |> Factory.preload(:document, [:node, :resource_hub])
+      |> Factory.add_comment(:comment, :document)
+
+    {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    scenarios = [
+      {"discussion_posting", %{"discussion_id" => ctx.discussion.id}, "publicou:", "posted:", "Discussion <literal>"},
+      {"resource_hub_document_commented", %{"document_id" => ctx.document.id, "comment_id" => ctx.comment.id}, "comentou em:", "commented on:", "Document <literal>"}
+    ]
+
+    for {action, content, portuguese, english, name} <- scenarios do
+      activity = activity_fixture(author_id: ctx.creator.id, action: action, content: content)
+
+      for {person, expected} <- [{ctx.portuguese, portuguese}, {ctx.english, english}, {ctx.portuguese, portuguese}] do
+        assert_localized_delivery(activity, person, expected, name)
+        assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+      end
+    end
+
+    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+
+    for {action, content, _portuguese, english, name} <- scenarios do
+      activity = activity_fixture(author_id: ctx.creator.id, action: action, content: content)
+      assert_localized_delivery(activity, ctx.portuguese, english, name)
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+    end
+
+    assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
+  end
+
+  defp assert_localized_delivery(activity, person, expected, name) do
+    notification = notification_fixture(activity_id: activity.id, person_id: person.id, email_sent: false)
+    flush_emails()
+    assert {:ok, :sent} = EmailWorker.deliver(notification)
+
+    assert_email_sent(fn email ->
+      assert email.to == [{"", person.email}]
+      assert email.subject =~ expected
+      assert email.subject =~ name
+      assert email.html_body =~ expected
+      assert email.text_body =~ expected
+      assert email.text_body =~ name
+      assert email.html_body =~ "&lt;literal&gt;"
+      refute email.html_body =~ "<literal>"
+      refute email.text_body =~ "%{"
+      true
+    end)
+
+    assert Notifications.get_notification!(notification.id).email_sent
+  end
+
+  defp flush_emails do
+    receive do
+      {:email, _} -> flush_emails()
+      {:emails, _} -> flush_emails()
+    after
+      0 -> :ok
+    end
   end
 end

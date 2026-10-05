@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias OperatelyEmail.Emails.ResourceHubEmail
@@ -13,18 +14,25 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     parent = ResourceHubEmail.parent(document)
 
     copied_document = get_copied_document(activity.content["copied_document_id"])
-    action = get_action(activity.content["copied_document_id"])
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: parent.name, who: author, action: "#{action} a document: #{document.name}")
+    |> subject(subject_text(author, parent, document, activity.content["copied_document_id"]))
     |> assign(:author, author)
     |> assign(:document, document)
     |> assign(:copied_document, copied_document)
     |> assign(:cta_url, OperatelyWeb.Paths.document_path(company, document) |> OperatelyWeb.Paths.to_url())
     |> render("resource_hub_document_created")
+  end
+
+  def subject_text(author, parent, document, copied_document_id) do
+    if copied_document_id do
+      gettext("(%{location}) %{author} copied a document: %{document_name}", location: parent.name, author: Operately.People.Person.short_name(author), document_name: document.name)
+    else
+      gettext("(%{location}) %{author} added a document: %{document_name}", location: parent.name, author: Operately.People.Person.short_name(author), document_name: document.name)
+    end
   end
 
   defp get_action(nil), do: "added"

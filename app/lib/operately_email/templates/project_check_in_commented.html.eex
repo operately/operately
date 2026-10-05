@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} commented on a Check-in for the #{@project.name} project") %>
+<%= title(gettext("%{author} commented on a Check-in for the %{project_name} project", author: short_name(@author), project_name: @project.name)) %>
 
 <%= spacer() %>
 
