@@ -1,9 +1,9 @@
-<%= @company.name %> - Your work for today
+<%= gettext("%{company_name} - Your work for today", company_name: @company.name) %>
 
-Tasks, reminders, and reviews that need your attention today.
+<%= gettext("Tasks, reminders, and reviews that need your attention today.") %>
 
 <%= Enum.map(@urgent_groups, fn group -> %>
-- <%= group.origin.name %><%= if group.origin.space_name do %> — Space: <%= group.origin.space_name %><% end %>
+- <%= group.origin.name %><%= if group.origin.space_name do %> — <%= gettext("Space: %{space_name}", space_name: group.origin.space_name) %><% end %>
 <%= Enum.map(group.assignments, fn assignment -> %>
   * <%= assignment.display_label %><%= if assignment.detail_labels != [] do %> — <%= Enum.join(assignment.detail_labels, ", ") %><% end %>
     <%= assignment.url %>

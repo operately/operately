@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.DiscussionEditingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Messages.Message
 
   def send(_person, _activity) do
@@ -18,7 +19,7 @@ defmodule OperatelyEmail.Emails.DiscussionEditingEmail do
       parent_id: space.id,
       parent_type: :space,
       parent_name: space.name,
-      headline: "edited the discussion \"#{title}\"",
+      headline: gettext("edited the discussion \"%{title}\"", title: title),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.message_path(company, message) |> OperatelyWeb.Paths.to_url(),

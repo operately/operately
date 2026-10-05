@@ -63,7 +63,7 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
     }
   end
 
-  defp buffered_headline(_old_date, nil), do: "removed the project's due date"
-  defp buffered_headline(nil, new_date), do: "set the project's due date to #{new_date}"
-  defp buffered_headline(_old_date, new_date), do: "changed the project's due date to #{new_date}"
+  defp buffered_headline(_old_date, nil), do: gettext("removed the project's due date")
+  defp buffered_headline(nil, new_date), do: gettext("set the project's due date to %{date}", date: new_date)
+  defp buffered_headline(_old_date, new_date), do: gettext("changed the project's due date to %{date}", date: new_date)
 end

@@ -46,7 +46,7 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on the task \"#{task.name}\"",
+      headline: gettext("commented on the task \"%{task_name}\"", task_name: task.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.task_path(company, task, comment) |> Paths.to_url(),

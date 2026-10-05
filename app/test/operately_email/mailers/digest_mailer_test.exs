@@ -379,4 +379,51 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert email.html_body =~ "Project Alpha"
     assert email.text_body =~ "You have 2 new updates"
   end
+
+  test "empty buffered and daily digests use zero updates in Portuguese and fallback", ctx do
+    for {locale, subject, empty} <- [
+          {"en", "You have 0 new updates", "No new updates."},
+          {"pt_BR", "Você tem 0 novas atualizações", "Nenhuma atualização nova."},
+          {"fr", "You have 0 new updates", "No new updates."}
+        ] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
+        for email <- [DigestMailer.build_digest_email(ctx.person, ctx.batch, []), DigestMailer.build_daily_summary_email(ctx.person, [])] do
+          assert email.subject == subject
+          assert email.html_body =~ empty
+          assert email.text_body =~ empty
+        end
+      end)
+    end
+  end
+
+  test "localized single and grouped digest items escape names and retain links", ctx do
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      headline = Gettext.dgettext(OperatelyWeb.Gettext, "messages", "moved the task \"%{task_name}\"", task_name: "Task <script> & literal")
+      item = %{
+        parent_id: "project",
+        parent_type: :project,
+        parent_name: "Project <literal>",
+        actor_name: "<Ana> S.",
+        headline: headline,
+        excerpt_html: "<p>Literal comment</p>",
+        excerpt_text: "Literal comment",
+        item_url: "https://example.com/task?literal=1",
+        occurred_at: ~N[2026-04-02 10:00:00],
+        coalesce_key: nil
+      }
+
+      for items <- [[item], [item, %{item | occurred_at: ~N[2026-04-02 10:01:00]}]],
+          email <- [DigestMailer.build_digest_email(ctx.person, ctx.batch, items), DigestMailer.build_daily_summary_email(ctx.person, items)] do
+        assert email.html_body =~ "&lt;Ana&gt; S."
+        assert email.html_body =~ "moveu a tarefa &quot;Task &lt;script&gt; &amp; literal&quot;"
+        assert email.html_body =~ "Project &lt;literal&gt;"
+        refute email.html_body =~ "<script>"
+        assert email.html_body =~ item.item_url
+        assert email.text_body =~ headline
+        assert email.text_body =~ "<Ana> S."
+        assert email.text_body =~ "Literal comment"
+        assert email.text_body =~ item.item_url
+      end
+    end)
+  end
 end

@@ -30,7 +30,7 @@ defmodule OperatelyEmail.Emails.GoalArchivedEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "archived this goal",
+      headline: gettext("archived this goal"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),

@@ -52,7 +52,7 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "closed the project",
+      headline: gettext("closed the project"),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.project_retrospective_path(company, project) |> Paths.to_url(),

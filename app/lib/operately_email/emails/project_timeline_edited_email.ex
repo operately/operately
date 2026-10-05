@@ -75,10 +75,10 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     }
   end
 
-  defp buffered_headline(nil, nil), do: "updated the project's timeline"
-  defp buffered_headline(start_date, nil), do: "updated the project's timeline to start on #{format_date(start_date)}"
-  defp buffered_headline(nil, end_date), do: "updated the project's timeline to end on #{format_date(end_date)}"
-  defp buffered_headline(start_date, end_date), do: "updated the project's timeline from #{format_date(start_date)} to #{format_date(end_date)}"
+  defp buffered_headline(nil, nil), do: gettext("updated the project's timeline")
+  defp buffered_headline(start_date, nil), do: gettext("updated the project's timeline to start on %{start_date}", start_date: format_date(start_date))
+  defp buffered_headline(nil, end_date), do: gettext("updated the project's timeline to end on %{end_date}", end_date: format_date(end_date))
+  defp buffered_headline(start_date, end_date), do: gettext("updated the project's timeline from %{start_date} to %{end_date}", start_date: format_date(start_date), end_date: format_date(end_date))
 
   defp format_date(date) when is_binary(date) do
     case Date.from_iso8601(date) do

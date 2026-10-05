@@ -54,7 +54,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
       parent_type: :project,
       parent_name: project.name,
       parent_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
-      headline: "submitted a check-in with status \"#{status_label(check_in.status)}\"",
+      headline: buffered_headline(check_in.status),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url(),
@@ -64,8 +64,9 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
     }
   end
 
-  defp status_label(:on_track), do: "on track"
-  defp status_label(:off_track), do: "off track"
-  defp status_label(status) when is_binary(status), do: status
-  defp status_label(status) when is_atom(status), do: Atom.to_string(status)
+  defp buffered_headline(:on_track), do: gettext("submitted a check-in with status \"on track\"")
+  defp buffered_headline(:off_track), do: gettext("submitted a check-in with status \"off track\"")
+  defp buffered_headline(:caution), do: gettext("submitted a check-in with status \"caution\"")
+  defp buffered_headline(status) when is_binary(status), do: gettext("submitted a check-in with status \"%{status}\"", status: status)
+  defp buffered_headline(status) when is_atom(status), do: buffered_headline(Atom.to_string(status))
 end

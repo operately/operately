@@ -61,7 +61,7 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
     }
   end
 
-  defp buffered_headline(milestone_title, _old_date, nil), do: "removed the due date from the milestone \"#{milestone_title}\""
-  defp buffered_headline(milestone_title, nil, new_date), do: "set the due date of the milestone \"#{milestone_title}\" to #{new_date}"
-  defp buffered_headline(milestone_title, _old_date, new_date), do: "changed the due date of the milestone \"#{milestone_title}\" to #{new_date}"
+  defp buffered_headline(milestone_title, _old_date, nil), do: gettext("removed the due date from the milestone \"%{milestone_name}\"", milestone_name: milestone_title)
+  defp buffered_headline(milestone_title, nil, new_date), do: gettext("set the due date of the milestone \"%{milestone_name}\" to %{date}", milestone_name: milestone_title, date: new_date)
+  defp buffered_headline(milestone_title, _old_date, new_date), do: gettext("changed the due date of the milestone \"%{milestone_name}\" to %{date}", milestone_name: milestone_title, date: new_date)
 end

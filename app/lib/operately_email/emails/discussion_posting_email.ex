@@ -39,7 +39,7 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
       parent_id: space.id,
       parent_type: :space,
       parent_name: space.name,
-      headline: "started the discussion \"#{title}\"",
+      headline: gettext("started the discussion \"%{title}\"", title: title),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.message_path(company, message) |> OperatelyWeb.Paths.to_url(),

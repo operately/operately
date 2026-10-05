@@ -32,7 +32,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInAcknowledgementEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "acknowledged a goal check-in",
+      headline: gettext("acknowledged a goal check-in"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.goal_check_in_path(company, update) |> OperatelyWeb.Paths.to_url(),

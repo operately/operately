@@ -43,6 +43,6 @@ defmodule OperatelyEmail.Emails.GoalChampionUpdatingEmail do
   defp get_champion(nil), do: nil
   defp get_champion(id), do: Operately.People.Person.get!(:system, id: id)
 
-  defp buffered_headline(nil), do: "removed the goal champion"
-  defp buffered_headline(champion), do: "assigned #{champion.full_name} as the goal champion"
+  defp buffered_headline(nil), do: gettext("removed the goal champion")
+  defp buffered_headline(champion), do: gettext("assigned %{champion_full_name} as the goal champion", champion_full_name: champion.full_name)
 end

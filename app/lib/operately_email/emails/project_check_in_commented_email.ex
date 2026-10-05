@@ -38,7 +38,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInCommentedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "commented on a project check-in",
+      headline: gettext("commented on a project check-in"),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_check_in_path(company, check_in, comment) |> OperatelyWeb.Paths.to_url(),
