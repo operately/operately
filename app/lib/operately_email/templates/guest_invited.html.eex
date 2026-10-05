@@ -1,13 +1,13 @@
-<%= title("#{short_name(@author)} invited you as an outside collaborator to #{@company.name}") %>
+<%= title(gettext("%{author} invited you as an outside collaborator to %{company_name}", author: short_name(@author), company_name: @company.name)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  You now have access to <%= @company.name %> as an outside collaborator.
+  <%= gettext("You now have access to %{company_name} as an outside collaborator.", company_name: @company.name) %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@login_url, "Log in to Operately") %>
+  <%= cta_button(@login_url, gettext("Log in to Operately")) %>
 <% end %>

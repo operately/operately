@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.EmailPreview.Previews.CompanyMemberAdded do
+  use Gettext, backend: OperatelyWeb.Gettext
   @moduledoc "Mock data for the company member added email preview."
 
   alias OperatelyEmail.Mailers.ActivityMailer, as: Mailer
@@ -19,11 +20,13 @@ defmodule OperatelyWeb.EmailPreview.Previews.CompanyMemberAdded do
     |> Mailer.new()
     |> Mailer.from(author)
     |> Mailer.to(person)
-    |> Mailer.subject(where: company.name, who: author, action: "added you as a company member")
+    |> Mailer.subject(gettext("(%{company_name}) %{author} added you as a company member", company_name: company.name, author: Operately.People.Person.short_name(author)))
     |> Mailer.assign(:author, author)
     |> Mailer.assign(:company, company)
     |> Mailer.assign(:person, person)
-    |> Mailer.assign(:login_url, login_url)
+    |> Mailer.assign(:headline, gettext("%{author} added you as a company member", author: Operately.People.Person.short_name(author)))
+    |> Mailer.assign(:button_url, login_url)
+    |> Mailer.assign(:button_text, gettext("Log in to Operately"))
   end
 
   defp base_context do

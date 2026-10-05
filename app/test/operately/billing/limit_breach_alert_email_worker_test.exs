@@ -90,4 +90,17 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorkerTest do
       end)
     end
   end
+  test "worker resolves mixed recipient languages at delivery time", ctx do
+    Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    Operately.People.update_person(ctx.admin, %{language: "pt-BR"})
+    args = %{company_id: ctx.company.id, limit_key: "member_count", current_usage: 20, limit: 20}
+    assert :ok = perform_job(LimitBreachAlertEmailWorker, args)
+    emails = for _ <- 1..2 do
+      assert_receive {:email, email}
+      email
+    end
+    assert Enum.any?(emails, &(&1.to == [{ctx.admin.full_name, ctx.admin.email}] and &1.subject =~ "plano Gratuito"))
+    assert Enum.any?(emails, &({ctx.owner.full_name, ctx.owner.email} in &1.to and &1.subject =~ "Free plan"))
+  end
+
 end

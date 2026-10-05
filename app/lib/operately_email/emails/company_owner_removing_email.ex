@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.CompanyOwnerRemovingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.CompanyOwnerRemovingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: "has revoked your account owner status")
+    |> subject(gettext("(%{company_name}) %{author} has revoked your account owner status", company_name: company.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:link, link)
     |> render("company_owner_removing")

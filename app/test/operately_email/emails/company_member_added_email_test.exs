@@ -131,4 +131,27 @@ defmodule OperatelyEmail.Emails.CompanyMemberAddedEmailTest do
       end)
     end
   end
+  test "translated invitation retains its token and complete subject with literal names", ctx do
+    changes = Oban.Testing.with_testing_mode(:manual, fn ->
+      {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
+      changes
+    end)
+    person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
+    activity = Repo.one(from a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
+    url = Paths.join_path(changes.invite_link.token) |> Paths.to_url()
+
+    for {locale, action} <- [{"pt_BR", "convidou você para participar de"}, {"fr", "invited you to join"}] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> CompanyMemberAddedEmail.send(person, activity) end)
+      assert_email_sent(fn email ->
+        assert email.subject =~ action
+        assert email.subject =~ ctx.company.name
+        assert email.html_body =~ action
+        assert email.text_body =~ action
+        assert email.html_body =~ url
+        assert email.text_body =~ url
+        true
+      end)
+    end
+  end
+
 end

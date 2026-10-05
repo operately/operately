@@ -1,10 +1,9 @@
-<%= title("Confirm your email address") %>
+<%= title(gettext("Confirm your email address")) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  Your confirmation code is below. Enter it in Operately to
-  confirm your email address or finish signing in.
+  <%= gettext("Your confirmation code is below. Enter it in Operately to confirm your email address or finish signing in.") %>
 <% end %>
 
 <%= spacer() %>
@@ -18,6 +17,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  If you didn’t request this email, there’s nothing to worry 
-  about — you can safely ignore it.
+  <%= gettext("If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.") %>
 <% end %>

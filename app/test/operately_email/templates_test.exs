@@ -3,6 +3,39 @@ defmodule OperatelyEmail.TemplatesTest do
 
   alias OperatelyEmail.Mailers.NotificationMailer
 
+  @account_emails ~w(company_admin_added company_admin_removed company_owner_removing company_owners_adding
+    company_member_restoring company_member_converted_to_guest company_members_permissions_edited guest_invited
+    current_email_verification email_change_code email_changed email_activation_code reset_password)
+
+  for template <- @account_emails do
+    @template template
+    test "#{template} localizes HTML and text with missing-locale fallback" do
+      assigns = %{
+        subject: "Subject", author: %Operately.People.Person{full_name: "<Ana> Silva"},
+        company: %{name: "Company <literal>"}, link: "https://example.com/literal", login_url: "https://example.com/literal",
+        previous_access_level: "Previous", updated_access_level: "Next", destination: "<literal>@example.com",
+        new_email: "<literal>@example.com", code: "ABC-123", reset_url: "https://example.com/literal?token=literal"
+      }
+      english = render(@template, assigns, "en")
+      portuguese = render(@template, assigns, "pt_BR")
+      assert elem(english, 0) != elem(portuguese, 0)
+      assert elem(english, 1) != elem(portuguese, 1)
+      assert render(@template, assigns, "fr") == english
+      for {html, text} <- [english, portuguese] do
+        refute html =~ "<literal>"
+        refute html =~ "<Ana>"
+        refute html =~ "%{"
+        refute text =~ "%{"
+      end
+    end
+  end
+
+  test "catalog-owned email emphasis preserves reordered text and literal email addresses" do
+    html = OperatelyEmail.Templates.email_with_emphasis("<email/> is your address. <script>literal</script>", "<email/> & <user>@example.com")
+      |> Phoenix.HTML.safe_to_string()
+    assert html == "<strong>&lt;email/&gt; &amp; &lt;user&gt;@example.com</strong> is your address. &lt;script&gt;literal&lt;/script&gt;"
+  end
+
   @work_emails ~w(
     goal_archived goal_champion_updating goal_check_in_acknowledgement goal_check_in
     goal_closing goal_created goal_description_changed goal_editing goal_reopening goal_reparent

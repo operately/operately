@@ -85,6 +85,13 @@ defmodule OperatelyEmail.Templates do
     Operately.People.Person.short_name(person)
   end
 
+  def email_with_emphasis(sentence, address) do
+    sentence
+    |> String.split("<email/>")
+    |> Enum.intersperse({:safe, ["<strong>", Phoenix.HTML.Safe.to_iodata(address), "</strong>"]})
+    |> Phoenix.HTML.html_escape()
+  end
+
   def view_update_label do
     gettext("View update")
   end

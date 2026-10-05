@@ -83,6 +83,10 @@ Activity presentation is translated at render time. Stored activity payloads and
 
 Web requests and recipient-specific email rendering share the same effective-language rules. Background workers scope Gettext to the recipient for the duration of rendering and restore the previous locale afterward, including when rendering fails.
 
+Account-level security emails have no company context. `AccountLanguage` uses the shared effective language only when all active company memberships agree; no memberships or conflicting preferences fall back to English. Suspended memberships do not contribute. The proposed new email address uses the current account's language, and queued email-change notifications carry the account ID. Billing alerts group recipients by their effective language within the billing company, preserving the existing English grouping when the flag is off.
+
+SendGrid marketing onboarding templates are external to this repository. `AccountOnboardingJob` registers contacts only; campaign content and locale routing still need an external audit before general availability.
+
 ## Space administration extraction — complete
 
 Space creation, editing, general access, access management (including Other People), member addition, and tool configuration use the shared catalog. The audit includes labels, examples, validation, empty states, errors, tooltips, and accessibility text, plus the shared permission option list and access-level summaries.

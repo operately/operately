@@ -1,15 +1,14 @@
 defmodule OperatelyEmail.Emails.BillingLimitReachedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Billing.EnforceLimits.LimitStatus
   alias Operately.People.Person
   alias OperatelyWeb.Paths
-  alias OperatelyEmail.Mailers.BaseMailer
   alias OperatelyEmail.Mailers.NotificationMailer
 
   def send([], _company, _status), do: {:ok, :no_recipients}
 
   def send(recipients, company, %LimitStatus{} = status) do
-    build(recipients, company, status)
-    |> BaseMailer.deliver_now()
+    OperatelyEmail.Mailers.BillingMailer.deliver(recipients, company, &build(&1, company, status))
   end
 
   def build(recipients, company, %LimitStatus{} = status) do
@@ -25,7 +24,7 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmail do
   end
 
   def subject(company, %LimitStatus{limit_key: :member_count}) do
-    "#{company.name} has reached its Free plan member limit"
+    gettext("%{company_name} has reached its Free plan member limit", company_name: company.name)
   end
 
   def template_assigns(company, %LimitStatus{} = status, cta_url) do
@@ -33,7 +32,7 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmail do
       headline: subject(company, status),
       usage_summary: usage_summary(company, status),
       impact_message: impact_message(status),
-      cta_label: "Review billing",
+      cta_label: gettext("Review billing"),
       cta_url: cta_url
     }
   end
@@ -44,10 +43,13 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmail do
   defp format_usage(:member_count, value), do: Integer.to_string(value)
 
   defp usage_summary(company, %LimitStatus{limit_key: :member_count} = status) do
-    "#{company.name} has reached its member limit: #{format_usage(status.limit_key, status.current_usage)} of #{format_usage(status.limit_key, status.limit)} active members."
+    gettext("%{company_name} has reached its member limit: %{usage} of %{limit} active members.",
+      company_name: company.name,
+      usage: format_usage(status.limit_key, status.current_usage),
+      limit: format_usage(status.limit_key, status.limit))
   end
 
   defp impact_message(%LimitStatus{limit_key: :member_count}) do
-    "Adding or restoring people is blocked until the plan is upgraded."
+    gettext("Adding or restoring people is blocked until the plan is upgraded.")
   end
 end

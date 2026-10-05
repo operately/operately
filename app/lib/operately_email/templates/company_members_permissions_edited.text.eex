@@ -1,6 +1,6 @@
-Your access level has been updated by <%= short_name(@author) %>.
+<%= gettext("Your access level has been updated by %{author}.", author: short_name(@author)) %>
 
-Previous Access Level: <%= @previous_access_level %>
-New Access Level: <%= @updated_access_level %>
+<%= gettext("Previous Access Level:") %> <%= @previous_access_level %>
+<%= gettext("New Access Level:") %> <%= @updated_access_level %>
 
-Link: <%= @link %>
+<%= gettext("Link:") %> <%= @link %>

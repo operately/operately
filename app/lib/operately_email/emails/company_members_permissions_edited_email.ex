@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.CompanyMembersPermissionsEditedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.Repo
   alias Operately.Access.Binding
@@ -19,7 +20,7 @@ defmodule OperatelyEmail.Emails.CompanyMembersPermissionsEditedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: "updated your access level")
+    |> subject(gettext("(%{company_name}) %{author} updated your access level", company_name: company.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:link, link)
     |> assign(:previous_access_level, access_level_name(member["previous_access_level"]))
@@ -27,6 +28,15 @@ defmodule OperatelyEmail.Emails.CompanyMembersPermissionsEditedEmail do
     |> render("company_members_permissions_edited")
   end
 
-  defp access_level_name(nil), do: "No Access"
-  defp access_level_name(level), do: Binding.label(level)
+  defp access_level_name(nil), do: gettext("No Access")
+  defp access_level_name(level) do
+    case Binding.label(level) do
+      "No Access" -> gettext("No Access")
+      "View Access" -> gettext("View Access")
+      "Comment Access" -> gettext("Comment Access")
+      "Edit Access" -> gettext("Edit Access")
+      "Admin Access" -> gettext("Admin Access")
+      "Full Access" -> gettext("Full Access")
+    end
+  end
 end

@@ -51,7 +51,7 @@ defmodule Operately.People.EmailChange.VerifyCurrentTest do
     {:ok, request} = EmailChange.request(ctx.account, "new@example.com")
     code = current_code()
 
-    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _ -> {:error, :smtp} end do
+    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _, _ -> {:error, :smtp} end do
       assert {:error, :delivery_failed} = EmailChange.verify_current(ctx.account, request.id, code)
     end
 

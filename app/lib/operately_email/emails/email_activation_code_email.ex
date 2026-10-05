@@ -1,13 +1,20 @@
 defmodule OperatelyEmail.Emails.EmailActivationCodeEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.NotificationMailer, only: [html: 2, text: 2]
   import Swoosh.Email
 
   def send(email_activation_code) do
+    Operately.I18n.AccountLanguage.with_locale(email_activation_code.email, fn ->
+      deliver(email_activation_code)
+    end)
+  end
+
+  defp deliver(email_activation_code) do
     formatted_code = format_code(email_activation_code.code)
 
     assigns = %{
       code: formatted_code,
-      subject: "Operately confirmation code: #{formatted_code}"
+      subject: gettext("Operately confirmation code: %{code}", code: formatted_code)
     }
 
     email = new()
