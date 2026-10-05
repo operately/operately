@@ -1,9 +1,18 @@
+/** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
 import React from "react";
+import { MemoryRouter } from "react-router";
+import { applyLanguage } from "@/i18n";
+import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { ProductReleaseAnnouncementBanner } from "./ProductReleaseAnnouncementBanner";
 
+jest.mock("../../../../../turboui/node_modules/react", () => jest.requireActual("react"));
+jest.mock("../../../../../turboui/node_modules/react-router", () => jest.requireActual("react-router"));
+jest.mock("../../../../../turboui/node_modules/react-i18next", () => jest.requireActual("react-i18next"));
+jest.mock("../../../../../turboui/node_modules/i18next", () => jest.requireActual("i18next"));
+jest.mock("../../../../../turboui/src/icons", () => ({ IconX: () => null, IconSparkles: () => null }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({
   useMe: jest.fn(),
 }));
@@ -15,20 +24,8 @@ jest.mock("@/models/productReleases/productReleaseLifecycle", () => ({
 }));
 
 jest.mock("turboui", () => ({
-  ProductReleaseAnnouncement: ({
-    release,
-    onDismiss,
-  }: {
-    release: { title: string };
-    onDismiss: () => void;
-  }) => (
-    <div data-test-id="product-release-toast">
-      <span>{release.title}</span>
-      <button type="button" data-test-id="product-release-toast-dismiss" onClick={onDismiss}>
-        Dismiss
-      </button>
-    </div>
-  ),
+  ...jest.requireActual("../../../../../turboui/src/ProductReleaseAnnouncement"),
+  i18nOptions: jest.requireActual("../../../../../turboui/src/i18nOptions").i18nOptions,
 }));
 
 const mockUseMe = jest.mocked(useMe);
@@ -45,7 +42,11 @@ function stubMe(dismissedProductReleaseId: string | null) {
 }
 
 function renderBanner(productRelease: typeof release | null = release) {
-  return renderToStaticMarkup(<ProductReleaseAnnouncementBanner productRelease={productRelease} />);
+  return renderToStaticMarkup(
+    <MemoryRouter>
+      <ProductReleaseAnnouncementBanner productRelease={productRelease} />
+    </MemoryRouter>,
+  );
 }
 
 describe("ProductReleaseAnnouncementBanner", () => {
@@ -73,4 +74,21 @@ describe("ProductReleaseAnnouncementBanner", () => {
     expect(markup).toContain("product-release-toast");
     expect(markup).toContain(release.title);
   });
+});
+
+afterEach(async () => {
+  await applyLanguage("en");
+});
+
+test.each([
+  [true, "Ver versão"],
+  [false, "View release"],
+])("release controls respect the language flag: %s", async (enabled, label) => {
+  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  stubMe(null);
+
+  const markup = renderBanner();
+
+  expect(markup).toContain(label);
+  expect(markup).toContain(release.title);
 });

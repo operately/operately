@@ -191,12 +191,22 @@ These surfaces now use the shared catalog, with 14 Brazilian Portuguese drafts a
 
 Validation passes: 14 component tests, 30 app tests, 29 browser tests, TypeScript checks, builds, catalog integrity/determinism, and 375px layout review. Coverage includes English/Portuguese, fallback, plurals, flag rollback, and literal user content.
 
+### Home and Review — implemented locally
+
+Headings, greetings, actions, empty/error states, assignment labels, and urgency/count messages now use the shared catalog, with 24 Portuguese drafts. Due-date wording follows “data de conclusão”. Existing TurboUI controls, user content, API identifiers, and sorting are preserved. Native-speaker review remains PR 8; not merged or deployed.
+
+Validation covers English/Portuguese, fallback, plurals, flag rollback, literal names, feed errors, and 375px expanded-text layouts. All 84 focused component/app/catalog/browser tests, TypeScript checks, and builds pass. Catalogs regenerate deterministically without changing existing translations.
+
+### Company banners and release announcements — implemented locally
+
+Billing messages and announcement controls now use the shared catalog, with 15 Portuguese drafts. Billing and site-message presentation uses TurboUI; complete sentences retain formatted deadlines. Operator content, eligibility, destinations, and dismissal behavior are preserved. Billing actions stack and wrap at narrow widths. Native-speaker review remains PR 8; not merged or deployed.
+
+Validation passes: 44 component/app tests, 18 browser workflows, TypeScript checks, builds, catalog integrity/determinism, and Portuguese/expanded-text review at 375px. One cancellation-page browser test still fails in isolation, redirecting to a Free-plan billing overview; this route hides the banner and needs separate billing-fixture investigation.
+
 ### Additional extraction gaps
 
 The source audit confirmed these remaining surfaces:
 
-- Home and Review: headings, actions, empty/error states, relationship and due-date labels.
-- Company banners and release announcements: billing copy, dismiss labels, and actions.
 - Error/public pages: ErrorPage, NotFoundPage, BillingPickCompanyPage, and PublicDocumentPage.
 - Shared controls: OtherPeopleWithAccess, SidebarSection notifications, WorkMapTable next-step heading, SortControl, and ContinueEditingDrafts counts.
 - Dates: TimeframeSelectorDialog labels and RelativeWeekdayOrDate’s assembled “this” + weekday phrase.
