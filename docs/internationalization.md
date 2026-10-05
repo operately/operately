@@ -45,6 +45,9 @@ Use these Brazilian Portuguese terms in the pilot and later translations:
 | --- | --- |
 | company | empresa |
 | member | membro |
+| manager | gestor |
+| peers | pares |
+| reports (people) | subordinados |
 | email / emails | e-mail / e-mails |
 | space | espaço |
 | project | projeto |
@@ -78,7 +81,7 @@ The first cataloged English workflow is company navigation → project → task 
 | Activity and notifications | Task-adding feed titles, in-app notification title, Notifications page chrome, Mark as read |
 | Emails | Immediate task-adding subjects and bodies (including mentions and the plain-text link label), buffered digest subject/empty state/CTAs and resource labels (Project, Space, Goal), and the task-adding digest headline |
 
-PR 5 extraction is complete across navigation chrome/shared controls, account/onboarding, and company/space administration, including billing, export, and import. These surfaces were covered by #5357, #5362, #5366, and the space administration follow-up below. People directory and org-chart page copy remain coverage gaps. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles belong to PR 6. Other emails belong to PR 7. Remaining Portuguese coverage and native-speaker review belong to PR 8.
+PR 5 extraction is complete across navigation chrome/shared controls, account/onboarding, and company/space administration, including billing, export, and import. These surfaces were covered by #5357, #5362, #5366, and the space administration follow-up below. People directory, org-chart, and profile copy is extracted in the later follow-up; the specification tracks additional audit findings. Remaining project and task operations (due date, reminders, assignees, description, status, milestone, delete, move), task-board filters/menus/milestone creation, space-task operations, and generic “Update failed” titles belong to PR 6. Other emails belong to PR 7. Remaining Portuguese coverage and native-speaker review belong to PR 8.
 
 Activity presentation is translated at render time. Stored activity payloads and user-authored names stay in the original language.
 
@@ -100,7 +103,7 @@ Coverage after the PR 5 extraction:
 
 - Work-management copy is cataloged by the PR 6 implementation described below, including goals, projects, tasks, discussions, Docs & Files, activity feeds, space home/work map/kanban/KPI/discussion pages, and operation toasts.
 - Remaining backend messages, emails, digests, and server-rendered pages. Pass-through API error messages remain as returned, including `data.message` assigned to forms.
-- People directory and org-chart page copy.
+- Additional product copy identified by the repository audit in `specs/0018-internationalization.md` (Home/Review, banners, public/error pages, shared controls, and timeframe labels).
 - Complete Brazilian Portuguese coverage, native-speaker review of new messages, and automated coverage checks.
 
 Operator SaaS administration is outside PR 5's scope. User-authored names, emails, company names, space names, and API identifiers stay outside translation lookup. The language flag, preference, and selector behavior are unchanged.

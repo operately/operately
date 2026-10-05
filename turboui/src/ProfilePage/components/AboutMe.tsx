@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { TaskListInteraction } from "../../RichEditor/taskLists";
 import React from "react";
 
@@ -14,10 +15,11 @@ export function AboutMe({
   mentionedPersonLookup: MentionedPersonLookupFn;
 }) {
   const parsedContent = parseContent(content);
+  const { t } = useTranslation();
 
   return (
     <div>
-      <div className="text-xs mb-2 uppercase font-bold">About me</div>
+      <div className="text-xs mb-2 uppercase font-bold">{t("About me")}</div>
       <RichContent
         taskList={taskList}
         content={parsedContent}
