@@ -100,6 +100,7 @@ defmodule OperatelyWeb.MarkdownExportController do
     conn
     |> ensure_current_company()
     |> ensure_current_person()
+    |> OperatelyWeb.Plugs.SetLocale.call([])
   end
 
   defp ensure_current_company(conn) do

@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
   Creates a new check-in for a goal.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   require Logger
   use OperatelyWeb.Api.Helpers
@@ -55,7 +56,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
         {:error, :forbidden}
 
       {:error, :operation, %{error: :scheduled_at_must_be_in_the_future}} ->
-        {:error, :bad_request, "Scheduled time must be in the future"}
+        {:error, :bad_request, gettext("Scheduled time must be in the future")}
 
       {:error, :operation, _} ->
         {:error, :internal_server_error}

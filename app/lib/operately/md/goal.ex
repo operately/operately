@@ -1,4 +1,5 @@
 defmodule Operately.MD.Goal do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Drafts
 
   def render(goal) do
@@ -24,31 +25,31 @@ defmodule Operately.MD.Goal do
 
   defp render_overview_info(goal) do
     """
-    Status: #{Operately.Goals.Goal.status(goal)}
-    Progress: #{Operately.Goals.Goal.progress_percentage(goal)}%
-    Space: #{goal.group.name}
-    Created: #{render_date(goal.inserted_at)}
-    Last Updated: #{render_date(goal.updated_at)}
+    #{gettext("Status")}: #{Operately.Goals.Goal.status(goal)}
+    #{gettext("Progress")}: #{Operately.Goals.Goal.progress_percentage(goal)}%
+    #{gettext("Space")}: #{goal.group.name}
+    #{gettext("Created")}: #{render_date(goal.inserted_at)}
+    #{gettext("Last Updated")}: #{render_date(goal.updated_at)}
     """
     |> then(fn info ->
       if goal.closed_at do
-        info <> "Closed At: #{render_date(goal.closed_at)}"
+        info <> "#{gettext("Closed At")}: #{render_date(goal.closed_at)}"
       else
         info
       end
     end)
     |> then(fn info ->
       if goal.deleted_at do
-        info <> "Archived At: #{render_date(goal.deleted_at)}"
+        info <> "#{gettext("Archived At")}: #{render_date(goal.deleted_at)}"
       else
         info
       end
     end)
     |> then(fn info ->
       if goal.parent_goal do
-        info <> "Parent Goal: #{goal.parent_goal.name}"
+        info <> "#{gettext("Parent Goal")}: #{goal.parent_goal.name}"
       else
-        info <> "Parent Goal: None (Top Level Goal)"
+        info <> "#{gettext("Parent Goal: None (Top Level Goal)")}"
       end
     end)
     |> then(fn info -> info <> "\n\n" end)
@@ -57,15 +58,15 @@ defmodule Operately.MD.Goal do
   defp render_description(goal) do
     if goal.description do
       """
-      ## Description
+      ## #{gettext("Description")}
 
       #{Operately.MD.RichText.render(goal.description)}
       """
     else
       """
-      ## Description
+      ## #{gettext("Description")}
 
-      _No description provided._
+      _#{gettext("No description provided.")}_
       """
     end
   end
@@ -76,25 +77,25 @@ defmodule Operately.MD.Goal do
 
   defp render_targets([]) do
     """
-    ## Targets
+    ## #{gettext("Targets")}
 
-    _No targets defined._
+    _#{gettext("No targets defined.")}_
     """
   end
 
   defp render_targets(targets) do
     """
-    ## Targets
+    ## #{gettext("Targets")}
 
     #{targets |> Enum.sort_by(& &1.index) |> Enum.map_join("\n", fn target ->
       progress = calculate_target_progress(target)
 
       """
       #{target.index + 1}. #{target.name}
-        - Current Value: #{target.value} #{target.unit}
-        - Target: #{target.to} #{target.unit}
-        - Starting From: #{target.from} #{target.unit}
-        - Progress: #{progress}%"
+        - #{gettext("Current Value")}: #{target.value} #{target.unit}
+        - #{gettext("Target")}: #{target.to} #{target.unit}
+        - #{gettext("Starting From")}: #{target.from} #{target.unit}
+        - #{gettext("Progress")}: #{progress}%"
       """
     end)}
     """
@@ -110,7 +111,7 @@ defmodule Operately.MD.Goal do
   defp render_retrospective(retrospective) do
     if retrospective do
       """
-      ## Retrospective
+      ## #{gettext("Retrospective")}
 
       #{Operately.MD.RichText.render(retrospective.content)}
       """
@@ -121,21 +122,21 @@ defmodule Operately.MD.Goal do
 
   defp render_people(goal) do
     """
-    ## People Involved
+    ## #{gettext("People Involved")}
 
     """
     |> then(fn msg ->
       if goal.champion do
-        msg <> "\n" <> "Champion: #{goal.champion.full_name} (#{goal.champion.title})"
+        msg <> "\n" <> "#{gettext("Champion")}: #{goal.champion.full_name} (#{goal.champion.title})"
       else
-        msg <> "\n" <> "Champion: Not Assigned"
+        msg <> "\n" <> "#{gettext("Champion: Not Assigned")}"
       end
     end)
     |> then(fn msg ->
       if goal.reviewer do
-        msg <> "\n" <> "Reviewer: #{goal.reviewer.full_name} (#{goal.reviewer.title})"
+        msg <> "\n" <> "#{gettext("Reviewer")}: #{goal.reviewer.full_name} (#{goal.reviewer.title})"
       else
-        msg <> "\n" <> "Reviewer: Not Assigned"
+        msg <> "\n" <> "#{gettext("Reviewer: Not Assigned")}"
       end
     end)
     |> then(fn msg -> msg <> "\n" end)
@@ -145,7 +146,7 @@ defmodule Operately.MD.Goal do
 
   defp render_projects(projects) when is_list(projects) do
     """
-    ## Related Projects
+    ## #{gettext("Related Projects")}
 
     #{Enum.map_join(projects, "\n", fn project -> "- #{project.name} (ID: #{project.id})" end)}
     """

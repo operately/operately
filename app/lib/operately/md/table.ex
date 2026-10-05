@@ -1,6 +1,8 @@
 defmodule Operately.MD.Table do
   @moduledoc "Canonical pipe-table export, aligned with the frontend exporter and shared fixtures."
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   @mark_order ["link", "bold", "italic", "strike", "highlight", "code"]
 
   def render(%{"content" => []}), do: ""
@@ -58,7 +60,7 @@ defmodule Operately.MD.Table do
         _ -> nil
       end
 
-    label = Enum.find([attrs["alt"], attrs["title"], "File"], &(&1 not in [nil, ""])) |> escape_text()
+    label = Enum.find([attrs["alt"], attrs["title"], gettext("File")], &(&1 not in [nil, ""])) |> escape_text()
 
     if source in [nil, ""] do
       label

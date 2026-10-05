@@ -128,3 +128,22 @@ it("updates navigation when the language changes while mounted", async () => {
   expect(props().navigationItems[0]?.label).toBe("Administração da empresa");
   expect(props().navigationItems[1]?.label).toBe("Gerenciar membros");
 });
+
+it.each(["team_member", "outside_collaborator"])(
+  "places a localized %s validation error by its field identifier",
+  async (memberType) => {
+    mockMemberType = memberType;
+    const message = "O nome não pode ficar em branco";
+    jest.mocked(axios.post).mockRejectedValue({ response: { data: { message, details: { field: "full_name" } } } });
+    const errorLog = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      renderHook(() => null, { initialProps: undefined, wrapper });
+      fillForm();
+      await act(() => props().onSubmit());
+      expect(props().formErrors?.fullName).toBe(message);
+      expect(props().state.state).toBe("form");
+    } finally {
+      errorLog.mockRestore();
+    }
+  },
+);

@@ -58,7 +58,7 @@ PR 7 is an umbrella milestone. Each sub-PR is independently deployable and inclu
 | 7b | Discussion, comment, Docs & Files, and remaining activity emails. | Implemented locally; ready for review |
 | 7c | Buffered notification item copy and digest subjects/bodies, including mixed-language recipients. | Implemented locally; ready for review |
 | 7d | Account, invitation, onboarding, security, and billing emails. | Implemented locally; ready for review. External SendGrid onboarding coverage remains open. |
-| 7e | Remaining backend user-facing messages and server-rendered pages. | Planned |
+| 7e | Remaining backend user-facing messages and server-rendered pages. | Implemented locally; ready for review |
 
 7a covers implemented immediate notification emails. Existing unsupported email stubs remain unsupported. Discussion/comment emails belong to 7b even when attached to goals, projects, milestones, or tasks. Buffered-item headlines and digest composition belong to 7c; existing pilot translations remain intact. Remaining frontend extraction is tracked separately from PR 7.
 
@@ -103,6 +103,18 @@ Billing alerts resolve language from each recipient and the alert's company at d
 All 293 focused email, worker, catalog, preview, and API/security tests pass. Validation covers the migrated templates and subjects, English/Portuguese/missing-locale fallback, invitation/login branches, access labels, literal names and addresses, unchanged tokens/codes/links, mixed-language billing workers, account-language conflicts, flag rollback, legacy/new email-change jobs, and email-change API/security regressions. Catalog checks verify deterministic POT/PO/JSON generation, matching placeholders, and preservation of existing translations. API contracts and machine identifiers are unchanged; no CLI catalog regeneration is needed.
 
 **External onboarding coverage remains open:** `OperatelyEE.AccountOnboardingJob` only registers contacts with a SendGrid marketing list. The onboarding email templates and automation are managed outside this repository; there is no local subject/body to extract or language-aware campaign configuration to update here. Local account confirmation/invitation emails are covered above. The SendGrid campaign needs a separate content and locale-routing audit before general availability. Native-speaker review remains PR 8; remaining backend messages and server-rendered pages remain 7e. This implementation has not been merged or deployed.
+
+### PR 7e — backend messages and server-rendered pages
+
+Backend API and input-validation messages, billing-limit explanations, sanitized import/export failures, activity access labels, MCP tool errors, and browser authorization pages now use the shared catalog. Markdown exports catalog their headings, labels, empty states, and complete activity sentences. This adds 282 messages with Brazilian Portuguese drafts; existing nonempty translations are preserved. Due-date wording follows “data de conclusão”. User content, custom task-status labels, identifiers, protocol error categories, OAuth parameters, and stored diagnostics remain unchanged.
+
+Account-only requests reuse the active-membership language policy from 7d. MCP consent resolves the selected company's effective language, including when account memberships disagree. Markdown downloads resolve language after loading the company and membership from the URL. Unauthenticated requests remain English, browser language is ignored, and disabling the company flag restores English. Server-rendered HTML declares the effective language; catalog-owned emphasis escapes client names and translated text.
+
+Member and guest validation errors now include additive `details.field` metadata. The add-person form uses that identifier to place translated errors instead of inspecting English words. Its existing TanStack Query flow, TurboUI `CompanyAdminAddPeoplePage` and `InviteMemberForm`, and `showErrorToast` remain in use. No new interactive elements are introduced. API/MCP/CLI consumers were audited; endpoint inputs, successful output schemas, command names, and permissions are unchanged. The CLI catalog is regenerated and checked for compatibility; its only generated change is enum ordering, with command names and flags unchanged.
+
+Import/export workers continue storing stable diagnostics; serializers translate sanitized explanations when read. Access-label translation is shared with the existing permissions email. Machine-facing API documentation, MCP schemas and protocol status names, logs, persisted custom labels, and user-authored content remain literal. Existing date/number formatting conventions are preserved; regional-formatting follow-ups remain separate.
+
+Validation covers English regressions, Portuguese rendering, missing-locale fallback, flag rollback, conflicting account memberships, literal names and escaping, zero/singular/plural validation counts, stable error categories and field metadata, Markdown exports, and unchanged external API authorization. Focused backend regressions, eight Jest tests, TypeScript checks, and the CLI catalog sync check pass. Catalog checks verify deterministic POT/PO/JSON generation, matching placeholders/plurals, and preservation of existing translations. Native-speaker review remains PR 8. This implementation has not been merged or deployed.
 
 ## Release acceptance
 
@@ -167,7 +179,7 @@ Validation covers English, Portuguese, substituted translations, missing-languag
 Remaining gaps before general availability:
 
 - Review and merge the local PR 6 implementation. Full-product acceptance with selected companies remains PR 8 work.
-- PR 7: review and merge the local 7a–7d implementations; complete 7e for remaining backend messages and server-rendered pages. Audit the external SendGrid onboarding campaign and locale routing to close 7d’s external coverage gap.
+- PR 7: review and merge the local 7a–7e implementations. Audit the external SendGrid onboarding campaign and locale routing to close 7d’s external coverage gap.
 - People directory and org-chart page copy still need extraction.
 - PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted translations, and coverage checks.
 

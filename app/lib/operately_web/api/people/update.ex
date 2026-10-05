@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.People.Update do
   Updates a person's profile information.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -133,8 +134,8 @@ defmodule OperatelyWeb.Api.People.Update do
            {:manager_id, {message, _}} -> message
            _ -> nil
          end) do
-      nil -> "Invalid profile update"
-      message -> message
+      nil -> gettext("Invalid profile update")
+      message -> Operately.I18n.ValidationErrors.translate({message, []})
     end
   end
 end

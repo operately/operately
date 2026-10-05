@@ -1,21 +1,22 @@
 defmodule Operately.MD.Project.Timeframe do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(project) do
     tf = project.timeframe
     timeframe_activities = load_timeframe_activities(project.id)
 
     """
-    ## Timeframe
+    ## #{gettext("Timeframe")}
 
-    Start Date: #{render_contextual_date(tf && tf.contextual_start_date)}
-    Due Date: #{render_contextual_date(tf && tf.contextual_end_date)}
+    #{gettext("Start Date")}: #{render_contextual_date(tf && tf.contextual_start_date)}
+    #{gettext("Due Date")}: #{render_contextual_date(tf && tf.contextual_end_date)}
 
-    ### Timeframe History
+    ### #{gettext("Timeframe History")}
 
     #{render_timeframe_history(timeframe_activities)}
     """
   end
 
-  defp render_contextual_date(nil), do: "Not Set"
+  defp render_contextual_date(nil), do: gettext("Not Set")
   defp render_contextual_date(date), do: date.value
 
   defp load_timeframe_activities(project_id) do
@@ -38,7 +39,7 @@ defmodule Operately.MD.Project.Timeframe do
   end
 
   defp render_timeframe_history([]) do
-    "_No timeframe changes recorded._"
+    gettext("_No timeframe changes recorded._")
   end
 
   defp render_timeframe_history(activities) do
@@ -55,7 +56,7 @@ defmodule Operately.MD.Project.Timeframe do
     old_date = render_activity_date(content.old_due_date)
     new_date = render_activity_date(content.new_due_date)
 
-    "**#{date}** - #{author} changed the due date from #{old_date} to #{new_date}"
+    gettext("**%{date}** - %{author} changed the due date from %{old_date} to %{new_date}", date: date, author: author, old_date: old_date, new_date: new_date)
   end
 
   defp render_timeframe_activity(%{action: "project_start_date_updating"} = activity) do
@@ -66,7 +67,7 @@ defmodule Operately.MD.Project.Timeframe do
     old_date = render_activity_date(content.old_start_date)
     new_date = render_activity_date(content.new_start_date)
 
-    "**#{date}** - #{author} changed the start date from #{old_date} to #{new_date}"
+    gettext("**%{date}** - %{author} changed the start date from %{old_date} to %{new_date}", date: date, author: author, old_date: old_date, new_date: new_date)
   end
 
   defp render_timeframe_activity(%{action: "project_timeline_edited"} = activity) do
@@ -74,31 +75,23 @@ defmodule Operately.MD.Project.Timeframe do
     author = activity.author.full_name
     date = render_date(activity.inserted_at)
 
-    changes = []
+    start_changed? = content.old_start_date != content.new_start_date
+    due_changed? = content.old_end_date != content.new_end_date
 
-    changes =
-      if content.old_start_date != content.new_start_date do
-        old_date = render_activity_date(content.old_start_date)
-        new_date = render_activity_date(content.new_start_date)
-        ["start date from #{old_date} to #{new_date}" | changes]
-      else
-        changes
-      end
-
-    changes =
-      if content.old_end_date != content.new_end_date do
-        old_date = render_activity_date(content.old_end_date)
-        new_date = render_activity_date(content.new_end_date)
-        ["due date from #{old_date} to #{new_date}" | changes]
-      else
-        changes
-      end
-
-    if length(changes) > 0 do
-      change_list = Enum.reverse(changes) |> Enum.join(" and ")
-      "**#{date}** - #{author} changed the #{change_list}"
-    else
-      "**#{date}** - #{author} updated the project timeline"
+    cond do
+      start_changed? and due_changed? ->
+        gettext("**%{date}** - %{author} changed the start date from %{old_start} to %{new_start} and due date from %{old_due} to %{new_due}",
+          date: date, author: author,
+          old_start: render_activity_date(content.old_start_date), new_start: render_activity_date(content.new_start_date),
+          old_due: render_activity_date(content.old_end_date), new_due: render_activity_date(content.new_end_date))
+      start_changed? ->
+        gettext("**%{date}** - %{author} changed the start date from %{old_date} to %{new_date}", date: date, author: author,
+          old_date: render_activity_date(content.old_start_date), new_date: render_activity_date(content.new_start_date))
+      due_changed? ->
+        gettext("**%{date}** - %{author} changed the due date from %{old_date} to %{new_date}", date: date, author: author,
+          old_date: render_activity_date(content.old_end_date), new_date: render_activity_date(content.new_end_date))
+      true ->
+        gettext("**%{date}** - %{author} updated the project timeline", date: date, author: author)
     end
   end
 
@@ -106,10 +99,10 @@ defmodule Operately.MD.Project.Timeframe do
     # Fallback for any other timeframe-related activities
     author = activity.author.full_name
     date = render_date(activity.inserted_at)
-    "**#{date}** - #{author} made a timeframe change"
+    gettext("**%{date}** - %{author} made a timeframe change", date: date, author: author)
   end
 
-  defp render_activity_date(nil), do: "Not Set"
+  defp render_activity_date(nil), do: gettext("Not Set")
 
   defp render_activity_date(%Date{} = date), do: Date.to_iso8601(date)
 

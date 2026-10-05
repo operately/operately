@@ -1,4 +1,5 @@
 defmodule Operately.Operations.CompanyAdding do
+  use Gettext, backend: OperatelyWeb.Gettext
   alias Operately.Billing
   alias Operately.Billing.Inputs
   alias Operately.Companies.ShortId
@@ -234,7 +235,7 @@ defmodule Operately.Operations.CompanyAdding do
         :ok
 
       {:error, _reason} ->
-        {:error, :bad_request, "Invalid billing intent"}
+        {:error, :bad_request, gettext("Invalid billing intent")}
     end
   end
 

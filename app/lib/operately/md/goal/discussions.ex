@@ -1,14 +1,15 @@
 defmodule Operately.MD.Goal.Discussions do
+  use Gettext, backend: OperatelyWeb.Gettext
   def render(discussions) do
     if Enum.empty?(discussions) do
       """
-      ## Discussions
+      ## #{gettext("Discussions")}
 
-      _No discussions yet._
+      _#{gettext("No discussions yet.")}_
       """
     else
       """
-      ## Discussions
+      ## #{gettext("Discussions")}
 
       #{Enum.map_join(discussions, "\n\n", &render_discussion/1)}
       """
@@ -21,8 +22,8 @@ defmodule Operately.MD.Goal.Discussions do
     """
     ### #{discussion.title}
 
-    Author: #{discussion.author.full_name}
-    Posted on: #{render_date(discussion.inserted_at)}
+    #{gettext("Author")}: #{discussion.author.full_name}
+    #{gettext("Posted on")}: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
 
@@ -38,10 +39,10 @@ defmodule Operately.MD.Goal.Discussions do
 
   defp render_comments(comments) do
     if Enum.empty?(comments) do
-      "_No comments yet._"
+      gettext("_No comments yet._")
     else
       """
-      ## Comments
+      ## #{gettext("Comments")}
 
       #{Enum.map_join(comments, "\n\n", &render_comment/1)}
       """
@@ -50,7 +51,7 @@ defmodule Operately.MD.Goal.Discussions do
 
   defp render_comment(comment) do
     """
-    ### Comment by #{comment.author.full_name} on #{Operately.Time.as_date(comment.inserted_at) |> Date.to_iso8601()}
+    ### #{gettext("Comment by %{author} on %{date}", author: comment.author.full_name, date: Operately.Time.as_date(comment.inserted_at) |> Date.to_iso8601())}
 
     #{Operately.MD.RichText.render(comment.content)}
 
@@ -61,7 +62,7 @@ defmodule Operately.MD.Goal.Discussions do
   defp render_reactions(reactions) do
     case reactions do
       [] -> ""
-      reactions -> "Reactions: #{Enum.map(reactions, &render_reaction/1) |> Enum.join(" ")}"
+      reactions -> "#{gettext("Reactions")}: #{Enum.map(reactions, &render_reaction/1) |> Enum.join(" ")}"
     end
   end
 

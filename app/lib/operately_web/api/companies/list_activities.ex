@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
   pages, passing next_cursor as cursor to fetch older activities.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -162,7 +163,7 @@ defmodule OperatelyWeb.Api.Companies.ListActivities do
          {:ok, id} <- Ecto.UUID.cast(id) do
       {:ok, %{inserted_at: inserted_at, id: id}}
     else
-      _ -> {:error, :bad_request, "Invalid activity cursor"}
+      _ -> {:error, :bad_request, gettext("Invalid activity cursor")}
     end
   end
 

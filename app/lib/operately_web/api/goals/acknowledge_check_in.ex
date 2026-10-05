@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckIn do
   Acknowledges a goal check-in.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -54,7 +55,7 @@ defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckIn do
         {:error, :forbidden}
 
       {:error, :check_not_the_author, _} ->
-        {:error, :bad_request, "Authors cannot acknowledge their own check-ins"}
+        {:error, :bad_request, gettext("Authors cannot acknowledge their own check-ins")}
 
       {:error, :operation, _} ->
         {:error, :internal_server_error}

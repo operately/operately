@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.Documents.RestoreVersion do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -53,7 +54,7 @@ defmodule OperatelyWeb.Api.Documents.RestoreVersion do
         {:error, :forbidden}
 
       {:error, :operation, %{error: :version_conflict}} ->
-        {:error, :bad_request, "A newer version of this document exists", %{reason: "version_conflict"}}
+        {:error, :bad_request, gettext("A newer version of this document exists"), %{reason: "version_conflict"}}
 
       {:error, :operation, %{error: :not_found}} ->
         {:error, :not_found}

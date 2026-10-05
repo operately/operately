@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.McpOAuthController do
+  use Gettext, backend: OperatelyWeb.Gettext
   use OperatelyWeb, :controller
 
   alias Operately.Mcp
@@ -15,7 +16,7 @@ defmodule OperatelyWeb.McpOAuthController do
 
       case companies do
         [] ->
-          render_error(conn, 403, "No Companies Found", "Your account is not associated with any active companies.")
+          render_error(conn, 403, gettext("No Companies Found"), gettext("Your account is not associated with any active companies."))
 
         [company] ->
           render_consent(conn, request, company)
@@ -159,7 +160,7 @@ defmodule OperatelyWeb.McpOAuthController do
     conn
     |> put_view(OperatelyWeb.McpOAuthHTML)
     |> render(:company_picker,
-      title: "Choose a Company",
+      title: gettext("Choose a Company"),
       request: request,
       companies: companies,
       hidden_fields: hidden_fields(request)
@@ -167,10 +168,13 @@ defmodule OperatelyWeb.McpOAuthController do
   end
 
   defp render_consent(conn, request, company) do
+    person = Operately.People.get_person!(conn.assigns.current_account, company)
+    conn = conn |> assign(:current_person, person) |> assign(:current_company, company) |> OperatelyWeb.Plugs.SetLocale.call([])
+
     conn
     |> put_view(OperatelyWeb.McpOAuthHTML)
     |> render(:consent,
-      title: "Authorize MCP Client",
+      title: gettext("Authorize MCP Client"),
       request: request,
       company: company,
       hidden_fields: Map.put(hidden_fields(request), "selected_company_id", company.id),
@@ -187,15 +191,15 @@ defmodule OperatelyWeb.McpOAuthController do
     })
 
     case reason do
-      :invalid_redirect_uri -> render_error(conn, 400, "Invalid Redirect URI", "The requested redirect URI is not registered for this client.")
-      :invalid_target_resource -> render_error(conn, 400, "Invalid Resource", "The authorization request must target this server's canonical MCP endpoint.")
-      :invalid_scope -> render_error(conn, 400, "Invalid Scope", "The authorization request contains an unsupported scope.")
-      :missing_code_challenge -> render_error(conn, 400, "Missing PKCE Challenge", "This authorization request must include a PKCE code challenge.")
-      :unsupported_code_challenge_method -> render_error(conn, 400, "Unsupported PKCE Method", "Only the S256 PKCE challenge method is supported.")
-      :unsupported_client_authentication -> render_error(conn, 400, "Unsupported Client Authentication", "Only public OAuth clients using token_endpoint_auth_method=none are supported.")
-      :invalid_client -> render_error(conn, 400, "Invalid Client", "The OAuth client is not registered for this Operately MCP server.")
-      :invalid_request -> render_error(conn, 400, "Invalid Request", "The authorization request is missing required parameters or contains invalid values.")
-      _ -> render_error(conn, 500, "Authorization Error", "Operately couldn't complete this authorization request.")
+      :invalid_redirect_uri -> render_error(conn, 400, gettext("Invalid Redirect URI"), gettext("The requested redirect URI is not registered for this client."))
+      :invalid_target_resource -> render_error(conn, 400, gettext("Invalid Resource"), gettext("The authorization request must target this server's canonical MCP endpoint."))
+      :invalid_scope -> render_error(conn, 400, gettext("Invalid Scope"), gettext("The authorization request contains an unsupported scope."))
+      :missing_code_challenge -> render_error(conn, 400, gettext("Missing PKCE Challenge"), gettext("This authorization request must include a PKCE code challenge."))
+      :unsupported_code_challenge_method -> render_error(conn, 400, gettext("Unsupported PKCE Method"), gettext("Only the S256 PKCE challenge method is supported."))
+      :unsupported_client_authentication -> render_error(conn, 400, gettext("Unsupported Client Authentication"), gettext("Only public OAuth clients using token_endpoint_auth_method=none are supported."))
+      :invalid_client -> render_error(conn, 400, gettext("Invalid Client"), gettext("The OAuth client is not registered for this Operately MCP server."))
+      :invalid_request -> render_error(conn, 400, gettext("Invalid Request"), gettext("The authorization request is missing required parameters or contains invalid values."))
+      _ -> render_error(conn, 500, gettext("Authorization Error"), gettext("Operately couldn't complete this authorization request."))
     end
   end
 
@@ -209,12 +213,12 @@ defmodule OperatelyWeb.McpOAuthController do
   defp oauth_json_error(conn, reason) do
     {status, error, description} =
       case reason do
-        :invalid_client -> {401, "invalid_client", "The client could not be authenticated."}
-        :invalid_target_resource -> {400, "invalid_target_resource", "The requested resource does not match this MCP server."}
-        :invalid_grant -> {400, "invalid_grant", "The supplied authorization grant is invalid, expired, or has already been used."}
-        :unsupported_grant_type -> {400, "unsupported_grant_type", "The token endpoint only supports authorization_code and refresh_token grants."}
-        :invalid_request -> {400, "invalid_request", "The token request is missing required parameters or contains invalid values."}
-        _ -> {400, "invalid_request", "The token request could not be completed."}
+        :invalid_client -> {401, "invalid_client", gettext("The client could not be authenticated.")}
+        :invalid_target_resource -> {400, "invalid_target_resource", gettext("The requested resource does not match this MCP server.")}
+        :invalid_grant -> {400, "invalid_grant", gettext("The supplied authorization grant is invalid, expired, or has already been used.")}
+        :unsupported_grant_type -> {400, "unsupported_grant_type", gettext("The token endpoint only supports authorization_code and refresh_token grants.")}
+        :invalid_request -> {400, "invalid_request", gettext("The token request is missing required parameters or contains invalid values.")}
+        _ -> {400, "invalid_request", gettext("The token request could not be completed.")}
       end
 
     Observability.oauth_token(%{
@@ -232,16 +236,16 @@ defmodule OperatelyWeb.McpOAuthController do
     {status, error, description} =
       case reason do
         :invalid_redirect_uri ->
-          {400, "invalid_redirect_uri", "One or more redirect URIs are not allowed for this MCP server."}
+          {400, "invalid_redirect_uri", gettext("One or more redirect URIs are not allowed for this MCP server.")}
 
         :unsupported_client_authentication ->
-          {400, "invalid_client_metadata", "Only public OAuth clients using token_endpoint_auth_method=none are supported."}
+          {400, "invalid_client_metadata", gettext("Only public OAuth clients using token_endpoint_auth_method=none are supported.")}
 
         :invalid_client_metadata ->
-          {400, "invalid_client_metadata", "The client registration request is missing required fields or contains invalid values."}
+          {400, "invalid_client_metadata", gettext("The client registration request is missing required fields or contains invalid values.")}
 
         _ ->
-          {400, "invalid_client_metadata", "The client registration request could not be completed."}
+          {400, "invalid_client_metadata", gettext("The client registration request could not be completed.")}
       end
 
     conn

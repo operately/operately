@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang={@conn.assigns[:locale] || "en"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -104,34 +104,34 @@
   <body>
     <div class="card">
       <._logo />
-      <p class="description"><strong><%= @request.client.client_name %></strong> is requesting access to your Operately workspace through MCP.</p>
+      <p class="description"><%= client_sentence(gettext("<client/> is requesting access to your Operately workspace through MCP."), @request.client.client_name) %></p>
 
       <%= if @localhost_warning do %>
         <div class="warning">
-          This client uses a localhost redirect URI. Confirm that you trust the local application before approving.
+          <%= gettext("This client uses a localhost redirect URI. Confirm that you trust the local application before approving.") %>
         </div>
       <% end %>
 
       <%= if "mcp:write" in @request.scopes do %>
         <div class="warning">
-          Write access lets this client create, update, delete, and archive content in your workspace.
+          <%= gettext("Write access lets this client create, update, delete, and archive content in your workspace.") %>
         </div>
       <% end %>
 
       <dl>
-        <dt>Client</dt>
+        <dt><%= gettext("Client") %></dt>
         <dd><%= @request.client.client_name %></dd>
 
-        <dt>Client Host</dt>
+        <dt><%= gettext("Client Host") %></dt>
         <dd><%= @client_host %></dd>
 
-        <dt>Redirect Host</dt>
+        <dt><%= gettext("Redirect Host") %></dt>
         <dd><%= @redirect_host %></dd>
 
-        <dt>Company</dt>
+        <dt><%= gettext("Company") %></dt>
         <dd><%= @company.name %></dd>
 
-        <dt>Permissions</dt>
+        <dt><%= gettext("Permissions") %></dt>
         <dd>
           <ul style="margin: 0; padding-left: 20px;">
             <%= for scope <- @request.scopes do %>
@@ -150,8 +150,8 @@
         <% end %>
 
         <div class="actions">
-          <button class="deny" type="submit" name="decision" value="deny">Deny</button>
-          <button class="approve" type="submit" name="decision" value="approve">Authorize</button>
+          <button class="deny" type="submit" name="decision" value="deny"><%= gettext("Deny") %></button>
+          <button class="approve" type="submit" name="decision" value="approve"><%= gettext("Authorize") %></button>
         </div>
       </form>
     </div>

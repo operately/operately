@@ -62,6 +62,20 @@ defmodule OperatelyWeb.Plugs.SetLocaleTest do
     assert Gettext.get_locale(@backend) == "en"
   end
 
+  test "account-only browser requests use the agreed active membership language", ctx do
+    ctx = Factory.enable_feature(ctx, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
+    account = Operately.Repo.preload(person, :account).account
+
+    conn = Phoenix.ConnTest.build_conn() |> Plug.Conn.assign(:current_account, account) |> SetLocale.call([])
+    assert conn.assigns.locale == "pt-BR"
+    assert Gettext.get_locale(@backend) == "pt_BR"
+
+    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    conn = SetLocale.call(conn, [])
+    assert conn.assigns.locale == "en"
+  end
+
   defp set_locale(ctx, accept_language: accept_language) do
     Phoenix.ConnTest.build_conn()
     |> Plug.Conn.put_req_header("accept-language", accept_language)

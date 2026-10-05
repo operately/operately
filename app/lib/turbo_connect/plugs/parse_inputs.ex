@@ -3,6 +3,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   Parses the request inputs and assigns them to the connection.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use Plug.Builder
   require Logger
 
@@ -65,7 +66,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
     null_allowed = Keyword.get(opts, :null, true)
 
     if value == nil && !null_allowed do
-      {:error, 400, "Field '#{field_name}' cannot be null"}
+      {:error, 400, gettext("Field '%{field_name}' cannot be null", field_name: field_name)}
     else
       :ok
     end
@@ -73,7 +74,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def find_field(fields, field_name) do
     case Enum.find(fields, fn {name, _, _} -> name == field_name end) do
-      nil -> {:error, 400, "Unknown input field: #{field_name}"}
+      nil -> {:error, 400, gettext("Unknown input field: %{field_name}", field_name: field_name)}
       field -> {:ok, field}
     end
   end
@@ -94,7 +95,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def parse_input(:integer, _types, value, false) do
     case Integer.parse(value) do
       {int, ""} -> {:ok, int}
-      _ -> {:error, 422, "Invalid integer: #{value}"}
+      _ -> {:error, 422, gettext("Invalid integer: %{value}", value: value)}
     end
   end
 
@@ -104,28 +105,28 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def parse_input(:float, _types, value, false) do
     case Float.parse(value) do
       {float, ""} -> {:ok, float}
-      _ -> {:error, 422, "Invalid float: #{value}"}
+      _ -> {:error, 422, gettext("Invalid float: %{value}", value: value)}
     end
   end
 
   def parse_input(:date, _types, value, _strict) when is_binary(value) do
     case Date.from_iso8601(value) do
       {:ok, date} -> {:ok, date}
-      _ -> {:error, 422, "Invalid date: #{value}"}
+      _ -> {:error, 422, gettext("Invalid date: %{value}", value: value)}
     end
   end
 
   def parse_input(:datetime, _types, value, _strict) when is_binary(value) do
     case DateTime.from_iso8601(value) do
       {:ok, datetime, _} -> {:ok, datetime}
-      _ -> {:error, 422, "Invalid datetime: #{value}"}
+      _ -> {:error, 422, gettext("Invalid datetime: %{value}", value: value)}
     end
   end
 
   def parse_input(:time, _types, value, _strict) when is_binary(value) do
     case Time.from_iso8601(value) do
       {:ok, time} -> {:ok, time}
-      _ -> {:error, 422, "Invalid time: #{value}"}
+      _ -> {:error, 422, gettext("Invalid time: %{value}", value: value)}
     end
   end
 
@@ -156,7 +157,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
-  def parse_input({:list, _type}, _types, _value, _strict), do: {:error, 400, "Expected a list"}
+  def parse_input({:list, _type}, _types, _value, _strict), do: {:error, 400, gettext("Expected a list")}
 
   def parse_input(_field, _types, nil, _strict) do
     # This simply returns nil, the null constraint is checked in validate_null_constraint
@@ -175,14 +176,14 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
         case decode_with do
           nil ->
-            {:error, 500, "Unknown decoder for primitive type: #{type}"}
+            {:error, 500, gettext("Unknown decoder for primitive type: %{type}", type: type)}
 
           _ ->
             case decode_with.(value) do
               {:ok, decoded} -> {:ok, decoded}
               {:error, reason} ->
                 if type == :id do
-                  {:error, 404, "The requested resource was not found"}
+                  {:error, 404, gettext("The requested resource was not found")}
                 else
                   {:error, 400, reason}
                 end
@@ -217,12 +218,12 @@ defmodule TurboConnect.Plugs.ParseInputs do
               {:ok, v}
             else
               allowed_values = enum_values |> Enum.join(", ")
-              {:error, 400, "Invalid value for enum #{type}: #{value}. Allowed values: #{allowed_values}"}
+              {:error, 400, gettext("Invalid value for enum %{type}: %{value}. Allowed values: %{allowed_values}", type: type, value: value, allowed_values: allowed_values)}
             end
 
           :error ->
             allowed_values = enum_values |> Enum.join(", ")
-            {:error, 400, "Invalid value for enum #{type}: #{value}. Allowed values: #{allowed_values}"}
+            {:error, 400, gettext("Invalid value for enum %{type}: %{value}. Allowed values: %{allowed_values}", type: type, value: value, allowed_values: allowed_values)}
         end
 
       types.int_enums[type] != nil ->
@@ -233,11 +234,11 @@ defmodule TurboConnect.Plugs.ParseInputs do
           {:ok, parsed_value}
         else
           allowed_values = int_enum_values |> Enum.join(", ")
-          {:error, 400, "Invalid value for int enum #{type}: #{parsed_value}. Allowed values: #{allowed_values}"}
+          {:error, 400, gettext("Invalid value for int enum %{type}: %{parsed_value}. Allowed values: %{allowed_values}", type: type, parsed_value: parsed_value, allowed_values: allowed_values)}
         end
 
       true ->
-        {:error, 400, "Unknown input type: #{type}"}
+        {:error, 400, gettext("Unknown input type: %{type}", type: type)}
     end
   end
 

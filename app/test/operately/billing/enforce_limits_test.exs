@@ -17,6 +17,19 @@ defmodule Operately.Billing.EnforceLimitsTest do
     {:ok, company: company}
   end
 
+  test "localized limit explanations preserve billing codes and numeric details", ctx do
+    company = enable_billing(ctx.company)
+    {:error, error} = EnforceLimits.check(company, :member_count, current_usage: 20, requested_delta: 1)
+    english = EnforceLimits.public_message(error)
+    details = EnforceLimits.public_details(error)
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert {:error, :bad_request, message, ^details} = EnforceLimits.to_api_error(error)
+      assert message =~ "20 de 20 membros ativos"
+      assert details.code == "member_count_limit_exceeded"
+    end)
+    assert Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> EnforceLimits.public_message(error) end) == english
+  end
+
   describe "status/3 and check/3" do
     test "falls back to the free plan when no billing row exists", ctx do
       company = enable_billing(ctx.company)

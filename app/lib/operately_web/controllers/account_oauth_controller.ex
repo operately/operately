@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.AccountOauthController do
+  use Gettext, backend: OperatelyWeb.Gettext
   use OperatelyWeb, :controller
   require Logger
 
@@ -67,7 +68,7 @@ defmodule OperatelyWeb.AccountOauthController do
 
   def callback(conn, _params) do
     conn
-    |> put_flash(:error, "Authentication failed")
+    |> put_flash(:error, gettext("Authentication failed"))
     |> redirect(to: "/")
   end
 

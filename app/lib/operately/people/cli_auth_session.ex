@@ -1,4 +1,5 @@
 defmodule Operately.People.CliAuthSession do
+  use Gettext, backend: OperatelyWeb.Gettext
   use Operately.Schema
 
   import Ecto.Query, warn: false
@@ -171,9 +172,9 @@ defmodule Operately.People.CliAuthSession do
   def poll_interval_ms, do: @poll_interval_ms
   def no_companies_message,
     do:
-      "This account is not a member of any companies. Use `operately auth create-company` to create one or `operately auth join` to join an existing company."
-  def existing_account_message, do: "An account already exists for this Google account. Use `operately auth login` or `operately auth join` instead."
-  def expired_message, do: "This authentication session has expired. Please start again from the CLI."
+      gettext("This account is not a member of any companies. Use `operately auth create-company` to create one or `operately auth join` to join an existing company.")
+  def existing_account_message, do: gettext("An account already exists for this Google account. Use `operately auth login` or `operately auth join` instead.")
+  def expired_message, do: gettext("This authentication session has expired. Please start again from the CLI.")
   def no_companies_reason, do: @no_companies_reason
   def existing_account_reason, do: @existing_account_reason
 
@@ -181,7 +182,7 @@ defmodule Operately.People.CliAuthSession do
     case session.failure_reason do
       @no_companies_reason -> no_companies_message()
       @existing_account_reason -> existing_account_message()
-      _ -> "Authentication failed. Please try again from the CLI."
+      _ -> gettext("Authentication failed. Please try again from the CLI.")
     end
   end
 

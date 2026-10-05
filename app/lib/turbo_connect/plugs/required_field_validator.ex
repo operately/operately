@@ -4,6 +4,7 @@ defmodule TurboConnect.Plugs.RequiredFieldValidator do
   This plug should be used after the `ParseInputs` plug.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use Plug.Builder
 
   def init(_), do: []
@@ -20,7 +21,7 @@ defmodule TurboConnect.Plugs.RequiredFieldValidator do
 
   defp missing_fields_response(conn, missing_fields) do
     missing_fields_str = Enum.join(missing_fields, ", ")
-    message = "Missing required fields: #{missing_fields_str}"
+    message = gettext("Missing required fields: %{missing_fields_str}", missing_fields_str: missing_fields_str)
 
     conn
     |> put_resp_content_type("application/json")

@@ -186,6 +186,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
   end
 
   defmodule SharedMultiSteps do
+    use Gettext, backend: OperatelyWeb.Gettext
     require Logger
     use OperatelyWeb.Api.Helpers
 
@@ -201,7 +202,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       Ecto.Multi.run(multi, :project, fn _repo, %{me: me} ->
         case Project.get(me, id: project_id, opts: [preload: [:access_context]]) do
           {:ok, project} -> {:ok, project}
-          {:error, _} -> {:error, {:not_found, "Project not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Project not found")}}
         end
       end)
     end
@@ -210,7 +211,7 @@ defmodule OperatelyWeb.Api.Projects.Discussions do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
         case Operately.Comments.CommentThread.get(me, id: discussion_id, opts: opts) do
           {:ok, discussion} -> {:ok, discussion}
-          {:error, _} -> {:error, {:not_found, "Discussion not found"}}
+          {:error, _} -> {:error, {:not_found, gettext("Discussion not found")}}
         end
       end)
     end
