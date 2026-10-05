@@ -295,3 +295,6 @@ export { PeopleOrgChartPage } from "./PeopleOrgChartPage";
 
 export { BillingDangerBanner, type BillingDangerBannerViewModel } from "./BillingDangerBanner";
 export { SiteMessageBanner } from "./SiteMessageBanner";
+
+export { ErrorPage } from "./ErrorPage";
+export { BillingPickCompanyPage } from "./BillingPickCompanyPage";
