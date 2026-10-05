@@ -1,5 +1,6 @@
 defmodule Operately.I18n.ValidationErrors do
   @moduledoc "Translates known changeset messages at the presentation boundary."
+
   use Gettext, backend: OperatelyWeb.Gettext
 
   def translate({"can't be blank", _opts}), do: gettext("can't be blank")
@@ -34,12 +35,25 @@ defmodule Operately.I18n.ValidationErrors do
     end)
   end
 
-  def member(:email, "can't be blank"), do: gettext("Email can't be blank")
-  def member(:email, "has already been taken"), do: gettext("Email has already been taken")
-  def member(:email, "is invalid"), do: gettext("Email is invalid")
-  def member(:email, "is not valid"), do: gettext("Email is not valid")
-  def member(:email, "must have the @ sign and no spaces"), do: gettext("Email must have the @ sign and no spaces")
-  def member(:full_name, "can't be blank"), do: gettext("Name can't be blank")
-  def member(:email, message), do: "Email " <> message
-  def member(:full_name, message), do: "Name " <> message
+  def member(field, message, opts \\ [])
+
+  def member(:email, "can't be blank", _opts), do: gettext("Email can't be blank")
+  def member(:email, "has already been taken", _opts), do: gettext("Email has already been taken")
+  def member(:email, "is invalid", _opts), do: gettext("Email is invalid")
+  def member(:email, "is not valid", _opts), do: gettext("Email is not valid")
+  def member(:email, "must have the @ sign and no spaces", _opts), do: gettext("Email must have the @ sign and no spaces")
+  def member(:full_name, "can't be blank", _opts), do: gettext("Name can't be blank")
+
+  def member(:email, "should be at most %{count} character(s)", opts) do
+    count = Keyword.fetch!(opts, :count)
+
+    if count == 0 do
+      gettext("Email should be at most 0 character(s)")
+    else
+      ngettext("Email should be at most %{count} character(s)", "Email should be at most %{count} character(s)", count)
+    end
+  end
+
+  def member(:email, message, opts), do: translate({"Email " <> message, opts})
+  def member(:full_name, message, opts), do: translate({"Name " <> message, opts})
 end

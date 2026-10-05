@@ -67,17 +67,17 @@ defmodule OperatelyWeb.Api.Companies.CreateMember do
       {:ok, changes} ->
         {:ok, changes}
 
-      {:error, [%{field: :email, message: message}]} ->
-        {:error, :bad_request, Operately.I18n.ValidationErrors.member(:email, message), %{field: "email"}}
+      {:error, [%{field: :email, message: message, opts: opts}]} ->
+        {:error, :bad_request, Operately.I18n.ValidationErrors.member(:email, message, opts), %{field: "email"}}
 
-      {:error, [%{field: :full_name, message: message}]} ->
-        {:error, :bad_request, Operately.I18n.ValidationErrors.member(:full_name, message), %{field: "full_name"}}
+      {:error, [%{field: :full_name, message: message, opts: opts}]} ->
+        {:error, :bad_request, Operately.I18n.ValidationErrors.member(:full_name, message, opts), %{field: "full_name"}}
 
       {:error, [%{message: "Email has already been taken"}]} ->
         {:error, :bad_request, Operately.I18n.ValidationErrors.translate({"Email has already been taken", []}), %{field: "email"}}
 
-      {:error, [%{message: message}]} ->
-        {:error, :bad_request, Operately.I18n.ValidationErrors.translate({message, []})}
+      {:error, [%{message: message, opts: opts}]} ->
+        {:error, :bad_request, Operately.I18n.ValidationErrors.translate({message, opts})}
 
       {:error, %LimitError{} = error} ->
         EnforceLimits.to_api_error(error)

@@ -8728,7 +8728,7 @@ msgid "Email"
 msgstr "E-mail"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:37
+#: lib/operately/i18n/validation_errors.ex:40
 msgid "Email can't be blank"
 msgstr "O e-mail não pode ficar em branco"
 
@@ -8753,8 +8753,8 @@ msgid "Email delivery isn’t configured. Contact your organization administrato
 msgstr "O envio de e-mails não está configurado. Entre em contato com o administrador da sua empresa para obter ajuda."
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:14
-#: lib/operately/i18n/validation_errors.ex:38
+#: lib/operately/i18n/validation_errors.ex:15
+#: lib/operately/i18n/validation_errors.ex:41
 msgid "Email has already been taken"
 msgstr "O e-mail já está em uso"
 
@@ -8765,12 +8765,12 @@ msgid "Email is already registered"
 msgstr "O e-mail já está cadastrado"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:39
+#: lib/operately/i18n/validation_errors.ex:42
 msgid "Email is invalid"
 msgstr "O e-mail é inválido"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:40
+#: lib/operately/i18n/validation_errors.ex:43
 msgid "Email is not valid"
 msgstr "O e-mail não é válido"
 
@@ -8785,9 +8785,21 @@ msgid "Email must be a valid email address"
 msgstr "Informe um endereço de e-mail válido"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:41
+#: lib/operately/i18n/validation_errors.ex:44
 msgid "Email must have the @ sign and no spaces"
 msgstr "O e-mail deve conter @ e não pode ter espaços"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:53
+msgid "Email should be at most %{count} character(s)"
+msgid_plural "Email should be at most %{count} character(s)"
+msgstr[0] "O e-mail deve ter no máximo %{count} caractere"
+msgstr[1] "O e-mail deve ter no máximo %{count} caracteres"
+
+#.elixir
+#: lib/operately/i18n/validation_errors.ex:51
+msgid "Email should be at most 0 character(s)"
+msgstr "O e-mail deve ter no máximo 0 caracteres"
 
 #.elixir
 #: lib/operately_web/api/mutations/create_email_activation_code.ex:34
@@ -11753,7 +11765,7 @@ msgid "Name"
 msgstr "Nome"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:42
+#: lib/operately/i18n/validation_errors.ex:45
 msgid "Name can't be blank"
 msgstr "O nome não pode ficar em branco"
 
@@ -17556,7 +17568,7 @@ msgid "This is the only time this value will be shown. Copy and store it securel
 msgstr "Este valor será exibido apenas uma vez. Copie-o e guarde-o em um local seguro."
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:13
+#: lib/operately/i18n/validation_errors.ex:14
 msgid "This item can't be moved into one of its subfolders"
 msgstr "Este item não pode ser movido para uma de suas subpastas"
 
@@ -17720,7 +17732,7 @@ msgid "This will revoke %{name}'s invitation. You can create a new invitation la
 msgstr "Isso revogará o convite para %{name}. Você poderá criar um novo convite depois, se necessário."
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:12
+#: lib/operately/i18n/validation_errors.ex:13
 msgid "This would create a circular reporting relationship"
 msgstr "Isso criaria uma relação de subordinação circular"
 
@@ -19984,7 +19996,7 @@ msgid "big-picture outcome"
 msgstr "resultado de visão geral"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:5
+#: lib/operately/i18n/validation_errors.ex:6
 msgid "can't be blank"
 msgstr "não pode ficar em branco"
 
@@ -20275,7 +20287,7 @@ msgstr "a descrição não pode ficar em branco"
 #~ msgstr ""
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:11
+#: lib/operately/i18n/validation_errors.ex:12
 msgid "did not change"
 msgstr "não foi alterado"
 
@@ -20285,7 +20297,7 @@ msgid "disconnected the project from the goal \"%{goal_name}\""
 msgstr "desconectou o projeto do objetivo \"%{goal_name}\""
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:10
+#: lib/operately/i18n/validation_errors.ex:11
 msgid "does not match password"
 msgstr "não coincide com a senha"
 
@@ -20460,7 +20472,7 @@ msgid "failed"
 msgstr "falhou"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:6
+#: lib/operately/i18n/validation_errors.ex:7
 msgid "has already been taken"
 msgstr "já está em uso"
 
@@ -20486,12 +20498,12 @@ msgid "intlRelativeDateTime"
 msgstr ""
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:7
+#: lib/operately/i18n/validation_errors.ex:8
 msgid "is invalid"
 msgstr "é inválido"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:8
+#: lib/operately/i18n/validation_errors.ex:9
 msgid "is not valid"
 msgstr "não é válido"
 
@@ -20541,7 +20553,7 @@ msgid "moved the task \"%{task_name}\""
 msgstr "moveu a tarefa \"%{task_name}\""
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:9
+#: lib/operately/i18n/validation_errors.ex:10
 msgid "must have the @ sign and no spaces"
 msgstr "deve conter @ e não pode ter espaços"
 
@@ -20709,38 +20721,38 @@ msgid "set the project's due date to %{date}"
 msgstr "definiu a data de conclusão do projeto para %{date}"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:28
+#: lib/operately/i18n/validation_errors.ex:29
 msgid "should be %{count} character(s)"
 msgid_plural "should be %{count} character(s)"
 msgstr[0] "deve ter %{count} caractere"
 msgstr[1] "deve ter %{count} caracteres"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:28
+#: lib/operately/i18n/validation_errors.ex:29
 msgid "should be 0 character(s)"
 msgstr "deve ter 0 caracteres"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:18
+#: lib/operately/i18n/validation_errors.ex:19
 msgid "should be at least %{count} character(s)"
 msgid_plural "should be at least %{count} character(s)"
 msgstr[0] "deve ter pelo menos %{count} caractere"
 msgstr[1] "deve ter pelo menos %{count} caracteres"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:18
+#: lib/operately/i18n/validation_errors.ex:19
 msgid "should be at least 0 character(s)"
 msgstr "deve ter pelo menos 0 caracteres"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:23
+#: lib/operately/i18n/validation_errors.ex:24
 msgid "should be at most %{count} character(s)"
 msgid_plural "should be at most %{count} character(s)"
 msgstr[0] "deve ter no máximo %{count} caractere"
 msgstr[1] "deve ter no máximo %{count} caracteres"
 
 #.elixir
-#: lib/operately/i18n/validation_errors.ex:23
+#: lib/operately/i18n/validation_errors.ex:24
 msgid "should be at most 0 character(s)"
 msgstr "deve ter no máximo 0 caracteres"
 
