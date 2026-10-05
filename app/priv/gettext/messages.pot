@@ -4301,7 +4301,13 @@ msgid "API tokens"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ProfilePage/index.tsx:147
+msgid "About"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:132
+#: ../turboui/src/ProfilePage/components/AboutMe.tsx:22
 msgid "About me"
 msgstr ""
 
@@ -4433,6 +4439,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Activity.tsx:9
 #: ../turboui/src/GoalPage/index.tsx:254
+#: ../turboui/src/ProfilePage/index.tsx:146
 #: ../turboui/src/ProjectPage/index.tsx:335
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
@@ -5281,6 +5288,11 @@ msgid "Assign task"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ProfilePage/index.tsx:127
+msgid "Assigned"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:196
 msgid "Assigned On"
 msgstr ""
@@ -5288,6 +5300,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:40
 msgid "Assigned goals and projects will appear here."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/index.tsx:76
+msgid "Assigned tasks will appear here."
 msgstr ""
 
 #.elixir
@@ -6549,7 +6566,19 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/PageDescription/index.tsx:136
+#: ../turboui/src/PeopleOrgChartPage/index.tsx:90
 msgid "Collapse"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PeopleOrgChartPage/index.tsx:87
+#: ../turboui/src/PeopleOrgChartPage/index.tsx:128
+msgid "Collapse reports for %{name}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/components/Colleagues.tsx:33
+msgid "Colleagues"
 msgstr ""
 
 #.frontend
@@ -6820,6 +6849,7 @@ msgstr ""
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:124
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
+#: ../turboui/src/ProfilePage/index.tsx:142
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:90
@@ -6980,6 +7010,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:38
 msgid "Connection Revoked"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/components/index.tsx:38
+msgid "Contact"
 msgstr ""
 
 #.frontend
@@ -8425,6 +8460,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:49
 #: ../turboui/src/ProfileEditPage/index.tsx:108
+#: ../turboui/src/ProfilePage/components/index.tsx:27
 msgid "Edit Profile"
 msgstr ""
 
@@ -8830,6 +8866,7 @@ msgstr ""
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
+#: assets/js/pages/ProfilePage/index.tsx:72
 #: assets/js/pages/ProjectPage/index.tsx:209
 #: assets/js/pages/ProjectPage/index.tsx:290
 #: assets/js/pages/ProjectPage/index.tsx:788
@@ -9071,6 +9108,13 @@ msgstr ""
 #: ../turboui/src/PageDescription/index.tsx:136
 msgid "Expand"
 msgstr ""
+
+#.frontend
+#: ../turboui/src/PeopleOrgChartPage/index.tsx:129
+msgid "Expand 1 report for %{name}"
+msgid_plural "Expand %{count} reports for %{name}"
+msgstr[0] ""
+msgstr[1] ""
 
 #.elixir
 #: lib/turbo_connect/plugs/parse_inputs.ex:160
@@ -10950,6 +10994,7 @@ msgstr ""
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:451
+#: assets/js/pages/ProfilePage/index.tsx:71
 #: assets/js/pages/SpacePage/page.tsx:118
 msgid "Loading..."
 msgstr ""
@@ -11141,6 +11186,11 @@ msgid "Manage trusted email domains"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ProfilePage/components/Colleagues.tsx:39
+msgid "Manager"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:109
 msgid "Managers have full access to resources in this space, including team and access management."
 msgstr ""
@@ -11209,6 +11259,11 @@ msgstr ""
 #: lib/operately/md/space.ex:46
 #: lib/operately/md/space.ex:54
 msgid "Members"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PeoplePage/index.tsx:21
+msgid "Members of %{company}"
 msgstr ""
 
 #.elixir
@@ -12670,6 +12725,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:40
+#: ../turboui/src/PeopleOrgChartPage/index.tsx:39
+#: assets/js/pages/PeopleOrgChartPage/page.tsx:16
 msgid "Org Chart"
 msgstr ""
 
@@ -12895,6 +12952,7 @@ msgid "Pause this project?"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ProfilePage/index.tsx:138
 #: ../turboui/src/SearchPage/index.tsx:344
 #: ../turboui/src/SmallStatusIndicator/constants.ts:22
 #: ../turboui/src/StatusBadge/index.tsx:119
@@ -12953,6 +13011,11 @@ msgid "Payment wasn't resolved in time. This company is now read-only, so collab
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ProfilePage/components/Colleagues.tsx:45
+msgid "Peers"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:28
 #: ../turboui/src/StatusBadge/index.tsx:159
 msgid "Pending"
@@ -12963,6 +13026,7 @@ msgstr ""
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
 #: ../turboui/src/CompanyNavigation/index.tsx:101
 #: ../turboui/src/SearchPage/filterOptions.ts:14
+#: assets/js/pages/PeoplePage/page.tsx:14
 #: lib/operately/md/task.ex:56
 msgid "People"
 msgstr ""
@@ -13406,6 +13470,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:48
 #: ../turboui/src/CompanyNavigation/User.tsx:40
+#: assets/js/pages/ProfilePage/index.tsx:43
 msgid "Profile"
 msgstr ""
 
@@ -13890,6 +13955,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:250
 msgid "Receive a daily email with your upcoming check-ins, reviews, and other work that needs your attention."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/index.tsx:160
+msgid "Recent activity"
 msgstr ""
 
 #.frontend
@@ -14571,6 +14641,11 @@ msgstr ""
 #.elixir
 #: lib/operately/md/goal.ex:139
 msgid "Reviewer: Not Assigned"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/index.tsx:134
+msgid "Reviewing"
 msgstr ""
 
 #.frontend
@@ -15353,6 +15428,12 @@ msgid "Show 1 more"
 msgid_plural "Show %{count} more"
 msgstr[0] ""
 msgstr[1] ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/components/Colleagues.tsx:72
+#: ../turboui/src/ProfilePage/components/Colleagues.tsx:97
+msgid "Show all"
+msgstr ""
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:93
@@ -16161,6 +16242,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
+#: ../turboui/src/ProfilePage/index.tsx:123
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchPage/filterOptions.ts:13
 #: ../turboui/src/SpaceKanbanPage/index.tsx:110
@@ -20570,4 +20652,10 @@ msgstr ""
 #: ../turboui/src/CompanyNavigation/index.tsx:189
 msgctxt "navigation"
 msgid "Company"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ProfilePage/components/Colleagues.tsx:80
+msgctxt "people"
+msgid "Reports"
 msgstr ""

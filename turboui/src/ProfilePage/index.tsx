@@ -1,5 +1,6 @@
 import type { TaskListInteraction } from "../RichEditor/taskLists";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   IconCircleCheck,
@@ -55,6 +56,7 @@ export namespace ProfilePage {
 }
 
 export function ProfilePage(props: ProfilePage.Props) {
+  const { t } = useTranslation();
   const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
 
   const workMapColumnOptions = React.useMemo(() => {
@@ -71,9 +73,9 @@ export function ProfilePage(props: ProfilePage.Props) {
 
   const zeroStateMessage = React.useMemo(() => {
     return match(tabs.active)
-      .with("tasks", () => "Assigned tasks will appear here.")
+      .with("tasks", () => t("Assigned tasks will appear here."))
       .otherwise(() => undefined);
-  }, [tabs.active]);
+  }, [tabs.active, t]);
 
   return (
     <PageNew title={props.title} size="fullwidth">
@@ -98,6 +100,7 @@ export function ProfilePage(props: ProfilePage.Props) {
 }
 
 function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item[]) {
+  const { t } = useTranslation();
   const { tasks, assigned, reviewing, paused, completed } = React.useMemo(() => {
     const tasks = workMap.filter((i) => i.type === "task");
 
@@ -117,13 +120,31 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
   }, [workMap, reviewerWorkMap]);
 
   const tabs = useTabs("tasks", [
-    { id: "tasks", label: "Tasks", icon: <IconChecklist size={14} />, count: tasks.length },
-    { id: "assigned", label: "Assigned", icon: <IconClipboardCheck size={14} />, count: assigned.length },
-    { id: "reviewing", label: "Reviewing", icon: <IconEye size={14} />, count: reviewing.length },
-    { id: "paused", label: "Paused", icon: <IconPlayerPause size={14} />, count: paused.length },
-    { id: "completed", label: "Completed", icon: <IconCircleCheck size={14} />, count: completed.length },
-    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
-    { id: "about", label: "About", icon: <IconUserCircle size={14} /> },
+    { id: "tasks", testId: "tasks", label: t("Tasks"), icon: <IconChecklist size={14} />, count: tasks.length },
+    {
+      id: "assigned",
+      testId: "assigned",
+      label: t("Assigned"),
+      icon: <IconClipboardCheck size={14} />,
+      count: assigned.length,
+    },
+    {
+      id: "reviewing",
+      testId: "reviewing",
+      label: t("Reviewing"),
+      icon: <IconEye size={14} />,
+      count: reviewing.length,
+    },
+    { id: "paused", testId: "paused", label: t("Paused"), icon: <IconPlayerPause size={14} />, count: paused.length },
+    {
+      id: "completed",
+      testId: "completed",
+      label: t("Completed"),
+      icon: <IconCircleCheck size={14} />,
+      count: completed.length,
+    },
+    { id: "activity", testId: "activity", label: t("Activity"), icon: <IconLogs size={14} /> },
+    { id: "about", testId: "about", label: t("About"), icon: <IconUserCircle size={14} /> },
   ]);
 
   return {
@@ -133,9 +154,10 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
 }
 
 function ActivityFeed(props: ProfilePage.Props) {
+  const { t } = useTranslation();
   return (
     <div className="p-4 max-w-5xl mx-auto my-6">
-      <div className="font-bold text-lg mb-4">Recent activity</div>
+      <div className="font-bold text-lg mb-4">{t("Recent activity")}</div>
       {props.activityFeed}
     </div>
   );
