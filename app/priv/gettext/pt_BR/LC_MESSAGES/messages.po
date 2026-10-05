@@ -3597,6 +3597,13 @@ msgid_plural "%{count} days after project starts"
 msgstr[0] "1 dia após o início do projeto"
 msgstr[1] "%{count} dias após o início do projeto"
 
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:160
+msgid "1 day overdue"
+msgid_plural "%{count} days overdue"
+msgstr[0] "Data de conclusão atrasada em 1 dia"
+msgstr[1] "Data de conclusão atrasada em %{count} dias"
+
 #.elixir
 #: lib/operately_email/check_in_overview.ex:61
 msgid "1 day until the deadline."
@@ -3746,6 +3753,13 @@ msgid "1 other person has access to this space"
 msgid_plural "%{count} other people have access to this space"
 msgstr[0] "1 outra pessoa tem acesso a este espaço"
 msgstr[1] "%{count} outras pessoas têm acesso a este espaço"
+
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:120
+msgid "1 outstanding item"
+msgid_plural "%{count} outstanding items"
+msgstr[0] "1 item pendente"
+msgstr[1] "%{count} itens pendentes"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:267
@@ -4486,6 +4500,7 @@ msgid "Active"
 msgstr "Ativo"
 
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:64
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:51
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:74
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:210
@@ -4601,6 +4616,11 @@ msgstr "Adicionar projeto"
 #: ../turboui/src/Reactions/index.tsx:451
 msgid "Add Reaction"
 msgstr "Adicionar reação"
+
+#.frontend
+#: ../turboui/src/HomePage/index.tsx:103
+msgid "Add Space"
+msgstr "Adicionar espaço"
 
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:282
@@ -4995,10 +5015,30 @@ msgstr "Adicionou você ao espaço %{spaceName}"
 msgid "Added: %{documentName}"
 msgstr "Adicionou: %{documentName}"
 
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:130
+msgid "Adding or restoring people and uploading files are paused until this company is back within its plan limits. Contact an admin or owner."
+msgstr "A adição ou restauração de pessoas e o envio de arquivos estão suspensos até que esta empresa volte a ficar dentro dos limites do plano. Entre em contato com um administrador ou proprietário."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:133
+msgid "Adding or restoring people and uploading files are paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
+msgstr "A adição ou restauração de pessoas e o envio de arquivos estão suspensos até que esta empresa volte a ficar dentro dos limites do plano. Revise o faturamento para alterar o plano ou reduzir o uso."
+
 #.elixir
 #: lib/operately_email/emails/billing_limit_reached_email.ex:54
 msgid "Adding or restoring people is blocked until the plan is upgraded."
 msgstr "A adição ou restauração de pessoas está bloqueada até que o plano seja atualizado."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:139
+msgid "Adding or restoring people is paused until this company is back within its plan limits. Contact an admin or owner."
+msgstr "A adição ou restauração de pessoas está suspensa até que esta empresa volte a ficar dentro dos limites do plano. Entre em contato com um administrador ou proprietário."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:142
+msgid "Adding or restoring people is paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
+msgstr "A adição ou restauração de pessoas está suspensa até que esta empresa volte a ficar dentro dos limites do plano. Revise o faturamento para alterar o plano ou reduzir o uso."
 
 #.elixir
 #: lib/operately_email/emails/billing_near_limit_warning_email.ex:66
@@ -5079,6 +5119,11 @@ msgstr "Todos os espaços"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:97
 msgid "All activity emails wait for the batch window, are grouped together, and sent as a single email."
 msgstr "Todas as atividades são agrupadas em um único e-mail, enviado ao final do intervalo de agrupamento."
+
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:121
+msgid "All caught up"
+msgstr "Tudo em dia"
 
 #.frontend
 #: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:28
@@ -5717,9 +5762,25 @@ msgid "Billing needs attention by %{date} or this company will become read-only.
 msgstr "Regularize o pagamento até %{date} para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:120
+msgid "Billing needs attention by <date/> or this company will become read-only."
+msgstr "Regularize o pagamento até <date/> para evitar que esta empresa fique em modo somente leitura."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:115
+msgid "Billing needs attention by <date/> or this company will become read-only. Contact an admin or owner."
+msgstr "Regularize o pagamento até <date/> para evitar que esta empresa fique em modo somente leitura. Entre em contato com um administrador ou proprietário."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:109
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:311
 msgid "Billing needs attention soon or this company will become read-only."
 msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:108
+msgid "Billing needs attention soon or this company will become read-only. Contact an admin or owner."
+msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura. Entre em contato com um administrador ou proprietário."
 
 #.elixir
 #: lib/operately_web/api/mutations/mark_blob_uploaded.ex:35
@@ -5784,6 +5845,16 @@ msgstr "Ao clicar no botão abaixo:"
 #: assets/js/features/auth/AgreeToTosAndPp.tsx:9
 msgid "By continuing, you agree to the <tos>Terms of Service</tos> and <pp>Privacy Policy</pp>."
 msgstr "Ao continuar, você concorda com os <tos>Termos de Serviço</tos> e a <pp>Política de Privacidade</pp>."
+
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:202
+msgid "CHAMPION"
+msgstr "CHAMPION"
+
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:198
+msgid "CONTRIBUTOR"
+msgstr "CONTRIBUIDOR"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:238
@@ -6009,6 +6080,11 @@ msgstr "Não encontrou seu código? Verifique a pasta de spam ou solicite outro.
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:224
 msgid "Can’t find your code? Check your spam folder."
 msgstr "Não encontrou seu código? Verifique a pasta de spam."
+
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:136
+msgid "Catch up on work that's due soon or waiting for your review."
+msgstr "Confira o trabalho com data de conclusão próxima ou aguardando sua revisão."
 
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:16
@@ -7313,6 +7389,11 @@ msgid "Correct the value recorded on <date>%{date}</date>. The previous number s
 msgstr "Corrija o valor registrado em <date>%{date}</date>. O número anterior permanece visível nesta atualização."
 
 #.frontend
+#: assets/js/pages/HomePage/index.tsx:69
+msgid "Could not delete feed item"
+msgstr "Não foi possível excluir o item do feed"
+
+#.frontend
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
 msgid "Could not save tool settings"
 msgstr "Não foi possível salvar as configurações das ferramentas"
@@ -8206,6 +8287,16 @@ msgid "Discussions"
 msgstr "Discussões"
 
 #.frontend
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:53
+msgid "Dismiss"
+msgstr "Dispensar"
+
+#.frontend
+#: ../turboui/src/SiteMessageBanner/index.tsx:32
+msgid "Dismiss message"
+msgstr "Dispensar mensagem"
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:35
 msgid "Display"
 msgstr "Exibição"
@@ -8483,11 +8574,15 @@ msgstr[0] "Data de conclusão em 1 dia"
 msgstr[1] "Data de conclusão em %{count} dias"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:163
 #: lib/operately_email/emails/assignments_email.ex:211
 msgid "Due today"
 msgstr "Data de conclusão: hoje"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:165
 #: lib/operately_email/emails/assignments_email.ex:214
 msgid "Due tomorrow"
 msgstr "Data de conclusão: amanhã"
@@ -9015,6 +9110,7 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/AccountAppearancePage/index.tsx:54
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:71
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
+#: assets/js/pages/HomePage/index.tsx:74
 #: assets/js/pages/MilestonePage/index.tsx:74
 #: assets/js/pages/MilestonePage/useComments.tsx:78
 #: assets/js/pages/ProfilePage/index.tsx:72
@@ -10183,6 +10279,21 @@ msgid "Goals & Projects"
 msgstr "Objetivos & Projetos"
 
 #.frontend
+#: ../turboui/src/HomePage/index.tsx:42
+msgid "Good afternoon, %{name}!"
+msgstr "Boa tarde, %{name}!"
+
+#.frontend
+#: ../turboui/src/HomePage/index.tsx:44
+msgid "Good evening, %{name}!"
+msgstr "Boa noite, %{name}!"
+
+#.frontend
+#: ../turboui/src/HomePage/index.tsx:40
+msgid "Good morning, %{name}!"
+msgstr "Bom dia, %{name}!"
+
+#.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:257
 msgid "Grant Access"
 msgstr "Conceder acesso"
@@ -10290,6 +10401,7 @@ msgstr "Há algo de errado com este link. Confira o endereço ou peça um novo l
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
 #: ../turboui/src/CompanyNavigation/index.tsx:85
 #: ../turboui/src/CompanyNavigation/index.tsx:185
+#: ../turboui/src/HomePage/index.tsx:20
 #: ../turboui/src/ProfileEditPage/index.tsx:98
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
 #: assets/js/pages/AccountAppearancePage/index.tsx:27
@@ -10621,6 +10733,11 @@ msgstr "Convidar colaborador"
 #: ../turboui/src/InviteMemberForm/index.tsx:102
 msgid "Invite Member"
 msgstr "Convidar membro"
+
+#.frontend
+#: ../turboui/src/HomePage/index.tsx:122
+msgid "Invite People"
+msgstr "Convidar pessoas"
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:113
@@ -11258,6 +11375,8 @@ msgid "Log update"
 msgstr "Registrar atualização"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:220
 #: lib/operately_email/emails/assignments_email.ex:108
 msgid "Log update for %{name}"
 msgstr "Registrar atualização de %{name}"
@@ -11370,6 +11489,11 @@ msgstr "Gerencie como você entra e concede acesso ao Operately."
 #: ../turboui/src/CompanyAdminPage/index.tsx:122
 msgid "Manage plan"
 msgstr "Gerenciar plano"
+
+#.frontend
+#: ../turboui/src/HomePage/index.tsx:70
+msgid "Manage projects, track goals, and organize your team's work."
+msgstr "Gerencie projetos, acompanhe objetivos e organize o trabalho da sua equipe."
 
 #.frontend
 #: assets/js/pages/ResourceHubDocumentPage/Options.tsx:35
@@ -11686,6 +11810,11 @@ msgid "More formatting options"
 msgstr "Mais opções de formatação"
 
 #.frontend
+#: ../turboui/src/ReviewPage/index.tsx:168
+msgid "More information about %{title}"
+msgstr "Mais informações sobre %{title}"
+
+#.frontend
 #: ../turboui/src/SearchPage/RefineControls.tsx:55
 msgid "Most recent"
 msgstr "Mais recentes"
@@ -11786,6 +11915,11 @@ msgstr "Minha conta"
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:312
 msgid "My Role"
 msgstr "Minha função"
+
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:99
+msgid "My upcoming work"
+msgstr "Meu próximo trabalho"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:93
@@ -12034,6 +12168,11 @@ msgid "New project template"
 msgstr "Novo template de projeto"
 
 #.frontend
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:35
+msgid "New release"
+msgstr "Nova versão"
+
+#.frontend
 #: ../turboui/src/CompanyNavigation/NewDropdown.tsx:46
 msgid "New space"
 msgstr "Novo espaço"
@@ -12140,6 +12279,11 @@ msgstr "Nenhum responsável"
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:523
 msgid "No assignees found"
 msgstr "Nenhum responsável encontrado"
+
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:195
+msgid "No assignments, check-ins, milestones, or reviews need your attention right now."
+msgstr "Nenhuma atribuição, check-in, marco ou revisão precisa da sua atenção no momento."
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:168
@@ -12487,6 +12631,11 @@ msgstr "Nenhum espaço selecionado"
 #: ../turboui/src/SpaceField/index.tsx:233
 msgid "No spaces found."
 msgstr "Nenhum espaço encontrado."
+
+#.frontend
+#: ../turboui/src/HomePage/SpacesZeroState.tsx:11
+msgid "No spaces yet"
+msgstr "Nenhum espaço ainda"
 
 #.frontend
 #: ../turboui/src/StatusSelector/index.tsx:61
@@ -13266,6 +13415,7 @@ msgid "Payment issue detected"
 msgstr "Problema no pagamento detectado"
 
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:46
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:172
 msgid "Payment issue requires attention"
 msgstr "Problema no pagamento requer atenção"
@@ -13281,6 +13431,12 @@ msgid "Payment method unavailable"
 msgstr "Forma de pagamento indisponível"
 
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:99
+msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until an admin or owner updates billing."
+msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo somente leitura, por isso o trabalho colaborativo está pausado até que um administrador ou proprietário atualize o faturamento."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:102
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:181
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated."
 msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo somente leitura, por isso o trabalho colaborativo está pausado até a regularização do faturamento."
@@ -13487,6 +13643,7 @@ msgstr "Tente novamente"
 #: assets/js/pages/AccountMcpConnectionsPage/index.tsx:41
 #: assets/js/pages/CompanyAdminRestoreSuspendedPeoplePage/index.tsx:185
 #: assets/js/pages/CompanyExportPage/index.tsx:31
+#: assets/js/pages/HomePage/index.tsx:69
 #: assets/js/pages/SpacePage/page.tsx:186
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
 msgid "Please try again."
@@ -14038,6 +14195,11 @@ msgstr "Resultados da busca rápida"
 #: ../turboui/src/RichEditor/components/BlockquoteButton.tsx:13
 msgid "Quote"
 msgstr "Citação"
+
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:193
+msgid "REVIEWER"
+msgstr "REVISOR"
 
 #.elixir
 #: lib/operately_web/mcp/plugs/rate_limit_oauth.ex:58
@@ -14848,6 +15010,8 @@ msgstr "A data de início voltou ao valor anterior."
 #.frontend
 #: ../turboui/src/CompanyNavigation/Review.tsx:18
 #: ../turboui/src/CompanyNavigation/index.tsx:97
+#: ../turboui/src/ReviewPage/index.tsx:83
+#: ../turboui/src/ReviewPage/index.tsx:132
 msgid "Review"
 msgstr "Revisão"
 
@@ -14862,12 +15026,18 @@ msgid "Review & Close Project"
 msgstr "Revisar e encerrar projeto"
 
 #.frontend
+#: ../turboui/src/ReviewPage/index.tsx:83
+msgid "Review (%{count})"
+msgstr "Revisão (%{count})"
+
+#.frontend
 #: ../turboui/src/AccountSecurityPage/index.tsx:51
 msgid "Review and revoke AI client connections"
 msgstr "Revise e revogue conexões de clientes de IA"
 
 #.elixir
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:82
 #: assets/js/models/billing/memberLimitGuidance.ts:44
 #: lib/operately_email/emails/billing_limit_reached_email.ex:36
 #: lib/operately_email/emails/billing_near_limit_warning_email.ex:40
@@ -14885,11 +15055,15 @@ msgid "Review cancellation"
 msgstr "Revisar cancelamento"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:214
 #: lib/operately_email/emails/assignments_email.ex:105
 msgid "Review goal progress update"
 msgstr "Revisar atualização de progresso do objetivo"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:218
 #: lib/operately_email/emails/assignments_email.ex:107
 msgid "Review goal retrospective"
 msgstr "Revisar retrospectiva do objetivo"
@@ -14900,11 +15074,15 @@ msgid "Review paid plans and continue to checkout when you're ready."
 msgstr "Confira os planos pagos e continue para o pagamento quando quiser."
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:216
 #: lib/operately_email/emails/assignments_email.ex:106
 msgid "Review project retrospective"
 msgstr "Revisar retrospectiva do projeto"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:212
 #: lib/operately_email/emails/assignments_email.ex:103
 msgid "Review weekly check-in"
 msgstr "Revisar check-in semanal"
@@ -15993,6 +16171,11 @@ msgid "Spaces help organize projects, goals, and team members in one place."
 msgstr "Os espaços ajudam a organizar projetos, objetivos e membros da equipe em um só lugar."
 
 #.frontend
+#: ../turboui/src/HomePage/SpacesZeroState.tsx:13
+msgid "Spaces will appear here when someone grants you access to them."
+msgstr "Os espaços aparecerão aqui quando alguém conceder acesso a você."
+
+#.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:249
 #: ../turboui/src/GoalTargetList/index.tsx:374
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:63
@@ -16169,6 +16352,11 @@ msgid "Status: %{status}"
 msgstr "Status: %{status}"
 
 #.frontend
+#: ../turboui/src/HomePage/index.tsx:88
+msgid "Stay up to date with your team's progress."
+msgstr "Acompanhe o progresso da sua equipe."
+
+#.frontend
 #: ../turboui/src/OnboardingWizard/WizardLayout.tsx:81
 msgid "Step %{stepNumber} of %{totalSteps}"
 msgstr "Etapa %{stepNumber} de %{totalSteps}"
@@ -16205,6 +16393,7 @@ msgid "Storage limit reached"
 msgstr "Limite de armazenamento atingido"
 
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:64
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:53
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:75
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:214
@@ -16235,11 +16424,15 @@ msgid "Submit check-in"
 msgstr "Enviar check-in"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:214
 #: lib/operately_email/emails/assignments_email.ex:104
 msgid "Submit goal progress update"
 msgstr "Enviar atualização de progresso do objetivo"
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/AssignmentsList.tsx:212
 #: lib/operately_email/emails/assignments_email.ex:102
 msgid "Submit weekly check-in"
 msgstr "Enviar check-in semanal"
@@ -17503,6 +17696,12 @@ msgid "This company is now on %{plan}."
 msgstr "Esta empresa agora está no plano %{plan}."
 
 #.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:43
+msgid "This company is over its plan limits"
+msgstr "Esta empresa excedeu os limites do plano"
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:45
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:180
 msgid "This company is read-only"
 msgstr "Esta empresa está em modo somente leitura"
@@ -18589,6 +18788,16 @@ msgstr[1] "Enviando arquivos"
 msgid "Uploading file..."
 msgstr "Enviando arquivo..."
 
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:147
+msgid "Uploading files is paused until this company is back within its plan limits. Contact an admin or owner."
+msgstr "O envio de arquivos está suspenso até que esta empresa volte a ficar dentro dos limites do plano. Entre em contato com um administrador ou proprietário."
+
+#.frontend
+#: ../turboui/src/BillingDangerBanner/index.tsx:148
+msgid "Uploading files is paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
+msgstr "O envio de arquivos está suspenso até que esta empresa volte a ficar dentro dos limites do plano. Revise o faturamento para alterar o plano ou reduzir o uso."
+
 #.elixir
 #: lib/operately_email/emails/billing_near_limit_warning_email.ex:70
 msgid "Uploading files will be blocked once the storage limit is reached."
@@ -19002,6 +19211,11 @@ msgstr "Ver detalhes das permissões"
 msgid "View profile"
 msgstr "Ver perfil"
 
+#.frontend
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:45
+msgid "View release"
+msgstr "Ver versão"
+
 #.elixir
 #: lib/operately_email/templates/goal_description_changed.text.eex:4
 msgid "View the goal to read the updated details."
@@ -19273,6 +19487,11 @@ msgid "What's new"
 msgstr "Novidades"
 
 #.frontend
+#: ../turboui/src/HomePage/index.tsx:88
+msgid "What's new?"
+msgstr "O que há de novo?"
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:66
 #: assets/js/pages/CompanyAdminTrustedEmailDomainsPage/page.tsx:26
 msgid "What's this?"
@@ -19383,6 +19602,11 @@ msgstr "Mapa de trabalho"
 #: lib/operately/md/workmap.ex:5
 msgid "Work Map Legend"
 msgstr "Legenda do mapa de trabalho"
+
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:100
+msgid "Work assigned to you with future due dates, sorted chronologically."
+msgstr "Trabalho atribuído a você com datas de conclusão futuras, em ordem cronológica."
 
 #.frontend
 #: ../turboui/src/Forms/SelectStatus.tsx:175
@@ -19698,6 +19922,8 @@ msgid "You'll receive the package here when the job finishes."
 msgstr "Você receberá o pacote aqui quando o processo terminar."
 
 #.elixir
+#.frontend
+#: ../turboui/src/ReviewPage/index.tsx:193
 #: lib/operately_email/mailers/digest_mailer.ex:56
 msgid "You're all caught up"
 msgstr "Você está em dia"
@@ -19727,6 +19953,11 @@ msgstr "Você está inscrito"
 #: assets/js/pages/DiscussionDraftsPage/index.tsx:70
 msgid "Your Drafts"
 msgstr "Seus rascunhos"
+
+#.frontend
+#: ../turboui/src/HomePage/index.tsx:69
+msgid "Your Operately Spaces"
+msgstr "Seus espaços no Operately"
 
 #.elixir
 #: lib/operately_email/templates/email_changed.text.eex:1

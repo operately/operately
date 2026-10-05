@@ -1,14 +1,16 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 export function SpacesZeroState() {
+  const { t } = useTranslation();
   return (
     <div className="bg-surface-base shadow rounded-2xl">
       <div className="w-full p-8 sm:p-10 dark:bg-stone-900/20 dark:rounded-2xl" data-test-id="spaces-zero-state">
         <div className="flex flex-col items-center text-center">
           <SpacesZeroStateIllustration />
-          <h3 className="-mt-5 text-xl font-bold text-content-accent dark:text-content-base">No spaces yet</h3>
+          <h3 className="-mt-5 text-xl font-bold text-content-accent dark:text-content-base">{t("No spaces yet")}</h3>
           <p className="mt-2 max-w-xl text-sm text-content-dimmed">
-            Spaces will appear here when someone grants you access to them.
+            {t("Spaces will appear here when someone grants you access to them.")}
           </p>
         </div>
       </div>

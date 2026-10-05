@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { UnstyledButton } from "../Button/UnstalyedButton";
 
 import { PrimaryButton } from "../Button";
 import { IconSparkles, IconX } from "../icons";
@@ -15,6 +17,8 @@ export namespace ProductReleaseAnnouncement {
 }
 
 export function ProductReleaseAnnouncement({ release, onDismiss }: ProductReleaseAnnouncement.Props) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="fixed bottom-6 right-6 z-40 w-[min(100%-2rem,24rem)]"
@@ -29,25 +33,30 @@ export function ProductReleaseAnnouncement({ release, onDismiss }: ProductReleas
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-content-dimmed">New release</p>
+            <p className="text-xs text-content-dimmed">{t("New release")}</p>
             <p className="mt-0.5 text-sm font-medium text-content-base line-clamp-3">{release.title}</p>
 
             <div className="mt-3">
-              <PrimaryButton size="sm" linkTo={PRODUCT_RELEASES_PAGE_URL} linkTarget="_blank" testId="product-release-read-more">
-                View release
+              <PrimaryButton
+                size="sm"
+                linkTo={PRODUCT_RELEASES_PAGE_URL}
+                linkTarget="_blank"
+                testId="product-release-read-more"
+              >
+                {t("View release")}
               </PrimaryButton>
             </div>
           </div>
 
-          <button
+          <UnstyledButton
             type="button"
             className="shrink-0 rounded-md p-1 text-content-subtle transition-colors hover:bg-surface-dimmed hover:text-content-base"
-            aria-label="Dismiss"
-            data-test-id="product-release-toast-dismiss"
+            ariaLabel={t("Dismiss")}
+            testId="product-release-toast-dismiss"
             onClick={onDismiss}
           >
             <IconX size={16} />
-          </button>
+          </UnstyledButton>
         </div>
       </div>
     </div>
