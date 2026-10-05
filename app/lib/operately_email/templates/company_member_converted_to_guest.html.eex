@@ -1,13 +1,13 @@
-<%= title("#{short_name(@author)} converted your account in #{@company.name} to an outside collaborator") %>
+<%= title(gettext("%{author} converted your account in %{company_name} to an outside collaborator", author: short_name(@author), company_name: @company.name)) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to.
+  <%= gettext("Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to.") %>
 <% end %>
 
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@login_url, "Log in to Operately") %>
+  <%= cta_button(@login_url, gettext("Log in to Operately")) %>
 <% end %>

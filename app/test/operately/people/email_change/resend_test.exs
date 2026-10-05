@@ -55,7 +55,7 @@ defmodule Operately.People.EmailChange.ResendTest do
     request = new_inbox_request(ctx.account)
     age_sends(ctx.account)
 
-    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _ -> {:error, :smtp} end do
+    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _, _ -> {:error, :smtp} end do
       assert {:error, :delivery_failed} = EmailChange.resend(ctx.account, request.id)
     end
 

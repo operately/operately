@@ -7,7 +7,7 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorker do
   alias Operately.Companies
   alias OperatelyEmail.Emails.BillingLimitReachedEmail
 
-  def perform(%Oban.Job{args: %{"company_id" => company_id, "limit_key" => limit_key, "current_usage" => current_usage, "limit" => limit}}) do
+  def perform(%Oban.Job{args: %{"company_id" => company_id, "limit_key" => limit_key, "current_usage" => current_usage, "limit" => limit}} = job) do
     with {:ok, limit_key} <- parse_limit_key(limit_key),
          {:ok, current_usage} <- parse_integer(current_usage),
          {:ok, limit} <- parse_integer(limit) do
@@ -15,7 +15,7 @@ defmodule Operately.Billing.LimitBreachAlertEmailWorker do
 
       company
       |> LimitBreachAlerting.recipients()
-      |> BillingLimitReachedEmail.send(company, LimitBreachAlerting.snapshot(limit_key, current_usage, limit))
+      |> BillingLimitReachedEmail.send(company, LimitBreachAlerting.snapshot(limit_key, current_usage, limit), job)
       |> case do
         {:ok, _result} -> :ok
         {:error, reason} -> {:error, reason}

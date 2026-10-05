@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Api.EmailChanges.ResendTest do
     {:ok, request} = Operately.Support.EmailChange.Helpers.request_new_email(ctx.account, "new@example.com")
     Repo.update_all(Operately.People.EmailChangeRequest, set: [sent_at: DateTime.utc_now() |> DateTime.add(-61) |> DateTime.truncate(:second)])
 
-    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _ -> {:error, :smtp} end do
+    with_mock OperatelyEmail.Emails.EmailChangeCodeEmail, send: fn _, _, _ -> {:error, :smtp} end do
       assert {200, %{outcome: "delivery_failed", state: state}} = mutation(ctx.conn, [:email_changes, :resend], %{request_id: request.id})
       assert state.pending.id == request.id
       assert state.pending.stage == "new_email"

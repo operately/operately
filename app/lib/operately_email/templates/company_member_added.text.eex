@@ -1,5 +1,5 @@
-<%= short_name(@author) %> <%= @action %>
+<%= @headline %>
 
-You now have access to <%= @company.name %> as a company member.
+<%= gettext("You now have access to %{company_name} as a company member.", company_name: @company.name) %>
 
 <%= @button_text %>: <%= @button_url %>

@@ -1,4 +1,5 @@
   defmodule OperatelyEmail.Emails.CompanyOwnersAddingEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
     import OperatelyEmail.Mailers.ActivityMailer
 
     alias Operately.Repo
@@ -15,7 +16,7 @@
       |> new()
       |> from(author)
       |> to(person)
-      |> subject(where: company.name, who: author, action: "promoted you to an account owner")
+      |> subject(gettext("(%{company_name}) %{author} promoted you to an account owner", company_name: company.name, author: Operately.People.Person.short_name(author)))
       |> assign(:author, author)
       |> assign(:link, link)
       |> render("company_owners_adding")

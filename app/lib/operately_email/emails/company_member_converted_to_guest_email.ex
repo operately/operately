@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.CompanyMemberConvertedToGuestEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -14,7 +15,7 @@ defmodule OperatelyEmail.Emails.CompanyMemberConvertedToGuestEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: "converted your account to an outside collaborator")
+    |> subject(gettext("(%{company_name}) %{author} converted your account to an outside collaborator", company_name: company.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:company, company)
     |> assign(:login_url, login_url)

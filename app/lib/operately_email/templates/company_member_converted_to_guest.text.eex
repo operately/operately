@@ -1,5 +1,5 @@
-<%= short_name(@author) %> converted your account in <%= @company.name %> to an outside collaborator.
+<%= gettext("%{author} converted your account in %{company_name} to an outside collaborator.", author: short_name(@author), company_name: @company.name) %>
 
-Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to.
+<%= gettext("Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to.") %>
 
-Log in to Operately: <%= @login_url %>
+<%= gettext("Log in to Operately:") %> <%= @login_url %>

@@ -671,6 +671,12 @@ msgid "%{author} added you as a %{role} on %{project_name}"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/emails/company_member_added_email.ex:46
+#: lib/operately_web/email_preview/previews/company_member_added.ex:27
+msgid "%{author} added you as a company member"
+msgstr ""
+
+#.elixir
 #: lib/operately_email/templates/project_contributors_addition.html.eex:1
 #: lib/operately_email/templates/project_contributors_addition.text.eex:1
 msgid "%{author} added you as a contributor on %{project_name}"
@@ -1225,6 +1231,16 @@ msgstr ""
 msgid "%{author} converted a team member to an outside collaborator"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/company_member_converted_to_guest.html.eex:1
+msgid "%{author} converted your account in %{company_name} to an outside collaborator"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_member_converted_to_guest.text.eex:1
+msgid "%{author} converted your account in %{company_name} to an outside collaborator."
+msgstr ""
+
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:43
 msgid "%{author} created a KPI"
@@ -1759,6 +1775,21 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/GuestInvited/index.tsx:45
 msgid "%{author} invited an outside collaborator"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/guest_invited.html.eex:1
+msgid "%{author} invited you as an outside collaborator to %{company_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/guest_invited.text.eex:1
+msgid "%{author} invited you as an outside collaborator to %{company_name}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_added_email.ex:47
+msgid "%{author} invited you to join %{company_name}"
 msgstr ""
 
 #.frontend
@@ -2603,6 +2634,36 @@ msgid "%{company_name} - Your work for today"
 msgstr ""
 
 #.elixir
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:52
+msgid "%{company_name} has %{usage} of %{limit} active members on the Free plan."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/billing_limit_reached_email.ex:28
+msgid "%{company_name} has reached its Free plan member limit"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/billing_limit_reached_email.ex:47
+msgid "%{company_name} has reached its member limit: %{usage} of %{limit} active members."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:28
+msgid "%{company_name} is near its Free plan member limit"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:32
+msgid "%{company_name} is near its Free plan storage limit"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:59
+msgid "%{company_name} is using %{usage} of %{limit} on the Free plan."
+msgstr ""
+
+#.elixir
 #: lib/operately_email/emails/assignments_email.ex:31
 msgid "%{company_name}: Your work for today"
 msgstr ""
@@ -2733,7 +2794,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.elixir
-#: lib/operately_email/templates.ex:93
+#: lib/operately_email/templates.ex:100
 msgid "%{name} (1 update)"
 msgid_plural "%{name} (%{count} updates)"
 msgstr[0] ""
@@ -2891,6 +2952,57 @@ msgstr ""
 #.elixir
 #: lib/operately_email/emails/task_adding_email.ex:75
 msgid "%{who} mentioned you in the description for \"%{task_name}\""
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_added_email.ex:42
+#: lib/operately_web/email_preview/previews/company_member_added.ex:23
+msgid "(%{company_name}) %{author} added you as a company member"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_converted_to_guest_email.ex:18
+msgid "(%{company_name}) %{author} converted your account to an outside collaborator"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_admin_added_email.ex:17
+msgid "(%{company_name}) %{author} granted you admin privileges"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_restoring_email.ex:20
+msgid "(%{company_name}) %{author} has restored your account"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_owner_removing_email.ex:20
+msgid "(%{company_name}) %{author} has revoked your account owner status"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/guest_invited_email.ex:20
+msgid "(%{company_name}) %{author} invited you as an outside collaborator"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_added_email.ex:44
+msgid "(%{company_name}) %{author} invited you to join %{company_name}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_owners_adding_email.ex:19
+msgid "(%{company_name}) %{author} promoted you to an account owner"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_admin_removed_email.ex:17
+msgid "(%{company_name}) %{author} revoked your admin privileges"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:23
+msgid "(%{company_name}) %{author} updated your access level"
 msgstr ""
 
 #.elixir
@@ -4021,6 +4133,16 @@ msgstr ""
 msgid "<version>%{version}</version> available"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/current_email_verification.text.eex:3
+msgid "A change to your Operately email was requested. The proposed new address is %{email}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/current_email_verification.html.eex:4
+msgid "A change to your Operately email was requested. The proposed new address is <email/>."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:35
 msgid "A new invitation URL will be generated for %{name}."
@@ -4721,6 +4843,16 @@ msgstr ""
 msgid "Added: %{documentName}"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/emails/billing_limit_reached_email.ex:54
+msgid "Adding or restoring people is blocked until the plan is upgraded."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:66
+msgid "Adding or restoring people will be blocked once the member limit is reached."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/GoalAddForm/index.tsx:76
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:82
@@ -4732,8 +4864,10 @@ msgstr ""
 msgid "Adjust how Operately looks for you"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:36
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:38
 msgid "Admin Access"
 msgstr ""
 
@@ -6159,6 +6293,7 @@ msgstr ""
 msgid "Column deleted"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:40
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:137
@@ -6168,6 +6303,7 @@ msgstr ""
 #: assets/js/features/Permissions/index.tsx:26
 #: assets/js/features/Permissions/index.tsx:48
 #: assets/js/features/Permissions/index.tsx:59
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:36
 msgid "Comment Access"
 msgstr ""
 
@@ -6486,6 +6622,22 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerifyNewEmailStep.tsx:16
 msgid "Confirm email change"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_activation_code.html.eex:1
+msgid "Confirm your email address"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_activation_code.text.eex:1
+msgid "Confirm your email address. Your confirmation code is %{code}. Enter it in Operately to confirm your email address or finish signing in."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_change_code.html.eex:1
+#: lib/operately_email/templates/email_change_code.text.eex:1
+msgid "Confirm your new email address"
 msgstr ""
 
 #.frontend
@@ -7846,6 +7998,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:38
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:136
@@ -7855,6 +8008,7 @@ msgstr ""
 #: assets/js/features/Permissions/index.tsx:33
 #: assets/js/features/Permissions/index.tsx:47
 #: assets/js/features/Permissions/index.tsx:58
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:37
 msgid "Edit Access"
 msgstr ""
 
@@ -8158,6 +8312,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:47
 msgid "Enter the six-character code from your email."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_change_code.html.eex:4
+msgid "Enter this code in Operately to change your account email. It expires in 5 minutes."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/current_email_verification.html.eex:8
+msgid "Enter this code in Operately to verify your current inbox. It expires in 5 minutes."
 msgstr ""
 
 #.frontend
@@ -9081,6 +9245,7 @@ msgstr ""
 msgid "From <old>%{oldName}</old> to <new>%{newName}</new>"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:34
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:135
@@ -9090,6 +9255,7 @@ msgstr ""
 #: assets/js/features/Permissions/index.tsx:40
 #: assets/js/features/Permissions/index.tsx:46
 #: assets/js/features/Permissions/index.tsx:57
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:39
 msgid "Full Access"
 msgstr ""
 
@@ -9397,6 +9563,25 @@ msgstr ""
 msgid "If the outside collaborator already has an account, they will be added to your company as an outside collaborator. If they don't have an account, we'll send them an email with an invitation link, and you'll get the same link here to share if needed. The link will be valid for 24 hours."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/email_changed.html.eex:9
+#: lib/operately_email/templates/email_changed.text.eex:4
+msgid "If you didn’t make this change, contact your organization administrator for help."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/current_email_verification.html.eex:15
+#: lib/operately_email/templates/current_email_verification.text.eex:9
+#: lib/operately_email/templates/email_change_code.html.eex:11
+#: lib/operately_email/templates/email_change_code.text.eex:6
+msgid "If you didn’t request this change, ignore this email. Don’t share this code with anyone."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_activation_code.html.eex:20
+msgid "If you didn’t request this email, there’s nothing to worry about — you can safely ignore it."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:45
 msgid "If you ever need a hand or want to talk shop, email me at marko@operately.com and I'll reply."
@@ -9615,6 +9800,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:80
 msgid "Join %{companyName}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_added_email.ex:50
+msgid "Join %{company_name}"
 msgstr ""
 
 #.frontend
@@ -9895,6 +10085,12 @@ msgstr ""
 
 #.elixir
 #: lib/operately_email/templates/comment_added.text.eex:3
+#: lib/operately_email/templates/company_admin_added.text.eex:3
+#: lib/operately_email/templates/company_admin_removed.text.eex:3
+#: lib/operately_email/templates/company_member_restoring.text.eex:3
+#: lib/operately_email/templates/company_members_permissions_edited.text.eex:6
+#: lib/operately_email/templates/company_owner_removing.text.eex:3
+#: lib/operately_email/templates/company_owners_adding.text.eex:3
 #: lib/operately_email/templates/discussion_comment_submitted.text.eex:3
 #: lib/operately_email/templates/discussion_posting.text.eex:3
 #: lib/operately_email/templates/goal_check_in_commented.text.eex:3
@@ -10031,6 +10227,20 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:121
 msgid "Log Out"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/company_member_added_email.ex:49
+#: lib/operately_email/templates/company_member_converted_to_guest.html.eex:12
+#: lib/operately_email/templates/guest_invited.html.eex:12
+#: lib/operately_web/email_preview/previews/company_member_added.ex:29
+msgid "Log in to Operately"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_member_converted_to_guest.text.eex:5
+#: lib/operately_email/templates/guest_invited.text.eex:5
+msgid "Log in to Operately:"
 msgstr ""
 
 #.frontend
@@ -10606,6 +10816,12 @@ msgstr ""
 msgid "New"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/company_members_permissions_edited.html.eex:14
+#: lib/operately_email/templates/company_members_permissions_edited.text.eex:4
+msgid "New Access Level:"
+msgstr ""
+
 #.frontend
 #: assets/js/pages/NewCompanyPage/index.tsx:49
 #: assets/js/pages/NewCompanyPage/index.tsx:105
@@ -10770,12 +10986,15 @@ msgstr ""
 msgid "No API tokens created yet."
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:45
 #: ../turboui/src/PrivacyField/index.tsx:183
 #: assets/js/components/Badges/AccessLevelBadges.tsx:147
 #: assets/js/features/Permissions/index.tsx:19
 #: assets/js/features/Permissions/index.tsx:61
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:31
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:34
 msgid "No Access"
 msgstr ""
 
@@ -11470,6 +11689,21 @@ msgstr ""
 msgid "Operately %{version} is available. This instance is running an older version. View release notes."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/emails/email_activation_code_email.ex:17
+msgid "Operately confirmation code: %{code}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/current_email_verification_email.ex:14
+msgid "Operately current email verification code: %{code}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/email_change_code_email.ex:14
+msgid "Operately email change code: %{code}"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:41
 msgid "Operately is what I wished I had when I started my first company. We had plenty of tools, but no single place where plans and daily work came together."
@@ -12065,6 +12299,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:45
 msgid "Preview version %{version}: %{action}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_members_permissions_edited.html.eex:9
+#: lib/operately_email/templates/company_members_permissions_edited.text.eex:3
+msgid "Previous Access Level:"
 msgstr ""
 
 #.frontend
@@ -12975,6 +13215,21 @@ msgstr ""
 msgid "Reset Password"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/reset_password.html.eex:13
+msgid "Reset password"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/reset_password_email.ex:16
+msgid "Reset password instructions"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/reset_password.html.eex:1
+msgid "Reset your password"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:125
 msgid "Resource"
@@ -13225,8 +13480,11 @@ msgstr ""
 msgid "Review and revoke AI client connections"
 msgstr ""
 
+#.elixir
 #.frontend
 #: assets/js/models/billing/memberLimitGuidance.ts:44
+#: lib/operately_email/emails/billing_limit_reached_email.ex:36
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:40
 msgid "Review billing"
 msgstr ""
 
@@ -15148,6 +15406,11 @@ msgstr ""
 msgid "The link is still on this page. Try again."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/reset_password.html.eex:19
+msgid "The link will expire in 24 hours for security reasons."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:46
 msgid "The milestone could not be completed. Check the tasks and try again."
@@ -15417,6 +15680,12 @@ msgstr ""
 msgid "This billing interval is not available right now"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/email_changed.html.eex:5
+#: lib/operately_email/templates/email_changed.text.eex:2
+msgid "This change applies to all your companies. Your existing sessions remain signed in."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:40
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:100
@@ -15628,6 +15897,11 @@ msgstr[1] ""
 #.frontend
 #: assets/js/models/companyExports/index.tsx:54
 msgid "This package was exported from Operately %{manifestVersion}, but this instance is running %{currentVersion}. The import failure may be related to version differences."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/reset_password.text.eex:6
+msgid "This password reset link will expire in 24 hours for security reasons."
 msgstr ""
 
 #.frontend
@@ -16420,6 +16694,11 @@ msgstr[1] ""
 msgid "Uploading file..."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/emails/billing_near_limit_warning_email.ex:70
+msgid "Uploading files will be blocked once the storage limit is reached."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:182
 #: ../turboui/src/Forms/Submit.tsx:26
@@ -16522,6 +16801,12 @@ msgstr ""
 msgid "Verify this inbox first. Then we’ll send a separate code to <email>%{email}</email>."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/current_email_verification.html.eex:1
+#: lib/operately_email/templates/current_email_verification.text.eex:1
+msgid "Verify your current email address"
+msgstr ""
+
 #.frontend
 #: assets/js/pages/ResourceHubDocumentVersionsPage/page.tsx:51
 msgid "Version %{version} restored as the current document."
@@ -16558,6 +16843,7 @@ msgstr ""
 msgid "View API usage instructions"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/AccessLevelBadge/index.tsx:42
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:138
@@ -16567,6 +16853,7 @@ msgstr ""
 #: assets/js/features/Permissions/index.tsx:12
 #: assets/js/features/Permissions/index.tsx:49
 #: assets/js/features/Permissions/index.tsx:60
+#: lib/operately_email/emails/company_members_permissions_edited_email.ex:35
 msgid "View Access"
 msgstr ""
 
@@ -16601,6 +16888,20 @@ msgstr ""
 #: lib/operately_email/templates/resource_hub_link_commented.html.eex:13
 #: lib/operately_email/templates/space_task_commented.html.eex:12
 msgid "View Comment"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_admin_removed.html.eex:6
+#: lib/operately_email/templates/company_member_restoring.html.eex:6
+#: lib/operately_email/templates/company_members_permissions_edited.html.eex:23
+#: lib/operately_email/templates/company_owner_removing.html.eex:6
+#: lib/operately_email/templates/company_owners_adding.html.eex:6
+msgid "View Company"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_admin_added.html.eex:6
+msgid "View Company Admin Tools"
 msgstr ""
 
 #.elixir
@@ -16812,7 +17113,7 @@ msgid "View the project to read the updated details."
 msgstr ""
 
 #.elixir
-#: lib/operately_email/templates.ex:89
+#: lib/operately_email/templates.ex:96
 msgid "View update"
 msgstr ""
 
@@ -16829,6 +17130,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/TaskBoard/components/MilestoneViewSelector.tsx:59
 msgid "Viewing tasks for %{milestone}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/reset_password.html.eex:7
+#: lib/operately_email/templates/reset_password.text.eex:2
+msgid "Visit the link below to reset your password."
 msgstr ""
 
 #.frontend
@@ -16924,6 +17231,12 @@ msgstr ""
 msgid "We need to make a decision..."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/reset_password.html.eex:6
+#: lib/operately_email/templates/reset_password.text.eex:1
+msgid "We received a request to reset the password for your account."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:64
 msgid "We sent a six-character code to<codeRecipient>%{codeRecipient}</codeRecipient>"
@@ -16975,6 +17288,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/InvitePeoplePage/index.tsx:163
 msgid "We’ll disable the current invite link and create a new one. Anyone holding the old link won’t be able to join anymore."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/current_email_verification.html.eex:14
+#: lib/operately_email/templates/current_email_verification.text.eex:7
+msgid "We’ll then send a separate code to the new address. Your email won’t change until both inboxes are verified."
 msgstr ""
 
 #.frontend
@@ -17306,9 +17625,51 @@ msgid_plural "You have %{count} new updates"
 msgstr[0] ""
 msgstr[1] ""
 
+#.elixir
+#: lib/operately_email/templates/company_admin_added.html.eex:1
+msgid "You have been granted admin privileges by %{author}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_admin_added.text.eex:1
+msgid "You have been granted admin privileges by %{author}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_owners_adding.html.eex:1
+msgid "You have been promoted to company owner by %{author}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_owners_adding.text.eex:1
+msgid "You have been promoted to company owner by %{author}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_owner_removing.html.eex:1
+msgid "You have been removed as a company owner by %{author}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_owner_removing.text.eex:1
+msgid "You have been removed as a company owner by %{author}."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:28
 msgid "You need to delete all subgoals and projects before you can delete this goal. The following items are connected to this goal and must be deleted first:"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_member_added.html.eex:6
+#: lib/operately_email/templates/company_member_added.text.eex:3
+msgid "You now have access to %{company_name} as a company member."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/guest_invited.html.eex:6
+#: lib/operately_email/templates/guest_invited.text.eex:3
+msgid "You now have access to %{company_name} as an outside collaborator."
 msgstr ""
 
 #.frontend
@@ -17417,14 +17778,75 @@ msgstr ""
 msgid "Your Drafts"
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/email_changed.text.eex:1
+msgid "Your Operately account email is now %{email}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_changed.html.eex:4
+msgid "Your Operately account email is now <email/>."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_change_code.text.eex:3
+msgid "Your Operately email change code is %{code}. Enter it in Operately within 5 minutes."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/emails/email_changed_email.ex:15
+msgid "Your Operately email has changed"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_members_permissions_edited.html.eex:1
+msgid "Your access level has been updated by %{author}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_members_permissions_edited.text.eex:1
+msgid "Your access level has been updated by %{author}."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:16
 msgid "Your account email is now <email>%{email}</email>."
 msgstr ""
 
+#.elixir
+#: lib/operately_email/templates/company_member_restoring.html.eex:1
+msgid "Your account has been restored as a company member by %{author}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_member_restoring.text.eex:1
+msgid "Your account has been restored as a company member by %{author}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_admin_removed.html.eex:1
+msgid "Your admin privileges have been revoked by %{author}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_admin_removed.text.eex:1
+msgid "Your admin privileges have been revoked by %{author}."
+msgstr ""
+
 #.frontend
 #: ../turboui/src/FilePage/index.tsx:130
 msgid "Your browser does not support videos."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_activation_code.html.eex:6
+msgid "Your confirmation code is below. Enter it in Operately to confirm your email address or finish signing in."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_change_code.html.eex:5
+#: lib/operately_email/templates/email_change_code.text.eex:4
+msgid "Your current email stays active until you confirm the change."
 msgstr ""
 
 #.frontend
@@ -17440,6 +17862,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocsAndFiles/index.tsx:238
 msgid "Your drafts (%{count})"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/email_changed.html.eex:1
+msgid "Your email address has changed"
 msgstr ""
 
 #.frontend
@@ -17473,6 +17900,17 @@ msgstr ""
 #: ../turboui/src/DocsAndFiles/index.tsx:437
 #: ../turboui/src/ResourceHub/ZeroNodes.tsx:23
 msgid "Your team's central hub for sharing documents, images, videos, and files. Click 'Add' to get started."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/company_member_converted_to_guest.html.eex:6
+#: lib/operately_email/templates/company_member_converted_to_guest.text.eex:3
+msgid "Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/templates/current_email_verification.text.eex:5
+msgid "Your verification code is %{code}. Enter it in Operately within 5 minutes."
 msgstr ""
 
 #.frontend
