@@ -16816,6 +16816,13 @@ msgid "View Discussion"
 msgstr "Ver discussão"
 
 #.elixir
+#: lib/operately_email/templates/resource_hub_document_deleted.html.eex:6
+#: lib/operately_email/templates/resource_hub_file_deleted.html.eex:6
+#: lib/operately_email/templates/resource_hub_link_deleted.html.eex:6
+msgid "View Docs & Files"
+msgstr "Ver Docs & Arquivos"
+
+#.elixir
 #: lib/operately_email/templates/resource_hub_document_created.html.eex:17
 #: lib/operately_email/templates/resource_hub_document_edited.html.eex:13
 msgid "View Document"
@@ -16895,13 +16902,6 @@ msgstr "Ver projeto"
 #: lib/operately_email/templates/project_description_changed.text.eex:9
 msgid "View Project: %{url}"
 msgstr "Ver projeto: %{url}"
-
-#.elixir
-#: lib/operately_email/templates/resource_hub_document_deleted.html.eex:6
-#: lib/operately_email/templates/resource_hub_file_deleted.html.eex:6
-#: lib/operately_email/templates/resource_hub_link_deleted.html.eex:6
-msgid "View Resource Hub"
-msgstr "Ver Docs & Arquivos"
 
 #.elixir
 #: lib/operately_email/emails/goal_closing_email.ex:41
