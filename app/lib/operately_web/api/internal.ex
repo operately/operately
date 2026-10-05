@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Internal do
 
   plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
+      {:query, "get_language"},
       {:query, "documents/get_public"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
