@@ -207,6 +207,8 @@ Validation passes: 44 component/app tests, 18 browser workflows, TypeScript chec
 
 ErrorPage, NotFoundPage, BillingPickCompanyPage, and PublicDocumentPage now use the shared catalog, with 20 Portuguese drafts. Error and picker presentation lives in TurboUI. Literal content, billing destinations, diagnostics visibility, and public-document refresh/access rules are preserved; 404 recovery now uses the current company-loader metadata.
 
+Non-company routes resolve account language explicitly; company error boundaries resolve the route company's language independently of failed loaders. Anonymous/unavailable contexts fall back to English, and stale navigation responses cannot change the active locale.
+
 Validation passes: 35 component/app tests, 11 catalog tests, billing-picker and anonymous sharing/revocation browser workflows, both TypeScript checks, and builds. Catalog generation is deterministic and preserves existing translations. Narrow-screen/expanded-text review remains pending because the local review browser stalled. Native-speaker review remains PR 8; not merged or deployed.
 
 ### Additional extraction gaps
