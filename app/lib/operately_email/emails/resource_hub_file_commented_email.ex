@@ -36,7 +36,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on the file \"#{file.name}\"",
+      headline: gettext("commented on the file \"%{file_name}\"", file_name: file.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.file_path(company, file, comment) |> Paths.to_url(),

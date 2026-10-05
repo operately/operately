@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
   use Operately.DataCase
 
+  import Mock
   import Swoosh.TestAssertions
   import Operately.KpisFixtures
 
@@ -260,6 +261,110 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     AssignmentsEmail.send(ctx.first_assignee)
 
     refute_email_sent()
+  end
+
+  test "work-summary subjects, badges and bodies use the recipient language", ctx do
+    {:ok, _} = Operately.People.update_person(ctx.first_assignee, %{language: "pt-BR"})
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    flush_emails()
+    OperatelyEmail.Cron.Assignments.send_assignments()
+    emails = collect_emails()
+    assert Enum.any?(emails, fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and
+        email.subject == "#{ctx.company.name}: Seu trabalho para hoje" and
+        email.html_body =~ "Data de conclusão: amanhã" and email.text_body =~ "Data de conclusão: amanhã" and
+        email.text_body =~ "Shared urgent task" and email.text_body =~ "Espaço: Product"
+    end)
+    assert Enum.any?(emails, fn email ->
+      email.to == [{"", ctx.second_assignee.email}] and email.subject == "#{ctx.company.name}: Your work for today" and
+        email.html_body =~ "Due tomorrow" and email.text_body =~ "Shared urgent task"
+    end)
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+
+    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+    flush_emails()
+    OperatelyEmail.Cron.Assignments.send_assignments()
+    emails = collect_emails()
+    assert Enum.any?(emails, fn email ->
+      email.to == [{"", ctx.first_assignee.email}] and email.subject == "#{ctx.company.name}: Your work for today" and
+        email.text_body =~ "Due tomorrow"
+    end)
+    assert Operately.People.get_person!(ctx.first_assignee.id).language == "pt-BR"
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+  end
+
+  test "email-only action labels translate without translating task names or reordering work", ctx do
+    alias Operately.Assignments.Assignment
+    origin = %Assignment.Origin{id: ctx.project.id, name: "Project <literal>", type: :project, path: "/project", space_name: "Space <literal>"}
+    definitions = [
+      {:check_in, :owner, "Submit weekly check-in", "Enviar check-in semanal"},
+      {:check_in, :reviewer, "Review weekly check-in", "Revisar check-in semanal"},
+      {:goal_update, :owner, "Submit goal progress update", "Enviar atualização de progresso do objetivo"},
+      {:goal_update, :reviewer, "Review goal progress update", "Revisar atualização de progresso do objetivo"},
+      {:project_retrospective, :reviewer, "Review project retrospective", "Revisar retrospectiva do projeto"},
+      {:goal_retrospective, :reviewer, "Review goal retrospective", "Revisar retrospectiva do objetivo"},
+      {:kpi_update, :owner, "Log update for KPI <literal>", "Registrar atualização de KPI <literal>"},
+      {:project_task, :owner, "Submit weekly check-in", "Submit weekly check-in"}
+    ]
+    assignments = Enum.with_index(definitions, fn {type, role, label, _}, index ->
+      %Assignment{resource_id: Ecto.UUID.generate(), type: type, role: role, action_label: label,
+        name: if(type == :kpi_update, do: "KPI <literal>", else: label), due: Date.utc_today(), path: "/assignment/#{index}", origin: origin}
+    end)
+
+    with_mock Operately.Assignments.Loader, [:passthrough], load: fn _, _ -> assignments end do
+      for locale <- ["en", "pt_BR", "fr"] do
+        flush_emails()
+        Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> AssignmentsEmail.send(ctx.first_assignee) end)
+        assert_email_sent(fn email ->
+          for {_, _, english, portuguese} <- definitions do
+            assert email.text_body =~ if(locale == "pt_BR", do: portuguese, else: english)
+          end
+          assert email.html_body =~ "Project &lt;literal&gt;"
+          assert email.text_body =~ "Project <literal>"
+          refute email.html_body =~ "<literal>"
+          expected_order = assignments |> Enum.sort_by(&String.downcase(&1.action_label)) |> Enum.map(& &1.path)
+          actual_order = Regex.scan(~r{/assignment/\d+}, email.text_body) |> List.flatten()
+          assert actual_order == expected_order
+          true
+        end)
+      end
+    end
+  end
+
+  test "work-summary due dates use singular and plural Portuguese copy with English fallback", ctx do
+    for {days, english, portuguese} <- [
+          {-1, "Overdue by 1 day", "Atrasado em 1 dia"},
+          {-3, "Overdue by 3 days", "Atrasado em 3 dias"},
+          {0, "Due today", "Data de conclusão: hoje"},
+          {1, "Due tomorrow", "Data de conclusão: amanhã"},
+          {3, "Due in 3 days", "Data de conclusão em 3 dias"},
+          {nil, "No due date", "Sem data de conclusão"}
+        ] do
+      due_date = if days, do: Date.utc_today() |> Date.add(days) |> ContextualDate.create_day_date() |> Map.from_struct()
+      {:ok, _} = Operately.Tasks.update_task(Repo.reload!(ctx.task), %{due_date: due_date, reminders: [%{type: :on_date, date: Date.utc_today()}]})
+      for {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+        flush_emails()
+        Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> AssignmentsEmail.send(ctx.first_assignee) end)
+        assert_email_sent(fn email ->
+          assert email.html_body =~ expected
+          assert email.text_body =~ expected
+          assert email.text_body =~ "Shared urgent task"
+          assert email.text_body =~ if(locale == "pt_BR", do: "Lembrete para hoje", else: "Reminder for today")
+          true
+        end)
+      end
+    end
+  end
+
+  defp collect_emails do
+    receive do
+      {:email, email} -> [email | collect_emails()]
+      {:emails, emails} -> emails ++ collect_emails()
+    after
+      0 -> []
+    end
   end
 
   defp flush_emails do

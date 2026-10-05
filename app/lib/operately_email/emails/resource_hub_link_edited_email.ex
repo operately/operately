@@ -33,7 +33,7 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkEditedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "edited the link \"#{link.name}\"",
+      headline: gettext("edited the link \"%{link_name}\"", link_name: link.name),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.link_path(company, link) |> OperatelyWeb.Paths.to_url(),

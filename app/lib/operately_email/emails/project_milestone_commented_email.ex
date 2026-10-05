@@ -84,9 +84,9 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
 
   def headline_text(milestone, action) do
     case action do
-      "none" -> "commented on the milestone \"#{milestone.title}\""
-      "complete" -> "completed the milestone \"#{milestone.title}\""
-      "reopen" -> "re-opened the milestone \"#{milestone.title}\""
+      "none" -> gettext("commented on the milestone \"%{milestone_title}\"", milestone_title: milestone.title)
+      "complete" -> gettext("completed the milestone \"%{milestone_title}\"", milestone_title: milestone.title)
+      "reopen" -> gettext("re-opened the milestone \"%{milestone_title}\"", milestone_title: milestone.title)
       _ -> raise "Unknown action: #{action}"
     end
   end

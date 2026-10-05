@@ -35,8 +35,6 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     end
   end
 
-  defp get_action(nil), do: "added"
-  defp get_action(_), do: "copied"
 
   defp get_copied_document(nil), do: nil
   defp get_copied_document(id) do
@@ -51,13 +49,18 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     document = ResourceHubEmail.load_document(activity.content["document_id"])
     parent = ResourceHubEmail.parent(document)
 
-    action = get_action(activity.content["copied_document_id"])
+    headline =
+      if activity.content["copied_document_id"] do
+        gettext("copied the document \"%{document_name}\"", document_name: document.name)
+      else
+        gettext("added the document \"%{document_name}\"", document_name: document.name)
+      end
 
     %{
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "#{action} the document \"#{document.name}\"",
+      headline: headline,
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.document_path(company, document) |> OperatelyWeb.Paths.to_url(),

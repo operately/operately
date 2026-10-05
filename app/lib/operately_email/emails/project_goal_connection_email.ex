@@ -42,7 +42,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalConnectionEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "connected the project to the goal \"#{goal.name}\"",
+      headline: gettext("connected the project to the goal \"%{goal_name}\"", goal_name: goal.name),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),

@@ -42,7 +42,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmailTest do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
           CommentAddedEmail.send(ctx.creator, activity)
-          assert CommentAddedEmail.buffered_item(ctx.creator, activity).headline == "commented on: #{title}"
+          assert CommentAddedEmail.buffered_item(ctx.creator, activity).headline == "#{expected} #{title}"
         end)
 
         assert_email_sent(fn email ->

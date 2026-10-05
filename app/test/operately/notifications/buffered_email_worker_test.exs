@@ -26,6 +26,54 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     Map.put(ctx, :batch, batch)
   end
 
+  test "mixed-language recipients get localized buffered items and flag rollback restores English", ctx do
+    ctx = ctx |> Factory.add_project(:project, :space, name: "Project <literal>") |> Factory.add_company_member(:portuguese)
+    {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    activities = for action <- ["project_created", "project_archived"] do
+      activity_fixture(author_id: ctx.creator.id, action: action, content: %{"project_id" => ctx.project.id})
+    end
+    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    for {person, subject, headline} <- [
+          {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"},
+          {ctx.creator, "You have 2 new updates", "archived the project"},
+          {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"}
+        ] do
+      deliver_localized_batch(person, activities, subject, headline)
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+    end
+
+    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+    deliver_localized_batch(ctx.portuguese, activities, "You have 2 new updates", "archived the project")
+    assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+  end
+
+  defp deliver_localized_batch(person, activities, subject, headline) do
+    {:ok, batch} = Notifications.create_email_batch(%{
+      person_id: person.id, status: :scheduled, window_minutes: 5,
+      window_started_at: ~N[2026-04-02 10:00:00], send_at: ~N[2026-04-02 10:05:00]
+    })
+    notifications = for activity <- activities do
+      notification_fixture(activity_id: activity.id, person_id: person.id, email_batch_id: batch.id, email_sent: false, email_sent_at: nil)
+    end
+    flush_emails()
+    assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => batch.id}})
+    assert_email_sent(fn email ->
+      assert email.to == [{"", person.email}]
+      assert email.subject == subject
+      assert email.html_body =~ headline
+      assert email.text_body =~ headline
+      assert email.html_body =~ "Project &lt;literal&gt;"
+      assert email.text_body =~ "Project <literal>"
+      refute email.html_body =~ "<literal>"
+      true
+    end)
+    assert Notifications.get_email_batch!(batch.id).status == :sent
+    assert Enum.all?(Notifications.list_notifications(Enum.map(notifications, & &1.id)), & &1.email_sent)
+  end
+
   test "single-item batch uses existing email template", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
     activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
@@ -414,5 +462,13 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
 
     assert batch.status == :skipped
     assert is_nil(batch.sent_at)
+  end
+  defp flush_emails do
+    receive do
+      {:email, _} -> flush_emails()
+      {:emails, _} -> flush_emails()
+    after
+      0 -> :ok
+    end
   end
 end

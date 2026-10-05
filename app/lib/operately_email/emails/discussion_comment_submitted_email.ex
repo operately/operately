@@ -41,7 +41,7 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
       parent_id: space.id,
       parent_type: :space,
       parent_name: space.name,
-      headline: "commented on the discussion \"#{title}\"",
+      headline: gettext("commented on the discussion \"%{title}\"", title: title),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.message_path(company, message, comment) |> Paths.to_url(),

@@ -38,7 +38,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentEditedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the document \"#{document.name}\"",
+      headline: gettext("updated the document \"%{document_name}\"", document_name: document.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.document_path(company, document) |> OperatelyWeb.Paths.to_url(),

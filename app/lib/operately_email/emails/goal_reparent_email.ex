@@ -41,6 +41,6 @@ defmodule OperatelyEmail.Emails.GoalReparentEmail do
     }
   end
 
-  defp buffered_headline(nil), do: "removed the goal's parent"
-  defp buffered_headline(parent_goal), do: "changed the goal's parent to \"#{parent_goal.name}\""
+  defp buffered_headline(nil), do: gettext("removed the goal's parent")
+  defp buffered_headline(parent_goal), do: gettext("changed the goal's parent to \"%{parent_goal_name}\"", parent_goal_name: parent_goal.name)
 end

@@ -42,7 +42,7 @@ defmodule OperatelyEmail.Emails.ProjectDiscussionSubmittedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "started the project discussion \"#{discussion.title}\"",
+      headline: gettext("started the project discussion \"%{discussion_title}\"", discussion_title: discussion.title),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.project_discussion_path(company, discussion) |> Paths.to_url(),
