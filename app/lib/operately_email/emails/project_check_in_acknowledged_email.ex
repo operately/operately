@@ -32,7 +32,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "acknowledged a project check-in",
+      headline: gettext("acknowledged a project check-in"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url(),

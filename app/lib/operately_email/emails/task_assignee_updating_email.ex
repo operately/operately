@@ -123,7 +123,11 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     end
   end
 
-  defp buffered_headline(task_name, assignee, _old_assignee, [_], []), do: "assigned #{assignee.full_name} to the task \"#{task_name}\""
-  defp buffered_headline(task_name, _new_assignee, assignee, [], [_]), do: "removed #{assignee.full_name} from the task \"#{task_name}\""
-  defp buffered_headline(task_name, _new_assignee, _old_assignee, _added_assignee_ids, _removed_assignee_ids), do: "changed the assignees for the task \"#{task_name}\""
+  defp buffered_headline(task_name, assignee, _old_assignee, [_], []) do
+    gettext("assigned %{assignee_full_name} to the task \"%{task_name}\"", assignee_full_name: assignee.full_name, task_name: task_name)
+  end
+  defp buffered_headline(task_name, _new_assignee, assignee, [], [_]) do
+    gettext("removed %{assignee_full_name} from the task \"%{task_name}\"", assignee_full_name: assignee.full_name, task_name: task_name)
+  end
+  defp buffered_headline(task_name, _new_assignee, _old_assignee, _added_assignee_ids, _removed_assignee_ids), do: gettext("changed the assignees for the task \"%{task_name}\"", task_name: task_name)
 end

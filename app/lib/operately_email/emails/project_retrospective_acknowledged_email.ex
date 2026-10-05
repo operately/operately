@@ -31,7 +31,7 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveAcknowledgedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "acknowledged a project retrospective",
+      headline: gettext("acknowledged a project retrospective"),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_retrospective_path(company, project) |> OperatelyWeb.Paths.to_url(),

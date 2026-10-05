@@ -122,27 +122,27 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
 
     cond do
       activity.action == "goal_timeframe_editing" ->
-        "commented on the goal timeframe change"
+        gettext("commented on the goal timeframe change")
 
       activity.action == "goal_closing" ->
-        "commented on the goal closing"
+        gettext("commented on the goal closing")
 
       activity.action == "goal_discussion_creation" ->
         parent_comment_thread = Operately.Comments.get_thread!(activity.comment_thread_id)
 
-        "commented on: #{parent_comment_thread.title}"
+        gettext("commented on: %{title}", title: parent_comment_thread.title)
 
       activity.action == "goal_reopening" ->
-        "commented on the goal reopening"
+        gettext("commented on the goal reopening")
 
       activity.action == "project_discussion_submitted" ->
-        "commented on: #{comment_thread.title}"
+        gettext("commented on: %{title}", title: comment_thread.title)
 
       activity.action == "project_resuming" ->
-        "commented on the project resumption"
+        gettext("commented on the project resumption")
 
       activity.action == "project_pausing" ->
-        "commented on the project pausing"
+        gettext("commented on the project pausing")
 
       true ->
         raise "Unsupported action: #{activity.action}"

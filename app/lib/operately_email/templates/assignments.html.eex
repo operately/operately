@@ -1,5 +1,5 @@
 <%= title(@company.name) %>
-<%= subtitle("Tasks, reminders, and reviews that need your attention today.") %>
+<%= subtitle(gettext("Tasks, reminders, and reviews that need your attention today.")) %>
 
 <%= spacer() %>
 <%= line() %>
@@ -13,7 +13,7 @@
       </div>
       <%= if group.origin.space_name do %>
         <div style="margin-top: 4px; color: #6b6b6b; font-size: 12px;">
-          Space: <%= group.origin.space_name %>
+          <%= gettext("Space: %{space_name}", space_name: group.origin.space_name) %>
         </div>
       <% end %>
     </div>

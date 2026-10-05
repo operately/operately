@@ -37,7 +37,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "commented on a goal check-in",
+      headline: gettext("commented on a goal check-in"),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),

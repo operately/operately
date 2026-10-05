@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.AssignmentsEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.NotificationMailer
 
   alias Operately.Assignments.{Loader, Assignment}
@@ -11,7 +12,6 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   @due_soon_window_in_days 1
   @far_future_tuple {9999, 12, 31}
   @due_status_rank %{overdue: 0, due_today: 1, due_soon: 2, upcoming: 3, none: 4}
-  @reminder_due_today_label "Reminder for today"
 
   #
   # Sending out an email to remind people of their assignments.
@@ -28,7 +28,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
           |> new()
           |> from("Operately")
           |> to(person)
-          |> subject("#{company.name}: Your work for today")
+          |> subject(gettext("%{company_name}: Your work for today", company_name: company.name))
           |> assign(:company, company)
 
         email =
@@ -94,9 +94,19 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     |> Map.put(:due_date, due_date)
     |> Map.put(:due_status, due_status)
     |> Map.put(:due_status_label, due_status_label)
-    |> Map.put(:display_label, assignment.action_label || assignment.name)
+    |> Map.put(:display_label, display_label(assignment))
     |> Map.put(:url, Paths.to_url(assignment.path))
   end
+
+  # Keep API-provided labels and identifiers unchanged; localize only email presentation.
+  defp display_label(%Assignment{type: :check_in, role: :owner}), do: gettext("Submit weekly check-in")
+  defp display_label(%Assignment{type: :check_in, role: :reviewer}), do: gettext("Review weekly check-in")
+  defp display_label(%Assignment{type: :goal_update, role: :owner}), do: gettext("Submit goal progress update")
+  defp display_label(%Assignment{type: :goal_update, role: :reviewer}), do: gettext("Review goal progress update")
+  defp display_label(%Assignment{type: :project_retrospective}), do: gettext("Review project retrospective")
+  defp display_label(%Assignment{type: :goal_retrospective}), do: gettext("Review goal retrospective")
+  defp display_label(%Assignment{type: :kpi_update, name: name}), do: gettext("Log update for %{name}", name: name)
+  defp display_label(assignment), do: assignment.action_label || assignment.name
 
   defp assign_category(assignment, :explicit_reminders_only) do
     category =
@@ -173,7 +183,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     {
       rank(assignment.due_status),
       due_tuple,
-      String.downcase(assignment.display_label || "")
+      String.downcase(assignment.action_label || assignment.name || "")
     }
   end
 
@@ -185,7 +195,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     {assignment_sort_key(first), String.downcase(origin.name || "")}
   end
 
-  defp resolve_due_status(nil), do: {:none, "No due date"}
+  defp resolve_due_status(nil), do: {:none, gettext("No due date")}
 
   defp resolve_due_status(%Date{} = due_date) do
     today = Date.utc_today()
@@ -194,20 +204,20 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     cond do
       diff < 0 ->
         days = abs(diff)
-        label = if days == 1, do: "Overdue by 1 day", else: "Overdue by #{days} days"
+        label = ngettext("Overdue by 1 day", "Overdue by %{count} days", days)
         {:overdue, label}
 
       diff == 0 ->
-        {:due_today, "Due today"}
+        {:due_today, gettext("Due today")}
 
       diff == 1 ->
-        {:due_soon, "Due tomorrow"}
+        {:due_soon, gettext("Due tomorrow")}
 
       diff <= @due_soon_window_in_days ->
-        {:due_soon, "Due in #{diff} days"}
+        {:due_soon, ngettext("Due in 1 day", "Due in %{count} days", diff)}
 
       true ->
-        {:upcoming, "Due in #{diff} days"}
+        {:upcoming, ngettext("Due in 1 day", "Due in %{count} days", diff)}
     end
   end
 
@@ -231,7 +241,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   end
 
   defp reminder_detail_label(assignment) do
-    if explicit_task_reminder_due?(assignment), do: @reminder_due_today_label
+    if explicit_task_reminder_due?(assignment), do: gettext("Reminder for today")
   end
 
   defp task_assignment_category(assignment) when is_list(assignment.reminders) and assignment.reminders != [] do

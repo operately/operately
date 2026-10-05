@@ -36,7 +36,7 @@ defmodule OperatelyEmail.Emails.KpiEntryCommentedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on a KPI update for \"#{kpi.name}\"",
+      headline: gettext("commented on a KPI update for \"%{kpi_name}\"", kpi_name: kpi.name),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: Paths.space_kpi_path(company, kpi.space, kpi, comment) |> Paths.to_url(),

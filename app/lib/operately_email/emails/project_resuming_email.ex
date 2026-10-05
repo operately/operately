@@ -32,7 +32,7 @@ defmodule OperatelyEmail.Emails.ProjectResumingEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "resumed the project",
+      headline: gettext("resumed the project"),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),

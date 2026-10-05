@@ -34,7 +34,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "deleted the document \"#{document.name}\"",
+      headline: gettext("deleted the document \"%{document_name}\"", document_name: document.name),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url(),

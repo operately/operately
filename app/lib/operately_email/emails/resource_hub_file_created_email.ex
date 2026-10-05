@@ -60,11 +60,11 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   end
 
   defp find_action(files) when length(files) == 1 do
-    "uploaded the file \"#{hd(files).name}\""
+    gettext("uploaded the file \"%{file_name}\"", file_name: hd(files).name)
   end
 
   defp find_action(files) do
-    "uploaded #{length(files)} files"
+    ngettext("uploaded 1 file", "uploaded %{count} files", length(files))
   end
 
   def buffered_item(_person, activity) do
