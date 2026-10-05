@@ -22,10 +22,9 @@ export function buildBillingDangerBanner(
     return {
       kind: "payment_default",
       mode,
-      title: mode === "read_only" ? "This company is read-only" : "Payment issue requires attention",
       deadline: accessState.accessStateEndsAt || null,
       shouldContactAdmin: !canManageBilling,
-      cta: canManageBilling ? { label: "Review billing", to: routes.companyBillingPath() } : null,
+      cta: canManageBilling ? { to: routes.companyBillingPath() } : null,
     };
   }
 
@@ -42,16 +41,10 @@ export function buildBillingDangerBanner(
   return {
     kind: "over_limit",
     mode: "over_limit",
-    title: "This company is over its plan limits",
     blockedLimitKeys: activeStatuses.filter((status) => status.blocked).map((status) => status.limitKey),
     usageRows: usageRows(activeStatuses),
     shouldContactAdmin: !canManageBilling,
-    cta: canManageBilling
-      ? {
-          label: "Review billing",
-          to: routes.companyBillingPlansPath(),
-        }
-      : null,
+    cta: canManageBilling ? { to: routes.companyBillingPlansPath() } : null,
   };
 }
 
@@ -67,20 +60,22 @@ function dangerStatuses(statuses: BillingLimitSnapshot[]): BillingLimitSnapshot[
   return [...blockedStatuses, ...nearLimitStatuses];
 }
 
-function usageRows(activeStatuses: BillingLimitSnapshot[]) {
+function usageRows(
+  activeStatuses: BillingLimitSnapshot[],
+): Extract<BillingDangerBannerViewModel, { kind: "over_limit" }>["usageRows"] {
   return activeStatuses.map((status) => {
     const state: "blocked" | "near_limit" = status.blocked ? "blocked" : "near_limit";
 
     if (status.limitKey === "member_count") {
       return {
-        label: "Active members",
+        limitKey: "member_count",
         value: `${status.currentUsage} / ${status.limit}`,
         state,
       };
     }
 
     return {
-      label: "Storage used",
+      limitKey: "storage_bytes",
       value: `${formatStorageBytes(status.currentUsage)} / ${formatStorageBytes(status.limit)}`,
       state,
     };

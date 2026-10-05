@@ -55,7 +55,7 @@ export function BillingDangerBanner({
               <div className="mt-2 flex flex-wrap gap-2">
                 {banner.usageRows.map((row) => (
                   <div
-                    key={row.label}
+                    key={row.limitKey}
                     className={`rounded-full border px-3 py-1 text-sm ${
                       row.state === "blocked"
                         ? "border-white/20 bg-white/15 font-semibold text-white-1"
@@ -63,7 +63,7 @@ export function BillingDangerBanner({
                     }`}
                   >
                     <span className="font-semibold text-white-1">
-                      {row.label === "Active members" ? t("Active members") : t("Storage used")}:
+                      {row.limitKey === "member_count" ? t("Active members") : t("Storage used")}:
                     </span>{" "}
                     {row.value}
                   </div>
