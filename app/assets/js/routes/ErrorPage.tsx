@@ -3,23 +3,21 @@ import * as React from "react";
 
 import { captureException } from "@sentry/react";
 import axios, { AxiosError } from "axios";
-import { useRouteError, useRouteLoaderData } from "react-router";
-import { GhostButton } from "turboui";
+import { useRouteError } from "react-router";
+import { ErrorPage as ErrorPageUI } from "turboui";
 
-import { usePaths } from "@/routes/paths";
+import { useOptionalPaths } from "@/routes/paths";
+
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
 
-  if (error && error["status"] === 404) {
-    return <NotFoundPage.Page />;
-  } else {
-    return <ServerErrorPage />;
-  }
+  return error?.status === 404 ? <NotFoundPage.Page /> : <ServerErrorPage />;
 }
 
 function ServerErrorPage() {
-  const error = useRouteError() as AxiosError | null;
-  const data = useRouteLoaderData("companyRoot") as { companyId: string } | undefined;
+  const error = useRouteError() as Error | null;
+  const paths = useOptionalPaths();
+  const env = window.appConfig.environment;
 
   React.useEffect(() => {
     if (!error) return;
@@ -31,56 +29,10 @@ function ServerErrorPage() {
   }, [error]);
 
   return (
-    <div className="absolute inset-0 flex justify-center items-center gap-16">
-      <div className="flex flex-col text-center -mt-64">
-        <div className="font-extrabold" style={{ fontSize: "10rem" }}>
-          500
-        </div>
-        <div className="text-3xl font-bold mt-4">Oops! Something went wrong.</div>
-        <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
-
-        {data?.companyId ? <LinkToHome /> : <LinkToLobby />}
-        <StackTrace />
-      </div>
-    </div>
-  );
-}
-
-function LinkToHome() {
-  const paths = usePaths();
-
-  return (
-    <div className="flex w-full justify-center mt-4">
-      <GhostButton linkTo={paths.homePath()} testId="back-to-lobby">
-        Go back to Home
-      </GhostButton>
-    </div>
-  );
-}
-
-function LinkToLobby() {
-  return (
-    <div className="flex w-full justify-center mt-4">
-      <GhostButton linkTo={"/"} testId="back-to-lobby">
-        Go back to Lobby
-      </GhostButton>
-    </div>
-  );
-}
-
-function StackTrace() {
-  const error = useRouteError() as Error | null;
-  const env = window.appConfig.environment;
-
-  if (env !== "dev" && env !== "test") return null;
-
-  return (
-    <div className="mt-8 bg-surface-base text-left p-4">
-      <div className="font-bold mb-4">Error Stack Trace</div>
-
-      <pre className="text-sm font-mono whitespace-pre-wrap">{error!.stack}</pre>
-
-      <div className="mt-4 text-sm">This error is visible only in dev and test environments.</div>
-    </div>
+    <ErrorPageUI
+      status={500}
+      homePath={paths?.homePath()}
+      diagnostics={env === "dev" || env === "test" ? { stack: error?.stack } : undefined}
+    />
   );
 }

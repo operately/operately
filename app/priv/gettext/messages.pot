@@ -3634,6 +3634,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:76
 #: ../turboui/src/LobbyPage/index.tsx:97
 msgid "1 member"
 msgid_plural "%{count} members"
@@ -4439,7 +4440,7 @@ msgid "Active"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:64
+#: ../turboui/src/BillingDangerBanner/index.tsx:66
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:51
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:74
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:210
@@ -4945,12 +4946,12 @@ msgid "Added: %{documentName}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:130
+#: ../turboui/src/BillingDangerBanner/index.tsx:138
 msgid "Adding or restoring people and uploading files are paused until this company is back within its plan limits. Contact an admin or owner."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:133
+#: ../turboui/src/BillingDangerBanner/index.tsx:141
 msgid "Adding or restoring people and uploading files are paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
 msgstr ""
 
@@ -4960,12 +4961,12 @@ msgid "Adding or restoring people is blocked until the plan is upgraded."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:139
+#: ../turboui/src/BillingDangerBanner/index.tsx:148
 msgid "Adding or restoring people is paused until this company is back within its plan limits. Contact an admin or owner."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:142
+#: ../turboui/src/BillingDangerBanner/index.tsx:151
 msgid "Adding or restoring people is paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
 msgstr ""
 
@@ -5128,6 +5129,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:31
 msgid "An admin or owner needs to review billing or free up member space before anyone else can join."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:28
+msgid "An unexpected error has occurred."
 msgstr ""
 
 #.elixir
@@ -5676,23 +5682,23 @@ msgid "Billing needs attention by %{date} or this company will become read-only.
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:120
+#: ../turboui/src/BillingDangerBanner/index.tsx:126
 msgid "Billing needs attention by <date/> or this company will become read-only."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:115
+#: ../turboui/src/BillingDangerBanner/index.tsx:121
 msgid "Billing needs attention by <date/> or this company will become read-only. Contact an admin or owner."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:109
+#: ../turboui/src/BillingDangerBanner/index.tsx:113
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:311
 msgid "Billing needs attention soon or this company will become read-only."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:108
+#: ../turboui/src/BillingDangerBanner/index.tsx:112
 msgid "Billing needs attention soon or this company will become read-only. Contact an admin or owner."
 msgstr ""
 
@@ -8161,12 +8167,12 @@ msgid "Discussions"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:53
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:54
 msgid "Dismiss"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SiteMessageBanner/index.tsx:32
+#: ../turboui/src/SiteMessageBanner/index.tsx:35
 msgid "Dismiss message"
 msgstr ""
 
@@ -8248,6 +8254,9 @@ msgid "Document public sharing"
 msgstr ""
 
 #.elixir
+#.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:26
+#: ../turboui/src/PublicDocumentPage/index.tsx:30
 #: lib/operately_web/controllers/public_document_controller.ex:22
 msgid "Document unavailable"
 msgstr ""
@@ -8978,6 +8987,11 @@ msgstr ""
 #: assets/js/pages/TaskPage/index.tsx:170
 #: assets/js/pages/TaskPage/index.tsx:382
 msgid "Error"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:39
+msgid "Error Stack Trace"
 msgstr ""
 
 #.frontend
@@ -9947,6 +9961,16 @@ msgstr ""
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:83
 msgid "Global"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:33
+msgid "Go back to Home"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:33
+msgid "Go back to Lobby"
 msgstr ""
 
 #.elixir
@@ -11094,6 +11118,16 @@ msgid "Loading docs and files"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:26
+msgid "Loading document"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:30
+msgid "Loading document…"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:108
 #: assets/js/features/Feed/index.tsx:105
 msgid "Loading more activities"
@@ -11915,7 +11949,7 @@ msgid "New project template"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:35
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:36
 msgid "New release"
 msgstr ""
 
@@ -12722,6 +12756,11 @@ msgid "Ooops, something went wrong while loading the feed"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ErrorPage/index.tsx:23
+msgid "Oops! Something went wrong."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:240
 msgid "Open %{name} preview"
@@ -12985,6 +13024,11 @@ msgid "Package"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/ErrorPage/index.tsx:23
+msgid "Page Not Found"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:50
 msgid "Paid access until"
 msgstr ""
@@ -13140,7 +13184,7 @@ msgid "Payment issue detected"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:46
+#: ../turboui/src/BillingDangerBanner/index.tsx:48
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:172
 msgid "Payment issue requires attention"
 msgstr ""
@@ -13156,12 +13200,12 @@ msgid "Payment method unavailable"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:99
+#: ../turboui/src/BillingDangerBanner/index.tsx:102
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until an admin or owner updates billing."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:102
+#: ../turboui/src/BillingDangerBanner/index.tsx:105
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:181
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated."
 msgstr ""
@@ -14752,7 +14796,7 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:82
+#: ../turboui/src/BillingDangerBanner/index.tsx:84
 #: assets/js/models/billing/memberLimitGuidance.ts:44
 #: lib/operately_email/emails/billing_limit_reached_email.ex:36
 #: lib/operately_email/emails/billing_near_limit_warning_email.ex:40
@@ -15195,6 +15239,11 @@ msgid "Select"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:27
+msgid "Select Company"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:383
 msgid "Select a Space"
 msgstr ""
@@ -15207,6 +15256,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:39
 msgid "Select a closed task status."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:32
+msgid "Select a company"
 msgstr ""
 
 #.frontend
@@ -15383,6 +15437,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:158
 msgid "Selected"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:46
+msgid "Selected plan: <plan>%{plan}</plan>"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:37
+msgid "Selected plan: <plan>%{plan}</plan> <interval>(%{interval})</interval>"
 msgstr ""
 
 #.frontend
@@ -15589,6 +15653,11 @@ msgid "Share this link to this draft with anyone who has access to this space:"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:70
+msgid "Shared with Operately"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:99
 msgid "Sheet"
 msgstr ""
@@ -15762,6 +15831,11 @@ msgstr ""
 #: assets/js/models/projects/useProjectContributorActions.tsx:171
 #: assets/js/pages/SpaceKpisPage/page.tsx:227
 msgid "Something went wrong. Please try again."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:27
+msgid "Sorry, we couldn't find that page you were looking for."
 msgstr ""
 
 #.frontend
@@ -16108,7 +16182,7 @@ msgid "Storage limit reached"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:64
+#: ../turboui/src/BillingDangerBanner/index.tsx:66
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:53
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:75
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:214
@@ -17384,12 +17458,12 @@ msgid "This company is now on %{plan}."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:43
+#: ../turboui/src/BillingDangerBanner/index.tsx:45
 msgid "This company is over its plan limits"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:45
+#: ../turboui/src/BillingDangerBanner/index.tsx:47
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:180
 msgid "This company is read-only"
 msgstr ""
@@ -17414,6 +17488,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
 msgid "This email is already registered. Use a different address."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:41
+msgid "This error is visible only in dev and test environments."
 msgstr ""
 
 #.elixir
@@ -17544,6 +17623,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:26
 msgid "This link (including the one in their email) expires in 24 hours."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:32
+msgid "This link may have been disabled or the document removed."
 msgstr ""
 
 #.frontend
@@ -18472,12 +18556,12 @@ msgid "Uploading file..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:147
+#: ../turboui/src/BillingDangerBanner/index.tsx:157
 msgid "Uploading files is paused until this company is back within its plan limits. Contact an admin or owner."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:148
+#: ../turboui/src/BillingDangerBanner/index.tsx:158
 msgid "Uploading files is paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
 msgstr ""
 
@@ -18895,7 +18979,7 @@ msgid "View profile"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:45
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:46
 msgid "View release"
 msgstr ""
 
@@ -19197,6 +19281,11 @@ msgid "When I post this, notify:"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:33
+msgid "Which company would you like to manage billing for?"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:31
 msgid "Who are you inviting?"
 msgstr ""
@@ -19453,6 +19542,11 @@ msgstr ""
 #.elixir
 #: lib/operately_web/mcp/executor.ex:88
 msgid "You do not have permission to perform this operation, or the company is read-only."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:62
+msgid "You don't have access to manage billing for any companies yet."
 msgstr ""
 
 #.frontend
@@ -20478,6 +20572,11 @@ msgstr ""
 msgid "minutes"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:24
+msgid "monthly"
+msgstr ""
+
 #.elixir
 #: lib/operately_email/emails/task_moving_email.ex:57
 msgid "moved the task \"%{task_name}\""
@@ -20809,6 +20908,11 @@ msgstr[1] ""
 #.elixir
 #: lib/operately_email/emails/resource_hub_file_created_email.ex:63
 msgid "uploaded the file \"%{file_name}\""
+msgstr ""
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:24
+msgid "yearly"
 msgstr ""
 
 #.frontend
