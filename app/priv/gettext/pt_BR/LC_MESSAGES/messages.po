@@ -8730,7 +8730,7 @@ msgstr "E-mail"
 #.elixir
 #: lib/operately/i18n/validation_errors.ex:37
 msgid "Email can't be blank"
-msgstr "O email não pode ficar em branco"
+msgstr "O e-mail não pode ficar em branco"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/SuccessStep.tsx:13
@@ -8740,12 +8740,12 @@ msgstr "E-mail alterado"
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:839
 msgid "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
-msgstr "O login com código por email não está disponível porque o envio de emails não foi configurado. Entre em contato com o administrador da sua organização."
+msgstr "O login com código por e-mail não está disponível porque o envio de e-mails não foi configurado. Entre em contato com o administrador da sua organização."
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:814
 msgid "Email code login isn't available for first-time invites. Set a password or use Google OAuth instead."
-msgstr "O login com código por email não está disponível para novos convites. Defina uma senha ou use o Google OAuth."
+msgstr "O login com código por e-mail não está disponível para novos convites. Defina uma senha ou use o Google OAuth."
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:92
@@ -8756,23 +8756,23 @@ msgstr "O envio de e-mails não está configurado. Entre em contato com o admini
 #: lib/operately/i18n/validation_errors.ex:14
 #: lib/operately/i18n/validation_errors.ex:38
 msgid "Email has already been taken"
-msgstr "O email já está em uso"
+msgstr "O e-mail já está em uso"
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:537
 #: lib/operately_web/api/mutations/create_account.ex:35
 msgid "Email is already registered"
-msgstr "O email já está cadastrado"
+msgstr "O e-mail já está cadastrado"
 
 #.elixir
 #: lib/operately/i18n/validation_errors.ex:39
 msgid "Email is invalid"
-msgstr "O email é inválido"
+msgstr "O e-mail é inválido"
 
 #.elixir
 #: lib/operately/i18n/validation_errors.ex:40
 msgid "Email is not valid"
-msgstr "O email não é válido"
+msgstr "O e-mail não é válido"
 
 #.frontend
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:232
@@ -8787,12 +8787,12 @@ msgstr "Informe um endereço de e-mail válido"
 #.elixir
 #: lib/operately/i18n/validation_errors.ex:41
 msgid "Email must have the @ sign and no spaces"
-msgstr "O email deve conter @ e não pode ter espaços"
+msgstr "O e-mail deve conter @ e não pode ter espaços"
 
 #.elixir
 #: lib/operately_web/api/mutations/create_email_activation_code.ex:34
 msgid "Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator."
-msgstr "O cadastro por email não está disponível porque o envio de emails não foi configurado. Entre em contato com o administrador da sua organização."
+msgstr "O cadastro por e-mail não está disponível porque o envio de e-mails não foi configurado. Entre em contato com o administrador da sua organização."
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:108
@@ -12050,7 +12050,7 @@ msgstr "Sem espaço"
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:835
 msgid "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
-msgstr "Não existe uma conta para este email. Use `operately auth signup` ou `operately auth join`."
+msgstr "Não existe uma conta para este e-mail. Use `operately auth signup` ou `operately auth join`."
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:267
@@ -17533,7 +17533,7 @@ msgstr "Este link de convite não é mais válido"
 #: lib/operately_web/api/cli_auth.ex:909
 #: lib/operately_web/api/invitations.ex:177
 msgid "This invite link is restricted to specific email domains"
-msgstr "Este link de convite é restrito a domínios de email específicos"
+msgstr "Este link de convite é restrito a domínios de e-mail específicos"
 
 #.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:86
@@ -17575,7 +17575,7 @@ msgstr[1] "Este marco tem %{count} tarefas abertas. Escolha o que fazer com elas
 #.elixir
 #: lib/operately/company_transfers/public_error_message.ex:18
 msgid "This package contains duplicate email addresses and can't be imported until that is fixed."
-msgstr "Este pacote contém endereços de email duplicados e não pode ser importado até que isso seja corrigido."
+msgstr "Este pacote contém endereços de e-mail duplicados e não pode ser importado até que isso seja corrigido."
 
 #.elixir
 #: lib/operately/company_transfers/public_error_message.ex:20
