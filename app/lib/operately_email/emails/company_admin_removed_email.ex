@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.CompanyAdminRemovedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.Repo
   alias OperatelyWeb.Paths
@@ -13,7 +14,7 @@ defmodule OperatelyEmail.Emails.CompanyAdminRemovedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: "revoked your admin privileges")
+    |> subject(gettext("(%{company_name}) %{author} revoked your admin privileges", company_name: company.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:link, link)
     |> render("company_admin_removed")

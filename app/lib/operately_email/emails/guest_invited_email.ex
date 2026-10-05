@@ -1,4 +1,5 @@
 defmodule OperatelyEmail.Emails.GuestInvitedEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
 
   alias Operately.Repo
@@ -16,7 +17,7 @@ defmodule OperatelyEmail.Emails.GuestInvitedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: "invited you as an outside collaborator")
+    |> subject(gettext("(%{company_name}) %{author} invited you as an outside collaborator", company_name: company.name, author: Operately.People.Person.short_name(author)))
     |> assign(:author, author)
     |> assign(:company, company)
     |> assign(:login_url, login_url)

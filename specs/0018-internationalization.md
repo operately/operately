@@ -57,7 +57,7 @@ PR 7 is an umbrella milestone. Each sub-PR is independently deployable and inclu
 | 7a | Goal, project, milestone, and task notification email subjects and HTML/plain-text bodies, including lifecycle events, assignments, check-ins, and acknowledgements. | Implemented locally; ready for review |
 | 7b | Discussion, comment, Docs & Files, and remaining activity emails. | Implemented locally; ready for review |
 | 7c | Buffered notification item copy and digest subjects/bodies, including mixed-language recipients. | Implemented locally; ready for review |
-| 7d | Account, invitation, onboarding, security, and billing emails. | Planned |
+| 7d | Account, invitation, onboarding, security, and billing emails. | Implemented locally; ready for review. External SendGrid onboarding coverage remains open. |
 | 7e | Remaining backend user-facing messages and server-rendered pages. | Planned |
 
 7a covers implemented immediate notification emails. Existing unsupported email stubs remain unsupported. Discussion/comment emails belong to 7b even when attached to goals, projects, milestones, or tasks. Buffered-item headlines and digest composition belong to 7c; existing pilot translations remain intact. Remaining frontend extraction is tracked separately from PR 7.
@@ -91,6 +91,18 @@ The daily work-summary email now catalogs its subject, HTML/plain-text introduct
 This slice adds 104 messages with Brazilian Portuguese drafts and regenerated POT/PO/JSON resources. Existing nonempty translations are retained. All 195 focused email, worker, scheduling, and catalog tests pass. Validation covers all 61 implemented buffered renderers, English/Portuguese/missing-locale fallback, unchanged item metadata, assignment/date/copy/upload/milestone/status branches, singular/plural counts, empty digests, escaped user content, work-summary ordering, mixed-language recipients, and flag rollback across buffered, daily, and work-summary delivery. Catalog checks verify deterministic generation, matching placeholders/plurals, and preservation of existing translations.
 
 Account, invitation, onboarding, security, and billing emails remain 7d; remaining backend messages and server-rendered pages remain 7e. Native-speaker review remains PR 8. This implementation has not been merged or deployed.
+
+### PR 7d — account, invitation, security, and billing emails
+
+The 16 locally rendered email types for company invitations, guest access, member restoration/conversion, owner/admin/access changes, login confirmation, password resets, email changes, and billing alerts now use the shared catalog for complete subjects and HTML/plain-text content. This adds 78 messages with Brazilian Portuguese drafts; existing translations and glossary terms are preserved. Access labels are translated only for email presentation. Account identifiers, stored access levels, invitation tokens, verification codes, reset links, recipients, and security expiry rules remain unchanged.
+
+Account-level emails have no company context or account-level language preference. They use a language only when all active company memberships resolve to the same effective language; absent preferences, unsupported languages, conflicting memberships, and new accounts resolve to English. Suspended memberships are excluded. Rendering explicitly scopes and restores the locale. New email-change notification jobs store the account ID so later address changes cannot change whose preference is used; previously queued jobs without an account ID remain supported and use English. The code sent to a proposed new address uses the existing account's preference.
+
+Billing alerts resolve language from each recipient and the alert's company at delivery time. Recipients sharing a language retain a single message; mixed-language groups receive separate localized messages. Flag-off delivery retains the existing English message and recipient grouping. Eligibility, deduplication, scheduling, retry errors, and billing limits are unchanged. Company activity emails retain the existing recipient-scoped notification worker. Catalog-owned email emphasis preserves literal, escaped addresses without interpreting translated HTML.
+
+All 293 focused email, worker, catalog, preview, and API/security tests pass. Validation covers the migrated templates and subjects, English/Portuguese/missing-locale fallback, invitation/login branches, access labels, literal names and addresses, unchanged tokens/codes/links, mixed-language billing workers, account-language conflicts, flag rollback, legacy/new email-change jobs, and email-change API/security regressions. Catalog checks verify deterministic POT/PO/JSON generation, matching placeholders, and preservation of existing translations. API contracts and machine identifiers are unchanged; no CLI catalog regeneration is needed.
+
+**External onboarding coverage remains open:** `OperatelyEE.AccountOnboardingJob` only registers contacts with a SendGrid marketing list. The onboarding email templates and automation are managed outside this repository; there is no local subject/body to extract or language-aware campaign configuration to update here. Local account confirmation/invitation emails are covered above. The SendGrid campaign needs a separate content and locale-routing audit before general availability. Native-speaker review remains PR 8; remaining backend messages and server-rendered pages remain 7e. This implementation has not been merged or deployed.
 
 ## Release acceptance
 
@@ -155,7 +167,7 @@ Validation covers English, Portuguese, substituted translations, missing-languag
 Remaining gaps before general availability:
 
 - Review and merge the local PR 6 implementation. Full-product acceptance with selected companies remains PR 8 work.
-- PR 7: review and merge 7a–7c; complete substeps 7d–7e for remaining account/billing email copy, backend messages, and server-rendered pages.
+- PR 7: review and merge the local 7a–7d implementations; complete 7e for remaining backend messages and server-rendered pages. Audit the external SendGrid onboarding campaign and locale routing to close 7d’s external coverage gap.
 - People directory and org-chart page copy still need extraction.
 - PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted translations, and coverage checks.
 

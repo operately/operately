@@ -1,9 +1,9 @@
-<%= title("#{short_name(@author)} #{@action}") %>
+<%= title(@headline) %>
 
 <%= spacer() %>
 
 <%= row do %>
-  You now have access to <%= @company.name %> as a company member.
+  <%= gettext("You now have access to %{company_name} as a company member.", company_name: @company.name) %>
 <% end %>
 
 <%= spacer() %>

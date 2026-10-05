@@ -21,7 +21,7 @@ defmodule Operately.People.EmailChangeTest do
 
     Oban.Testing.with_testing_mode(:manual, fn ->
       assert :ok = EmailChange.confirm(ctx.account, request.id, " #{String.downcase(formatted)} ")
-      assert_enqueued(worker: Operately.People.EmailChangedEmailWorker, args: %{old_email: ctx.account.email, new_email: "new@example.com"})
+      assert_enqueued(worker: Operately.People.EmailChangedEmailWorker, args: %{account_id: ctx.account.id, old_email: ctx.account.email, new_email: "new@example.com"})
     end)
 
     assert Repo.reload!(ctx.account).email == "new@example.com"

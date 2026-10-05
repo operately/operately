@@ -40,7 +40,7 @@ defmodule Operately.People.EmailChange.Confirm do
     |> Multi.update_all(:requests, Shared.pending_query(account), set: [invalidated_at: Shared.now(), updated_at: DateTime.to_naive(Shared.now())])
     |> Multi.delete_all(:recovery_tokens, recovery_tokens)
     |> IndexUpdates.enqueue(:search_people, "person", person_ids)
-    |> Oban.insert(:email_changed, EmailChangedEmailWorker.new(%{old_email: account.email, new_email: email}))
+    |> Oban.insert(:email_changed, EmailChangedEmailWorker.new(%{account_id: account.id, old_email: account.email, new_email: email}))
     |> Repo.transaction()
     |> case do
       {:ok, _} ->
