@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { PublicDocument } from "../ApiTypes";
 import { DocumentPage } from "../DocumentPage";
 import type { FormattedTimePreferences } from "../FormattedTime";
@@ -17,16 +18,18 @@ export namespace PublicDocumentPage {
 }
 
 export function PublicDocumentPage({ document, loading, formattedTimePreferences }: PublicDocumentPage.Props) {
+  const { t } = useTranslation();
+
   if (!document) {
     return (
       <Page
-        title={loading ? "Loading document" : "Document unavailable"}
+        title={loading ? t("Loading document") : t("Document unavailable")}
         testId={loading ? "public-document-loading" : "public-document-unavailable"}
       >
         <div className="px-8 py-12 text-center">
-          <h1 className="text-xl font-bold">{loading ? "Loading document…" : "Document unavailable"}</h1>
+          <h1 className="text-xl font-bold">{loading ? t("Loading document…") : t("Document unavailable")}</h1>
           {!loading && (
-            <p className="mt-3 text-content-dimmed">This link may have been disabled or the document removed.</p>
+            <p className="mt-3 text-content-dimmed">{t("This link may have been disabled or the document removed.")}</p>
           )}
         </div>
       </Page>
@@ -64,7 +67,7 @@ export function PublicDocumentPage({ document, loading, formattedTimePreferences
           <span aria-hidden="true">
             <OperatelyLogo width="16px" height="16px" />
           </span>
-          <span>Shared with Operately</span>
+          <span>{t("Shared with Operately")}</span>
         </DivLink>
       </footer>
     </>

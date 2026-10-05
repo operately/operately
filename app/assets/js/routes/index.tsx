@@ -9,6 +9,7 @@ import { pageRoute } from "./pageRoute";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { RouteLanguageProvider } from "@/contexts/RouteLanguageProvider";
 import { TimezoneProvider } from "@/contexts/TimezoneContext";
 
 import { saasAdminRoutes } from "@/ee/routes";
@@ -16,7 +17,11 @@ import CompanyLayout from "@/layouts/CompanyLayout";
 import NonCompanyLayout from "@/layouts/NonCompanyLayout";
 
 function NonCompanyRoutes() {
-  return <NonCompanyLayout />;
+  return (
+    <RouteLanguageProvider>
+      <NonCompanyLayout />
+    </RouteLanguageProvider>
+  );
 }
 
 function CompanyRoutes() {
@@ -36,7 +41,11 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
     {
       path: "/",
       element: <NonCompanyRoutes />,
-      errorElement: <ErrorPage />,
+      errorElement: (
+        <RouteLanguageProvider>
+          <ErrorPage />
+        </RouteLanguageProvider>
+      ),
       children: [
         pageRoute("/public/documents/:token", pages.PublicDocumentPage, { auth: false, preload: false }),
         pageRoute("/log_in", pages.LoginPage, { auth: false }),
@@ -61,7 +70,11 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
       path: "/:companyId",
       loader: companyLoader,
       element: <CompanyRoutes />,
-      errorElement: <ErrorPage />,
+      errorElement: (
+        <RouteLanguageProvider>
+          <ErrorPage />
+        </RouteLanguageProvider>
+      ),
       shouldRevalidate: companyShouldRevalidate,
       children: [
         pageRoute("", pages.HomePage),

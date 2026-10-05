@@ -3690,6 +3690,7 @@ msgstr[0] "1 item"
 msgstr[1] "%{count} itens"
 
 #.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:76
 #: ../turboui/src/LobbyPage/index.tsx:97
 msgid "1 member"
 msgid_plural "%{count} members"
@@ -4500,7 +4501,7 @@ msgid "Active"
 msgstr "Ativo"
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:64
+#: ../turboui/src/BillingDangerBanner/index.tsx:66
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:51
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:74
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:210
@@ -5016,12 +5017,12 @@ msgid "Added: %{documentName}"
 msgstr "Adicionou: %{documentName}"
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:130
+#: ../turboui/src/BillingDangerBanner/index.tsx:138
 msgid "Adding or restoring people and uploading files are paused until this company is back within its plan limits. Contact an admin or owner."
 msgstr "A adição ou restauração de pessoas e o envio de arquivos estão suspensos até que esta empresa volte a ficar dentro dos limites do plano. Entre em contato com um administrador ou proprietário."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:133
+#: ../turboui/src/BillingDangerBanner/index.tsx:141
 msgid "Adding or restoring people and uploading files are paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
 msgstr "A adição ou restauração de pessoas e o envio de arquivos estão suspensos até que esta empresa volte a ficar dentro dos limites do plano. Revise o faturamento para alterar o plano ou reduzir o uso."
 
@@ -5031,12 +5032,12 @@ msgid "Adding or restoring people is blocked until the plan is upgraded."
 msgstr "A adição ou restauração de pessoas está bloqueada até que o plano seja atualizado."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:139
+#: ../turboui/src/BillingDangerBanner/index.tsx:148
 msgid "Adding or restoring people is paused until this company is back within its plan limits. Contact an admin or owner."
 msgstr "A adição ou restauração de pessoas está suspensa até que esta empresa volte a ficar dentro dos limites do plano. Entre em contato com um administrador ou proprietário."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:142
+#: ../turboui/src/BillingDangerBanner/index.tsx:151
 msgid "Adding or restoring people is paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
 msgstr "A adição ou restauração de pessoas está suspensa até que esta empresa volte a ficar dentro dos limites do plano. Revise o faturamento para alterar o plano ou reduzir o uso."
 
@@ -5205,6 +5206,11 @@ msgstr "É necessária a ajuda de um administrador ou proprietário"
 #: assets/js/pages/InviteLinkFullPage/index.tsx:31
 msgid "An admin or owner needs to review billing or free up member space before anyone else can join."
 msgstr "Um administrador ou proprietário precisa revisar o faturamento ou liberar vagas para membros antes que outras pessoas possam entrar."
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:28
+msgid "An unexpected error has occurred."
+msgstr "Ocorreu um erro inesperado."
 
 #.elixir
 #: lib/turbo_connect/plugs/dispatch.ex:50
@@ -5762,23 +5768,23 @@ msgid "Billing needs attention by %{date} or this company will become read-only.
 msgstr "Regularize o pagamento até %{date} para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:120
+#: ../turboui/src/BillingDangerBanner/index.tsx:126
 msgid "Billing needs attention by <date/> or this company will become read-only."
 msgstr "Regularize o pagamento até <date/> para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:115
+#: ../turboui/src/BillingDangerBanner/index.tsx:121
 msgid "Billing needs attention by <date/> or this company will become read-only. Contact an admin or owner."
 msgstr "Regularize o pagamento até <date/> para evitar que esta empresa fique em modo somente leitura. Entre em contato com um administrador ou proprietário."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:109
+#: ../turboui/src/BillingDangerBanner/index.tsx:113
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:311
 msgid "Billing needs attention soon or this company will become read-only."
 msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:108
+#: ../turboui/src/BillingDangerBanner/index.tsx:112
 msgid "Billing needs attention soon or this company will become read-only. Contact an admin or owner."
 msgstr "Regularize o pagamento em breve para evitar que esta empresa fique em modo somente leitura. Entre em contato com um administrador ou proprietário."
 
@@ -8287,12 +8293,12 @@ msgid "Discussions"
 msgstr "Discussões"
 
 #.frontend
-#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:53
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:54
 msgid "Dismiss"
 msgstr "Dispensar"
 
 #.frontend
-#: ../turboui/src/SiteMessageBanner/index.tsx:32
+#: ../turboui/src/SiteMessageBanner/index.tsx:35
 msgid "Dismiss message"
 msgstr "Dispensar mensagem"
 
@@ -8379,6 +8385,9 @@ msgid "Document public sharing"
 msgstr "Compartilhamento público do documento"
 
 #.elixir
+#.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:26
+#: ../turboui/src/PublicDocumentPage/index.tsx:30
 #: lib/operately_web/controllers/public_document_controller.ex:22
 msgid "Document unavailable"
 msgstr "Documento indisponível"
@@ -9130,6 +9139,11 @@ msgstr "Insira zero ou um número positivo de dias."
 #: assets/js/pages/TaskPage/index.tsx:382
 msgid "Error"
 msgstr "Erro"
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:39
+msgid "Error Stack Trace"
+msgstr "Rastreamento de pilha do erro"
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:452
@@ -10171,6 +10185,16 @@ msgstr "Comece em um minuto. Não é necessário cartão de crédito."
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:83
 msgid "Global"
 msgstr "Global"
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:33
+msgid "Go back to Home"
+msgstr "Voltar para o Início"
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:33
+msgid "Go back to Lobby"
+msgstr "Voltar para o Lobby"
 
 #.elixir
 #.frontend
@@ -11317,6 +11341,16 @@ msgid "Loading docs and files"
 msgstr "Carregando documentos e arquivos"
 
 #.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:26
+msgid "Loading document"
+msgstr "Carregando documento"
+
+#.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:30
+msgid "Loading document…"
+msgstr "Carregando documento…"
+
+#.frontend
 #: ../turboui/src/InfiniteScroll/index.tsx:108
 #: assets/js/features/Feed/index.tsx:105
 msgid "Loading more activities"
@@ -12168,7 +12202,7 @@ msgid "New project template"
 msgstr "Novo template de projeto"
 
 #.frontend
-#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:35
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:36
 msgid "New release"
 msgstr "Nova versão"
 
@@ -12985,6 +13019,11 @@ msgid "Ooops, something went wrong while loading the feed"
 msgstr "Ops, algo deu errado ao carregar o feed"
 
 #.frontend
+#: ../turboui/src/ErrorPage/index.tsx:23
+msgid "Oops! Something went wrong."
+msgstr "Ops! Algo deu errado."
+
+#.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:111
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:240
 msgid "Open %{name} preview"
@@ -13260,6 +13299,11 @@ msgid "Package"
 msgstr "Pacote"
 
 #.frontend
+#: ../turboui/src/ErrorPage/index.tsx:23
+msgid "Page Not Found"
+msgstr "Página não encontrada"
+
+#.frontend
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:50
 msgid "Paid access until"
 msgstr "Acesso pago até"
@@ -13415,7 +13459,7 @@ msgid "Payment issue detected"
 msgstr "Problema no pagamento detectado"
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:46
+#: ../turboui/src/BillingDangerBanner/index.tsx:48
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:172
 msgid "Payment issue requires attention"
 msgstr "Problema no pagamento requer atenção"
@@ -13431,12 +13475,12 @@ msgid "Payment method unavailable"
 msgstr "Forma de pagamento indisponível"
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:99
+#: ../turboui/src/BillingDangerBanner/index.tsx:102
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until an admin or owner updates billing."
 msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo somente leitura, por isso o trabalho colaborativo está pausado até que um administrador ou proprietário atualize o faturamento."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:102
+#: ../turboui/src/BillingDangerBanner/index.tsx:105
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:181
 msgid "Payment wasn't resolved in time. This company is now read-only, so collaborative work is paused until billing is updated."
 msgstr "O pagamento não foi regularizado a tempo. Esta empresa está em modo somente leitura, por isso o trabalho colaborativo está pausado até a regularização do faturamento."
@@ -15037,7 +15081,7 @@ msgstr "Revise e revogue conexões de clientes de IA"
 
 #.elixir
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:82
+#: ../turboui/src/BillingDangerBanner/index.tsx:84
 #: assets/js/models/billing/memberLimitGuidance.ts:44
 #: lib/operately_email/emails/billing_limit_reached_email.ex:36
 #: lib/operately_email/emails/billing_near_limit_warning_email.ex:40
@@ -15480,6 +15524,11 @@ msgid "Select"
 msgstr "Selecionar"
 
 #.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:27
+msgid "Select Company"
+msgstr "Selecionar empresa"
+
+#.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:383
 msgid "Select a Space"
 msgstr "Selecione um espaço"
@@ -15493,6 +15542,11 @@ msgstr "Selecione um status de tarefa concluída"
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:39
 msgid "Select a closed task status."
 msgstr "Selecione um status de tarefa encerrada."
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:32
+msgid "Select a company"
+msgstr "Selecione uma empresa"
 
 #.frontend
 #: ../turboui/src/Forms/DateInput.tsx:28
@@ -15669,6 +15723,16 @@ msgstr "Selecionar horário"
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:158
 msgid "Selected"
 msgstr "Selecionado"
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:46
+msgid "Selected plan: <plan>%{plan}</plan>"
+msgstr "Plano selecionado: <plan>%{plan}</plan>"
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:37
+msgid "Selected plan: <plan>%{plan}</plan> <interval>(%{interval})</interval>"
+msgstr "Plano selecionado: <plan>%{plan}</plan> <interval>(%{interval})</interval>"
 
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:99
@@ -15874,6 +15938,11 @@ msgid "Share this link to this draft with anyone who has access to this space:"
 msgstr "Compartilhe este link do rascunho com qualquer pessoa que tenha acesso a este espaço:"
 
 #.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:70
+msgid "Shared with Operately"
+msgstr "Compartilhado com Operately"
+
+#.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:99
 msgid "Sheet"
 msgstr "Planilha"
@@ -16048,6 +16117,11 @@ msgstr "Algo deu errado ao usar este link de convite."
 #: assets/js/pages/SpaceKpisPage/page.tsx:227
 msgid "Something went wrong. Please try again."
 msgstr "Algo deu errado. Tente novamente."
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:27
+msgid "Sorry, we couldn't find that page you were looking for."
+msgstr "Desculpe, não encontramos a página que você estava procurando."
 
 #.frontend
 #: ../turboui/src/SearchPage/RefineControls.tsx:61
@@ -16393,7 +16467,7 @@ msgid "Storage limit reached"
 msgstr "Limite de armazenamento atingido"
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:64
+#: ../turboui/src/BillingDangerBanner/index.tsx:66
 #: ../turboui/src/CompanyBillingCancellationPage/viewModel.ts:53
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:75
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:214
@@ -17696,12 +17770,12 @@ msgid "This company is now on %{plan}."
 msgstr "Esta empresa agora está no plano %{plan}."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:43
+#: ../turboui/src/BillingDangerBanner/index.tsx:45
 msgid "This company is over its plan limits"
 msgstr "Esta empresa excedeu os limites do plano"
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:45
+#: ../turboui/src/BillingDangerBanner/index.tsx:47
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:180
 msgid "This company is read-only"
 msgstr "Esta empresa está em modo somente leitura"
@@ -17727,6 +17801,11 @@ msgstr "Esta empresa continuará no plano pago atual até o final do ciclo de fa
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:88
 msgid "This email is already registered. Use a different address."
 msgstr "Este e-mail já está cadastrado. Use outro endereço."
+
+#.frontend
+#: ../turboui/src/ErrorPage/index.tsx:41
+msgid "This error is visible only in dev and test environments."
+msgstr "Este erro é visível apenas nos ambientes de desenvolvimento e teste."
 
 #.elixir
 #: lib/operately/company_transfers/public_error_message.ex:19
@@ -17857,6 +17936,11 @@ msgstr "Este item não pode ser movido para uma de suas subpastas"
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:26
 msgid "This link (including the one in their email) expires in 24 hours."
 msgstr "Este link (incluindo o enviado por e-mail) expira em 24 horas."
+
+#.frontend
+#: ../turboui/src/PublicDocumentPage/index.tsx:32
+msgid "This link may have been disabled or the document removed."
+msgstr "Este link pode ter sido desativado ou o documento removido."
 
 #.frontend
 #: ../turboui/src/MilestonePage/components/CompleteMilestoneModal.tsx:67
@@ -18789,12 +18873,12 @@ msgid "Uploading file..."
 msgstr "Enviando arquivo..."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:147
+#: ../turboui/src/BillingDangerBanner/index.tsx:157
 msgid "Uploading files is paused until this company is back within its plan limits. Contact an admin or owner."
 msgstr "O envio de arquivos está suspenso até que esta empresa volte a ficar dentro dos limites do plano. Entre em contato com um administrador ou proprietário."
 
 #.frontend
-#: ../turboui/src/BillingDangerBanner/index.tsx:148
+#: ../turboui/src/BillingDangerBanner/index.tsx:158
 msgid "Uploading files is paused until this company is back within its plan limits. Review billing to change the plan or reduce usage."
 msgstr "O envio de arquivos está suspenso até que esta empresa volte a ficar dentro dos limites do plano. Revise o faturamento para alterar o plano ou reduzir o uso."
 
@@ -19212,7 +19296,7 @@ msgid "View profile"
 msgstr "Ver perfil"
 
 #.frontend
-#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:45
+#: ../turboui/src/ProductReleaseAnnouncement/index.tsx:46
 msgid "View release"
 msgstr "Ver versão"
 
@@ -19514,6 +19598,11 @@ msgid "When I post this, notify:"
 msgstr "Quando eu publicar, notificar:"
 
 #.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:33
+msgid "Which company would you like to manage billing for?"
+msgstr "De qual empresa você gostaria de gerenciar o faturamento?"
+
+#.frontend
 #: ../turboui/src/MemberTypeSelectionPage/index.tsx:31
 msgid "Who are you inviting?"
 msgstr "Quem você está convidando?"
@@ -19771,6 +19860,11 @@ msgstr "Você não pode excluir o espaço geral"
 #: lib/operately_web/mcp/executor.ex:88
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Você não tem permissão para realizar esta operação ou a empresa está no modo somente leitura."
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:62
+msgid "You don't have access to manage billing for any companies yet."
+msgstr "Você ainda não tem acesso para gerenciar o faturamento de nenhuma empresa."
 
 #.frontend
 #: assets/js/pages/DiscussionDraftsPage/index.tsx:92
@@ -20860,6 +20954,11 @@ msgstr "metas"
 msgid "minutes"
 msgstr "minutos"
 
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:24
+msgid "monthly"
+msgstr "mensal"
+
 #.elixir
 #: lib/operately_email/emails/task_moving_email.ex:57
 msgid "moved the task \"%{task_name}\""
@@ -21255,6 +21354,11 @@ msgstr[1] "enviou %{count} arquivos"
 #: lib/operately_email/emails/resource_hub_file_created_email.ex:63
 msgid "uploaded the file \"%{file_name}\""
 msgstr "enviou o arquivo \"%{file_name}\""
+
+#.frontend
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:24
+msgid "yearly"
+msgstr "anual"
 
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:111

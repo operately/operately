@@ -3203,9 +3203,9 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
+  | "project_check_in"
   | "project_retrospective"
   | "kpi"
-  | "project_check_in"
   | "project_discussion"
   | "goal_discussion"
   | "goal_check_in"
@@ -3550,6 +3550,14 @@ export interface FilesGetInput {
 
 export interface FilesGetResult {
   file: ResourceHubFile;
+}
+
+export interface GetLanguageInput {
+  companyId?: string | null;
+}
+
+export interface GetLanguageResult {
+  language: string;
 }
 
 export interface GetThemeInput {}
@@ -8004,6 +8012,25 @@ export async function resetPassword(input: ResetPasswordInput): Promise<ResetPas
   return defaultApiClient.resetPassword(input);
 }
 
+export function getLanguageQueryKeyPrefix() {
+  return buildApiQueryKeyPrefix(defaultApiClient, "/get_language");
+}
+
+export function getLanguageQueryKey(input: GetLanguageInput) {
+  return buildApiQueryKey(defaultApiClient, "/get_language", input);
+}
+
+export function getLanguageQueryOptions(input: GetLanguageInput) {
+  return buildApiQueryOptions<GetLanguageInput, GetLanguageResult>(defaultApiClient, "/get_language", input);
+}
+
+export function getLanguageQuery(input: GetLanguageInput) {
+  return queryClient.query({
+    ...getLanguageQueryOptions(input),
+    staleTime: Infinity,
+  });
+}
+
 export function getThemeQueryKeyPrefix() {
   return buildApiQueryKeyPrefix(defaultApiClient, "/get_theme");
 }
@@ -8192,6 +8219,10 @@ export function useResetPassword(): UseMutationHookResult<ResetPasswordInput, Re
 export default {
   default: defaultApiClient,
 
+  getLanguageQueryKeyPrefix,
+  getLanguageQueryKey,
+  getLanguageQueryOptions,
+  getLanguageQuery,
   getThemeQueryKeyPrefix,
   getThemeQueryKey,
   getThemeQueryOptions,
