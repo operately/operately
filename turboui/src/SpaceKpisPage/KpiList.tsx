@@ -1,3 +1,4 @@
+import { useKpiFormatting } from "./formatting";
 import { useTranslation } from "react-i18next";
 import React from "react";
 
@@ -6,7 +7,7 @@ import { DivLink } from "../Link";
 import { IconChartColumn } from "../icons";
 import { KpiSparkline } from "./KpiSparkline";
 import type { SpaceKpisPage } from "./types";
-import { formatNumber, formatValue, latestEntry, latestTrend } from "./utils";
+import { latestEntry, latestTrend } from "./utils";
 import { TrendIndicator } from "./TrendIndicator";
 
 interface KpiListProps {
@@ -46,6 +47,7 @@ export function KpiList({ kpis, canManage, onNewKpi }: KpiListProps) {
 }
 
 function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
+  const { formatNumber, formatValue } = useKpiFormatting();
   const { t } = useTranslation();
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);

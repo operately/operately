@@ -1,5 +1,6 @@
 import { ContextualDate } from "@/api";
 import * as Time from "@/utils/time";
+import { assertPresent } from "@/utils/assertions";
 import { DateField } from "turboui";
 
 /**
@@ -11,8 +12,12 @@ import { DateField } from "turboui";
 export function parseContextualDate(obj: ContextualDate | undefined | null): DateField.ContextualDate | null {
   if (!obj) return null;
 
+  // Contextual dates are calendar dates, not UTC timestamps.
+  const date = Time.parseDate(obj.date);
+  assertPresent(date, "Contextual date must contain a date");
+
   return {
-    date: new Date(obj.date),
+    date,
     dateType: obj.dateType,
     value: obj.value,
   };

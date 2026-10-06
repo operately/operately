@@ -1,3 +1,4 @@
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import i18n from "@/i18n";
 import * as React from "react";
 import { useNavigate } from "react-router";
@@ -18,6 +19,7 @@ import { useLoadedData, useRefresh } from "./loader";
 import { KpiEntryComments } from "./KpiEntryComments";
 
 export function Page() {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const paths = usePaths();
   const navigate = useNavigate();
   const refresh = useRefresh();
@@ -180,6 +182,7 @@ export function Page() {
 
   return (
     <SpaceKpisPage
+      formattedTimePreferences={formattedTimePreferences}
       space={{ id: space.id!, name: space.name!, link: paths.spacePath(space.id!) }}
       navigation={[{ to: paths.spacePath(space.id!), label: space.name! }]}
       kpisLink={kpisLink}

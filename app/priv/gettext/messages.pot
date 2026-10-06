@@ -7,6 +7,11 @@ msgstr "Language: \n"
 "X-Generator: Operately I18n\n"
 
 #.frontend
+#: assets/js/layouts/CompanyLayout/contactUsLink.ts:6
+msgid "\n\norg name: %{companyName}\norg id: %{companyId}\n\n"
+msgstr ""
+
+#.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:252
 msgid " %{firstName} should be aware."
 msgstr ""
@@ -2714,6 +2719,13 @@ msgid "%{count} min. ago"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SelectLocalization/index.ts:59
+msgid "%{count} result available."
+msgid_plural "%{count} results available."
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:85
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:93
 msgid "%{current} / Unlimited"
@@ -2725,7 +2737,7 @@ msgid "%{date} - no deadline"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:46
+#: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:47
 msgid "%{delta} vs previous"
 msgstr ""
 
@@ -2792,6 +2804,26 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:138
 msgid "%{interval} billing"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:18
+msgid "%{label} is focused. Press Down to open the menu."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:42
+msgid "%{label}, option %{position} of %{total}."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:22
+msgid "%{month} %{day}, %{year}"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:10
+msgid "%{month} %{year}"
 msgstr ""
 
 #.frontend
@@ -2961,7 +2993,7 @@ msgid "%{storage} storage"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:46
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:47
 msgid "%{value} recorded on %{date} will be permanently removed."
 msgstr ""
 
@@ -3363,7 +3395,7 @@ msgid "(%{where}) %{author} changed the assignees for %{task_name}"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_due_date_updating_email.ex:43
+#: lib/operately_email/emails/project_due_date_updating_email.ex:32
 msgid "(%{where}) %{author} changed the due date"
 msgstr ""
 
@@ -3393,7 +3425,7 @@ msgid "(%{where}) %{author} removed the champion"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_due_date_updating_email.ex:41
+#: lib/operately_email/emails/project_due_date_updating_email.ex:30
 msgid "(%{where}) %{author} removed the due date"
 msgstr ""
 
@@ -3408,7 +3440,7 @@ msgid "(%{where}) %{author} removed you from the task %{task_name}"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_due_date_updating_email.ex:42
+#: lib/operately_email/emails/project_due_date_updating_email.ex:31
 msgid "(%{where}) %{author} set the due date"
 msgstr ""
 
@@ -4128,7 +4160,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:467
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:472
 #: ../turboui/src/TaskBoard/components/TaskItem.tsx:363
 msgid "1 comment"
 msgid_plural "%{count} comments"
@@ -4197,7 +4229,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:247
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:250
 msgid "1 discussion in this template will be attributed to you because its original author is no longer active."
 msgid_plural "%{count} discussions in this template will be attributed to you because their original authors are no longer active."
 msgstr[0] ""
@@ -4348,7 +4380,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:267
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:270
 msgid "1 person in this template is no longer active."
 msgid_plural "%{count} people in this template are no longer active."
 msgstr[0] ""
@@ -4796,8 +4828,8 @@ msgid "<label>Edited</label> <date/>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:616
-msgid "<label>Logged by</label> <avatar/> <details><name>%{name}</name> on %{date}</details>"
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:621
+msgid "<label>Logged by</label> <avatar/> <details><name>%{name}</name> on <date/></details>"
 msgstr ""
 
 #.frontend
@@ -5055,8 +5087,8 @@ msgstr ""
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:238
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:402
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:297
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:422
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:299
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:425
 #: ../turboui/src/TaskPage/Sidebar.tsx:454
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:118
 msgid "Actions"
@@ -5214,7 +5246,7 @@ msgid "Add Trusted Email Domain"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:88
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:90
 msgid "Add a description..."
 msgstr ""
 
@@ -5275,7 +5307,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:96
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:108
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:110
 msgid "Add annotation"
 msgstr ""
 
@@ -5459,7 +5491,7 @@ msgid "Add task"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:113
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:115
 msgid "Add the first KPI"
 msgstr ""
 
@@ -5711,6 +5743,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/Feed/FeedZeroState.tsx:23
 msgid "All quiet for now"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:24
+msgid "All selected options have been cleared."
 msgstr ""
 
 #.frontend
@@ -6384,7 +6421,7 @@ msgid "Bold"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/index.tsx:210
+#: ../turboui/src/SpaceKpisPage/index.tsx:213
 msgid "Breadcrumb"
 msgstr ""
 
@@ -6429,7 +6466,7 @@ msgid "CONTRIBUTOR"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:238
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:240
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:80
 msgid "Cadence"
 msgstr ""
@@ -6553,8 +6590,8 @@ msgstr ""
 #: ../turboui/src/SlideIn/ActionConfirmation.tsx:30
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:76
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:113
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:195
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:98
 #: ../turboui/src/StatusCustomization/index.tsx:205
@@ -6680,8 +6717,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:166
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:218
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:220
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:36
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:89
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:163
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
@@ -6725,7 +6762,7 @@ msgid "Change access level"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:171
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:170
 msgid "Change date"
 msgstr ""
 
@@ -6992,7 +7029,7 @@ msgid "Checkout unavailable"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:9
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:23
 msgid "Choose"
 msgstr ""
 
@@ -7013,7 +7050,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:32
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:31
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:33
 msgid "Choose a date"
 msgstr ""
 
@@ -7038,7 +7075,7 @@ msgid "Choose a password (minimum 12 characters)"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:56
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:52
 msgid "Choose a period"
 msgstr ""
 
@@ -7397,7 +7434,7 @@ msgid "Comment not updated"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:468
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:473
 msgid "Comment on this update"
 msgstr ""
 
@@ -7409,7 +7446,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:138
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:420
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:423
 #: lib/operately/md/goal/check_ins.ex:48
 #: lib/operately/md/goal/discussions.ex:45
 #: lib/operately/md/project.ex:219
@@ -7922,7 +7959,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:221
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:335
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:280
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:282
 #: ../turboui/src/TaskPage/PageOptions.tsx:9
 #: ../turboui/src/TaskPage/Sidebar.tsx:421
 msgid "Copy URL"
@@ -7933,7 +7970,7 @@ msgstr ""
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:273
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:275
 #: ../turboui/src/TaskPage/Sidebar.tsx:415
 msgid "Copy failed"
 msgstr ""
@@ -7971,8 +8008,8 @@ msgid "Copy to clipboard"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:75
-msgid "Correct the value recorded on <date>%{date}</date>. The previous number stays visible on this update."
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:77
+msgid "Correct the value recorded on <date/>. The previous number stays visible on this update."
 msgstr ""
 
 #.frontend
@@ -7996,7 +8033,7 @@ msgid "Couldn't delete the draft. Please try again."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/index.tsx:273
+#: ../turboui/src/SpaceKpisPage/index.tsx:276
 msgid "Couldn't load KPIs"
 msgstr ""
 
@@ -8096,7 +8133,7 @@ msgid "Create a personal link to share with a single team member."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:106
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:108
 msgid "Create a project template"
 msgstr ""
 
@@ -8342,9 +8379,9 @@ msgstr ""
 #: ../turboui/src/DateField/DateDisplay.tsx:20
 #: ../turboui/src/DateField/index.tsx:109
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:108
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:93
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:417
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:133
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:94
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:420
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:129
 msgid "Date"
 msgstr ""
 
@@ -8403,8 +8440,8 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:92
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:88
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:67
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:287
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:510
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:289
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:515
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:326
 #: ../turboui/src/TaskPage/PageOptions.tsx:28
 #: ../turboui/src/TaskPage/Sidebar.tsx:442
@@ -8546,7 +8583,7 @@ msgid "Delete this company"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:43
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:44
 msgid "Delete this update?"
 msgstr ""
 
@@ -8556,7 +8593,7 @@ msgid "Delete token"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:52
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:53
 msgid "Delete update"
 msgstr ""
 
@@ -8696,7 +8733,7 @@ msgid "Describe the task..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:87
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:89
 msgid "Describe this KPI..."
 msgstr ""
 
@@ -8709,7 +8746,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectPage/Overview.tsx:52
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:112
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:86
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:88
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:31
 #: lib/operately/md/goal.ex:61
 #: lib/operately/md/goal.ex:67
@@ -9197,7 +9234,7 @@ msgstr ""
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
 #: ../turboui/src/SchedulePosting/ScheduleNotice.tsx:33
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:502
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:507
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:318
 #: assets/js/features/activities/GoalDiscussionCreation/index.tsx:62
 #: assets/js/pages/DiscussionPage/page.tsx:201
@@ -9326,7 +9363,7 @@ msgid "Edit status"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:69
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:71
 msgid "Edit update — %{name}"
 msgstr ""
 
@@ -9336,7 +9373,7 @@ msgid "Edit your comment..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:551
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:557
 msgid "Edited"
 msgstr ""
 
@@ -9564,8 +9601,8 @@ msgid "Enter a valid email address."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:28
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:53
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:30
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:49
 msgid "Enter a value"
 msgstr ""
 
@@ -9685,7 +9722,7 @@ msgstr ""
 #: assets/js/pages/ProjectPage/index.tsx:290
 #: assets/js/pages/ProjectPage/index.tsx:788
 #: assets/js/pages/ProjectPage/index.tsx:817
-#: assets/js/pages/SpaceKpisPage/page.tsx:100
+#: assets/js/pages/SpaceKpisPage/page.tsx:102
 #: assets/js/pages/SpacePage/page.tsx:119
 #: assets/js/pages/TaskPage/index.tsx:84
 #: assets/js/pages/TaskPage/index.tsx:93
@@ -10247,7 +10284,7 @@ msgid "Failed to unsubscribe from task notifications."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceKpisPage/page.tsx:100
+#: assets/js/pages/SpaceKpisPage/page.tsx:102
 msgid "Failed to update KPI description."
 msgstr ""
 
@@ -10940,7 +10977,7 @@ msgid "Hiring plan"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:36
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:37
 msgid "History"
 msgstr ""
 
@@ -11477,17 +11514,17 @@ msgid "Join this Space"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:34
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 msgid "KPI"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:271
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:273
 msgid "KPI URL copied to clipboard"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:164
+#: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:165
 msgid "KPI history line chart"
 msgstr ""
 
@@ -11512,12 +11549,12 @@ msgid "KPI: %{value}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:64
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:109
-#: ../turboui/src/SpaceKpisPage/index.tsx:74
-#: ../turboui/src/SpaceKpisPage/index.tsx:190
-#: ../turboui/src/SpaceKpisPage/index.tsx:227
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:70
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:116
+#: ../turboui/src/SpaceKpisPage/index.tsx:75
+#: ../turboui/src/SpaceKpisPage/index.tsx:193
 #: ../turboui/src/SpaceKpisPage/index.tsx:230
+#: ../turboui/src/SpaceKpisPage/index.tsx:233
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:85
 msgid "KPIs"
 msgstr ""
@@ -11590,7 +11627,7 @@ msgid "Keep template"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:53
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:54
 msgid "Keep update"
 msgstr ""
 
@@ -11674,7 +11711,7 @@ msgid "Last edited on <date/>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:110
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:106
 msgid "Last recorded value was <value>%{value}</value>."
 msgstr ""
 
@@ -11700,7 +11737,7 @@ msgid "Latest"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:37
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:38
 msgid "Latest value"
 msgstr ""
 
@@ -11928,6 +11965,7 @@ msgid "Loading tasks"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SelectLocalization/index.ts:56
 #: assets/js/pages/GoalPage/index.tsx:451
 #: assets/js/pages/ProfilePage/index.tsx:71
 #: assets/js/pages/SpacePage/page.tsx:118
@@ -11964,8 +12002,8 @@ msgid "Log in with your account"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:112
-#: ../turboui/src/SpaceKpisPage/index.tsx:64
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:114
+#: ../turboui/src/SpaceKpisPage/index.tsx:65
 msgid "Log update"
 msgstr ""
 
@@ -11977,22 +12015,22 @@ msgid "Log update for %{name}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:96
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:92
 msgid "Log update — %{name}"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:627
-msgid "Logged on %{date}"
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:634
+msgid "Logged on <date/>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:158
-msgid "Logging for <date>%{date}</date>"
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:154
+msgid "Logging for <date/>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:153
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:149
 msgid "Logging for <date>today</date>"
 msgstr ""
 
@@ -12375,14 +12413,14 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DateField/index.tsx:30
 #: ../turboui/src/TimeframeSelectorDialog/index.tsx:110
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:11
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:25
 msgid "Month"
 msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:15
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:95
-#: ../turboui/src/SpaceKpisPage/utils.ts:9
+#: ../turboui/src/SpaceKpisPage/utils.ts:10
 msgid "Monthly"
 msgstr ""
 
@@ -12397,7 +12435,7 @@ msgid "Monthly check-ins keep everyone in the loop. Updates will appear here."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:124
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:132
 msgid "Monthly revenue"
 msgstr ""
 
@@ -12536,7 +12574,7 @@ msgid "N/A"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:125
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:133
 msgid "NPS score"
 msgstr ""
 
@@ -12659,7 +12697,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:66
-#: ../turboui/src/SpaceKpisPage/index.tsx:69
+#: ../turboui/src/SpaceKpisPage/index.tsx:70
 msgid "New KPI"
 msgstr ""
 
@@ -12790,7 +12828,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:105
 #: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:65
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:14
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:28
 msgid "Next month"
 msgstr ""
 
@@ -12804,7 +12842,7 @@ msgstr ""
 #: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:37
 #: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:38
 #: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:46
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:16
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:30
 msgid "Next year"
 msgstr ""
 
@@ -12839,7 +12877,7 @@ msgid "No Companies Found"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:102
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:104
 msgid "No KPIs yet"
 msgstr ""
 
@@ -12889,15 +12927,15 @@ msgstr ""
 #: ../turboui/src/GoalPage/Sidebar.tsx:168
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:190
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:199
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:225
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:232
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:227
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:234
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:92
 #: ../turboui/src/TemplateProjectPage/People.tsx:96
 msgid "No champion"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:25
+#: ../turboui/src/SpaceKpisPage/TrendIndicator.tsx:26
 msgid "No change"
 msgstr ""
 
@@ -12938,8 +12976,8 @@ msgid "No contributors"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:87
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:86
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:89
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:93
 msgid "No data"
 msgstr ""
 
@@ -13152,6 +13190,11 @@ msgid "No one will be notified when someone comments on this task."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SelectLocalization/index.ts:57
+msgid "No options"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:130
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:123
 msgid "No parent goal"
@@ -13271,7 +13314,7 @@ msgid "No tasks yet."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:103
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:105
 msgid "No template"
 msgstr ""
 
@@ -13328,7 +13371,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:356
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:216
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:10
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:24
 msgid "Not available"
 msgstr ""
 
@@ -13363,12 +13406,12 @@ msgid "Not yet acknowledged"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:180
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:179
 msgid "Note (optional)"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceKpisPage/page.tsx:130
+#: assets/js/pages/SpaceKpisPage/page.tsx:132
 msgid "Note not posted"
 msgstr ""
 
@@ -13714,6 +13757,21 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:75
 msgid "Operately package"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:28
+msgid "Option %{label} deselected."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:31
+msgid "Option %{label} is disabled. Select another option."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:32
+msgid "Option %{label} selected."
 msgstr ""
 
 #.frontend
@@ -14363,7 +14421,7 @@ msgid "Posted <date/> at <time/>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:186
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:185
 msgid "Posted as the first comment on this update."
 msgstr ""
 
@@ -14398,6 +14456,11 @@ msgid "Press Enter to add. You can also drag tasks here."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SelectLocalization/index.ts:14
+msgid "Press Tab to select the option and exit the menu."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:45
 msgid "Preview version %{version}: %{action}"
 msgstr ""
@@ -14422,12 +14485,12 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:94
 #: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:63
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:13
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:27
 msgid "Previous month"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:560
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:566
 msgid "Previous values"
 msgstr ""
 
@@ -14435,7 +14498,7 @@ msgstr ""
 #: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:35
 #: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:36
 #: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:42
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:15
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:29
 msgid "Previous year"
 msgstr ""
 
@@ -14737,13 +14800,13 @@ msgid "Project reviewer"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:185
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:224
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:188
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:227
 msgid "Project start date"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:210
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:213
 msgid "Project start date <text>*</text>"
 msgstr ""
 
@@ -14826,10 +14889,12 @@ msgstr ""
 msgid "Q%{quarter}"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/DateField/utils.ts:46
 #: ../turboui/src/utils/timeframes.tsx:38
 #: assets/js/utils/timeframes.tsx:20
+#: lib/operately_email/date_formatting.ex:11
 msgid "Q%{quarter} %{year}"
 msgstr ""
 
@@ -15084,22 +15149,22 @@ msgid "Recommended plan"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:102
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:98
 msgid "Record the current value in <unit>%{unit}</unit>."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:195
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:194
 msgid "Record update"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:418
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:421
 msgid "Recorded by"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:412
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:415
 msgid "Recorded updates"
 msgstr ""
 
@@ -15377,13 +15442,13 @@ msgid "Replace unavailable contributor"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:572
-msgid "Replaced by %{name} on <date>%{date}</date>"
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:578
+msgid "Replaced by %{name} on <date/>"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:578
-msgid "Replaced on <date>%{date}</date>"
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:584
+msgid "Replaced on <date/>"
 msgstr ""
 
 #.frontend
@@ -15929,7 +15994,7 @@ msgid "Save as template"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:113
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
 #: ../turboui/src/StatusCustomization/index.tsx:220
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:143
 msgid "Save changes"
@@ -16068,7 +16133,7 @@ msgid "Search for people to promote to owner"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Forms/SelectPerson.tsx:66
+#: ../turboui/src/Forms/SelectPerson.tsx:67
 msgid "Search for person..."
 msgstr ""
 
@@ -16111,6 +16176,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceField/index.tsx:224
 msgid "Search spaces..."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:51
+msgid "Search term: %{term}."
 msgstr ""
 
 #.frontend
@@ -16159,6 +16229,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/Forms/SelectGoal.tsx:99
 #: ../turboui/src/Forms/SelectGoal.tsx:154
+#: ../turboui/src/SelectLocalization/index.ts:18
 msgid "Select"
 msgstr ""
 
@@ -16194,7 +16265,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/Forms/DateInput.tsx:28
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:221
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:224
 msgid "Select a date"
 msgstr ""
 
@@ -16209,7 +16280,7 @@ msgid "Select a goal …"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:188
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:191
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:261
 msgid "Select a project start date."
 msgstr ""
@@ -16364,6 +16435,11 @@ msgid "Select time"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SelectLocalization/index.ts:55
+msgid "Select..."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:158
 msgid "Selected"
 msgstr ""
@@ -16381,6 +16457,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocumentVersionHistoryPage/index.tsx:99
 msgid "Selected version"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:34
+msgid "Selected: %{labels}."
 msgstr ""
 
 #.frontend
@@ -16438,7 +16519,7 @@ msgstr ""
 #: ../turboui/src/GoalPage/Sidebar.tsx:167
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:189
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:198
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:224
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:226
 msgid "Set champion"
 msgstr ""
 
@@ -16754,16 +16835,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:55
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:83
-#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:34
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:35
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:36
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:47
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:76
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:49
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:72
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:59
 #: assets/js/models/projects/useProjectContributorActions.tsx:91
 #: assets/js/models/projects/useProjectContributorActions.tsx:102
 #: assets/js/models/projects/useProjectContributorActions.tsx:150
 #: assets/js/models/projects/useProjectContributorActions.tsx:171
-#: assets/js/pages/SpaceKpisPage/page.tsx:227
+#: assets/js/pages/SpaceKpisPage/page.tsx:230
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -17220,7 +17301,7 @@ msgstr ""
 #: ../turboui/src/CommentSection/CommentItem.tsx:192
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:326
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:271
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:273
 #: ../turboui/src/TaskPage/Sidebar.tsx:413
 msgid "Success"
 msgstr ""
@@ -17524,8 +17605,8 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:122
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:127
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:124
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:130
 msgid "Template"
 msgstr ""
 
@@ -18215,33 +18296,33 @@ msgid "The uploaded file is unavailable"
 msgstr ""
 
 #.frontend
-#: assets/js/pages/SpaceKpisPage/page.tsx:130
+#: assets/js/pages/SpaceKpisPage/page.tsx:132
 msgid "The value was recorded, but the note wasn't saved."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:294
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:297
 msgid "Their %{roles} project roles and 1 task will be left unassigned."
 msgid_plural "Their %{roles} project roles and %{count} tasks will be left unassigned."
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:281
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:284
 msgid "Their 1 task will be left unassigned."
 msgid_plural "Their %{count} tasks will be left unassigned."
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:289
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:292
 msgid "Their project role and 1 task will be left unassigned."
 msgid_plural "Their project role and %{count} tasks will be left unassigned."
 msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/ProjectTemplateSelection/index.tsx:283
+#: ../turboui/src/ProjectTemplateSelection/index.tsx:286
 msgid "Their project role will be left unassigned."
 msgid_plural "Their %{count} project roles will be left unassigned."
 msgstr[0] ""
@@ -18617,6 +18698,16 @@ msgid_plural "This milestone has %{count} open tasks. Choose what happens to the
 msgstr[0] ""
 msgstr[1] ""
 
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:47
+msgid "This option is disabled."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:48
+msgid "This option is selected."
+msgstr ""
+
 #.elixir
 #: lib/operately/company_transfers/public_error_message.ex:18
 msgid "This package contains duplicate email addresses and can't be imported until that is fixed."
@@ -18755,7 +18846,7 @@ msgid "This time does not exist in your timezone"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:117
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:113
 msgid "This will be the first recorded value."
 msgstr ""
 
@@ -18921,7 +19012,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
-#: ../turboui/src/FormattedTime/ShortDate.tsx:31
+#: ../turboui/src/FormattedTime/ShortDate.tsx:33
 #: ../turboui/src/utils/time.tsx:198
 #: assets/js/utils/time.tsx:134
 msgid "Today"
@@ -19014,17 +19105,17 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:115
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:122
 msgid "Track a KPI"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:104
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:106
 msgid "Track key metrics for this space and record updates over time."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:112
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:119
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:86
 msgid "Track the numbers this space cares about and log updates on a weekly or monthly cadence."
 msgstr ""
@@ -19090,6 +19181,11 @@ msgid "Type the title of this link"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SelectLocalization/index.ts:19
+msgid "Type to refine the list."
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/ResourceHubLinkEdited/index.tsx:157
 msgid "Type:"
 msgstr ""
@@ -19119,7 +19215,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:273
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:275
 #: ../turboui/src/TaskPage/Sidebar.tsx:415
 msgid "Unable to copy URL to clipboard"
 msgstr ""
@@ -19176,7 +19272,7 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiList.tsx:70
+#: ../turboui/src/SpaceKpisPage/KpiList.tsx:72
 #: lib/operately/md/milestone.ex:81
 #: lib/operately/md/task.ex:139
 #: lib/operately/md/workmap.ex:107
@@ -19221,7 +19317,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:269
 #: ../turboui/src/GoalTargetList/index.tsx:390
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:246
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:248
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:77
 #: assets/js/features/goals/GoalTargetsV2/EditTargetCard.tsx:66
 msgid "Unit"
@@ -19235,7 +19331,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:349
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:451
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:456
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:407
 #: assets/js/models/projectTemplates/useTemplateComments.tsx:21
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:166
@@ -19371,12 +19467,12 @@ msgid "Update name"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:34
+#: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:35
 msgid "Update not deleted"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:491
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:496
 msgid "Update options"
 msgstr ""
 
@@ -19605,7 +19701,7 @@ msgid "Uploads are unavailable for this account."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:126
+#: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:134
 msgid "Uptime"
 msgstr ""
 
@@ -19627,6 +19723,16 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:84
 msgid "Use API tokens to access Operately programmatically from scripts, integrations, and automation tools."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:17
+msgid "Use Left and Right to focus selected values. Press Backspace to remove the focused value."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SelectLocalization/index.ts:11
+msgid "Use Up and Down to choose options, press Enter to select the focused option, and press Escape to exit the menu."
 msgstr ""
 
 #.frontend
@@ -19670,13 +19776,13 @@ msgid "Validating Package"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:419
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:422
 msgid "Value"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:85
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:124
+#: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:86
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:120
 msgid "Value (%{unit})"
 msgstr ""
 
@@ -20187,12 +20293,12 @@ msgid "We've sent you a 6-character code to <email>%{email}</email>. The code ex
 msgstr ""
 
 #.frontend
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:12
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:26
 msgid "Week"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/utils.ts:7
+#: ../turboui/src/SpaceKpisPage/utils.ts:8
 msgid "Weekly"
 msgstr ""
 
@@ -20272,7 +20378,7 @@ msgid "What you can do"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:181
+#: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:180
 msgid "What's behind this number?"
 msgstr ""
 
@@ -20505,7 +20611,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:16
-#: ../turboui/src/FormattedTime/ShortDate.tsx:33
+#: ../turboui/src/FormattedTime/ShortDate.tsx:35
 #: ../turboui/src/utils/time.tsx:199
 #: assets/js/utils/time.tsx:135
 msgid "Yesterday"
@@ -21110,8 +21216,8 @@ msgid "archived this goal"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:194
-msgid "as of %{date}"
+#: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:196
+msgid "as of <date/>"
 msgstr ""
 
 #.elixir
@@ -21190,7 +21296,7 @@ msgid "changed the goal's parent to \"%{parent_goal_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_due_date_updating_email.ex:68
+#: lib/operately_email/emails/project_due_date_updating_email.ex:57
 msgid "changed the project's due date to %{date}"
 msgstr ""
 
@@ -21750,7 +21856,7 @@ msgid "removed the project reviewer"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_due_date_updating_email.ex:66
+#: lib/operately_email/emails/project_due_date_updating_email.ex:55
 msgid "removed the project's due date"
 msgstr ""
 
@@ -21795,7 +21901,7 @@ msgid "set the due date of the task \"%{task_name}\" to %{date}"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_due_date_updating_email.ex:67
+#: lib/operately_email/emails/project_due_date_updating_email.ex:56
 msgid "set the project's due date to %{date}"
 msgstr ""
 
@@ -22005,7 +22111,7 @@ msgid "your@email.com"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Forms/SelectPerson.tsx:189
+#: ../turboui/src/Forms/SelectPerson.tsx:194
 msgid "· %{title}"
 msgstr ""
 
@@ -22022,6 +22128,78 @@ msgstr ""
 #.elixir
 #: lib/operately/md/goal/check_ins.ex:65
 msgid "🟢 **On Track** - The goal is progressing as planned."
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:28
+msgctxt "abbreviated month"
+msgid "Apr"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:32
+msgctxt "abbreviated month"
+msgid "Aug"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:36
+msgctxt "abbreviated month"
+msgid "Dec"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:26
+msgctxt "abbreviated month"
+msgid "Feb"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:25
+msgctxt "abbreviated month"
+msgid "Jan"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:31
+msgctxt "abbreviated month"
+msgid "Jul"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:30
+msgctxt "abbreviated month"
+msgid "Jun"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:27
+msgctxt "abbreviated month"
+msgid "Mar"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:29
+msgctxt "abbreviated month"
+msgid "May"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:35
+msgctxt "abbreviated month"
+msgid "Nov"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:34
+msgctxt "abbreviated month"
+msgid "Oct"
+msgstr ""
+
+#.elixir
+#: lib/operately_email/date_formatting.ex:33
+msgctxt "abbreviated month"
+msgid "Sep"
 msgstr ""
 
 #.frontend

@@ -1,3 +1,4 @@
+import { useSelectLocalization } from "../SelectLocalization";
 import { tn } from "../i18n";
 import { Trans } from "../Translate";
 import { useTranslation } from "react-i18next";
@@ -83,6 +84,7 @@ export function ProjectTemplateFields({
   startDateField,
   onCreateTemplate,
 }: ProjectTemplateFields.Props & { startDateField?: string }) {
+  const localization = useSelectLocalization<TemplateOption>();
   const { t } = useTranslation();
   const compatibleTemplates = React.useMemo(
     () => templates.filter((template) => template.spaceId === spaceId),
@@ -122,6 +124,7 @@ export function ProjectTemplateFields({
         <label className="font-bold text-sm mb-1 block text-left">{t("Template")}</label>
         <div data-test-id="template" className="flex-1">
           <Select
+            {...localization}
             unstyled={true}
             className="flex-1"
             aria-label={t("Template")}

@@ -300,3 +300,5 @@ export { ErrorPage } from "./ErrorPage";
 export { BillingPickCompanyPage } from "./BillingPickCompanyPage";
 
 export { formatDate } from "./utils/formatting";
+
+export { useSelectLocalization } from "./SelectLocalization";

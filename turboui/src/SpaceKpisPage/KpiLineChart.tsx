@@ -1,9 +1,9 @@
+import { KpiDate, useKpiFormatting } from "./formatting";
 import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { timeAxisTicks } from "./timeAxis";
 import type { SpaceKpisPage } from "./types";
-import { formatNumber, formatShortDate, formatValue } from "./utils";
 
 interface KpiLineChartProps {
   entries: SpaceKpisPage.KpiEntry[];
@@ -95,6 +95,7 @@ function MultiPointChart({
   onAnnotationClick,
 }: Required<Pick<KpiLineChartProps, "entries" | "unit" | "height" | "annotations">> &
   Pick<KpiLineChartProps, "onAnnotationClick">) {
+  const { formatNumber } = useKpiFormatting();
   const { t } = useTranslation();
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
   const [hoveredAnnotationId, setHoveredAnnotationId] = React.useState<string | null>(null);
@@ -368,6 +369,7 @@ interface ChartPoint {
 const TOOLTIP = { height: 40, paddingX: 10, valueFontSize: 12, dateFontSize: 11, gap: 12 };
 
 function Tooltip({ point, unit, withYear }: { point: ChartPoint; unit: string; withYear: boolean }) {
+  const { formatValue, formatShortDate } = useKpiFormatting();
   const valueLabel = formatValue(point.entry.value, unit);
   const dateLabel = formatShortDate(point.entry.recordedAt, { withYear });
 
@@ -413,7 +415,7 @@ function Tooltip({ point, unit, withYear }: { point: ChartPoint; unit: string; w
         className="fill-content-dimmed"
         style={{ fontSize: TOOLTIP.dateFontSize }}
       >
-        {dateLabel}
+        <KpiDate time={point.entry.recordedAt} withYear={withYear} />
       </text>
     </g>
   );
@@ -430,6 +432,7 @@ function AnnotationTooltip({
   baseline: number;
   withYear: boolean;
 }) {
+  const { formatShortDate } = useKpiFormatting();
   const dateLabel = formatShortDate(mark.annotation.date, { withYear });
   const title = truncate(mark.annotation.title, ANNOTATION_TOOLTIP.titleMaxChars);
 
@@ -472,7 +475,7 @@ function AnnotationTooltip({
         className="fill-content-dimmed"
         style={{ fontSize: TOOLTIP.dateFontSize }}
       >
-        {dateLabel}
+        <KpiDate time={mark.annotation.date} withYear={withYear} />
       </text>
     </g>
   );
