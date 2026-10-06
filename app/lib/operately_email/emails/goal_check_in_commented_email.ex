@@ -1,16 +1,23 @@
 defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
   use Gettext, backend: OperatelyWeb.Gettext
   import OperatelyEmail.Mailers.ActivityMailer
-  alias Operately.{Repo, Goals, Updates}
+  alias Operately.{Repo, Goals}
   alias Operately.Goals.Update
+  alias Operately.Updates.Comment
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
+    case Repo.get(Comment, activity.content["comment_id"]) do
+      nil -> :skip
+      comment -> send_email(person, activity, comment)
+    end
+  end
+
+  defp send_email(person, activity, comment) do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
     {:ok, update} = Update.get(:system, id: activity.content["goal_check_in_id"])
-    comment = Updates.get_comment!(activity.content["comment_id"])
 
     company
     |> new()
@@ -26,8 +33,14 @@ defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
   end
 
   def buffered_item(_person, activity) do
+    case Repo.get(Comment, activity.content["comment_id"]) do
+      nil -> :skip
+      comment -> build_buffered_item(activity, comment)
+    end
+  end
+
+  defp build_buffered_item(activity, comment) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
-    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
     content = comment.content
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
