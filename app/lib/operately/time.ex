@@ -156,19 +156,4 @@ defmodule Operately.Time do
   def current_day do
     Date.utc_today().day
   end
-
-  def relative_due_days(due) do
-    today = DateTime.utc_now() |> DateTime.to_date()
-    due = as_datetime(due)
-
-    case Date.compare(due, today) do
-      :lt ->
-        days_ago = Date.diff(today, due)
-
-        "was due #{days_ago} days ago"
-
-      :eq ->
-        "is due today"
-    end
-  end
 end

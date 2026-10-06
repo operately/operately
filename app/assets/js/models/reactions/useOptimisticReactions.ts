@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useCreateReaction, useDeleteReaction } from "./reactionLifecycle";
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import { type Reaction } from "@/api";
@@ -90,7 +91,8 @@ export function useOptimisticReactions({
         session.pendingServerReactions = null;
         session.changed = true;
       } catch {
-        if (mounted.current && current.current === session) showErrorToast("Error", "Failed to save reaction.");
+        if (mounted.current && current.current === session)
+          showErrorToast(i18n.t("Error"), i18n.t("Failed to save reaction."));
       }
       session.pending = session.pending.filter((change) => change !== apply);
       if (!session.pending.length) syncServerReactions();

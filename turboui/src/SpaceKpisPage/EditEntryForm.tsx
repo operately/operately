@@ -1,10 +1,12 @@
+import { KpiDate } from "./formatting";
 import React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { Trans } from "../Translate";
 
 import { Form, NumberInput, Submit, useForm } from "../Forms";
 import { Modal } from "../Modal";
 import type { SpaceKpisPage } from "./types";
-import { formatShortDate, toIsoDate } from "./utils";
+import { toIsoDate } from "./utils";
 
 interface EditEntryFormProps {
   kpi: SpaceKpisPage.Kpi | null;
@@ -73,9 +75,8 @@ export function EditEntryForm({ kpi, entry, isOpen, onClose, onEdit }: EditEntry
       <Form form={form}>
         <p className="mb-4 text-sm text-content-dimmed">
           <Trans
-            i18nKey="Correct the value recorded on <date>{{date}}</date>. The previous number stays visible on this update."
-            values={{ date: formatShortDate(entry.recordedAt) }}
-            components={{ date: <span className="font-medium text-content-base" /> }}
+            i18nKey="Correct the value recorded on <date/>. The previous number stays visible on this update."
+            components={{ date: <KpiDate className="font-medium text-content-base" time={entry.recordedAt} /> }}
           />
         </p>
 

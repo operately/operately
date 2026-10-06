@@ -1,13 +1,25 @@
+import { i18n, setupTestCatalog } from "../../test/i18n";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import type { AccessLevels } from "../ApiTypes";
-import { SpacePrivacyIndicator } from ".";
+import { PrivacyIndicator, SpacePrivacyIndicator } from ".";
 
 jest.mock("../Tooltip", () => ({
-  Tooltip: ({ children, testId }: { children: React.ReactNode; testId?: string }) => (
-    <div data-testid={testId}>{children}</div>
+  Tooltip: ({
+    children,
+    testId,
+    content,
+  }: {
+    children: React.ReactNode;
+    content: React.ReactNode;
+    testId?: string;
+  }) => (
+    <div data-testid={testId}>
+      {children}
+      {content}
+    </div>
   ),
 }));
 
@@ -40,9 +52,7 @@ describe("SpacePrivacyIndicator", () => {
   });
 
   it("renders nothing when the space is company-visible", () => {
-    const { container } = render(
-      <SpacePrivacyIndicator accessLevels={accessLevels({ company: 10 })} iconSize={14} />,
-    );
+    const { container } = render(<SpacePrivacyIndicator accessLevels={accessLevels({ company: 10 })} iconSize={14} />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -75,3 +85,15 @@ describe("SpacePrivacyIndicator", () => {
     expect(screen.queryByTestId("secret-space-tooltip")).not.toBeInTheDocument();
   });
 });
+
+setupTestCatalog();
+
+it.each(["goal", "project", "space"] as const)(
+  "translates complete privacy sentences for a %s",
+  async (resourceType) => {
+    await i18n.changeLanguage("pt-BR");
+    render(<PrivacyIndicator privacyLevel="confidential" resourceType={resourceType} spaceName="<R&D>" />);
+    expect(screen.getByText("Somente membros de <R&D>")).toBeInTheDocument();
+    expect(screen.getByText(/visível apenas para membros/)).toHaveTextContent("<R&D>");
+  },
+);

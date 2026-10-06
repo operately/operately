@@ -1,3 +1,5 @@
+import type { FormattedTimePreferences } from "../FormattedTime";
+import { KpiFormattingProvider, useKpiFormatting } from "./formatting";
 import { useTranslation } from "react-i18next";
 import React from "react";
 
@@ -8,9 +10,10 @@ import classNames from "../utils/classnames";
 import { KpiSparkline } from "./KpiSparkline";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
-import { formatValue, latestEntry, latestTrend } from "./utils";
+import { latestEntry, latestTrend } from "./utils";
 
 interface KpiSummaryCardProps {
+  formattedTimePreferences?: FormattedTimePreferences;
   // The KPIs tracked by this space. May be empty.
   kpis: SpaceKpisPage.Kpi[];
 
@@ -30,6 +33,7 @@ interface KpiSummaryCardProps {
 // Tasks, and Files) so the card matches their layout and hover behaviour.
 export function KpiSummaryCard({
   kpis,
+  formattedTimePreferences,
   canManage = true,
   maxRows = 7,
   testId = "kpi-summary-card",
@@ -37,9 +41,11 @@ export function KpiSummaryCard({
   const isZeroState = kpis.length === 0;
 
   return (
-    <div data-test-id={testId}>
-      {isZeroState ? <ZeroState canManage={canManage} /> : <RegularState kpis={kpis} maxRows={maxRows} />}
-    </div>
+    <KpiFormattingProvider value={formattedTimePreferences ?? null}>
+      <div data-test-id={testId}>
+        {isZeroState ? <ZeroState canManage={canManage} /> : <RegularState kpis={kpis} maxRows={maxRows} />}
+      </div>
+    </KpiFormattingProvider>
   );
 }
 
@@ -65,6 +71,7 @@ function Title() {
 }
 
 function KpiRow({ kpi }: { kpi: SpaceKpisPage.Kpi }) {
+  const { formatValue } = useKpiFormatting();
   const { t } = useTranslation();
   const latest = latestEntry(kpi);
   const trend = latestTrend(kpi);
@@ -118,12 +125,13 @@ function ExplanationAndButton({ canManage }: { canManage: boolean }) {
 }
 
 function Examples() {
+  const { formatNumber, formatValue, formatCurrency } = useKpiFormatting();
   const { t } = useTranslation();
   return (
     <div className="relative w-full h-[170px] mt-10 opacity-75 px-[50px] flex flex-col gap-3">
-      <Example name={t("Monthly revenue")} value="$42k" trend="up" />
-      <Example name={t("NPS score")} value="68" trend="flat" />
-      <Example name={t("Uptime")} value="99.9%" trend="up" />
+      <Example name={t("Monthly revenue")} value={formatCurrency(42_000, "USD")} trend="up" />
+      <Example name={t("NPS score")} value={formatNumber(68)} trend="flat" />
+      <Example name={t("Uptime")} value={formatValue(99.9, "%")} trend="up" />
     </div>
   );
 }

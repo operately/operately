@@ -2,7 +2,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 
 import { useNavigate } from "react-router";
-import { Timezones } from "./timezones";
+import { getTimezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { applyLanguage } from "@/i18n";
@@ -23,6 +23,7 @@ export type { FromLocation } from "./loader";
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
 function Page() {
+  useTranslation();
   const paths = usePaths();
   const me = useMe();
   const navigate = useNavigate();
@@ -163,7 +164,7 @@ function Page() {
       managerSearch={managerSearch}
       richTextHandlers={richTextHandlers}
       localDraftKeyBase={`profile:${person.id}`}
-      timezones={Timezones}
+      timezones={getTimezones()}
       isCurrentUser={isCurrentUser}
       showLanguageSelector={showLanguageSelector}
       fromLocation={from}

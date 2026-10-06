@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export interface ContentListSkeletonProps {
   count?: number;
@@ -11,13 +12,16 @@ export interface ContentListSkeletonProps {
 export function ContentListSkeleton({
   count = 3,
   leadingShape = "avatar",
-  label = "Loading items",
+  label,
   testId = "content-list-skeleton",
   variant = "list",
 }: ContentListSkeletonProps) {
+  const { t } = useTranslation();
+  const accessibleLabel = label ?? t("Loading items");
+
   return (
-    <div role="status" aria-label={label} data-test-id={testId}>
-      <span className="sr-only">{label}</span>
+    <div role="status" aria-label={accessibleLabel} data-test-id={testId}>
+      <span className="sr-only">{accessibleLabel}</span>
       <div aria-hidden="true" className="motion-safe:animate-pulse">
         {Array.from({ length: count }, (_, index) => (
           <div

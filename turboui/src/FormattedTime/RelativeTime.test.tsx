@@ -1,7 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import "../i18n";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
 import RelativeTime from "./RelativeTime";
 import * as BreakpointHooks from "../utils/useWindowSizeBreakpoint";
 
@@ -186,5 +188,33 @@ describe("RelativeTime", () => {
       render(<RelativeTime locale="en-US" time={createDate(750 * 24 * 60 * 60 * 1000)} />);
       expect(screen.getByText("2 years ago")).toBeInTheDocument();
     });
+  });
+});
+
+describe("translated mobile abbreviations", () => {
+  beforeEach(() => {
+    mockUseWindowSizeBiggerOrEqualTo.mockReturnValue(false);
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-10-05T12:00:00Z"));
+  });
+  afterEach(() => jest.useRealTimers());
+
+  it.each([
+    ["en", "5 min. ago"],
+    ["pt-BR", "há 5 min."],
+  ])(
+    "uses interface language %s for abbreviated minutes with English regional formatting",
+    async (language, expected) => {
+      await i18n.changeLanguage(language);
+      render(<RelativeTime time={new Date("2026-10-05T11:55:00Z")} locale="en-US" timezone="UTC" />);
+      expect(screen.getByText(expected)).toBeInTheDocument();
+    },
+  );
+
+  it("falls back to English when the Portuguese abbreviation is missing", async () => {
+    i18n.removeResourceBundle("pt-BR", "translation");
+    await i18n.changeLanguage("pt-BR");
+    render(<RelativeTime time={new Date("2026-10-05T11:55:00Z")} locale="en-US" timezone="UTC" />);
+    expect(screen.getByText("5 min. ago")).toBeInTheDocument();
   });
 });

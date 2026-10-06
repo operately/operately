@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { formatDate } from "../utils/formatting";
 import { DateField } from ".";
 
 export const getCurrentYear = () => new Date().getFullYear();
@@ -38,20 +40,20 @@ export const getYearDate = (year: number, useStartOfPeriod = false) => {
  * @returns Formatted date string
  */
 export function getDateWithoutCurrentYear(date: DateField.ContextualDate) {
-  if (date.dateType !== "day") {
-    return date.value;
+  if (!date.date) return date.value;
+
+  if (date.dateType === "quarter") {
+    return i18n.t("Q{{quarter}} {{year}}", {
+      quarter: Math.floor(date.date.getMonth() / 3) + 1,
+      year: date.date.getFullYear(),
+    });
   }
 
-  const parts = date.value.split(",");
+  if (date.dateType === "year") return date.value;
 
-  if (parts.length === 2) {
-    const currentYear = new Date().getFullYear();
-    const selectedYear = parseInt(parts[1]!.trim());
-
-    if (selectedYear === currentYear) {
-      return parts[0]!.trim();
-    }
-  }
-
-  return date.value;
+  return formatDate(date.date, i18n.resolvedLanguage, {
+    month: "short",
+    day: date.dateType === "day" ? "numeric" : undefined,
+    year: date.dateType === "month" || date.date.getFullYear() !== getCurrentYear() ? "numeric" : undefined,
+  });
 }

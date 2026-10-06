@@ -1,3 +1,4 @@
+import { formatNumber as formatLocalizedNumber, formatDate } from "../utils/formatting";
 import i18n from "../i18n";
 import type { SpaceKpisPage } from "./types";
 
@@ -19,8 +20,8 @@ export const CADENCE_OPTIONS: { label: string; value: SpaceKpisPage.Cadence }[] 
 
 // Compact, locale-aware number so charts/tables stay readable
 // (e.g. 1500000 -> "1.5M", 87.5 -> "87.5").
-export function formatValue(value: number, unit?: string): string {
-  const formatted = formatNumber(value);
+export function formatValue(value: number, unit?: string, locale = i18n.resolvedLanguage ?? "en"): string {
+  const formatted = formatNumber(value, locale);
   if (!unit) return formatted;
 
   // Percent and currency-ish units read better glued to / prefixing the number.
@@ -28,17 +29,8 @@ export function formatValue(value: number, unit?: string): string {
   return `${formatted} ${unit}`;
 }
 
-export function formatNumber(value: number): string {
-  const abs = Math.abs(value);
-
-  if (abs >= 1_000_000) return trimZeroes(value / 1_000_000) + "M";
-  if (abs >= 1_000) return trimZeroes(value / 1_000) + "K";
-
-  return trimZeroes(value);
-}
-
-function trimZeroes(value: number): string {
-  return Number(value.toFixed(1)).toString();
+export function formatNumber(value: number, locale = i18n.resolvedLanguage ?? "en"): string {
+  return formatLocalizedNumber(value, locale, { notation: "compact", maximumFractionDigits: 1 });
 }
 
 // Entries are stored oldest -> newest; the latest is the most recent sample.
@@ -60,13 +52,13 @@ export function latestTrend(kpi: SpaceKpisPage.Kpi): number | null {
   return last.value - prev.value;
 }
 
-// Self-contained short date (e.g. "Apr 5" / "Apr 5, 2026") so components render
-// identically in Storybook and the app without a FormattedTime preferences context.
-// The year is dropped for the current year unless the caller needs it, as a chart
-// spanning several years does.
-export function formatShortDate(date: Date, { withYear = false }: { withYear?: boolean } = {}): string {
+// String labels for confirmation copy and chart measurements; visible dates use FormattedTime.
+export function formatShortDate(
+  date: Date,
+  { withYear = false, locale = i18n.resolvedLanguage ?? "en" }: { withYear?: boolean; locale?: string } = {},
+): string {
   const sameYear = date.getFullYear() === new Date().getFullYear();
-  return date.toLocaleDateString(undefined, {
+  return formatDate(date, locale, {
     month: "short",
     day: "numeric",
     year: withYear || !sameYear ? "numeric" : undefined,

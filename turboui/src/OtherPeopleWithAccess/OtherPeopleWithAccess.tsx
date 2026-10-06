@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { AccessLevelBadge } from "../AccessLevelBadge";
 import { Avatar } from "../Avatar";
@@ -28,6 +29,8 @@ export function OtherPeopleWithAccess({
   showTitle = true,
   testId = "other-people-list",
 }: OtherPeopleWithAccess.Props) {
+  const { t } = useTranslation();
+
   if (loading) {
     return <OtherPeopleWithAccessSkeleton showTitle={showTitle} />;
   }
@@ -37,7 +40,7 @@ export function OtherPeopleWithAccess({
       <div>
         <Header showTitle={showTitle} />
         <p className="text-sm text-content-dimmed">
-          No one else has access beyond people already assigned to this project.
+          {t("No one else has access beyond people already assigned to this project.")}
         </p>
       </div>
     );
@@ -59,12 +62,15 @@ export function OtherPeopleWithAccess({
 }
 
 function Header({ showTitle }: { showTitle: boolean }) {
+  const { t } = useTranslation();
+
   return (
     <>
-      {showTitle && <div className="font-bold text-lg">Other People with Access</div>}
+      {showTitle && <div className="font-bold text-lg">{t("Other People with Access")}</div>}
       <div className={`text-medium text-sm max-w-lg mb-6 ${showTitle ? "mt-1" : ""}`}>
-        People who have access to the project based on their company or space membership but are not directly assigned
-        to the project.
+        {t(
+          "People who have access to the project based on their company or space membership but are not directly assigned to the project.",
+        )}
       </div>
     </>
   );

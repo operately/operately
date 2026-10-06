@@ -1,3 +1,4 @@
+import { i18n, setupTestCatalog } from "../../test/i18n";
 import * as React from "react";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -143,4 +144,21 @@ it.each([false, true])("dismisses another list's removal mode across instances (
   expect(second.queryByTitle("Remove reaction")).not.toBeNull();
   views.forEach((view) => view.unmount());
   hosts.forEach((host) => host.remove());
+});
+
+setupTestCatalog();
+
+it("finds reactions using Portuguese aliases without accents and retains English aliases", async () => {
+  await i18n.changeLanguage("pt-BR");
+  const onAddReaction = jest.fn();
+  const { container } = render(<Reactions reactions={[]} onAddReaction={onAddReaction} onRemoveReaction={jest.fn()} />);
+  const trigger = container.querySelector('[aria-haspopup="dialog"]');
+  if (!trigger) throw new Error("Reaction picker trigger missing");
+  fireEvent.click(trigger);
+  const search = screen.getByRole("textbox");
+  fireEvent.change(search, { target: { value: "coracao" } });
+  expect(screen.getByText("❤️")).toBeInTheDocument();
+  fireEvent.change(search, { target: { value: "heart" } });
+  fireEvent.click(screen.getByText("❤️"));
+  expect(onAddReaction).toHaveBeenCalledWith("❤️");
 });

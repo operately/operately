@@ -6,13 +6,17 @@ import { DateField } from "turboui";
  * Takes a ContextualDate object and returns a DateField.ContextualDate object that can be used in the UI.
  *
  * @param {ContextualDate | null | undefined} obj The ContextualDate object to parse.
- * @returns {DateField.ContextualDate | undefined} The DateField.ContextualDate object that was parsed, or undefined if the input was null or undefined.
+ * @returns {DateField.ContextualDate | null} The parsed contextual date, or null if the input or its date is missing.
  */
 export function parseContextualDate(obj: ContextualDate | undefined | null): DateField.ContextualDate | null {
   if (!obj) return null;
 
+  // Contextual dates are calendar dates, not UTC timestamps.
+  const date = Time.parseDate(obj.date);
+  if (!date) return null;
+
   return {
-    date: new Date(obj.date),
+    date,
     dateType: obj.dateType,
     value: obj.value,
   };

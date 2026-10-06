@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 import type { Node } from "@tiptap/pm/model";
 import { DecorationSet, Decoration } from "@tiptap/pm/view";
 
@@ -28,10 +29,10 @@ export function buildDiffDecorations(doc: Node, changes: RichContentChange[], si
     if (to <= from) continue;
 
     const className = side === "before" ? "diff-removed" : "diff-added";
-    const label = side === "before" ? "Removed" : "Added";
+    const label = side === "before" ? i18n.t("Removed") : i18n.t("Added");
     const attributes = {
       class: className,
-      "data-diff": label.toLowerCase(),
+      "data-diff": side === "before" ? "removed" : "added",
       "aria-label": label,
     };
     const nodeRanges = classifyNodeRanges(doc, from, to);
