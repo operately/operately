@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import {
   Activity,
   ActivityContentTaskAdding,
@@ -144,7 +145,7 @@ function parseTaskCommentDeletingActivity(
     type: "task_comment_deleting" as const,
     author,
     insertedAt: activity.insertedAt,
-    taskName: content.task?.name || content.taskName || "a task",
+    taskName: content.task?.name || content.taskName || i18n.t("a task"),
     page: pageContext,
   };
 }
@@ -195,7 +196,7 @@ function parseTaskDescriptionChangeActivity(
     author,
     insertedAt: activity.insertedAt,
     hasContent: content.hasDescription,
-    taskName: content.task?.name || "a task",
+    taskName: content.task?.name || i18n.t("a task"),
     page: pageContext,
   };
 }
@@ -224,7 +225,7 @@ function parseTaskAssigneeUpdatingActivity(
     insertedAt: activity.insertedAt,
     assignee,
     action: addedAssignee ? "assigned" : "unassigned",
-    taskName: content.task?.name || "a task",
+    taskName: content.task?.name || i18n.t("a task"),
     page: pageContext,
   };
 }

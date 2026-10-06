@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 /** Normalize pasted tables before ProseMirror can discard unsupported cell content. */
 export function normalizeTableHtml(html: string, insideTable = false): string {
   // Leave ordinary HTML alone when pasting outside a table.
@@ -176,7 +177,7 @@ function appendInline(target: Element, node: Node): void {
 
   if (node.tagName === "IMG") {
     const link = doc.createElement("a");
-    link.textContent = node.getAttribute("alt") || node.getAttribute("title") || "Image";
+    link.textContent = node.getAttribute("alt") || node.getAttribute("title") || i18n.t("Image");
     link.setAttribute("href", node.getAttribute("src") ?? "");
     target.append(link);
     return;

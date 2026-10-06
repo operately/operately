@@ -44,6 +44,7 @@ function Harness(args: HarnessArgs) {
 
   return (
     <SpaceKpisPage
+      formattedTimePreferences={defaultFormattedTimePreferences}
       {...demo.actions}
       space={demo.space}
       navigation={[{ to: demo.space.link, label: demo.space.name }]}

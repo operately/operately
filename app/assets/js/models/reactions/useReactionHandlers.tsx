@@ -1,5 +1,7 @@
+import i18n from "@/i18n";
 import React from "react";
-import Api, { CommentParentType } from "@/api";
+import type { CommentParentType } from "@/api";
+import { useCreateReaction, useDeleteReaction } from "./reactionLifecycle";
 import { showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -10,6 +12,8 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
   invalidateCache: () => void,
 ) {
   const currentUser = useMe();
+  const { mutateAsync: createReaction } = useCreateReaction();
+  const { mutateAsync: deleteReaction } = useDeleteReaction();
 
   const updateCommentById = React.useCallback(
     (commentId: string, updater: (comment: T) => T) => {
@@ -28,7 +32,7 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
   const handleAddReaction = React.useCallback(
     async (commentId: string, emoji: string) => {
       if (!currentUser) {
-        showErrorToast("Error", "Failed to add reaction.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to add reaction."));
         return;
       }
 
@@ -46,7 +50,7 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
       }));
 
       try {
-        await Api.reactions.create({
+        await createReaction({
           entityId: commentId,
           entityType: "comment",
           parentType,
@@ -60,10 +64,10 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
           ...comment,
           reactions: (comment.reactions ?? []).filter((reaction) => reaction.id !== tempReactionId),
         }));
-        showErrorToast("Error", "Failed to add reaction.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to add reaction."));
       }
     },
-    [currentUser, updateCommentById, invalidateCache, parentType],
+    [currentUser, updateCommentById, invalidateCache, parentType, createReaction],
   );
 
   const handleRemoveReaction = React.useCallback(
@@ -78,7 +82,7 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
       });
 
       try {
-        await Api.reactions.delete({ reactionId });
+        await deleteReaction({ reactionId });
         invalidateCache();
       } catch (error) {
         // Rollback on error
@@ -89,10 +93,10 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
           }));
         }
 
-        showErrorToast("Error", "Failed to remove reaction.");
+        showErrorToast(i18n.t("Error"), i18n.t("Failed to remove reaction."));
       }
     },
-    [updateCommentById, invalidateCache],
+    [updateCommentById, invalidateCache, deleteReaction],
   );
 
   return {

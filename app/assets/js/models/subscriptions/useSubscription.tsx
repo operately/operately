@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as React from "react";
 import { type SubscriptionList } from "@/api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -109,12 +110,7 @@ export function useSubscription({
       } catch (error) {
         if (isCurrent()) {
           console.error(`Failed to toggle ${entityType} subscription`, error);
-          showErrorToast(
-            "Error",
-            nextIsSubscribed
-              ? `Failed to subscribe to ${entityType} notifications.`
-              : `Failed to unsubscribe from ${entityType} notifications.`,
-          );
+          showErrorToast(i18n.t("Error"), subscriptionError(entityType, nextIsSubscribed));
         }
       } finally {
         session.currentWrite = null;
@@ -151,4 +147,26 @@ export function useSubscription({
     entityType,
     subscribedPeople,
   };
+}
+
+function subscriptionError(entityType: SubscriptionEntityType, subscribing: boolean): string {
+  switch (entityType) {
+    case "project":
+      return subscribing
+        ? i18n.t("Failed to subscribe to project notifications.")
+        : i18n.t("Failed to unsubscribe from project notifications.");
+    case "milestone":
+      return subscribing
+        ? i18n.t("Failed to subscribe to milestone notifications.")
+        : i18n.t("Failed to unsubscribe from milestone notifications.");
+    case "project_task":
+    case "space_task":
+      return subscribing
+        ? i18n.t("Failed to subscribe to task notifications.")
+        : i18n.t("Failed to unsubscribe from task notifications.");
+    case "kpi":
+      return subscribing
+        ? i18n.t("Failed to subscribe to KPI notifications.")
+        : i18n.t("Failed to unsubscribe from KPI notifications.");
+  }
 }

@@ -1,3 +1,4 @@
+import { useSelectLocalization } from "../SelectLocalization";
 import * as React from "react";
 import Select from "react-select";
 
@@ -5,7 +6,7 @@ import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 import { useFieldError, useFieldValue } from "./context";
 import { InputField } from "./FieldGroup";
-import type { SelectBoxProps } from "./types";
+import type { SelectBoxOption, SelectBoxProps } from "./types";
 
 export function SelectBox(props: SelectBoxProps) {
   const { field, label, labelIcon, hidden, required } = props;
@@ -19,15 +20,17 @@ export function SelectBox(props: SelectBoxProps) {
 }
 
 function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
+  const localization = useSelectLocalization<SelectBoxOption>();
   const [value, setValue] = useFieldValue(field);
   const error = useFieldError(field);
 
   return (
     <div data-test-id={createTestId(field)} className="flex-1">
       <Select
+        {...localization}
         unstyled={true}
         className="flex-1"
-        placeholder={placeholder}
+        placeholder={placeholder ?? localization.placeholder}
         classNames={selectBoxClassNames(!!error)}
         value={options.find(({ value: optionValue }) => optionValue === value)}
         onChange={(option) => setValue(option?.value)}

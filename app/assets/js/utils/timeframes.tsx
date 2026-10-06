@@ -1,8 +1,35 @@
+import i18n from "@/i18n";
+import { formatDate } from "turboui";
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 export function getTimeframeRange({ contextualStartDate, contextualEndDate }: api.Timeframe) {
-  return `${contextualStartDate?.value} - ${contextualEndDate?.value}`;
+  return i18n.t("{{start}} - {{end}}", {
+    start: contextualDateLabel(contextualStartDate),
+    end: contextualDateLabel(contextualEndDate),
+  });
+}
+
+function contextualDateLabel(value: api.ContextualDate | null | undefined): string {
+  if (!value) return i18n.t("Not set");
+  const date = Time.parseDate(value.date);
+  if (!date) return value.value;
+
+  switch (value.dateType) {
+    case "quarter":
+      return i18n.t("Q{{quarter}} {{year}}", {
+        quarter: Math.floor(date.getMonth() / 3) + 1,
+        year: date.getFullYear(),
+      });
+    case "year":
+      return value.value;
+    default:
+      return formatDate(date, i18n.resolvedLanguage, {
+        month: "short",
+        day: value.dateType === "day" ? "numeric" : undefined,
+        year: "numeric",
+      });
+  }
 }
 
 //

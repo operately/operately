@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useMemo } from "react";
 import { isPast, isToday } from "../../../utils/time";
 
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function DueDateCell({ tab, status, completedOn, timeframe, hide, formattedTimePreferences }: Props) {
+  const { t } = useTranslation();
   const { isCompleted, isFailed, isPending } = useItemStatus(status);
 
   if (hide) return null;
@@ -39,7 +41,7 @@ export function DueDateCell({ tab, status, completedOn, timeframe, hide, formatt
         </span>
       ) : (
         <span className={textClassName}>
-          <DateField date={timeframe?.endDate} readonly hideCalendarIcon placeholder="N/A" />
+          <DateField date={timeframe?.endDate} readonly hideCalendarIcon placeholder={t("N/A")} />
         </span>
       )}
     </td>

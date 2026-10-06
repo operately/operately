@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "../utils/classnames";
 import { NotificationToggle } from "../NotificationToggle";
 
@@ -24,11 +25,13 @@ export function SidebarSection({
 }
 
 export function SidebarNotificationSection(props: SidebarNotificationSection.Props) {
+  const { t } = useTranslation();
+
   if (props.hidden) return null;
 
   return (
     <div className={props.className}>
-      <SidebarSection title="Notifications">
+      <SidebarSection title={t("Notifications")}>
         <NotificationToggle {...props} />
       </SidebarSection>
     </div>

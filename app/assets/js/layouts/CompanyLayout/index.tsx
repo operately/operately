@@ -1,3 +1,4 @@
+import { contactUsLink } from "./contactUsLink";
 import * as React from "react";
 
 import { CompanyNavigation } from "turboui";
@@ -13,7 +14,7 @@ import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNaviga
 import * as Billing from "@/models/billing";
 import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
 import * as Notifications from "@/models/notifications";
-import { encodeUrlParams, Paths, usePaths } from "@/routes/paths";
+import { Paths, usePaths } from "@/routes/paths";
 import { companySearchPathBuilder, useGlobalSearchHandler } from "./useGlobalSearch";
 import { useProductRelease } from "@/models/productReleases/useProductRelease";
 import { useCompanyLoaderData, useRefreshCompanyLoader } from "@/routes/useCompanyLoaderData";
@@ -124,12 +125,4 @@ function Navigation({
   };
 
   return <CompanyNavigation {...props} />;
-}
-
-function contactUsLink(companyName: string, companyId: string) {
-  const params = encodeUrlParams({
-    body: "\n\norg name: " + companyName + "\norg id: " + companyId + "\n\n",
-  });
-
-  return `mailto:support@operately.com` + params;
 }

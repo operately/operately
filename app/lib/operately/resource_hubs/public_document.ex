@@ -1,4 +1,6 @@
 defmodule Operately.ResourceHubs.PublicDocument do
+  use Gettext, backend: OperatelyWeb.Gettext
+
   import Ecto.Query
 
   alias Operately.Repo
@@ -39,7 +41,7 @@ defmodule Operately.ResourceHubs.PublicDocument do
   def public_content(nodes, token) when is_list(nodes), do: Enum.map(nodes, &public_content(&1, token))
 
   def public_content(%{"type" => "mention", "attrs" => attrs}, _token) do
-    %{"type" => "text", "text" => attrs["label"] || "Mentioned person"}
+    %{"type" => "text", "text" => attrs["label"] || gettext("Mentioned person")}
   end
 
   def public_content(%{"type" => "blob", "attrs" => attrs}, token) do
