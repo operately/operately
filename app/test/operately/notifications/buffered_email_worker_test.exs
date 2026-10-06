@@ -414,6 +414,91 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     refute Notifications.get_notification!(skipped.id).email_sent
   end
 
+  for type <- [:project, :goal] do
+    for count <- [1, 2] do
+      test "skips a batch containing #{count} deleted #{type} check-in comment notifications", ctx do
+        ctx = setup_check_in_comment(ctx, unquote(type))
+        notifications = Enum.map(1..unquote(count), fn _ -> check_in_comment_notification(ctx, ctx.comment) end)
+        {:ok, _} = Operately.Updates.delete_comment(ctx.comment)
+
+        assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+        batch = Notifications.get_email_batch!(ctx.batch.id)
+        assert batch.status == :skipped
+        assert is_nil(batch.sent_at)
+        assert is_nil(batch.error)
+
+        for notification <- notifications do
+          notification = Notifications.get_notification!(notification.id)
+          refute notification.email_sent
+          assert is_nil(notification.email_sent_at)
+        end
+
+        assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+        refute_email_sent()
+      end
+    end
+
+    test "delivers valid digest items while omitting a deleted #{type} check-in comment", ctx do
+      ctx =
+        ctx
+        |> setup_check_in_comment(unquote(type))
+        |> Factory.add_comment(:valid_comment, :check_in, content: Operately.Support.RichText.rich_text("Remaining comment"))
+
+      skipped = check_in_comment_notification(ctx, ctx.comment)
+      sent = check_in_comment_notification(ctx, ctx.valid_comment)
+      {:ok, _} = Operately.Updates.delete_comment(ctx.comment)
+
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+
+      assert_email_sent(fn email ->
+        assert email.to == [{"", ctx.creator.email}]
+        assert email.html_body =~ "Remaining comment"
+        assert email.text_body =~ "Remaining comment"
+        refute email.html_body =~ "Deleted comment"
+        refute email.text_body =~ "Deleted comment"
+        true
+      end)
+
+      batch = Notifications.get_email_batch!(ctx.batch.id)
+      assert batch.status == :sent
+      refute is_nil(batch.sent_at)
+      assert is_nil(batch.error)
+      assert Notifications.get_notification!(sent.id).email_sent
+      refute Notifications.get_notification!(skipped.id).email_sent
+    end
+  end
+
+  defp setup_check_in_comment(ctx, type) do
+    ctx =
+      case type do
+        :project -> ctx |> Factory.add_project(:project, :space) |> Factory.add_project_check_in(:check_in, :project, :creator)
+        :goal -> ctx |> Factory.add_goal(:goal, :space) |> Factory.add_goal_update(:check_in, :goal, :creator) |> Factory.preload(:check_in, [:goal])
+      end
+
+    ctx
+    |> Map.put(:check_in_type, type)
+    |> Factory.add_comment(:comment, :check_in, content: Operately.Support.RichText.rich_text("Deleted comment"))
+  end
+
+  defp check_in_comment_notification(ctx, comment) do
+    content =
+      case ctx.check_in_type do
+        :project -> %{"project_id" => ctx.project.id, "check_in_id" => ctx.check_in.id, "comment_id" => comment.id}
+        :goal -> %{"goal_id" => ctx.goal.id, "goal_check_in_id" => ctx.check_in.id, "comment_id" => comment.id}
+      end
+
+    activity = activity_fixture(author_id: ctx.creator.id, action: "#{ctx.check_in_type}_check_in_commented", content: content)
+
+    notification_fixture(
+      activity_id: activity.id,
+      person_id: ctx.creator.id,
+      email_batch_id: ctx.batch.id,
+      email_sent: false,
+      email_sent_at: nil
+    )
+  end
+
   defp check_in_notification(ctx, check_in) do
     activity = activity_fixture(author_id: check_in.author_id, action: "goal_check_in", content: %{"update_id" => check_in.id})
 
