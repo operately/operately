@@ -3141,12 +3141,12 @@ msgid "(%{location}) %{author} commented on a KPI update: %{kpi_name}"
 msgstr "(%{location}) %{author} comentou em uma atualização de KPI: %{kpi_name}"
 
 #.elixir
-#: lib/operately_email/emails/project_check_in_commented_email.ex:18
+#: lib/operately_email/emails/project_check_in_commented_email.ex:25
 msgid "(%{location}) %{author} commented on a check-in"
 msgstr "(%{location}) %{author} comentou em um check-in"
 
 #.elixir
-#: lib/operately_email/emails/goal_check_in_commented_email.ex:19
+#: lib/operately_email/emails/goal_check_in_commented_email.ex:26
 msgid "(%{location}) %{author} commented on the check-in"
 msgstr "(%{location}) %{author} comentou no check-in"
 
@@ -11440,6 +11440,11 @@ msgid "Invalid datetime: %{value}"
 msgstr "Data e hora inválidas: %{value}"
 
 #.elixir
+#: lib/operately_web/controllers/blob_controller.ex:14
+msgid "Invalid disposition"
+msgstr "Modo de exibição inválido"
+
+#.elixir
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:41
 #: lib/operately_web/api/cli_auth.ex:36
@@ -12641,6 +12646,11 @@ msgstr "Não alcançado"
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "Missing PKCE Challenge"
 msgstr "Desafio PKCE ausente"
+
+#.elixir
+#: lib/operately_web/controllers/blob_controller.ex:11
+msgid "Missing id"
+msgstr "Identificador ausente"
 
 #.elixir
 #: lib/turbo_connect/plugs/required_field_validator.ex:24
@@ -20224,7 +20234,7 @@ msgid "View Check-In"
 msgstr "Ver check-in"
 
 #.elixir
-#: lib/operately_email/emails/project_check_in_commented_email.ex:23
+#: lib/operately_email/emails/project_check_in_commented_email.ex:30
 #: lib/operately_email/emails/project_milestone_commented_email.ex:79
 #: lib/operately_email/templates/comment_added.html.eex:13
 #: lib/operately_email/templates/discussion_comment_submitted.html.eex:13
@@ -21716,12 +21726,12 @@ msgid "commented on a KPI update for \"%{kpi_name}\""
 msgstr "comentou em uma atualização do KPI \"%{kpi_name}\""
 
 #.elixir
-#: lib/operately_email/emails/goal_check_in_commented_email.ex:40
+#: lib/operately_email/emails/goal_check_in_commented_email.ex:53
 msgid "commented on a goal check-in"
 msgstr "comentou em um check-in de objetivo"
 
 #.elixir
-#: lib/operately_email/emails/project_check_in_commented_email.ex:41
+#: lib/operately_email/emails/project_check_in_commented_email.ex:54
 msgid "commented on a project check-in"
 msgstr "comentou em um check-in de projeto"
 

@@ -233,7 +233,7 @@ interface ReactionPalleteProps {
 
 interface EmojiDataItem {
   emoji: string;
-  keywords: string[];
+  keywords: [english: string, localized: string];
 }
 
 // Comprehensive list of common emojis organized by category
@@ -929,7 +929,7 @@ function ReactionPallete({ size, close, onSelected }: ReactionPalleteProps) {
                   className="hover:scale-125 cursor-pointer"
                   onClick={() => onSelected(item.emoji)}
                   data-test-id={`reaction-${item.emoji}-button`}
-                  title={item.keywords.join(", ")}
+                  title={item.keywords[1]}
                 >
                   <span style={{ fontSize: size - 2 }}>{item.emoji}</span>
                 </div>
