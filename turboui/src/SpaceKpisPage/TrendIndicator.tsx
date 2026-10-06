@@ -1,9 +1,9 @@
+import { useKpiFormatting } from "./formatting";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { IconChevronDown, IconChevronUp, IconMinus } from "../icons";
 import classNames from "../utils/classnames";
-import { formatNumber } from "./utils";
 
 // Compact up/down/flat change since the previous entry. `delta === null` means we
 // cannot compute a trend yet (fewer than 2 entries).
@@ -11,6 +11,7 @@ import { formatNumber } from "./utils";
 // The plain variant sits in dense contexts such as list rows; the badge variant
 // carries a tinted pill so it holds its own next to a KPI's headline value.
 export function TrendIndicator({ delta, variant = "plain" }: { delta: number | null; variant?: "plain" | "badge" }) {
+  const { formatNumber } = useKpiFormatting();
   const { t } = useTranslation();
   if (delta === null) return null;
 

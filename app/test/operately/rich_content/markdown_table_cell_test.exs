@@ -41,6 +41,19 @@ defmodule Operately.RichContent.MarkdownTableCellTest do
            ]
   end
 
+  test "only unnamed image labels use the creation locale" do
+    url = "https://example.com/image.png"
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert [unnamed] = MarkdownTableCell.parse("![](#{url})", [])
+      assert unnamed["text"] == "Imagem"
+      assert hd(unnamed["marks"])["attrs"]["href"] == url
+
+      assert [named] = MarkdownTableCell.parse("![Literal name](#{url})", [])
+      assert named["text"] == "Literal name"
+    end)
+  end
+
   test "code-like syntax in link destinations and titles stays literal" do
     assert [node] = MarkdownTableCell.parse("[Link](https://example.com/`abc` \"A ` title `\")", [])
     assert hd(node["marks"])["attrs"] == %{"href" => "https://example.com/`abc`", "title" => "A ` title `"}

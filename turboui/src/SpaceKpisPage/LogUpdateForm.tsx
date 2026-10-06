@@ -1,12 +1,14 @@
+import { KpiDate, useKpiFormatting } from "./formatting";
 import React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { Trans } from "../Translate";
 
 import { Form, NumberInput, RichTextArea, Submit, useForm } from "../Forms";
 import { Modal } from "../Modal";
 import { emptyContent, isContentEmpty } from "../RichContent";
 import type { RichEditorHandlers } from "../RichEditor/useEditor";
 import type { SpaceKpisPage } from "./types";
-import { formatShortDate, formatValue, fromIsoDate, latestEntry } from "./utils";
+import { fromIsoDate, latestEntry } from "./utils";
 
 interface LogUpdateFormProps {
   kpi: SpaceKpisPage.Kpi | null;
@@ -24,16 +26,10 @@ function today(): string {
   return new Date(now.getTime() - offset).toISOString().slice(0, 10);
 }
 
-// Human-friendly label for a `YYYY-MM-DD` period. Parses the parts locally (not
-// via `new Date(string)`, which would treat the value as UTC) so the displayed
-// date matches the picked calendar day.
-function formatPeriodLabel(period: string): string {
-  return formatShortDate(fromIsoDate(period));
-}
-
 // Single-KPI "Log update" form → calls the `logKpiEntry` mutation.
 // This POC intentionally has NO "update all KPIs at once" batch UI — one KPI at a time.
 export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers }: LogUpdateFormProps) {
+  const { formatValue } = useKpiFormatting();
   const { t } = useTranslation();
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
@@ -156,9 +152,12 @@ export function LogUpdateForm({ kpi, isOpen, onClose, onRecord, richTextHandlers
                   />
                 ) : (
                   <Trans
-                    i18nKey="Logging for <date>{{date}}</date>"
-                    values={{ date: formatPeriodLabel(form.values.period) }}
-                    components={{ date: <span className="font-medium text-content-base" /> }}
+                    i18nKey="Logging for <date/>"
+                    components={{
+                      date: (
+                        <KpiDate className="font-medium text-content-base" time={fromIsoDate(form.values.period)} />
+                      ),
+                    }}
                   />
                 )}
               </span>

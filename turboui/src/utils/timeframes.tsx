@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { formatDate } from "./formatting";
 import { match } from "ts-pattern";
 import { overdueDays } from "./time";
 
@@ -13,25 +15,27 @@ export interface Timeframe {
 // Parsing and serializing the timeframe
 //
 
-export function formatTimeframe(timeframe: Timeframe) {
+export function formatTimeframe(timeframe: Timeframe, locale?: string) {
   return match(timeframe.type)
-    .with("month", () => formatMonth(timeframe))
+    .with("month", () => formatMonth(timeframe, locale))
     .with("quarter", () => formatQuarter(timeframe))
     .with("year", () => formatYear(timeframe))
-    .with("days", () => formatDays(timeframe))
+    .with("days", () => formatDays(timeframe, locale))
     .exhaustive();
 }
 
-function formatMonth(timeframe: Timeframe) {
+function formatMonth(timeframe: Timeframe, locale?: string) {
   if (!timeframe.startDate) return null;
   if (!timeframe.endDate) return null;
 
-  return timeframe.startDate.toLocaleString("default", { month: "long", year: "numeric" });
+  return formatDate(timeframe.startDate, locale, { month: "long", year: "numeric" });
 }
 
 function formatQuarter(timeframe: Timeframe) {
-  const quarter = Math.floor(timeframe.startDate!.getMonth() / 3) + 1;
-  return `Q${quarter} ${timeframe.startDate!.getFullYear()}`;
+  if (!timeframe.startDate) return null;
+
+  const quarter = Math.floor(timeframe.startDate.getMonth() / 3) + 1;
+  return i18n.t("Q{{quarter}} {{year}}", { quarter, year: timeframe.startDate.getFullYear() });
 }
 
 function formatYear(timeframe: Timeframe) {
@@ -40,27 +44,27 @@ function formatYear(timeframe: Timeframe) {
   return timeframe.startDate.getFullYear().toString();
 }
 
-function formatDays(timeframe: Timeframe) {
+function formatDays(timeframe: Timeframe, locale?: string) {
   if (!timeframe.startDate) return null;
   if (!timeframe.endDate) return null;
 
   if (timeframe.startDate.getFullYear() === timeframe.endDate.getFullYear()) {
     if (getCurrentFullYear() === timeframe.startDate.getFullYear()) {
-      const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric" });
-      const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric" });
+      const start = formatDate(timeframe.startDate, locale, { month: "long", day: "numeric" });
+      const end = formatDate(timeframe.endDate, locale, { month: "long", day: "numeric" });
 
-      return `${start} - ${end}`;
+      return i18n.t("{{start}} - {{end}}", { start, end });
     } else {
-      const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric" });
-      const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
+      const start = formatDate(timeframe.startDate, locale, { month: "long", day: "numeric" });
+      const end = formatDate(timeframe.endDate, locale, { month: "long", day: "numeric", year: "numeric" });
 
-      return `${start} - ${end}`;
+      return i18n.t("{{start}} - {{end}}", { start, end });
     }
   } else {
-    const start = timeframe.startDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
-    const end = timeframe.endDate.toLocaleString("default", { month: "long", day: "numeric", year: "numeric" });
+    const start = formatDate(timeframe.startDate, locale, { month: "long", day: "numeric", year: "numeric" });
+    const end = formatDate(timeframe.endDate, locale, { month: "long", day: "numeric", year: "numeric" });
 
-    return `${start} - ${end}`;
+    return i18n.t("{{start}} - {{end}}", { start, end });
   }
 }
 

@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../utils/formatting";
+import { useCalendarLocale } from "./useCalendarLocale";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
@@ -10,18 +13,22 @@ interface Props {
 }
 
 export function CustomRangePicker({ timeframe, setTimeframe }: Props) {
+  const { t } = useTranslation();
+  const calendarLocale = useCalendarLocale();
+
   return (
     <div className="flex flex-col sm:flex-row items-start gap-6">
       <div className="flex flex-col items-start justify-start h-full">
-        <div className="font-bold text-sm mb-1">Start Date</div>
+        <div className="font-bold text-sm mb-1">{t("Start Date")}</div>
         <DatePicker
+          {...calendarLocale}
           inline
           selected={timeframe.startDate}
           onChange={(date) => setTimeframe({ ...timeframe, startDate: date })}
           startDate={timeframe.startDate}
           endDate={timeframe.endDate}
           showFourColumnMonthYearPicker
-          renderCustomHeader={Header}
+          renderCustomHeader={(props) => <Header {...props} />}
         />
       </div>
 
@@ -30,16 +37,17 @@ export function CustomRangePicker({ timeframe, setTimeframe }: Props) {
       </div>
 
       <div className="flex flex-col items-start justify-start h-full">
-        <div className="font-bold text-sm mb-1">Due Date</div>
+        <div className="font-bold text-sm mb-1">{t("Due Date")}</div>
 
         <DatePicker
+          {...calendarLocale}
           inline
           selected={timeframe.endDate}
           startDate={timeframe.startDate}
           endDate={timeframe.endDate}
           onChange={(date) => setTimeframe({ ...timeframe, endDate: date })}
           minDate={timeframe.startDate}
-          renderCustomHeader={Header}
+          renderCustomHeader={(props) => <Header {...props} />}
           showFourColumnMonthYearPicker
         />
       </div>
@@ -47,19 +55,14 @@ export function CustomRangePicker({ timeframe, setTimeframe }: Props) {
   );
 }
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
 function Header({ date, increaseMonth, decreaseMonth }) {
-  const month = MONTHS[date.getMonth()];
-  const year = date.getFullYear();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="flex items-center w-full px-1 pb-1 gap-4 font-medium">
-      <LeftChevron onClick={decreaseMonth} />
-      <div>
-        {month} {year}
-      </div>
-      <RightChevron onClick={increaseMonth} />
+      <LeftChevron label={t("Previous month")} onClick={decreaseMonth} />
+      <div>{formatDate(date, i18n.resolvedLanguage, { month: "short", year: "numeric" })}</div>
+      <RightChevron label={t("Next month")} onClick={increaseMonth} />
     </div>
   );
 }

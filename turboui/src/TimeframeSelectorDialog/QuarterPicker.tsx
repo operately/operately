@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../utils/formatting";
+import { useCalendarLocale } from "./useCalendarLocale";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
@@ -10,45 +13,46 @@ interface Props {
 }
 
 export function QuarterPicker({ timeframe, setTimeframe }: Props) {
+  const calendarLocale = useCalendarLocale();
+
   return (
     <DatePicker
+      {...calendarLocale}
       inline
       selected={timeframe.startDate}
       onChange={(date) => setTimeframe({ ...timeframe, startDate: date, endDate: endOfQuarter(date) })}
       calendarClassName="w-full"
       showQuarterYearPicker
-      renderQuarterContent={renderQuarterContent}
-      renderCustomHeader={Header}
+      renderQuarterContent={(quarter) => <QuarterContent quarter={Number(quarter)} />}
+      renderCustomHeader={(props) => <Header {...props} />}
     />
   );
 }
 
 function Header({ date, decreaseYear, increaseYear }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center w-full px-1 pb-1 gap-2 font-medium mb-2">
-      <LeftChevron onClick={decreaseYear} />
+      <LeftChevron label={t("Previous year")} onClick={decreaseYear} />
       <div>{date.getFullYear()}</div>
-      <RightChevron onClick={increaseYear} />
+      <RightChevron label={t("Next year")} onClick={increaseYear} />
     </div>
   );
 }
 
-const RANGES = {
-  Q1: ["Jan 1", "Mar 31"],
-  Q2: ["Apr 1", "Jun 30"],
-  Q3: ["Jul 1", "Sep 30"],
-  Q4: ["Oct 1", "Dec 31"],
-};
-
-function renderQuarterContent(quarter) {
-  const range = RANGES["Q" + quarter];
+function QuarterContent({ quarter }: { quarter: number }) {
+  const { t, i18n } = useTranslation();
+  // These are calendar dates, not instants; the year does not appear in the label.
+  const start = formatDate(new Date(2000, (quarter - 1) * 3, 1), i18n.resolvedLanguage, {
+    month: "short",
+    day: "numeric",
+  });
+  const end = formatDate(new Date(2000, quarter * 3, 0), i18n.resolvedLanguage, { month: "short", day: "numeric" });
 
   return (
     <div className="text-left px-4 py-2 flex items-center justify-between">
-      <span className="font-medium">Q{quarter}</span>
-      <span className="text-xs font-medium">
-        {range[0]} &ndash; {range[1]}
-      </span>
+      <span className="font-medium">{t("Q{{quarter}}", { quarter })}</span>
+      <span className="text-xs font-medium">{t("{{start}} – {{end}}", { start, end })}</span>
     </div>
   );
 }

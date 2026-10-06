@@ -1,10 +1,10 @@
+import { useKpiFormatting } from "./formatting";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { ConfirmDialog } from "../ConfirmDialog";
 import { showErrorToast } from "../Toasts";
 import type { SpaceKpisPage } from "./types";
-import { formatShortDate, formatValue } from "./utils";
 
 interface DeleteEntryDialogProps {
   entry: SpaceKpisPage.KpiEntry | null;
@@ -14,6 +14,7 @@ interface DeleteEntryDialogProps {
 }
 
 export function DeleteEntryDialog({ entry, unit, onClose, onDelete }: DeleteEntryDialogProps) {
+  const { formatValue, formatShortDate } = useKpiFormatting();
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = React.useState(false);
 

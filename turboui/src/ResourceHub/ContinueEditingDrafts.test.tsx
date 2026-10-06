@@ -6,6 +6,10 @@ import { MemoryRouter } from "react-router";
 import { ContinueEditingDrafts } from "./ContinueEditingDrafts";
 import type { ResourceHubNode } from "./types";
 
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
+
 const draftNode: ResourceHubNode = {
   __typename: "resource_hub_node",
   id: "node-1",
@@ -40,4 +44,26 @@ describe("ContinueEditingDrafts", () => {
       expect(link).toHaveAccessibleName(`Your drafts (${count})`);
     }
   });
+});
+
+it.each([0, 1, 3])("uses Portuguese plural resources for %i drafts", async (count) => {
+  await i18n.changeLanguage("pt-BR");
+  const { container } = render(
+    <MemoryRouter>
+      <ContinueEditingDrafts drafts={Array.from({ length: count }, () => draftNode)} draftsPath="/drafts" />
+    </MemoryRouter>,
+  );
+  if (count === 0) expect(container).toBeEmptyDOMElement();
+  else expect(screen.getByRole("link")).toHaveAccessibleName(`Seus rascunhos (${count})`);
+});
+
+it.each([1, 3])("falls back using English plurals for %i drafts", async (count) => {
+  i18n.removeResourceBundle("pt-BR", "translation");
+  await i18n.changeLanguage("pt-BR");
+  render(
+    <MemoryRouter>
+      <ContinueEditingDrafts drafts={Array.from({ length: count }, () => draftNode)} draftsPath="/drafts" />
+    </MemoryRouter>,
+  );
+  expect(screen.getByRole("link")).toHaveAccessibleName(`Your drafts (${count})`);
 });

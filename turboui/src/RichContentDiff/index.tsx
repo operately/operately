@@ -139,7 +139,7 @@ export function RichContentDiff(props: RichContentDiffProps) {
   const schema = React.useMemo(() => getSchema(baseExtensions), [baseExtensions]);
   const comparison = React.useMemo(
     () => prepareComparison(schema, props.before, props.after),
-    [schema, props.before, props.after],
+    [schema, props.before, props.after, t],
   );
 
   const beforeLabel = props.beforeLabel ?? t("Before");

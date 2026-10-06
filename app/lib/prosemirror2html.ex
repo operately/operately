@@ -5,6 +5,8 @@ defmodule Prosemirror2Html do
   Link: https://github.com/inputhq/prosemirror_to_html
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   defmodule Options do
     defstruct domain: nil, highlights: %{}
   end
@@ -152,7 +154,7 @@ defmodule Prosemirror2Html do
   defp convert_table_inline(%{"type" => "mention", "attrs" => %{"label" => label}}, _opts), do: wrap(escape(label), "strong")
 
   defp convert_table_inline(%{"type" => "blob", "attrs" => attrs}, opts) do
-    title = escape(attrs["title"] || attrs["alt"] || "File")
+    title = escape(attrs["title"] || attrs["alt"] || gettext("File"))
     source =
       case attrs["src"] do
         %{"url" => url} -> url

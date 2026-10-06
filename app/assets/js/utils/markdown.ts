@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { MarkdownSerializer, MarkdownSerializerState } from "prosemirror-markdown";
 import { Node, Schema, Fragment, Mark } from "prosemirror-model";
 import { renderMarkdownTable } from "./markdownTable";
@@ -155,7 +156,7 @@ const serializer = new MarkdownSerializer(
 
       // If it's a non-image file, use link syntax instead
       if (node.attrs.filetype && !node.attrs.filetype.startsWith("image/")) {
-        state.write(`[${alt || node.attrs.title || "File"}](${src}${title ? ` "${title}"` : ""})`);
+        state.write(`[${alt || node.attrs.title || i18n.t("File")}](${src}${title ? ` "${title}"` : ""})`);
       } else {
         state.write(`![${alt}](${src}${title ? ` "${title}"` : ""})`);
       }

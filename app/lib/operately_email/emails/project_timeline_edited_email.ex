@@ -76,15 +76,9 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
   end
 
   defp buffered_headline(nil, nil), do: gettext("updated the project's timeline")
-  defp buffered_headline(start_date, nil), do: gettext("updated the project's timeline to start on %{start_date}", start_date: format_date(start_date))
-  defp buffered_headline(nil, end_date), do: gettext("updated the project's timeline to end on %{end_date}", end_date: format_date(end_date))
-  defp buffered_headline(start_date, end_date), do: gettext("updated the project's timeline from %{start_date} to %{end_date}", start_date: format_date(start_date), end_date: format_date(end_date))
+  defp buffered_headline(start_date, nil), do: gettext("updated the project's timeline to start on %{start_date}", start_date: OperatelyEmail.DateFormatting.format(start_date))
+  defp buffered_headline(nil, end_date), do: gettext("updated the project's timeline to end on %{end_date}", end_date: OperatelyEmail.DateFormatting.format(end_date))
+  defp buffered_headline(start_date, end_date), do: gettext("updated the project's timeline from %{start_date} to %{end_date}", start_date: OperatelyEmail.DateFormatting.format(start_date), end_date: OperatelyEmail.DateFormatting.format(end_date))
 
-  defp format_date(date) when is_binary(date) do
-    case Date.from_iso8601(date) do
-      {:ok, parsed} -> Calendar.strftime(parsed, "%b %-d, %Y")
-      _ -> date
-    end
-  end
-  defp format_date(date), do: Calendar.strftime(date, "%b %-d, %Y")
+
 end

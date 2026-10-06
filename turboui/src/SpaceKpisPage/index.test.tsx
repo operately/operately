@@ -1,3 +1,4 @@
+import { defaultFormattedTimePreferences } from "../FormattedTime";
 import * as React from "react";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -76,6 +77,7 @@ const kpisLink = `/spaces/${mockSpace.id}/kpis`;
 // the other space tools rather than an in-page tab bar.
 function pageProps(overrides: Partial<SpaceKpisPageNS.Props> = {}): SpaceKpisPageNS.Props {
   return {
+    formattedTimePreferences: defaultFormattedTimePreferences,
     space: mockSpace,
     navigation: [{ to: `/spaces/${mockSpace.id}`, label: mockSpace.name }],
     kpisLink,
