@@ -11,7 +11,6 @@ export * from "./Avatar";
 export * from "./Button";
 export { UnstyledButton } from "./Button/UnstalyedButton";
 export * from "./BorderedRow";
-export * from "./Chronometer";
 export * from "./CheckInHeader";
 export * from "./CommentSection";
 export * from "./Circle";

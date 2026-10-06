@@ -14183,37 +14183,35 @@ msgid "Overdue by %{duration}."
 msgstr "Atrasado há %{duration}."
 
 #.elixir
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:168
 #: lib/operately_email/emails/assignments_email.ex:207
 msgid "Overdue by 1 day"
 msgid_plural "Overdue by %{count} days"
 msgstr[0] "Atrasado em 1 dia"
 msgstr[1] "Atrasado em %{count} dias"
 
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:170
-msgid "Overdue by 1 month"
-msgid_plural "Overdue by %{count} months"
-msgstr[0] "Data de conclusão ultrapassada em 1 mês"
-msgstr[1] "Data de conclusão ultrapassada em %{count} meses"
-msgstr[2] "Data de conclusão ultrapassada em %{count} meses"
+#~ #.frontend
+#~ #: ../turboui/src/Chronometer/index.tsx:170
+#~ msgid "Overdue by 1 month"
+#~ msgid_plural "Overdue by %{count} months"
+#~ msgstr[0] "Data de conclusão ultrapassada em 1 mês"
+#~ msgstr[1] "Data de conclusão ultrapassada em %{count} meses"
+#~ msgstr[2] "Data de conclusão ultrapassada em %{count} meses"
 
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:169
-msgid "Overdue by 1 week"
-msgid_plural "Overdue by %{count} weeks"
-msgstr[0] "Data de conclusão ultrapassada em 1 semana"
-msgstr[1] "Data de conclusão ultrapassada em %{count} semanas"
-msgstr[2] "Data de conclusão ultrapassada em %{count} semanas"
+#~ #.frontend
+#~ #: ../turboui/src/Chronometer/index.tsx:169
+#~ msgid "Overdue by 1 week"
+#~ msgid_plural "Overdue by %{count} weeks"
+#~ msgstr[0] "Data de conclusão ultrapassada em 1 semana"
+#~ msgstr[1] "Data de conclusão ultrapassada em %{count} semanas"
+#~ msgstr[2] "Data de conclusão ultrapassada em %{count} semanas"
 
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:171
-msgid "Overdue by 1 year"
-msgid_plural "Overdue by %{count} years"
-msgstr[0] "Data de conclusão ultrapassada em 1 ano"
-msgstr[1] "Data de conclusão ultrapassada em %{count} anos"
-msgstr[2] "Data de conclusão ultrapassada em %{count} anos"
+#~ #.frontend
+#~ #: ../turboui/src/Chronometer/index.tsx:171
+#~ msgid "Overdue by 1 year"
+#~ msgid_plural "Overdue by %{count} years"
+#~ msgstr[0] "Data de conclusão ultrapassada em 1 ano"
+#~ msgstr[1] "Data de conclusão ultrapassada em %{count} anos"
+#~ msgstr[2] "Data de conclusão ultrapassada em %{count} anos"
 
 #.elixir
 #.frontend

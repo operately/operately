@@ -13882,32 +13882,9 @@ msgid "Overdue by %{duration}."
 msgstr ""
 
 #.elixir
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:168
 #: lib/operately_email/emails/assignments_email.ex:207
 msgid "Overdue by 1 day"
 msgid_plural "Overdue by %{count} days"
-msgstr[0] ""
-msgstr[1] ""
-
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:170
-msgid "Overdue by 1 month"
-msgid_plural "Overdue by %{count} months"
-msgstr[0] ""
-msgstr[1] ""
-
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:169
-msgid "Overdue by 1 week"
-msgid_plural "Overdue by %{count} weeks"
-msgstr[0] ""
-msgstr[1] ""
-
-#.frontend
-#: ../turboui/src/Chronometer/index.tsx:171
-msgid "Overdue by 1 year"
-msgid_plural "Overdue by %{count} years"
 msgstr[0] ""
 msgstr[1] ""
 
