@@ -1,4 +1,5 @@
 import Api from "@/api";
+import { useTranslation } from "react-i18next";
 import { useQuerySearch } from "./useQuerySearch";
 import * as React from "react";
 
@@ -28,6 +29,7 @@ function useResourceHubSearchHandler(resourceHubId: string | null | undefined): 
 export function useResourceHubSearchProps(
   resourceHubId: string | null | undefined,
 ): ResourceHubPage.SearchProps | undefined {
+  const { t } = useTranslation();
   const search = useResourceHubSearchHandler(resourceHubId);
 
   return React.useMemo(
@@ -35,10 +37,10 @@ export function useResourceHubSearchProps(
       resourceHubId
         ? {
             search,
-            placeholder: "Search documents and files…",
+            placeholder: t("Search documents and files…"),
             testId: "resource-hub-search",
           }
         : undefined,
-    [resourceHubId, search],
+    [resourceHubId, search, t],
   );
 }

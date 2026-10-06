@@ -9,7 +9,7 @@ interface SegmentedControlProps {
 
 export function SegmentedControl(props: SegmentedControlProps) {
   return (
-    <div className="flex items-center bg-surface-dimmed p-0.5 rounded-lg">
+    <div className="flex flex-wrap items-center bg-surface-dimmed p-0.5 rounded-lg">
       {props.options.map((option) => (
         <SegmentedControlOption
           key={option.value}
@@ -31,7 +31,7 @@ interface SegmentedControlOptionProps {
 }
 
 function SegmentedControlOption(props: SegmentedControlOptionProps) {
-  const className = classNames("w-full px-2.5 py-1 text-sm font-medium rounded-lg", {
+  const className = classNames("flex-1 px-2.5 py-1 text-sm font-medium rounded-lg", {
     "bg-surface-base border border-stroke-base": props.value === props.activeValue,
     "bg-transparent": props.value !== props.activeValue,
   });

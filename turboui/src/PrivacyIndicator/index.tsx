@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import React from "react";
 import { match } from "ts-pattern";
 import type { AccessLevels } from "../ApiTypes";
@@ -7,6 +9,7 @@ import { IconLockFilled, IconWorld } from "../icons";
 const DEFAULT_SIZE = 24;
 
 export function PrivacyIndicator(props: PrivacyIndicator.Props) {
+  const { t } = useTranslation();
   props = { ...props, iconSize: props.iconSize ?? DEFAULT_SIZE };
 
   if (props.privacyLevel === "internal") {
@@ -15,8 +18,8 @@ export function PrivacyIndicator(props: PrivacyIndicator.Props) {
 
   const tooltipContent = (
     <div>
-      <div className="text-content-accent font-bold">{title(props)}</div>
-      <div className="text-content-dimmed mt-1 w-64 text-sm">{description(props)}</div>
+      <div className="text-content-accent font-bold">{title(props, t)}</div>
+      <div className="text-content-dimmed mt-1 w-64 text-sm">{description(props, t)}</div>
     </div>
   );
 
@@ -38,27 +41,42 @@ export function PrivacyIndicator(props: PrivacyIndicator.Props) {
   );
 }
 
-function title(props: PrivacyIndicator.Props) {
+function title(props: PrivacyIndicator.Props, t: TFunction) {
   if (props.privacyLevel === "internal") return null;
 
   return match(props.privacyLevel)
-    .with("public", () => "Anyone on the internet")
-    .with("confidential", () => `Only ${props.spaceName} members`)
-    .with("secret", () => `Invite-Only`)
+    .with("public", () => t("Anyone on the internet"))
+    .with("confidential", () => t("Only {{spaceName}} members", { spaceName: props.spaceName }))
+    .with("secret", () => t("Invite-Only"))
     .exhaustive();
 }
 
-function description(props: PrivacyIndicator.Props) {
-  if (props.privacyLevel === "internal") return null;
+function description(props: PrivacyIndicator.Props, t: TFunction) {
+  const options = { spaceName: props.spaceName };
 
-  const t = props.resourceType;
-  const s = props.spaceName;
-
-  return match(props.privacyLevel)
-    .with("public", () => `This ${t} is visible to anyone on the internet who has the link.`)
-    .with("confidential", () => `This ${t} is visible only to members of the ${s} space.`)
-    .with("secret", () => `Only people explicitly invited to this ${t} can view it.`)
-    .exhaustive();
+  switch (props.resourceType) {
+    case "goal":
+      return match(props.privacyLevel)
+        .with("internal", () => null)
+        .with("public", () => t("This goal is visible to anyone on the internet who has the link."))
+        .with("confidential", () => t("This goal is visible only to members of the {{spaceName}} space.", options))
+        .with("secret", () => t("Only people explicitly invited to this goal can view it."))
+        .exhaustive();
+    case "project":
+      return match(props.privacyLevel)
+        .with("internal", () => null)
+        .with("public", () => t("This project is visible to anyone on the internet who has the link."))
+        .with("confidential", () => t("This project is visible only to members of the {{spaceName}} space.", options))
+        .with("secret", () => t("Only people explicitly invited to this project can view it."))
+        .exhaustive();
+    case "space":
+      return match(props.privacyLevel)
+        .with("internal", () => null)
+        .with("public", () => t("This space is visible to anyone on the internet who has the link."))
+        .with("confidential", () => t("This space is visible only to members of the {{spaceName}} space.", options))
+        .with("secret", () => t("Only people explicitly invited to this space can view it."))
+        .exhaustive();
+  }
 }
 
 export namespace PrivacyIndicator {

@@ -1,6 +1,8 @@
 defmodule Operately.RichContent.MarkdownTableCell do
   @moduledoc "Maps inline Markdown to the paragraph-only table cell schema shared with the web editor."
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   def parse(text, opts) do
     {text, codes} = protect_code_spans(text)
     text = protect_escaped_angle_brackets(text)
@@ -99,7 +101,8 @@ defmodule Operately.RichContent.MarkdownTableCell do
   # Images are outside the cell schema; retain their label and destination as a link.
   defp node({"img", attrs, _, _}, marks, opts) do
     attrs = Map.new(attrs)
-    [text_node((attrs["alt"] || "Image") |> restore_code_syntax(opts) |> HtmlEntities.decode(), marks ++ [link_mark([{"href", attrs["src"]}, {"title", attrs["title"]}], opts)])]
+    label = if attrs["alt"] in [nil, ""], do: gettext("Image"), else: attrs["alt"]
+    [text_node(label |> restore_code_syntax(opts) |> HtmlEntities.decode(), marks ++ [link_mark([{"href", attrs["src"]}, {"title", attrs["title"]}], opts)])]
   end
 
   defp node({_tag, _attrs, children, _meta}, marks, opts), do: inline(children, marks, opts)

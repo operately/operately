@@ -1,10 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { tn } from "../i18n";
+import { FormattedTime, defaultFormattedTimePreferences, type FormattedTimePreferences } from "../FormattedTime";
 
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
 import { IconAlertTriangleFilled } from "../icons";
 import { Tooltip } from "../Tooltip";
-import { durationHumanized, overdueDays } from "../utils/time";
+import { daysBetween, weeksBetween, overdueDays } from "../utils/time";
 
 export type Color = "indigo" | "stone";
 
@@ -14,6 +17,7 @@ interface Props {
   color?: Color;
 
   showOverdueWarning?: boolean;
+  formattedTimePreferences?: FormattedTimePreferences;
 }
 
 const gridLayout = classNames(
@@ -21,7 +25,13 @@ const gridLayout = classNames(
   "grid grid-cols-[auto_1fr_auto] items-center gap-2",
 );
 
-export function Chronometer({ start, end, color = "indigo", showOverdueWarning = false }: Props) {
+export function Chronometer({
+  start,
+  end,
+  color = "indigo",
+  showOverdueWarning = false,
+  formattedTimePreferences = defaultFormattedTimePreferences,
+}: Props) {
   //
   // We are displaying two separate grids, one for the completed part and one for the remaining part.
   // The completed part is clipped to the left, and the remaining part is clipped to the right.
@@ -52,9 +62,19 @@ export function Chronometer({ start, end, color = "indigo", showOverdueWarning =
       <div className="absolute inset-0 z-20">
         <div className="absolute inset-0" style={{ right: overdue ? 20 : 0 }}>
           <div className={gridLayout} style={completedStyle}>
-            <TimeDisplay time={start} isHighlighted={true} bgColor={color} />
+            <TimeDisplay
+              time={start}
+              isHighlighted={true}
+              bgColor={color}
+              formattedTimePreferences={formattedTimePreferences}
+            />
             <Dividers color={color} />
-            <TimeDisplay time={end} isHighlighted={true} bgColor={color} />
+            <TimeDisplay
+              time={end}
+              isHighlighted={true}
+              bgColor={color}
+              formattedTimePreferences={formattedTimePreferences}
+            />
           </div>
         </div>
 
@@ -64,9 +84,9 @@ export function Chronometer({ start, end, color = "indigo", showOverdueWarning =
       <div className="absolute inset-0 z-10">
         <div className="absolute inset-0" style={{ right: overdue ? 20 : 0 }}>
           <div className={gridLayout} style={remainingStyle}>
-            <TimeDisplay time={start} bgColor={color} />
+            <TimeDisplay time={start} bgColor={color} formattedTimePreferences={formattedTimePreferences} />
             <Dividers color="stone" />
-            <TimeDisplay time={end} bgColor={color} />
+            <TimeDisplay time={end} bgColor={color} formattedTimePreferences={formattedTimePreferences} />
           </div>
         </div>
 
@@ -77,12 +97,13 @@ export function Chronometer({ start, end, color = "indigo", showOverdueWarning =
 }
 
 function OverdueWarning({ bgColor, end }: { bgColor: Color; end: Date }) {
+  useTranslation();
   const className = classNames("shrink-0", {
     "text-callout-error-message dark:text-white-1": bgColor === "stone",
     "text-white-1": bgColor === "indigo",
   });
 
-  const content = "Overdue by " + durationHumanized(end, new Date());
+  const content = overdueLabel(end);
 
   return (
     <div className="absolute top-2 right-[8px] z-30">
@@ -119,12 +140,13 @@ function ChronometerProgress({ progress, color }: { progress: number; color: Col
 }
 
 interface TimeDisplayProps {
+  formattedTimePreferences: FormattedTimePreferences;
   time: Date | string;
   bgColor: Color;
   isHighlighted?: boolean;
 }
 
-function TimeDisplay({ time, bgColor, isHighlighted = false }: TimeDisplayProps) {
+function TimeDisplay({ time, bgColor, isHighlighted = false, formattedTimePreferences }: TimeDisplayProps) {
   const containerClass = classNames("text-xs z-1 relative whitespace-nowrap", {
     "text-white-1 font-bold": isHighlighted && bgColor === "indigo",
   });
@@ -133,21 +155,20 @@ function TimeDisplay({ time, bgColor, isHighlighted = false }: TimeDisplayProps)
     time = new Date(time);
   }
 
-  const formatDate = (date: Date) => {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    const currentYear = new Date().getFullYear();
+  return (
+    <span className={containerClass}>
+      <FormattedTime time={time} format="short-date" {...formattedTimePreferences} />
+    </span>
+  );
+}
 
-    if (year === currentYear) {
-      return `${day} ${month}`;
-    } else {
-      return `${day} ${month} '${String(year).slice(-2)}`;
-    }
-  };
-
-  return <span className={containerClass}>{formatDate(time)}</span>;
+function overdueLabel(end: Date): string {
+  const now = new Date();
+  const days = daysBetween(end, now);
+  if (days < 14) return tn("Overdue by 1 day", "Overdue by {{count}} days", days);
+  if (days < 60) return tn("Overdue by 1 week", "Overdue by {{count}} weeks", weeksBetween(end, now));
+  if (days < 365) return tn("Overdue by 1 month", "Overdue by {{count}} months", Math.floor(days / 30));
+  return tn("Overdue by 1 year", "Overdue by {{count}} years", Math.floor(days / 365));
 }
 
 function findProgress(start: Date | string, end: Date | string) {

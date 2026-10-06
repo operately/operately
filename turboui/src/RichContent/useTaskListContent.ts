@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 import React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { setTaskItemChecked, type TaskListInteraction } from "../RichEditor/taskLists";
@@ -32,7 +33,7 @@ export function useTaskListContent(content: JSONContent, taskList: TaskListInter
       await taskList.onChange({ itemPath, checked, expectedContent });
     } catch {
       if (mounted.current) setOptimistic(null);
-      showErrorToast("Couldn't update task item", "Refresh the content and try again.");
+      showErrorToast(i18n.t("Couldn't update task item"), i18n.t("Refresh the content and try again."));
     } finally {
       saving.current = false;
       if (mounted.current) setPending(false);

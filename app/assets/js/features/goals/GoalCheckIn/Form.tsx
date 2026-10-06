@@ -449,7 +449,7 @@ function DueDateSelector() {
 
   return (
     <div>
-      <Label text={t("Due Date")} info="Set a new due date for the goal." />
+      <Label text={t("Due Date")} info={t("Set a new due date for the goal.")} />
       <DateField
         date={value ?? null}
         onDateSelect={(date) => setValue(date)}

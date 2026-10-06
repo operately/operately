@@ -2686,6 +2686,14 @@ msgid "%{completed}/%{total} completed (%{percentage}%)"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/utils/time.tsx:201
+#: assets/js/utils/time.tsx:137
+msgid "%{count} day ago"
+msgid_plural "%{count} days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:129
 msgid "%{count} hidden without dates"
 msgstr ""
@@ -2698,6 +2706,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:248
 msgid "%{count} member limit"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/FormattedTime/RelativeTime.tsx:53
+msgid "%{count} min. ago"
 msgstr ""
 
 #.frontend
@@ -2927,6 +2940,19 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKanbanPage/index.tsx:64
 msgid "%{space} Tasks"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/utils/timeframes.tsx:56
+#: ../turboui/src/utils/timeframes.tsx:61
+#: ../turboui/src/utils/timeframes.tsx:67
+#: assets/js/utils/timeframes.tsx:7
+msgid "%{start} - %{end}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:55
+msgid "%{start} – %{end}"
 msgstr ""
 
 #.frontend
@@ -3412,6 +3438,621 @@ msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr ""
 
 #.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:44
+msgid "(UTC) Dublin, Edinburgh, Lisbon, London"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:45
+msgid "(UTC) Monrovia, Reykjavik"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:46
+msgid "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:47
+msgid "(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:48
+msgid "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:51
+msgid "(UTC+01:00) Casablanca"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:49
+msgid "(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:50
+msgid "(UTC+01:00) West Central Africa"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:52
+msgid "(UTC+01:00) Windhoek"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:53
+msgid "(UTC+02:00) Athens, Bucharest"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:54
+msgid "(UTC+02:00) Beirut"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:55
+msgid "(UTC+02:00) Cairo"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:56
+msgid "(UTC+02:00) Damascus"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:57
+msgid "(UTC+02:00) Gaza, Hebron"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:58
+msgid "(UTC+02:00) Harare, Pretoria"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:59
+msgid "(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:60
+msgid "(UTC+02:00) Jerusalem"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:61
+msgid "(UTC+02:00) Kaliningrad"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:62
+msgid "(UTC+02:00) Tripoli"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:63
+msgid "(UTC+03:00) Amman"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:64
+msgid "(UTC+03:00) Baghdad"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:65
+msgid "(UTC+03:00) Istanbul"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:66
+msgid "(UTC+03:00) Kuwait, Riyadh"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:67
+msgid "(UTC+03:00) Minsk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:68
+msgid "(UTC+03:00) Moscow, St. Petersburg"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:69
+msgid "(UTC+03:00) Nairobi"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:70
+msgid "(UTC+03:30) Tehran"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:71
+msgid "(UTC+04:00) Abu Dhabi, Muscat"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:72
+msgid "(UTC+04:00) Astrakhan, Ulyanovsk, Volgograd"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:73
+msgid "(UTC+04:00) Baku"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:74
+msgid "(UTC+04:00) Izhevsk, Samara"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:75
+msgid "(UTC+04:00) Port Louis"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:76
+msgid "(UTC+04:00) Tbilisi"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:77
+msgid "(UTC+04:00) Yerevan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:78
+msgid "(UTC+04:30) Kabul"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:82
+msgid "(UTC+05:00) Astana"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:80
+msgid "(UTC+05:00) Ekaterinburg"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:81
+msgid "(UTC+05:00) Islamabad, Karachi"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:79
+msgid "(UTC+05:00) Tashkent, Ashgabat"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:83
+msgid "(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:84
+msgid "(UTC+05:30) Sri Jayawardenepura"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:85
+msgid "(UTC+05:45) Kathmandu"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:86
+msgid "(UTC+06:00) Dhaka"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:87
+msgid "(UTC+06:30) Yangon (Rangoon)"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:89
+msgid "(UTC+07:00) Bangkok, Hanoi, Jakarta"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:90
+msgid "(UTC+07:00) Barnaul, Gorno-Altaysk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:91
+msgid "(UTC+07:00) Hovd"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:92
+msgid "(UTC+07:00) Krasnoyarsk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:88
+msgid "(UTC+07:00) Novosibirsk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:93
+msgid "(UTC+07:00) Tomsk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:94
+msgid "(UTC+08:00) Beijing, Chongqing, Hong Kong SAR, Urumqi"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:95
+msgid "(UTC+08:00) Irkutsk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:96
+msgid "(UTC+08:00) Kuala Lumpur, Singapore"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:97
+msgid "(UTC+08:00) Perth"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:98
+msgid "(UTC+08:00) Taipei"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:99
+msgid "(UTC+08:00) Ulaanbaatar"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:100
+msgid "(UTC+08:30) Pyongyang"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:101
+msgid "(UTC+08:45) Eucla"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:102
+msgid "(UTC+09:00) Chita"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:103
+msgid "(UTC+09:00) Osaka, Sapporo, Tokyo"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:104
+msgid "(UTC+09:00) Seoul"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:105
+msgid "(UTC+09:00) Yakutsk"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:106
+msgid "(UTC+09:30) Adelaide"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:107
+msgid "(UTC+09:30) Darwin"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:108
+msgid "(UTC+10:00) Brisbane"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:109
+msgid "(UTC+10:00) Canberra, Melbourne, Sydney"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:110
+msgid "(UTC+10:00) Guam, Port Moresby"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:111
+msgid "(UTC+10:00) Hobart"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:112
+msgid "(UTC+10:00) Vladivostok"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:113
+msgid "(UTC+10:30) Lord Howe Island"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:114
+msgid "(UTC+11:00) Bougainville Island"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:115
+msgid "(UTC+11:00) Chokurdakh"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:116
+msgid "(UTC+11:00) Magadan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:117
+msgid "(UTC+11:00) Norfolk Island"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:118
+msgid "(UTC+11:00) Sakhalin"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:119
+msgid "(UTC+11:00) Solomon Islands, New Caledonia"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:120
+msgid "(UTC+12:00) Anadyr, Petropavlovsk-Kamchatsky"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:121
+msgid "(UTC+12:00) Auckland, Wellington"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:122
+msgid "(UTC+12:00) Fiji Islands"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:123
+msgid "(UTC+12:45) Chatham Islands"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:124
+msgid "(UTC+13:00) Nuku'alofa"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:125
+msgid "(UTC+13:00) Samoa"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:126
+msgid "(UTC+14:00) Kiritimati Island"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:42
+msgid "(UTC-01:00) Azores"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:43
+msgid "(UTC-01:00) Cabo Verde Islands"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:41
+msgid "(UTC-02:00) Fernando de Noronha"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:33
+msgid "(UTC-03:00) Araguaina"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:34
+msgid "(UTC-03:00) Brasilia"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:35
+msgid "(UTC-03:00) Cayenne, Fortaleza"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:36
+msgid "(UTC-03:00) City of Buenos Aires"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:37
+msgid "(UTC-03:00) Greenland"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:38
+msgid "(UTC-03:00) Montevideo"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:39
+msgid "(UTC-03:00) Saint Pierre and Miquelon"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:40
+msgid "(UTC-03:00) Salvador"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:32
+msgid "(UTC-03:30) Newfoundland"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:25
+msgid "(UTC-04:00) Asuncion"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:26
+msgid "(UTC-04:00) Atlantic Time (Canada)"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:27
+msgid "(UTC-04:00) Caracas"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:28
+msgid "(UTC-04:00) Cuiaba"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:29
+msgid "(UTC-04:00) Georgetown, La Paz, Manaus, San Juan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:30
+msgid "(UTC-04:00) Santiago"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:31
+msgid "(UTC-04:00) Turks and Caicos"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:19
+msgid "(UTC-05:00) Bogota, Lima, Quito"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:20
+msgid "(UTC-05:00) Chetumal"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:21
+msgid "(UTC-05:00) Eastern Time (US and Canada)"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:22
+msgid "(UTC-05:00) Haiti"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:23
+msgid "(UTC-05:00) Havana"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:24
+msgid "(UTC-05:00) Indiana (East)"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:13
+msgid "(UTC-06:00) Central America"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:14
+msgid "(UTC-06:00) Central Time (US and Canada)"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:15
+msgid "(UTC-06:00) Chihuahua, La Paz, Mazatlan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:16
+msgid "(UTC-06:00) Easter Island"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:17
+msgid "(UTC-06:00) Guadalajara, Mexico City, Monterrey"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:18
+msgid "(UTC-06:00) Saskatchewan"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:11
+msgid "(UTC-07:00) Arizona"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:12
+msgid "(UTC-07:00) Mountain Time (US and Canada), Navajo Nation"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:9
+msgid "(UTC-08:00) Baja California"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:10
+msgid "(UTC-08:00) Pacific Time (US and Canada)"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:8
+msgid "(UTC-09:00) Alaska"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:7
+msgid "(UTC-09:30) Marquesas Islands"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:5
+msgid "(UTC-10:00) Aleutian Islands"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:6
+msgid "(UTC-10:00) Hawaii"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/ProfileEditPage/timezones.tsx:4
+msgid "(UTC-11:00) Midway Island, American Samoa"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/JoinPage/index.tsx:146
 msgid "* If you sign in with Google, you must use <email>%{email}</email>."
 msgstr ""
@@ -3518,7 +4159,7 @@ msgstr[1] ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/utils/time.tsx:214
+#: ../turboui/src/utils/time.tsx:215
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:137
 #: assets/js/utils/time.tsx:143
 #: lib/operately_email/emails/project_timeline_edited_email.ex:46
@@ -3670,7 +4311,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:220
+#: ../turboui/src/utils/time.tsx:221
 #: assets/js/utils/time.tsx:149
 msgid "1 months"
 msgid_plural "%{count} months"
@@ -3891,7 +4532,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:217
+#: ../turboui/src/utils/time.tsx:218
 #: assets/js/utils/time.tsx:146
 msgid "1 weeks"
 msgid_plural "%{count} weeks"
@@ -3899,7 +4540,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:223
+#: ../turboui/src/utils/time.tsx:224
 #: assets/js/utils/time.tsx:152
 msgid "1 year"
 msgid_plural "%{count} years"
@@ -4553,7 +5194,7 @@ msgid "Add Project"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:451
+#: ../turboui/src/Reactions/index.tsx:903
 msgid "Add Reaction"
 msgstr ""
 
@@ -4878,6 +5519,7 @@ msgid "Add/remove people..."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/RichContentDiff/decorations.ts:32
 #: ../turboui/src/RichContentDiff/index.tsx:330
 msgid "Added"
 msgstr ""
@@ -5150,6 +5792,11 @@ msgid "Annotated KPI: %{title}"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:48
+msgid "Anyone on the internet"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccessLevelSummary/descriptions.ts:29
 msgid "Anyone on the internet can view this goal."
 msgstr ""
@@ -5187,6 +5834,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:44
 msgid "Anyone with the link can read the latest version of this document and its attachments without signing in."
+msgstr ""
+
+#.frontend
+#: assets/js/api/staleClient.ts:35
+msgid "App updated"
 msgstr ""
 
 #.frontend
@@ -5898,6 +6550,7 @@ msgstr ""
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:111
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
+#: ../turboui/src/SlideIn/ActionConfirmation.tsx:30
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:76
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:113
@@ -6030,6 +6683,7 @@ msgstr ""
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:218
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:89
+#: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:163
 #: ../turboui/src/TemplateProjectPage/People.tsx:37
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:27
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:205
@@ -6273,6 +6927,7 @@ msgstr ""
 #.elixir
 #: lib/operately/md/goal/check_ins.ex:24
 #: lib/operately/md/project.ex:204
+#: lib/operately_web/api/serializers/search_result.ex:19
 msgid "Check-in on %{date}"
 msgstr ""
 
@@ -6334,6 +6989,11 @@ msgstr ""
 #: assets/js/pages/CompanyBillingPage/page.tsx:162
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:97
 msgid "Checkout unavailable"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:9
+msgid "Choose"
 msgstr ""
 
 #.frontend
@@ -6538,6 +7198,11 @@ msgstr ""
 msgid "Click + or press c to add a task, or drag a task here."
 msgstr ""
 
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:159
+msgid "Click to remove your reaction"
+msgstr ""
+
 #.elixir
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:150
@@ -6576,6 +7241,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:368
 msgid "Close image preview"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Toasts/index.tsx:72
+msgid "Close notification"
 msgstr ""
 
 #.frontend
@@ -7023,6 +7693,7 @@ msgstr ""
 #: ../turboui/src/ConfirmDialog/index.tsx:58
 #: ../turboui/src/DateField/components/ActionButtons.tsx:26
 #: ../turboui/src/SchedulePosting/useScheduleFlowState.ts:46
+#: ../turboui/src/SlideIn/ActionConfirmation.tsx:33
 #: assets/js/hooks/useScheduleFlow.ts:64
 msgid "Confirm"
 msgstr ""
@@ -7167,6 +7838,7 @@ msgstr[1] ""
 
 #.elixir
 #.frontend
+#: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:167
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:29
 #: lib/operately_email/emails/project_created_email.ex:52
 msgid "Contributor"
@@ -7332,6 +8004,21 @@ msgstr ""
 #: assets/js/pages/CompanyWorkMapPage/page.tsx:42
 #: assets/js/pages/SpaceWorkMapPage/page.tsx:33
 msgid "Couldn't load options for adding goals and projects."
+msgstr ""
+
+#.frontend
+#: assets/js/models/people/usePeopleSearchError.ts:7
+msgid "Couldn't load people"
+msgstr ""
+
+#.frontend
+#: assets/js/pages/NotificationsPage/optimisticMarkAsRead.ts:21
+msgid "Couldn't mark notification as read"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/RichContent/useTaskListContent.ts:36
+msgid "Couldn't update task item"
 msgstr ""
 
 #.frontend
@@ -7535,6 +8222,11 @@ msgstr ""
 msgid "Created date between"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/SortControl/index.tsx:19
+msgid "Creation Date"
+msgstr ""
+
 #.elixir
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:82
@@ -7609,6 +8301,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:177
 msgid "Current value"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/index.tsx:111
+msgid "Custom"
 msgstr ""
 
 #.frontend
@@ -8218,6 +8915,7 @@ msgstr ""
 #: assets/js/features/activities/ResourceHubLinkDeleted/index.tsx:62
 #: assets/js/models/projectTemplates/pageNavigation.ts:19
 #: assets/js/pages/ResourceHubDraftsPage/page.tsx:23
+#: assets/js/pages/ResourceHubPage/page.tsx:32
 msgid "Docs & Files"
 msgstr ""
 
@@ -8354,6 +9052,11 @@ msgstr ""
 msgid "Drop files here to upload them"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/RichEditor/Blob/DropFilePlugin.tsx:15
+msgid "Drop your files to add them"
+msgstr ""
+
 #.elixir
 #: lib/operately/md/milestone.ex:25
 #: lib/operately/md/milestone.ex:74
@@ -8379,6 +9082,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
+#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:40
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 #: lib/operately/md/goal/timeframe.ex:10
@@ -8941,6 +9645,11 @@ msgstr ""
 #: assets/js/models/projects/useProjectMilestoneOrdering.ts:132
 #: assets/js/models/projects/useTaskStatuses.tsx:67
 #: assets/js/models/projects/useTaskStatuses.tsx:73
+#: assets/js/models/reactions/useOptimisticReactions.ts:95
+#: assets/js/models/reactions/useReactionHandlers.tsx:35
+#: assets/js/models/reactions/useReactionHandlers.tsx:67
+#: assets/js/models/reactions/useReactionHandlers.tsx:96
+#: assets/js/models/subscriptions/useSubscription.tsx:113
 #: assets/js/models/tasks/useKanbanState.tsx:122
 #: assets/js/models/tasks/useKanbanState.tsx:244
 #: assets/js/models/tasks/useKanbanState.tsx:251
@@ -9321,6 +10030,8 @@ msgstr ""
 #.frontend
 #: assets/js/models/comments/useOptimisticComments.tsx:110
 #: assets/js/models/comments/useOptimisticComments.tsx:127
+#: assets/js/models/reactions/useReactionHandlers.tsx:35
+#: assets/js/models/reactions/useReactionHandlers.tsx:67
 msgid "Failed to add reaction."
 msgstr ""
 
@@ -9445,6 +10156,7 @@ msgstr ""
 #.frontend
 #: assets/js/models/comments/useOptimisticComments.tsx:133
 #: assets/js/models/comments/useOptimisticComments.tsx:150
+#: assets/js/models/reactions/useReactionHandlers.tsx:96
 msgid "Failed to remove reaction."
 msgstr ""
 
@@ -9469,6 +10181,11 @@ msgid "Failed to reset invite link. Please try again."
 msgstr ""
 
 #.frontend
+#: assets/js/models/reactions/useOptimisticReactions.ts:95
+msgid "Failed to save reaction."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:176
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:111
 msgid "Failed to start checkout"
@@ -9485,8 +10202,48 @@ msgid "Failed to start import"
 msgstr ""
 
 #.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:169
+msgid "Failed to subscribe to KPI notifications."
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:160
+msgid "Failed to subscribe to milestone notifications."
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:156
+msgid "Failed to subscribe to project notifications."
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:165
+msgid "Failed to subscribe to task notifications."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/GoalPage/useChecklists.tsx:117
 msgid "Failed to toggle checklist item"
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:170
+msgid "Failed to unsubscribe from KPI notifications."
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:161
+msgid "Failed to unsubscribe from milestone notifications."
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:157
+msgid "Failed to unsubscribe from project notifications."
+msgstr ""
+
+#.frontend
+#: assets/js/models/subscriptions/useSubscription.tsx:166
+msgid "Failed to unsubscribe from task notifications."
 msgstr ""
 
 #.frontend
@@ -9500,7 +10257,7 @@ msgid "Failed to update assignees."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:241
+#: assets/js/pages/ProfileEditPage/index.tsx:242
 msgid "Failed to update avatar. Please try again."
 msgstr ""
 
@@ -9661,7 +10418,7 @@ msgid "Failed to upload %{name}. Please try again."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:214
+#: assets/js/pages/ProfileEditPage/index.tsx:215
 msgid "Failed to upload avatar. Please try again."
 msgstr ""
 
@@ -9678,10 +10435,15 @@ msgstr ""
 
 #.elixir
 #.frontend
+#: ../turboui/src/RichContent/contentOps.tsx:135
 #: ../turboui/src/SearchPage/index.tsx:311
 #: assets/js/pages/ResourceHubEditFilePage/navigation.tsx:22
+#: assets/js/utils/markdown.ts:159
+#: assets/js/utils/markdownTable.ts:62
 #: lib/operately/md/richtext.ex:81
 #: lib/operately/md/table.ex:63
+#: lib/operately_email/rich_text_excerpt.ex:59
+#: lib/prosemirror2html.ex:157
 msgid "File"
 msgstr ""
 
@@ -9830,6 +10592,11 @@ msgstr ""
 #: ../turboui/src/DocumentVersionHistoryPage/types.ts:86
 #: ../turboui/src/DocumentVersionHistoryPage/types.ts:87
 msgid "Former member"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "Fr"
 msgstr ""
 
 #.frontend
@@ -10265,6 +11032,13 @@ msgstr ""
 msgid "If you sign in with Google, you’ll need to use a Google account with the new email address."
 msgstr ""
 
+#.elixir
+#.frontend
+#: ../turboui/src/RichEditor/tablePaste.ts:180
+#: lib/operately/rich_content/markdown_table_cell.ex:104
+msgid "Image"
+msgstr ""
+
 #.frontend
 #: ../turboui/src/RichEditor/Blob/BlobView.tsx:355
 msgid "Image preview"
@@ -10590,6 +11364,11 @@ msgid "Invite your whole team at once"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:50
+msgid "Invite-Only"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:69
 msgid "Invite-only Access"
 msgstr ""
@@ -10879,7 +11658,7 @@ msgid "Last Used"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/utils/time.tsx:213
+#: ../turboui/src/utils/time.tsx:214
 #: assets/js/utils/time.tsx:142
 msgid "Last day"
 msgstr ""
@@ -11125,6 +11904,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/PublicDocumentPage/index.tsx:30
 msgid "Loading document…"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/ContentListSkeleton/index.tsx:20
+msgid "Loading items"
 msgstr ""
 
 #.frontend
@@ -11425,6 +12209,11 @@ msgid "Members of %{company}"
 msgstr ""
 
 #.elixir
+#: lib/operately/resource_hubs/public_document.ex:44
+msgid "Mentioned person"
+msgstr ""
+
+#.elixir
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:319
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:89
@@ -11574,7 +12363,19 @@ msgid "Mission"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "Mo"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SortControl/index.tsx:20
+msgid "Modified Date"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/DateField/index.tsx:30
+#: ../turboui/src/TimeframeSelectorDialog/index.tsx:110
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:11
 msgid "Month"
 msgstr ""
 
@@ -11730,6 +12531,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/WorkMap/components/TableRow/AssignedDateCell.tsx:24
+#: ../turboui/src/WorkMap/components/TableRow/DueDateCell.tsx:44
 msgid "N/A"
 msgstr ""
 
@@ -11746,6 +12548,7 @@ msgstr ""
 #: ../turboui/src/ProfileEditPage/index.tsx:116
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
+#: ../turboui/src/SortControl/index.tsx:18
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:71
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:117
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:120
@@ -11985,8 +12788,24 @@ msgid "Next"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:105
+#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:65
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:14
+msgid "Next month"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
+#: ../turboui/src/WorkMap/components/WorkMapTable.tsx:248
 msgid "Next step"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:37
+#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:38
+#: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:46
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:16
+msgid "Next year"
 msgstr ""
 
 #.frontend
@@ -12180,7 +12999,7 @@ msgid "No due date set."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:488
+#: ../turboui/src/Reactions/index.tsx:940
 msgid "No emojis found"
 msgstr ""
 
@@ -12270,6 +13089,11 @@ msgstr ""
 #: ../turboui/src/Subscriptions/SubscribersSelector.tsx:67
 #: ../turboui/src/TemplateProjectPage/DocsAndFiles.tsx:36
 msgid "No one"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:43
+msgid "No one else has access beyond people already assigned to this project."
 msgstr ""
 
 #.frontend
@@ -12504,10 +13328,13 @@ msgstr ""
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:356
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:216
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:10
 msgid "Not available"
 msgstr ""
 
 #.elixir
+#.frontend
+#: assets/js/utils/timeframes.tsx:14
 #: lib/operately/md/milestone.ex:72
 #: lib/operately/md/milestone.ex:83
 #: lib/operately/md/milestone.ex:88
@@ -12597,6 +13424,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
 #: ../turboui/src/CompanyNavigation/index.tsx:105
+#: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
 #: assets/js/pages/NotificationsPage/index.tsx:41
 msgid "Notifications"
@@ -12665,6 +13493,11 @@ msgid "One or more redirect URIs are not allowed for this MCP server."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:49
+msgid "Only %{spaceName} members"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/PrivacyField/index.tsx:161
 msgid "Only assigned people have access"
 msgstr ""
@@ -12682,6 +13515,21 @@ msgstr ""
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiLineChart.tsx:41
 msgid "Only one update so far"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:63
+msgid "Only people explicitly invited to this goal can view it."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:70
+msgid "Only people explicitly invited to this project can view it."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:77
+msgid "Only people explicitly invited to this space can view it."
 msgstr ""
 
 #.frontend
@@ -12930,6 +13778,8 @@ msgid "Other"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OtherPeopleWithAccess/Modal.tsx:25
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:69
 #: assets/js/pages/GoalAccessManagementPage/OtherPeople.tsx:32
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:33
 msgid "Other People with Access"
@@ -12974,9 +13824,32 @@ msgid "Overdue by %{duration}."
 msgstr ""
 
 #.elixir
+#.frontend
+#: ../turboui/src/Chronometer/index.tsx:168
 #: lib/operately_email/emails/assignments_email.ex:207
 msgid "Overdue by 1 day"
 msgid_plural "Overdue by %{count} days"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: ../turboui/src/Chronometer/index.tsx:170
+msgid "Overdue by 1 month"
+msgid_plural "Overdue by %{count} months"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: ../turboui/src/Chronometer/index.tsx:169
+msgid "Overdue by 1 week"
+msgid_plural "Overdue by %{count} weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#.frontend
+#: ../turboui/src/Chronometer/index.tsx:171
+msgid "Overdue by 1 year"
+msgid_plural "Overdue by %{count} years"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -13247,6 +14120,11 @@ msgid "People who have access to the goal based on their company or space member
 msgstr ""
 
 #.frontend
+#: ../turboui/src/OtherPeopleWithAccess/OtherPeopleWithAccess.tsx:71
+msgid "People who have access to the project based on their company or space membership but are not directly assigned to the project."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:34
 msgid "People who have access to the space via their company membeship."
 msgstr ""
@@ -13352,7 +14230,7 @@ msgid "Please choose an image file."
 msgstr ""
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:191
+#: assets/js/pages/ProfileEditPage/index.tsx:192
 msgid "Please choose an image smaller than 12 MB."
 msgstr ""
 
@@ -13403,8 +14281,9 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CommentSection/CommentInput.tsx:69
 #: ../turboui/src/CommentSection/CommentItem.tsx:183
-#: ../turboui/src/Reactions/index.tsx:57
-#: ../turboui/src/Reactions/index.tsx:203
+#: ../turboui/src/Reactions/index.tsx:58
+#: ../turboui/src/Reactions/index.tsx:204
+#: assets/js/models/people/usePeopleSearchError.ts:7
 #: assets/js/pages/AccountApiTokensPage/index.tsx:61
 #: assets/js/pages/AccountApiTokensPage/index.tsx:84
 #: assets/js/pages/AccountApiTokensPage/index.tsx:113
@@ -13541,8 +14420,23 @@ msgid "Previous check-in"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:94
+#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:63
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:13
+msgid "Previous month"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:560
 msgid "Previous values"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:35
+#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:36
+#: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:42
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:15
+msgid "Previous year"
 msgstr ""
 
 #.frontend
@@ -13825,8 +14719,10 @@ msgstr ""
 msgid "Project resumed"
 msgstr ""
 
+#.elixir
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:331
+#: lib/operately_web/api/serializers/search_result.ex:20
 msgid "Project retrospective"
 msgstr ""
 
@@ -13925,7 +14821,21 @@ msgid "Purpose"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/QuarterSelector.tsx:73
+#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:54
+msgid "Q%{quarter}"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DateField/utils.ts:46
+#: ../turboui/src/utils/timeframes.tsx:38
+#: assets/js/utils/timeframes.tsx:20
+msgid "Q%{quarter} %{year}"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/DateField/index.tsx:36
+#: ../turboui/src/TimeframeSelectorDialog/index.tsx:109
 msgid "Quarter"
 msgstr ""
 
@@ -14082,12 +14992,12 @@ msgid "Re: timeframe change"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:203
+#: ../turboui/src/Reactions/index.tsx:204
 msgid "Reaction not added"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:57
+#: ../turboui/src/Reactions/index.tsx:58
 msgid "Reaction not removed"
 msgstr ""
 
@@ -14209,6 +15119,11 @@ msgid "Refine results"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/RichContent/useTaskListContent.ts:36
+msgid "Refresh the content and try again."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/ReissueInvitationModal.tsx:31
 msgid "Regenerate the invitation URL"
 msgstr ""
@@ -14315,7 +15230,7 @@ msgid "Remove photo"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:169
+#: ../turboui/src/Reactions/index.tsx:170
 msgid "Remove reaction"
 msgstr ""
 
@@ -14341,6 +15256,7 @@ msgid "Remove unavailable assignees"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/RichContentDiff/decorations.ts:32
 #: ../turboui/src/RichContentDiff/index.tsx:329
 msgid "Removed"
 msgstr ""
@@ -14667,6 +15583,7 @@ msgstr ""
 
 #.elixir
 #.frontend
+#: assets/js/components/ProjectPageNavigation/index.tsx:18
 #: assets/js/pages/GoalActivityPage/index.tsx:168
 #: assets/js/pages/ProjectRetrospectivePage/Comments.tsx:33
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:52
@@ -14850,6 +15767,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:213
+#: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:165
 #: ../turboui/src/TemplateProjectPage/People.tsx:45
 #: ../turboui/src/WorkMap/components/TableRow/RoleCell.tsx:28
 #: assets/js/features/goals/GoalCheckIn/StatusSelector.tsx:63
@@ -14936,6 +15854,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:40
 msgid "SPACES"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "Sa"
 msgstr ""
 
 #.frontend
@@ -15120,11 +16043,12 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ResourceHub/Search.tsx:17
+#: assets/js/models/search/resourceHub.ts:40
 msgid "Search documents and files…"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/Reactions/index.tsx:461
+#: ../turboui/src/Reactions/index.tsx:913
 msgid "Search emojis..."
 msgstr ""
 
@@ -15241,6 +16165,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/BillingPickCompanyPage/index.tsx:27
 msgid "Select Company"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/index.tsx:84
+msgid "Select Timeframe"
 msgstr ""
 
 #.frontend
@@ -15498,6 +16427,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/DateField/index.tsx:434
 msgid "Set Date"
+msgstr ""
+
+#.frontend
+#: assets/js/features/goals/GoalCheckIn/Form.tsx:452
+msgid "Set a new due date for the goal."
 msgstr ""
 
 #.frontend
@@ -15839,6 +16773,21 @@ msgid "Sorry, we couldn't find that page you were looking for."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/SortControl/index.tsx:19
+msgid "Sort by Creation Date"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SortControl/index.tsx:20
+msgid "Sort by Modified Date"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/SortControl/index.tsx:18
+msgid "Sort by Name"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SearchPage/RefineControls.tsx:61
 msgid "Sort results"
 msgstr ""
@@ -15974,6 +16923,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:58
+#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:22
 #: lib/operately/md/goal/timeframe.ex:9
 #: lib/operately/md/project/timeframe.ex:10
 msgid "Start Date"
@@ -16195,6 +17145,11 @@ msgid "Strikethrough"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "Su"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalPage/RelatedWork.tsx:31
 msgid "Subgoals & Projects"
 msgstr ""
@@ -16239,6 +17194,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:208
 msgid "Submitting..."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:49
+msgid "Subscribe"
 msgstr ""
 
 #.frontend
@@ -16634,6 +17594,11 @@ msgid "Templates"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "Th"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/OnboardingWizard/WelcomeStep.tsx:38
 msgid "Thanks for signing up!"
 msgstr ""
@@ -16998,6 +17963,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:98
 msgid "The name was changed to %{name}."
+msgstr ""
+
+#.frontend
+#: assets/js/pages/NotificationsPage/optimisticMarkAsRead.ts:22
+msgid "The notification is still unread. Try again."
 msgstr ""
 
 #.frontend
@@ -17555,6 +18525,16 @@ msgid "This goal is paused"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:62
+msgid "This goal is visible only to members of the %{spaceName} space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:61
+msgid "This goal is visible to anyone on the internet who has the link."
+msgstr ""
+
+#.frontend
 #: assets/js/features/goals/GoalPageHeader/Banner.tsx:32
 msgid "This goal was archived on <date/>"
 msgstr ""
@@ -17695,6 +18675,16 @@ msgid "This project is paused"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:69
+msgid "This project is visible only to members of the %{spaceName} space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:68
+msgid "This project is visible to anyone on the internet who has the link."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectPageLayout/StatusBanner.tsx:68
 msgid "This project was closed on <date/>."
 msgstr ""
@@ -17725,8 +18715,23 @@ msgid "This request is no longer active. Review your current email or request a 
 msgstr ""
 
 #.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:76
+msgid "This space is visible only to members of the %{spaceName} space."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/PrivacyIndicator/index.tsx:75
+msgid "This space is visible to anyone on the internet who has the link."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:51
 msgid "This status cannot be deleted. The Kanban board must have at least one status."
+msgstr ""
+
+#.frontend
+#: assets/js/api/staleClient.ts:35
+msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr ""
 
 #.frontend
@@ -17917,6 +18922,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:12
 #: ../turboui/src/FormattedTime/ShortDate.tsx:31
+#: ../turboui/src/utils/time.tsx:198
+#: assets/js/utils/time.tsx:134
 msgid "Today"
 msgstr ""
 
@@ -18063,6 +19070,11 @@ msgstr ""
 msgid "Try loading them again."
 msgstr ""
 
+#.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "Tu"
+msgstr ""
+
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
@@ -18178,6 +19190,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:50
+#: ../turboui/src/CompanyBilling/storageFormatting.ts:12
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:68
 msgid "Unavailable"
 msgstr ""
@@ -18292,6 +19305,11 @@ msgstr ""
 #.elixir
 #: lib/operately/md/workmap.ex:92
 msgid "Unnamed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:49
+msgid "Unsubscribe"
 msgstr ""
 
 #.frontend
@@ -19045,6 +20063,11 @@ msgid "Was this goal achieved?"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/DateField/components/InlineCalendar.tsx:115
+msgid "We"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:147
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:148
 msgid "We couldn't change the plan right now. Please try again."
@@ -19161,6 +20184,11 @@ msgstr ""
 #.frontend
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:238
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:12
+msgid "Week"
 msgstr ""
 
 #.frontend
@@ -19448,6 +20476,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/DateField/index.tsx:42
+#: ../turboui/src/TimeframeSelectorDialog/index.tsx:108
 msgid "Year"
 msgstr ""
 
@@ -19477,6 +20506,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:16
 #: ../turboui/src/FormattedTime/ShortDate.tsx:33
+#: ../turboui/src/utils/time.tsx:199
+#: assets/js/utils/time.tsx:135
 msgid "Yesterday"
 msgstr ""
 
@@ -19711,6 +20742,27 @@ msgid "You're all caught up."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:40
+msgid "You're not receiving notifications from this KPI."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:36
+msgid "You're not receiving notifications from this milestone."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:32
+msgid "You're not receiving notifications from this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:24
+#: ../turboui/src/NotificationToggle/index.tsx:28
+msgid "You're not receiving notifications from this task."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/Subscriptions/CurrentSubscriptions.tsx:249
 msgid "You're not subscribed"
 msgstr ""
@@ -19718,6 +20770,27 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:135
 msgid "You're now editing the copy."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:39
+msgid "You're receiving notifications because you're subscribed to this KPI."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:35
+msgid "You're receiving notifications because you're subscribed to this milestone."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:31
+msgid "You're receiving notifications because you're subscribed to this project."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/NotificationToggle/index.tsx:23
+#: ../turboui/src/NotificationToggle/index.tsx:27
+msgid "You're receiving notifications because you're subscribed to this task."
 msgstr ""
 
 #.frontend
@@ -19829,8 +20902,11 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/DocsAndFiles/index.tsx:238
+#: ../turboui/src/ResourceHub/ContinueEditingDrafts.tsx:20
 msgid "Your drafts (%{count})"
-msgstr ""
+msgid_plural "Your drafts (%{count})"
+msgstr[0] ""
+msgstr[1] ""
 
 #.elixir
 #: lib/operately_email/templates/email_changed.html.eex:1
@@ -19982,6 +21058,9 @@ msgstr ""
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:54
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:56
 #: assets/js/features/activities/TaskDueDateUpdating/index.tsx:132
+#: assets/js/models/activities/feed.tsx:148
+#: assets/js/models/activities/feed.tsx:199
+#: assets/js/models/activities/feed.tsx:228
 msgid "a task"
 msgstr ""
 
@@ -20823,6 +21902,11 @@ msgid "the project"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/FormattedTime/RelativeWeekdayOrDate.tsx:28
+msgid "this %{weekday}"
+msgstr ""
+
+#.frontend
 #: assets/js/pages/ProjectPausePage/Form.tsx:22
 #: assets/js/pages/ProjectResumePage/Form.tsx:22
 msgid "this project"
@@ -20938,6 +22022,906 @@ msgstr ""
 #.elixir
 #: lib/operately/md/goal/check_ins.ex:65
 msgid "🟢 **On Track** - The goal is progressing as planned."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:275
+msgctxt "emoji search"
+msgid "100, perfect, agree, correct, absolutely"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:632
+msgctxt "emoji search"
+msgid "alarm, clock, time, wake up"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:855
+msgctxt "emoji search"
+msgid "alert, siren, warning, emergency"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:362
+msgctxt "emoji search"
+msgid "angel, innocent, halo"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:428
+msgctxt "emoji search"
+msgid "angry, mad, rage, furious"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:429
+msgctxt "emoji search"
+msgid "angry, mad, upset"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:418
+msgctxt "emoji search"
+msgid "anxious, nervous, sweat, worried"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:833
+msgctxt "emoji search"
+msgid "art, paint, palette, creative, design"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:660
+msgctxt "emoji search"
+msgid "balloon, party, celebrate"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:743
+msgctxt "emoji search"
+msgid "beers, cheers, drinks, celebrate, toast"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:627
+msgctxt "emoji search"
+msgid "bell, notification, alert, reminder"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:826
+msgctxt "emoji search"
+msgid "brain, smart, think, intelligence"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:583
+msgctxt "emoji search"
+msgid "briefcase, work, business, professional"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:734
+msgctxt "emoji search"
+msgid "burger, hamburger, food"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:737
+msgctxt "emoji search"
+msgid "cake, dessert, sweet, birthday"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:636
+msgctxt "emoji search"
+msgid "calendar, date, schedule"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:639
+msgctxt "emoji search"
+msgid "calendar, planning, schedule"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:851
+msgctxt "emoji search"
+msgid "camera, photo, picture, snapshot"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:750
+msgctxt "emoji search"
+msgid "champagne, celebrate, bottle, party"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:604
+msgctxt "emoji search"
+msgid "chart down, decrease, trending down, decline"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:597
+msgctxt "emoji search"
+msgid "chart up, growth, trending up, increase"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:590
+msgctxt "emoji search"
+msgid "chart, graph, stats, data, analytics"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:317
+msgctxt "emoji search"
+msgid "check, done, complete, yes, correct"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:757
+msgctxt "emoji search"
+msgid "cheers, toast, glasses, celebrate"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:303
+msgctxt "emoji search"
+msgid "clap, applause, praise, congratulations, bravo"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:616
+msgctxt "emoji search"
+msgid "clipboard, checklist, todo, list"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:696
+msgctxt "emoji search"
+msgid "cloud, partly sunny, weather"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:793
+msgctxt "emoji search"
+msgid "clover, four leaf clover, luck, lucky, shamrock"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:731
+msgctxt "emoji search"
+msgid "coffee, tea, hot, drink, cafe"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:663
+msgctxt "emoji search"
+msgid "confetti, party, celebration"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:410
+msgctxt "emoji search"
+msgid "confused, uncertain, puzzled"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:862
+msgctxt "emoji search"
+msgid "cool, awesome, nice"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:357
+msgctxt "emoji search"
+msgid "cool, sunglasses, awesome"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:464
+msgctxt "emoji search"
+msgid "crazy, silly, goofy, wacky"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:654
+msgctxt "emoji search"
+msgid "credit card, payment, card"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:777
+msgctxt "emoji search"
+msgid "crown, king, queen, royalty, best"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:401
+msgctxt "emoji search"
+msgid "cry, sad, tear, upset"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:402
+msgctxt "emoji search"
+msgid "cry, sob, tears, very sad"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:430
+msgctxt "emoji search"
+msgid "curse, swear, mad, angry"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:407
+msgctxt "emoji search"
+msgid "disappointed, sad, upset"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:651
+msgctxt "emoji search"
+msgid "dollar, money, bill, cash"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:769
+msgctxt "emoji search"
+msgid "dress, fashion, clothing"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:804
+msgctxt "emoji search"
+msgid "exclamation, important, warning, alert"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:487
+msgctxt "emoji search"
+msgid "expressionless, blank, deadpan"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:492
+msgctxt "emoji search"
+msgid "eye roll, whatever, annoyed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:820
+msgctxt "emoji search"
+msgid "eyes, look, watch, see, viewing"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:422
+msgctxt "emoji search"
+msgid "fearful, scared, fear, shock"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:556
+msgctxt "emoji search"
+msgid "fingers crossed, luck, hope, wish"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:269
+msgctxt "emoji search"
+msgid "fire, hot, lit, awesome, great"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:674
+msgctxt "emoji search"
+msgid "first, gold, medal, winner, 1st"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:564
+msgctxt "emoji search"
+msgid "fist, bump, punch, power"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:567
+msgctxt "emoji search"
+msgid "fist, power, solidarity, punch"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:447
+msgctxt "emoji search"
+msgid "flushed, embarrassed, shocked"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:863
+msgctxt "emoji search"
+msgid "free, gratis"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:845
+msgctxt "emoji search"
+msgid "game, gaming, controller, play"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:711
+msgctxt "emoji search"
+msgid "gear, settings, config, configure"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:658
+msgctxt "emoji search"
+msgid "gift, present, box, birthday"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:471
+msgctxt "emoji search"
+msgid "giggle, shy, oops, hand over mouth"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:771
+msgctxt "emoji search"
+msgid "glasses, eyeglasses, nerd"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:524
+msgctxt "emoji search"
+msgid "grimace, awkward, nervous"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:343
+msgctxt "emoji search"
+msgid "grin, smile, happy"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:848
+msgctxt "emoji search"
+msgid "guitar, music, rock"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:705
+msgctxt "emoji search"
+msgid "hammer, tool, fix, build"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:310
+msgctxt "emoji search"
+msgid "hands, celebrate, praise, hooray, yay"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:798
+msgctxt "emoji search"
+msgid "handshake, agreement, deal"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:542
+msgctxt "emoji search"
+msgid "handshake, deal, agreement, shake"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:251
+msgctxt "emoji search"
+msgid "heart, love, like, favorite"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:635
+msgctxt "emoji search"
+msgid "hourglass, time, waiting"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:466
+msgctxt "emoji search"
+msgid "hug, hugging, embrace"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:513
+msgctxt "emoji search"
+msgid "hurt, injured, bandage, pain"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:330
+msgctxt "emoji search"
+msgid "idea, light, bulb, think, smart"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:725
+msgctxt "emoji search"
+msgid "key, unlock, access, password"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:340
+msgctxt "emoji search"
+msgid "laugh, lol, haha, funny, joy"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:702
+msgctxt "emoji search"
+msgid "lightning, bolt, fast, power, energy"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:716
+msgctxt "emoji search"
+msgid "link, chain, connection, url"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:622
+msgctxt "emoji search"
+msgid "location, pin, map, place"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:720
+msgctxt "emoji search"
+msgid "lock, secure, private, locked"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:351
+msgctxt "emoji search"
+msgid "love, heart eyes, adore, crush"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:355
+msgctxt "emoji search"
+msgid "love, hearts, adore, affection"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:562
+msgctxt "emoji search"
+msgid "love, rock, you rock, i love you"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:683
+msgctxt "emoji search"
+msgid "medal, military, honor, award"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:611
+msgctxt "emoji search"
+msgid "memo, note, write, document, pencil"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:442
+msgctxt "emoji search"
+msgid "mind blown, exploding head, shocked, amazed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:645
+msgctxt "emoji search"
+msgid "money, bag, dollar, cash, rich"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:649
+msgctxt "emoji search"
+msgid "money, flying, spend, loss"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:385
+msgctxt "emoji search"
+msgid "monocle, examine, inspect, curious"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:296
+msgctxt "emoji search"
+msgid "muscle, strong, strength, power, flex"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:847
+msgctxt "emoji search"
+msgid "music, note, song"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:484
+msgctxt "emoji search"
+msgid "neutral, meh, blank"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:861
+msgctxt "emoji search"
+msgid "new, fresh, latest"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:489
+msgctxt "emoji search"
+msgid "no mouth, silence, quiet"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:320
+msgctxt "emoji search"
+msgid "ok, okay, perfect, good"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:569
+msgctxt "emoji search"
+msgid "open hands, jazz hands"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:480
+msgctxt "emoji search"
+msgid "party, celebrate, birthday, hat"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:264
+msgctxt "emoji search"
+msgid "party, celebrate, celebration, tada, confetti"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:559
+msgctxt "emoji search"
+msgid "peace, victory, v sign"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:620
+msgctxt "emoji search"
+msgid "pin, pushpin, important, mark"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:733
+msgctxt "emoji search"
+msgid "pizza, food, slice"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:521
+msgctxt "emoji search"
+msgid "pleading, puppy eyes, beg, please"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:549
+msgctxt "emoji search"
+msgid "pray, please, thanks, namaste, high five"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:809
+msgctxt "emoji search"
+msgid "question, help, what, confused"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:690
+msgctxt "emoji search"
+msgid "rainbow, pride, colorful, diversity"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:574
+msgctxt "emoji search"
+msgid "raising hands, celebrate, yay, hooray"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:257
+msgctxt "emoji search"
+msgid "rocket, launch, fast, success, ship"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:348
+msgctxt "emoji search"
+msgid "rolling, laugh, lol, rofl"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:405
+msgctxt "emoji search"
+msgid "sad, pensive, down, disappointed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:786
+msgctxt "emoji search"
+msgid "salute, respect, yes sir, military"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:426
+msgctxt "emoji search"
+msgid "scream, shocked, omg, afraid"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:678
+msgctxt "emoji search"
+msgid "second, silver, medal, 2nd"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:476
+msgctxt "emoji search"
+msgid "shh, quiet, secret, silence"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:770
+msgctxt "emoji search"
+msgid "shirt, t-shirt, clothing"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:437
+msgctxt "emoji search"
+msgid "shocked, astonished, gasp"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:509
+msgctxt "emoji search"
+msgid "sick, ill, fever, thermometer"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:501
+msgctxt "emoji search"
+msgid "sick, nauseated, ill, gross"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:494
+msgctxt "emoji search"
+msgid "sleep, tired, sleepy, zzz"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:496
+msgctxt "emoji search"
+msgid "sleepy, tired, exhausted"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:336
+msgctxt "emoji search"
+msgid "smile, happy, glad, pleased"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:342
+msgctxt "emoji search"
+msgid "smile, happy, joy, grin"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:365
+msgctxt "emoji search"
+msgid "smile, slight smile, happy"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:282
+msgctxt "emoji search"
+msgid "sparkles, shine, stars, magic, new"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:815
+msgctxt "emoji search"
+msgid "speech, comment, talk, chat, message"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:360
+msgctxt "emoji search"
+msgid "star eyes, wow, excited, amazed"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:685
+msgctxt "emoji search"
+msgid "star, favorite, rating"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:289
+msgctxt "emoji search"
+msgid "star, success, excellent, favorite"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:634
+msgctxt "emoji search"
+msgid "stopwatch, timer, time"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:693
+msgctxt "emoji search"
+msgid "sun, sunny, bright, day"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:772
+msgctxt "emoji search"
+msgid "sunglasses, cool, shades"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:346
+msgctxt "emoji search"
+msgid "sweat, relief, phew, nervous"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:325
+msgctxt "emoji search"
+msgid "target, goal, bullseye, accuracy, hit"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:840
+msgctxt "emoji search"
+msgid "theater, drama, masks, performance"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:378
+msgctxt "emoji search"
+msgid "think, thinking, hmm, wonder, consider"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:680
+msgctxt "emoji search"
+msgid "third, bronze, medal, 3rd"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:390
+msgctxt "emoji search"
+msgid "thought, thinking, bubble, idea"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:398
+msgctxt "emoji search"
+msgid "thumbs down, dislike, no, bad, disapprove"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:246
+msgctxt "emoji search"
+msgid "thumbs up, like, yes, approve, good, ok"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:766
+msgctxt "emoji search"
+msgid "tie, formal, business, professional"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:459
+msgctxt "emoji search"
+msgid "tongue, playful, silly, closed eyes"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:453
+msgctxt "emoji search"
+msgid "tongue, wink, playful, silly"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:669
+msgctxt "emoji search"
+msgid "trophy, win, winner, achievement, award"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:722
+msgctxt "emoji search"
+msgid "unlock, open, unlocked"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:369
+msgctxt "emoji search"
+msgid "upside down, silly, sarcasm"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:505
+msgctxt "emoji search"
+msgid "vomit, sick, puke, throw up"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:859
+msgctxt "emoji search"
+msgid "warning, caution, alert, careful"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:536
+msgctxt "emoji search"
+msgid "wave, hello, hi, bye, goodbye"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:371
+msgctxt "emoji search"
+msgid "wink, flirt, playful"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:414
+msgctxt "emoji search"
+msgid "worried, concerned, anxious"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:435
+msgctxt "emoji search"
+msgid "wow, surprised, amazed, oh"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:706
+msgctxt "emoji search"
+msgid "wrench, tool, fix, repair"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:495
+msgctxt "emoji search"
+msgid "yawn, tired, bored"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/Reactions/index.tsx:529
+msgctxt "emoji search"
+msgid "zipper mouth, secret, quiet, sealed"
 msgstr ""
 
 #.frontend

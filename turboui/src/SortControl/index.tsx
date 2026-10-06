@@ -1,9 +1,10 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconCheck, IconChevronDown } from "../icons";
 import { Menu, MenuActionItem } from "../Menu";
 import classNames from "../utils/classnames";
-import { NAME_AND_DATE_SORT_OPTIONS, type NameAndDateSortBy } from "../utils/sortWithFoldersFirst";
+import { type NameAndDateSortBy } from "../utils/sortWithFoldersFirst";
 
 export interface SortControlProps {
   sortBy: NameAndDateSortBy;
@@ -12,7 +13,13 @@ export interface SortControlProps {
 }
 
 export function SortControl({ sortBy, onSortChange, disabled = false }: SortControlProps) {
-  const currentOption = NAME_AND_DATE_SORT_OPTIONS.find((option) => option.value === sortBy);
+  const { t } = useTranslation();
+  const options = [
+    { value: "name" as const, label: t("Name"), trigger: t("Sort by Name") },
+    { value: "insertedAt" as const, label: t("Creation Date"), trigger: t("Sort by Creation Date") },
+    { value: "updatedAt" as const, label: t("Modified Date"), trigger: t("Sort by Modified Date") },
+  ];
+  const currentOption = options.find((option) => option.value === sortBy);
 
   const trigger = (
     <button
@@ -24,7 +31,7 @@ export function SortControl({ sortBy, onSortChange, disabled = false }: SortCont
         disabled ? "cursor-not-allowed opacity-50" : "hover:text-content-accent",
       )}
     >
-      <span>Sort by {currentOption?.label}</span>
+      <span>{currentOption?.trigger}</span>
       <IconChevronDown size={14} />
     </button>
   );
@@ -33,7 +40,7 @@ export function SortControl({ sortBy, onSortChange, disabled = false }: SortCont
 
   return (
     <Menu testId="sort-control" size="tiny" customTrigger={trigger}>
-      {NAME_AND_DATE_SORT_OPTIONS.map((option) => (
+      {options.map((option) => (
         <MenuActionItem
           key={option.value}
           onClick={() => onSortChange(option.value)}

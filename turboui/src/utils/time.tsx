@@ -1,4 +1,5 @@
 import * as datefsn from "date-fns";
+import { formatDate } from "./formatting";
 import i18n, { tn } from "../i18n";
 import { dateInTimezone } from "./timezone";
 
@@ -181,7 +182,7 @@ export function hoursBetween(start: Date, end: Date) {
 }
 
 export function getMonthName(date: Date) {
-  return datefsn.format(date, "MMMM");
+  return formatDate(date, i18n.resolvedLanguage, { month: "long" });
 }
 
 export function isSameDay(date1: Date, date2: Date) {
@@ -194,10 +195,10 @@ export function relativeDay(date: Date) {
 
   const days = daysBetween(startOfDayOfDate, startOfToday);
 
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
+  if (days === 0) return i18n.t("Today");
+  if (days === 1) return i18n.t("Yesterday");
 
-  return `${days} days ago`;
+  return tn("{{count}} day ago", "{{count}} days ago", days);
 }
 
 export function dateChanged(old: Date | null, current: Date | null): boolean {

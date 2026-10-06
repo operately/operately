@@ -148,3 +148,9 @@ describe("Work Map creation loading", () => {
     expect(name).toHaveValue("Draft project");
   });
 });
+
+it("looks up the next-step column heading", () => {
+  i18n.addResourceBundle("en", "translation", { "Next step": "Translated next step" }, true, true);
+  renderMap({ items: [mockSingleItem] });
+  expect(screen.getByText("Translated next step")).toBeInTheDocument();
+});

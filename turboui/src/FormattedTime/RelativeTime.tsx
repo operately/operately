@@ -50,7 +50,7 @@ export default function RelativeTime({
     const useAbbreviatedMinutes = !isLargeScreen && locale.toLowerCase().startsWith("en");
 
     label = useAbbreviatedMinutes
-      ? `${minutes} min. ago`
+      ? t("{{count}} min. ago", { count: minutes })
       : t("intlRelativeDateTime", { val: -minutes, range: "minute" });
   } else if (hours < 24) {
     label = t("intlRelativeDateTime", { val: -hours, range: "hour" });

@@ -1,4 +1,6 @@
 defmodule OperatelyEmail.RichTextExcerpt do
+  use Gettext, backend: OperatelyWeb.Gettext
+
   @default_limit 120
   @default_suffix "..."
 
@@ -54,7 +56,7 @@ defmodule OperatelyEmail.RichTextExcerpt do
   defp parse_content(_), do: nil
 
   defp shorten_node(%{"type" => "table"} = table, count, limit, suffix) do
-    text = table |> Operately.RichContent.Table.to_plain_text() |> String.replace("\n", " / ")
+    text = table |> Operately.RichContent.Table.to_plain_text(file_label: gettext("File")) |> String.replace("\n", " / ")
     paragraph = %{"type" => "paragraph", "content" => [%{"type" => "text", "text" => text}]}
     shorten_node(paragraph, count, limit, suffix)
   end
