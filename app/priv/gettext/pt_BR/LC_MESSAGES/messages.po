@@ -2989,10 +2989,10 @@ msgstr "Tarefas de %{space}"
 msgid "%{start} - %{end}"
 msgstr "%{start} - %{end}"
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:55
-msgid "%{start} – %{end}"
-msgstr "%{start} – %{end}"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:55
+#~ msgid "%{start} – %{end}"
+#~ msgstr "%{start} – %{end}"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:256
@@ -7125,10 +7125,10 @@ msgstr "Status do pagamento"
 msgid "Checkout unavailable"
 msgstr "Pagamento indisponível"
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:23
-msgid "Choose"
-msgstr "Escolher"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:23
+#~ msgid "Choose"
+#~ msgstr "Escolher"
 
 #~ #.frontend
 #~ #: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:66
@@ -8457,10 +8457,10 @@ msgstr "Plano atual mantido"
 msgid "Current value"
 msgstr "Valor atual"
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/index.tsx:111
-msgid "Custom"
-msgstr "Personalizado"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/index.tsx:111
+#~ msgid "Custom"
+#~ msgstr "Personalizado"
 
 #.frontend
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:52
@@ -9271,7 +9271,6 @@ msgstr "Prazo: <date/>"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:77
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:85
-#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:40
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:193
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 #: lib/operately/md/goal/timeframe.ex:10
@@ -12666,8 +12665,6 @@ msgstr "Data de modificação"
 
 #.frontend
 #: ../turboui/src/DateField/index.tsx:30
-#: ../turboui/src/TimeframeSelectorDialog/index.tsx:110
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:25
 msgid "Month"
 msgstr "Mês"
 
@@ -13106,8 +13103,6 @@ msgstr "Próximo"
 
 #.frontend
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:105
-#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:65
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:28
 msgid "Next month"
 msgstr "Próximo mês"
 
@@ -13117,13 +13112,13 @@ msgstr "Próximo mês"
 msgid "Next step"
 msgstr "Próxima etapa"
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:37
-#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:38
-#: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:46
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:30
-msgid "Next year"
-msgstr "Próximo ano"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:37
+#~ #: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:38
+#~ #: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:46
+#~ #: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:30
+#~ msgid "Next year"
+#~ msgstr "Próximo ano"
 
 #.frontend
 #: assets/js/features/ProjectRetrospective/Form.tsx:95
@@ -13650,7 +13645,6 @@ msgstr "Não atribuído"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:356
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:216
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:24
 msgid "Not available"
 msgstr "Indisponível"
 
@@ -14786,8 +14780,6 @@ msgstr "Check-in anterior"
 
 #.frontend
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:94
-#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:63
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:27
 msgid "Previous month"
 msgstr "Mês anterior"
 
@@ -14796,13 +14788,13 @@ msgstr "Mês anterior"
 msgid "Previous values"
 msgstr "Valores anteriores"
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:35
-#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:36
-#: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:42
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:29
-msgid "Previous year"
-msgstr "Ano anterior"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/MonthPicker.tsx:35
+#~ #: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:36
+#~ #: ../turboui/src/TimeframeSelectorDialog/YearPicker.tsx:42
+#~ #: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:29
+#~ msgid "Previous year"
+#~ msgstr "Ano anterior"
 
 #.frontend
 #: assets/js/features/activities/ProjectContributorEdited/index.tsx:114
@@ -15187,7 +15179,6 @@ msgstr "Propósito"
 
 #.frontend
 #: ../turboui/src/DateField/components/QuarterSelector.tsx:73
-#: ../turboui/src/TimeframeSelectorDialog/QuarterPicker.tsx:54
 msgid "Q%{quarter}"
 msgstr "T%{quarter}"
 
@@ -15202,7 +15193,6 @@ msgstr "T%{quarter} %{year}"
 
 #.frontend
 #: ../turboui/src/DateField/index.tsx:36
-#: ../turboui/src/TimeframeSelectorDialog/index.tsx:109
 msgid "Quarter"
 msgstr "Trimestre"
 
@@ -16560,10 +16550,10 @@ msgstr "Selecionar"
 msgid "Select Company"
 msgstr "Selecionar empresa"
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/index.tsx:84
-msgid "Select Timeframe"
-msgstr "Selecionar período"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/index.tsx:84
+#~ msgid "Select Timeframe"
+#~ msgstr "Selecionar período"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:383
@@ -17326,7 +17316,6 @@ msgstr "Início"
 #.elixir
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:58
-#: ../turboui/src/TimeframeSelectorDialog/CustomRangePicker.tsx:22
 #: lib/operately/md/goal/timeframe.ex:9
 #: lib/operately/md/project/timeframe.ex:10
 msgid "Start Date"
@@ -20646,10 +20635,10 @@ msgstr "Estamos aguardando a conclusão da sua mudança para um plano superior. 
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Enviamos um código de 6 caracteres para <email>%{email}</email>. O código expira em 5 minutos, então digite-o em breve."
 
-#.frontend
-#: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:26
-msgid "Week"
-msgstr "Semana"
+#~ #.frontend
+#~ #: ../turboui/src/TimeframeSelectorDialog/useCalendarLocale.ts:26
+#~ msgid "Week"
+#~ msgstr "Semana"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/utils.ts:8
@@ -20936,7 +20925,6 @@ msgstr "Gravando pacote"
 
 #.frontend
 #: ../turboui/src/DateField/index.tsx:42
-#: ../turboui/src/TimeframeSelectorDialog/index.tsx:108
 msgid "Year"
 msgstr "Ano"
 

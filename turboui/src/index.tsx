@@ -44,7 +44,6 @@ export * from "./StatusBadge";
 export * from "./SmallStatusIndicator";
 export * from "./SortControl";
 export * from "./TextSeparator";
-export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./ViewToggle";
 export * from "./WorkMap";
