@@ -1,3 +1,4 @@
+import { useSelectLocalization } from "../SelectLocalization";
 import { Trans } from "../Translate";
 import { useEmbedding, portalPosition } from "../Embedding";
 import * as React from "react";
@@ -103,6 +104,7 @@ interface PersonSearchProps {
 }
 
 function PersonSearch(props: PersonSearchProps) {
+  const localization = useSelectLocalization<Option>();
   const embedding = useEmbedding();
   if (props.allowEmptySelection && !props.emptySelectionLabel) {
     throw new Error("emptySelectionLabel is required when allowEmptySelection is true");
@@ -113,6 +115,9 @@ function PersonSearch(props: PersonSearchProps) {
 
   return (
     <AsyncSelect
+      {...localization}
+      getOptionLabel={(option) => option.person?.fullName ?? props.emptySelectionLabel ?? ""}
+      formatOptionLabel={(option) => option.label}
       unstyled
       autoFocus={props.autoFocus}
       placeholder={props.placeholder}

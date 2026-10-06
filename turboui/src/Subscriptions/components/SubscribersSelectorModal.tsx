@@ -156,6 +156,20 @@ function SubscribersList({
   onToggle,
   alwaysNotifyLabel,
 }: SubscribersListProps) {
+  const { t } = useTranslation();
+  const roleLabel = (role: string) => {
+    switch (role) {
+      case "Champion":
+        return t("Champion");
+      case "Reviewer":
+        return t("Reviewer");
+      case "Contributor":
+        return t("Contributor");
+      default:
+        return role;
+    }
+  };
+
   const sortedSubscribers = React.useMemo(
     () => sortSubscribers(subscribers, alwaysNotifyIds),
     [subscribers, alwaysNotifyIds],
@@ -193,7 +207,7 @@ function SubscribersList({
                 <div className="font-medium text-content-accent">{subscriber.person.fullName}</div>
                 {subscriber.role && (
                   <div className="text-sm text-content-dimmed">
-                    {subscriber.role}
+                    {roleLabel(subscriber.role)}
                     {isAlwaysNotify ? ` - ${alwaysNotifyLabel}` : ""}
                   </div>
                 )}

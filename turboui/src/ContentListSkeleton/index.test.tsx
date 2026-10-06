@@ -1,6 +1,10 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { i18n, setupTestCatalog } from "../../test/i18n";
+
+setupTestCatalog();
+
 import { ContentListSkeleton } from ".";
 
 it("announces loading once and hides the decorative rows", () => {
@@ -15,4 +19,10 @@ it("supports document lists and a custom row count", () => {
   const { container } = render(<ContentListSkeleton leadingShape="document" count={2} />);
   expect(container.querySelector('[aria-hidden="true"]')?.children).toHaveLength(2);
   expect(container.querySelectorAll(".rounded-full")).toHaveLength(0);
+});
+
+it("translates the default loading announcement", async () => {
+  await i18n.changeLanguage("pt-BR");
+  render(<ContentListSkeleton />);
+  expect(screen.getByRole("status", { name: "Carregando itens" })).toBeInTheDocument();
 });

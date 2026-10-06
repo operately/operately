@@ -10,12 +10,6 @@ export interface FoldersFirstSortableItem {
   updatedAt?: string | null;
 }
 
-export const NAME_AND_DATE_SORT_OPTIONS: ReadonlyArray<{ value: NameAndDateSortBy; label: string }> = [
-  { value: "name", label: "Name" },
-  { value: "insertedAt", label: "Creation Date" },
-  { value: "updatedAt", label: "Modified Date" },
-];
-
 export function sortWithFoldersFirst<T extends FoldersFirstSortableItem>(
   items: T[],
   sortBy: NameAndDateSortBy = "name",
@@ -39,7 +33,10 @@ export function sortWithFoldersFirst<T extends FoldersFirstSortableItem>(
   return [...folders, ...otherItems];
 }
 
-function createSortFunction<T extends FoldersFirstSortableItem>(sortBy: NameAndDateSortBy, sortDirection: SortDirection) {
+function createSortFunction<T extends FoldersFirstSortableItem>(
+  sortBy: NameAndDateSortBy,
+  sortDirection: SortDirection,
+) {
   return (left: T, right: T) => {
     let comparison = 0;
 

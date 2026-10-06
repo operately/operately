@@ -1,3 +1,4 @@
+import type { FormattedTimePreferences } from "../FormattedTime";
 //
 // Shared types for the Space KPIs proof-of-concept.
 //
@@ -139,6 +140,7 @@ export namespace SpaceKpisPage {
   export type MutationResult = { success: boolean; id?: string; error?: string };
 
   export interface Props {
+    formattedTimePreferences: FormattedTimePreferences;
     space: Space;
 
     // Breadcrumb items shown in the page header, matching the other space tools

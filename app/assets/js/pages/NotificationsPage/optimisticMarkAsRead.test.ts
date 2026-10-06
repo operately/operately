@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { Notification } from "@/api";
 import { showErrorToast } from "turboui";
 import { optimisticallyMarkNotificationAsRead, type SetNotifications } from "./optimisticMarkAsRead";
@@ -99,4 +100,22 @@ describe("optimisticallyMarkNotificationAsRead", () => {
       "The notification is still unread. Try again.",
     );
   });
+});
+
+it("localizes the failure toast and rolls back the notification", async () => {
+  await i18n.changeLanguage("pt-BR");
+  try {
+    const unread = notification("localized");
+    const store = notificationStore([unread]);
+    await optimisticallyMarkNotificationAsRead(unread, store.setNotifications, () =>
+      Promise.reject(new Error("failure")),
+    );
+    expect(showErrorToast).toHaveBeenLastCalledWith(
+      "Não foi possível marcar a notificação como lida",
+      "A notificação continua não lida. Tente novamente.",
+    );
+    expect(store.notifications[0]?.read).toBe(false);
+  } finally {
+    await i18n.changeLanguage("en");
+  }
 });

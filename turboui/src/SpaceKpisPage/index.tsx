@@ -1,3 +1,4 @@
+import { KpiFormattingProvider } from "./formatting";
 import { useTranslation } from "react-i18next";
 import React from "react";
 
@@ -74,79 +75,81 @@ export function SpaceKpisPage(props: SpaceKpisPageNS.Props) {
   const title = openKpi ? [openKpi.name, props.space.name] : [props.space.name, t("KPIs")];
 
   return (
-    <PageNew title={title} size="fullwidth" testId="space-kpis-page">
-      <PageHeader
-        navigation={props.navigation}
-        kpisLink={props.kpisLink}
-        isKpiOpen={openKpi !== null}
-        primaryAction={primaryAction}
-      />
+    <KpiFormattingProvider value={props.formattedTimePreferences}>
+      <PageNew title={title} size="fullwidth" testId="space-kpis-page">
+        <PageHeader
+          navigation={props.navigation}
+          kpisLink={props.kpisLink}
+          isKpiOpen={openKpi !== null}
+          primaryAction={primaryAction}
+        />
 
-      <div className="flex-1 overflow-auto">
-        <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-          <KpisContent
-            {...props}
-            canManage={canManage}
-            selectedKpi={selectedKpi}
-            openKpi={openKpi}
-            onOpenNew={() => setIsNewOpen(true)}
-            onOpenDelete={() => setIsDeleteOpen(true)}
-            onLogUpdate={() => selectedKpi && setLogKpiId(selectedKpi.id)}
-            onOpenNewAnnotation={() => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation: null })}
-            onOpenAnnotation={(annotation) => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation })}
-            onOpenEditEntry={setEditingEntry}
-            onOpenDeleteEntry={setDeletingEntry}
-          />
+        <div className="flex-1 overflow-auto">
+          <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
+            <KpisContent
+              {...props}
+              canManage={canManage}
+              selectedKpi={selectedKpi}
+              openKpi={openKpi}
+              onOpenNew={() => setIsNewOpen(true)}
+              onOpenDelete={() => setIsDeleteOpen(true)}
+              onLogUpdate={() => selectedKpi && setLogKpiId(selectedKpi.id)}
+              onOpenNewAnnotation={() => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation: null })}
+              onOpenAnnotation={(annotation) => selectedKpi && setAnnotationState({ kpi: selectedKpi, annotation })}
+              onOpenEditEntry={setEditingEntry}
+              onOpenDeleteEntry={setDeletingEntry}
+            />
+          </div>
         </div>
-      </div>
 
-      <NewKpiModal
-        isOpen={isNewOpen}
-        onClose={() => setIsNewOpen(false)}
-        championSearch={props.championSearch}
-        onCreate={props.onCreateKpi}
-      />
+        <NewKpiModal
+          isOpen={isNewOpen}
+          onClose={() => setIsNewOpen(false)}
+          championSearch={props.championSearch}
+          onCreate={props.onCreateKpi}
+        />
 
-      <DeleteKpiModal
-        kpi={selectedKpi}
-        isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        onDelete={props.onDeleteKpi}
-      />
+        <DeleteKpiModal
+          kpi={selectedKpi}
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          onDelete={props.onDeleteKpi}
+        />
 
-      <LogUpdateForm
-        kpi={logKpi}
-        isOpen={logKpiId !== null}
-        onClose={() => setLogKpiId(null)}
-        onRecord={props.onRecordEntry}
-        richTextHandlers={props.richTextHandlers}
-      />
+        <LogUpdateForm
+          kpi={logKpi}
+          isOpen={logKpiId !== null}
+          onClose={() => setLogKpiId(null)}
+          onRecord={props.onRecordEntry}
+          richTextHandlers={props.richTextHandlers}
+        />
 
-      <EditEntryForm
-        kpi={selectedKpi}
-        entry={editingEntry}
-        isOpen={editingEntry !== null}
-        onClose={() => setEditingEntry(null)}
-        onEdit={props.onEditEntry}
-      />
+        <EditEntryForm
+          kpi={selectedKpi}
+          entry={editingEntry}
+          isOpen={editingEntry !== null}
+          onClose={() => setEditingEntry(null)}
+          onEdit={props.onEditEntry}
+        />
 
-      <DeleteEntryDialog
-        entry={deletingEntry}
-        unit={selectedKpi?.unit ?? ""}
-        onClose={() => setDeletingEntry(null)}
-        onDelete={props.onDeleteEntry}
-      />
+        <DeleteEntryDialog
+          entry={deletingEntry}
+          unit={selectedKpi?.unit ?? ""}
+          onClose={() => setDeletingEntry(null)}
+          onDelete={props.onDeleteEntry}
+        />
 
-      <AnnotationForm
-        kpi={annotationState?.kpi ?? null}
-        annotation={annotationState?.annotation ?? null}
-        isOpen={annotationState !== null}
-        onClose={() => setAnnotationState(null)}
-        onCreate={props.onAddAnnotation}
-        onEdit={props.onEditAnnotation}
-        onDelete={props.onDeleteAnnotation}
-      />
-    </PageNew>
+        <AnnotationForm
+          kpi={annotationState?.kpi ?? null}
+          annotation={annotationState?.annotation ?? null}
+          isOpen={annotationState !== null}
+          onClose={() => setAnnotationState(null)}
+          onCreate={props.onAddAnnotation}
+          onEdit={props.onEditAnnotation}
+          onDelete={props.onDeleteAnnotation}
+        />
+      </PageNew>
+    </KpiFormattingProvider>
   );
 }
 

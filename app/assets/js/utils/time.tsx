@@ -131,10 +131,10 @@ export function relativeDay(date: Date) {
 
   const days = daysBetween(startOfDayOfDate, startOfToday);
 
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
+  if (days === 0) return i18n.t("Today");
+  if (days === 1) return i18n.t("Yesterday");
 
-  return `${days} days ago`;
+  return tn("{{count}} day ago", "{{count}} days ago", days);
 }
 
 export function durationHumanized(a: Date, b: Date, suffix?: string): string {

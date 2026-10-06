@@ -1,5 +1,6 @@
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { usePaths } from "@/routes/paths";
 export function ProjectPageNavigation({ project }) {
@@ -8,12 +9,13 @@ export function ProjectPageNavigation({ project }) {
 }
 
 export function ProjectRetrospectiveNavigation({ project }) {
+  const { t } = useTranslation();
   const paths = usePaths();
   return (
     <Paper.Navigation
       items={[
         { to: paths.projectPath(project.id!), label: project.name },
-        { to: paths.projectRetrospectivePath(project.id!), label: "Retrospective" },
+        { to: paths.projectRetrospectivePath(project.id!), label: t("Retrospective") },
       ]}
     />
   );

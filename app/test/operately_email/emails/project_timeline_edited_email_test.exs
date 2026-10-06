@@ -40,4 +40,18 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmailTest do
       end
     end
   end
+
+  test "buffered timelines localize both calendar dates", ctx do
+    activity = activity_fixture(%{
+      action: "project_timeline_edited",
+      author_id: ctx.creator.id,
+      content: %{"project_id" => ctx.project.id, "new_start_date" => "2026-01-01", "new_end_date" => "2026-02-02"}
+    })
+    for {locale, start_date, end_date} <- [{"en", "Jan 1, 2026", "Feb 2, 2026"}, {"pt_BR", "1 de jan. de 2026", "2 de fev. de 2026"}] do
+      item = Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> ProjectTimelineEditedEmail.buffered_item(ctx.creator, activity) end)
+      assert item.headline =~ start_date
+      assert item.headline =~ end_date
+      assert item.parent_name == ctx.project.name
+    end
+  end
 end

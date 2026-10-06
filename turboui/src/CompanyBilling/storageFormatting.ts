@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 function roundDisplayValue(value: number): number {
   if (value >= 10) {
     return Math.round(value);
@@ -8,7 +9,7 @@ function roundDisplayValue(value: number): number {
 
 export function formatStorageBytes(bytes?: number | null): string {
   if (bytes == null) {
-    return "Unavailable";
+    return i18n.t("Unavailable");
   }
 
   const units = ["B", "KB", "MB", "GB", "TB", "PB"];

@@ -1,5 +1,6 @@
 import { IconExclamationCircleFilled, IconCircleCheckFilled, IconInfoCircleFilled, IconX } from "../icons";
 import React from "react";
+import i18n from "../i18n";
 import toast, { Toaster } from "react-hot-toast";
 import { SecondaryButton } from "../Button";
 import { UnstyledButton } from "../Button/UnstalyedButton";
@@ -68,7 +69,7 @@ const showToast = (type: ToastType, title: string, description: string, options:
           </div>
           {options.duration === Infinity && (
             <UnstyledButton
-              ariaLabel="Close notification"
+              ariaLabel={i18n.t("Close notification")}
               className="absolute right-1 top-1 rounded p-1 text-content-subtle hover:text-content-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-1"
               onClick={() => toast.dismiss(notification.id)}
             >

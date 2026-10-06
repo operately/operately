@@ -10,8 +10,8 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
     project = Project.get!(:system, id: activity.content["project_id"])
 
-    previous_date = get_date_value(activity.content["old_due_date"])
-    new_date = get_date_value(activity.content["new_due_date"])
+    previous_date = OperatelyEmail.DateFormatting.format(activity.content["old_due_date"])
+    new_date = OperatelyEmail.DateFormatting.format(activity.content["new_due_date"])
     subject_text = subject_text(project.name, author, previous_date, new_date)
 
     company
@@ -27,17 +27,6 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
     |> render("project_due_date_updating")
   end
 
-  defp get_date_value(nil), do: nil
-  defp get_date_value(%Operately.ContextualDates.ContextualDate{value: value}), do: value
-
-  defp get_date_value(date) when is_binary(date) do
-    case Date.from_iso8601(date) do
-      {:ok, parsed} -> Calendar.strftime(parsed, "%b %-d, %Y")
-      _ -> date
-    end
-  end
-  defp get_date_value(date), do: Calendar.strftime(date, "%b %-d, %Y")
-
   defp subject_text(where, author, _old, nil), do: gettext("(%{where}) %{author} removed the due date", where: where, author: Operately.People.Person.short_name(author))
   defp subject_text(where, author, nil, _new), do: gettext("(%{where}) %{author} set the due date", where: where, author: Operately.People.Person.short_name(author))
   defp subject_text(where, author, _old, _new), do: gettext("(%{where}) %{author} changed the due date", where: where, author: Operately.People.Person.short_name(author))
@@ -46,8 +35,8 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
     project = Operately.Projects.get_project!(activity.content["project_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-    old_date = get_date_value(activity.content["old_due_date"])
-    new_date = get_date_value(activity.content["new_due_date"])
+    old_date = OperatelyEmail.DateFormatting.format(activity.content["old_due_date"])
+    new_date = OperatelyEmail.DateFormatting.format(activity.content["new_due_date"])
 
     %{
       parent_id: project.id,

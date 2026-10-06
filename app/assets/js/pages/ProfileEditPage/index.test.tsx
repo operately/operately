@@ -14,7 +14,11 @@ import { ProfileEditPage } from "turboui";
 import pageModule from ".";
 
 jest.mock("axios");
-jest.mock("@/i18n", () => ({ applyLanguage: jest.fn(() => Promise.resolve("en")) }));
+jest.mock("@/i18n", () => ({
+  __esModule: true,
+  default: { t: (key: string) => key },
+  applyLanguage: jest.fn(() => Promise.resolve("en")),
+}));
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/components/Pages", () => ({ useLoadedData: jest.fn(), getSearchParam: () => null }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: jest.fn() }));
