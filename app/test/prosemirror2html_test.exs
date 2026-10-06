@@ -55,6 +55,20 @@ defmodule Prosemirror2HtmlTest do
     end
   end
 
+  test "translates unnamed table attachments while preserving literal titles and links" do
+    for {title, expected} <- [{nil, "Arquivo"}, {"<Literal & title>", "<Literal & title>"}] do
+      blob = %{"type" => "blob", "attrs" => %{"title" => title, "src" => %{"url" => "https://example.com/file"}}}
+      cell = %{"type" => "tableCell", "content" => [%{"type" => "paragraph", "content" => [blob]}]}
+
+      Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+        dom = cell |> Prosemirror2Html.convert_node(@opts) |> Floki.parse_fragment!()
+        assert Floki.text(dom) == expected
+        assert Floki.attribute(dom, "a", "href") == ["https://example.com/file"]
+        assert Floki.find(dom, "literal") == []
+      end)
+    end
+  end
+
   test "preserves valid merged cell spans and ignores invalid span attributes" do
     for type <- ["tableCell", "tableHeader"] do
       cell = %{"type" => type, "attrs" => %{"colspan" => 2, "rowspan" => 3}, "content" => [%{"type" => "paragraph"}]}

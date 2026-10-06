@@ -4,6 +4,19 @@ defmodule Operately.ResourceHubs.PublicDocumentTest do
   alias Operately.Support.Factory
   alias Operately.ResourceHubs.PublicDocument
 
+  test "localizes only missing mention labels in presentation" do
+    unnamed = %{"type" => "mention", "attrs" => %{"id" => "person"}}
+    named = put_in(unnamed, ["attrs", "label"], "<Mentioned person>")
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert PublicDocument.public_content(unnamed, "token")["text"] == "Pessoa mencionada"
+      assert PublicDocument.public_content(named, "token")["text"] == "<Mentioned person>"
+    end)
+
+    assert unnamed["attrs"]["label"] == nil
+    assert Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> PublicDocument.public_content(unnamed, "token")["text"] end) == "Mentioned person"
+  end
+
   setup ctx do
     ctx
     |> Factory.setup()

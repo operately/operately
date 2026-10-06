@@ -8,10 +8,12 @@ export default function ShortDate({
   time,
   weekday,
   locale,
+  withYear = false,
 }: {
   time: Date;
   weekday: boolean;
   locale: string;
+  withYear?: boolean;
 }): JSX.Element {
   const { t } = useTranslation();
 
@@ -20,7 +22,7 @@ export default function ShortDate({
     month: "short",
   };
 
-  if (!Time.isCurrentYear(time)) {
+  if (withYear || !Time.isCurrentYear(time)) {
     options.year = "numeric";
   }
 

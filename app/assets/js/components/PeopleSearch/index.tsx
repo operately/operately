@@ -1,7 +1,7 @@
 import React from "react";
 import AsyncSelect from "react-select/async";
 
-import { Avatar } from "turboui";
+import { Avatar, useSelectLocalization } from "turboui";
 import classnames from "classnames";
 
 import { Person } from "@/models/people";
@@ -32,6 +32,7 @@ interface PeopleSearchProps {
 }
 
 export default function PeopleSearch(props: PeopleSearchProps) {
+  const localization = useSelectLocalization<Option>();
   validateProps(props);
 
   const defaultValue = props.defaultValue && personAsOption(props.defaultValue, props.showTitle);
@@ -39,6 +40,9 @@ export default function PeopleSearch(props: PeopleSearchProps) {
 
   return (
     <AsyncSelect
+      {...localization}
+      getOptionLabel={(option) => option.person?.fullName ?? props.emptySelectionLabel ?? ""}
+      formatOptionLabel={(option) => option.label}
       unstyled
       autoFocus={props.autoFocus}
       placeholder={props.placeholder}

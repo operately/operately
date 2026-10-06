@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../../utils/formatting";
 import React, { useRef, useLayoutEffect } from "react";
 import { generateMonths } from "../utils";
 import { OptionButton } from "./OptionButton";
@@ -20,6 +22,7 @@ export function MonthSelector({
   minDateLimit,
   maxDateLimit,
 }: Props) {
+  const { i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
@@ -68,7 +71,7 @@ export function MonthSelector({
                     isDisabled={isDisabled}
                     className="py-1 px-2 text-xs"
                   >
-                    {month.label}
+                    {formatDate(monthDate, i18n.resolvedLanguage, { month: "short" })}
                   </OptionButton>
                 );
               })}

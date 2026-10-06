@@ -25,7 +25,7 @@ export default function RelativeWeekdayOrDate({ time, locale }: { time: Date; lo
       weekday: "long",
     };
 
-    return <>this {formatDate(time, locale, options)}</>;
+    return <>{t("this {{weekday}}", { weekday: formatDate(time, locale, options) })}</>;
   }
 
   return <ShortDateWithWeekday time={time} locale={locale} />;

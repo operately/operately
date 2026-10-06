@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useRef, useLayoutEffect } from "react";
 import { generateQuarters } from "../utils";
 import { OptionButton } from "./OptionButton";
@@ -20,6 +21,7 @@ export function QuarterSelector({
   minDateLimit,
   maxDateLimit,
 }: Props) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
@@ -68,7 +70,7 @@ export function QuarterSelector({
                     isDisabled={isDisabled}
                     className="flex-1 py-1 px-2 text-xs"
                   >
-                    {quarter.label}
+                    {t("Q{{quarter}}", { quarter: Math.floor(quarterDate.getMonth() / 3) + 1 })}
                   </OptionButton>
                 );
               })}

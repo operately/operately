@@ -1,6 +1,8 @@
+import { KpiDate, useKpiFormatting } from "./formatting";
 import * as Popover from "../Embedding/Popover";
 import React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { Trans } from "../Translate";
 
 import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
@@ -19,7 +21,7 @@ import { KpiLineChart } from "./KpiLineChart";
 import { TrendIndicator } from "./TrendIndicator";
 import type { SpaceKpisPage } from "./types";
 import type { KpiFields } from "./useKpiFields";
-import { CADENCE_OPTIONS, formatCadence, formatShortDate, formatValue, latestEntry, latestTrend } from "./utils";
+import { CADENCE_OPTIONS, formatCadence, latestEntry, latestTrend } from "./utils";
 
 interface KpiDetailProps {
   kpi: SpaceKpisPage.Kpi;
@@ -179,7 +181,7 @@ function Heading({ fields, canManage }: { fields: KpiFields; canManage: boolean 
 // recorded it is in the recorded-updates log. With no entries there is no
 // reading to show and the chart says so instead.
 function CurrentValue({ kpi, unit }: { kpi: SpaceKpisPage.Kpi; unit: string }) {
-  const { t } = useTranslation();
+  const { formatValue } = useKpiFormatting();
   const latest = latestEntry(kpi);
   if (!latest) return null;
 
@@ -191,7 +193,7 @@ function CurrentValue({ kpi, unit }: { kpi: SpaceKpisPage.Kpi; unit: string }) {
       </div>
 
       <div className="mt-1.5 text-xs leading-none text-content-dimmed">
-        {t("as of {{date}}", { date: formatShortDate(latest.recordedAt) })}
+        <Trans i18nKey="as of <date/>" components={{ date: <KpiDate time={latest.recordedAt} /> }} />
       </div>
     </div>
   );
@@ -399,6 +401,7 @@ function EntriesTable({
   onDeleteEntry: (entry: SpaceKpisPage.KpiEntry) => void;
   renderEntryComments?: SpaceKpisPage.Props["renderEntryComments"];
 }) {
+  const { formatValue } = useKpiFormatting();
   const { t } = useTranslation();
   const [openEntryId, setOpenEntryId] = React.useState<string | null>(null);
   const openEntry = entries.find((entry) => entry.id === openEntryId) ?? null;
@@ -437,7 +440,9 @@ function EntriesTable({
                 >
                   <td className="whitespace-nowrap px-4 py-2.5 text-content-base">
                     <div className="flex items-center gap-1.5">
-                      <span>{formatShortDate(entry.recordedAt)}</span>
+                      <span>
+                        <KpiDate time={entry.recordedAt} />
+                      </span>
                       <EntryEditedHistory entry={entry} unit={unit} />
                     </div>
                   </td>
@@ -537,6 +542,7 @@ function EntriesTable({
 }
 
 function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; unit: string }) {
+  const { formatValue } = useKpiFormatting();
   const { t } = useTranslation();
   if (entry.edits.length === 0) return null;
 
@@ -564,21 +570,20 @@ function EntryEditedHistory({ entry, unit }: { entry: SpaceKpisPage.KpiEntry; un
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="font-medium text-content-accent">{formatValue(edit.previousValue, unit)}</span>
                   <span className="whitespace-nowrap text-xs text-content-dimmed">
-                    {formatShortDate(edit.previousPeriod)}
+                    <KpiDate time={edit.previousPeriod} />
                   </span>
                 </div>
                 <div className="mt-0.5 text-xs text-content-dimmed">
                   {edit.editedBy ? (
                     <Trans
-                      i18nKey="Replaced by {{name}} on <date>{{date}}</date>"
-                      values={{ name: edit.editedBy.fullName, date: formatShortDate(edit.editedAt) }}
-                      components={{ date: <span className="whitespace-nowrap" /> }}
+                      i18nKey="Replaced by {{name}} on <date/>"
+                      values={{ name: edit.editedBy.fullName }}
+                      components={{ date: <KpiDate className="whitespace-nowrap" time={edit.editedAt} timestamp /> }}
                     />
                   ) : (
                     <Trans
-                      i18nKey="Replaced on <date>{{date}}</date>"
-                      values={{ date: formatShortDate(edit.editedAt) }}
-                      components={{ date: <span className="whitespace-nowrap" /> }}
+                      i18nKey="Replaced on <date/>"
+                      components={{ date: <KpiDate className="whitespace-nowrap" time={edit.editedAt} timestamp /> }}
                     />
                   )}
                 </div>
@@ -604,7 +609,7 @@ function EntryCommentsHeader({
   unit: string;
   kpiName: string;
 }) {
-  const { t } = useTranslation();
+  const { formatValue } = useKpiFormatting();
   return (
     <div className="border-b border-stroke-base px-6 py-4 pr-12" data-test-id="entry-comments-header">
       <div className="text-xs text-content-dimmed">{kpiName}</div>
@@ -614,17 +619,20 @@ function EntryCommentsHeader({
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-content-dimmed">
         {entry.recordedBy ? (
           <Trans
-            i18nKey="<label>Logged by</label> <avatar/> <details><name>{{name}}</name> on {{date}}</details>"
-            values={{ name: entry.recordedBy.fullName, date: formatShortDate(entry.recordedAt) }}
+            i18nKey="<label>Logged by</label> <avatar/> <details><name>{{name}}</name> on <date/></details>"
+            values={{ name: entry.recordedBy.fullName }}
             components={{
               label: <span />,
               avatar: <Avatar person={entry.recordedBy} size={16} />,
               details: <span />,
+              date: <KpiDate time={entry.recordedAt} />,
               name: <span className="font-medium text-content-base" />,
             }}
           />
         ) : (
-          <span>{t("Logged on {{date}}", { date: formatShortDate(entry.recordedAt) })}</span>
+          <span>
+            <Trans i18nKey="Logged on <date/>" components={{ date: <KpiDate time={entry.recordedAt} /> }} />
+          </span>
         )}
       </div>
     </div>

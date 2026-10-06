@@ -1,3 +1,4 @@
+import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 import React, { useMemo } from "react";
 
 import { KpiSummaryCard } from "turboui";
@@ -13,13 +14,14 @@ interface Props {
 }
 
 export function Kpis({ space, kpis = [] }: Props) {
+  const formattedTimePreferences = useFormattedTimePreferences();
   const paths = usePaths();
   const path = paths.spaceKpisPath(space.id!);
   const parsedKpis = useMemo(() => kpis.map((kpi) => parseKpiForTurboUi(paths, kpi)), [kpis, paths]);
 
   return (
     <Container path={path} testId="kpis-tool">
-      <KpiSummaryCard kpis={parsedKpis} />
+      <KpiSummaryCard kpis={parsedKpis} formattedTimePreferences={formattedTimePreferences} />
     </Container>
   );
 }

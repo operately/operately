@@ -43,6 +43,7 @@ export type Format =
 export interface FormattedTimeProps extends FormattedTimePreferences {
   time: string | Date;
   format: Format;
+  withYear?: boolean;
 }
 
 export function FormattedTime(props: FormattedTimeProps): JSX.Element {
@@ -80,7 +81,7 @@ export function FormattedTime(props: FormattedTimeProps): JSX.Element {
     case "relative-weekday-or-date":
       return <RelativeWeekdayOrDate time={localizedTime} locale={locale} />;
     case "short-date":
-      return <ShortDate time={localizedTime} weekday={false} locale={locale} />;
+      return <ShortDate time={localizedTime} weekday={false} locale={locale} withYear={props.withYear} />;
     case "short-date-with-weekday":
       return <ShortDateWithWeekday time={localizedTime} locale={locale} />;
     case "time-only":

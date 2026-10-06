@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { Mark, Node } from "prosemirror-model";
 
 const markOrder = ["link", "bold", "italic", "strike", "highlight", "code"];
@@ -58,7 +59,7 @@ function renderLeaf(node: Node): string {
   if (node.type.name === "blob") {
     const { src, title, alt, filetype } = node.attrs;
     const href = typeof src === "string" ? src : src?.url;
-    const label = escapeText(alt || title || "File");
+    const label = escapeText(alt || title || i18n.t("File"));
     if (!href) return label;
     const prefix = filetype?.startsWith("image/") ? "!" : "";
     return prefix + renderLink(label, href, title);

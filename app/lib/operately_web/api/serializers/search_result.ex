@@ -1,9 +1,11 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Search.Result do
+  use Gettext, backend: OperatelyWeb.Gettext
+
   def serialize(result, level: :essential) do
     %{
       id: encode_id(result.id),
       type: result.type,
-      title: result.title,
+      title: display_title(result),
       context: result.context,
       matched_field: result.matched_field,
       snippet: result.snippet,
@@ -12,6 +14,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Search.Result do
       navigation_target: serialize_navigation_target(result.navigation_target)
     }
   end
+
+  # Search keeps canonical titles for indexing; only presentation is localized.
+  defp display_title(%{type: type, title: "Check-in on " <> date}) when type in [:goal_check_in, :project_check_in], do: gettext("Check-in on %{date}", date: date)
+  defp display_title(%{type: :project_retrospective, title: "Project retrospective"}), do: gettext("Project retrospective")
+  defp display_title(result), do: result.title
 
   defp serialize_navigation_target(target) do
     %{
