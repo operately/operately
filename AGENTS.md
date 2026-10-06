@@ -44,6 +44,14 @@
 - Components and pages: PascalCase for React components; filenames `ComponentName.tsx`. Tests: `*.test.ts(x)`.
 - TurboUI component architecture and patterns: `turboui/AGENTS.md`.
 
+## Internationalization
+
+- **Hardcoded system-authored, user-visible text is forbidden.** All new or changed copy must use the shared translation infrastructure, include translations for every supported language, and regenerate catalogs and resources in the same PR.
+- This covers app/shared UI, tooltips, accessibility labels, validation and errors, notifications, activity feeds, exports, server-rendered pages, and email subjects and HTML/plain-text bodies.
+- Follow [docs/internationalization.md](docs/internationalization.md) and its linked language glossaries. Use complete sentences, named placeholders, language-aware plurals, and the shared `Trans` adapter for rich frontend text. Escape user content and translate activity presentation at render time, not stored payloads.
+- User-authored content, machine identifiers/protocol fields, developer-only diagnostics/logs, and proper names that need no translation are exceptions. Diagnostics displayed to users require translated presentation.
+- Edit translations in PO files and run `make gen.i18n`; never edit generated JSON manually. Runtime English fallback is a safeguard, not a substitute for translations.
+
 ## UI Pattern Checklist
 
 - When a request references an existing screen, component, or screenshot, inspect that source in the repo before coding. Reuse its structure, typography, and spacing verbatim unless the user explicitly requests something different.
