@@ -23,7 +23,7 @@ Use the glossary for each target language:
 
 Start each new language from the glossary template, then expand its glossary with as many terms, phrases, and usage notes as needed for consistent product copy and documentation. Each language can have its own additional entries.
 
-Keep approved terminology in these files rather than duplicating it in guides or skills. AI may draft translations; if possible, a native speaker should reviews them before release. New or changed glossary terms need particular attention because they affect copy throughout the product.
+Keep approved terminology in these files rather than duplicating it in guides or skills. AI drafts must follow the glossary; if possible, have a native speaker review them before release. New or changed glossary terms need particular attention because they affect copy throughout the product.
 
 ## Language resolution
 

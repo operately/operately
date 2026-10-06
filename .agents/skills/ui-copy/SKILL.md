@@ -20,7 +20,7 @@ Write interface copy as part of the design, not as decoration after the layout i
 
 Hardcoded system-authored, user-visible text is forbidden. Follow the [internationalization guide](../../../docs/internationalization.md) and its language glossaries for every copy change, including accessibility text, errors, notifications, activity feeds, exports, server-rendered pages, and email subjects and both body formats.
 
-Use translation wrappers with literal message identifiers, complete sentences, named placeholders, language-aware plurals, and safe rich-text interpolation. Include translations for every supported language and run `make gen.i18n` in the same PR; never edit generated JSON manually or treat English fallback as completion. AI drafts require native-speaker review against the glossary.
+Use translation wrappers with literal message identifiers, complete sentences, named placeholders, language-aware plurals, and safe rich-text interpolation. Include translations for every supported language and run `make gen.i18n` in the same PR; never edit generated JSON manually or treat English fallback as completion. AI drafts must follow the glossary; if possible, have a native speaker review them before release.
 
 User-authored content, machine identifiers/protocol fields, developer-only diagnostics/logs, and proper names needing no translation are exceptions. Diagnostics shown to users require translated presentation. The wording examples below illustrate copy choices; they must still use translation wrappers when implemented.
 
