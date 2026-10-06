@@ -251,3 +251,12 @@ it("preserves page state while resolving language after query-string navigation"
   expect(input.value).toBe("Unsaved changes");
   expect(input.closest("[hidden]")).toBeNull();
 });
+
+it("resolves the operator account language without using the inspected company's ID", async () => {
+  await visit("/admin/companies/target-company");
+  await waitFor(() => expect(i18n.language).toBe("pt-BR"));
+  const request = jest.mocked(axios.get).mock.calls.find(([url]) => url.endsWith("/get_language"));
+  expect(request).toBeDefined();
+  expect(request?.[1]?.params).not.toHaveProperty("company_id");
+  expect(request?.[1]?.headers).not.toHaveProperty("x-company-id");
+});

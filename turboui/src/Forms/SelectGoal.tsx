@@ -1,3 +1,4 @@
+import { tn } from "../i18n";
 import { Trans } from "../Translate";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
@@ -145,7 +146,7 @@ function GoalNodeView({
           <div className="truncate">{node.goal.name}</div>
           {hasChildren && !isExpanded ? (
             <div className="text-xs text-content-dimmed shrink-0">
-              {node.children.length} {node.children.length === 1 ? "subgoal" : "subgoals"}
+              {tn("{{count}} subgoal", "{{count}} subgoals", node.children.length)}
             </div>
           ) : null}
         </div>

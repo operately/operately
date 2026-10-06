@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
@@ -14,22 +15,23 @@ import { useLoadedData } from "./loader";
 export { loader } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { company, companyId, availableFeatures } = useLoadedData();
   const { startSupportSession, supportSessionStarting } = useStartSupportSession(companyId);
 
   return (
-    <Pages.Page title={"Admininstration"} testId="saas-admin-page">
+    <Pages.Page title={t("Admininstration")} testId="saas-admin-page">
       <Paper.Root size="large">
-        <Paper.Navigation items={[{ to: "/admin", label: "All Companies" }]} />
+        <Paper.Navigation items={[{ to: "/admin", label: t("All Companies") }]} />
 
         <Paper.Body>
           <div className="text-3xl font-semibold">{company.name}</div>
           <OwnersSection company={company} />
 
-          <h2 className="mt-8 font-bold">Stats</h2>
+          <h2 className="mt-8 font-bold">{t("Stats")}</h2>
           <StatsSection company={company} />
 
-          <h2 className="mt-8 font-bold">Information</h2>
+          <h2 className="mt-8 font-bold">{t("Information")}</h2>
           <Info company={company} />
 
           <FeatureFlagsSection
@@ -38,10 +40,11 @@ export function Page() {
             enabledFeatures={company.enabledFeatures ?? []}
           />
 
-          <h2 className="mt-8 font-bold">Support Mode</h2>
+          <h2 className="mt-8 font-bold">{t("Support Mode")}</h2>
           <p className="text-sm text-content-accent mb-3 mt-1 max-w-lg">
-            Temporarily enable elevated support access for troubleshooting issues with this company's account. You will
-            view the account as if you were an owner.
+            {t(
+              "Temporarily enable elevated support access for troubleshooting issues with this company's account. You will view the account as if you were an owner.",
+            )}
           </p>
 
           <SecondaryButton
@@ -50,10 +53,10 @@ export function Page() {
             loading={supportSessionStarting}
             testId="start-support-session"
           >
-            Start Support Session
+            {t("Start Support Session")}
           </SecondaryButton>
 
-          <h2 className="mt-8 font-bold">Activity</h2>
+          <h2 className="mt-8 font-bold">{t("Activity")}</h2>
           <ActivitySection companyId={companyId} />
         </Paper.Body>
       </Paper.Root>
@@ -62,17 +65,18 @@ export function Page() {
 }
 
 function Info({ company }: { company: AdminApi.Company }) {
+  const { t } = useTranslation();
   return (
     <div className="border-y border-stroke-base py-3 px-1 mt-2 text-sm flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <div className="font-medium w-40">Short ID</div>
+        <div className="font-medium w-40">{t("Short ID")}</div>
         <div className="text-blue-500">
           <code>{company.shortId}</code>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="font-medium w-40">Database ID</div>
+        <div className="font-medium w-40">{t("Database ID")}</div>
         <div className="text-blue-500">
           <code>{company.uuid}</code>
         </div>
@@ -82,14 +86,15 @@ function Info({ company }: { company: AdminApi.Company }) {
 }
 
 function StatsSection({ company }: { company: AdminApi.Company }) {
+  const { t } = useTranslation();
   return (
     <div className="border-y border-stroke-base py-3 mt-2">
       <div className="grid grid-cols-5 gap-4 w-full">
-        <Stat title="People" value={company.peopleCount ?? 0} />
-        <Stat title="Spaces" value={company.spacesCount ?? 0} />
-        <Stat title="Goals" value={company.goalsCount ?? 0} />
-        <Stat title="Projects" value={company.projectsCount ?? 0} />
-        <Stat title="Storage" value={formatStorageBytes(company.storageUsageBytes)} />
+        <Stat title={t("People")} value={company.peopleCount ?? 0} />
+        <Stat title={t("Spaces")} value={company.spacesCount ?? 0} />
+        <Stat title={t("Goals")} value={company.goalsCount ?? 0} />
+        <Stat title={t("Projects")} value={company.projectsCount ?? 0} />
+        <Stat title={t("Storage")} value={formatStorageBytes(company.storageUsageBytes)} />
       </div>
     </div>
   );
@@ -124,6 +129,7 @@ function OwnersSection({ company }: { company: AdminApi.Company }) {
 }
 
 function ActivitySection({ companyId }: { companyId: string }) {
+  const { t } = useTranslation();
   const formattedTimePreferences = useFormattedTimePreferences();
   const { data } = useQuery(AdminApi.getActivitiesQueryOptions({ companyId }));
 
@@ -134,8 +140,8 @@ function ActivitySection({ companyId }: { companyId: string }) {
   return (
     <div className="mt-3">
       <div className="border-y border-stroke-base py-2 flex items-center gap-4 bg-surface-dimmed uppercase text-xs font-bold">
-        <div className="px-4 w-32">Time</div>
-        <div className="px-4">Activity Description</div>
+        <div className="px-4 w-32">{t("Time")}</div>
+        <div className="px-4">{t("Activity Description")}</div>
       </div>
 
       {activities.map((activity: AdminApi.Activity) => (

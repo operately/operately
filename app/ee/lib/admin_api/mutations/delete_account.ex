@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.DeleteAccount do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -31,7 +32,7 @@ defmodule OperatelyEE.AdminApi.Mutations.DeleteAccount do
           }}
 
         {:error, :last_site_admin} ->
-          {:ok, %{success: false, error: "This account cannot be deleted because it is the last site admin."}}
+          {:ok, %{success: false, error: gettext("This account cannot be deleted because it is the last site admin.")}}
 
         {:error, :not_found} ->
           {:error, :not_found}
@@ -54,11 +55,11 @@ defmodule OperatelyEE.AdminApi.Mutations.DeleteAccount do
   end
 
   defp last_owner_error([company_name]) do
-    "This account cannot be deleted because it is the only active owner of #{company_name}. Transfer ownership or delete the company first."
+    gettext("This account cannot be deleted because it is the only active owner of %{company_name}. Transfer ownership or delete the company first.", company_name: company_name)
   end
 
   defp last_owner_error(company_names) do
     companies = Enum.join(company_names, ", ")
-    "This account cannot be deleted because it is the only active owner of these companies: #{companies}. Transfer ownership or delete the companies first."
+    gettext("This account cannot be deleted because it is the only active owner of these companies: %{companies}. Transfer ownership or delete the companies first.", companies: companies)
   end
 end

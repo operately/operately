@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import axios, { type AxiosError } from "axios";
 import { showErrorToast } from "turboui";
 
@@ -19,7 +20,7 @@ export function handleStaleClientError(error: unknown) {
 
   sessionStorage.setItem(RELOAD_VERSION_STORAGE_KEY, serverVersion);
 
-  showErrorToast("App updated", "This tab is out of date. Reloading to get the latest version...");
+  showErrorToast(i18n.t("App updated"), i18n.t("This tab is out of date. Reloading to get the latest version..."));
 
   if (pendingReload) return;
 

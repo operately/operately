@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProduct do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.Billing
@@ -17,7 +18,7 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProduct do
 
   def call(_conn, inputs) do
     if not Billing.billing_enabled?() do
-      {:error, :bad_request, "Billing is not enabled on this instance"}
+      {:error, :bad_request, gettext("Billing is not enabled on this instance")}
     else
       attrs = %{
         plan_family: inputs.plan_family,
@@ -32,13 +33,13 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingProduct do
           {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(product, level: :essential)}}
 
         {:error, :bad_request} ->
-          {:error, :bad_request, "Invalid product parameters"}
+          {:error, :bad_request, gettext("Invalid product parameters")}
 
         {:error, :internal_server_error} ->
-          {:error, :internal_server_error, "Failed to create product in Polar"}
+          {:error, :internal_server_error, gettext("Failed to create product in Polar")}
 
         {:error, _changeset} ->
-          {:error, :bad_request, "Invalid product parameters"}
+          {:error, :bad_request, gettext("Invalid product parameters")}
       end
     end
   end

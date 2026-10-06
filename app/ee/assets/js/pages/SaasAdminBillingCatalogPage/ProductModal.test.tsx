@@ -1,3 +1,4 @@
+import { setupTestCatalog } from "@/__tests__/i18n";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -8,6 +9,8 @@ let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockSelectOptions: Record<string, { label: string; value: string }[]> = {};
 
+setupTestCatalog();
+
 jest.mock("@/ee/models/billingCatalogLifecycle", () => ({
   useCreateBillingProduct: () => ({ mutateAsync: mockCreate }),
   useUpdateBillingProduct: () => ({ mutateAsync: mockUpdate }),
@@ -17,6 +20,7 @@ jest.mock("turboui", () => {
   const React = require("react");
 
   return {
+    i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
     Modal: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) =>
       isOpen ? (
         <section>

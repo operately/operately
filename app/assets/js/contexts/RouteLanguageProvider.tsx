@@ -6,9 +6,13 @@ import { applyLanguage } from "@/i18n";
 import { routeLanguageQueryOptions } from "@/i18n/routeLanguageQuery";
 
 /** Language for routes that render outside the company layout, including its error boundary. */
-export function RouteLanguageProvider({ children }: React.PropsWithChildren) {
+export function RouteLanguageProvider({
+  children,
+  accountOnly = false,
+}: React.PropsWithChildren<{ accountOnly?: boolean }>) {
   const location = useLocation();
-  const { companyId } = useParams();
+  const params = useParams();
+  const companyId = accountOnly ? undefined : params.companyId;
   const options = React.useMemo(() => routeLanguageQueryOptions(companyId, location.key), [companyId, location.key]);
   const query = useQuery(options);
   const language = query.isError ? "en" : query.data?.language;

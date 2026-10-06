@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinition do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.Billing
@@ -19,14 +20,14 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateBillingPlanDefinition do
 
   def call(_conn, inputs) do
     if not Billing.billing_enabled?() do
-      {:error, :bad_request, "Billing is not enabled on this instance"}
+      {:error, :bad_request, gettext("Billing is not enabled on this instance")}
     else
       case Billing.create_plan_definition(build_attrs(inputs)) do
         {:ok, plan_definition} ->
           {:ok, %{plan_definition: OperatelyWeb.Api.Serializer.serialize(plan_definition, level: :full)}}
 
         {:error, _changeset} ->
-          {:error, :bad_request, "Invalid plan definition parameters"}
+          {:error, :bad_request, gettext("Invalid plan definition parameters")}
       end
     end
   end
