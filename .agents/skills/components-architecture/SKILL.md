@@ -51,6 +51,10 @@ TurboUI components **should**:
 - Type props with `turboui/src/ApiTypes` (same shapes as `app/assets/js/api/index.tsx`) or a
   component-specific type when the UI needs a different shape
 
+### Translated copy
+
+Hardcoded system-authored, user-visible text is forbidden, including accessible labels, tooltips, empty states, and errors. Follow the [internationalization guide](../../../docs/internationalization.md) and its language glossaries. Use `useTranslation`, the relative `i18n` plural helper, and the shared `Translate` adapter; keep user content literal and escaped. Every copy change must include translations for all supported languages and regenerated catalogs/resources in the same PR. Never edit generated JSON manually or introduce independent locale detection.
+
 ### Data types
 
 `turboui/src/ApiTypes/index.ts` mirrors the types in `app/assets/js/api/index.tsx`.
