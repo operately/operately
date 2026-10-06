@@ -3554,7 +3554,7 @@ msgstr "(UTC+02:00) Harare, Pretória"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:59
 msgid "(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius"
-msgstr "(UTC+02:00) Helsinque, Kyiv, Riga, Sófia, Tallinn, Vilnius"
+msgstr "(UTC+02:00) Helsinque, Kyiv, Riga, Sófia, Talin, Vilnius"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:60
@@ -3589,7 +3589,7 @@ msgstr "(UTC+03:00) Istambul"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:66
 msgid "(UTC+03:00) Kuwait, Riyadh"
-msgstr "(UTC+03:00) Kuwait, Riad"
+msgstr "(UTC+03:00) Kuwait, Riade"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:67
@@ -3604,7 +3604,7 @@ msgstr "(UTC+03:00) Moscou, São Petersburgo"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:69
 msgid "(UTC+03:00) Nairobi"
-msgstr "(UTC+03:00) Nairobi"
+msgstr "(UTC+03:00) Nairóbi"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:70
@@ -3619,7 +3619,7 @@ msgstr "(UTC+04:00) Abu Dhabi, Mascate"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:72
 msgid "(UTC+04:00) Astrakhan, Ulyanovsk, Volgograd"
-msgstr "(UTC+04:00) Astrakhan, Ulyanovsk, Volgograd"
+msgstr "(UTC+04:00) Astracã, Ulianovsk, Volgogrado"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:73
@@ -3649,7 +3649,7 @@ msgstr "(UTC+04:00) Erevan"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:78
 msgid "(UTC+04:30) Kabul"
-msgstr "(UTC+04:30) Kabul"
+msgstr "(UTC+04:30) Cabul"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:82
@@ -3729,7 +3729,7 @@ msgstr "(UTC+07:00) Tomsk"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:94
 msgid "(UTC+08:00) Beijing, Chongqing, Hong Kong SAR, Urumqi"
-msgstr "(UTC+08:00) Pequim, Chongqing, RAE de Hong Kong, Urumqi"
+msgstr "(UTC+08:00) Pequim, Chongqing, RAE de Hong Kong, Ürümqi"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:95
@@ -3749,12 +3749,12 @@ msgstr "(UTC+08:00) Perth"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:98
 msgid "(UTC+08:00) Taipei"
-msgstr "(UTC+08:00) Taipei"
+msgstr "(UTC+08:00) Taipé"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:99
 msgid "(UTC+08:00) Ulaanbaatar"
-msgstr "(UTC+08:00) Ulaanbaatar"
+msgstr "(UTC+08:00) Ulan Bator"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:100
@@ -3804,7 +3804,7 @@ msgstr "(UTC+10:00) Brisbane"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:109
 msgid "(UTC+10:00) Canberra, Melbourne, Sydney"
-msgstr "(UTC+10:00) Canberra, Melbourne, Sydney"
+msgstr "(UTC+10:00) Camberra, Melbourne, Sydney"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:110
@@ -3849,7 +3849,7 @@ msgstr "(UTC+11:00) Ilha Norfolk"
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:118
 msgid "(UTC+11:00) Sakhalin"
-msgstr "(UTC+11:00) Sakhalin"
+msgstr "(UTC+11:00) Sacalina"
 
 #.frontend
 #: assets/js/pages/ProfileEditPage/timezones.tsx:119
