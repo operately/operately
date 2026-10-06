@@ -23,6 +23,13 @@ This document captures the architecture principles, patterns, and workflow for d
 - **Interface consistency**: Match callback signatures across similar components
 - **Prefer named exports over default exports**: Vite and other bundlers have a harder time working with default exports (slower compile speed, flaky name lookup in IDEs)
 
+## Internationalization
+
+- **Hardcoded system-authored, user-visible text is forbidden**, including labels, placeholders, tooltips, accessible text, validation/errors, and notifications. Every new or changed message must include translations for all supported languages and regenerated catalogs/resources in the same PR.
+- Follow the [internationalization guide](../docs/internationalization.md) and its language glossaries. Use `useTranslation`, `tn` from the relative `i18n` module, and `Trans` from the relative `Translate` module. Keep literal message identifiers, complete sentences, named placeholders, language-aware plurals, and escaped user content.
+- User-authored content, machine identifiers, developer-only diagnostics, and proper names requiring no translation are exceptions. A diagnostic shown to users needs a translated presentation.
+- Edit PO translations and run `make gen.i18n` from the repository root. Never edit generated JSON or rely on English fallback instead of supplying translations. Use the app-controlled language rather than independent browser detection.
+
 ## Development Workflow
 
 ### Setup
