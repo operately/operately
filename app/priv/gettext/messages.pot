@@ -3129,12 +3129,12 @@ msgid "(%{location}) %{author} commented on a KPI update: %{kpi_name}"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_check_in_commented_email.ex:18
+#: lib/operately_email/emails/project_check_in_commented_email.ex:25
 msgid "(%{location}) %{author} commented on a check-in"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/goal_check_in_commented_email.ex:19
+#: lib/operately_email/emails/goal_check_in_commented_email.ex:26
 msgid "(%{location}) %{author} commented on the check-in"
 msgstr ""
 
@@ -11186,6 +11186,11 @@ msgid "Invalid datetime: %{value}"
 msgstr ""
 
 #.elixir
+#: lib/operately_web/controllers/blob_controller.ex:14
+msgid "Invalid disposition"
+msgstr ""
+
+#.elixir
 #.frontend
 #: assets/js/pages/LoginPage/index.tsx:41
 #: lib/operately_web/api/cli_auth.ex:36
@@ -12371,6 +12376,11 @@ msgstr ""
 #.elixir
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:197
 msgid "Missing PKCE Challenge"
+msgstr ""
+
+#.elixir
+#: lib/operately_web/controllers/blob_controller.ex:11
+msgid "Missing id"
 msgstr ""
 
 #.elixir
@@ -19811,7 +19821,7 @@ msgid "View Check-In"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_check_in_commented_email.ex:23
+#: lib/operately_email/emails/project_check_in_commented_email.ex:30
 #: lib/operately_email/emails/project_milestone_commented_email.ex:79
 #: lib/operately_email/templates/comment_added.html.eex:13
 #: lib/operately_email/templates/discussion_comment_submitted.html.eex:13
@@ -21253,12 +21263,12 @@ msgid "commented on a KPI update for \"%{kpi_name}\""
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/goal_check_in_commented_email.ex:40
+#: lib/operately_email/emails/goal_check_in_commented_email.ex:53
 msgid "commented on a goal check-in"
 msgstr ""
 
 #.elixir
-#: lib/operately_email/emails/project_check_in_commented_email.ex:41
+#: lib/operately_email/emails/project_check_in_commented_email.ex:54
 msgid "commented on a project check-in"
 msgstr ""
 

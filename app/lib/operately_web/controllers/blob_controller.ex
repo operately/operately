@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.BlobController do
   use OperatelyWeb, :controller
+  use Gettext, backend: OperatelyWeb.Gettext
 
   def get(conn, params) do
     id = Map.get(params, "id")
@@ -7,10 +8,10 @@ defmodule OperatelyWeb.BlobController do
 
     cond do
       id == nil ->
-        conn |> put_status(400) |> text("Missing id")
+        conn |> put_status(400) |> text(gettext("Missing id"))
 
       !Operately.Blobs.SignedUrls.is_valid_disposition?(disposition) ->
-        conn |> put_status(400) |> text("Invalid disposition")
+        conn |> put_status(400) |> text(gettext("Invalid disposition"))
 
       true ->
         blob = Operately.Blobs.get_blob!(id)
