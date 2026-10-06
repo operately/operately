@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 
 import { match } from "ts-pattern";
@@ -57,7 +58,7 @@ type PopoverContentProps = TimeframeSelectorDialog.Props & {
 
 function PopoverContent(props: PopoverContentProps) {
   const className = classNames(
-    "z-[100] overflow-hidden",
+    "z-[100] overflow-y-auto max-h-[var(--radix-popover-content-available-height)] max-w-[calc(100vw-2rem)]",
     "border border-surface-outline",
     "rounded-lg shadow-xl",
     "bg-surface-base",
@@ -75,11 +76,13 @@ function PopoverContent(props: PopoverContentProps) {
 }
 
 function TimeframeSelectorHeader(props: TimeframeSelectorDialog.Props) {
+  const { t, i18n } = useTranslation();
+
   return (
-    <div className="flex items-center justify-between gap-10 w-full border-b border-stroke-base pb-3 mb-3">
+    <div className="flex flex-wrap items-center justify-between gap-3 w-full border-b border-stroke-base pb-3 mb-3">
       <div className="">
-        <div className="font-bold shrink-0">Select Timeframe</div>
-        <div className="text-content-dimmed text-xs">{formatTimeframe(props.timeframe)}</div>
+        <div className="font-bold shrink-0">{t("Select Timeframe")}</div>
+        <div className="text-content-dimmed text-xs">{formatTimeframe(props.timeframe, i18n.resolvedLanguage)}</div>
       </div>
 
       <TimeframeSelectorTypeSelector {...props} />
@@ -88,6 +91,8 @@ function TimeframeSelectorHeader(props: TimeframeSelectorDialog.Props) {
 }
 
 function TimeframeSelectorTypeSelector(props: TimeframeSelectorDialog.Props) {
+  const { t } = useTranslation();
+
   const changeHandler = (value: string) => {
     match(value as TimeframeType)
       .with("year", () => props.setTimeframe(currentYear()))
@@ -100,10 +105,10 @@ function TimeframeSelectorTypeSelector(props: TimeframeSelectorDialog.Props) {
   return (
     <SegmentedControl
       options={[
-        { label: "Year", value: "year" },
-        { label: "Quarter", value: "quarter" },
-        { label: "Month", value: "month" },
-        { label: "Custom", value: "days" },
+        { label: t("Year"), value: "year" },
+        { label: t("Quarter"), value: "quarter" },
+        { label: t("Month"), value: "month" },
+        { label: t("Custom"), value: "days" },
       ]}
       value={props.timeframe.type}
       onChange={changeHandler}

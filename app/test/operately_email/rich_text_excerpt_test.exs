@@ -4,6 +4,16 @@ defmodule OperatelyEmail.RichTextExcerptTest do
   alias OperatelyEmail.RichTextExcerpt
   alias Operately.Support.RichText
 
+  test "localizes unnamed files in email excerpts without changing search text" do
+    table = %{"type" => "table", "content" => [%{"content" => [%{"content" => [%{"type" => "paragraph", "content" => [%{"type" => "blob", "attrs" => %{}}]}]}]}]}
+    content = %{"type" => "doc", "content" => [table]}
+
+    Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn ->
+      assert RichTextExcerpt.excerpt(content).text == "Arquivo"
+      assert Operately.RichContent.Table.to_plain_text(table) == "File"
+    end)
+  end
+
   @table_fixtures "test/fixtures/rich_text/tables.json" |> File.read!() |> Jason.decode!()
 
   for fixture <- @table_fixtures do

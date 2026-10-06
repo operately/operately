@@ -1,3 +1,4 @@
+import i18n from "../../i18n";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { AddBlobsEditorCommand } from "./AddBlobsEditorCommand";
 import { UploadFileFn } from "../useEditor";
@@ -11,6 +12,7 @@ export const createDropFilePlugin = (uploadFile: UploadFileFn) =>
         dragover: (view, _event) => {
           if (!view.editable) return false;
 
+          view.dom.dataset.dropFileLabel = i18n.t("Drop your files to add them");
           view.dom.classList.add("dragover");
           return true;
         },

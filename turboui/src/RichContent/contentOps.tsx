@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 import { firstName } from "../utils/people";
 import type { JSONContent } from "@tiptap/core";
 import { tableContentToInline } from "./tableContent";
@@ -131,7 +132,7 @@ export function richContentToString(node: any): string {
     return tableContentToInline(node, "\n")
       .map((child) => {
         if (child.type === "mention") return child.attrs?.label ?? "";
-        if (child.type === "blob") return child.attrs?.title || child.attrs?.alt || "File";
+        if (child.type === "blob") return child.attrs?.title || child.attrs?.alt || i18n.t("File");
         return child.text ?? "";
       })
       .join("");

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import { IconCalendar, IconChevronDown, IconX } from "../icons";
 
@@ -95,6 +96,8 @@ interface TimeframeSelectorTriggerProps {
 }
 
 function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
+  const { i18n } = useTranslation();
+
   const className = classNames(
     props.isDefaultTimeframe ? "bg-surface-base" : "bg-surface-highlight dark:bg-surface-dimmed/20",
     "hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
@@ -121,7 +124,7 @@ function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
     <Popover.Trigger asChild>
       <button type="button" className={className} onClick={handleClick}>
         <IconCalendar size={iconSize} className="shrink-0" />
-        <span className="truncate">{formatTimeframe(props.timeframe)}</span>
+        <span className="truncate">{formatTimeframe(props.timeframe, i18n.resolvedLanguage)}</span>
         {props.isDefaultTimeframe ? (
           <IconChevronDown size={iconSize} className="shrink-0 ml-1" />
         ) : (

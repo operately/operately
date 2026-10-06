@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import * as Timeframes from "./timeframes";
 import { Timeframe, ContextualDate, ContextualDateType } from "@/api";
 
@@ -45,12 +46,12 @@ describe("Timeframes", () => {
 
     it("handles null/undefined values safely", () => {
       const timeframe = {} as unknown as Timeframe;
-      expect(Timeframes.getTimeframeRange(timeframe)).toBe("undefined - undefined");
+      expect(Timeframes.getTimeframeRange(timeframe)).toBe("Not set - Not set");
 
       const partialTimeframe = {
         contextualStartDate: { dateType: "day" as ContextualDateType, value: "Jan 1, 2021", date: "2021-01-01" },
       } as unknown as Timeframe;
-      expect(Timeframes.getTimeframeRange(partialTimeframe)).toBe("Jan 1, 2021 - undefined");
+      expect(Timeframes.getTimeframeRange(partialTimeframe)).toBe("Jan 1, 2021 - Not set");
     });
   });
 
@@ -173,4 +174,20 @@ describe("Timeframes", () => {
       expect(Timeframes.compareDuration(timeframe1, timeframe2)).toBe(0);
     });
   });
+});
+
+it("localizes month and quarter presentation without changing canonical values", async () => {
+  const timeframe: Timeframe = {
+    __typename: "timeframe",
+    contextualStartDate: { __typename: "contextual_date", dateType: "month", value: "Jul 2026", date: "2026-07-01" },
+    contextualEndDate: { __typename: "contextual_date", dateType: "quarter", value: "Q4 2026", date: "2026-12-31" },
+  };
+  try {
+    await i18n.changeLanguage("pt-BR");
+    expect(Timeframes.getTimeframeRange(timeframe)).toBe("jul. de 2026 - T4 2026");
+    expect(timeframe.contextualStartDate?.value).toBe("Jul 2026");
+    expect(timeframe.contextualEndDate?.value).toBe("Q4 2026");
+  } finally {
+    await i18n.changeLanguage("en");
+  }
 });

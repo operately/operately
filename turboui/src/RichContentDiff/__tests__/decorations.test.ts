@@ -1,3 +1,4 @@
+import { i18n, setupTestCatalog } from "../../../test/i18n";
 import type { Node } from "@tiptap/pm/model";
 
 import { buildDiffDecorations, type DiffDecorationSide } from "../decorations";
@@ -92,4 +93,16 @@ describe("buildDiffDecorations", () => {
 
     expect(decorationRanges(doc, changes, "before")).toEqual([]);
   });
+});
+
+setupTestCatalog();
+
+it("translates accessibility labels while preserving diff machine attributes", async () => {
+  await i18n.changeLanguage("pt-BR");
+  expect(decorationsFor(F.charInsertBefore, F.charInsertAfter, "after")).toMatchObject([
+    { type: { attrs: { "aria-label": "Adicionado", "data-diff": "added" } } },
+  ]);
+  expect(decorationsFor(F.charInsertAfter, F.charInsertBefore, "before")).toMatchObject([
+    { type: { attrs: { "aria-label": "Removido", "data-diff": "removed" } } },
+  ]);
 });

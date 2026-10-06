@@ -245,7 +245,7 @@ function NextStepHeaderCell({ hide }: { hide?: boolean }) {
   return (
     <HeaderCell hide={hide} className="hidden xl:table-cell xl:w-[200px] 2xl:w-[300px] md:px-4">
       <div className="flex items-center gap-1">
-        Next step
+        {t("Next step")}
         <Tooltip content={tooltipContent} className="z-50">
           <IconInfoCircle size={12} className="text-content-dimmed" />
         </Tooltip>

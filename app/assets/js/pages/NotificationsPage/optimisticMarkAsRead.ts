@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { Notification } from "@/api";
 import type { Dispatch, SetStateAction } from "react";
 import { showErrorToast } from "turboui";
@@ -16,7 +17,10 @@ export async function optimisticallyMarkNotificationAsRead(
     await markNotificationAsRead();
   } catch {
     restoreNotificationReadState(setNotifications, notification);
-    showErrorToast("Couldn't mark notification as read", "The notification is still unread. Try again.");
+    showErrorToast(
+      i18n.t("Couldn't mark notification as read"),
+      i18n.t("The notification is still unread. Try again."),
+    );
   }
 }
 

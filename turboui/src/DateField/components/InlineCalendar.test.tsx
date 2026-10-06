@@ -5,6 +5,10 @@ import "@testing-library/jest-dom";
 
 import { InlineCalendar } from "./InlineCalendar";
 
+import { i18n, setupTestCatalog } from "../../../test/i18n";
+
+setupTestCatalog();
+
 const JULY_14_2026 = new Date(2026, 6, 14);
 
 function renderCalendar(overrides: Partial<React.ComponentProps<typeof InlineCalendar>> = {}) {
@@ -134,4 +138,14 @@ describe("InlineCalendar", () => {
     expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("February 2025");
     expect(queryDay(29)).not.toBeInTheDocument();
   });
+});
+
+it("translates calendar headings while retaining canonical selection values", async () => {
+  await i18n.changeLanguage("pt-BR");
+  const { setSelectedDate } = renderCalendar();
+  expect(screen.getByTestId("date-field-current-month")).toHaveTextContent("julho de 2026");
+  expect(screen.getByRole("button", { name: "Próximo mês" })).toBeInTheDocument();
+  expect(screen.getByText("Do")).toBeInTheDocument();
+  await userEvent.setup().click(getDay(15));
+  expect(setSelectedDate).toHaveBeenCalledWith({ date: new Date(2026, 6, 15), dateType: "day", value: "Jul 15, 2026" });
 });

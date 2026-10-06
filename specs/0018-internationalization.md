@@ -180,7 +180,7 @@ Remaining gaps before general availability:
 
 - Review and merge the local PR 6 implementation. Full-product acceptance with selected companies remains PR 8 work.
 - PR 7: review and merge the local 7a–7e implementations. Audit the external SendGrid onboarding campaign and locale routing to close 7d’s external coverage gap.
-- Close the remaining product-copy gaps identified in the repository audit below. People directory, org-chart, and profile extraction is implemented locally.
+- Merge the local frontend follow-ups below. The confirmed product-copy gaps from the source audit are cataloged.
 - PR 8: Remaining Portuguese coverage, terminology/native-speaker review of drafted translations, and coverage checks.
 
 Operator SaaS administration is outside PR 5's scope. User-authored content (including names and emails) and machine identifiers are not translated.
@@ -211,11 +211,10 @@ Non-company routes resolve account language explicitly; company error boundaries
 
 Validation passes: 35 component/app tests, 11 catalog tests, billing-picker and anonymous sharing/revocation browser workflows, both TypeScript checks, and builds. Catalog generation is deterministic and preserves existing translations. Narrow-screen/expanded-text review remains pending because the local review browser stalled. Native-speaker review remains PR 8; not merged or deployed.
 
-### Additional extraction gaps
+### Shared controls and date labels — implemented locally
 
-The source audit confirmed these remaining surfaces:
+The confirmed extraction gaps are cataloged: access/notification controls, work-map and sort labels, draft counts, timeframe/date pickers, and complete relative-weekday phrases. The source sweep also covers Docs & Files search, the retrospective breadcrumb, loading announcements, reaction hints, and people-search/toast labels. All 41 new messages have Portuguese drafts; existing translations and canonical date values are preserved. Existing TurboUI controls are reused; the timeframe popover wraps and scrolls within narrow viewports.
 
-- Shared controls: OtherPeopleWithAccess, SidebarSection notifications, WorkMapTable next-step heading, SortControl, and ContinueEditingDrafts counts.
-- Dates: TimeframeSelectorDialog labels and RelativeWeekdayOrDate’s assembled “this” + weekday phrase.
+Focused component/app/catalog tests, both TypeScript checks, and production builds pass. Catalog generation is deterministic. Portuguese and expanded-text calendar layouts pass at 375px. This source audit is not exhaustive runtime acceptance; PR 8, external SendGrid onboarding, regional-formatting follow-ups, and older activity rich-text escaping remain open. User content and operator SaaS administration remain excluded. Not merged or deployed.
 
-This inventory is not exhaustive runtime coverage. PR 8 acceptance, external SendGrid onboarding, formatting follow-ups, and older activity rich-text escaping remain open. User content and operator SaaS administration remain excluded.
+The repository-wide follow-up closes the remaining confirmed product gaps: error feedback, privacy descriptions, timezone/date labels, subscriber roles, editor/accessibility text, rich-content fallbacks, and generated search titles. Portuguese emoji search aliases are included. It adds 309 catalog messages with Portuguese drafts, preserving existing translations, user content, identifiers, and canonical search values. All 301 focused tests pass; catalog generation is deterministic. Native-speaker and full-product acceptance remain PR 8.

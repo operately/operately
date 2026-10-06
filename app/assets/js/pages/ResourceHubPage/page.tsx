@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { ResourceHubPage } from "turboui";
 import {
@@ -15,6 +16,7 @@ import { buildResourceHubPageNavigation } from "./navigation";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
 
 export function Page() {
+  const { t } = useTranslation();
   const { resourceHub, nodes, draftNodes } = useLoadedData();
   const refresh = useRefresh();
   const paths = usePaths();
@@ -27,7 +29,7 @@ export function Page() {
   const nodesListProps = useResourceHubNodesListProps({ resourceHub, type: "resource_hub", nodes, refetch: refresh });
 
   const props: ResourceHubPage.Props = {
-    title: resourceHub.name || "Docs & Files",
+    title: resourceHub.name || t("Docs & Files"),
     navigation: buildResourceHubPageNavigation(resourceHub, paths),
     resourceHub,
     drafts: {

@@ -1,6 +1,14 @@
 import i18n from "../src/i18n";
-import en from "../../app/assets/js/generated/locales/en.json";
-import ptBR from "../../app/assets/js/generated/locales/pt-BR.json";
+import englishCatalog from "../../app/assets/js/generated/locales/en.json";
+import portugueseCatalog from "../../app/assets/js/generated/locales/pt-BR.json";
+
+// Match the app initializer: these keys configure Intl interpolation at runtime.
+const formatMessages = {
+  intlDateTime: "{{val, datetime}}",
+  intlRelativeDateTime: "{{val, relativetime}}",
+};
+const en = { ...englishCatalog, ...formatMessages };
+const ptBR = { ...portugueseCatalog, ...formatMessages };
 
 // Use the same generated catalog as the app; restore bundles so substitutions
 // never leak into another case (including newly added keys).

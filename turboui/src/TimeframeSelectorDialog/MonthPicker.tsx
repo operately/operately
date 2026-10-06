@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { useCalendarLocale } from "./useCalendarLocale";
 import DatePicker from "react-datepicker";
 
 import { LeftChevron, RightChevron } from "./Chevrons";
@@ -10,25 +12,29 @@ interface Props {
 }
 
 export function MonthPicker({ timeframe, setTimeframe }: Props) {
+  const calendarLocale = useCalendarLocale();
+
   return (
     <DatePicker
+      {...calendarLocale}
       inline
       selected={timeframe.startDate}
       onChange={(date) => setTimeframe({ ...timeframe, startDate: date, endDate: endOfMonth(date) })}
       calendarClassName="w-full"
       showMonthYearPicker
-      renderCustomHeader={Header}
+      renderCustomHeader={(props) => <Header {...props} />}
       renderMonthContent={renderMonthContent}
     />
   );
 }
 
 function Header({ date, decreaseYear, increaseYear }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center w-full px-1 pb-1 gap-2 font-medium mb-2">
-      <LeftChevron onClick={decreaseYear} />
+      <LeftChevron label={t("Previous year")} onClick={decreaseYear} />
       <div>{date.getFullYear()}</div>
-      <RightChevron onClick={increaseYear} />
+      <RightChevron label={t("Next year")} onClick={increaseYear} />
     </div>
   );
 }
