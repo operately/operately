@@ -36,7 +36,7 @@ defmodule Operately.MixProject do
     [
       {:bcrypt_elixir, "~> 3.1"},
       {:phoenix, "~> 1.8.9"},
-      {:phoenix_ecto, "~> 4.6.5"},
+      {:phoenix_ecto, "~> 4.7.0"},
       {:ecto, "~> 3.13", override: true},
       {:ecto_sql, "~> 3.13"},
       {:postgrex, "~> 0.22.4"},
