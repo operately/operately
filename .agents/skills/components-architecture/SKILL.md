@@ -53,6 +53,8 @@ TurboUI components **should**:
 
 ### Translated copy
 
+Use the [internationalization skill](../internationalization/SKILL.md) for copy changes and new-language registration.
+
 Hardcoded system-authored, user-visible text is forbidden, including accessible labels, tooltips, empty states, and errors. Follow the [internationalization guide](../../../docs/internationalization.md) and its language glossaries. Use `useTranslation`, the relative `i18n` plural helper, and the shared `Translate` adapter; keep user content literal and escaped. Every copy change must include translations for all supported languages and regenerated catalogs/resources in the same PR. Never edit generated JSON manually or introduce independent locale detection.
 
 ### Data types

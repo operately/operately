@@ -46,6 +46,7 @@
 
 ## Internationalization
 
+- Use the [internationalization skill](.agents/skills/internationalization/SKILL.md) for copy/translation changes and adding languages. Its [new-language reference](.agents/skills/internationalization/references/adding-a-language.md) defines the glossary-first workflow.
 - **Hardcoded system-authored, user-visible text is forbidden.** All new or changed copy must use the shared translation infrastructure, include translations for every supported language, and regenerate catalogs and resources in the same PR.
 - This covers app/shared UI, tooltips, accessibility labels, validation and errors, notifications, activity feeds, exports, server-rendered pages, and email subjects and HTML/plain-text bodies.
 - Follow [docs/internationalization.md](docs/internationalization.md) and its linked language glossaries. Use complete sentences, named placeholders, language-aware plurals, and the shared `Trans` adapter for rich frontend text. Escape user content and translate activity presentation at render time, not stored payloads.

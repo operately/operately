@@ -4,6 +4,8 @@ Operately uses one Gettext catalog for Elixir, React, and TurboUI. English sourc
 
 So far supported languages are English (`en`) and Brazilian Portuguese (`pt-BR`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
 
+To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary approval.
+
 ## Required for every copy change
 
 **Hardcoded system-authored, user-visible text is forbidden.** All new or changed copy must use the shared translation infrastructure, include translations for every supported language, and regenerate catalogs and resources in the same PR.
