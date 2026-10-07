@@ -72,7 +72,7 @@ it("translates known roles while keeping user names and custom roles literal", a
     />,
   );
   expect(await screen.findByText("Papel traduzido")).toBeInTheDocument();
-  expect(screen.getByText("Revisor")).toBeInTheDocument();
+  expect(screen.getByText("Reviewer")).toBeInTheDocument();
   expect(screen.getByText("Champion")).toBeInTheDocument();
   expect(screen.getByText("Custom role")).toBeInTheDocument();
 });

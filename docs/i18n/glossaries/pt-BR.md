@@ -22,6 +22,7 @@ Use the listed forms consistently. Lowercase terms may be capitalized at the sta
 | acknowledge | Action confirming an update has been read | confirmar leitura | Confirms reading, not approval. Use “confirmar a leitura” within sentences. |
 | acknowledgement | Confirmation that an update has been read | confirmação de leitura | Use “leitura confirmada” for the completed state. |
 | champion | Person accountable for a goal or project | champion | Retain the approved borrowed term. |
+| reviewer | Person who follows progress, provides feedback, and confirms reading check-ins | reviewer | Retain the borrowed term, like champion. Capitalize when required by the sentence or label. |
 | home | Home navigation destination | início | Capitalize when required by the sentence or label. |
 | my work | Personal work navigation destination | meu trabalho | Capitalize when required by the sentence or label. |
 | review | Review navigation or review work | revisão | Capitalize when required by the sentence or label. |
