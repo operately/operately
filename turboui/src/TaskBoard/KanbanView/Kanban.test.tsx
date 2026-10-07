@@ -151,12 +151,12 @@ describe("Kanban", () => {
       />,
     );
 
-    const displayButton = screen.getByRole("button", { name: "Display options" });
+    const displayButton = getTestElement(container, "display-menu-trigger");
     expect(container.querySelector("header")).toContainElement(displayButton);
     expect(container.querySelector('[data-test-id="kanban-toolbar"]')).not.toBeInTheDocument();
 
     await user.click(displayButton);
-    await user.click(screen.getByRole("switch", { name: "Show closed statuses" }));
+    await user.click(getTestElement(document.body, "toggle-closed-statuses"));
     expect(container.querySelector('[data-test-id="kanban-column-done"]')).not.toBeInTheDocument();
     expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
   });
@@ -179,7 +179,7 @@ describe("Kanban", () => {
 
     expect(container.querySelector("header")).toBeInTheDocument();
     expect(container.querySelector('[data-test-id="kanban-toolbar"]')).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Display options" })).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="display-menu-trigger"]')).not.toBeInTheDocument();
     expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
   });
 
