@@ -66,6 +66,10 @@ export function Page() {
             </SecondaryButton>
           </div>
 
+          <p className="mt-2 text-sm text-content-subtle">
+            {t("Use site messages to share announcements with your companies.")}
+          </p>
+
           {messages.length === 0 ? (
             <div className="py-12 text-center">
               <p className="text-lg text-content-accent">{t("No site messages yet.")}</p>
