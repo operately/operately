@@ -333,70 +333,70 @@ msgstr "%{author} <checkIn>enviou um check-in</checkIn> do objetivo <goal>%{goal
 #.frontend
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:44
 msgid "%{author} acknowledged a <checkIn>Check-In</checkIn>"
-msgstr "%{author} reconheceu um <checkIn>Check-in</checkIn>"
+msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:52
 msgid "%{author} acknowledged a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
-msgstr "%{author} reconheceu um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:42
 msgid "%{author} acknowledged the <checkIn>Check-In</checkIn>"
-msgstr "%{author} reconheceu o <checkIn>Check-in</checkIn>"
+msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:50
 msgid "%{author} acknowledged the <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
-msgstr "%{author} reconheceu o <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:40
 msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective>"
-msgstr "%{author} reconheceu a <retrospective>Retrospectiva</retrospective>"
+msgstr "%{author} confirmou a leitura da <retrospective>Retrospectiva</retrospective>"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:48
 msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective> in the <goal>%{goalName}</goal> goal"
-msgstr "%{author} reconheceu a <retrospective>Retrospectiva</retrospective> no objetivo <goal>%{goalName}</goal>"
+msgstr "%{author} confirmou a leitura da <retrospective>Retrospectiva</retrospective> no objetivo <goal>%{goalName}</goal>"
 
 #.elixir
 #: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:1
 #: lib/operately_email/templates/goal_check_in_acknowledgement.text.eex:1
 msgid "%{author} acknowledged the check-in for %{goal_name}."
-msgstr "%{author} reconheceu o check-in de %{goal_name}."
+msgstr "%{author} confirmou a leitura do check-in de %{goal_name}."
 
 #.frontend
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:37
 msgid "%{author} acknowledged the retrospective"
-msgstr "%{author} reconheceu a retrospectiva"
+msgstr "%{author} confirmou a leitura da retrospectiva"
 
 #.elixir
 #: lib/operately_email/templates/goal_retrospective_acknowledged.html.eex:1
 #: lib/operately_email/templates/goal_retrospective_acknowledged.text.eex:1
 msgid "%{author} acknowledged the retrospective for %{goal_name}."
-msgstr "%{author} reconheceu a retrospectiva de %{goal_name}."
+msgstr "%{author} confirmou a leitura da retrospectiva de %{goal_name}."
 
 #.frontend
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:41
 msgid "%{author} acknowledged the retrospective in the <project>%{projectName}</project> project"
-msgstr "%{author} reconheceu a retrospectiva no projeto <project>%{projectName}</project>"
+msgstr "%{author} confirmou a leitura da retrospectiva no projeto <project>%{projectName}</project>"
 
 #.elixir
 #: lib/operately_email/templates/project_check_in_acknowledged.html.eex:1
 msgid "%{author} acknowledged your check-in for %{project_name} project"
-msgstr "%{author} reconheceu o seu check-in do projeto %{project_name}"
+msgstr "%{author} confirmou a leitura do seu check-in do projeto %{project_name}"
 
 #.elixir
 #: lib/operately_email/templates/project_check_in_acknowledged.text.eex:1
 msgid "%{author} acknowledged your check-in for %{project_name}."
-msgstr "%{author} reconheceu o seu check-in de %{project_name}."
+msgstr "%{author} confirmou a leitura do seu check-in de %{project_name}."
 
 #.elixir
 #: lib/operately_email/templates/project_retrospective_acknowledged.html.eex:1
 #: lib/operately_email/templates/project_retrospective_acknowledged.text.eex:1
 msgid "%{author} acknowledged your retrospective for %{project_name} project"
-msgstr "%{author} reconheceu a sua retrospectiva do projeto %{project_name}"
+msgstr "%{author} confirmou a leitura da sua retrospectiva do projeto %{project_name}"
 
 #.frontend
 #: assets/js/features/activities/SpaceMembersAdded/index.tsx:43
@@ -2788,7 +2788,7 @@ msgstr "%{duration} <status>em atraso</status>."
 #.frontend
 #: ../turboui/src/CommentSection/FeedRows.tsx:98
 msgid "%{fullName} acknowledged this %{label}<icon/>"
-msgstr "%{fullName} reconheceu %{label}<icon/>"
+msgstr "%{fullName} confirmou a leitura de %{label}<icon/>"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
@@ -3125,12 +3125,12 @@ msgstr "(%{destination_name_task}) %{author} moveu a tarefa \"%{task_name}\""
 #.elixir
 #: lib/operately_email/emails/goal_check_in_acknowledgement_email.ex:17
 msgid "(%{goal_name}) %{author} acknowledged your check-in"
-msgstr "(%{goal_name}) %{author} reconheceu o seu check-in"
+msgstr "(%{goal_name}) %{author} confirmou a leitura do seu check-in"
 
 #.elixir
 #: lib/operately_email/emails/goal_retrospective_acknowledged_email.ex:17
 msgid "(%{goal_name}) %{author} acknowledged your retrospective"
-msgstr "(%{goal_name}) %{author} reconheceu a sua retrospectiva"
+msgstr "(%{goal_name}) %{author} confirmou a leitura da sua retrospectiva"
 
 #.elixir
 #: lib/operately_email/emails/goal_champion_updating_email.ex:16
@@ -3316,12 +3316,12 @@ msgstr "(%{milestone_project_name}) %{author} alterou a data de conclusão de \"
 #.elixir
 #: lib/operately_email/emails/project_check_in_acknowledged_email.ex:16
 msgid "(%{project_name}) %{author} acknowledged your check-in"
-msgstr "(%{project_name}) %{author} reconheceu o seu check-in"
+msgstr "(%{project_name}) %{author} confirmou a leitura do seu check-in"
 
 #.elixir
 #: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:16
 msgid "(%{project_name}) %{author} acknowledged your retrospective"
-msgstr "(%{project_name}) %{author} reconheceu a sua retrospectiva"
+msgstr "(%{project_name}) %{author} confirmou a leitura da sua retrospectiva"
 
 #.elixir
 #: lib/operately_email/emails/project_contributor_addition_email.ex:19
@@ -4767,7 +4767,7 @@ msgstr "<author/> <icon/><text>reabriu o marco</text>"
 #.frontend
 #: ../turboui/src/Timeline/ActivityComponents.tsx:179
 msgid "<author/> <text>acknowledged this Check-In</text><icon/>"
-msgstr "<author/> <text>reconheceu este check-in</text><icon/>"
+msgstr "<author/> <text>confirmou a leitura deste check-in</text><icon/>"
 
 #.frontend
 #: ../turboui/src/Timeline/ActivityComponents.tsx:125
@@ -4915,7 +4915,7 @@ msgstr "<date/> às <time/>"
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:47
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:126
 msgid "<icon/>Acknowledged by %{fullName}"
-msgstr "<icon/>Reconhecido por %{fullName}"
+msgstr "<icon/>Leitura confirmada por %{fullName}"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
@@ -4936,7 +4936,7 @@ msgstr "<icon/>Inativo"
 #.frontend
 #: ../turboui/src/CheckInHeader/index.tsx:108
 msgid "<label>Acknowledged by</label> <person>%{name}</person>"
-msgstr "<label>Reconhecido por</label> <person>%{name}</person>"
+msgstr "<label>Leitura confirmada por</label> <person>%{name}</person>"
 
 #.frontend
 #: ../turboui/src/DocumentTitle/index.tsx:76
@@ -5194,31 +5194,31 @@ msgstr "Alcançado"
 #.elixir
 #: lib/operately_email/acknowledge_cta.ex:6
 msgid "Acknowledge"
-msgstr "Reconhecer"
+msgstr "Confirmar leitura"
 
 #.frontend
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:32
 #: assets/js/pages/ProjectRetrospectivePage/AckCTA.tsx:26
 msgid "Acknowledge Retrospective"
-msgstr "Reconhecer a retrospectiva"
+msgstr "Confirmar leitura"
 
 #.frontend
 #: assets/js/pages/GoalCheckInPage/AckCTA.tsx:47
 #: assets/js/pages/ProjectCheckInPage/AckCTA.tsx:45
 msgid "Acknowledge this Check-In"
-msgstr "Reconhecer este check-in"
+msgstr "Confirmar leitura"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:76
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:78
 msgid "Acknowledged check-in"
-msgstr "Check-in reconhecido"
+msgstr "Leitura do check-in confirmada"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:74
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:67
 msgid "Acknowledged retrospective"
-msgstr "Retrospectiva reconhecida"
+msgstr "Leitura da retrospectiva confirmada"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
@@ -14448,7 +14448,7 @@ msgstr "Não tem certeza? Comece com um projeto — você pode definir objetivos
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
 msgid "Not yet acknowledged"
-msgstr "Ainda não reconhecido"
+msgstr "Leitura ainda não confirmada"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:179
@@ -16042,12 +16042,12 @@ msgstr "Gerenciado pelo provedor"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:199
 msgid "Provides feedback throughout the goal, and is responsible for acknowledging monthly check-ins."
-msgstr "Dá feedback ao longo do objetivo e é responsável por reconhecer os check-ins mensais."
+msgstr "Dá feedback ao longo do objetivo e é responsável por confirmar a leitura dos check-ins mensais."
 
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:219
 msgid "Provides feedback throughout the project, and is responsible for acknowledging weekly check-ins."
-msgstr "Dá feedback ao longo do projeto e é responsável por reconhecer os check-ins semanais."
+msgstr "Dá feedback ao longo do projeto e é responsável por confirmar a leitura dos check-ins semanais."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:58
@@ -22962,22 +22962,22 @@ msgstr "uma tarefa"
 #.elixir
 #: lib/operately_email/emails/goal_check_in_acknowledgement_email.ex:35
 msgid "acknowledged a goal check-in"
-msgstr "reconheceu um check-in de objetivo"
+msgstr "confirmou a leitura de um check-in de objetivo"
 
 #.elixir
 #: lib/operately_email/emails/goal_retrospective_acknowledged_email.ex:34
 msgid "acknowledged a goal retrospective"
-msgstr "reconheceu uma retrospectiva de objetivo"
+msgstr "confirmou a leitura de uma retrospectiva de objetivo"
 
 #.elixir
 #: lib/operately_email/emails/project_check_in_acknowledged_email.ex:35
 msgid "acknowledged a project check-in"
-msgstr "reconheceu um check-in de projeto"
+msgstr "confirmou a leitura de um check-in de projeto"
 
 #.elixir
 #: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:34
 msgid "acknowledged a project retrospective"
-msgstr "reconheceu uma retrospectiva de projeto"
+msgstr "confirmou a leitura de uma retrospectiva de projeto"
 
 #~ #.frontend
 #~ #: ../turboui/src/Timeline/ActivityComponents.tsx:175
