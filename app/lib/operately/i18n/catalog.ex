@@ -2,10 +2,14 @@ defmodule Operately.I18n.Catalog do
   @moduledoc """
   Shared translation catalog for Elixir, React, and TurboUI.
 
-  English source text is extracted into `priv/gettext/messages.pot`. Reviewed
-  translations live in `priv/gettext/<locale>/LC_MESSAGES/messages.po`. i18next
-  JSON under `assets/js/generated/locales/` is generated from those files and
-  must not be edited by hand.
+  1. Extract wrapped messages from backend and frontend source files.
+  2. Merge both runtimes' messages into `priv/gettext/messages.pot`.
+  3. Merge source changes into `priv/gettext/<locale>/LC_MESSAGES/messages.po`,
+     preserving compatible translations and marking removed messages obsolete.
+  4. Generate English JSON from the POT and other languages' JSON from their PO catalogs.
+
+  Generated resources live in `assets/js/generated/locales/` and must not be edited
+  by hand. `extract_messages/1` reads source messages without writing any files.
   """
 
   alias Operately.I18n.{Converter, ElixirExtractor, FrontendExtractor, Locale, Message, Po}
@@ -22,17 +26,20 @@ defmodule Operately.I18n.Catalog do
   def po_root, do: Path.expand(@po_root)
   def json_dir, do: Path.expand(@json_dir)
 
-  def extract(opts \\ []) do
+  def extract_messages(opts \\ []) do
     elixir_files = Keyword.get_lazy(opts, :elixir_files, &default_elixir_files/0)
     frontend_files = Keyword.get_lazy(opts, :frontend_files, &default_frontend_files/0)
+
+    elixir_files
+    |> Enum.flat_map(&ElixirExtractor.extract_file/1)
+    |> Kernel.++(FrontendExtractor.extract_files(frontend_files))
+    |> merge_messages()
+  end
+
+  def extract(opts \\ []) do
     pot_path = Keyword.get(opts, :pot_path, pot_path())
     po_root = Keyword.get(opts, :po_root, po_root())
-
-    messages =
-      elixir_files
-      |> Enum.flat_map(&ElixirExtractor.extract_file/1)
-      |> Kernel.++(FrontendExtractor.extract_files(frontend_files))
-      |> merge_messages()
+    messages = extract_messages(opts)
 
     Po.write!(pot_path, messages)
     merge_po_files(po_root, messages)
