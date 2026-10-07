@@ -164,11 +164,12 @@ const buildTaskPageProps = (
 };
 
 export const Default: Story = {
-  render: () => {
+  render: (args: SpaceKanbanPage.Props) => {
+    const statuses = args.statuses ?? STATUSES;
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks("space"), milestone).map((task) => ({
+    const initialTasks = (args.tasks ?? filterTasksByMilestone(mockTasks("space"), milestone)).map((task) => ({
       ...task,
       description: normalizeRichText(task.description),
     }));
@@ -186,7 +187,7 @@ export const Default: Story = {
     const taskActions = useMockTaskBoardActions({
       tasks,
       setTasks,
-      statuses: STATUSES,
+      statuses,
       subscriptions,
       currentUser,
     });
@@ -291,7 +292,7 @@ export const Default: Story = {
           space={space}
           navigation={[{ to: "/spaces/demo-space", label: "Demo Space" }]}
           tasks={tasks}
-          statuses={STATUSES}
+          statuses={statuses}
           kanbanState={taskActions.kanbanState}
           getTaskPageProps={(taskId, ctx) =>
             buildTaskPageProps(taskId, ctx, subscriptions, {
@@ -334,7 +335,7 @@ export const Default: Story = {
               (event.updatedKanbanState[status] ?? []).forEach((id) => nextIdsInOrder.push(id));
             });
 
-            const statusOption = STATUSES.find((s) => s.value === event.to.status) ?? null;
+            const statusOption = statuses.find((s) => s.value === event.to.status) ?? null;
 
             setTasks((prev) => {
               const byId = new Map(prev.map((t) => [t.id, t] as const));
@@ -356,6 +357,16 @@ export const Default: Story = {
       </div>
     );
   },
+};
+
+export const Empty: Story = {
+  ...Default,
+  args: { tasks: [] },
+};
+
+export const OnlyOpenStatuses: Story = {
+  ...Default,
+  args: { tasks: [], statuses: [PENDING_STATUS, IN_PROGRESS_STATUS] },
 };
 
 export const WithStatusManagement: Story = {

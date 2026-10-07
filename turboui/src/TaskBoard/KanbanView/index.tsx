@@ -136,6 +136,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
         }
         onTaskClick={setSelectedTaskId}
         isTaskSlideInOpen={Boolean(selectedTaskId)}
+        renderHeader={props.renderHeader}
         toolbarLeading={props.toolbarLeading}
         toolbarActions={props.toolbarActions}
       />

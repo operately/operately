@@ -109,6 +109,8 @@ export interface KanbanBoardProps {
   richTextHandlers?: RichTextHandlers;
   getTaskPageProps: GetTaskPageProps;
   unstyled?: boolean;
+  /** Place board actions in a page header instead of the default toolbar. */
+  renderHeader?: (actions: ReactNode) => ReactNode;
   toolbarLeading?: ReactNode;
   toolbarActions?: ReactNode | ((context: KanbanToolbarContext) => ReactNode);
 }

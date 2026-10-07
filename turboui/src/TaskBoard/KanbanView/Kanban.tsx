@@ -34,6 +34,7 @@ interface Props {
   isTaskSlideInOpen: boolean;
   canEdit: boolean;
   canManageStatuses?: boolean;
+  renderHeader?: (actions: React.ReactNode) => React.ReactNode;
   toolbarLeading?: React.ReactNode;
   toolbarActions?: React.ReactNode | ((context: KanbanToolbarContext) => React.ReactNode);
 }
@@ -59,6 +60,7 @@ export function Kanban({
   canManageStatuses = false,
   toolbarLeading,
   toolbarActions,
+  renderHeader,
 }: Props) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -91,7 +93,7 @@ export function Kanban({
       ? toolbarActions(toolbarContext)
       : toolbarActions ||
         (closedStatuses.length > 0 && <TaskDisplayMenu closedStatuses={toolbarContext.closedStatuses} />);
-  const hasBoardToolbar = Boolean(toolbarLeading || resolvedToolbarActions);
+  const hasBoardToolbar = !renderHeader && Boolean(toolbarLeading || resolvedToolbarActions);
 
   const setScrollContainerRefs = React.useCallback(
     (element: HTMLDivElement | null) => {
@@ -144,66 +146,69 @@ export function Kanban({
   );
 
   return (
-    <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
-      {hasBoardToolbar && (
-        <div
-          className={classNames(
-            "mx-4 mt-4 flex min-h-9 flex-wrap items-center gap-3 px-1",
-            toolbarLeading ? "justify-between" : "justify-end",
-          )}
-          data-test-id="kanban-toolbar"
-        >
-          {toolbarLeading}
+    <>
+      {renderHeader?.(resolvedToolbarActions)}
+      <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
+        {hasBoardToolbar && (
+          <div
+            className={classNames(
+              "mx-4 mt-4 flex min-h-9 flex-wrap items-center gap-3 px-1",
+              toolbarLeading ? "justify-between" : "justify-end",
+            )}
+            data-test-id="kanban-toolbar"
+          >
+            {toolbarLeading}
 
-          <div className="flex items-center gap-1">{resolvedToolbarActions}</div>
-        </div>
-      )}
-
-      <div
-        ref={setScrollContainerRefs}
-        className={classNames(
-          "overflow-x-auto px-3 pb-3",
-          hasBoardToolbar ? "h-[calc(80vh-52px)] pt-3" : "h-[80vh] pt-3",
+            <div className="flex items-center gap-1">{resolvedToolbarActions}</div>
+          </div>
         )}
-        {...scopeBind}
-      >
-        <div className="flex gap-3 min-w-max items-start" data-test-id="kanban-columns">
-          {unknownStatus && (
-            <Column
-              status={unknownStatus}
-              tasks={columns[unknownStatus.value] || []}
-              draggedItemId={draggedItemId}
-              targetLocation={targetLocation}
-              placeholderHeight={placeholderHeight}
-              onTaskAssigneeChange={onTaskAssigneeChange}
-              onTaskDueDateChange={onTaskDueDateChange}
-              onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
-              assigneePersonSearch={assigneePersonSearch}
-              onCreateTask={undefined}
-              dragHandleRef={undefined}
-              isStatusDraggable={false}
-              allStatuses={statuses}
-              canManageStatuses={false}
-              onEditStatus={undefined}
-              onDeleteStatus={undefined}
-              onTaskClick={onTaskClick}
-              canCreateTask={canEdit}
-              selectedTaskId={keyboardSelectedTaskId}
-              hideStatusIcon
-              disableDnD
-            />
+
+        <div
+          ref={setScrollContainerRefs}
+          className={classNames(
+            "overflow-x-auto px-3 pb-3",
+            hasBoardToolbar ? "h-[calc(80vh-52px)] pt-3" : "h-[80vh] pt-3",
           )}
+          {...scopeBind}
+        >
+          <div className="flex gap-3 min-w-max items-start" data-test-id="kanban-columns">
+            {unknownStatus && (
+              <Column
+                status={unknownStatus}
+                tasks={columns[unknownStatus.value] || []}
+                draggedItemId={draggedItemId}
+                targetLocation={targetLocation}
+                placeholderHeight={placeholderHeight}
+                onTaskAssigneeChange={onTaskAssigneeChange}
+                onTaskDueDateChange={onTaskDueDateChange}
+                onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
+                assigneePersonSearch={assigneePersonSearch}
+                onCreateTask={undefined}
+                dragHandleRef={undefined}
+                isStatusDraggable={false}
+                allStatuses={statuses}
+                canManageStatuses={false}
+                onEditStatus={undefined}
+                onDeleteStatus={undefined}
+                onTaskClick={onTaskClick}
+                canCreateTask={canEdit}
+                selectedTaskId={keyboardSelectedTaskId}
+                hideStatusIcon
+                disableDnD
+              />
+            )}
 
-          {regularStatuses.map((status, index) => {
-            if (status.closed && !areClosedStatusesVisible) return null;
+            {regularStatuses.map((status, index) => {
+              if (status.closed && !areClosedStatusesVisible) return null;
 
-            return renderStatusColumn(status, index);
-          })}
+              return renderStatusColumn(status, index);
+            })}
 
-          {canManageStatuses && onAddStatusClick && <AddStatusButton onClick={onAddStatusClick} />}
+            {canManageStatuses && onAddStatusClick && <AddStatusButton onClick={onAddStatusClick} />}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
