@@ -25,6 +25,7 @@ This document captures the architecture principles, patterns, and workflow for d
 
 ## Internationalization
 
+- Use the [internationalization skill](../.agents/skills/internationalization/SKILL.md) for copy/translation changes and adding languages; follow its linked guide and glossaries.
 - **Hardcoded system-authored, user-visible text is forbidden**, including labels, placeholders, tooltips, accessible text, validation/errors, and notifications. Every new or changed message must include translations for all supported languages and regenerated catalogs/resources in the same PR.
 - Follow the [internationalization guide](../docs/internationalization.md) and its language glossaries. Use `useTranslation`, `tn` from the relative `i18n` module, and `Trans` from the relative `Translate` module. Keep literal message identifiers, complete sentences, named placeholders, language-aware plurals, and escaped user content.
 - User-authored content, machine identifiers, developer-only diagnostics, and proper names requiring no translation are exceptions. A diagnostic shown to users needs a translated presentation.

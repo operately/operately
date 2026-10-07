@@ -174,6 +174,8 @@ paths, a collection load, or a custom loading wrapper.
 
 ### 16. Definition of done
 
+Use the [internationalization skill](../internationalization/SKILL.md) when changing product copy or adding a language.
+
 Hardcoded system-authored, user-visible text is forbidden, including API validation/errors, notifications, feeds, exports, pages, and emails. Follow the [internationalization guide](../../../docs/internationalization.md) and its language glossaries: use translation wrappers and include translations for every supported language plus regenerated catalogs/resources in the same PR. Keep machine identifiers and stored activity payloads stable; translate their presentation. Developer-only diagnostics may remain literal, but diagnostics displayed to users need translated presentation. Never edit generated JSON manually or rely on fallback to complete a copy change.
 
 A task is done only when:
