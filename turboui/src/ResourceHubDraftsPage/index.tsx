@@ -39,12 +39,12 @@ export function ResourceHubDraftsPage(props: ResourceHubDraftsPage.Props) {
 function DraftsHeader({ actions }: { actions?: React.ReactNode }) {
   const { t } = useTranslation();
   return (
-    <div className="mb-6 -mx-4 sm:-mx-12 -mt-10 flex items-center justify-between border-b border-stroke-base px-4 sm:px-8 pt-5 pb-4">
-      <div className="w-[30%]">{actions}</div>
-      <div className="w-[50%] flex-1 text-center">
-        <div className="text-content-accent text-lg font-extrabold md:text-2xl">{t("Your Drafts")}</div>
+    <div className="mb-6 -mx-4 sm:-mx-12 -mt-10 flex items-center justify-between max-sm:gap-3 border-b border-stroke-base px-4 sm:px-8 pt-5 pb-4">
+      <div className="max-sm:shrink-0 max-sm:whitespace-nowrap sm:w-[30%]">{actions}</div>
+      <div className="min-w-0 flex-1 sm:w-[50%] sm:text-center">
+        <div className="truncate text-content-accent text-lg font-extrabold md:text-2xl">{t("Your Drafts")}</div>
       </div>
-      <div className="w-[30%]" />
+      <div className="hidden sm:block sm:w-[30%]" />
     </div>
   );
 }
