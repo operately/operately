@@ -63,7 +63,7 @@ export function SiteMessageModal({ isOpen, onClose, onSuccess, message }: SiteMe
     <Modal title={isEdit ? t("Edit message") : t("Create message")} isOpen={isOpen} onClose={onClose} size="large">
       <Forms.Form form={form}>
         <Forms.FieldGroup>
-          <Forms.TextInput field="title" label={t("Title")} required autoFocus />
+          <Forms.TextInput field="title" label={t("Title", { context: "message" })} required autoFocus />
           <Forms.RichTextArea
             field="description"
             label={t("Description")}

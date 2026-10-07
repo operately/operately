@@ -20648,8 +20648,6 @@ msgstr "Dica: Inscreva-se se também quiser receber notificações."
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:79
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:66
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:122
 msgid "Title"
 msgstr "Cargo"
 
@@ -25102,6 +25100,13 @@ msgstr "é"
 msgctxt "filter operator"
 msgid "is not"
 msgstr "não é"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:66
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:122
+msgctxt "message"
+msgid "Title"
+msgstr "Título"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:89

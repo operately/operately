@@ -3307,6 +3307,7 @@
   "Title in the company": "Cargo na empresa",
   "Title is required": "O cargo é obrigatório",
   "Title...": "Título...",
+  "Title|message": "Título",
   "To confirm, type \"{{confirmationValue}}\" in the box below": "Para confirmar, digite \"{{confirmationValue}}\" no campo abaixo",
   "To delete the <strong>{{label}}</strong> status, select a replacement status. All tasks currently in <strong2>{{label2}}</strong2> will be moved to the replacement status.": "Para excluir o status <strong>{{label}}</strong>, selecione um status substituto. Todas as tarefas atualmente em <strong2>{{label2}}</strong2> serão movidas para o status substituto.",
   "Today": "Hoje",

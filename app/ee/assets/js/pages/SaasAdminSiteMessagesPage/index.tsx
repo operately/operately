@@ -119,7 +119,7 @@ function MessageTable({
   return (
     <div className="mt-6">
       <TableRow header gridTemplateColumns="2fr 1fr 0.75fr 1fr 1fr 0.5fr">
-        <div>{t("Title")}</div>
+        <div>{t("Title", { context: "message" })}</div>
         <div>{t("Audience")}</div>
         <div>{t("Status")}</div>
         <div>{t("Expires")}</div>
