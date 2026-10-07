@@ -134,6 +134,55 @@ describe("Kanban", () => {
     expect(within(columns).queryByText("Closed statuses")).not.toBeInTheDocument();
   });
 
+  it("renders display controls in a custom header without a duplicate toolbar", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <Kanban
+        milestone={null}
+        columns={{ pending: [], done: [] }}
+        draggedItemId={null}
+        targetLocation={null}
+        placeholderHeight={null}
+        statuses={[pendingStatus, doneStatus]}
+        onTaskClick={jest.fn()}
+        isTaskSlideInOpen={false}
+        canEdit={false}
+        renderHeader={(actions) => <header>{actions}</header>}
+      />,
+    );
+
+    const displayButton = getTestElement(container, "display-menu-trigger");
+    expect(container.querySelector("header")).toContainElement(displayButton);
+    expect(container.querySelector('[data-test-id="kanban-toolbar"]')).not.toBeInTheDocument();
+
+    await user.click(displayButton);
+    await user.click(getTestElement(document.body, "toggle-closed-statuses"));
+    expect(container.querySelector('[data-test-id="kanban-column-done"]')).not.toBeInTheDocument();
+    expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
+  });
+
+  it("keeps the custom header when there are no display options", () => {
+    const { container } = render(
+      <Kanban
+        milestone={null}
+        columns={{ pending: [] }}
+        draggedItemId={null}
+        targetLocation={null}
+        placeholderHeight={null}
+        statuses={[pendingStatus]}
+        onTaskClick={jest.fn()}
+        isTaskSlideInOpen={false}
+        canEdit={false}
+        renderHeader={(actions) => <header>{actions}</header>}
+      />,
+    );
+
+    expect(container.querySelector("header")).toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="kanban-toolbar"]')).not.toBeInTheDocument();
+    expect(container.querySelector('[data-test-id="display-menu-trigger"]')).not.toBeInTheDocument();
+    expect(getKanbanColumn(container, "pending")).toBeInTheDocument();
+  });
+
   it("shows a task count in each visible column header", () => {
     const { container } = render(
       <Kanban

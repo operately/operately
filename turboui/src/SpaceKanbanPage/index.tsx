@@ -65,39 +65,37 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
 
   return (
     <PageNew title={title} size="fullwidth" testId={createTestId("space-kanban-page", props.space.id)}>
-      <SpaceKanbanPageHeader navigation={props.navigation} />
-
-      <div className="flex-1 overflow-auto px-2 py-4">
-        <KanbanBoard
-          tasks={props.tasks}
-          statuses={props.statuses}
-          kanbanState={props.kanbanState}
-          onTaskKanbanChange={props.onTaskKanbanChange}
-          onTaskCreate={props.onTaskCreate}
-          onTaskNameChange={props.onTaskNameChange}
-          onTaskAssigneeChange={props.onTaskAssigneeChange}
-          onTaskDueDateChange={props.onTaskDueDateChange}
-          onTaskRemindersChange={props.onTaskRemindersChange}
-          onTaskStatusChange={props.onTaskStatusChange}
-          onTaskDelete={props.onTaskDelete}
-          onTaskDescriptionChange={props.onTaskDescriptionChange}
-          richTextHandlers={props.richTextHandlers}
-          assigneePersonSearch={props.assigneePersonSearch}
-          getTaskPageProps={props.getTaskPageProps}
-          canEdit={props.canEdit}
-          onStatusesChange={props.onStatusesChange}
-          unstyled
-        />
-      </div>
+      <KanbanBoard
+        renderHeader={(actions) => <SpaceKanbanPageHeader navigation={props.navigation} actions={actions} />}
+        tasks={props.tasks}
+        statuses={props.statuses}
+        kanbanState={props.kanbanState}
+        onTaskKanbanChange={props.onTaskKanbanChange}
+        onTaskCreate={props.onTaskCreate}
+        onTaskNameChange={props.onTaskNameChange}
+        onTaskAssigneeChange={props.onTaskAssigneeChange}
+        onTaskDueDateChange={props.onTaskDueDateChange}
+        onTaskRemindersChange={props.onTaskRemindersChange}
+        onTaskStatusChange={props.onTaskStatusChange}
+        onTaskDelete={props.onTaskDelete}
+        onTaskDescriptionChange={props.onTaskDescriptionChange}
+        richTextHandlers={props.richTextHandlers}
+        assigneePersonSearch={props.assigneePersonSearch}
+        getTaskPageProps={props.getTaskPageProps}
+        canEdit={props.canEdit}
+        onStatusesChange={props.onStatusesChange}
+        unstyled
+      />
     </PageNew>
   );
 }
 
 interface SpaceKanbanPageHeaderProps {
   navigation: Navigation.Item[];
+  actions: React.ReactNode;
 }
 
-function SpaceKanbanPageHeader({ navigation }: SpaceKanbanPageHeaderProps) {
+function SpaceKanbanPageHeader({ navigation, actions }: SpaceKanbanPageHeaderProps) {
   const { t } = useTranslation();
   return (
     <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex items-center gap-3">
@@ -110,6 +108,8 @@ function SpaceKanbanPageHeader({ navigation }: SpaceKanbanPageHeaderProps) {
           <h1 className="text-sm sm:text-base font-semibold text-content-accent truncate">{t("Tasks")}</h1>
         </div>
       </div>
+
+      <div className="shrink-0">{actions}</div>
     </header>
   );
 }
