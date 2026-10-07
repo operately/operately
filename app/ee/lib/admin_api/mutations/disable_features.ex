@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.DisableFeatures do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -31,7 +32,7 @@ defmodule OperatelyEE.AdminApi.Mutations.DisableFeatures do
   end
 
   defp validate_features(features) when is_list(features) and features != [], do: :ok
-  defp validate_features(_), do: {:error, :bad_request, "Features list cannot be empty"}
+  defp validate_features(_), do: {:error, :bad_request, gettext("Features list cannot be empty")}
 
   defp load(id) do
     Company.get(:system, short_id: id)

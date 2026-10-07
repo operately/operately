@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useCreateBillingPlanDefinition, useUpdateBillingPlanDefinition } from "@/ee/models/billingCatalogLifecycle";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
@@ -14,6 +15,7 @@ interface PlanDefinitionModalProps {
 type LimitMode = "limited" | "unlimited";
 
 export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition }: PlanDefinitionModalProps) {
+  const { t } = useTranslation();
   const { mutateAsync: create } = useCreateBillingPlanDefinition();
   const { mutateAsync: update } = useUpdateBillingPlanDefinition();
   const isEdit = planDefinition !== undefined;
@@ -32,10 +34,10 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
     },
     validate: (addError) => {
       if (!isEdit && form.values.planKey.trim().length === 0) {
-        addError("planKey", "Plan key is required");
+        addError("planKey", t("Plan key is required"));
       }
 
-      validatePositiveInteger(addError, "tierRank", form.values.tierRank, "Tier rank must be 0 or greater", {
+      validatePositiveInteger(addError, "tierRank", form.values.tierRank, t("Tier rank must be 0 or greater"), {
         allowZero: true,
       });
 
@@ -44,7 +46,7 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
           addError,
           "memberLimit",
           form.values.memberLimit,
-          "Member limit must be greater than 0",
+          t("Member limit must be greater than 0"),
         );
       }
 
@@ -53,7 +55,7 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
           addError,
           "storageLimitBytes",
           form.values.storageLimitBytes,
-          "Storage limit must be greater than 0",
+          t("Storage limit must be greater than 0"),
         );
       }
     },
@@ -92,67 +94,67 @@ export function PlanDefinitionModal({ isOpen, onClose, onSuccess, planDefinition
   }, [form.actions, form.values.billingBehavior, form.values.customerSelectable]);
 
   return (
-    <Modal title={isEdit ? "Edit plan definition" : "Create plan definition"} isOpen={isOpen} onClose={onClose}>
+    <Modal title={isEdit ? t("Edit plan definition") : t("Create plan definition")} isOpen={isOpen} onClose={onClose}>
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="vertical">
           {isEdit ? (
-            <ReadOnlyField label="Plan key" value={planDefinition.key} />
+            <ReadOnlyField label={t("Plan key")} value={planDefinition.key} />
           ) : (
-            <Forms.TextInput label="Plan key" field="planKey" required autoFocus />
+            <Forms.TextInput label={t("Plan key")} field="planKey" required autoFocus />
           )}
-          <Forms.TextInput label="Display Name" field="displayName" required />
-          <Forms.NumberInput label="Tier rank" field="tierRank" required />
+          <Forms.TextInput label={t("Display Name")} field="displayName" required />
+          <Forms.NumberInput label={t("Tier rank")} field="tierRank" required />
           <Forms.SelectBox
-            label="Billing behavior"
+            label={t("Billing behavior")}
             field="billingBehavior"
             options={[
-              { value: "provider_managed", label: "Provider managed" },
-              { value: "internal", label: "Internal" },
+              { value: "provider_managed", label: t("Provider managed") },
+              { value: "internal", label: t("Internal") },
             ]}
             required
           />
           {form.values.billingBehavior === "internal" ? (
-            <ReadOnlyField label="Customer selectable" value="No" />
+            <ReadOnlyField label={t("Customer selectable")} value={t("No")} />
           ) : (
             <Forms.SelectBox
-              label="Customer selectable"
+              label={t("Customer selectable")}
               field="customerSelectable"
               options={[
-                { value: "false", label: "No" },
-                { value: "true", label: "Yes" },
+                { value: "false", label: t("No") },
+                { value: "true", label: t("Yes") },
               ]}
               required
             />
           )}
           <Forms.SelectBox
-            label="Member limit"
+            label={t("Member limit")}
             field="memberLimitMode"
             options={[
-              { value: "limited", label: "Limited" },
-              { value: "unlimited", label: "Unlimited" },
+              { value: "limited", label: t("Limited") },
+              { value: "unlimited", label: t("Unlimited") },
             ]}
             required
           />
           {form.values.memberLimitMode === "limited" && (
-            <Forms.NumberInput label="Member limit value" field="memberLimit" />
+            <Forms.NumberInput label={t("Member limit value")} field="memberLimit" />
           )}
           <Forms.SelectBox
-            label="Storage limit"
+            label={t("Storage limit")}
             field="storageLimitMode"
             options={[
-              { value: "limited", label: "Limited" },
-              { value: "unlimited", label: "Unlimited" },
+              { value: "limited", label: t("Limited") },
+              { value: "unlimited", label: t("Unlimited") },
             ]}
             required
           />
           {form.values.storageLimitMode === "limited" && (
             <div className="flex flex-col gap-1">
-              <Forms.NumberInput label="Storage limit bytes" field="storageLimitBytes" />
+              <Forms.NumberInput label={t("Storage limit bytes")} field="storageLimitBytes" />
               <StorageLimitPreview value={form.values.storageLimitBytes} />
             </div>
           )}
         </Forms.FieldGroup>
-        <Forms.Submit saveText={isEdit ? "Save changes" : "Create plan"} cancelText="Cancel" />
+        <Forms.Submit saveText={isEdit ? t("Save changes") : t("Create plan")} cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );
@@ -169,11 +171,14 @@ function ReadOnlyField({ label, value }: { label: string; value: string }) {
 }
 
 function StorageLimitPreview({ value }: { value: string }) {
+  const { t } = useTranslation();
   const parsed = Number.parseInt(value, 10);
 
   if (!Number.isInteger(parsed) || parsed <= 0) return null;
 
-  return <div className="text-xs text-content-dimmed">Preview: {formatStorageBytes(parsed)}</div>;
+  return (
+    <div className="text-xs text-content-dimmed">{t("Preview: {{size}}", { size: formatStorageBytes(parsed) })}</div>
+  );
 }
 
 function limitModeFromValue(value?: number | null): LimitMode {

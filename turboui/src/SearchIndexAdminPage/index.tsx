@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -49,6 +51,7 @@ interface PendingAction {
 }
 
 export function SearchIndexAdminPage(props: SearchIndexAdminPageProps) {
+  const { t } = useTranslation();
   const [pendingAction, setPendingAction] = React.useState<PendingAction | null>(null);
   const [starting, setStarting] = React.useState(false);
   const [actionError, setActionError] = React.useState<string | null>(null);
@@ -63,7 +66,7 @@ export function SearchIndexAdminPage(props: SearchIndexAdminPageProps) {
       await props.onStartMaintenance(pendingAction.kind, pendingAction.sourceType);
       setPendingAction(null);
     } catch (_error) {
-      setActionError("Search index maintenance could not be started. Try again.");
+      setActionError(t("Search index maintenance could not be started. Try again."));
       setPendingAction(null);
     } finally {
       setStarting(false);
@@ -74,26 +77,28 @@ export function SearchIndexAdminPage(props: SearchIndexAdminPageProps) {
     <div className="mx-auto w-full max-w-6xl px-8 py-10" data-test-id="search-index-admin-page">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-content-base">Search index</h1>
+          <h1 className="text-2xl font-bold text-content-base">{t("Search index")}</h1>
           <p className="mt-1 max-w-3xl text-sm text-content-subtle">
-            Monitor indexing progress and repair search data when canonical records change.
+            {t("Monitor indexing progress and repair search data when canonical records change.")}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <SecondaryButton size="sm" onClick={() => setPendingAction({ kind: "backfill" })}>
-            Backfill all sources
+            {t("Backfill all sources")}
           </SecondaryButton>
           <PrimaryButton size="sm" onClick={() => setPendingAction({ kind: "reconciliation" })}>
-            Reconcile all sources
+            {t("Reconcile all sources")}
           </PrimaryButton>
         </div>
       </div>
 
       <div className="mt-6">
         <InfoCallout
-          message="Backfills add missing entries. Reconciliation performs a complete repair."
-          description="Reconciliation also updates stale entries and removes entries whose source record no longer exists."
+          message={t("Backfills add missing entries. Reconciliation performs a complete repair.")}
+          description={t(
+            "Reconciliation also updates stale entries and removes entries whose source record no longer exists.",
+          )}
         />
       </div>
 
@@ -105,10 +110,10 @@ export function SearchIndexAdminPage(props: SearchIndexAdminPageProps) {
 
       <div className="mt-6 overflow-hidden rounded-lg border border-stroke-base bg-surface-base">
         <div className="hidden grid-cols-[minmax(12rem,1.2fr)_minmax(12rem,1fr)_minmax(20rem,2fr)_auto] gap-4 border-b border-stroke-base bg-surface-dimmed px-5 py-3 text-xs font-bold uppercase text-content-subtle lg:grid">
-          <div>Source</div>
-          <div>Latest run</div>
-          <div>Progress</div>
-          <div>Actions</div>
+          <div>{t("Source")}</div>
+          <div>{t("Latest run")}</div>
+          <div>{t("Progress")}</div>
+          <div>{t("Actions")}</div>
         </div>
 
         {props.sources.map((source) => (
@@ -128,12 +133,12 @@ export function SearchIndexAdminPage(props: SearchIndexAdminPageProps) {
         title={confirmationTitle(pendingAction)}
         message={confirmationMessage(pendingAction)}
         confirmText={confirmationButton(pendingAction)}
-        cancelText="Cancel"
+        cancelText={t("Cancel")}
         testId="confirm-search-index-maintenance"
       />
 
       <span className="sr-only" aria-live="polite">
-        {starting ? "Starting search index maintenance…" : ""}
+        {starting ? t("Starting search index maintenance…") : ""}
       </span>
     </div>
   );
@@ -148,6 +153,7 @@ function SourceRow({
   formattedTimePreferences: FormattedTimePreferences;
   onStart: (kind: MaintenanceKind) => void;
 }) {
+  const { t } = useTranslation();
   const run = source.latestRun;
   const active = run?.status === "pending" || run?.status === "running";
 
@@ -169,7 +175,7 @@ function SourceRow({
             </div>
             <div className="mt-1 space-y-0.5 text-xs text-content-subtle">
               <div>
-                <span>Started:</span>{" "}
+                <span>{t("Started:")}</span>{" "}
                 <FormattedTime
                   {...formattedTimePreferences}
                   time={run.startedAt || run.insertedAt}
@@ -178,14 +184,14 @@ function SourceRow({
               </div>
               {run.completedAt ? (
                 <div>
-                  <span>Completed:</span>{" "}
+                  <span>{t("Completed:")}</span>{" "}
                   <FormattedTime {...formattedTimePreferences} time={run.completedAt} format="relative-time-or-date" />
                 </div>
               ) : null}
             </div>
           </>
         ) : (
-          <span className="text-sm text-content-subtle">Not started</span>
+          <span className="text-sm text-content-subtle">{t("Not started")}</span>
         )}
       </div>
 
@@ -193,28 +199,28 @@ function SourceRow({
         {run ? (
           <>
             <div className="grid grid-cols-2 gap-x-5 gap-y-1 text-xs text-content-dimmed sm:grid-cols-4">
-              <Counter label="Processed" value={run.processedCount} />
-              <Counter label="Inserted" value={run.insertedCount} />
-              <Counter label="Updated" value={run.updatedCount} />
-              <Counter label="Unchanged" value={run.unchangedCount} />
-              <Counter label="Skipped" value={run.skippedCount} />
-              <Counter label="Failed" value={run.failedCount} />
-              <Counter label="Superseded" value={run.supersededCount} />
-              <Counter label="Orphans removed" value={run.deletedOrphanCount} />
+              <Counter label={t("Processed")} value={run.processedCount} />
+              <Counter label={t("Inserted")} value={run.insertedCount} />
+              <Counter label={t("Updated")} value={run.updatedCount} />
+              <Counter label={t("Unchanged")} value={run.unchangedCount} />
+              <Counter label={t("Skipped")} value={run.skippedCount} />
+              <Counter label={t("Failed")} value={run.failedCount} />
+              <Counter label={t("Superseded")} value={run.supersededCount} />
+              <Counter label={t("Orphans removed")} value={run.deletedOrphanCount} />
             </div>
             {run.lastError ? <p className="mt-2 break-words text-xs text-content-error">{run.lastError}</p> : null}
           </>
         ) : (
-          <span className="text-sm text-content-subtle">No progress to report.</span>
+          <span className="text-sm text-content-subtle">{t("No progress to report.")}</span>
         )}
       </div>
 
       <div className="flex flex-wrap gap-2 lg:justify-end">
         <SecondaryButton size="xs" disabled={active} onClick={() => onStart("backfill")}>
-          Run backfill
+          {t("Run backfill")}
         </SecondaryButton>
         <SecondaryButton size="xs" disabled={active} onClick={() => onStart("reconciliation")}>
-          Run reconciliation
+          {t("Run reconciliation")}
         </SecondaryButton>
       </div>
     </div>
@@ -245,19 +251,19 @@ function StatusBadge({ status }: { status: RunStatus }) {
 
 function sourceLabel(sourceType: string): string {
   const labels: Record<string, string> = {
-    resource_hub_folder: "Folders",
-    resource_hub_document: "Documents",
-    resource_hub_file: "Files",
-    resource_hub_link: "Links",
-    project: "Projects",
-    goal: "Goals",
-    milestone: "Milestones",
-    task: "Tasks",
-    person: "People",
-    discussion: "Discussions",
-    project_check_in: "Project check-ins",
-    goal_check_in: "Goal check-ins",
-    project_retrospective: "Project retrospectives",
+    resource_hub_folder: i18n.t("Folders"),
+    resource_hub_document: i18n.t("Documents"),
+    resource_hub_file: i18n.t("Files"),
+    resource_hub_link: i18n.t("Links"),
+    project: i18n.t("Projects"),
+    goal: i18n.t("Goals"),
+    milestone: i18n.t("Milestones"),
+    task: i18n.t("Tasks"),
+    person: i18n.t("People"),
+    discussion: i18n.t("Discussions"),
+    project_check_in: i18n.t("Project check-ins"),
+    goal_check_in: i18n.t("Goal check-ins"),
+    project_retrospective: i18n.t("Project retrospectives"),
   };
 
   return labels[sourceType] || sourceType;
@@ -265,40 +271,45 @@ function sourceLabel(sourceType: string): string {
 
 function statusLabel(status: RunStatus): string {
   const labels: Record<RunStatus, string> = {
-    pending: "Pending",
-    running: "Running",
-    completed: "Completed",
-    completed_with_errors: "Completed with errors",
-    failed: "Failed",
+    pending: i18n.t("Pending"),
+    running: i18n.t("Running"),
+    completed: i18n.t("Completed"),
+    completed_with_errors: i18n.t("Completed with errors"),
+    failed: i18n.t("Failed"),
   };
 
   return labels[status];
 }
 
 function kindLabel(kind: MaintenanceKind): string {
-  return kind === "backfill" ? "Backfill" : "Reconciliation";
+  return kind === "backfill" ? i18n.t("Backfill") : i18n.t("Reconciliation");
 }
 
 function phaseLabel(phase: SearchIndexRun["phase"]): string {
-  return phase === "source_scan" ? "Source scan" : "Index scan";
+  return phase === "source_scan" ? i18n.t("Source scan") : i18n.t("Index scan");
 }
 
 function confirmationTitle(action: PendingAction | null): string {
-  if (!action) return "Start search index maintenance?";
-  const target = action.sourceType ? sourceLabel(action.sourceType) : "all sources";
-  return `${action.kind === "backfill" ? "Backfill" : "Reconcile"} ${target}?`;
+  if (!action) return i18n.t("Start search index maintenance?");
+  if (!action.sourceType) {
+    return action.kind === "backfill" ? i18n.t("Backfill all sources?") : i18n.t("Reconcile all sources?");
+  }
+  const target = sourceLabel(action.sourceType);
+  return action.kind === "backfill"
+    ? i18n.t("Backfill {{target}}?", { target })
+    : i18n.t("Reconcile {{target}}?", { target });
 }
 
 function confirmationMessage(action: PendingAction | null): string {
-  if (!action) return "This starts a background search index job.";
+  if (!action) return i18n.t("This starts a background search index job.");
 
   if (action.kind === "backfill") {
-    return "This starts a background job that adds missing entries and refreshes newer canonical records.";
+    return i18n.t("This starts a background job that adds missing entries and refreshes newer canonical records.");
   }
 
-  return "This starts a complete background repair that also updates stale entries and removes orphans.";
+  return i18n.t("This starts a complete background repair that also updates stale entries and removes orphans.");
 }
 
 function confirmationButton(action: PendingAction | null): string {
-  return action?.kind === "reconciliation" ? "Run reconciliation" : "Run backfill";
+  return action?.kind === "reconciliation" ? i18n.t("Run reconciliation") : i18n.t("Run backfill");
 }

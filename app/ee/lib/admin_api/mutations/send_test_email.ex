@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.SendTestEmail do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias OperatelyEmail.Mailers.Config.Db, as: DbConfig
@@ -17,7 +18,7 @@ defmodule OperatelyEE.AdminApi.Mutations.SendTestEmail do
   def call(_conn, inputs) do
     case DbConfig.config() do
       {:ok, config} -> deliver(config, inputs)
-      :not_configured -> {:ok, %{success: false, error: "Email settings are not configured"}}
+      :not_configured -> {:ok, %{success: false, error: gettext("Email settings are not configured")}}
     end
   rescue
     e -> {:ok, %{success: false, error: Exception.message(e)}}
@@ -27,7 +28,7 @@ defmodule OperatelyEE.AdminApi.Mutations.SendTestEmail do
     from_email = OperatelyEmail.notification_email_address()
 
     if is_nil(from_email) or String.trim(from_email) == "" do
-      {:ok, %{success: false, error: "Notification email address is not configured"}}
+      {:ok, %{success: false, error: gettext("Notification email address is not configured")}}
     else
       email =
         Swoosh.Email.new()

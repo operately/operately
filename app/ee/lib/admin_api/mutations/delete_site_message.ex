@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.DeleteSiteMessage do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.SiteMessages
@@ -28,7 +29,7 @@ defmodule OperatelyEE.AdminApi.Mutations.DeleteSiteMessage do
 
   defp find_message(id) do
     case SiteMessages.get(id) do
-      nil -> {:error, :not_found, "Site message not found"}
+      nil -> {:error, :not_found, gettext("Site message not found")}
       message -> {:ok, message}
     end
   end
@@ -36,7 +37,7 @@ defmodule OperatelyEE.AdminApi.Mutations.DeleteSiteMessage do
   defp decode_id(id) do
     case Operately.ShortUuid.decode(id) do
       {:ok, decoded} -> {:ok, decoded}
-      _ -> {:error, :bad_request, "Invalid site message ID"}
+      _ -> {:error, :bad_request, gettext("Invalid site message ID")}
     end
   end
 end

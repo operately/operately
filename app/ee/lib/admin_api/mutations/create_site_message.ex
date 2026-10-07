@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.CreateSiteMessage do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.SiteMessages
@@ -27,10 +28,10 @@ defmodule OperatelyEE.AdminApi.Mutations.CreateSiteMessage do
         {:ok, %{message: OperatelyWeb.Api.Serializer.serialize(message, level: :full)}}
 
       {:error, :invalid_company_id} ->
-        {:error, :bad_request, "One or more selected companies are invalid"}
+        {:error, :bad_request, gettext("One or more selected companies are invalid")}
 
       {:error, %Ecto.Changeset{}} ->
-        {:error, :bad_request, "Invalid site message parameters"}
+        {:error, :bad_request, gettext("Invalid site message parameters")}
     end
   end
 end

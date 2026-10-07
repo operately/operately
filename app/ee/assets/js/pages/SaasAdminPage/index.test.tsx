@@ -1,4 +1,5 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import { setupTestCatalog } from "@/__tests__/i18n";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { Simulate } from "react-dom/test-utils";
@@ -7,6 +8,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as AdminApi from "@/ee/admin_api";
 import { act, waitFor } from "@/__tests__/renderHook";
 import { Page } from "./index";
+
+setupTestCatalog();
 
 jest.mock("axios");
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
@@ -22,6 +25,7 @@ jest.mock("@/components/PaperContainer/PageOptions", () => ({ Root: () => null, 
 jest.mock("turboui", () => {
   const React = jest.requireActual("react");
   return {
+    i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
     ...Object.fromEntries(
       [
         "AvatarList",
@@ -38,6 +42,7 @@ jest.mock("turboui", () => {
         "IconTrash",
       ].map((name) => [name, () => null]),
     ),
+    Trans: jest.requireActual("react-i18next").Trans,
     Tooltip: ({ children }: React.PropsWithChildren) => children,
     DivLink: ({ children, to }: React.PropsWithChildren<{ to: string }>) => <a href={to}>{children}</a>,
     formatStorageBytes: () => "0 B",

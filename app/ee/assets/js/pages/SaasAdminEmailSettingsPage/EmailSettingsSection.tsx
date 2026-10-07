@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useUpdateEmailSettings } from "@/ee/models/emailSettingsLifecycle";
 import * as React from "react";
 
@@ -11,13 +12,16 @@ interface Props {
 }
 
 export function EmailSettingsSection({ initialSettings }: Props) {
+  const { t } = useTranslation();
   const [emailSettings, setEmailSettings] = React.useState<AdminApi.EmailSettings | null>(initialSettings);
 
   return (
     <div className="mt-12">
       <PageSection
-        title="Email Settings"
-        subtitle="Configure the email provider used by all companies. Secrets are never displayed; enter a new value to replace them."
+        title={t("Email Settings")}
+        subtitle={t(
+          "Configure the email provider used by all companies. Secrets are never displayed; enter a new value to replace them.",
+        )}
         actions={<TestEmailAction />}
       >
         <EmailSettingsForm emailSettings={emailSettings} onUpdate={setEmailSettings} />
@@ -32,6 +36,7 @@ interface FormProps {
 }
 
 function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
+  const { t } = useTranslation();
   const { mutateAsync: updateEmailSettings } = useUpdateEmailSettings();
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const [statusTone, setStatusTone] = React.useState<"success" | "error">("success");
@@ -73,13 +78,13 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
 
       if (result.success) {
         setStatusTone("success");
-        setStatusMessage("Email settings saved.");
+        setStatusMessage(t("Email settings saved."));
         form.actions.setValue("sendgridApiKey", "");
         form.actions.setValue("smtpPassword", "");
         onUpdate(result.emailSettings ?? null);
       } else {
         setStatusTone("error");
-        setStatusMessage(result.error || "Failed to save email settings.");
+        setStatusMessage(result.error || t("Failed to save email settings."));
       }
     },
   });
@@ -90,13 +95,17 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.TextInput field="notificationEmail" label="Notification Email" placeholder="noreply@yourcompany.com" />
+        <Forms.TextInput
+          field="notificationEmail"
+          label={t("Notification Email")}
+          placeholder={t("noreply@yourcompany.com")}
+        />
         <Forms.RadioButtons
           field="provider"
-          label="Provider"
+          label={t("Provider")}
           options={[
-            { value: "smtp", label: "SMTP" },
-            { value: "sendgrid", label: "SendGrid" },
+            { value: "smtp", label: t("SMTP") },
+            { value: "sendgrid", label: t("SendGrid") },
           ]}
         />
       </Forms.FieldGroup>
@@ -107,29 +116,29 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
         <Forms.FieldGroup>
           <SecretPasswordInput
             field="sendgridApiKey"
-            label="SendGrid API Key"
+            label={t("SendGrid API Key")}
             isSet={sendgridKeySet}
-            placeholder="Enter API key"
+            placeholder={t("Enter API key")}
           />
         </Forms.FieldGroup>
       )}
 
       {form.values.provider === "smtp" && (
         <Forms.FieldGroup layout="grid" layoutOptions={{ columns: 2 }}>
-          <Forms.TextInput field="smtpHost" label="SMTP Host" placeholder="smtp.example.com" />
-          <Forms.NumberInput field="smtpPort" label="SMTP Port" placeholder="587" />
-          <Forms.TextInput field="smtpUsername" label="SMTP Username" placeholder="user@example.com" />
+          <Forms.TextInput field="smtpHost" label={t("SMTP Host")} placeholder={t("smtp.example.com")} />
+          <Forms.NumberInput field="smtpPort" label={t("SMTP Port")} placeholder="587" />
+          <Forms.TextInput field="smtpUsername" label={t("SMTP Username")} placeholder={t("user@example.com")} />
           <SmtpPasswordInput isSet={smtpPasswordSet} />
           <div className="col-span-2 space-y-2">
-            <BooleanCheckbox field="smtpSsl" label="Use SSL" />
-            <BooleanCheckbox field="smtpTlsRequired" label="Require TLS" />
+            <BooleanCheckbox field="smtpSsl" label={t("Use SSL")} />
+            <BooleanCheckbox field="smtpTlsRequired" label={t("Require TLS")} />
           </div>
         </Forms.FieldGroup>
       )}
 
       {statusMessage && <StatusMessage tone={statusTone}>{statusMessage}</StatusMessage>}
 
-      <Forms.Submit saveText="Save Email Settings" />
+      <Forms.Submit saveText={t("Save Email Settings")} />
     </Forms.Form>
   );
 }
@@ -145,12 +154,15 @@ function SecretPasswordInput({
   isSet: boolean;
   placeholder: string;
 }) {
+  const { t } = useTranslation();
   const [value, setValue] = Forms.useFieldValue<string>(field);
   const error = Forms.useFieldError(field);
   const [isFocused, setIsFocused] = React.useState(false);
 
   const helperText = (
-    <div className="text-xs text-content-dimmed">{label} already set. Leave blank to keep the current value</div>
+    <div className="text-xs text-content-dimmed">
+      {t("{{label}} already set. Leave blank to keep the current value", { label })}
+    </div>
   );
   const placeholderValue = isSet && !isFocused && value === "" ? "••••••••" : placeholder;
 
@@ -189,19 +201,20 @@ function SecretPasswordInput({
 }
 
 function SmtpPasswordInput({ isSet }: { isSet: boolean }) {
+  const { t } = useTranslation();
   const field = "smtpPassword";
   const [value, setValue] = Forms.useFieldValue<string>(field);
   const error = Forms.useFieldError(field);
   const [isFocused, setIsFocused] = React.useState(false);
 
   const helperText = (
-    <div className="text-xs text-content-dimmed">Password already set. Leave blank to keep current password</div>
+    <div className="text-xs text-content-dimmed">{t("Password already set. Leave blank to keep current password")}</div>
   );
-  const placeholder = isSet && !isFocused && value === "" ? "••••••••" : "Enter password";
+  const placeholder = isSet && !isFocused && value === "" ? "••••••••" : t("Enter password");
 
   const labelNode = (
     <span className="inline-flex items-center gap-2">
-      <span>SMTP Password</span>
+      <span>{t("SMTP Password")}</span>
       <Tooltip content={helperText}>
         <span className="inline-flex items-center">
           <IconInfoCircle size={14} className="text-content-dimmed hover:text-content-accent" />

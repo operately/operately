@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 import { SwitchToggle, showErrorToast } from "turboui";
@@ -11,6 +12,7 @@ interface FeatureFlagsSectionProps {
 }
 
 export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatures }: FeatureFlagsSectionProps) {
+  const { t } = useTranslation();
   const enableFeature = useEnableCompanyFeature();
   const disableFeatures = useDisableCompanyFeatures();
   const [localFeatures, setLocalFeatures] = React.useState(enabledFeatures);
@@ -38,7 +40,7 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
       });
     } catch {
       setLocalFeatures(previous);
-      showErrorToast("Could not update feature flag", "Please try again.");
+      showErrorToast(t("Could not update feature flag"), t("Please try again."));
     } finally {
       toggleLock.finish();
       setTogglePending(false);
@@ -50,9 +52,9 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
   return (
     <div className="mt-8" data-test-id="feature-flags-section">
       <div>
-        <h2 className="font-bold">Feature flags</h2>
+        <h2 className="font-bold">{t("Feature flags")}</h2>
         <p className="text-sm text-content-accent mt-1 max-w-lg">
-          Turn experimental features on or off for this company.
+          {t("Turn experimental features on or off for this company.")}
         </p>
       </div>
 
@@ -62,7 +64,7 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
         data-test-id={features.length === 0 ? "no-feature-flags" : "feature-flags-list"}
       >
         {features.length === 0 ? (
-          <div className="py-3 px-1 text-sm text-content-dimmed">No feature flags are available.</div>
+          <div className="py-3 px-1 text-sm text-content-dimmed">{t("No feature flags are available.")}</div>
         ) : (
           features.map((feature) => (
             <div
@@ -72,7 +74,7 @@ export function FeatureFlagsSection({ companyId, availableFeatures, enabledFeatu
             >
               <code className="text-sm text-content-accent">{feature}</code>
               <SwitchToggle
-                label={`Toggle ${feature}`}
+                label={t("Toggle {{feature}}", { feature: feature })}
                 labelHidden
                 value={localFeatures.includes(feature)}
                 setValue={(enabled) => {

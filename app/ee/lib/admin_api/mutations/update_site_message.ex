@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.UpdateSiteMessage do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.SiteMessages
@@ -32,16 +33,16 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateSiteMessage do
         {:error, :bad_request, message}
 
       {:error, :invalid_company_id} ->
-        {:error, :bad_request, "One or more selected companies are invalid"}
+        {:error, :bad_request, gettext("One or more selected companies are invalid")}
 
       {:error, %Ecto.Changeset{}} ->
-        {:error, :bad_request, "Invalid site message parameters"}
+        {:error, :bad_request, gettext("Invalid site message parameters")}
     end
   end
 
   defp find_message(id) do
     case SiteMessages.get(id) do
-      nil -> {:error, :not_found, "Site message not found"}
+      nil -> {:error, :not_found, gettext("Site message not found")}
       message -> {:ok, message}
     end
   end
@@ -49,7 +50,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateSiteMessage do
   defp decode_id(id) do
     case Operately.ShortUuid.decode(id) do
       {:ok, decoded} -> {:ok, decoded}
-      _ -> {:error, :bad_request, "Invalid site message ID"}
+      _ -> {:error, :bad_request, gettext("Invalid site message ID")}
     end
   end
 

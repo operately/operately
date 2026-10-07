@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useSendTestEmail } from "@/ee/models/emailSettingsLifecycle";
 import * as React from "react";
 
@@ -11,20 +12,22 @@ interface TestEmailModalProps {
 }
 
 function TestEmailModal({ isOpen, onClose }: TestEmailModalProps) {
+  const { t } = useTranslation();
   return (
-    <Modal title="Send Test Email" isOpen={isOpen} onClose={onClose}>
+    <Modal title={t("Send Test Email")} isOpen={isOpen} onClose={onClose}>
       <TestEmailForm onClose={onClose} />
     </Modal>
   );
 }
 
 export function TestEmailAction() {
+  const { t } = useTranslation();
   const [isOpen, , openModal, closeModal] = useBoolState(false);
 
   return (
     <>
       <SecondaryButton size="sm" onClick={openModal}>
-        Send Test Email
+        {t("Send Test Email")}
       </SecondaryButton>
       <TestEmailModal isOpen={isOpen} onClose={closeModal} />
     </>
@@ -32,6 +35,7 @@ export function TestEmailAction() {
 }
 
 function TestEmailForm({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const { mutateAsync: sendTestEmail } = useSendTestEmail();
   const [statusMessage, setStatusMessage] = React.useState<string | null>(null);
   const [statusTone, setStatusTone] = React.useState<"success" | "error">("success");
@@ -39,8 +43,8 @@ function TestEmailForm({ onClose }: { onClose: () => void }) {
   const form = Forms.useForm({
     fields: {
       recipient: "",
-      subject: "Test email from Operately",
-      body: "This is a test email to confirm your delivery settings.",
+      subject: t("Test email from Operately"),
+      body: t("This is a test email to confirm your delivery settings."),
     },
     submit: async () => {
       setStatusMessage(null);
@@ -56,10 +60,10 @@ function TestEmailForm({ onClose }: { onClose: () => void }) {
 
       if (result.success) {
         setStatusTone("success");
-        setStatusMessage("Test email sent successfully.");
+        setStatusMessage(t("Test email sent successfully."));
       } else {
         setStatusTone("error");
-        setStatusMessage(result.error || "Failed to send test email.");
+        setStatusMessage(result.error || t("Failed to send test email."));
       }
     },
     cancel: onClose,
@@ -68,14 +72,14 @@ function TestEmailForm({ onClose }: { onClose: () => void }) {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.TextInput field="recipient" label="Recipient" placeholder="recipient@example.com" />
-        <Forms.TextInput field="subject" label="Subject" placeholder="Test email" />
-        <TextareaField field="body" label="Body" placeholder="Write a short test message" rows={5} />
+        <Forms.TextInput field="recipient" label={t("Recipient")} placeholder={t("recipient@example.com")} />
+        <Forms.TextInput field="subject" label={t("Subject")} placeholder={t("Test email")} />
+        <TextareaField field="body" label={t("Body")} placeholder={t("Write a short test message")} rows={5} />
       </Forms.FieldGroup>
 
       {statusMessage && <StatusMessage tone={statusTone}>{statusMessage}</StatusMessage>}
 
-      <Forms.Submit saveText="Send Test Email" cancelText="Cancel" />
+      <Forms.Submit saveText={t("Send Test Email")} cancelText={t("Cancel")} />
     </Forms.Form>
   );
 }

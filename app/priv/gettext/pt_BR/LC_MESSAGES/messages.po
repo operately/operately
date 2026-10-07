@@ -2676,6 +2676,7 @@ msgstr "%{company_name} está usando %{usage} de %{limit} no plano Gratuito."
 
 #.elixir
 #: lib/operately_email/emails/assignments_email.ex:31
+#: lib/operately_web/email_preview/previews/assignments.ex:34
 msgid "%{company_name}: Your work for today"
 msgstr "%{company_name}: Seu trabalho para hoje"
 
@@ -2733,6 +2734,27 @@ msgstr[0] "%{count} resultado disponível."
 msgstr[1] "%{count} resultados disponíveis."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSearchIndexPage/index.tsx:75
+msgid "%{count} started."
+msgid_plural "%{count} started."
+msgstr[0] "%{count} iniciado."
+msgstr[1] "%{count} iniciados."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSearchIndexPage/index.tsx:69
+msgid "%{count} started. %{skipped} already running."
+msgid_plural "%{count} started. %{skipped} already running."
+msgstr[0] "%{count} iniciado. %{skipped} já em execução."
+msgstr[1] "%{count} iniciados. %{skipped} já em execução."
+
+#.frontend
+#: ../turboui/src/Forms/SelectGoal.tsx:149
+msgid "%{count} subgoal"
+msgid_plural "%{count} subgoals"
+msgstr[0] "%{count} subobjetivo"
+msgstr[1] "%{count} subobjetivos"
+
+#.frontend
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:85
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:93
 msgid "%{current} / Unlimited"
@@ -2749,6 +2771,11 @@ msgid "%{delta} vs previous"
 msgstr "%{delta} vs anterior"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:133
+msgid "%{displayName} (%{key})"
+msgstr "%{displayName} (%{key})"
+
+#.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:295
 msgid "%{durationHumanized} until the deadline."
 msgstr "%{durationHumanized} até o prazo final."
@@ -2762,6 +2789,21 @@ msgstr "%{duration} <status>em atraso</status>."
 #: ../turboui/src/CommentSection/FeedRows.tsx:98
 msgid "%{fullName} acknowledged this %{label}<icon/>"
 msgstr "%{fullName} reconheceu %{label}<icon/>"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
+msgid "%{fullName} has been deleted."
+msgstr "%{fullName} foi excluído."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:167
+msgid "%{fullName} is now a site admin."
+msgstr "%{fullName} agora é administrador do site."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:169
+msgid "%{fullName} no longer has site admin access."
+msgstr "%{fullName} não tem mais acesso de administrador do site."
 
 #.frontend
 #: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:103
@@ -2812,6 +2854,11 @@ msgstr "%{hour}:00 PM"
 #: ../turboui/src/CompanyBillingPage/index.tsx:138
 msgid "%{interval} billing"
 msgstr "Faturamento %{interval}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:164
+msgid "%{label} already set. Leave blank to keep the current value"
+msgstr "%{label} já definido. Deixe em branco para manter o valor atual"
 
 #.frontend
 #: ../turboui/src/SelectLocalization/index.ts:18
@@ -4225,6 +4272,13 @@ msgstr[0] "1 comentário"
 msgstr[1] "%{count} comentários"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:171
+msgid "1 company"
+msgid_plural "%{count} companies"
+msgstr[0] "1 empresa"
+msgstr[1] "%{count} empresas"
+
+#.frontend
 #: ../turboui/src/MilestoneField/index.tsx:451
 #: ../turboui/src/TaskBoard/components/CompletedMilestonesSection.tsx:20
 msgid "1 completed milestone"
@@ -5102,6 +5156,7 @@ msgstr "Modo de acesso do novo token"
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:109
 #: assets/js/pages/AccountAppearancePage/index.tsx:24
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Conta"
 
@@ -5110,6 +5165,21 @@ msgstr "Conta"
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:50
 msgid "Account Owners"
 msgstr "Proprietários da conta"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:160
+msgid "Account deleted"
+msgstr "Conta excluída"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:182
+msgid "Account deletion blocked"
+msgstr "Exclusão da conta bloqueada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:193
+msgid "Account deletion failed"
+msgstr "Falha ao excluir a conta"
 
 #.elixir
 #: lib/operately_web/api/invitations.ex:168
@@ -5154,10 +5224,15 @@ msgstr "Retrospectiva reconhecida"
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:238
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:402
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:116
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:299
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:425
 #: ../turboui/src/TaskPage/Sidebar.tsx:454
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:118
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:258
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:289
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:317
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:127
 msgid "Actions"
 msgstr "Ações"
 
@@ -5176,8 +5251,22 @@ msgstr "O código de ativação expirou"
 #: ../turboui/src/MilestonePage/index.tsx:368
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:317
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:333
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:332
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:96
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:139
 msgid "Active"
 msgstr "Ativo"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:45
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:107
+msgid "Active Companies"
+msgstr "Empresas ativas"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:95
+msgid "Active Company Criteria"
+msgstr "Critérios de empresa ativa"
 
 #.frontend
 #: ../turboui/src/BillingDangerBanner/index.tsx:66
@@ -5199,8 +5288,14 @@ msgstr "Trabalho em andamento"
 #: ../turboui/src/ProjectPage/index.tsx:335
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:57
 #: assets/js/pages/SpacePage/page.tsx:108
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:59
 msgid "Activity"
 msgstr "Atividade"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:144
+msgid "Activity Description"
+msgstr "Descrição da atividade"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:89
@@ -5745,7 +5840,16 @@ msgid "Admin Access"
 msgstr "Acesso de administrador"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:23
+msgid "Admininstration"
+msgstr "Administração"
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:57
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/index.tsx:18
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:58
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:55
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:52
 msgid "Administration"
 msgstr "Administração"
 
@@ -5792,6 +5896,19 @@ msgid "After that, the company will move to the Free plan."
 msgstr "Depois disso, a empresa passará para o plano Gratuito."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:47
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:85
+msgid "All Accounts"
+msgstr "Todas as contas"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:25
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:46
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:88
+msgid "All Companies"
+msgstr "Todas as empresas"
+
+#.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:183
 msgid "All Spaces"
 msgstr "Todos os espaços"
@@ -5805,6 +5922,12 @@ msgstr "Todas as atividades são agrupadas em um único e-mail, enviado ao final
 #: ../turboui/src/ReviewPage/index.tsx:121
 msgid "All caught up"
 msgstr "Tudo em dia"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:78
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:169
+msgid "All companies"
+msgstr "Todas as empresas"
 
 #.frontend
 #: assets/js/features/SpaceTools/GoalsAndProjects/AllDoneState.tsx:28
@@ -5967,6 +6090,7 @@ msgstr "Qualquer pessoa com o link pode ler a versão mais recente deste documen
 
 #.frontend
 #: assets/js/api/staleClient.ts:35
+#: ee/assets/js/admin_api/staleClient.ts:23
 msgid "App updated"
 msgstr "Aplicativo atualizado"
 
@@ -5987,8 +6111,22 @@ msgstr "Aplicar filtro"
 #: ../turboui/src/TaskPage/PageOptions.tsx:21
 #: ../turboui/src/TaskPage/Sidebar.tsx:436
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:109
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:353
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:388
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:456
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:491
 msgid "Archive"
 msgstr "Arquivar"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:351
+msgid "Archive Plan"
+msgstr "Arquivar plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:452
+msgid "Archive Product"
+msgstr "Arquivar produto"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:163
@@ -6006,6 +6144,7 @@ msgstr "Arquivar “%{name}”?"
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:317
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:334
 #: ../turboui/src/SearchPage/index.tsx:342
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:332
 msgid "Archived"
 msgstr "Arquivado"
 
@@ -6014,6 +6153,11 @@ msgstr "Arquivado"
 #: lib/operately/md/project.ex:346
 msgid "Archived At"
 msgstr "Arquivado em"
+
+#.elixir
+#: ee/lib/admin_api/mutations/set_active_billing_product.ex:25
+msgid "Archived products cannot be activated"
+msgstr "Produtos arquivados não podem ser ativados"
 
 #.frontend
 #: assets/js/features/activities/GoalArchived/index.tsx:65
@@ -6024,6 +6168,16 @@ msgstr "Arquivou o objetivo %{goalName}"
 #: assets/js/features/activities/ProjectArchived/index.tsx:65
 msgid "Archived the %{projectName} project"
 msgstr "Arquivou o projeto %{projectName}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:352
+msgid "Are you sure you want to archive \"%{displayName}\"?"
+msgstr "Tem certeza de que deseja arquivar \"%{displayName}\"?"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:453
+msgid "Are you sure you want to archive \"%{polarProductName}\"?"
+msgstr "Tem certeza de que deseja arquivar \"%{polarProductName}\"?"
 
 #.frontend
 #: ../turboui/src/ResourceHub/DeleteResourceConfirmModal.tsx:95
@@ -6221,6 +6375,12 @@ msgstr "É necessário pelo menos um status de tarefa"
 msgid "At most 100 URLs can be resolved at once"
 msgstr "No máximo 100 URLs podem ser resolvidas de uma vez"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:76
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:123
+msgid "Audience"
+msgstr "Público"
+
 #.elixir
 #: lib/operately_web/controllers/cli_login_controller.ex:61
 msgid "Authentication Complete"
@@ -6369,6 +6529,31 @@ msgstr "Voltar ao início"
 msgid "Back to the Lobby"
 msgstr "Voltar à recepção"
 
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:285
+msgid "Backfill"
+msgstr "Preenchimento retroativo"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:299
+msgid "Backfill %{target}?"
+msgstr "Preencher retroativamente %{target}?"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:88
+msgid "Backfill all sources"
+msgstr "Preencher retroativamente todas as fontes"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:295
+msgid "Backfill all sources?"
+msgstr "Preencher retroativamente todas as fontes?"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:98
+msgid "Backfills add missing entries. Reconciliation performs a complete repair."
+msgstr "O preenchimento retroativo adiciona entradas ausentes. A reconciliação faz um reparo completo."
+
 #.elixir
 #: lib/operately_web/controllers/error_html.ex:5
 msgid "Bad Request"
@@ -6401,6 +6586,11 @@ msgid "Before due date"
 msgstr "Antes da data de conclusão"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:284
+msgid "Behavior"
+msgstr "Comportamento"
+
+#.frontend
 #: ../turboui/src/SearchPage/RefineControls.tsx:54
 msgid "Best match"
 msgstr "Mais relevante"
@@ -6428,9 +6618,27 @@ msgid "Billing"
 msgstr "Faturamento"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:133
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:179
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:415
+msgid "Billing Catalog"
+msgstr "Catálogo de cobrança"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:83
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:100
+msgid "Billing Interval"
+msgstr "Intervalo de cobrança"
+
+#.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:122
 msgid "Billing action unavailable"
 msgstr "Ação de faturamento indisponível"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:108
+msgid "Billing behavior"
+msgstr "Comportamento de cobrança"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:89
@@ -6451,6 +6659,18 @@ msgstr "Histórico de faturamento"
 #: ../turboui/src/CompanyBillingPage/viewModel.ts:68
 msgid "Billing interval"
 msgstr "Periodicidade do faturamento"
+
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_plan_definition.ex:17
+#: ee/lib/admin_api/mutations/archive_billing_product.ex:17
+#: ee/lib/admin_api/mutations/create_billing_plan_definition.ex:23
+#: ee/lib/admin_api/mutations/create_billing_product.ex:21
+#: ee/lib/admin_api/mutations/set_active_billing_product.ex:17
+#: ee/lib/admin_api/mutations/sync_billing_products_from_polar.ex:17
+#: ee/lib/admin_api/mutations/unarchive_billing_plan_definition.ex:17
+#: ee/lib/admin_api/mutations/update_billing_product.ex:20
+msgid "Billing is not enabled on this instance"
+msgstr "A cobrança não está habilitada nesta instância"
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:219
@@ -6497,6 +6717,11 @@ msgstr "Trabalho bloqueado ou interrompido intencionalmente"
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:78
 msgid "Board"
 msgstr "Quadro"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:77
+msgid "Body"
+msgstr "Corpo"
 
 #.frontend
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:39
@@ -6679,6 +6904,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ../turboui/src/RichEditor/LinkEditForm.tsx:111
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:149
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:96
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:136
 #: ../turboui/src/SlideIn/ActionConfirmation.tsx:30
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/DeleteKpiModal.tsx:76
@@ -6710,6 +6936,12 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: assets/js/pages/ProjectDiscussionEditPage/page.tsx:101
 #: assets/js/pages/ProjectDiscussionNewPage/page.tsx:100
 #: assets/js/pages/SpacePage/page.tsx:263
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:157
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:112
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:82
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:354
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:108
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:99
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -7302,6 +7534,7 @@ msgstr "Remover projeto"
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:169
 #: ../turboui/src/ResourceHub/Search.tsx:40
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:448
 msgid "Clear search"
 msgstr "Limpar busca"
 
@@ -7567,7 +7800,20 @@ msgstr "Comentários & Atividade"
 msgid "Comments and task updates will appear here"
 msgstr "Comentários e atualizações de tarefas aparecerão aqui"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:313
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:141
+msgid "Companies"
+msgstr "Empresas"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:233
+msgid "Companies need to meet all activity criteria to appear here"
+msgstr "As empresas precisam atender a todos os critérios de atividade para aparecer aqui"
+
 #.elixir
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:255
 #: lib/operately/md/space.ex:19
 #: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:131
 msgid "Company"
@@ -7709,7 +7955,7 @@ msgid "Company-wide Access"
 msgstr "Acesso para toda a empresa"
 
 #.frontend
-#: ../turboui/src/Forms/SelectGoal.tsx:96
+#: ../turboui/src/Forms/SelectGoal.tsx:97
 msgid "Company-wide goal"
 msgstr "Objetivo de toda a empresa"
 
@@ -7741,6 +7987,7 @@ msgstr "Concluir “%{name}”?"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:144
 #: ../turboui/src/MilestonePage/index.tsx:363
 #: ../turboui/src/ProfilePage/index.tsx:142
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:276
 #: ../turboui/src/SearchPage/index.tsx:340
 #: ../turboui/src/StatusBadge/index.tsx:111
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:90
@@ -7801,8 +8048,14 @@ msgid "Completed the Milestone"
 msgstr "Concluiu o marco"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:277
+msgid "Completed with errors"
+msgstr "Concluído com erros"
+
+#.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:178
 #: ../turboui/src/CompanyImportPage/index.tsx:315
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:187
 msgid "Completed:"
 msgstr "Concluído:"
 
@@ -7815,6 +8068,11 @@ msgstr "Passos concretos e tarefas com entregas específicas. Coloque o trabalho
 #: ../turboui/src/AccountSettingsPage/index.tsx:37
 msgid "Configure how activity and summary emails are delivered"
 msgstr "Configure o envio de e-mails de atividade e de resumo"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:22
+msgid "Configure the email provider used by all companies. Secrets are never displayed; enter a new value to replace them."
+msgstr "Configure o provedor de e-mail usado por todas as empresas. Os dados secretos nunca são exibidos; insira um novo valor para substituí-los."
 
 #.frontend
 #: assets/js/pages/SpacePage/page.tsx:236
@@ -7834,6 +8092,7 @@ msgstr "Configurar ferramentas deste espaço"
 #: ../turboui/src/SchedulePosting/useScheduleFlowState.ts:46
 #: ../turboui/src/SlideIn/ActionConfirmation.tsx:33
 #: assets/js/hooks/useScheduleFlow.ts:64
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:353
 msgid "Confirm"
 msgstr "Confirmar"
 
@@ -8130,9 +8389,20 @@ msgid "Could not save tool settings"
 msgstr "Não foi possível salvar as configurações das ferramentas"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
+msgid "Could not update feature flag"
+msgstr "Não foi possível atualizar a configuração do recurso"
+
+#.frontend
 #: ../turboui/src/DocumentPublicSharingModal/index.tsx:70
 msgid "Could not update public sharing. Please try again."
 msgstr "Não foi possível atualizar o compartilhamento público. Tente novamente."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:32
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:43
+msgid "Could not update setting"
+msgstr "Não foi possível atualizar a configuração"
 
 #.frontend
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:78
@@ -8229,6 +8499,11 @@ msgid "Create a copy of %{name}"
 msgstr "Criar uma cópia de %{name}"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:73
+msgid "Create a message to show a banner to company users."
+msgstr "Crie uma mensagem para exibir um banner aos usuários das empresas."
+
+#.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:57
 #: assets/js/pages/SpaceAddPage/index.tsx:86
 msgid "Create a new space"
@@ -8265,6 +8540,13 @@ msgid "Create invite"
 msgstr "Criar convite"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:63
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:108
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:65
+msgid "Create message"
+msgstr "Criar mensagem"
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/MilestoneCreationModal.tsx:112
 #: ../turboui/src/TaskBoard/components/MilestoneViewSelector.tsx:89
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:85
@@ -8281,6 +8563,29 @@ msgstr "Criar marco"
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:166
 msgid "Create more"
 msgstr "Criar mais"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:36
+msgid "Create or unarchive a provider-managed plan first"
+msgstr "Primeiro, crie ou desarquive um plano gerenciado pelo provedor"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:157
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:205
+msgid "Create plan"
+msgstr "Criar plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:97
+msgid "Create plan definition"
+msgstr "Criar definição de plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:73
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:112
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:187
+msgid "Create product"
+msgstr "Criar produto"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/TemplateCard.tsx:97
@@ -8313,6 +8618,8 @@ msgstr "Criar, atualizar, excluir e arquivar conteúdo do ambiente de trabalho"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:252
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:196
 #: ../turboui/src/TaskPage/Sidebar.tsx:388
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:257
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:126
 #: lib/operately/md/goal.ex:31
 #: lib/operately/md/milestone.ex:23
 #: lib/operately/md/project.ex:46
@@ -8320,6 +8627,12 @@ msgstr "Criar, atualizar, excluir e arquivar conteúdo do ambiente de trabalho"
 #: lib/operately/md/task.ex:28
 msgid "Created"
 msgstr "Criado"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:263
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:316
+msgid "Created At"
+msgstr "Criado em"
 
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:72
@@ -8468,6 +8781,12 @@ msgid "Customer onboarding"
 msgstr "Integração de clientes"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:117
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:120
+msgid "Customer selectable"
+msgstr "Selecionável pelo cliente"
+
+#.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:38
 msgid "Customize statuses"
 msgstr "Personalizar status"
@@ -8491,6 +8810,11 @@ msgstr "Resumo diário"
 #: ../turboui/src/CompanyAdminPage/index.tsx:189
 msgid "Danger Zone:"
 msgstr "Área de risco:"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:79
+msgid "Database ID"
+msgstr "ID do banco de dados"
 
 #.frontend
 #: ../turboui/src/DateField/DateDisplay.tsx:20
@@ -8574,8 +8898,14 @@ msgstr "Desativar conta"
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:47
 #: assets/js/pages/ResourceHubLinkPage/Options.tsx:36
 #: assets/js/pages/SpacePage/page.tsx:241
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:158
 msgid "Delete"
 msgstr "Excluir"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:142
+msgid "Delete %{fullName}? This will suspend all linked people, anonymize personal data, and revoke access permanently."
+msgstr "Excluir %{fullName}? Isso suspenderá todas as pessoas vinculadas, anonimizará os dados pessoais e revogará o acesso permanentemente."
 
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:14
@@ -8637,6 +8967,13 @@ msgid "Delete Task"
 msgstr "Excluir tarefa"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:30
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:141
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:146
+msgid "Delete account"
+msgstr "Excluir conta"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:137
 msgid "Delete annotation"
 msgstr "Excluir anotação"
@@ -8674,6 +9011,11 @@ msgid "Delete forever"
 msgstr "Excluir para sempre"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:98
+msgid "Delete message"
+msgstr "Excluir mensagem"
+
+#.frontend
 #: ../turboui/src/RichEditor/components/TableControls.tsx:71
 #: ../turboui/src/RichEditor/components/TableControls.tsx:110
 msgid "Delete row"
@@ -8698,6 +9040,11 @@ msgstr "Excluir template"
 #: ../turboui/src/CompanyAdminPage/index.tsx:211
 msgid "Delete this company"
 msgstr "Excluir esta empresa"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:96
+msgid "Delete this message?"
+msgstr "Excluir esta mensagem?"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:44
@@ -8885,6 +9232,7 @@ msgstr "Descreva..."
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:112
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:88
 #: ../turboui/src/TemplateProjectPage/Overview.tsx:31
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:69
 #: lib/operately/md/goal.ex:61
 #: lib/operately/md/goal.ex:67
 #: lib/operately/md/milestone.ex:42
@@ -9016,6 +9364,7 @@ msgstr "Discussão não atualizada"
 #: ../turboui/src/ProjectPage/Discussions.tsx:27
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:46
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:137
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:263
 #: ../turboui/src/SearchPage/filterOptions.ts:15
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:53
 #: ../turboui/src/TemplateProjectPage/Discussions.tsx:16
@@ -9056,6 +9405,12 @@ msgstr "Dispensar mensagem"
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:35
 msgid "Display"
 msgstr "Exibição"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:105
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:76
+msgid "Display Name"
+msgstr "Nome de exibição"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:30
@@ -9144,6 +9499,7 @@ msgid "Document unavailable"
 msgstr "Documento indisponível"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:255
 #: ../turboui/src/SearchPage/filterOptions.ts:19
 msgid "Documents"
 msgstr "Documentos"
@@ -9405,6 +9761,7 @@ msgstr "Versão anterior"
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:97
 #: assets/js/pages/SpaceAddPage/index.tsx:157
 #: assets/js/pages/SpacePage/page.tsx:228
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:155
 msgid "Edit"
 msgstr "Editar"
 
@@ -9499,9 +9856,30 @@ msgid "Edit discussion"
 msgstr "Editar discussão"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:63
+msgid "Edit message"
+msgstr "Editar mensagem"
+
+#.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:318
 msgid "Edit only"
 msgstr "Somente edição"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:379
+msgid "Edit plan"
+msgstr "Editar plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:97
+msgid "Edit plan definition"
+msgstr "Editar definição de plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:73
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:482
+msgid "Edit product"
+msgstr "Editar produto"
 
 #.frontend
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:88
@@ -9620,8 +9998,21 @@ msgstr "Vigente a partir de: %{date}."
 #: assets/js/pages/LoginPage/index.tsx:110
 #: assets/js/pages/ResetPasswordPage/index.tsx:66
 #: assets/js/pages/SetupPage/page.tsx:140
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:312
 msgid "Email"
 msgstr "E-mail"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/index.tsx:16
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/index.tsx:20
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:410
+msgid "Email Configuration"
+msgstr "Configuração de e-mail"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:21
+msgid "Email Settings"
+msgstr "Configurações de e-mail"
 
 #.elixir
 #: lib/operately/i18n/validation_errors.ex:40
@@ -9686,6 +10077,16 @@ msgid "Email must have the @ sign and no spaces"
 msgstr "O e-mail deve conter @ e não pode ter espaços"
 
 #.elixir
+#: ee/lib/admin_api/mutations/send_test_email.ex:21
+msgid "Email settings are not configured"
+msgstr "As configurações de e-mail não foram definidas"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:81
+msgid "Email settings saved."
+msgstr "Configurações de e-mail salvas."
+
+#.elixir
 #: lib/operately/i18n/validation_errors.ex:53
 msgid "Email should be at most %{count} character(s)"
 msgid_plural "Email should be at most %{count} character(s)"
@@ -9746,6 +10147,11 @@ msgid "Enabled public sharing"
 msgstr "Ativou o compartilhamento público"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:121
+msgid "Enter API key"
+msgstr "Insira a chave de API"
+
+#.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:124
 msgid "Enter a project name."
 msgstr "Informe o nome do projeto."
@@ -9782,6 +10188,11 @@ msgstr "Digite o nome do marco"
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:104
 msgid "Enter milestone title"
 msgstr "Digite o título do marco"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:213
+msgid "Enter password"
+msgstr "Insira a senha"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:118
@@ -9905,6 +10316,21 @@ msgstr "Erro"
 #: ../turboui/src/ErrorPage/index.tsx:39
 msgid "Error Stack Trace"
 msgstr "Rastreamento de pilha do erro"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:181
+msgid "Error loading accounts: %{message}"
+msgstr "Erro ao carregar contas: %{message}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:220
+msgid "Error loading active companies: %{message}"
+msgstr "Erro ao carregar empresas ativas: %{message}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:142
+msgid "Error loading companies: %{message}"
+msgstr "Erro ao carregar empresas: %{message}"
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:452
@@ -10199,6 +10625,16 @@ msgid "Existing Tokens"
 msgstr "Tokens existentes"
 
 #.frontend
+#: ee/assets/js/layouts/SaasAdminLayout.tsx:43
+msgid "Exit Admin Panel"
+msgstr "Sair do painel de administração"
+
+#.frontend
+#: assets/js/layouts/CompanyLayout/SupportSessionBanner.tsx:28
+msgid "Exit Support Mode"
+msgstr "Sair do modo de suporte"
+
+#.frontend
 #: ../turboui/src/PageDescription/index.tsx:136
 msgid "Expand"
 msgstr "Expandir"
@@ -10216,9 +10652,19 @@ msgid "Expected a list"
 msgstr "Era esperada uma lista"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:125
+msgid "Expires"
+msgstr "Expira"
+
+#.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonRow.tsx:115
 msgid "Expires in %{duration}"
 msgstr "Expira em %{duration}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:102
+msgid "Expires on"
+msgstr "Expira em"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:42
@@ -10266,6 +10712,8 @@ msgstr "PASTAS"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:350
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:207
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:278
 msgid "Failed"
 msgstr "Falhou"
 
@@ -10315,6 +10763,11 @@ msgstr "Falha ao adicionar a reação."
 msgid "Failed to add target"
 msgstr "Falha ao adicionar a meta"
 
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_product.ex:25
+msgid "Failed to archive product in Polar"
+msgstr "Falha ao arquivar o produto no Polar"
+
 #.frontend
 #: assets/js/pages/CompanyBillingPlanSelectionPage/page.tsx:148
 msgid "Failed to change plan"
@@ -10334,6 +10787,11 @@ msgstr "Não foi possível criar a conta"
 #: assets/js/pages/ProjectPage/index.tsx:788
 msgid "Failed to create milestone"
 msgstr "Falha ao criar o marco"
+
+#.elixir
+#: ee/lib/admin_api/mutations/create_billing_product.ex:39
+msgid "Failed to create product in Polar"
+msgstr "Falha ao criar o produto no Polar"
 
 #.frontend
 #: assets/js/models/tasks/useProjectTasksForTurboUi.tsx:201
@@ -10355,6 +10813,11 @@ msgstr "Falha ao criar o objetivo."
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:307
 msgid "Failed to create the project."
 msgstr "Falha ao criar o projeto."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:204
+msgid "Failed to delete account."
+msgstr "Falha ao excluir a conta."
 
 #.frontend
 #: assets/js/pages/GoalPage/useChecklists.tsx:103
@@ -10417,6 +10880,16 @@ msgid "Failed to edit comment."
 msgstr "Falha ao editar o comentário."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:200
+msgid "Failed to grant site admin access."
+msgstr "Falha ao conceder acesso de administrador do site."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:175
+msgid "Failed to load companies"
+msgstr "Falha ao carregar empresas"
+
+#.frontend
 #: ../turboui/src/TaskPage/MoveModal.tsx:49
 #: ../turboui/src/TaskPage/MoveModal.tsx:52
 msgid "Failed to move task"
@@ -10434,6 +10907,11 @@ msgstr "Falha ao mover a tarefa."
 #: assets/js/models/reactions/useReactionHandlers.tsx:96
 msgid "Failed to remove reaction."
 msgstr "Falha ao remover a reação."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:202
+msgid "Failed to remove site admin access."
+msgstr "Falha ao remover o acesso de administrador do site."
 
 #.frontend
 #: assets/js/models/projects/useProjectMilestoneOrdering.ts:132
@@ -10456,9 +10934,19 @@ msgid "Failed to reset invite link. Please try again."
 msgstr "Não foi possível redefinir o link de convite. Tente novamente."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:87
+msgid "Failed to save email settings."
+msgstr "Falha ao salvar as configurações de e-mail."
+
+#.frontend
 #: assets/js/models/reactions/useOptimisticReactions.ts:95
 msgid "Failed to save reaction."
 msgstr "Não foi possível salvar a reação."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:66
+msgid "Failed to send test email."
+msgstr "Falha ao enviar o e-mail de teste."
 
 #.frontend
 #: assets/js/pages/CompanyBillingPage/page.tsx:176
@@ -10495,6 +10983,12 @@ msgstr "Não foi possível ativar as notificações do projeto."
 #: assets/js/models/subscriptions/useSubscription.tsx:165
 msgid "Failed to subscribe to task notifications."
 msgstr "Não foi possível ativar as notificações da tarefa."
+
+#.elixir
+#: ee/lib/admin_api/mutations/sync_billing_products_from_polar.ex:24
+#: ee/lib/admin_api/mutations/sync_billing_products_from_polar.ex:27
+msgid "Failed to synchronize products from Polar"
+msgstr "Falha ao sincronizar produtos do Polar"
 
 #.frontend
 #: assets/js/pages/GoalPage/useChecklists.tsx:117
@@ -10585,6 +11079,11 @@ msgstr "Falha ao atualizar o marco."
 #: assets/js/pages/AccountNotificationSettingsPage/index.tsx:71
 msgid "Failed to update notification settings"
 msgstr "Não foi possível atualizar as configurações de notificação"
+
+#.elixir
+#: ee/lib/admin_api/mutations/update_billing_product.ex:29
+msgid "Failed to update product in Polar"
+msgstr "Falha ao atualizar o produto no Polar"
 
 #.frontend
 #: assets/js/models/goals/useGoalTargets.ts:118
@@ -10698,6 +11197,22 @@ msgid "Failed to upload avatar. Please try again."
 msgstr "Não foi possível enviar a foto de perfil. Tente novamente."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:55
+msgid "Feature flags"
+msgstr "Configurações de recursos"
+
+#.elixir
+#: ee/lib/admin_api/mutations/enable_feature.ex:41
+#: ee/lib/admin_api/mutations/enable_feature.ex:47
+msgid "Feature name cannot be empty"
+msgstr "O nome do recurso não pode ficar em branco"
+
+#.elixir
+#: ee/lib/admin_api/mutations/disable_features.ex:35
+msgid "Features list cannot be empty"
+msgstr "A lista de recursos não pode ficar vazia"
+
+#.frontend
 #: assets/js/features/Feed/index.tsx:278
 #: assets/js/features/Feed/index.tsx:279
 msgid "Feed item actions"
@@ -10744,6 +11259,7 @@ msgid "File: %{name}"
 msgstr "Arquivo: %{name}"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:256
 #: ../turboui/src/SearchPage/filterOptions.ts:21
 msgid "Files"
 msgstr "Arquivos"
@@ -10823,6 +11339,7 @@ msgid "Folder not renamed"
 msgstr "Pasta não renomeada"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:254
 #: ../turboui/src/SearchPage/filterOptions.ts:20
 msgid "Folders"
 msgstr "Pastas"
@@ -11070,6 +11587,7 @@ msgid "Goal check-in"
 msgstr "Check-in de objetivo"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:265
 #: ../turboui/src/SearchPage/filterOptions.ts:17
 msgid "Goal check-ins"
 msgstr "Check-ins de objetivos"
@@ -11110,8 +11628,11 @@ msgstr "Alteração de período do objetivo"
 
 #.frontend
 #: ../turboui/src/GoalPage/PageHeader.tsx:17
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:259
 #: ../turboui/src/SearchPage/filterOptions.ts:11
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:69
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:95
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:258
 msgid "Goals"
 msgstr "Objetivos"
 
@@ -11137,9 +11658,24 @@ msgid "Good morning, %{name}!"
 msgstr "Bom dia, %{name}!"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:120
+msgid "Grant %{fullName} access to the site admin dashboard? Site admins can manage instance-wide settings and other privileged admin actions. Only grant this access to someone who should administer the whole site."
+msgstr "Conceder a %{fullName} acesso ao painel de administração do site? Administradores do site podem gerenciar configurações de toda a instância e realizar outras ações administrativas privilegiadas. Conceda esse acesso apenas a quem deve administrar todo o site."
+
+#.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/index.tsx:257
 msgid "Grant Access"
 msgstr "Conceder acesso"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:124
+msgid "Grant access"
+msgstr "Conceder acesso"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:119
+msgid "Grant site admin access"
+msgstr "Conceder acesso de administrador do site"
 
 #.frontend
 #: assets/js/features/activities/CompanyAdminAdded/index.tsx:57
@@ -11355,9 +11891,20 @@ msgid "Imports"
 msgstr "Importações"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:221
+msgid "Imports and reconciles Operately-managed Polar products. Unrelated manual Polar products are ignored."
+msgstr "Importa e reconcilia produtos do Polar gerenciados pelo Operately. Produtos manuais do Polar sem vínculo são ignorados."
+
+#.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:35
 msgid "In progress (blue)"
 msgstr "Em andamento (azul)"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:97
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:139
+msgid "Inactive"
+msgstr "Inativo"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:119
@@ -11369,10 +11916,36 @@ msgstr "Incluir"
 msgid "Include in template"
 msgstr "Incluir no template"
 
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:289
+msgid "Index scan"
+msgstr "Varredura do índice"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:34
+msgid "Information"
+msgstr "Informações"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:203
+msgid "Inserted"
+msgstr "Inseridos"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:112
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:538
+msgid "Internal"
+msgstr "Interno"
+
 #.elixir
 #: lib/operately_web/controllers/error_html.ex:9
 msgid "Internal Server Error"
 msgstr "Erro interno do servidor"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:254
+msgid "Interval"
+msgstr "Intervalo"
 
 #.elixir
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:200
@@ -11488,6 +12061,35 @@ msgid "Invalid link"
 msgstr "Link inválido"
 
 #.elixir
+#: ee/lib/admin_api/mutations/archive_billing_plan_definition.ex:46
+#: ee/lib/admin_api/mutations/unarchive_billing_plan_definition.ex:43
+#: ee/lib/admin_api/mutations/update_billing_plan_definition.ex:46
+msgid "Invalid plan definition ID"
+msgstr "ID de definição de plano inválido"
+
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_plan_definition.ex:31
+#: ee/lib/admin_api/mutations/create_billing_plan_definition.ex:30
+#: ee/lib/admin_api/mutations/unarchive_billing_plan_definition.ex:28
+#: ee/lib/admin_api/mutations/update_billing_plan_definition.ex:32
+msgid "Invalid plan definition parameters"
+msgstr "Parâmetros de definição de plano inválidos"
+
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_product.ex:43
+#: ee/lib/admin_api/mutations/set_active_billing_product.ex:46
+#: ee/lib/admin_api/mutations/update_billing_product.ex:47
+msgid "Invalid product ID"
+msgstr "ID de produto inválido"
+
+#.elixir
+#: ee/lib/admin_api/mutations/create_billing_product.ex:36
+#: ee/lib/admin_api/mutations/create_billing_product.ex:42
+#: ee/lib/admin_api/mutations/set_active_billing_product.ex:31
+msgid "Invalid product parameters"
+msgstr "Parâmetros de produto inválidos"
+
+#.elixir
 #: lib/operately_web/api/people/update.ex:137
 msgid "Invalid profile update"
 msgstr "Atualização de perfil inválida"
@@ -11497,6 +12099,23 @@ msgstr "Atualização de perfil inválida"
 #: lib/operately_web/api/tasks.ex:749
 msgid "Invalid reminders"
 msgstr "Lembretes inválidos"
+
+#.elixir
+#: ee/lib/admin_api/mutations/update_email_settings.ex:109
+msgid "Invalid settings"
+msgstr "Configurações inválidas"
+
+#.elixir
+#: ee/lib/admin_api/mutations/delete_site_message.ex:40
+#: ee/lib/admin_api/mutations/update_site_message.ex:53
+msgid "Invalid site message ID"
+msgstr "ID de mensagem do site inválido"
+
+#.elixir
+#: ee/lib/admin_api/mutations/create_site_message.ex:34
+#: ee/lib/admin_api/mutations/update_site_message.ex:39
+msgid "Invalid site message parameters"
+msgstr "Parâmetros de mensagem do site inválidos"
 
 #.elixir
 #: lib/operately/operations/kanban_state_updating.ex:57
@@ -11874,6 +12493,11 @@ msgstr "Manter template"
 msgid "Keep update"
 msgstr "Manter atualização"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:282
+msgid "Key"
+msgstr "Chave"
+
 #.elixir
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:346
@@ -11921,6 +12545,11 @@ msgstr "Últimos 7 dias"
 #: ../turboui/src/SearchPage/filterOptions.ts:30
 msgid "Last 90 days"
 msgstr "Últimos 90 dias"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:262
+msgid "Last Activity"
+msgstr "Última atividade"
 
 #.elixir
 #: lib/operately/md/goal.ex:32
@@ -11980,6 +12609,11 @@ msgid "Latest"
 msgstr "Mais recente"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:114
+msgid "Latest run"
+msgstr "Última execução"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:38
 msgid "Latest value"
 msgstr "Valor mais recente"
@@ -12028,6 +12662,12 @@ msgstr "Vamos configurar sua empresa no Operately."
 #: assets/js/pages/SetupPage/page.tsx:30
 msgid "Let's set up your company."
 msgstr "Vamos configurar sua empresa."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:133
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:145
+msgid "Limited"
+msgstr "Limitado"
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:313
@@ -12132,6 +12772,7 @@ msgid "Link: %{url}"
 msgstr "Link: %{url}"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:257
 #: ../turboui/src/SearchPage/filterOptions.ts:22
 msgid "Links"
 msgstr "Links"
@@ -12152,9 +12793,25 @@ msgid "Loading Package"
 msgstr "Carregando pacote"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:173
+msgid "Loading accounts..."
+msgstr "Carregando contas..."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:212
+msgid "Loading active companies..."
+msgstr "Carregando empresas ativas..."
+
+#.frontend
 #: ../turboui/src/ContentListState/index.tsx:19
 msgid "Loading check-ins"
 msgstr "Carregando check-ins"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:134
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:174
+msgid "Loading companies..."
+msgstr "Carregando empresas..."
 
 #.frontend
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:25
@@ -12485,9 +13142,25 @@ msgid "Member"
 msgstr "Membro"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:130
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:287
+msgid "Member limit"
+msgstr "Limite de membros"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:49
+msgid "Member limit must be greater than 0"
+msgstr "O limite de membros deve ser maior que 0"
+
+#.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:65
 msgid "Member limit reached"
 msgstr "Limite de membros atingido"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:139
+msgid "Member limit value"
+msgstr "Valor do limite de membros"
 
 #.elixir
 #.frontend
@@ -12620,6 +13293,7 @@ msgstr "O marco foi renomeado para \"%{newTitle}\""
 #.elixir
 #.frontend
 #: ../turboui/src/MilestoneList/index.tsx:119
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:260
 #: ../turboui/src/SearchPage/filterOptions.ts:12
 #: ../turboui/src/WorkMap/components/TableRow/ProjectProgressSummary.tsx:33
 #: lib/operately/md/project.ex:77
@@ -12674,6 +13348,11 @@ msgid "Modified Date"
 msgstr "Data de modificação"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:82
+msgid "Monitor indexing progress and repair search data when canonical records change."
+msgstr "Acompanhe o progresso da indexação e repare os dados de busca quando os registros de origem mudarem."
+
+#.frontend
 #: ../turboui/src/DateField/index.tsx:30
 msgid "Month"
 msgstr "Mês"
@@ -12682,6 +13361,9 @@ msgstr "Mês"
 #: ../turboui/src/CompanyBilling/formatting.ts:15
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:95
 #: ../turboui/src/SpaceKpisPage/utils.ts:10
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:103
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:137
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:429
 msgid "Monthly"
 msgstr "Mensal"
 
@@ -12907,6 +13589,11 @@ msgid "Name:"
 msgstr "Nome:"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:57
+msgid "Navbar update badge"
+msgstr "Indicador de atualização na barra de navegação"
+
+#.frontend
 #: assets/js/pages/GoalPage/index.tsx:72
 #: assets/js/pages/GoalPage/index.tsx:81
 #: assets/js/pages/GoalPage/index.tsx:88
@@ -12940,6 +13627,7 @@ msgstr "Erro de rede"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:364
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:224
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:144
 msgid "Never"
 msgstr "Nunca"
 
@@ -13134,6 +13822,10 @@ msgstr "Próxima etapa"
 #: assets/js/features/ProjectRetrospective/Form.tsx:95
 #: assets/js/pages/GoalClosingPage/Form.tsx:75
 #: assets/js/pages/NewCompanyPage/index.tsx:76
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:117
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:123
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:334
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:329
 msgid "No"
 msgstr "Não"
 
@@ -13179,6 +13871,21 @@ msgstr "Sem espaço"
 #: lib/operately_web/api/cli_auth.ex:835
 msgid "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
 msgstr "Não existe uma conta para este e-mail. Use `operately auth signup` ou `operately auth join`."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:192
+msgid "No accounts found"
+msgstr "Nenhuma conta encontrada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:467
+msgid "No accounts matched <query>“%{searchQuery}”</query>."
+msgstr "Nenhuma conta corresponde a <query>“%{searchQuery}”</query>."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:231
+msgid "No active companies found"
+msgstr "Nenhuma empresa ativa encontrada"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:267
@@ -13233,6 +13940,26 @@ msgstr "Ainda não há check-ins."
 #: lib/operately/md/goal/checklist.ex:8
 msgid "No checklist items."
 msgstr "Nenhum item na lista."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:153
+msgid "No companies found"
+msgstr "Nenhuma empresa encontrada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:177
+msgid "No companies match your search."
+msgstr "Nenhuma empresa corresponde à sua busca."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:473
+msgid "No companies matched <query>“%{searchQuery}”</query>."
+msgstr "Nenhuma empresa corresponde a <query>“%{searchQuery}”</query>."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:158
+msgid "No companies selected yet."
+msgstr "Nenhuma empresa selecionada ainda."
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:568
@@ -13331,6 +14058,11 @@ msgid "No exports yet. Start one when you need to move this company to another O
 msgstr "Nenhuma exportação ainda. Inicie uma quando precisar transferir esta empresa para outra instância do Operately."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:67
+msgid "No feature flags are available."
+msgstr "Nenhuma configuração de recurso disponível."
+
+#.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:184
 #: ../turboui/src/CompanyImportPage/index.tsx:187
 #: ../turboui/src/CompanyImportPage/index.tsx:331
@@ -13351,6 +14083,16 @@ msgstr "Nenhum objetivo para mostrar."
 #: ../turboui/src/CompanyImportPage/index.tsx:288
 msgid "No imports yet. Upload a package above to create the first one."
 msgstr "Nenhuma importação ainda. Envie um pacote acima para criar a primeira."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:463
+msgid "No matching accounts found"
+msgstr "Nenhuma conta correspondente encontrada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:463
+msgid "No matching companies found"
+msgstr "Nenhuma empresa correspondente encontrada"
 
 #.frontend
 #: ../turboui/src/ResourceHub/Search.tsx:62
@@ -13511,6 +14253,11 @@ msgid "No privacy set"
 msgstr "Privacidade não definida"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:214
+msgid "No progress to report."
+msgstr "Nenhum progresso para informar."
+
+#.frontend
 #: ../turboui/src/ProjectField/index.tsx:62
 msgid "No project selected"
 msgstr "Nenhum projeto selecionado"
@@ -13541,6 +14288,11 @@ msgid "No projects to show."
 msgstr "Nenhum projeto para mostrar."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:95
+msgid "No provider-managed plans available"
+msgstr "Nenhum plano gerenciado pelo provedor disponível"
+
+#.frontend
 #: ../turboui/src/RichEditor/extensions/MentionPeople/MentionList.tsx:137
 msgid "No result"
 msgstr "Nenhum resultado"
@@ -13553,6 +14305,11 @@ msgstr "Nenhum resultado"
 #: assets/js/pages/ProjectAddPage/page.tsx:193
 msgid "No reviewer"
 msgstr "Nenhum revisor"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:71
+msgid "No site messages yet."
+msgstr "Ainda não há mensagens do site."
 
 #.frontend
 #: ../turboui/src/SpaceField/index.tsx:62
@@ -13672,6 +14429,11 @@ msgid "Not set"
 msgstr "Não definido"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:194
+msgid "Not started"
+msgstr "Não iniciado"
+
+#.frontend
 #: ../turboui/src/StatusCustomization/StatusAppearancePicker.tsx:24
 msgid "Not started (gray)"
 msgstr "Não iniciado (cinza)"
@@ -13737,9 +14499,19 @@ msgid "Nothing new for you."
 msgstr "Nada novo para você."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:100
+msgid "Notification Email"
+msgstr "E-mail de notificação"
+
+#.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:72
 msgid "Notification Settings"
 msgstr "Configurações de notificação"
+
+#.elixir
+#: ee/lib/admin_api/mutations/send_test_email.ex:31
+msgid "Notification email address is not configured"
+msgstr "O endereço de e-mail de notificação não está configurado"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:79
@@ -13817,6 +14589,12 @@ msgstr "Não foi possível processar um dos conteúdos com o formato atual do ed
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:239
 msgid "One or more redirect URIs are not allowed for this MCP server."
 msgstr "Uma ou mais URIs de redirecionamento não são permitidas neste servidor MCP."
+
+#.elixir
+#: ee/lib/admin_api/mutations/create_site_message.ex:31
+#: ee/lib/admin_api/mutations/update_site_message.ex:36
+msgid "One or more selected companies are invalid"
+msgstr "Uma ou mais empresas selecionadas são inválidas"
 
 #.frontend
 #: ../turboui/src/PrivacyIndicator/index.tsx:49
@@ -14014,6 +14792,7 @@ msgstr "Tarefas em aberto"
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:50
 #: assets/js/pages/LoginPage/index.tsx:75
+#: ee/assets/js/layouts/SaasAdminLayout.tsx:36
 msgid "Operately"
 msgstr "Operately"
 
@@ -14066,6 +14845,11 @@ msgstr "A opção %{label} está desativada. Selecione outra opção."
 #: ../turboui/src/SelectLocalization/index.ts:32
 msgid "Option %{label} selected."
 msgstr "Opção %{label} selecionada."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:104
+msgid "Optional. Leave blank to show until deactivated or deleted."
+msgstr "Opcional. Deixe em branco para exibir até que seja desativada ou excluída."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:255
@@ -14133,6 +14917,11 @@ msgstr "Organograma"
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:23
 msgid "Organize tasks on a Kanban board with status columns."
 msgstr "Organize as tarefas em um quadro Kanban com colunas de status."
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:209
+msgid "Orphans removed"
+msgstr "Órfãos removidos"
 
 #.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:101
@@ -14231,7 +15020,13 @@ msgid "Overview"
 msgstr "Visão geral"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:314
+msgid "Owned Companies"
+msgstr "Empresas sob propriedade"
+
+#.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:50
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:261
 msgid "Owners"
 msgstr "Proprietários"
 
@@ -14329,6 +15124,11 @@ msgstr "Não foi possível alterar a senha"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:38
 msgid "Password Changed"
 msgstr "Senha alterada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:211
+msgid "Password already set. Leave blank to keep current password"
+msgstr "Senha já definida. Deixe em branco para manter a senha atual"
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:65
@@ -14453,6 +15253,7 @@ msgid "Peers"
 msgstr "Pares"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:274
 #: ../turboui/src/SmallStatusIndicator/constants.ts:28
 #: ../turboui/src/StatusBadge/index.tsx:159
 msgid "Pending"
@@ -14462,8 +15263,11 @@ msgstr "Pendente"
 #.frontend
 #: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
 #: ../turboui/src/CompanyNavigation/index.tsx:101
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:262
 #: ../turboui/src/SearchPage/filterOptions.ts:14
 #: assets/js/pages/PeoplePage/page.tsx:14
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:93
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:256
 #: lib/operately/md/task.ex:56
 msgid "People"
 msgstr "Pessoas"
@@ -14554,6 +15358,18 @@ msgid "Pitch Ideas"
 msgstr "Apresentar ideias"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:281
+msgid "Plan"
+msgstr "Plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:80
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:88
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:253
+msgid "Plan Family"
+msgstr "Família de planos"
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:64
 msgid "Plan action unavailable"
 msgstr "Ação do plano indisponível"
@@ -14562,6 +15378,24 @@ msgstr "Ação do plano indisponível"
 #: ../turboui/src/CompanyBilling/feedback.ts:50
 msgid "Plan change scheduled"
 msgstr "Alteração de plano agendada"
+
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_plan_definition.ex:39
+#: ee/lib/admin_api/mutations/unarchive_billing_plan_definition.ex:36
+#: ee/lib/admin_api/mutations/update_billing_plan_definition.ex:39
+msgid "Plan definition not found"
+msgstr "Definição de plano não encontrada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:101
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:103
+msgid "Plan key"
+msgstr "Chave do plano"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:37
+msgid "Plan key is required"
+msgstr "A chave do plano é obrigatória"
 
 #.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:38
@@ -14577,6 +15411,11 @@ msgstr "Plano indisponível"
 #: ../turboui/src/CompanyBilling/feedback.ts:59
 msgid "Plan updated"
 msgstr "Plano atualizado"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:92
+msgid "Plans"
+msgstr "Planos"
 
 #.frontend
 #: ../turboui/src/TemplateDiscussionForm/index.tsx:38
@@ -14658,6 +15497,9 @@ msgstr "Tente novamente"
 #: assets/js/pages/HomePage/index.tsx:69
 #: assets/js/pages/SpacePage/page.tsx:186
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
+#: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:43
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:32
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:43
 msgid "Please try again."
 msgstr "Tente novamente."
 
@@ -14770,6 +15612,11 @@ msgstr "Pressione Tab para selecionar a opção e sair do menu."
 #: ../turboui/src/DocumentVersionHistoryPage/VersionTimeline.tsx:45
 msgid "Preview version %{version}: %{action}"
 msgstr "Pré-visualizar versão %{version}: %{action}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:180
+msgid "Preview: %{size}"
+msgstr "Prévia: %{size}"
 
 #.elixir
 #: lib/operately_email/templates/company_members_permissions_edited.html.eex:9
@@ -14901,6 +15748,16 @@ msgstr "Anteriormente, a tarefa estava %{oldStatus}. Agora está %{newStatus}."
 msgid "Previously, the task was named \"%{oldName}\"."
 msgstr "Antes, a tarefa se chamava \"%{oldName}\"."
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:255
+msgid "Price"
+msgstr "Preço"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:110
+msgid "Price (in cents)"
+msgstr "Preço (em centavos)"
+
 #.elixir
 #: lib/operately/md/task.ex:20
 msgid "Priority"
@@ -14920,6 +15777,16 @@ msgid "Privacy Settings"
 msgstr "Configurações de privacidade"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:202
+msgid "Processed"
+msgstr "Processados"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:251
+msgid "Product"
+msgstr "Produto"
+
+#.frontend
 #: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:37
 msgid "Product Roadmap"
 msgstr "Roadmap do produto"
@@ -14928,6 +15795,18 @@ msgstr "Roadmap do produto"
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:51
 msgid "Product launch"
 msgstr "Lançamento de produto"
+
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_product.ex:36
+#: ee/lib/admin_api/mutations/set_active_billing_product.ex:39
+#: ee/lib/admin_api/mutations/update_billing_product.ex:40
+msgid "Product not found"
+msgstr "Produto não encontrado"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:91
+msgid "Products"
+msgstr "Produtos"
 
 #.frontend
 #: ../turboui/src/AccountPage/index.tsx:48
@@ -14938,6 +15817,7 @@ msgstr "Perfil"
 
 #.elixir
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:115
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:187
 #: lib/operately/md/goal.ex:29
 #: lib/operately/md/goal.ex:98
@@ -15041,6 +15921,7 @@ msgid "Project check-in is overdue"
 msgstr "O check-in do projeto está atrasado"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:264
 #: ../turboui/src/SearchPage/filterOptions.ts:16
 msgid "Project check-ins"
 msgstr "Check-ins de projetos"
@@ -15094,6 +15975,7 @@ msgid "Project retrospective"
 msgstr "Retrospectiva de projeto"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:266
 #: ../turboui/src/SearchPage/filterOptions.ts:18
 msgid "Project retrospectives"
 msgstr "Retrospectivas de projetos"
@@ -15122,8 +16004,11 @@ msgstr "Projeto: %{projectName}"
 
 #.frontend
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:258
 #: ../turboui/src/SearchPage/filterOptions.ts:10
 #: ../turboui/src/WorkMap/hooks/useWorkMapTab.ts:76
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:96
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:259
 msgid "Projects"
 msgstr "Projetos"
 
@@ -15133,9 +16018,26 @@ msgid "Promote to manager"
 msgstr "Promover a gestor"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:21
+msgid "Promote to site admin"
+msgstr "Promover a administrador do site"
+
+#.frontend
 #: assets/js/features/activities/CompanyOwnersAdding/index.tsx:61
 msgid "Promoted you to an account owner"
 msgstr "Promoveu você a proprietário da conta"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:252
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
+msgid "Provider"
+msgstr "Provedor"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:111
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:538
+msgid "Provider managed"
+msgstr "Gerenciado pelo provedor"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:199
@@ -15451,9 +16353,39 @@ msgid "Recent activity"
 msgstr "Atividade recente"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:75
+msgid "Recipient"
+msgstr "Destinatário"
+
+#.frontend
 #: ../turboui/src/BillingLimitGuidanceNotice/index.tsx:49
 msgid "Recommended plan"
 msgstr "Plano recomendado"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:300
+msgid "Reconcile %{target}?"
+msgstr "Reconciliar %{target}?"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:91
+msgid "Reconcile all sources"
+msgstr "Reconciliar todas as fontes"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:295
+msgid "Reconcile all sources?"
+msgstr "Reconciliar todas as fontes?"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:285
+msgid "Reconciliation"
+msgstr "Reconciliação"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:99
+msgid "Reconciliation also updates stale entries and removes entries whose source record no longer exists."
+msgstr "A reconciliação também atualiza entradas desatualizadas e remove entradas cujo registro de origem não existe mais."
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:98
@@ -15561,6 +16493,11 @@ msgid "Remove Highlight"
 msgstr "Remover destaque"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:135
+msgid "Remove access"
+msgstr "Remover acesso"
+
+#.frontend
 #: ../turboui/src/ContributorsSection/index.tsx:86
 msgid "Remove contributor"
 msgstr "Remover contribuidor"
@@ -15610,6 +16547,17 @@ msgstr "Remover reação"
 #: ../turboui/src/TaskPage/Sidebar.tsx:219
 msgid "Remove reminder"
 msgstr "Remover lembrete"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:26
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:130
+msgid "Remove site admin access"
+msgstr "Remover acesso de administrador do site"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:131
+msgid "Remove site admin access from %{fullName}? This will revoke access to the site admin dashboard and other privileged admin actions. Use this carefully."
+msgstr "Remover o acesso de administrador do site de %{fullName}? Isso revogará o acesso ao painel de administração do site e a outras ações administrativas privilegiadas. Use com cuidado."
 
 #.frontend
 #: ../turboui/src/StatusCustomization/components/StatusRow.tsx:65
@@ -15794,6 +16742,11 @@ msgstr "Plano solicitado"
 #: ../turboui/src/CompanyImportPage/index.tsx:310
 msgid "Requested:"
 msgstr "Solicitado:"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:134
+msgid "Require TLS"
+msgstr "Exigir TLS"
 
 #.frontend
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:85
@@ -16239,6 +17192,48 @@ msgid "Rows: %{count}"
 msgstr "Linhas: %{count}"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:220
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:314
+msgid "Run backfill"
+msgstr "Executar preenchimento retroativo"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:223
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:314
+msgid "Run reconciliation"
+msgstr "Executar reconciliação"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:275
+msgid "Running"
+msgstr "Em execução"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:107
+msgid "SMTP"
+msgstr "SMTP"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:128
+msgid "SMTP Host"
+msgstr "Servidor SMTP"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:217
+msgid "SMTP Password"
+msgstr "Senha SMTP"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:129
+msgid "SMTP Port"
+msgstr "Porta SMTP"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:130
+msgid "SMTP Username"
+msgstr "Nome de usuário SMTP"
+
+#.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:40
 msgid "SPACES"
 msgstr "ESPAÇOS"
@@ -16247,6 +17242,11 @@ msgstr "ESPAÇOS"
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:115
 msgid "Sa"
 msgstr "Sá"
+
+#.frontend
+#: ee/assets/js/layouts/SaasAdminLayout.tsx:37
+msgid "Saas Admin Panel"
+msgstr "Painel de administração SaaS"
 
 #.frontend
 #: assets/js/pages/AccountAppearancePage/index.tsx:71
@@ -16294,6 +17294,11 @@ msgid "Save Changes"
 msgstr "Salvar alterações"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:141
+msgid "Save Email Settings"
+msgstr "Salvar configurações de e-mail"
+
+#.frontend
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 msgid "Save annotation"
 msgstr "Salvar anotação"
@@ -16319,6 +17324,9 @@ msgstr "Salvar como Template"
 #: ../turboui/src/SpaceKpisPage/EditEntryForm.tsx:114
 #: ../turboui/src/StatusCustomization/index.tsx:220
 #: ../turboui/src/TaskBoard/KanbanView/AddStatusModal.tsx:143
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:157
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:112
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:108
 msgid "Save changes"
 msgstr "Salvar alterações"
 
@@ -16357,6 +17365,11 @@ msgstr "Salvar seleção"
 #: ../turboui/src/ProfileEditPage/index.tsx:354
 msgid "Saving..."
 msgstr "Salvando..."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:72
+msgid "Saving…"
+msgstr "Salvando…"
 
 #.frontend
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:99
@@ -16414,6 +17427,16 @@ msgid "Search"
 msgstr "Buscar"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:413
+msgid "Search Index"
+msgstr "Índice de busca"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:486
+msgid "Search accounts by name or email"
+msgstr "Buscar contas por nome ou e-mail"
+
+#.frontend
 #: ../turboui/src/SearchPage/index.tsx:128
 msgid "Search across projects, goals, discussions, documents, and more."
 msgstr "Busque em projetos, objetivos, discussões, documentos e muito mais."
@@ -16422,6 +17445,16 @@ msgstr "Busque em projetos, objetivos, discussões, documentos e muito mais."
 #: ../turboui/src/GlobalSearch/SearchOverlay.tsx:25
 msgid "Search all content for “%{query}”"
 msgstr "Buscar “%{query}” em todo o conteúdo"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:167
+msgid "Search companies"
+msgstr "Buscar empresas"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:489
+msgid "Search companies by name"
+msgstr "Buscar empresas por nome"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:581
@@ -16468,6 +17501,27 @@ msgstr "Buscar espaços, projetos, objetivos, marcos, tarefas ou pessoas..."
 #: ../turboui/src/GoalField/index.tsx:270
 msgid "Search goals..."
 msgstr "Buscar objetivos..."
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:80
+#: ee/assets/js/pages/SaasAdminSearchIndexPage/index.tsx:37
+msgid "Search index"
+msgstr "Índice de busca"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:69
+msgid "Search index maintenance could not be started. Try again."
+msgstr "Não foi possível iniciar a manutenção do índice de busca. Tente novamente."
+
+#.elixir
+#: ee/lib/admin_api/mutations/start_search_index_maintenance.ex:25
+msgid "Search index maintenance is already running for %{target}"
+msgstr "A manutenção do índice de busca já está em execução para %{target}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSearchIndexPage/index.tsx:76
+msgid "Search index maintenance started"
+msgstr "Manutenção do índice de busca iniciada"
 
 #.frontend
 #: ../turboui/src/ResourceHub/Search.tsx:58
@@ -16549,8 +17603,8 @@ msgid "See what you and your team are working on, with progress and deadlines."
 msgstr "Veja o que você e sua equipe estão fazendo, com progresso e prazos."
 
 #.frontend
-#: ../turboui/src/Forms/SelectGoal.tsx:99
-#: ../turboui/src/Forms/SelectGoal.tsx:154
+#: ../turboui/src/Forms/SelectGoal.tsx:100
+#: ../turboui/src/Forms/SelectGoal.tsx:155
 #: ../turboui/src/SelectLocalization/index.ts:18
 msgid "Select"
 msgstr "Selecionar"
@@ -16597,7 +17651,7 @@ msgid "Select a goal"
 msgstr "Selecione um objetivo"
 
 #.frontend
-#: ../turboui/src/Forms/SelectGoal.tsx:83
+#: ../turboui/src/Forms/SelectGoal.tsx:84
 msgid "Select a goal …"
 msgstr "Selecione um objetivo …"
 
@@ -16762,7 +17816,13 @@ msgid "Select..."
 msgstr "Selecione..."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:285
+msgid "Selectable"
+msgstr "Selecionável"
+
+#.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:158
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:193
 msgid "Selected"
 msgstr "Selecionado"
 
@@ -16792,6 +17852,13 @@ msgid "Send Reset Instructions"
 msgstr "Enviar instruções para redefinir senha"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:17
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:30
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:82
+msgid "Send Test Email"
+msgstr "Enviar e-mail de teste"
+
+#.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:257
 msgid "Send assignments email"
 msgstr "Enviar e-mail de atribuições"
@@ -16810,6 +17877,16 @@ msgstr "Envie um e-mail de resumo ao final do seu dia de trabalho."
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:96
 msgid "Send verification code"
 msgstr "Enviar código de verificação"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:108
+msgid "SendGrid"
+msgstr "SendGrid"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:119
+msgid "SendGrid API Key"
+msgstr "Chave de API do SendGrid"
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/VerificationStep.tsx:113
@@ -16836,6 +17913,11 @@ msgstr "Definir data"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:452
 msgid "Set a new due date for the goal."
 msgstr "Defina uma nova data de conclusão para o objetivo."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:486
+msgid "Set active"
+msgstr "Ativar"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:167
@@ -17000,6 +18082,11 @@ msgid "Sheet"
 msgstr "Planilha"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:72
+msgid "Short ID"
+msgstr "ID curto"
+
+#.frontend
 #: ../turboui/src/TaskBoard/components/TaskList.tsx:209
 msgid "Show 1 completed task"
 msgid_plural "Show %{count} completed tasks"
@@ -17030,6 +18117,12 @@ msgstr "Mostrar status encerrados"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:368
 msgid "Show previous check-in"
 msgstr "Mostrar check-in anterior"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:63
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:65
+msgid "Show update badge"
+msgstr "Exibir indicador de atualização"
 
 #.frontend
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:238
@@ -17107,6 +18200,58 @@ msgstr "Problemas significativos afetam o sucesso. A ajuda da pessoa responsáve
 msgid "Signing in after the change"
 msgstr "Como entrar após a alteração"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:315
+msgid "Site Admin"
+msgstr "Administrador do site"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:412
+msgid "Site Messages"
+msgstr "Mensagens do site"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:156
+msgid "Site admin access granted"
+msgstr "Acesso de administrador do site concedido"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:158
+msgid "Site admin access removed"
+msgstr "Acesso de administrador do site removido"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:180
+msgid "Site admin demotion blocked"
+msgstr "Remoção de administrador do site bloqueada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:191
+msgid "Site admin demotion failed"
+msgstr "Falha ao remover administrador do site"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:189
+msgid "Site admin promotion failed"
+msgstr "Falha ao promover a administrador do site"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:178
+msgid "Site admin update blocked"
+msgstr "Atualização de administrador do site bloqueada"
+
+#.elixir
+#: ee/lib/admin_api/mutations/delete_site_message.ex:32
+#: ee/lib/admin_api/mutations/update_site_message.ex:45
+msgid "Site message not found"
+msgstr "Mensagem do site não encontrada"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:53
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:58
+msgid "Site messages"
+msgstr "Mensagens do site"
+
 #.elixir
 #: lib/operately/md/task.ex:21
 msgid "Size"
@@ -17116,6 +18261,11 @@ msgstr "Tamanho"
 #: ../turboui/src/ResourceHub/AddFileWidget.tsx:195
 msgid "Size:"
 msgstr "Tamanho:"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:206
+msgid "Skipped"
+msgstr "Ignorados"
 
 #.frontend
 #: ../turboui/src/LinkNewPage/index.tsx:100
@@ -17194,6 +18344,16 @@ msgstr "Ordenar por nome"
 #: ../turboui/src/SearchPage/RefineControls.tsx:61
 msgid "Sort results"
 msgstr "Ordenar resultados"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:113
+msgid "Source"
+msgstr "Fonte"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:289
+msgid "Source scan"
+msgstr "Varredura da fonte"
 
 #.elixir
 #.frontend
@@ -17307,6 +18467,12 @@ msgid "Space: %{space_name}"
 msgstr "Espaço: %{space_name}"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:94
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:257
+msgid "Spaces"
+msgstr "Espaços"
+
+#.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:87
 msgid "Spaces help organize projects, goals, and team members in one place."
 msgstr "Os espaços ajudam a organizar projetos, objetivos e membros da equipe em um só lugar."
@@ -17315,6 +18481,11 @@ msgstr "Os espaços ajudam a organizar projetos, objetivos e membros da equipe e
 #: ../turboui/src/HomePage/SpacesZeroState.tsx:13
 msgid "Spaces will appear here when someone grants you access to them."
 msgstr "Os espaços aparecerão aqui quando alguém conceder acesso a você."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:79
+msgid "Specific companies"
+msgstr "Empresas específicas"
 
 #.frontend
 #: ../turboui/src/GoalTargetList/index.tsx:249
@@ -17330,6 +18501,11 @@ msgstr "Início"
 #: lib/operately/md/project/timeframe.ex:10
 msgid "Start Date"
 msgstr "Data de início"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:56
+msgid "Start Support Session"
+msgstr "Iniciar sessão de suporte"
 
 #.frontend
 #: ../turboui/src/TemplateProjectPage/Discussions.tsx:28
@@ -17403,6 +18579,11 @@ msgid "Start import"
 msgstr "Iniciar importação"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:293
+msgid "Start search index maintenance?"
+msgstr "Iniciar manutenção do índice de busca?"
+
+#.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:156
 msgid "Start with something already in motion. You can add tasks, milestones, and teammates next."
 msgstr "Comece com algo que já está em andamento. Depois você pode adicionar tarefas, marcos e colegas."
@@ -17427,15 +18608,30 @@ msgstr "Data de início anterior a"
 msgid "Started date between"
 msgstr "Data de início entre"
 
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:178
+msgid "Started:"
+msgstr "Iniciado:"
+
 #.elixir
 #: lib/operately/md/goal.ex:97
 msgid "Starting From"
 msgstr "Valor inicial"
 
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:141
+msgid "Starting search index maintenance…"
+msgstr "Iniciando manutenção do índice de busca…"
+
 #.elixir
 #: lib/operately/md/workmap.ex:102
 msgid "State"
 msgstr "Estado"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:31
+msgid "Stats"
+msgstr "Estatísticas"
 
 #.elixir
 #.frontend
@@ -17444,6 +18640,10 @@ msgstr "Estado"
 #: ../turboui/src/TaskCreationModal/index.tsx:307
 #: ../turboui/src/WorkMap/components/WorkMapTable.tsx:184
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:325
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:256
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:283
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:94
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:124
 #: lib/operately/md/goal.ex:28
 #: lib/operately/md/goal/check_ins.ex:68
 #: lib/operately/md/milestone.ex:18
@@ -17529,6 +18729,28 @@ msgid "Stop notifications for team members"
 msgstr "Interromper as notificações para os membros da equipe"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:97
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:260
+msgid "Storage"
+msgstr "Armazenamento"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:142
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:288
+msgid "Storage limit"
+msgstr "Limite de armazenamento"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:152
+msgid "Storage limit bytes"
+msgstr "Limite de armazenamento em bytes"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:58
+msgid "Storage limit must be greater than 0"
+msgstr "O limite de armazenamento deve ser maior que 0"
+
+#.frontend
 #: assets/js/models/blobs/uploadFile.ts:55
 msgid "Storage limit reached"
 msgstr "Limite de armazenamento atingido"
@@ -17555,6 +18777,11 @@ msgstr "Do"
 #: ../turboui/src/GoalPage/RelatedWork.tsx:31
 msgid "Subgoals & Projects"
 msgstr "Subobjetivos & Projetos"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:76
+msgid "Subject"
+msgstr "Assunto"
 
 #.frontend
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:396
@@ -17628,6 +18855,21 @@ msgid "Success"
 msgstr "Sucesso"
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:208
+msgid "Superseded"
+msgstr "Substituídos"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:43
+msgid "Support Mode"
+msgstr "Modo de suporte"
+
+#.frontend
+#: assets/js/layouts/CompanyLayout/SupportSessionBanner.tsx:22
+msgid "Support Mode Active"
+msgstr "Modo de suporte ativo"
+
+#.frontend
 #: assets/js/pages/ProjectPausePage/page.tsx:26
 msgid "Suspend all associated milestones and tasks"
 msgstr "Suspender todos os marcos e tarefas associados"
@@ -17642,6 +18884,11 @@ msgstr "Contas suspensas não podem ser convertidas em colaboradores externos"
 #: ../turboui/src/CompanyNavigation/index.tsx:117
 msgid "Switch Company"
 msgstr "Trocar de empresa"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:232
+msgid "Sync from Polar"
+msgstr "Sincronizar com o Polar"
 
 #.frontend
 #: ../turboui/src/GlobalSearch/searchOptions.tsx:88
@@ -17873,6 +19120,7 @@ msgstr "A tarefa foi removida do marco \"%{title}\""
 #: ../turboui/src/MilestonePage/index.tsx:209
 #: ../turboui/src/ProfilePage/index.tsx:123
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
 #: ../turboui/src/SpaceKanbanPage/index.tsx:110
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
@@ -17996,6 +19244,26 @@ msgid "Templates"
 msgstr "Templates"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:45
+msgid "Temporarily enable elevated support access for troubleshooting issues with this company's account. You will view the account as if you were an owner."
+msgstr "Habilite temporariamente o acesso elevado de suporte para solucionar problemas na conta desta empresa. Você visualizará a conta como se fosse um proprietário."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:76
+msgid "Test email"
+msgstr "E-mail de teste"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:46
+msgid "Test email from Operately"
+msgstr "E-mail de teste do Operately"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:63
+msgid "Test email sent successfully."
+msgstr "E-mail de teste enviado com sucesso."
+
+#.frontend
 #: ../turboui/src/DateField/components/InlineCalendar.tsx:115
 msgid "Th"
 msgstr "Qu"
@@ -18105,6 +19373,16 @@ msgstr "A solicitação de autorização não contém parâmetros obrigatórios 
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:195
 msgid "The authorization request must target this server's canonical MCP endpoint."
 msgstr "A solicitação de autorização deve apontar para o endpoint MCP canônico deste servidor."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:39
+msgid "The badge is disabled."
+msgstr "O indicador está desativado."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:39
+msgid "The badge is enabled."
+msgstr "O indicador está ativado."
 
 #.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:30
@@ -18291,6 +19569,11 @@ msgstr "As seguintes metas foram removidas:"
 #: assets/js/features/activities/GoalEditing/index.tsx:168
 msgid "The following measures were updated:"
 msgstr "As seguintes metas foram atualizadas:"
+
+#.elixir
+#: ee/lib/admin_api/mutations/archive_billing_plan_definition.ex:25
+msgid "The free plan cannot be archived"
+msgstr "O plano gratuito não pode ser arquivado"
 
 #.elixir
 #: lib/operately_email/check_in_overview.ex:15
@@ -18699,6 +19982,26 @@ msgid "This ZIP file looks incomplete or damaged. Export the company again and t
 msgstr "Este arquivo ZIP parece incompleto ou danificado. Exporte a empresa novamente e tente outra vez."
 
 #.elixir
+#: ee/lib/admin_api/mutations/delete_account.ex:35
+msgid "This account cannot be deleted because it is the last site admin."
+msgstr "Esta conta não pode ser excluída porque é a última conta de administrador do site."
+
+#.elixir
+#: ee/lib/admin_api/mutations/delete_account.ex:58
+msgid "This account cannot be deleted because it is the only active owner of %{company_name}. Transfer ownership or delete the company first."
+msgstr "Esta conta não pode ser excluída porque é a única proprietária ativa de %{company_name}. Transfira a propriedade ou exclua a empresa primeiro."
+
+#.elixir
+#: ee/lib/admin_api/mutations/delete_account.ex:63
+msgid "This account cannot be deleted because it is the only active owner of these companies: %{companies}. Transfer ownership or delete the companies first."
+msgstr "Esta conta não pode ser excluída porque é a única proprietária ativa destas empresas: %{companies}. Transfira a propriedade ou exclua as empresas primeiro."
+
+#.elixir
+#: ee/lib/admin_api/mutations/demote_account_from_site_admin.ex:50
+msgid "This account cannot be demoted because it is the last site admin. Promote another account to site admin first."
+msgstr "Esta conta não pode perder o acesso de administrador do site porque é a última com esse acesso. Promova outra conta a administrador do site primeiro."
+
+#.elixir
 #: lib/operately/people/cli_auth_session.ex:175
 msgid "This account is not a member of any companies. Use `operately auth create-company` to create one or `operately auth join` to join an existing company."
 msgstr "Esta conta não é membro de nenhuma empresa. Use `operately auth create-company` para criar uma ou `operately auth join` para entrar em uma empresa existente."
@@ -19005,6 +20308,11 @@ msgid "This invite link is restricted to specific email domains"
 msgstr "Este link de convite é restrito a domínios de e-mail específicos"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:47
+msgid "This is a test email to confirm your delivery settings."
+msgstr "Este é um e-mail de teste para confirmar suas configurações de envio."
+
+#.frontend
 #: assets/js/pages/AccountChangeEmailPage/index.tsx:86
 msgid "This is already your current email. Enter a different address."
 msgstr "Este já é seu e-mail atual. Informe outro endereço."
@@ -19169,12 +20477,28 @@ msgid "This space is visible to anyone on the internet who has the link."
 msgstr "Este espaço é visível para qualquer pessoa na internet que tenha o link."
 
 #.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:307
+msgid "This starts a background job that adds missing entries and refreshes newer canonical records."
+msgstr "Isso inicia uma tarefa em segundo plano que adiciona entradas ausentes e atualiza registros de origem mais recentes."
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:304
+msgid "This starts a background search index job."
+msgstr "Isso inicia uma tarefa de indexação de busca em segundo plano."
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:310
+msgid "This starts a complete background repair that also updates stale entries and removes orphans."
+msgstr "Isso inicia um reparo completo em segundo plano que também atualiza entradas desatualizadas e remove entradas órfãs."
+
+#.frontend
 #: ../turboui/src/TaskBoard/KanbanView/DeleteStatusModal.tsx:51
 msgid "This status cannot be deleted. The Kanban board must have at least one status."
 msgstr "Este status não pode ser excluído. O quadro Kanban deve ter pelo menos um status."
 
 #.frontend
 #: assets/js/api/staleClient.ts:35
+#: ee/assets/js/admin_api/staleClient.ts:23
 msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais recente..."
 
@@ -19234,7 +20558,19 @@ msgid "This would create a circular reporting relationship"
 msgstr "Isso criaria uma relação de subordinação circular"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:106
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:286
+msgid "Tier rank"
+msgstr "Ordem do nível"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:40
+msgid "Tier rank must be 0 or greater"
+msgstr "A ordem do nível deve ser 0 ou maior"
+
+#.frontend
 #: ../turboui/src/SchedulePosting/ScheduleModal.tsx:76
+#: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:143
 msgid "Time"
 msgstr "Horário"
 
@@ -19312,6 +20648,8 @@ msgstr "Dica: Inscreva-se se também quiser receber notificações."
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:79
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:66
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:122
 msgid "Title"
 msgstr "Cargo"
 
@@ -19375,6 +20713,11 @@ msgstr "Hoje"
 #: ../turboui/src/WorkMap/components/WorkMapTimeline.tsx:360
 msgid "Today · %{date}"
 msgstr "Hoje · %{date}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:77
+msgid "Toggle %{feature}"
+msgstr "Alternar %{feature}"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:250
@@ -19519,6 +20862,11 @@ msgstr "Tente carregá-los novamente."
 msgid "Tu"
 msgstr "Te"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminCompanyPage/FeatureFlagsSection.tsx:57
+msgid "Turn experimental features on or off for this company."
+msgstr "Ative ou desative recursos experimentais para esta empresa."
+
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
@@ -19623,6 +20971,11 @@ msgstr "Não foi possível carregar esta comparação"
 msgid "Unable to restore member"
 msgstr "Não foi possível reativar o membro"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:383
+msgid "Unarchive"
+msgstr "Desarquivar"
+
 #.elixir
 #.frontend
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:72
@@ -19655,6 +21008,11 @@ msgstr "Indisponível para esta periodicidade de faturamento"
 #: ../turboui/src/TemplateProjectPage/TaskRow.tsx:303
 msgid "Unavailable person"
 msgstr "Pessoa indisponível"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:205
+msgid "Unchanged"
+msgstr "Inalterados"
 
 #.frontend
 #: ../turboui/src/RichEditor/components/UndoButton.tsx:14
@@ -19729,12 +21087,35 @@ msgstr "Tipo de entrada desconhecido: %{type}"
 msgid "Unknown plan"
 msgstr "Plano desconhecido"
 
+#.elixir
+#: lib/operately_web/api/people/get_binded.ex:41
+msgid "Unknown resourse type: %{type}"
+msgstr "Tipo de recurso desconhecido: %{type}"
+
+#.elixir
+#: ee/lib/admin_api/mutations/start_search_index_maintenance.ex:31
+msgid "Unknown search maintenance kind"
+msgstr "Tipo de manutenção de busca desconhecido"
+
+#.elixir
+#: ee/lib/admin_api/mutations/start_search_index_maintenance.ex:28
+msgid "Unknown search source type"
+msgstr "Tipo de fonte de busca desconhecido"
+
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:35
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:41
 #: ../turboui/src/TaskBoard/utils/filterDescription.ts:9
 msgid "Unknown status"
 msgstr "Status desconhecido"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:134
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:146
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:528
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:533
+msgid "Unlimited"
+msgstr "Ilimitado"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPlanSelectionPage/viewModel.ts:245
@@ -19794,6 +21175,13 @@ msgid "Update %{name}"
 msgstr "Atualizar %{name}"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:411
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:50
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:54
+msgid "Update Badge"
+msgstr "Indicador de atualização"
+
+#.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:553
 msgid "Update Checklist"
 msgstr "Atualizar checklist"
@@ -19807,6 +21195,11 @@ msgstr "Atualizar meta"
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:486
 msgid "Update Targets"
 msgstr "Atualizar metas"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:38
+msgid "Update badge setting saved"
+msgstr "Configuração do indicador de atualização salva"
 
 #.frontend
 #: assets/js/pages/ProjectPage/index.tsx:632
@@ -19858,6 +21251,11 @@ msgstr "Atualizar nome do token"
 #: ../turboui/src/AccountSecurityPage/index.tsx:33
 msgid "Update your email across all your companies"
 msgstr "Atualize seu e-mail em todas as suas empresas"
+
+#.frontend
+#: ../turboui/src/SearchIndexAdminPage/index.tsx:204
+msgid "Updated"
+msgstr "Atualizados"
 
 #.frontend
 #: assets/js/features/activities/KpiEntryEdited/index.tsx:89
@@ -20084,6 +21482,11 @@ msgid "Use Left and Right to focus selected values. Press Backspace to remove th
 msgstr "Use as setas para a esquerda e para a direita para mover o foco entre os valores selecionados. Pressione Backspace para remover o valor em foco."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:133
+msgid "Use SSL"
+msgstr "Usar SSL"
+
+#.frontend
 #: ../turboui/src/SelectLocalization/index.ts:11
 msgid "Use Up and Down to choose options, press Enter to select the focused option, and press Escape to exit the menu."
 msgstr "Use as setas para cima e para baixo para escolher opções, pressione Enter para selecionar a opção em foco e Escape para sair do menu."
@@ -20112,6 +21515,11 @@ msgstr "Use esta URL para criar uma conexão no seu cliente de IA."
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:117
 msgid "Use your work email — keep work and life separate."
 msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:97
+msgid "Users who haven't dismissed it will stop seeing it immediately."
+msgstr "Os usuários que ainda não a dispensaram deixarão de vê-la imediatamente."
 
 #.elixir
 #: lib/operately/md/workmap.ex:17
@@ -20190,6 +21598,11 @@ msgstr "Versão restaurada"
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:79
 msgid "Version unavailable"
 msgstr "Versão indisponível"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:400
+msgid "Version: %{version}"
+msgstr "Versão: %{version}"
 
 #.frontend
 #: ../turboui/src/FilePage/index.tsx:170
@@ -20768,6 +22181,11 @@ msgid "When I post this, notify:"
 msgstr "Quando eu publicar, notificar:"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminUpdateBadgePage/index.tsx:58
+msgid "When enabled, the navbar shows a badge when a newer Operately release is available. This setting applies to all companies."
+msgstr "Quando ativado, a barra de navegação exibe um indicador quando uma nova versão do Operately está disponível. Essa configuração se aplica a todas as empresas."
+
+#.frontend
 #: ../turboui/src/BillingPickCompanyPage/index.tsx:33
 msgid "Which company would you like to manage billing for?"
 msgstr "De qual empresa você gostaria de gerenciar o faturamento?"
@@ -20899,6 +22317,11 @@ msgstr "Escreva um comentário aqui..."
 msgid "Write a new post"
 msgstr "Escrever um novo post"
 
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:77
+msgid "Write a short test message"
+msgstr "Escreva uma mensagem curta de teste"
+
 #.elixir
 #: lib/operately_web/controllers/mcp_oauth_html/consent.html.heex:117
 msgid "Write access lets this client create, update, delete, and archive content in your workspace."
@@ -20934,6 +22357,11 @@ msgid "Writing Package"
 msgstr "Gravando pacote"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:102
+msgid "YYYY-MM-DD"
+msgstr "AAAA-MM-DD"
+
+#.frontend
 #: ../turboui/src/DateField/index.tsx:42
 msgid "Year"
 msgstr "Ano"
@@ -20941,6 +22369,9 @@ msgstr "Ano"
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:15
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:100
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:104
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:137
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:429
 msgid "Yearly"
 msgstr "Anual"
 
@@ -20953,6 +22384,9 @@ msgstr "Objetivo anual"
 #: assets/js/features/ProjectRetrospective/Form.tsx:94
 #: assets/js/pages/GoalClosingPage/Form.tsx:74
 #: assets/js/pages/NewCompanyPage/index.tsx:75
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:124
+#: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:334
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:329
 msgid "Yes"
 msgstr "Sim"
 
@@ -20995,6 +22429,11 @@ msgstr "Você agora é responsável por esta tarefa."
 #: lib/operately_email/emails/project_contributor_addition_email.ex:37
 msgid "You are responsible for: %{contributor_responsibility}"
 msgstr "Você é responsável por: %{contributor_responsibility}"
+
+#.frontend
+#: assets/js/layouts/CompanyLayout/SupportSessionBanner.tsx:23
+msgid "You are viewing this account as support staff."
+msgstr "Você está visualizando esta conta como membro da equipe de suporte."
 
 #.frontend
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:184
@@ -22210,6 +23649,11 @@ msgid "name@company.com"
 msgstr "nome@empresa.com"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:101
+msgid "noreply@yourcompany.com"
+msgstr "naoresponda@suaempresa.com"
+
+#.frontend
 #: ../turboui/src/TemplateDiscussionPage/index.tsx:60
 #: assets/js/pages/ProjectActivityPage/index.tsx:101
 msgid "on"
@@ -22246,6 +23690,11 @@ msgstr "pendente"
 #: lib/operately_email/emails/project_milestone_commented_email.ex:89
 msgid "re-opened the milestone \"%{milestone_title}\""
 msgstr "reabriu o marco \"%{milestone_title}\""
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:75
+msgid "recipient@example.com"
+msgstr "destinatario@example.com"
 
 #.elixir
 #: lib/operately_email/emails/task_assignee_updating_email.ex:130
@@ -22398,6 +23847,11 @@ msgstr "deve ter no máximo 0 caracteres"
 #: assets/js/pages/SpaceAccessManagementPage/OtherPeople.tsx:51
 msgid "show all"
 msgstr "mostrar todos"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:128
+msgid "smtp.example.com"
+msgstr "smtp.example.com"
 
 #.elixir
 #: lib/operately_email/emails/goal_discussion_creation_email.ex:43
@@ -22586,6 +24040,11 @@ msgid "uploaded the file \"%{file_name}\""
 msgstr "enviou o arquivo \"%{file_name}\""
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:130
+msgid "user@example.com"
+msgstr "usuario@example.com"
+
+#.frontend
 #: ../turboui/src/BillingPickCompanyPage/index.tsx:24
 msgid "yearly"
 msgstr "anual"
@@ -22599,6 +24058,21 @@ msgstr "seu@email.com"
 #: ../turboui/src/Forms/SelectPerson.tsx:194
 msgid "· %{title}"
 msgstr "· %{title}"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:98
+msgid "• Have multiple goals and projects (2 or more)"
+msgstr "• Ter vários objetivos e projetos (2 ou mais)"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:97
+msgid "• Have multiple team members (2 or more)"
+msgstr "• Ter vários membros na equipe (2 ou mais)"
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:99
+msgid "• Show recent activity within the last 14 days"
+msgstr "• Apresentar atividade recente nos últimos 14 dias"
 
 #.elixir
 #: lib/operately/md/goal/check_ins.ex:67

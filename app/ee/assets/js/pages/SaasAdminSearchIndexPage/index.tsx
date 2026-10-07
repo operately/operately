@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n, { tn } from "@/i18n";
 import { useStartSearchIndexMaintenance, useRefreshSearchIndex } from "@/ee/models/searchIndexLifecycle";
 import { useLoadedData } from "./loader";
 import * as React from "react";
@@ -15,6 +17,7 @@ type StartMaintenance = (
 ) => Promise<AdminApi.StartSearchIndexMaintenanceResult>;
 
 export function Page() {
+  const { t } = useTranslation();
   const { sources } = useLoadedData();
   const refresh = useRefreshSearchIndex();
   const formattedTimePreferences = useFormattedTimePreferences();
@@ -31,7 +34,7 @@ export function Page() {
   };
 
   return (
-    <Pages.Page title="Search index" testId="saas-admin-search-index-page">
+    <Pages.Page title={t("Search index")} testId="saas-admin-search-index-page">
       <SearchIndexAdminPage
         sources={sources}
         formattedTimePreferences={formattedTimePreferences}
@@ -61,8 +64,16 @@ export async function startMaintenanceAndRefresh(
 
   const count = result.startedSourceTypes.length;
   const skipped = result.alreadyRunningSourceTypes.length;
-  const description = skipped > 0 ? `${count} started. ${skipped} already running.` : `${count} started.`;
-  showSuccessToast("Search index maintenance started", description);
+  const description =
+    skipped > 0
+      ? tn(
+          "{{count}} started. {{skipped}} already running.",
+          "{{count}} started. {{skipped}} already running.",
+          count,
+          { skipped },
+        )
+      : tn("{{count}} started.", "{{count}} started.", count);
+  showSuccessToast(i18n.t("Search index maintenance started"), description);
 
   return result;
 }
