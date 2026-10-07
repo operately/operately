@@ -66,7 +66,7 @@ and source alias, so its code continues to import from `"turboui"`. Other
 consumers can also keep that name by installing an npm alias:
 
 ```sh
-npm install turboui@npm:@operately/turboui@0.2.0
+npm install turboui@npm:@operately/turboui@0.3.0
 ```
 
 With that alias, use `import { PrimaryButton } from "turboui"` and
