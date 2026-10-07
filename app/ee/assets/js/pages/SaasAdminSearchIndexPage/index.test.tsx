@@ -1,6 +1,11 @@
+import { showSuccessToast } from "turboui";
+import { setupTestCatalog, applyLanguage } from "@/__tests__/i18n";
 import { resolveSourceType, scheduleActiveRunRefresh, startMaintenanceAndRefresh } from "./index";
 
+setupTestCatalog();
+
 jest.mock("turboui", () => ({
+  i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
   showSuccessToast: jest.fn(),
 }));
 
@@ -79,4 +84,16 @@ describe("SaasAdminSearchIndexPage", () => {
     expect(resolveSourceType(sources)).toBeUndefined();
     expect(() => resolveSourceType(sources, "missing")).toThrow("Unknown search index source type: missing");
   });
+});
+
+test.each([0, 1, 2])("uses Portuguese plural forms for %i started sources", async (count) => {
+  await applyLanguage("pt-BR");
+  const start = jest
+    .fn()
+    .mockResolvedValue({ startedSourceTypes: Array(count).fill("project"), alreadyRunningSourceTypes: [] });
+  await startMaintenanceAndRefresh(start, jest.fn(), "backfill");
+  expect(showSuccessToast).toHaveBeenLastCalledWith(
+    "Manutenção do índice de busca iniciada",
+    count === 1 ? "1 iniciado." : `${count} iniciados.`,
+  );
 });

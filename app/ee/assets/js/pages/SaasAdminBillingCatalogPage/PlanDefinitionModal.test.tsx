@@ -1,3 +1,4 @@
+import { setupTestCatalog, applyLanguage } from "@/__tests__/i18n";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -9,6 +10,8 @@ let mockReset = jest.fn();
 let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 
+setupTestCatalog();
+
 jest.mock("@/ee/models/billingCatalogLifecycle", () => ({
   useCreateBillingPlanDefinition: () => ({ mutateAsync: mockCreate }),
   useUpdateBillingPlanDefinition: () => ({ mutateAsync: mockUpdate }),
@@ -19,6 +22,7 @@ jest.mock("turboui", () => {
   const { formatStorageBytes } = jest.requireActual("turboui");
 
   return {
+    i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
     formatStorageBytes,
     Modal: ({ isOpen, title, children }: { isOpen: boolean; title: string; children: React.ReactNode }) =>
       isOpen ? (
@@ -331,4 +335,13 @@ describe("PlanDefinitionModal", () => {
       storageLimitBytes: null,
     });
   });
+});
+
+test("renders Portuguese labels while retaining form field identifiers", async () => {
+  await applyLanguage("pt-BR");
+  const markup = renderToStaticMarkup(<PlanDefinitionModal isOpen onClose={jest.fn()} onSuccess={jest.fn()} />);
+  expect(markup).toContain("Criar definição de plano");
+  expect(markup).toContain("Chave do plano");
+  expect(mockCapturedConfig.fields).toHaveProperty("planKey");
+  expect(mockCapturedConfig.fields).toHaveProperty("billingBehavior", "provider_managed");
 });

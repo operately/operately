@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import * as React from "react";
 
 import { Outlet } from "react-router";
@@ -25,20 +26,21 @@ export default function SaasAdminLayout() {
 }
 
 function Navigation() {
+  const { t } = useTranslation();
   return (
     <div className="mt-8 max-w-6xl mx-auto w-full px-8">
       <div className="flex items-center justify-between">
         <DivLink className="flex items-center gap-2 cursor-pointer" to={"/admin"}>
           <OperatelyLogo width="32px" height="32px" />
           <div className="">
-            <span className="font-bold leading-snug">Operately</span>
-            <div className="text-xs text-content-accent leading-snug">Saas Admin Panel</div>
+            <span className="font-bold leading-snug">{t("Operately")}</span>
+            <div className="text-xs text-content-accent leading-snug">{t("Saas Admin Panel")}</div>
           </div>
         </DivLink>
 
         <div>
           <SecondaryButton linkTo="/" size="sm">
-            <IconDoorExit className="inline-block mr-2" size={16} /> Exit Admin Panel
+            <IconDoorExit className="inline-block mr-2" size={16} /> {t("Exit Admin Panel")}
           </SecondaryButton>
         </div>
       </div>

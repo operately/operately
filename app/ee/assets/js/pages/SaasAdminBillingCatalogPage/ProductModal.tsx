@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { useCreateBillingProduct, useUpdateBillingProduct } from "@/ee/models/billingCatalogLifecycle";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
@@ -13,6 +15,7 @@ interface ProductModalProps {
 }
 
 export function ProductModal({ isOpen, onClose, onSuccess, product, planDefinitions }: ProductModalProps) {
+  const { t } = useTranslation();
   const { mutateAsync: create } = useCreateBillingProduct();
   const { mutateAsync: update } = useUpdateBillingProduct();
   const isEdit = product !== undefined;
@@ -30,7 +33,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, planDefiniti
     },
     validate: (addError) => {
       if (!isEdit && !form.values.planFamily) {
-        addError("planFamily", "Create or unarchive a provider-managed plan first");
+        addError("planFamily", t("Create or unarchive a provider-managed plan first"));
       }
     },
     cancel: onClose,
@@ -67,41 +70,46 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, planDefiniti
   });
 
   return (
-    <Modal title={isEdit ? "Edit product" : "Create product"} isOpen={isOpen} onClose={onClose}>
+    <Modal title={isEdit ? t("Edit product") : t("Create product")} isOpen={isOpen} onClose={onClose}>
       <Forms.Form form={form}>
         <Forms.FieldGroup layout="vertical">
-          <Forms.TextInput label="Display Name" field="displayName" required autoFocus />
+          <Forms.TextInput label={t("Display Name")} field="displayName" required autoFocus />
           {isEdit ? (
             <>
-              <ReadOnlyField label="Plan Family" value={planFamilyLabel(form.values.planFamily, planDefinitions)} />
-              <ReadOnlyField label="Billing Interval" value={billingIntervalLabel(form.values.billingInterval)} />
+              <ReadOnlyField
+                label={t("Plan Family")}
+                value={planFamilyLabel(form.values.planFamily, planDefinitions)}
+              />
+              <ReadOnlyField label={t("Billing Interval")} value={billingIntervalLabel(form.values.billingInterval)} />
             </>
           ) : (
             <>
               <Forms.SelectBox
-                label="Plan Family"
+                label={t("Plan Family")}
                 field="planFamily"
                 options={availablePlanDefinitions.map((planDefinition) => ({
                   value: planDefinition.key,
                   label: planFamilyLabel(planDefinition.key, availablePlanDefinitions),
                 }))}
-                placeholder={availablePlanDefinitions.length === 0 ? "No provider-managed plans available" : undefined}
+                placeholder={
+                  availablePlanDefinitions.length === 0 ? t("No provider-managed plans available") : undefined
+                }
                 required
               />
               <Forms.SelectBox
-                label="Billing Interval"
+                label={t("Billing Interval")}
                 field="billingInterval"
                 options={[
-                  { value: "monthly", label: "Monthly" },
-                  { value: "yearly", label: "Yearly" },
+                  { value: "monthly", label: t("Monthly") },
+                  { value: "yearly", label: t("Yearly") },
                 ]}
                 required
               />
             </>
           )}
-          <Forms.NumberInput label="Price (in cents)" field="unitAmount" required />
+          <Forms.NumberInput label={t("Price (in cents)")} field="unitAmount" required />
         </Forms.FieldGroup>
-        <Forms.Submit saveText={isEdit ? "Save changes" : "Create product"} cancelText="Cancel" />
+        <Forms.Submit saveText={isEdit ? t("Save changes") : t("Create product")} cancelText={t("Cancel")} />
       </Forms.Form>
     </Modal>
   );
@@ -122,9 +130,9 @@ function planFamilyLabel(value: string, planDefinitions: AdminApi.BillingPlanDef
 
   if (!planDefinition) return value;
 
-  return `${planDefinition.displayName} (${planDefinition.key})`;
+  return i18n.t("{{displayName}} ({{key}})", { displayName: planDefinition.displayName, key: planDefinition.key });
 }
 
 function billingIntervalLabel(value: string) {
-  return value === "yearly" ? "Yearly" : "Monthly";
+  return value === "yearly" ? i18n.t("Yearly") : i18n.t("Monthly");
 }

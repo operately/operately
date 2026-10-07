@@ -8,7 +8,10 @@ defmodule OperatelyEE.AdminApi.Plugs.RequireSiteAdmin do
 
     cond do
       account && account.site_admin == true ->
-        conn
+        # The selected admin target is not the operator's company membership.
+        language = Operately.I18n.AccountLanguage.resolve(account)
+        Gettext.put_locale(OperatelyWeb.Gettext, Operately.I18n.Locale.to_gettext(language))
+        assign(conn, :locale, language)
 
       true ->
         conn |> send_resp(401, "Unauthorized") |> halt()

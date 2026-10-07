@@ -1,4 +1,5 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import { setupTestCatalog } from "@/__tests__/i18n";
 import React from "react";
 import axios from "axios";
 import * as AdminApi from "@/ee/admin_api";
@@ -10,10 +11,13 @@ import { EmailSettingsSection } from "./EmailSettingsSection";
 let mockSubmit: () => Promise<void>;
 let mockValues: Record<string, unknown>;
 const mockSetValue = jest.fn();
+setupTestCatalog();
+
 jest.mock("axios");
 jest.mock("@/ee/admin_api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("./TestEmailModal", () => ({ TestEmailAction: () => null }));
 jest.mock("turboui", () => ({
+  i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
   PageSection: ({ children }: React.PropsWithChildren) => children,
   Forms: {
     useForm: (config: { submit: () => Promise<void> }) => {

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import {
   useArchiveBillingPlanDefinition,
   useUnarchiveBillingPlanDefinition,
@@ -83,10 +85,11 @@ export async function unarchiveBillingPlanDefinition(
 }
 
 export function Page() {
+  const { t } = useTranslation();
   const { products, planDefinitions } = useLoadedData();
   const tabs = useTabs("products", [
-    { id: "products", label: "Products", icon: <IconBuilding size={16} /> },
-    { id: "plans", label: "Plans", icon: <IconSettings size={16} /> },
+    { id: "products", label: t("Products"), icon: <IconBuilding size={16} /> },
+    { id: "plans", label: t("Plans"), icon: <IconSettings size={16} /> },
   ]);
   const refresh = useRefreshBillingCatalog();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -127,7 +130,7 @@ export function Page() {
   };
 
   return (
-    <Pages.Page title="Billing Catalog" testId="saas-admin-billing-catalog-page">
+    <Pages.Page title={t("Billing Catalog")} testId="saas-admin-billing-catalog-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
           <PageHeader activeTab={tabs.active} onCreate={openCreate} onRefresh={refresh} />
@@ -170,9 +173,10 @@ function PageHeader({
   onCreate: () => void;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between">
-      <Paper.Header title="Billing Catalog" />
+      <Paper.Header title={t("Billing Catalog")} />
       {activeTab === "products" && (
         <div className="flex items-center gap-3">
           <button
@@ -180,7 +184,7 @@ function PageHeader({
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-surface-dimmed hover:bg-surface-highlight rounded border border-stroke-base transition-colors"
           >
             <IconPlus size={16} />
-            Create product
+            {t("Create product")}
           </button>
           <SyncButton onRefresh={onRefresh} />
         </div>
@@ -190,6 +194,7 @@ function PageHeader({
 }
 
 function PlanHeaderActions({ onCreate }: { onCreate: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-4 flex justify-end">
       <button
@@ -197,13 +202,14 @@ function PlanHeaderActions({ onCreate }: { onCreate: () => void }) {
         className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-surface-dimmed hover:bg-surface-highlight rounded border border-stroke-base transition-colors"
       >
         <IconPlus size={16} />
-        Create plan
+        {t("Create plan")}
       </button>
     </div>
   );
 }
 
 function SyncButton({ onRefresh }: { onRefresh: () => void }) {
+  const { t } = useTranslation();
   const { mutateAsync: sync, isPending: loading } = useSyncBillingProductsFromPolar();
 
   const handleSync = async () => {
@@ -212,7 +218,9 @@ function SyncButton({ onRefresh }: { onRefresh: () => void }) {
 
   return (
     <Tooltip
-      content="Imports and reconciles Operately-managed Polar products. Unrelated manual Polar products are ignored."
+      content={t(
+        "Imports and reconciles Operately-managed Polar products. Unrelated manual Polar products are ignored.",
+      )}
       size="sm"
     >
       <button
@@ -221,7 +229,7 @@ function SyncButton({ onRefresh }: { onRefresh: () => void }) {
         className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-surface-dimmed hover:bg-surface-highlight rounded border border-stroke-base transition-colors"
       >
         <IconRefresh size={16} className={classNames({ "animate-spin": loading })} />
-        Sync from Polar
+        {t("Sync from Polar")}
       </button>
     </Tooltip>
   );
@@ -236,17 +244,18 @@ function ProductTable({
   onEdit: (product: AdminApi.BillingProduct) => void;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-6">
       <TableRow header gridTemplateColumns="2fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr">
-        <div>Product</div>
-        <div>Provider</div>
-        <div>Plan Family</div>
-        <div>Interval</div>
-        <div className="text-right">Price</div>
-        <div className="text-center">Status</div>
-        <div className="text-center">Created</div>
-        <div className="text-right">Actions</div>
+        <div>{t("Product")}</div>
+        <div>{t("Provider")}</div>
+        <div>{t("Plan Family")}</div>
+        <div>{t("Interval")}</div>
+        <div className="text-right">{t("Price")}</div>
+        <div className="text-center">{t("Status")}</div>
+        <div className="text-center">{t("Created")}</div>
+        <div className="text-right">{t("Actions")}</div>
       </TableRow>
 
       {products.map((product) => (
@@ -265,18 +274,19 @@ function PlanDefinitionTable({
   onEdit: (planDefinition: AdminApi.BillingPlanDefinition) => void;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-6">
       <TableRow header gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
-        <div>Plan</div>
-        <div>Key</div>
-        <div>Status</div>
-        <div>Behavior</div>
-        <div className="text-center">Selectable</div>
-        <div className="text-right">Tier rank</div>
-        <div className="text-right">Member limit</div>
-        <div className="text-right">Storage limit</div>
-        <div className="text-right">Actions</div>
+        <div>{t("Plan")}</div>
+        <div>{t("Key")}</div>
+        <div>{t("Status")}</div>
+        <div>{t("Behavior")}</div>
+        <div className="text-center">{t("Selectable")}</div>
+        <div className="text-right">{t("Tier rank")}</div>
+        <div className="text-right">{t("Member limit")}</div>
+        <div className="text-right">{t("Storage limit")}</div>
+        <div className="text-right">{t("Actions")}</div>
       </TableRow>
 
       {planDefinitions.map((planDefinition) => (
@@ -300,6 +310,7 @@ function PlanDefinitionRow({
   onEdit: (planDefinition: AdminApi.BillingPlanDefinition) => void;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   const { mutateAsync: archive } = useArchiveBillingPlanDefinition();
   const { mutateAsync: unarchive } = useUnarchiveBillingPlanDefinition();
   const [confirmArchive, setConfirmArchive] = React.useState(false);
@@ -318,9 +329,9 @@ function PlanDefinitionRow({
       <TableRow gridTemplateColumns="1.5fr 1fr 1fr 1.25fr 1fr 1fr 1.25fr 1.5fr 0.75fr">
         <div className="font-medium">{planDefinition.displayName}</div>
         <div className="text-sm font-mono text-content-dimmed">{planDefinition.key}</div>
-        <div className="text-sm">{isArchived ? "Archived" : "Active"}</div>
+        <div className="text-sm">{isArchived ? t("Archived") : t("Active")}</div>
         <div className="text-sm">{billingBehaviorLabel(planDefinition.billingBehavior)}</div>
-        <div className="text-sm text-center">{planDefinition.customerSelectable ? "Yes" : "No"}</div>
+        <div className="text-sm text-center">{planDefinition.customerSelectable ? t("Yes") : t("No")}</div>
         <div className="text-sm text-right">{formatInteger(planDefinition.tierRank)}</div>
         <div className="text-sm text-right">{formatLimit(planDefinition.memberLimit)}</div>
         <div className="text-sm text-right">{formatStorageLimit(planDefinition.storageLimitBytes)}</div>
@@ -337,9 +348,9 @@ function PlanDefinitionRow({
 
       <ConfirmDialog
         isOpen={confirmArchive}
-        title="Archive Plan"
-        message={`Are you sure you want to archive "${planDefinition.displayName}"?`}
-        confirmText="Archive"
+        title={t("Archive Plan")}
+        message={t('Are you sure you want to archive "{{displayName}}"?', { displayName: planDefinition.displayName })}
+        confirmText={t("Archive")}
         variant="danger"
         onConfirm={handleArchive}
         onCancel={() => setConfirmArchive(false)}
@@ -361,19 +372,20 @@ function PlanDefinitionActionsMenu({
   onUnarchive: () => void;
   isArchived: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <Menu align="end" testId={`plan-definition-actions-${planDefinition.id}`}>
       <MenuActionItem icon={IconEdit} onClick={() => onEdit(planDefinition)}>
-        Edit plan
+        {t("Edit plan")}
       </MenuActionItem>
       {isArchived ? (
         <MenuActionItem icon={IconRefresh} onClick={onUnarchive}>
-          Unarchive
+          {t("Unarchive")}
         </MenuActionItem>
       ) : (
         planDefinition.key !== "free" && (
           <MenuActionItem icon={IconTrash} danger onClick={onArchive}>
-            Archive
+            {t("Archive")}
           </MenuActionItem>
         )
       )}
@@ -390,6 +402,7 @@ function ProductRow({
   onEdit: (product: AdminApi.BillingProduct) => void;
   onRefresh: () => void;
 }) {
+  const { t } = useTranslation();
   const { mutateAsync: archive } = useArchiveBillingProduct();
   const { mutateAsync: setActive } = useSetActiveBillingProduct();
   const [confirmArchive, setConfirmArchive] = React.useState(false);
@@ -413,7 +426,7 @@ function ProductRow({
         </div>
         <div className="text-sm">{product.provider}</div>
         <div className="text-sm capitalize">{product.planFamily}</div>
-        <div className="text-sm capitalize">{product.billingInterval}</div>
+        <div className="text-sm capitalize">{product.billingInterval === "yearly" ? t("Yearly") : t("Monthly")}</div>
         <div className="text-sm text-right font-mono">{price}</div>
         <div className="flex justify-center">
           {isActive ? (
@@ -436,9 +449,11 @@ function ProductRow({
 
       <ConfirmDialog
         isOpen={confirmArchive}
-        title="Archive Product"
-        message={`Are you sure you want to archive "${product.polarProductName}"?`}
-        confirmText="Archive"
+        title={t("Archive Product")}
+        message={t('Are you sure you want to archive "{{polarProductName}}"?', {
+          polarProductName: product.polarProductName,
+        })}
+        confirmText={t("Archive")}
         variant="danger"
         onConfirm={handleArchive}
         onCancel={() => setConfirmArchive(false)}
@@ -460,19 +475,20 @@ function ProductActionsMenu({
   onEdit: (product: AdminApi.BillingProduct) => void;
   isActive: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <Menu align="end" testId={`product-actions-${product.id}`}>
       <MenuActionItem icon={IconEdit} onClick={() => onEdit(product)}>
-        Edit product
+        {t("Edit product")}
       </MenuActionItem>
       {!isActive && !product.archivedAt && (
         <MenuActionItem icon={IconCheck} onClick={onSetActive}>
-          Set active
+          {t("Set active")}
         </MenuActionItem>
       )}
       {!product.archivedAt && (
         <MenuActionItem icon={IconTrash} danger onClick={onArchive}>
-          Archive
+          {t("Archive")}
         </MenuActionItem>
       )}
     </Menu>
@@ -509,17 +525,17 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 function formatLimit(limit?: number | null) {
-  if (limit == null) return "Unlimited";
+  if (limit == null) return i18n.t("Unlimited");
   return formatInteger(limit);
 }
 
 function formatStorageLimit(limit?: number | null) {
-  if (limit == null) return "Unlimited";
+  if (limit == null) return i18n.t("Unlimited");
   return formatStorageBytes(limit);
 }
 
 function billingBehaviorLabel(value: AdminApi.BillingBehavior) {
-  return value === "internal" ? "Internal" : "Provider managed";
+  return value === "internal" ? i18n.t("Internal") : i18n.t("Provider managed");
 }
 
 function formatInteger(value: number) {

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n, { tn } from "@/i18n";
 import { useDeleteSiteMessage, useRefreshSiteMessages } from "@/ee/models/siteMessageLifecycle";
 import { useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
@@ -26,6 +28,7 @@ import { SiteMessageModal } from "./SiteMessageModal";
 export { loader } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { messages } = useLoadedData();
   const refresh = useRefreshSiteMessages();
   const [modalMessage, setModalMessage] = React.useState<AdminApi.SiteMessage | undefined>();
@@ -47,26 +50,28 @@ export function Page() {
   };
 
   return (
-    <Pages.Page title="Site messages" testId="saas-admin-site-messages-page">
+    <Pages.Page title={t("Site messages")} testId="saas-admin-site-messages-page">
       <Paper.Root size="xlarge">
-        <Paper.Navigation items={[{ to: "/admin", label: "Administration" }]} />
+        <Paper.Navigation items={[{ to: "/admin", label: t("Administration") }]} />
         <Paper.Body>
           <div className="flex items-start justify-between gap-4">
-            <Paper.Header title="Site messages" />
+            <Paper.Header title={t("Site messages")} />
             <SecondaryButton
               size="sm"
               icon={IconPlus}
               onClick={() => setIsCreateOpen(true)}
               testId="create-site-message-button"
             >
-              Create message
+              {t("Create message")}
             </SecondaryButton>
           </div>
 
           {messages.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-lg text-content-accent">No site messages yet.</p>
-              <p className="mt-2 text-sm text-content-subtle">Create a message to show a banner to company users.</p>
+              <p className="text-lg text-content-accent">{t("No site messages yet.")}</p>
+              <p className="mt-2 text-sm text-content-subtle">
+                {t("Create a message to show a banner to company users.")}
+              </p>
             </div>
           ) : (
             <MessageTable messages={messages} onEdit={setModalMessage} onDelete={setMessageToDelete} />
@@ -88,10 +93,10 @@ export function Page() {
         isOpen={messageToDelete !== undefined}
         onCancel={() => setMessageToDelete(undefined)}
         onConfirm={handleDelete}
-        title="Delete this message?"
-        message="Users who haven't dismissed it will stop seeing it immediately."
-        confirmText="Delete message"
-        cancelText="Cancel"
+        title={t("Delete this message?")}
+        message={t("Users who haven't dismissed it will stop seeing it immediately.")}
+        confirmText={t("Delete message")}
+        cancelText={t("Cancel")}
         variant="danger"
         testId="delete-site-message-confirmation"
       />
@@ -108,17 +113,18 @@ function MessageTable({
   onEdit: (message: AdminApi.SiteMessage) => void;
   onDelete: (message: AdminApi.SiteMessage) => void;
 }) {
+  const { t } = useTranslation();
   const formattedTimePreferences = useFormattedTimePreferences();
 
   return (
     <div className="mt-6">
       <TableRow header gridTemplateColumns="2fr 1fr 0.75fr 1fr 1fr 0.5fr">
-        <div>Title</div>
-        <div>Audience</div>
-        <div>Status</div>
-        <div>Expires</div>
-        <div>Created</div>
-        <div className="text-right">Actions</div>
+        <div>{t("Title", { context: "message" })}</div>
+        <div>{t("Audience")}</div>
+        <div>{t("Status")}</div>
+        <div>{t("Expires")}</div>
+        <div>{t("Created")}</div>
+        <div className="text-right">{t("Actions")}</div>
       </TableRow>
 
       {messages.map((message) => (
@@ -130,12 +136,12 @@ function MessageTable({
             </div>
           </div>
           <div>{audienceLabel(message)}</div>
-          <div>{message.active ? "Active" : "Inactive"}</div>
+          <div>{message.active ? t("Active") : t("Inactive")}</div>
           <div>
             {message.expiresAt ? (
               <FormattedTime {...formattedTimePreferences} time={message.expiresAt} format="long-date" />
             ) : (
-              "Never"
+              t("Never")
             )}
           </div>
           <div>
@@ -146,10 +152,10 @@ function MessageTable({
           <div className="flex justify-end">
             <Menu>
               <MenuActionItem icon={IconEdit} onClick={() => onEdit(message)}>
-                Edit
+                {t("Edit")}
               </MenuActionItem>
               <MenuActionItem icon={IconTrash} onClick={() => onDelete(message)}>
-                Delete
+                {t("Delete")}
               </MenuActionItem>
             </Menu>
           </div>
@@ -160,9 +166,9 @@ function MessageTable({
 }
 
 function audienceLabel(message: AdminApi.SiteMessage) {
-  if (message.allCompanies) return "All companies";
+  if (message.allCompanies) return i18n.t("All companies");
   const count = message.companyIds?.length ?? 0;
-  return count === 1 ? "1 company" : `${count} companies`;
+  return tn("1 company", "{{count}} companies", count);
 }
 
 function TableRow({
