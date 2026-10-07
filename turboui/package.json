@@ -125,7 +125,7 @@
     "classnames": "^2.5.1",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0"
   },
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "React components and pages for Operately",
   "repository": {
     "type": "git",

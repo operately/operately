@@ -333,70 +333,70 @@ msgstr "%{author} <checkIn>enviou um check-in</checkIn> do objetivo <goal>%{goal
 #.frontend
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:44
 msgid "%{author} acknowledged a <checkIn>Check-In</checkIn>"
-msgstr "%{author} reconheceu um <checkIn>Check-in</checkIn>"
+msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:52
 msgid "%{author} acknowledged a <checkIn>Check-In</checkIn> in the <project>%{projectName}</project> project"
-msgstr "%{author} reconheceu um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
+msgstr "%{author} confirmou a leitura de um <checkIn>Check-in</checkIn> no projeto <project>%{projectName}</project>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:42
 msgid "%{author} acknowledged the <checkIn>Check-In</checkIn>"
-msgstr "%{author} reconheceu o <checkIn>Check-in</checkIn>"
+msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn>"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:50
 msgid "%{author} acknowledged the <checkIn>Check-In</checkIn> in the <goal>%{goalName}</goal> goal"
-msgstr "%{author} reconheceu o <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
+msgstr "%{author} confirmou a leitura do <checkIn>Check-in</checkIn> no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:40
 msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective>"
-msgstr "%{author} reconheceu a <retrospective>Retrospectiva</retrospective>"
+msgstr "%{author} confirmou a leitura da <retrospective>Retrospectiva</retrospective>"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:48
 msgid "%{author} acknowledged the <retrospective>Retrospective</retrospective> in the <goal>%{goalName}</goal> goal"
-msgstr "%{author} reconheceu a <retrospective>Retrospectiva</retrospective> no objetivo <goal>%{goalName}</goal>"
+msgstr "%{author} confirmou a leitura da <retrospective>Retrospectiva</retrospective> no objetivo <goal>%{goalName}</goal>"
 
 #.elixir
 #: lib/operately_email/templates/goal_check_in_acknowledgement.html.eex:1
 #: lib/operately_email/templates/goal_check_in_acknowledgement.text.eex:1
 msgid "%{author} acknowledged the check-in for %{goal_name}."
-msgstr "%{author} reconheceu o check-in de %{goal_name}."
+msgstr "%{author} confirmou a leitura do check-in de %{goal_name}."
 
 #.frontend
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:37
 msgid "%{author} acknowledged the retrospective"
-msgstr "%{author} reconheceu a retrospectiva"
+msgstr "%{author} confirmou a leitura da retrospectiva"
 
 #.elixir
 #: lib/operately_email/templates/goal_retrospective_acknowledged.html.eex:1
 #: lib/operately_email/templates/goal_retrospective_acknowledged.text.eex:1
 msgid "%{author} acknowledged the retrospective for %{goal_name}."
-msgstr "%{author} reconheceu a retrospectiva de %{goal_name}."
+msgstr "%{author} confirmou a leitura da retrospectiva de %{goal_name}."
 
 #.frontend
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:41
 msgid "%{author} acknowledged the retrospective in the <project>%{projectName}</project> project"
-msgstr "%{author} reconheceu a retrospectiva no projeto <project>%{projectName}</project>"
+msgstr "%{author} confirmou a leitura da retrospectiva no projeto <project>%{projectName}</project>"
 
 #.elixir
 #: lib/operately_email/templates/project_check_in_acknowledged.html.eex:1
 msgid "%{author} acknowledged your check-in for %{project_name} project"
-msgstr "%{author} reconheceu o seu check-in do projeto %{project_name}"
+msgstr "%{author} confirmou a leitura do seu check-in do projeto %{project_name}"
 
 #.elixir
 #: lib/operately_email/templates/project_check_in_acknowledged.text.eex:1
 msgid "%{author} acknowledged your check-in for %{project_name}."
-msgstr "%{author} reconheceu o seu check-in de %{project_name}."
+msgstr "%{author} confirmou a leitura do seu check-in de %{project_name}."
 
 #.elixir
 #: lib/operately_email/templates/project_retrospective_acknowledged.html.eex:1
 #: lib/operately_email/templates/project_retrospective_acknowledged.text.eex:1
 msgid "%{author} acknowledged your retrospective for %{project_name} project"
-msgstr "%{author} reconheceu a sua retrospectiva do projeto %{project_name}"
+msgstr "%{author} confirmou a leitura da sua retrospectiva do projeto %{project_name}"
 
 #.frontend
 #: assets/js/features/activities/SpaceMembersAdded/index.tsx:43
@@ -782,22 +782,22 @@ msgstr "%{author} atribuiu %{personName} como champion no projeto <project>%{pro
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:39
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:39
 msgid "%{author} assigned %{personName} as the reviewer"
-msgstr "%{author} atribuiu %{personName} como revisor"
+msgstr "%{author} atribuiu %{personName} como reviewer"
 
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:42
 msgid "%{author} assigned %{personName} as the reviewer on <goal>%{goalName}</goal>"
-msgstr "%{author} atribuiu %{personName} como revisor no objetivo <goal>%{goalName}</goal>"
+msgstr "%{author} atribuiu %{personName} como reviewer no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:42
 msgid "%{author} assigned %{personName} as the reviewer on <project>%{projectName}</project>"
-msgstr "%{author} atribuiu %{personName} como revisor no projeto <project>%{projectName}</project>"
+msgstr "%{author} atribuiu %{personName} como reviewer no projeto <project>%{projectName}</project>"
 
 #.elixir
 #: lib/operately_email/templates/project_reviewer_updating.html.eex:7
 msgid "%{author} assigned %{reviewer} as the reviewer on %{project_name}"
-msgstr "%{author} atribuiu a %{reviewer} o papel de revisor em %{project_name}"
+msgstr "%{author} atribuiu a %{reviewer} o papel de reviewer em %{project_name}"
 
 #.frontend
 #: assets/js/features/activities/TaskMilestoneUpdating/index.tsx:38
@@ -837,22 +837,22 @@ msgstr "%{author} atribuiu a você o papel de champion em %{project_name}"
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:85
 msgid "%{author} assigned you as the reviewer"
-msgstr "%{author} atribuiu você como revisor"
+msgstr "%{author} atribuiu você como reviewer"
 
 #.elixir
 #: lib/operately_email/templates/goal_reviewer_updating.text.eex:1
 msgid "%{author} assigned you as the reviewer for the goal %{goal_name}."
-msgstr "%{author} atribuiu a você o papel de revisor do objetivo %{goal_name}."
+msgstr "%{author} atribuiu a você o papel de reviewer do objetivo %{goal_name}."
 
 #.elixir
 #: lib/operately_email/templates/goal_reviewer_updating.html.eex:1
 msgid "%{author} assigned you as the reviewer on %{goal_name}"
-msgstr "%{author} atribuiu a você o papel de revisor em %{goal_name}"
+msgstr "%{author} atribuiu a você o papel de reviewer em %{goal_name}"
 
 #.elixir
 #: lib/operately_email/templates/project_reviewer_updating.html.eex:5
 msgid "%{author} assigned you as the reviewer on %{project_name}"
-msgstr "%{author} atribuiu a você o papel de revisor em %{project_name}"
+msgstr "%{author} atribuiu a você o papel de reviewer em %{project_name}"
 
 #.elixir
 #: lib/operately_email/templates/task_assignee_updating.html.eex:2
@@ -970,12 +970,12 @@ msgstr "%{author} alterou o cronograma do projeto %{project_name}."
 #.frontend
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:91
 msgid "%{author} changed the reviewer for %{projectName}"
-msgstr "%{author} alterou o revisor de %{projectName}"
+msgstr "%{author} alterou o reviewer de %{projectName}"
 
 #.elixir
 #: lib/operately_email/templates/project_reviewer_updating.text.eex:1
 msgid "%{author} changed the reviewer for %{project_name}."
-msgstr "%{author} alterou o revisor de %{project_name}."
+msgstr "%{author} alterou o reviewer de %{project_name}."
 
 #.frontend
 #: assets/js/features/activities/GoalStartDateUpdating/index.tsx:41
@@ -2171,22 +2171,22 @@ msgstr "%{author} removeu a descrição do projeto"
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:40
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:40
 msgid "%{author} removed the reviewer"
-msgstr "%{author} removeu o revisor"
+msgstr "%{author} removeu o reviewer"
 
 #.elixir
 #: lib/operately_email/templates/project_reviewer_updating.html.eex:2
 msgid "%{author} removed the reviewer on %{project_name}"
-msgstr "%{author} removeu o revisor de %{project_name}"
+msgstr "%{author} removeu o reviewer de %{project_name}"
 
 #.frontend
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:43
 msgid "%{author} removed the reviewer on <goal>%{goalName}</goal>"
-msgstr "%{author} removeu o revisor no objetivo <goal>%{goalName}</goal>"
+msgstr "%{author} removeu o reviewer no objetivo <goal>%{goalName}</goal>"
 
 #.frontend
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:43
 msgid "%{author} removed the reviewer on <project>%{projectName}</project>"
-msgstr "%{author} removeu o revisor no projeto <project>%{projectName}</project>"
+msgstr "%{author} removeu o reviewer no projeto <project>%{projectName}</project>"
 
 #.elixir
 #: lib/operately_email/templates/task_assignee_updating.html.eex:5
@@ -2788,7 +2788,7 @@ msgstr "%{duration} <status>em atraso</status>."
 #.frontend
 #: ../turboui/src/CommentSection/FeedRows.tsx:98
 msgid "%{fullName} acknowledged this %{label}<icon/>"
-msgstr "%{fullName} reconheceu %{label}<icon/>"
+msgstr "%{fullName} confirmou a leitura de %{label}<icon/>"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
@@ -2969,7 +2969,7 @@ msgstr "%{person} adicionou um novo objetivo e atribuiu você como champion"
 #.frontend
 #: assets/js/features/activities/GoalCreated/index.tsx:76
 msgid "%{person} added a new goal and assigned you as the reviewer"
-msgstr "%{person} adicionou um novo objetivo e atribuiu você como revisor"
+msgstr "%{person} adicionou um novo objetivo e atribuiu você como reviewer"
 
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:26
@@ -3125,12 +3125,12 @@ msgstr "(%{destination_name_task}) %{author} moveu a tarefa \"%{task_name}\""
 #.elixir
 #: lib/operately_email/emails/goal_check_in_acknowledgement_email.ex:17
 msgid "(%{goal_name}) %{author} acknowledged your check-in"
-msgstr "(%{goal_name}) %{author} reconheceu o seu check-in"
+msgstr "(%{goal_name}) %{author} confirmou a leitura do seu check-in"
 
 #.elixir
 #: lib/operately_email/emails/goal_retrospective_acknowledged_email.ex:17
 msgid "(%{goal_name}) %{author} acknowledged your retrospective"
-msgstr "(%{goal_name}) %{author} reconheceu a sua retrospectiva"
+msgstr "(%{goal_name}) %{author} confirmou a leitura da sua retrospectiva"
 
 #.elixir
 #: lib/operately_email/emails/goal_champion_updating_email.ex:16
@@ -3140,7 +3140,7 @@ msgstr "(%{goal_name}) %{author} atribuiu a você o papel de champion"
 #.elixir
 #: lib/operately_email/emails/goal_reviewer_updating_email.ex:16
 msgid "(%{goal_name}) %{author} assigned you as the reviewer"
-msgstr "(%{goal_name}) %{author} atribuiu a você o papel de revisor"
+msgstr "(%{goal_name}) %{author} atribuiu a você o papel de reviewer"
 
 #.elixir
 #: lib/operately_email/emails/goal_reparent_email.ex:16
@@ -3316,12 +3316,12 @@ msgstr "(%{milestone_project_name}) %{author} alterou a data de conclusão de \"
 #.elixir
 #: lib/operately_email/emails/project_check_in_acknowledged_email.ex:16
 msgid "(%{project_name}) %{author} acknowledged your check-in"
-msgstr "(%{project_name}) %{author} reconheceu o seu check-in"
+msgstr "(%{project_name}) %{author} confirmou a leitura do seu check-in"
 
 #.elixir
 #: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:16
 msgid "(%{project_name}) %{author} acknowledged your retrospective"
-msgstr "(%{project_name}) %{author} reconheceu a sua retrospectiva"
+msgstr "(%{project_name}) %{author} confirmou a leitura da sua retrospectiva"
 
 #.elixir
 #: lib/operately_email/emails/project_contributor_addition_email.ex:19
@@ -3426,7 +3426,7 @@ msgstr "(%{where}) %{author} atribuiu a %{champion} o papel de champion"
 #.elixir
 #: lib/operately_email/emails/project_reviewer_updating_email.ex:36
 msgid "(%{where}) %{author} assigned %{reviewer} as the reviewer"
-msgstr "(%{where}) %{author} atribuiu a %{reviewer} o papel de revisor"
+msgstr "(%{where}) %{author} atribuiu a %{reviewer} o papel de reviewer"
 
 #.elixir
 #: lib/operately_email/emails/project_champion_updating_email.ex:35
@@ -3436,7 +3436,7 @@ msgstr "(%{where}) %{author} atribuiu a você o papel de champion"
 #.elixir
 #: lib/operately_email/emails/project_reviewer_updating_email.ex:34
 msgid "(%{where}) %{author} assigned you as the reviewer"
-msgstr "(%{where}) %{author} atribuiu a você o papel de revisor"
+msgstr "(%{where}) %{author} atribuiu a você o papel de reviewer"
 
 #.elixir
 #: lib/operately_email/emails/task_assignee_updating_email.ex:45
@@ -3486,7 +3486,7 @@ msgstr "(%{where}) %{author} removeu a data de conclusão"
 #.elixir
 #: lib/operately_email/emails/project_reviewer_updating_email.ex:31
 msgid "(%{where}) %{author} removed the reviewer"
-msgstr "(%{where}) %{author} removeu o revisor"
+msgstr "(%{where}) %{author} removeu o reviewer"
 
 #.elixir
 #: lib/operately_email/emails/task_assignee_updating_email.ex:53
@@ -4767,7 +4767,7 @@ msgstr "<author/> <icon/><text>reabriu o marco</text>"
 #.frontend
 #: ../turboui/src/Timeline/ActivityComponents.tsx:179
 msgid "<author/> <text>acknowledged this Check-In</text><icon/>"
-msgstr "<author/> <text>reconheceu este check-in</text><icon/>"
+msgstr "<author/> <text>confirmou a leitura deste check-in</text><icon/>"
 
 #.frontend
 #: ../turboui/src/Timeline/ActivityComponents.tsx:125
@@ -4915,7 +4915,7 @@ msgstr "<date/> às <time/>"
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:47
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:126
 msgid "<icon/>Acknowledged by %{fullName}"
-msgstr "<icon/>Reconhecido por %{fullName}"
+msgstr "<icon/>Leitura confirmada por %{fullName}"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
@@ -4936,7 +4936,7 @@ msgstr "<icon/>Inativo"
 #.frontend
 #: ../turboui/src/CheckInHeader/index.tsx:108
 msgid "<label>Acknowledged by</label> <person>%{name}</person>"
-msgstr "<label>Reconhecido por</label> <person>%{name}</person>"
+msgstr "<label>Leitura confirmada por</label> <person>%{name}</person>"
 
 #.frontend
 #: ../turboui/src/DocumentTitle/index.tsx:76
@@ -5194,31 +5194,31 @@ msgstr "Alcançado"
 #.elixir
 #: lib/operately_email/acknowledge_cta.ex:6
 msgid "Acknowledge"
-msgstr "Reconhecer"
+msgstr "Confirmar leitura"
 
 #.frontend
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:32
 #: assets/js/pages/ProjectRetrospectivePage/AckCTA.tsx:26
 msgid "Acknowledge Retrospective"
-msgstr "Reconhecer a retrospectiva"
+msgstr "Confirmar leitura"
 
 #.frontend
 #: assets/js/pages/GoalCheckInPage/AckCTA.tsx:47
 #: assets/js/pages/ProjectCheckInPage/AckCTA.tsx:45
 msgid "Acknowledge this Check-In"
-msgstr "Reconhecer este check-in"
+msgstr "Confirmar leitura"
 
 #.frontend
 #: assets/js/features/activities/GoalCheckInAcknowledgement/index.tsx:76
 #: assets/js/features/activities/ProjectCheckInAcknowledged/index.tsx:78
 msgid "Acknowledged check-in"
-msgstr "Check-in reconhecido"
+msgstr "Leitura do check-in confirmada"
 
 #.frontend
 #: assets/js/features/activities/GoalRetrospectiveAcknowledged/index.tsx:74
 #: assets/js/features/activities/ProjectRetrospectiveAcknowledged/index.tsx:67
 msgid "Acknowledged retrospective"
-msgstr "Retrospectiva reconhecida"
+msgstr "Leitura da retrospectiva confirmada"
 
 #.frontend
 #: ../turboui/src/CompanyBillingPage/index.tsx:168
@@ -6234,7 +6234,7 @@ msgstr "Como champion, você deve liderar o projeto, definir o escopo, os objeti
 #.elixir
 #: lib/operately_email/emails/project_contributor_addition_email.ex:36
 msgid "As a reviewer, you are responsible for reviewing the progress of the project, providing feedback, and approving the final deliverables."
-msgstr "Como revisor, você deve revisar o progresso do projeto, fornecer feedback e aprovar as entregas finais."
+msgstr "Como reviewer, você deve revisar o progresso do projeto, fornecer feedback e aprovar as entregas finais."
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:110
@@ -6259,7 +6259,7 @@ msgstr "Atribuir como champion"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:171
 msgid "Assign as reviewer"
-msgstr "Atribuir como revisor"
+msgstr "Atribuir como reviewer"
 
 #.frontend
 #: ../turboui/src/TaskCreationModal/index.tsx:345
@@ -10119,7 +10119,7 @@ msgstr "Riscos ou atrasos emergentes. %{reviewer} deve estar ciente."
 #: ../turboui/src/Forms/SelectStatus.tsx:163
 #: assets/js/components/status/Status.tsx:53
 msgid "Emerging risks or delays. The reviewer should be aware."
-msgstr "Riscos ou atrasos emergentes. A pessoa responsável pela revisão deve estar ciente."
+msgstr "Riscos ou atrasos emergentes. O reviewer deve estar ciente."
 
 #.frontend
 #: assets/js/features/SpaceTools/ResourceHubs/ZeroState.tsx:42
@@ -11579,7 +11579,7 @@ msgstr "Retrospectiva do objetivo"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:197
 msgid "Goal Reviewer"
-msgstr "Revisor do objetivo"
+msgstr "Reviewer do objetivo"
 
 #.frontend
 #: ../turboui/src/SearchPage/index.tsx:329
@@ -14304,7 +14304,7 @@ msgstr "Nenhum resultado"
 #: ../turboui/src/TemplateProjectPage/People.tsx:96
 #: assets/js/pages/ProjectAddPage/page.tsx:193
 msgid "No reviewer"
-msgstr "Nenhum revisor"
+msgstr "Nenhum reviewer"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:71
@@ -14448,7 +14448,7 @@ msgstr "Não tem certeza? Comece com um projeto — você pode definir objetivos
 #: assets/js/pages/GoalActivityPage/AckCTA.tsx:56
 #: assets/js/pages/ProjectRetrospectivePage/page.tsx:135
 msgid "Not yet acknowledged"
-msgstr "Ainda não reconhecido"
+msgstr "Leitura ainda não confirmada"
 
 #.frontend
 #: ../turboui/src/SpaceKpisPage/LogUpdateForm.tsx:179
@@ -15721,7 +15721,7 @@ msgstr "Anteriormente, %{personName} era o champion."
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:62
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:62
 msgid "Previously, %{personName} was the reviewer."
-msgstr "Anteriormente, %{personName} era o revisor."
+msgstr "Anteriormente, %{personName} era o reviewer."
 
 #.frontend
 #: assets/js/features/activities/TaskMoving/index.tsx:82
@@ -15983,7 +15983,7 @@ msgstr "Retrospectivas de projetos"
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:217
 msgid "Project reviewer"
-msgstr "Revisor do projeto"
+msgstr "Reviewer do projeto"
 
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:188
@@ -16042,12 +16042,12 @@ msgstr "Gerenciado pelo provedor"
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:199
 msgid "Provides feedback throughout the goal, and is responsible for acknowledging monthly check-ins."
-msgstr "Dá feedback ao longo do objetivo e é responsável por reconhecer os check-ins mensais."
+msgstr "Dá feedback ao longo do objetivo e é responsável por confirmar a leitura dos check-ins mensais."
 
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:219
 msgid "Provides feedback throughout the project, and is responsible for acknowledging weekly check-ins."
-msgstr "Dá feedback ao longo do projeto e é responsável por reconhecer os check-ins semanais."
+msgstr "Dá feedback ao longo do projeto e é responsável por confirmar a leitura dos check-ins semanais."
 
 #.frontend
 #: ../turboui/src/AccessLevelSummary/index.tsx:58
@@ -16147,7 +16147,7 @@ msgstr "Citação"
 #.frontend
 #: ../turboui/src/ReviewPage/AssignmentsList.tsx:193
 msgid "REVIEWER"
-msgstr "REVISOR"
+msgstr "REVIEWER"
 
 #.elixir
 #: lib/operately_web/mcp/plugs/rate_limit_oauth.ex:58
@@ -17005,7 +17005,7 @@ msgstr "O nome do projeto voltou ao valor anterior."
 #: assets/js/pages/GoalPage/index.tsx:122
 #: assets/js/pages/ProjectPage/index.tsx:677
 msgid "Reverted the reviewer to its previous value."
-msgstr "O revisor voltou ao valor anterior."
+msgstr "O reviewer voltou ao valor anterior."
 
 #.frontend
 #: assets/js/pages/GoalPage/index.tsx:98
@@ -17116,12 +17116,12 @@ msgstr "Revisar check-in semanal"
 #: lib/operately/md/goal.ex:137
 #: lib/operately_email/emails/project_created_email.ex:51
 msgid "Reviewer"
-msgstr "Revisor"
+msgstr "Reviewer"
 
 #.elixir
 #: lib/operately/md/goal.ex:139
 msgid "Reviewer: Not Assigned"
-msgstr "Revisor: Não atribuído"
+msgstr "Reviewer: Não atribuído"
 
 #.frontend
 #: ../turboui/src/ProfilePage/index.tsx:134
@@ -17786,7 +17786,7 @@ msgstr "Selecione um substituto"
 #.frontend
 #: ../turboui/src/TemplateProjectPage/People.tsx:97
 msgid "Select reviewer"
-msgstr "Selecione a pessoa responsável pela revisão"
+msgstr "Selecione o reviewer"
 
 #.frontend
 #: ../turboui/src/SpaceField/index.tsx:59
@@ -17996,7 +17996,7 @@ msgstr "Definir data de conclusão relativa"
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:236
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:245
 msgid "Set reviewer"
-msgstr "Definir revisor"
+msgstr "Definir reviewer"
 
 #.frontend
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:138
@@ -18193,7 +18193,7 @@ msgstr "Problemas significativos afetam o sucesso. A ajuda de %{reviewer} é nec
 #: ../turboui/src/Forms/SelectStatus.tsx:171
 #: assets/js/components/status/Status.tsx:61
 msgid "Significant problems affecting success. The reviewer’s help is needed."
-msgstr "Problemas significativos afetam o sucesso. A ajuda da pessoa responsável pela revisão é necessária."
+msgstr "Problemas significativos afetam o sucesso. A ajuda do reviewer é necessária."
 
 #.frontend
 #: ../turboui/src/AccountChangeEmailPage/EnterEmailStep.tsx:51
@@ -19755,12 +19755,12 @@ msgstr "O recurso solicitado não foi encontrado ou não está acessível."
 #.elixir
 #: lib/operately_email/templates/goal_editing.html.eex:25
 msgid "The reviewer was changed from %{old_reviewer} to %{new_reviewer}"
-msgstr "O revisor foi alterado de %{old_reviewer} para %{new_reviewer}"
+msgstr "O reviewer foi alterado de %{old_reviewer} para %{new_reviewer}"
 
 #.frontend
 #: assets/js/features/activities/GoalEditing/index.tsx:137
 msgid "The reviewer was changed to %{personName}."
-msgstr "O revisor foi alterado para %{personName}."
+msgstr "O reviewer foi alterado para %{personName}."
 
 #.elixir
 #: lib/operately_web/api/goals/create.ex:50
@@ -19770,7 +19770,7 @@ msgstr "O champion selecionado não tem acesso ao espaço selecionado"
 #.elixir
 #: lib/operately_web/api/goals/create.ex:51
 msgid "The selected reviewer doesn't have access to the selected space"
-msgstr "O revisor selecionado não tem acesso ao espaço selecionado"
+msgstr "O reviewer selecionado não tem acesso ao espaço selecionado"
 
 #.elixir
 #: lib/operately_web/api/rich_content/set_task_item_checked.ex:52
@@ -19969,7 +19969,7 @@ msgstr "Não havia champion anterior."
 #: assets/js/features/activities/GoalReviewerUpdating/index.tsx:68
 #: assets/js/features/activities/ProjectReviewerUpdating/index.tsx:68
 msgid "There was no previous reviewer."
-msgstr "Não havia revisor anterior."
+msgstr "Não havia reviewer anterior."
 
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/InvitedContent.tsx:23
@@ -22962,22 +22962,22 @@ msgstr "uma tarefa"
 #.elixir
 #: lib/operately_email/emails/goal_check_in_acknowledgement_email.ex:35
 msgid "acknowledged a goal check-in"
-msgstr "reconheceu um check-in de objetivo"
+msgstr "confirmou a leitura de um check-in de objetivo"
 
 #.elixir
 #: lib/operately_email/emails/goal_retrospective_acknowledged_email.ex:34
 msgid "acknowledged a goal retrospective"
-msgstr "reconheceu uma retrospectiva de objetivo"
+msgstr "confirmou a leitura de uma retrospectiva de objetivo"
 
 #.elixir
 #: lib/operately_email/emails/project_check_in_acknowledged_email.ex:35
 msgid "acknowledged a project check-in"
-msgstr "reconheceu um check-in de projeto"
+msgstr "confirmou a leitura de um check-in de projeto"
 
 #.elixir
 #: lib/operately_email/emails/project_retrospective_acknowledged_email.ex:34
 msgid "acknowledged a project retrospective"
-msgstr "reconheceu uma retrospectiva de projeto"
+msgstr "confirmou a leitura de uma retrospectiva de projeto"
 
 #~ #.frontend
 #~ #: ../turboui/src/Timeline/ActivityComponents.tsx:175
@@ -23042,12 +23042,12 @@ msgstr "atribuiu a função de champion do projeto a %{champion_full_name}"
 #.elixir
 #: lib/operately_email/emails/goal_reviewer_updating_email.ex:44
 msgid "assigned %{reviewer_full_name} as the goal reviewer"
-msgstr "atribuiu a função de revisor do objetivo a %{reviewer_full_name}"
+msgstr "atribuiu a função de reviewer do objetivo a %{reviewer_full_name}"
 
 #.elixir
 #: lib/operately_email/emails/project_reviewer_updating_email.ex:61
 msgid "assigned %{reviewer_full_name} as the project reviewer"
-msgstr "atribuiu a função de revisor do projeto a %{reviewer_full_name}"
+msgstr "atribuiu a função de reviewer do projeto a %{reviewer_full_name}"
 
 #~ #.frontend
 #~ #: ../turboui/src/Timeline/TaskActivities.tsx:125
@@ -23732,7 +23732,7 @@ msgstr "removeu o champion do objetivo"
 #.elixir
 #: lib/operately_email/emails/goal_reviewer_updating_email.ex:43
 msgid "removed the goal reviewer"
-msgstr "removeu o revisor do objetivo"
+msgstr "removeu o reviewer do objetivo"
 
 #.elixir
 #: lib/operately_email/emails/goal_reparent_email.ex:44
@@ -23747,7 +23747,7 @@ msgstr "removeu o champion do projeto"
 #.elixir
 #: lib/operately_email/emails/project_reviewer_updating_email.ex:60
 msgid "removed the project reviewer"
-msgstr "removeu o revisor do projeto"
+msgstr "removeu o reviewer do projeto"
 
 #.elixir
 #: lib/operately_email/emails/project_due_date_updating_email.ex:55
@@ -23776,7 +23776,7 @@ msgstr "retomou o projeto"
 #: lib/operately_email/emails/goal_created_email.ex:28
 #: lib/operately_email/emails/project_contributor_addition_email.ex:29
 msgid "reviewer"
-msgstr "revisor"
+msgstr "reviewer"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:221

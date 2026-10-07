@@ -133,7 +133,7 @@ defmodule OperatelyEmail.TemplatesTest do
           {"task_description_change", "A descrição foi apagada."},
           {"task_assignee_updating", "O responsável foi removido."},
           {"project_champion_updating", "removeu o champion"},
-          {"project_reviewer_updating", "removeu o revisor"},
+          {"project_reviewer_updating", "removeu o reviewer"},
           {"goal_reparent", "O objetivo superior foi removido"}
         ] do
       {html, _} = render(template, assigns, "pt_BR")

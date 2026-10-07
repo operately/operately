@@ -170,7 +170,7 @@ describe("catalog rendering", () => {
       {
         "Check-In for <date/>": "Atualização de <date/>",
         "<label>Acknowledged by</label> <person>{{name}}</person>":
-          "<label>Reconhecido por</label> <person>{{name}}</person>",
+          "<label>Leitura confirmada por</label> <person>{{name}}</person>",
       },
       true,
       true,
@@ -194,6 +194,6 @@ describe("catalog rendering", () => {
     );
     expect(screen.getByRole("heading")).toHaveTextContent("Atualização de");
     expect(screen.getByText("Grace <Admin> & Hopper")).toBeInTheDocument();
-    expect(screen.getByText(/Reconhecido por/)).toBeInTheDocument();
+    expect(screen.getByText(/Leitura confirmada por/)).toBeInTheDocument();
   });
 });
