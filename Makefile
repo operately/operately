@@ -134,6 +134,10 @@ gen.cli.catalog:
 gen.i18n:
 	./devenv bash -c "cd app && mix operately.i18n.extract && mix operately.i18n.convert"
 
+.PHONY: test.i18n
+test.i18n:
+	./devenv bash -c "cd app && MIX_ENV=test mix operately.i18n.check"
+
 dev.shell:
 	./devenv shell
 
