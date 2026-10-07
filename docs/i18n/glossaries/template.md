@@ -8,7 +8,7 @@ Start every new language by copying this file to `<BCP-47-locale>.md` and fillin
 - Review status: Draft — not approved for translation
 - Native-speaker reviewer and approval reference/date:
 
-AI may propose terminology. Obtain careful native-speaker approval of the completed glossary before translating the full catalog. Resolve ambiguous roles, borrowed terms, plural forms, and UI names explicitly. Update the review status only after approval. See the [internationalization guide](../../internationalization.md).
+AI may propose terminology. Obtain careful native-speaker approval of the completed glossary before translating the full catalog. Resolve ambiguous roles, borrowed terms, plural forms, and UI names explicitly. Update the review status only after approval. Then follow [Adding a language](../../../.agents/skills/internationalization/references/adding-a-language.md).
 
 | English | Meaning/context | Target-language term | Capitalization and usage |
 | --- | --- | --- | --- |
