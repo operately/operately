@@ -4272,7 +4272,7 @@ msgstr[0] "1 comentário"
 msgstr[1] "%{count} comentários"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:171
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:175
 msgid "1 company"
 msgid_plural "%{count} companies"
 msgstr[0] "1 empresa"
@@ -5232,7 +5232,7 @@ msgstr "Retrospectiva reconhecida"
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:258
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:289
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:317
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:127
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:131
 msgid "Actions"
 msgstr "Ações"
 
@@ -5253,7 +5253,7 @@ msgstr "O código de ativação expirou"
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:333
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:332
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:96
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:139
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:143
 msgid "Active"
 msgstr "Ativo"
 
@@ -5925,7 +5925,7 @@ msgstr "Tudo em dia"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:78
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:169
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:173
 msgid "All companies"
 msgstr "Todas as empresas"
 
@@ -6377,7 +6377,7 @@ msgstr "No máximo 100 URLs podem ser resolvidas de uma vez"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:76
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:123
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:127
 msgid "Audience"
 msgstr "Público"
 
@@ -6941,7 +6941,7 @@ msgstr "Não pode ser a mesma pessoa que o champion"
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/TestEmailModal.tsx:82
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:354
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:108
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:99
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:103
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -8499,7 +8499,7 @@ msgid "Create a copy of %{name}"
 msgstr "Criar uma cópia de %{name}"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:73
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:77
 msgid "Create a message to show a banner to company users."
 msgstr "Crie uma mensagem para exibir um banner aos usuários das empresas."
 
@@ -8619,7 +8619,7 @@ msgstr "Criar, atualizar, excluir e arquivar conteúdo do ambiente de trabalho"
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:196
 #: ../turboui/src/TaskPage/Sidebar.tsx:388
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:257
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:126
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:130
 #: lib/operately/md/goal.ex:31
 #: lib/operately/md/milestone.ex:23
 #: lib/operately/md/project.ex:46
@@ -8898,7 +8898,7 @@ msgstr "Desativar conta"
 #: assets/js/pages/ResourceHubFilePage/Options.tsx:47
 #: assets/js/pages/ResourceHubLinkPage/Options.tsx:36
 #: assets/js/pages/SpacePage/page.tsx:241
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:158
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:162
 msgid "Delete"
 msgstr "Excluir"
 
@@ -9011,7 +9011,7 @@ msgid "Delete forever"
 msgstr "Excluir para sempre"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:98
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:102
 msgid "Delete message"
 msgstr "Excluir mensagem"
 
@@ -9042,7 +9042,7 @@ msgid "Delete this company"
 msgstr "Excluir esta empresa"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:96
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:100
 msgid "Delete this message?"
 msgstr "Excluir esta mensagem?"
 
@@ -9761,7 +9761,7 @@ msgstr "Versão anterior"
 #: assets/js/pages/SpaceAccessManagementPage/page.tsx:97
 #: assets/js/pages/SpaceAddPage/index.tsx:157
 #: assets/js/pages/SpacePage/page.tsx:228
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:155
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:159
 msgid "Edit"
 msgstr "Editar"
 
@@ -10652,7 +10652,7 @@ msgid "Expected a list"
 msgstr "Era esperada uma lista"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:125
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:129
 msgid "Expires"
 msgstr "Expira"
 
@@ -11902,7 +11902,7 @@ msgstr "Em andamento (azul)"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:97
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:139
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:143
 msgid "Inactive"
 msgstr "Inativo"
 
@@ -13627,7 +13627,7 @@ msgstr "Erro de rede"
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:364
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:224
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:144
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:148
 msgid "Never"
 msgstr "Nunca"
 
@@ -14307,7 +14307,7 @@ msgid "No reviewer"
 msgstr "Nenhum revisor"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:71
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:75
 msgid "No site messages yet."
 msgstr "Ainda não há mensagens do site."
 
@@ -18643,7 +18643,7 @@ msgstr "Estatísticas"
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:256
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:283
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:94
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:124
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:128
 #: lib/operately/md/goal.ex:28
 #: lib/operately/md/goal/check_ins.ex:68
 #: lib/operately/md/milestone.ex:18
@@ -21500,6 +21500,11 @@ msgid "Use for backlog or paused work"
 msgstr "Use para trabalho pendente ou pausado"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:70
+msgid "Use site messages to share announcements with your companies."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:48
 msgid "Use these values when calling the external Operately API."
 msgstr "Use estes valores ao chamar a API externa do Operately."
@@ -21515,7 +21520,7 @@ msgid "Use your work email — keep work and life separate."
 msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:97
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:101
 msgid "Users who haven't dismissed it will stop seeing it immediately."
 msgstr "Os usuários que ainda não a dispensaram deixarão de vê-la imediatamente."
 
@@ -25103,7 +25108,7 @@ msgstr "não é"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/SiteMessageModal.tsx:66
-#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:122
+#: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:126
 msgctxt "message"
 msgid "Title"
 msgstr "Título"
