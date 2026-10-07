@@ -94,7 +94,7 @@ test.each([
     await i18n.changeLanguage("pt-BR");
     const view = renderPage([assignment({ type, role, actionLabel: english })]);
     expect(screen.getByText(portuguese)).toBeInTheDocument();
-    expect(screen.getByText(role === "reviewer" ? "REVISOR" : "CHAMPION")).toBeInTheDocument();
+    expect(screen.getByText(role === "reviewer" ? "REVIEWER" : "CHAMPION")).toBeInTheDocument();
     expect(document.querySelector("resource")).toBeNull();
     view.unmount();
     await i18n.changeLanguage("en");

@@ -127,7 +127,7 @@ tarball, extracted package, and consumer for inspection.
 
 `npm pack` includes compiled output, this README, and the Apache-2.0 license.
 It excludes tests, fixtures, Storybook, and build tools. Installing the tarball
-does not compile anything. Version 0.2.0 is prepared for public npm publishing;
+does not compile anything. The package is configured for public npm publishing;
 publishing and release automation are separate steps.
 
 ## Embedding in an open Shadow DOM
