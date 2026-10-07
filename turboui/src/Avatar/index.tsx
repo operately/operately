@@ -120,9 +120,14 @@ function BackupAvatar({ person, size, className, testId }: AvatarProps): JSX.Ele
 //
 // Fixed based on this issue: https://github.com/chakra-ui/chakra-ui/issues/5909.
 //
-function ImageAvatar({ person, size, className, testId }: AvatarProps): JSX.Element {
-  if (!person) return <></>;
-
+function ImageAvatar({
+  person,
+  avatarUrl,
+  size,
+  className,
+  testId,
+  onError,
+}: AvatarProps & { avatarUrl: string; onError: () => void }): JSX.Element {
   const cn = classNames(
     "rounded-full overflow-hidden bg-white shrink-0 border border-stroke-base inline-block",
     className,
@@ -134,8 +139,9 @@ function ImageAvatar({ person, size, className, testId }: AvatarProps): JSX.Elem
   return (
     <div title={person.fullName ?? ""} className={cn} style={style} data-test-id={testId}>
       <img
-        src={person.avatarUrl!}
+        src={avatarUrl}
         alt={person.fullName ?? ""}
+        onError={onError}
         referrerPolicy="no-referrer"
         style={{
           height: "100%",
@@ -149,9 +155,13 @@ function ImageAvatar({ person, size, className, testId }: AvatarProps): JSX.Elem
 }
 
 export function Avatar(props: AvatarProps) {
+  const [failedAvatarUrl, setFailedAvatarUrl] = React.useState<string | null>(null);
+
   if (props.person) {
-    if (props.person.avatarUrl) {
-      return ImageAvatar(props);
+    const avatarUrl = props.person.avatarUrl;
+
+    if (avatarUrl && avatarUrl !== failedAvatarUrl) {
+      return <ImageAvatar {...props} avatarUrl={avatarUrl} onError={() => setFailedAvatarUrl(avatarUrl)} />;
     } else {
       return BackupAvatar(props);
     }
