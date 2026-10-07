@@ -111,7 +111,8 @@ Use Operately's shared `Trans` adapter rather than importing `Trans` directly fr
 2. Run `make gen.i18n` to extract messages and merge catalogs.
 3. Fill every active translation and required plural form in each supported non-English PO file. Preserve named placeholders, context, and rich-text tags. Review translations against the glossary.
 4. Run `make gen.i18n` again and include the source, PO, POT, and generated-resource changes in the same PR. Inspect the diff for unintended translation changes.
-5. Run the affected surface's tests and check English, translated output, user-content escaping, links, and zero/one/many counts where relevant. Check language switching and flag rollback when changing locale handling; email changes also verify recipient isolation and both body formats.
+5. Run `make test.i18n`. It checks that every wrapped source message has a translation in every supported non-English language, without changing your working tree.
+6. Run the affected surface's tests and check English, translated output, user-content escaping, links, and zero/one/many counts where relevant. Check language switching and flag rollback when changing locale handling; email changes also verify recipient isolation and both body formats.
 
 Existing focused catalog checks can be run from the repository root:
 
@@ -121,6 +122,10 @@ make test FILE=app/test/operately/i18n/converter_test.exs
 make test FILE=app/test/operately/i18n/pt_br_translations_test.exs
 ```
 
-These tests exercise catalog tooling and selected translations; they do not prove full translation completeness. Inspect PO entries directly: generated JSON can contain English fallback text for missing translations. A second generation without further source or translation edits should produce no new changes.
+`make test.i18n` checks current wrapped copy against every supported non-English PO catalog, including newly registered languages. CI fails for missing, blank, fuzzy, or incompatible singular/plural translations and identifies the language, message/context, location, and missing form. Obsolete entries and `intlRelativeDateTime` are excluded; translations identical to English are allowed.
+
+To fix failures, run `make gen.i18n`, complete the reported PO entries, regenerate, and rerun `make test.i18n`. Commit POT, PO, and JSON changes together.
+
+This checks completeness only. Unwrapped copy, generated-file freshness, language configuration, placeholders, tags, and translation quality still require review.
 
 Runtime English fallback remains a safeguard, not permission to ship missing translations. Preserve fallback behavior and its tests. Plural conversion uses explicit locale mappings; for Portuguese, the frontend's `zero`, `many`, and `other` categories use `msgstr[1]`, while `one` uses `msgstr[0]`. The zero override prevents a zero count from displaying a hardcoded singular. Missing plural forms fall back using English plural rules.
