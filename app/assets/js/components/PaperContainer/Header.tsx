@@ -58,15 +58,15 @@ function HeaderLeft(props: Props & { className: string }) {
 
 function HeaderCentered(props: Props & { className: string }) {
   return (
-    <div className={classNames(props.className, "gap-3")}>
-      <div className="order-2 shrink-0 whitespace-nowrap sm:order-1 sm:w-[30%]">{props.actions}</div>
+    <div className={classNames(props.className, "max-sm:gap-3")}>
+      <div className="max-sm:shrink-0 max-sm:whitespace-nowrap sm:w-[30%]">{props.actions}</div>
 
-      <div className="order-1 min-w-0 flex-1 sm:order-2 sm:w-[50%] sm:text-center">
+      <div className="min-w-0 flex-1 sm:w-[50%] sm:text-center">
         <Title title={props.title} />
         {props.subtitle && <Subtitle message={props.subtitle} />}
       </div>
 
-      <div className="hidden sm:order-3 sm:block sm:w-[30%]" />
+      <div className="hidden sm:block sm:w-[30%]" />
     </div>
   );
 }
