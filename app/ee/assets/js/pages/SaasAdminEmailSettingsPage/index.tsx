@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useLoadedData } from "./loader";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
@@ -8,14 +9,15 @@ import { EmailSettingsSection } from "./EmailSettingsSection";
 export { loader } from "./loader";
 
 export function Page() {
+  const { t } = useTranslation();
   const { emailSettings } = useLoadedData();
 
   return (
-    <Pages.Page title="Email Configuration" testId="saas-admin-email-settings-page">
+    <Pages.Page title={t("Email Configuration")} testId="saas-admin-email-settings-page">
       <Paper.Root size="large">
-        <Paper.Navigation items={[{ to: "/admin", label: "Administration" }]} />
+        <Paper.Navigation items={[{ to: "/admin", label: t("Administration") }]} />
         <Paper.Body>
-          <Paper.Header title="Email Configuration" />
+          <Paper.Header title={t("Email Configuration")} />
           <EmailSettingsSection initialSettings={emailSettings} />
         </Paper.Body>
       </Paper.Root>

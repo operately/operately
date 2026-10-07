@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.Billing
@@ -16,7 +17,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
 
   def call(_conn, inputs) do
     if not Billing.billing_enabled?() do
-      {:error, :bad_request, "Billing is not enabled on this instance"}
+      {:error, :bad_request, gettext("Billing is not enabled on this instance")}
     else
       with {:ok, id} <- decode_id(inputs.id),
            {:ok, product} <- find_product(id),
@@ -25,7 +26,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
         {:ok, %{product: OperatelyWeb.Api.Serializer.serialize(updated, level: :essential)}}
       else
         {:error, :internal_server_error} ->
-          {:error, :internal_server_error, "Failed to update product in Polar"}
+          {:error, :internal_server_error, gettext("Failed to update product in Polar")}
 
         {:error, error, message} ->
           {:error, error, message}
@@ -36,14 +37,14 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingProduct do
   defp find_product(id) do
     case Billing.get_product(id) do
       {:ok, product} -> {:ok, product}
-      {:error, :not_found} -> {:error, :not_found, "Product not found"}
+      {:error, :not_found} -> {:error, :not_found, gettext("Product not found")}
     end
   end
 
   defp decode_id(id) do
     case Operately.ShortUuid.decode(id) do
       {:ok, decoded} -> {:ok, decoded}
-      _ -> {:error, :bad_request, "Invalid product ID"}
+      _ -> {:error, :bad_request, gettext("Invalid product ID")}
     end
   end
 

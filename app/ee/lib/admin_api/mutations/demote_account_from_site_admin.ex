@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.DemoteAccountFromSiteAdmin do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -46,6 +47,6 @@ defmodule OperatelyEE.AdminApi.Mutations.DemoteAccountFromSiteAdmin do
   end
 
   defp last_site_admin_error do
-    "This account cannot be demoted because it is the last site admin. Promote another account to site admin first."
+    gettext("This account cannot be demoted because it is the last site admin. Promote another account to site admin first.")
   end
 end

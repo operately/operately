@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.UpdateEmailSettings do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -105,7 +106,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateEmailSettings do
   defp truthy?(_), do: false
 
   defp changeset_error(changeset) do
-    {message, _opts} = changeset.errors |> List.first() || {"Invalid settings", []}
+    {message, _opts} = changeset.errors |> List.first() || {gettext("Invalid settings"), []}
     message
   end
 end

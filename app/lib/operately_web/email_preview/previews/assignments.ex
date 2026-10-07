@@ -3,6 +3,8 @@ defmodule OperatelyWeb.EmailPreview.Previews.Assignments do
   Mock data for previewing the assignments email template.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
+
   alias OperatelyEmail.Mailers.NotificationMailer, as: Mailer
   alias OperatelyWeb.EmailPreview.Preview
 
@@ -29,7 +31,7 @@ defmodule OperatelyWeb.EmailPreview.Previews.Assignments do
       |> Mailer.new()
       |> Mailer.from("Operately")
       |> Mailer.to(person)
-      |> Mailer.subject("#{company.name}: Your work for today")
+      |> Mailer.subject(gettext("%{company_name}: Your work for today", company_name: company.name))
       |> Mailer.assign(:company, company)
       |> Mailer.assign(:urgent_groups, urgent_groups)
 

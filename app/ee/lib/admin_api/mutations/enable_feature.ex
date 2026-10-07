@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.EnableFeature do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -37,13 +38,13 @@ defmodule OperatelyEE.AdminApi.Mutations.EnableFeature do
     feature = String.trim(feature)
 
     if feature == "" do
-      {:error, :bad_request, "Feature name cannot be empty"}
+      {:error, :bad_request, gettext("Feature name cannot be empty")}
     else
       {:ok, feature}
     end
   end
 
-  defp validate_feature(_), do: {:error, :bad_request, "Feature name cannot be empty"}
+  defp validate_feature(_), do: {:error, :bad_request, gettext("Feature name cannot be empty")}
 
   defp enable_feature(company, feature) do
     Operately.Companies.enable_experimental_feature(company, feature)

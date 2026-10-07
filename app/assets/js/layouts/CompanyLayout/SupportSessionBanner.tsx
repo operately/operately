@@ -1,8 +1,10 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { IconCircleKey, SecondaryButton } from "turboui";
 import { useEndSupportSession, useHasSupportSessionCookie } from "../../features/SupportSessions";
 
 export function SupportSessionBanner() {
+  const { t } = useTranslation();
   const handleEndSession = useEndSupportSession();
   const hasSupportCookie = useHasSupportSessionCookie();
 
@@ -17,13 +19,13 @@ export function SupportSessionBanner() {
         <div className="flex items-center gap-3">
           <IconCircleKey size={20} className="text-yellow-600" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <span className="font-semibold text-yellow-800">Support Mode Active</span>
-            <span className="text-sm text-yellow-700">You are viewing this account as support staff.</span>
+            <span className="font-semibold text-yellow-800">{t("Support Mode Active")}</span>
+            <span className="text-sm text-yellow-700">{t("You are viewing this account as support staff.")}</span>
           </div>
         </div>
 
         <SecondaryButton onClick={handleEndSession} size="sm" testId="end-support-session-button">
-          <span className="hidden sm:inline">Exit Support Mode</span>
+          <span className="hidden sm:inline">{t("Exit Support Mode")}</span>
         </SecondaryButton>
       </div>
     </div>

@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.StartSearchIndexMaintenance do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.Search.MaintenanceRuns
@@ -21,13 +22,13 @@ defmodule OperatelyEE.AdminApi.Mutations.StartSearchIndexMaintenance do
         {:ok, serialize_result(result)}
 
       {:error, :already_running} ->
-        {:error, :bad_request, "Search index maintenance is already running for #{target}"}
+        {:error, :bad_request, gettext("Search index maintenance is already running for %{target}", target: target)}
 
       {:error, :unknown_source_type} ->
-        {:error, :bad_request, "Unknown search source type"}
+        {:error, :bad_request, gettext("Unknown search source type")}
 
       {:error, :unknown_maintenance_kind} ->
-        {:error, :bad_request, "Unknown search maintenance kind"}
+        {:error, :bad_request, gettext("Unknown search maintenance kind")}
 
       _error ->
         {:error, :internal_server_error}

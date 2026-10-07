@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.People.GetBinded do
   Gets people bound to a resource.
   """
 
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -37,7 +38,7 @@ defmodule OperatelyWeb.Api.People.GetBinded do
   end
 
   def load_access_context(type, _) do
-    {:error, :bad_request, "Unknown resourse type: #{type}"}
+    {:error, :bad_request, gettext("Unknown resourse type: %{type}", type: type)}
   end
 
   def respond(ctx) do

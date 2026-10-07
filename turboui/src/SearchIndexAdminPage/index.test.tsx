@@ -1,6 +1,9 @@
 import * as React from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
+import i18n from "../i18n";
+import ptBR from "../../../app/assets/js/generated/locales/pt-BR.json";
 
 import { defaultFormattedTimePreferences } from "../FormattedTime";
 import { SearchIndexAdminPage, SearchIndexSourceStatus } from "./index";
@@ -133,4 +136,22 @@ describe("SearchIndexAdminPage", () => {
 
     expect(await screen.findByText("Search index maintenance could not be started. Try again.")).toBeInTheDocument();
   });
+});
+
+test("translates operator controls and confirmation without changing source identifiers", async () => {
+  i18n.addResourceBundle("pt-BR", "translation", ptBR, true, true);
+  await i18n.changeLanguage("pt-BR");
+  try {
+    const onStart = jest.fn().mockResolvedValue({ startedSourceTypes: ["task"], alreadyRunningSourceTypes: [] });
+    renderPage(onStart);
+    expect(screen.getByRole("heading", { name: "Índice de busca" })).toBeInTheDocument();
+    expect(screen.getByText("Concluído com erros")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Preencher retroativamente todas as fontes" }));
+    expect(screen.getByText("Preencher retroativamente todas as fontes?")).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog");
+    fireEvent.click(within(dialog).getByRole("button", { name: "Executar preenchimento retroativo" }));
+    await waitFor(() => expect(onStart).toHaveBeenCalledWith("backfill", undefined));
+  } finally {
+    await act(() => i18n.changeLanguage("en"));
+  }
 });

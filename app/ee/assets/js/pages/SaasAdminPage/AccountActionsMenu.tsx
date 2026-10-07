@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import * as AdminApi from "@/ee/admin_api";
 import * as SaasAdmin from "@/ee/models/saasAdminLifecycle";
 import * as React from "react";
@@ -11,20 +13,21 @@ interface AccountActionsMenuProps {
 }
 
 export function AccountActionsMenu({ account, onPromote, onDemote, onDelete }: AccountActionsMenuProps) {
+  const { t } = useTranslation();
   return (
     <Menu align="end" testId={`account-actions-${account.id}`}>
       {!account.siteAdmin && (
         <MenuActionItem icon={IconShieldLock} onClick={onPromote} testId={`promote-account-${account.id}`}>
-          Promote to site admin
+          {t("Promote to site admin")}
         </MenuActionItem>
       )}
       {account.siteAdmin && (
         <MenuActionItem icon={IconShieldLock} danger onClick={onDemote} testId={`demote-account-${account.id}`}>
-          Remove site admin access
+          {t("Remove site admin access")}
         </MenuActionItem>
       )}
       <MenuActionItem icon={IconTrash} danger onClick={onDelete} testId={`delete-account-${account.id}`}>
-        Delete account
+        {t("Delete account")}
       </MenuActionItem>
     </Menu>
   );
@@ -113,25 +116,34 @@ function dialogDetails(action: PendingAccountAction) {
   switch (action.type) {
     case "promote":
       return {
-        title: "Grant site admin access",
-        message: `Grant ${action.account.fullName} access to the site admin dashboard? Site admins can manage instance-wide settings and other privileged admin actions. Only grant this access to someone who should administer the whole site.`,
-        confirmText: "Grant access",
+        title: i18n.t("Grant site admin access"),
+        message: i18n.t(
+          "Grant {{fullName}} access to the site admin dashboard? Site admins can manage instance-wide settings and other privileged admin actions. Only grant this access to someone who should administer the whole site.",
+          { fullName: action.account.fullName },
+        ),
+        confirmText: i18n.t("Grant access"),
         variant: "default" as const,
         testId: "promote-site-admin-confirmation",
       };
     case "demote":
       return {
-        title: "Remove site admin access",
-        message: `Remove site admin access from ${action.account.fullName}? This will revoke access to the site admin dashboard and other privileged admin actions. Use this carefully.`,
-        confirmText: "Remove access",
+        title: i18n.t("Remove site admin access"),
+        message: i18n.t(
+          "Remove site admin access from {{fullName}}? This will revoke access to the site admin dashboard and other privileged admin actions. Use this carefully.",
+          { fullName: action.account.fullName },
+        ),
+        confirmText: i18n.t("Remove access"),
         variant: "danger" as const,
         testId: "demote-site-admin-confirmation",
       };
     case "delete":
       return {
-        title: "Delete account",
-        message: `Delete ${action.account.fullName}? This will suspend all linked people, anonymize personal data, and revoke access permanently.`,
-        confirmText: "Delete account",
+        title: i18n.t("Delete account"),
+        message: i18n.t(
+          "Delete {{fullName}}? This will suspend all linked people, anonymize personal data, and revoke access permanently.",
+          { fullName: action.account.fullName },
+        ),
+        confirmText: i18n.t("Delete account"),
         variant: "danger" as const,
         testId: "delete-account-confirmation",
       };
@@ -141,54 +153,54 @@ function dialogDetails(action: PendingAccountAction) {
 function successActionTitle(actionType: PendingAccountAction["type"]) {
   switch (actionType) {
     case "promote":
-      return "Site admin access granted";
+      return i18n.t("Site admin access granted");
     case "demote":
-      return "Site admin access removed";
+      return i18n.t("Site admin access removed");
     case "delete":
-      return "Account deleted";
+      return i18n.t("Account deleted");
   }
 }
 
 function successActionMessage(action: PendingAccountAction) {
   switch (action.type) {
     case "promote":
-      return `${action.account.fullName} is now a site admin.`;
+      return i18n.t("{{fullName}} is now a site admin.", { fullName: action.account.fullName });
     case "demote":
-      return `${action.account.fullName} no longer has site admin access.`;
+      return i18n.t("{{fullName}} no longer has site admin access.", { fullName: action.account.fullName });
     case "delete":
-      return `${action.account.fullName} has been deleted.`;
+      return i18n.t("{{fullName}} has been deleted.", { fullName: action.account.fullName });
   }
 }
 
 function blockedActionTitle(actionType: PendingAccountAction["type"]) {
   switch (actionType) {
     case "promote":
-      return "Site admin update blocked";
+      return i18n.t("Site admin update blocked");
     case "demote":
-      return "Site admin demotion blocked";
+      return i18n.t("Site admin demotion blocked");
     case "delete":
-      return "Account deletion blocked";
+      return i18n.t("Account deletion blocked");
   }
 }
 
 function failedActionTitle(actionType: PendingAccountAction["type"]) {
   switch (actionType) {
     case "promote":
-      return "Site admin promotion failed";
+      return i18n.t("Site admin promotion failed");
     case "demote":
-      return "Site admin demotion failed";
+      return i18n.t("Site admin demotion failed");
     case "delete":
-      return "Account deletion failed";
+      return i18n.t("Account deletion failed");
   }
 }
 
 function failedActionMessage(actionType: PendingAccountAction["type"]) {
   switch (actionType) {
     case "promote":
-      return "Failed to grant site admin access.";
+      return i18n.t("Failed to grant site admin access.");
     case "demote":
-      return "Failed to remove site admin access.";
+      return i18n.t("Failed to remove site admin access.");
     case "delete":
-      return "Failed to delete account.";
+      return i18n.t("Failed to delete account.");
   }
 }

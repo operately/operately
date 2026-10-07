@@ -1,7 +1,10 @@
+import { setupTestCatalog } from "@/__tests__/i18n";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { FeatureFlagsSection } from "./FeatureFlagsSection";
+
+setupTestCatalog();
 
 jest.mock("./featureFlagsLifecycle", () => ({
   useEnableCompanyFeature: () => ({ mutateAsync: jest.fn() }),
@@ -9,6 +12,7 @@ jest.mock("./featureFlagsLifecycle", () => ({
 }));
 
 jest.mock("turboui", () => ({
+  i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
   showErrorToast: jest.fn(),
   SwitchToggle: ({ label, testId, value }: { label: string; testId?: string; value: boolean }) => (
     <button data-test-id={testId} aria-label={label} data-enabled={value ? "true" : "false"}>

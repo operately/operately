@@ -1,3 +1,4 @@
+import { setupTestCatalog } from "@/__tests__/i18n";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -79,6 +80,8 @@ let mockLoadedData = {
   ],
 };
 
+setupTestCatalog();
+
 jest.mock("@/components/Pages", () => ({
   Page: ({ children, testId }: { children: React.ReactNode; testId?: string }) => (
     <div data-test-id={testId}>{children}</div>
@@ -105,6 +108,7 @@ jest.mock("turboui", () => {
   const { formatStorageBytes } = jest.requireActual("turboui");
 
   return {
+    i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
     ConfirmDialog: ({ isOpen, title, message, confirmText }: any) =>
       isOpen ? (
         <div>

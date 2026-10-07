@@ -1,4 +1,5 @@
 /** @jest-environment <rootDir>/../turboui/node_modules/jest-environment-jsdom */
+import { setupTestCatalog } from "@/__tests__/i18n";
 import React from "react";
 import axios from "axios";
 import * as AdminApi from "@/ee/admin_api";
@@ -8,6 +9,8 @@ import { act, renderHook } from "@/__tests__/renderHook";
 import { Page } from "./index";
 
 let mockSwitch: { value: boolean; setValue: (value: boolean) => Promise<void> };
+setupTestCatalog();
+
 jest.mock("axios");
 jest.mock("@/ee/admin_api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/components/Pages", () => ({
@@ -21,6 +24,7 @@ jest.mock("@/components/PaperContainer", () => ({
   Header: () => null,
 }));
 jest.mock("turboui", () => ({
+  i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
   PageSection: ({ children }: React.PropsWithChildren) => children,
   SwitchToggle: (props: typeof mockSwitch) => {
     mockSwitch = props;

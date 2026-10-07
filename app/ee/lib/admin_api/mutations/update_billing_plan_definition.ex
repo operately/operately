@@ -1,4 +1,5 @@
 defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinition do
+  use Gettext, backend: OperatelyWeb.Gettext
   use TurboConnect.Mutation
 
   alias Operately.Billing
@@ -28,21 +29,21 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateBillingPlanDefinition do
         {:error, error, message}
 
       {:error, _changeset} ->
-        {:error, :bad_request, "Invalid plan definition parameters"}
+        {:error, :bad_request, gettext("Invalid plan definition parameters")}
     end
   end
 
   defp find_plan_definition(id) do
     case Billing.get_plan_definition(id) do
       {:ok, plan_definition} -> {:ok, plan_definition}
-      {:error, :not_found} -> {:error, :not_found, "Plan definition not found"}
+      {:error, :not_found} -> {:error, :not_found, gettext("Plan definition not found")}
     end
   end
 
   defp decode_id(id) do
     case Operately.ShortUuid.decode(id) do
       {:ok, decoded} -> {:ok, decoded}
-      _ -> {:error, :bad_request, "Invalid plan definition ID"}
+      _ -> {:error, :bad_request, gettext("Invalid plan definition ID")}
     end
   end
 

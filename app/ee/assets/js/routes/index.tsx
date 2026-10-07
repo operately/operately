@@ -1,4 +1,5 @@
 import React from "react";
+import { RouteLanguageProvider } from "@/contexts/RouteLanguageProvider";
 
 import adminpages from "@/ee/pages";
 import { pageRoute } from "@/routes/pageRoute";
@@ -6,7 +7,11 @@ import { pageRoute } from "@/routes/pageRoute";
 import SaasAdminLayout from "@/ee/layouts/SaasAdminLayout";
 
 function SaasAdminRoutes() {
-  return <SaasAdminLayout />;
+  return (
+    <RouteLanguageProvider accountOnly>
+      <SaasAdminLayout />
+    </RouteLanguageProvider>
+  );
 }
 
 export function saasAdminRoutes() {
