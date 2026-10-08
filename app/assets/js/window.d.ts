@@ -26,8 +26,9 @@ declare global {
     api: ApiConfig;
 
     showDevBar: boolean;
+    analytics?: import("./analytics/browser").AnalyticsConfig;
     account: {
-      id: number;
+      id: string;
     };
 
     discordUrl: string;
@@ -38,6 +39,7 @@ declare global {
 
   interface Window {
     appConfig: AppConfig;
+    posthog?: import("./analytics/browser").AnalyticsSdk;
     __tests?: any;
   }
 }

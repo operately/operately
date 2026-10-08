@@ -1,6 +1,8 @@
 import { disablePreloading } from "./preloading/preloadSession";
 import { queryClient } from "@/api/queryClient";
 
+import { resetAnalytics } from "@/analytics/session";
+
 type LogOutResult = "success" | "failure";
 type LogInResult = "success" | "failure";
 
@@ -11,6 +13,7 @@ export async function logOut(): Promise<LogOutResult> {
     return "failure";
   }
 
+  resetAnalytics();
   disablePreloading();
   queryClient.clear();
 
