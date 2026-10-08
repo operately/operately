@@ -1,3 +1,5 @@
+import type { AnalyticsConfig, AnalyticsSdk } from "./analytics/browser";
+
 declare global {
   interface SentryConfig {
     dsn: string;
@@ -26,7 +28,7 @@ declare global {
     api: ApiConfig;
 
     showDevBar: boolean;
-    analytics?: import("./analytics/browser").AnalyticsConfig;
+    analytics?: AnalyticsConfig;
     account: {
       id: string;
     };
@@ -39,7 +41,7 @@ declare global {
 
   interface Window {
     appConfig: AppConfig;
-    posthog?: import("./analytics/browser").AnalyticsSdk;
+    posthog?: AnalyticsSdk;
     __tests?: any;
   }
 }

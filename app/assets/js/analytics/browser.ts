@@ -1,6 +1,6 @@
 // App analytics. The website has a separate tracker in operately-website.
 // Keep the operately_analytics_v1 cookie format compatible between repositories.
-interface AnalyticsConfig {
+export interface AnalyticsConfig {
   enabled: boolean;
   token?: string;
   host?: string;
