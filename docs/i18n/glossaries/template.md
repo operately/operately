@@ -5,10 +5,8 @@ Start every new language by copying this file to `<BCP-47-locale>.md` and fillin
 - Language and region:
 - BCP 47 locale:
 - Gettext locale:
-- Review status: Draft — not approved for translation
-- Native-speaker reviewer and approval reference/date:
 
-AI may propose terminology. Obtain careful native-speaker approval of the completed glossary before translating the full catalog. Resolve ambiguous roles, borrowed terms, plural forms, and UI names explicitly. Update the review status only after approval. Then follow [Adding a language](../../../.agents/skills/internationalization/references/adding-a-language.md).
+AI may propose terminology. Resolve ambiguous roles, borrowed terms, plural forms, and UI names explicitly. Native-speaker review is recommended when available, but is not required to use the glossary or translate the full catalog. Review status and approval metadata are optional; only record review that actually occurred. Then follow [Adding a language](../../../.agents/skills/internationalization/references/adding-a-language.md).
 
 | English | Meaning/context | Target-language term | Capitalization and usage |
 | --- | --- | --- | --- |

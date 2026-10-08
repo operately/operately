@@ -2,7 +2,7 @@
 
 Locale: `pt-BR` (Gettext: `pt_BR`). The terms below preserve the native-speaker-reviewed glossary and are the authoritative terminology for Portuguese product copy.
 
-Use the listed forms consistently. Lowercase terms may be capitalized at the start of a sentence or label; preserve the listed spelling and casing of named UI sections. Any terminology changes require native-speaker review before use across the product. See the [internationalization guide](../../internationalization.md).
+Use the listed forms consistently. Lowercase terms may be capitalized at the start of a sentence or label; preserve the listed spelling and casing of named UI sections. Native-speaker review of terminology changes is recommended when available, but is optional. See the [internationalization guide](../../internationalization.md).
 
 | English | Meaning/context | Português (Brasil) | Capitalization and usage |
 | --- | --- | --- | --- |

@@ -2,11 +2,11 @@
 
 Add a language's registration, complete translations, and generated resources in one PR. Keep English as the default and preserve the existing language feature flag and fallback behavior. This guide complements the [internationalization guide](../../../../docs/internationalization.md).
 
-## 1. Prepare and approve the glossary
+## 1. Prepare the glossary
 
 Copy [the template](../../../../docs/i18n/glossaries/template.md) to `docs/i18n/glossaries/<BCP-47-locale>.md`. Fill every target term, its meaning, capitalization, and usage guidance. Add as many terms, phrases, and examples as the language needs; glossaries need not have identical entries.
 
-Choose the language/region and both locale codes, for example `de` for German or `pt-BR` / `pt_BR` for Brazilian Portuguese. AI may draft terminology, but a native speaker must carefully review and approve the glossary **before full-catalog translation**. Resolve ambiguous roles and borrowed terms; record the reviewer, approval date/reference, and approved status in the glossary. Existing documented approval is sufficient. Link the glossary from the main guide.
+Choose the language/region and both locale codes, for example `de` for German or `pt-BR` / `pt_BR` for Brazilian Portuguese. AI may draft terminology. Resolve ambiguous roles and borrowed terms, and link the glossary from the main guide. Native-speaker review is recommended when available, but is not required before full-catalog translation. Review status, reviewer names, and approval references are optional.
 
 ## 2. Register the language
 
@@ -40,7 +40,7 @@ The merge creates `app/priv/gettext/de/LC_MESSAGES/messages.po`. `make gen.i18n`
 
 Verify the PO `Language` and `Plural-Forms` headers for the target language. Gettext uses numbered `msgstr[n]` forms; i18next uses named categories. The mapping in `Locale` must agree with the PO rules. Add every required form: the shared PO writer initially creates indexes 0 and 1 for new plural entries, so languages with other counts need their forms adjusted. Do not copy Portuguese rules. Test zero, one, many, and language-specific boundaries/fractions, including any necessary i18next `zero` override.
 
-Translate every active message/context and required plural form using the approved glossary. AI may draft the entire catalog. Preserve `%{name}` placeholders, catalog-owned tags, and user content; do not edit English message identifiers or use English fallback to fill gaps. Resolve fuzzy entries before removing their flag. `intlRelativeDateTime` is the documented technical exception. Existing languages' translations must remain intact.
+Translate every active message/context and required plural form using the glossary. AI may draft the entire catalog. Preserve `%{name}` placeholders, catalog-owned tags, and user content; do not edit English message identifiers or use English fallback to fill gaps. Resolve fuzzy entries before removing their flag. `intlRelativeDateTime` is the documented technical exception. Existing languages' translations must remain intact.
 
 Regenerate resources and API/CLI types:
 
@@ -55,7 +55,7 @@ make test.cli.catalog.sync
 
 ## 4. Review and verify
 
-Have a native speaker review the new language's full catalog, especially glossary consistency and ambiguous contexts. Record the reviewer and outcome in the PR and resolve corrections before release. For later routine copy changes, native-speaker review is recommended **if possible**; it is not a requirement for every change.
+Review the new language's full catalog, especially glossary consistency and ambiguous contexts, and resolve identified issues before release. Native-speaker review is recommended when available for both new languages and routine copy changes, but is optional. Its absence, or missing approval metadata, must not block translation, merge, or release and is not itself a review finding. If native-speaker review occurs, its outcome may be recorded in the PR; do not claim review that did not occur.
 
 Run the completeness check and type checks:
 
@@ -82,4 +82,4 @@ Verify selection persists, switching updates the UI, flag-off restores English w
 
 ## 5. Deliver together
 
-Include the approved glossary, registration changes, complete PO/POT/JSON resources, generated API/CLI updates, tests, and review evidence in the PR. Keep existing users in English until they select the language. Do not expose an incomplete language or weaken completeness checks to make it pass.
+Include the glossary, registration changes, complete PO/POT/JSON resources, generated API/CLI updates, tests, and verification results in the PR. Keep existing users in English until they select the language. Do not expose an incomplete language or weaken completeness checks to make it pass.
