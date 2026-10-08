@@ -15,7 +15,7 @@ Locale: `ru` (Gettext: `ru`). Use standard Russian for a general professional au
 
 ## Organization, people, and roles
 
-Unlike the [Portuguese](pt-BR.md) and [German](de.md) choices, use Russian names for Champion and Reviewer. **Ответственный** states accountability more clearly than **Чемпион**; **Куратор** describes ongoing oversight and feedback without suggesting a literary reviewer or a mandatory approval gate. This is an Operately terminology choice, not a claim that a competitor has identical roles. Keep these roles distinct from **Исполнитель** on a task, **Руководитель** in the org chart, and **Владелец** in company administration.
+Unlike the [Portuguese](pt-BR.md) and [German](de.md) choices, use Russian names for Champion and Reviewer. **Ответственный** states accountability more clearly than **Чемпион**; **Куратор** describes ongoing oversight and feedback without suggesting a literary reviewer or a mandatory approval gate. Keep these roles distinct from **Исполнитель** on a task, **Руководитель** in the org chart, and **Владелец** in company administration.
 
 | English | Meaning/context | Русский | Capitalization and usage |
 | --- | --- | --- | --- |
@@ -63,7 +63,7 @@ Unlike the [Portuguese](pt-BR.md) and [German](de.md) choices, use Russian names
 | top-level goal / company-wide goal | Hierarchy root / company scope | Цель верхнего уровня / Цель компании | A root goal does not necessarily have company-wide scope. |
 | task | Unit of work | Задача | Prefer to Таск or Задание for this product object. |
 | project task / space task | Task attached to a project or directly to a space | Задача проекта / Задача пространства | Not a subtask just because it belongs to a project. |
-| milestone | Project delivery checkpoint | Веха | Plural **вехи**. Familiar from Asana; a checkpoint, not a whole project phase (**этап**). |
+| milestone | Project delivery checkpoint | Веха | Plural **вехи**. A checkpoint, not a whole project phase (**этап**). |
 | task list / board | Task views | Список задач / Доска | **Канбан-доска** when specifying the view type. |
 | timeline (view) | Time-based visualization | Временная шкала | Not the project's schedule or a history of past events. |
 | timeline (planning) / timeframe | Planned schedule / bounded date range | График / Период | **График проекта** versus **период цели**. Keep both distinct from Длительность. |
@@ -227,17 +227,15 @@ These examples illustrate natural case agreement and attribution without changin
 | Separate closure from success | **Цель закрыта. Результат: не достигнута.** |
 | Count after a preposition | **Просрочено на 1 день / на 2 дня / на 5 дней.** |
 
-## Competitor references
+## Research references
 
-Official Russian pages consulted on 2026-10-08. The observed vocabulary is evidence of familiar usage, not a requirement to copy a competitor's hierarchy or every translation. The mappings of Champion to **Ответственный**, Reviewer to **Куратор**, and Review to **На контроле** are Operately-specific decisions.
+Official Russian pages consulted on 2026-10-08 for familiar product terminology.
 
-| Reference | Relevant terminology and choice |
+| Reference | Terminology observed |
 | --- | --- |
-| [Asana: project progress and status](https://asana.com/ru/guide/help/projects/progress) | Uses **Вехи**, **Цели**, **Срок выполнения**, **По плану**, **Под угрозой**, and **Отстаёт**. Operately uses **Критично** for the red state because serious problems can extend beyond delays. |
-| [Asana: status-report guidance](https://asana.com/ru/resources/how-project-status-reports) | Uses Russian report terminology for written progress communication. Supports **Отчёт о ходе работы** rather than transliterating check-in. |
-| [Wrike: project scheduling](https://www.wrike.com/ru/templates/project-scheduling/), [Asana: Gantt charts](https://asana.com/ru/resources/gantt-chart-basics) | Wrike uses **просроченные задачи**; Asana uses **задерживается** for delays that may affect a later deadline. Supports distinguishing passed deadlines from delays. |
-| [monday.com: workdocs](https://monday.com/lang/ru/docsmobile), [Russian product page](https://monday.com/lang/ru) | Uses **Чек-лист**, **Комментарии**, **Итоги совещаний**, and **Тариф**. Operately uses **Итоги** for its written closing reflection, without implying a meeting. |
-| [Wrike: work items](https://help.wrike.com/hc/ru/articles/6900556197015-%D0%9F%D0%BB%D0%B0%D0%BD-Team-%D0%9F%D0%BE%D0%BD%D1%8F%D1%82%D0%B8%D0%B5-%D0%BE-%D1%80%D0%B0%D0%B1%D0%BE%D1%87%D0%B8%D1%85-%D0%BE%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%B0%D1%85) | Uses **Пространства**, **Проекты**, **Задачи**, and space administrators. Supports Пространство for Operately's shared area without introducing an extra workspace level. |
-| [Kaiten: people and dates on task cards](https://kaiten.ru/blog/card-facade/) | Distinguishes **Исполнитель**, **Ответственный**, and **Участники**. Supports keeping task assignment and overall accountability distinct, while Operately's exact role boundaries remain its own. |
-
-Searches for ClickUp and Notion did not yield verified first-party Russian terminology pages for these workflows. Community templates and pages in other languages were not used as evidence of their Russian UI wording.
+| [Asana: project progress and status](https://asana.com/ru/guide/help/projects/progress) | **Вехи**, **Цели**, **Срок выполнения**, **По плану**, **Под угрозой**, **Отстаёт**. |
+| [Asana: status-report guidance](https://asana.com/ru/resources/how-project-status-reports) | Report terminology for written progress updates. |
+| [Wrike: project scheduling](https://www.wrike.com/ru/templates/project-scheduling/), [Asana: Gantt charts](https://asana.com/ru/resources/gantt-chart-basics) | **Просроченные задачи** (Wrike); **задерживается** for delays that may affect a later deadline (Asana). |
+| [monday.com: workdocs](https://monday.com/lang/ru/docsmobile), [Russian product page](https://monday.com/lang/ru) | **Чек-лист**, **Комментарии**, **Итоги совещаний**, **Тариф**. |
+| [Wrike: work items](https://help.wrike.com/hc/ru/articles/6900556197015-%D0%9F%D0%BB%D0%B0%D0%BD-Team-%D0%9F%D0%BE%D0%BD%D1%8F%D1%82%D0%B8%D0%B5-%D0%BE-%D1%80%D0%B0%D0%B1%D0%BE%D1%87%D0%B8%D1%85-%D0%BE%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%B0%D1%85) | **Пространства**, **Проекты**, **Задачи**, space administrators. |
+| [Kaiten: people and dates on task cards](https://kaiten.ru/blog/card-facade/) | **Исполнитель**, **Ответственный**, **Участники**. |
