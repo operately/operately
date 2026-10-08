@@ -22,6 +22,7 @@ Use the glossary for each target language:
 
 - [Português (Brasil)](i18n/glossaries/pt-BR.md)
 - [Deutsch](i18n/glossaries/de.md)
+- [Русский](i18n/glossaries/ru.md)
 - [Glossary template](i18n/glossaries/template.md)
 
 Start each new language from the glossary template, then expand its glossary with as many terms, phrases, and usage notes as needed for consistent product copy and documentation. Each language can have its own additional entries.
