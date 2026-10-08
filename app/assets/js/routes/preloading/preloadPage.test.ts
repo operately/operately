@@ -48,7 +48,7 @@ beforeEach(() => {
   Api.default.setHeaders({ "x-company-id": "acme" });
   Object.defineProperty(global, "window", {
     configurable: true,
-    value: { appConfig: { configured: true, account: { id: 1 } } },
+    value: { appConfig: { configured: true, account: { id: "1" } } },
   });
   location = "/acme/home";
   navigating = false;
@@ -175,9 +175,9 @@ it("shares pending and completed cache entries with navigation, then refreshes i
 
 it("skips authentication failures, active navigation, and mismatched company headers", async () => {
   const service = preloader();
-  window.appConfig.account = { id: 0 };
+  window.appConfig.account = { id: "" };
   await service.preloadPage("/acme/projects/one");
-  window.appConfig.account = { id: 1 };
+  window.appConfig.account = { id: "1" };
   navigating = true;
   await service.preloadPage("/acme/projects/one");
   navigating = false;

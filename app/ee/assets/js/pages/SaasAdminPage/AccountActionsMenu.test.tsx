@@ -40,7 +40,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   AdminApi.default.default.setBasePath("/admin/api");
-  window.appConfig = { account: { id: 123 } } as typeof window.appConfig;
+  window.appConfig = { account: { id: "123" } } as typeof window.appConfig;
   Object.defineProperty(window, "location", { configurable: true, value: { assign } });
 });
 afterEach(() => {
