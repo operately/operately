@@ -4,7 +4,7 @@ Operately uses one Gettext catalog for Elixir, React, and TurboUI. English sourc
 
 So far supported languages are English (`en`) and Brazilian Portuguese (`pt-BR`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
 
-To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary approval.
+To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary preparation.
 
 ## Required for every copy change
 
@@ -22,11 +22,12 @@ Use the glossary for each target language:
 
 - [Português (Brasil)](i18n/glossaries/pt-BR.md)
 - [Deutsch](i18n/glossaries/de.md)
+- [Русский](i18n/glossaries/ru.md)
 - [Glossary template](i18n/glossaries/template.md)
 
 Start each new language from the glossary template, then expand its glossary with as many terms, phrases, and usage notes as needed for consistent product copy and documentation. Each language can have its own additional entries.
 
-Keep approved terminology in these files rather than duplicating it in guides or skills. AI drafts must follow the glossary; if possible, have a native speaker review them before release. New or changed glossary terms need particular attention because they affect copy throughout the product.
+Keep terminology in these files rather than duplicating it in guides or skills. AI drafts must follow the glossary. Native-speaker review is recommended when available for glossaries and translations, including new languages, but is not feasible for every language and is optional. Missing native-speaker approval or review metadata must not block translation, merge, or release and is not itself a review finding. New or changed glossary terms need particular attention because they affect copy throughout the product.
 
 ## Language resolution
 
