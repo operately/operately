@@ -1,15 +1,17 @@
 defmodule Operately.Analytics.Delivery do
   use Oban.Worker, queue: :analytics, max_attempts: 10
+  import Ecto.Query
   require Logger
-  alias Operately.Analytics
+  alias Operately.{Analytics, Repo}
+  alias Operately.People.Account
 
   @impl true
   def perform(%Oban.Job{args: %{"event" => event}} = job) do
     properties = event["properties"]
 
     allowed =
-      Analytics.enabled?() and not Analytics.opted_out?(event["distinct_id"]) and
-        not Analytics.opted_out?(properties["creator_account_id"])
+      Analytics.enabled?() and account_allows_tracking?(event["distinct_id"]) and
+        (is_nil(properties["creator_account_id"]) or account_allows_tracking?(properties["creator_account_id"]))
 
     if allowed do
       result = deliver(event)
@@ -22,6 +24,11 @@ defmodule Operately.Analytics.Delivery do
     else
       :ok
     end
+  end
+
+  defp account_allows_tracking?(account_id) do
+    # Repo excludes soft-deleted accounts, including those deleted after enqueueing.
+    Repo.exists?(from a in Account, where: a.id == ^account_id) and not Analytics.opted_out?(account_id)
   end
 
   defp deliver(event) do
