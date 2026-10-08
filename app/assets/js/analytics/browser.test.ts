@@ -19,6 +19,7 @@ interface BrowserOptions extends Pick<AnalyticsOptions, "surface" | "accountId" 
   sdkAccountId?: string | null;
   optedOut?: boolean;
   url?: string;
+  deferSdkLoad?: boolean;
 }
 
 function browser({
@@ -31,6 +32,7 @@ function browser({
   syncContext,
   url = "https://app.test/sign_up?utm_source=launch&token=secret",
   surface = "app",
+  deferSdkLoad = false,
 }: BrowserOptions = {}) {
   const events: AnalyticsEvent[] = [];
   let identified = Boolean(sdkAccountId);
@@ -68,7 +70,7 @@ function browser({
   const sdk: AnalyticsSdk = {
     init(_token, options) {
       config = options;
-      options.loaded(sdk);
+      if (!deferSdkLoad) options.loaded(sdk);
     },
     get_distinct_id: () => distinctId,
     get_property: (key) => key === "$user_state" && (identified ? "identified" : "anonymous"),
@@ -119,6 +121,10 @@ function browser({
     events,
     doc,
     env,
+    loadSdk: () => {
+      assert.ok(config);
+      config.loaded(sdk);
+    },
     emit: (name: string) => listeners.get(name)?.(),
     get config() {
       assert.ok(config);
@@ -158,6 +164,85 @@ test("failed context synchronization suppresses events without breaking navigati
   });
   await b.tracker.visit({ path: "/", key: "/" });
   assert.deepEqual(b.events, []);
+});
+
+test("email invitation signup is captured once across reloads without exposing the token", async () => {
+  const sharedCookies = new Map<string, string>();
+  const url = "https://app.test/join?token=private-invitation";
+  const page = { path: "/join", key: "/join?token=private-invitation" };
+  const invited = browser({ sharedCookies, url });
+  await invited.tracker.visit(page);
+
+  const events = signupEvents(invited);
+  assert.equal(events.length, 1);
+  assert.equal(events[0]?.properties.signup_kind, "invitation");
+  assert.equal(events[0]?.properties.page, "/join");
+  assert.ok(events[0]?.properties.attempt_id);
+  assert.ok(!JSON.stringify(invited.events).includes("private-invitation"));
+
+  const reloaded = browser({ sharedCookies, url });
+  await reloaded.tracker.visit(page);
+  assert.equal(signupEvents(reloaded).length, 0);
+  assert.equal(reloaded.tracker.context().attempt_id, invited.tracker.context().attempt_id);
+});
+
+test("invite previews and capacity pages do not start signup attempts", async () => {
+  const b = browser({ url: "https://app.test/join/private-invitation" });
+  await b.tracker.visit({ path: "/join/:token", key: "/join/private-invitation" });
+  await b.tracker.visit({ path: "/join/:token/full", key: "/join/private-invitation/full" });
+  assert.equal(signupEvents(b).length, 0);
+  assert.equal(b.tracker.context().attempt_id, undefined);
+});
+
+test("signup classification uses the visited URL even when navigation changes during sync", async () => {
+  const b = browser({
+    url: "https://app.test/sign_up?invite_token=private-invitation",
+    syncContext: async () => {
+      b.env.location = new URL("https://app.test/log_in");
+      return { optedOut: false };
+    },
+  });
+  await b.tracker.visit({ path: "/sign_up", key: "/sign_up?invite_token=private-invitation" });
+  assert.equal(signupEvents(b)[0]?.properties.signup_kind, "invitation");
+});
+
+test("logout discards a pending workspace visit and allows new anonymous visits", async () => {
+  let completeSync: ((context: SynchronizedContext) => void) | undefined;
+  const b = browser({
+    accountId: "account",
+    syncContext: () =>
+      new Promise((resolve) => {
+        completeSync = resolve;
+      }),
+  });
+  const oldVisit = b.tracker.visit({ path: "/:companyId", key: "/old-company" });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.ok(completeSync);
+
+  b.tracker.logout();
+  completeSync({ optedOut: false, companyId: "old-company" });
+  await oldVisit;
+  assert.deepEqual(b.events, []);
+
+  const newVisit = b.tracker.visit({ path: "/log_in", key: "/log_in" });
+  await new Promise((resolve) => setImmediate(resolve));
+  completeSync({ optedOut: false });
+  await newVisit;
+  assert.equal(b.events.length, 1);
+  assert.equal(b.events[0]?.properties.account_id, null);
+  assert.equal(b.events[0]?.properties.company_id, null);
+  assert.equal(b.events[0]?.properties.distinct_id, "22222222-2222-4222-8222-222222222222");
+});
+
+test("logout discards visits waiting for SDK loading before they synchronize", async () => {
+  const syncContext = jest.fn(async () => ({ optedOut: false }));
+  const b = browser({ accountId: "account", deferSdkLoad: true, syncContext });
+  const visit = b.tracker.visit({ path: "/:companyId", key: "/old-company" });
+  b.tracker.logout();
+  b.loadSdk();
+  await visit;
+  assert.deepEqual(b.events, []);
+  expect(syncContext).not.toHaveBeenCalled();
 });
 
 test("opt-outs suppress events and synchronize denial", async () => {

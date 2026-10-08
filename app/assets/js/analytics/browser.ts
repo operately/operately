@@ -111,6 +111,7 @@ export class BrowserAnalytics {
   private trackingContext: AnalyticsContext;
   private sdk: AnalyticsSdk | undefined;
   private lastVisitKey: string | undefined;
+  private sessionVersion = 0;
   private ready: Promise<void>;
   private resolveReady: () => void = () => {};
 
@@ -211,6 +212,7 @@ export class BrowserAnalytics {
   }
 
   async visit(page: AnalyticsPage) {
+    const sessionVersion = this.sessionVersion;
     // Save context before SDK loading so a fast signup/OAuth navigation retains attribution.
     this.saveContext();
     this.recordFirstTouch(page.path);
@@ -222,10 +224,11 @@ export class BrowserAnalytics {
     }
 
     await this.ready;
-    if (!this.sdk) return;
+    if (!this.sdk || sessionVersion !== this.sessionVersion) return;
 
     this.identifyAccount();
     const synchronizedContext = await this.synchronizeContext(page);
+    if (sessionVersion !== this.sessionVersion) return;
     if (this.isTrackingDenied() || !synchronizedContext) return;
     if (this.lastVisitKey === page.key) return;
 
@@ -233,7 +236,7 @@ export class BrowserAnalytics {
     this.sdk.resetGroups();
     const properties = this.visitProperties(page, synchronizedContext);
     this.sdk.capture("$pageview", { ...properties, $insert_id: this.generateEventId() });
-    this.captureSignupStarted(properties);
+    this.captureSignupStarted(page, properties);
   }
 
   private recordFirstTouch(path: string) {
@@ -275,7 +278,8 @@ export class BrowserAnalytics {
   }
 
   private startSignupAttempt(page: AnalyticsPage) {
-    if (this.surface !== "app" || !/^\/sign_up(?:\/|$)/.test(page.path)) return;
+    const isSignupPage = page.path === "/join" || /^\/sign_up(?:\/|$)/.test(page.path);
+    if (this.surface !== "app" || !isSignupPage) return;
     if (this.accountId || this.trackingContext.attempt_id || this.isTrackingDenied()) return;
 
     this.saveContext({
@@ -302,14 +306,15 @@ export class BrowserAnalytics {
     };
   }
 
-  private captureSignupStarted(properties: Record<string, unknown>) {
+  private captureSignupStarted(page: AnalyticsPage, properties: Record<string, unknown>) {
     if (this.surface !== "app" || this.accountId || !this.sdk) return;
 
     // A different signup tab may have already captured this attempt while we awaited the SDK/server.
     this.saveContext();
     if (!this.trackingContext.attempt_pending) return;
 
-    const isInvitation = new URL(this.environment.location.href).searchParams.has("invite_token");
+    const isInvitation =
+      page.path === "/join" || new URL(page.key, this.environment.location.origin).searchParams.has("invite_token");
     this.sdk.capture("signup_started", {
       ...properties,
       $insert_id: this.trackingContext.attempt_id,
@@ -400,6 +405,8 @@ export class BrowserAnalytics {
   }
 
   logout() {
+    // Visits awaiting the SDK or context sync belong to the previous session.
+    this.sessionVersion++;
     this.sdk?.reset();
     this.accountId = null;
     this.lastVisitKey = undefined;
@@ -443,11 +450,13 @@ export class BrowserAnalytics {
   }
 
   private async synchronizeContext(page: Partial<AnalyticsPage> = {}): Promise<SynchronizedContext | null> {
+    const sessionVersion = this.sessionVersion;
     this.saveContext();
     if (!this.options.syncContext) return { optedOut: this.accountOptedOut };
 
     try {
       const result = await this.options.syncContext(this.context(), page);
+      if (sessionVersion !== this.sessionVersion) return null;
 
       this.accountOptedOut = Boolean(result.optedOut);
       this.saveContext();
