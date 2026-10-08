@@ -63,6 +63,9 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   """
 
   @excluded_tables [
+    "analytics_accounts",
+    "analytics_companies",
+    "analytics_activations",
     "schema_migrations",
     "oban_jobs",
     "oban_peers",

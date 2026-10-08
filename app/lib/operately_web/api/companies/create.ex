@@ -20,16 +20,16 @@ defmodule OperatelyWeb.Api.Companies.Create do
   def call(conn, inputs) do
     account = conn.assigns.current_account
 
-    with {:ok, company} <- add_company(inputs, account) do
+    with {:ok, company} <- add_company(inputs, account, OperatelyWeb.Analytics.context(conn)) do
       {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
     end
   end
 
-  def add_company(inputs, account) do
+  def add_company(inputs, account, analytics_context \\ %{}) do
     if inputs[:is_demo] do
       Operately.Demo.run(account, inputs[:company_name], inputs[:title])
     else
-      Operately.Operations.CompanyAdding.run(inputs, account)
+      Operately.Operations.CompanyAdding.run(inputs, account, analytics_context)
     end
   end
 end

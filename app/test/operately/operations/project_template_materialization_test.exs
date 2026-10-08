@@ -514,6 +514,23 @@ defmodule Operately.Operations.ProjectTemplateMaterializationTest do
     assert Repo.aggregate(SubscriptionList, :count) == before_lists
   end
 
+  test "template definitions do not activate, but materializing a project does", ctx do
+    previous = Application.get_env(:operately, :conversion_analytics)
+    Application.put_env(:operately, :conversion_analytics, enabled: true, token: "test")
+
+    on_exit(fn -> Application.put_env(:operately, :conversion_analytics, previous) end)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      account = Repo.get!(Operately.People.Account, ctx.creator.account_id)
+      Repo.transaction(fn -> Operately.Analytics.workspace_created(ctx.company, account, %{}) end)
+      ctx = Factory.add_project_template(ctx, :template, :space)
+      assert Repo.all(Operately.Analytics.Activation) == []
+      assert {:ok, _} = materialize(ctx, Date.utc_today())
+      assert [%{company_id: company_id}] = Repo.all(Operately.Analytics.Activation)
+      assert company_id == ctx.company.id
+    end)
+  end
+
   defp materialize(ctx, start_date) do
     ProjectTemplateMaterialization.run(%ProjectTemplateMaterialization{
       template_id: ctx.template.id,

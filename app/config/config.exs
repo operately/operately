@@ -97,6 +97,7 @@ config :operately, Oban,
   queues: [
     default: 10,
     mailer: 10,
+    analytics: 5,
     search_maintenance: 1
   ]
 

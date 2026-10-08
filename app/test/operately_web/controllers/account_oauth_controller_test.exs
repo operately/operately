@@ -16,6 +16,35 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
   end
 
   describe "callback/2" do
+    test "invitation signup uses saved OAuth attribution during browser login", ctx do
+      account = account_fixture()
+      previous = Application.get_env(:operately, :conversion_analytics)
+      Application.put_env(:operately, :conversion_analytics, enabled: true, token: "test")
+      on_exit(fn -> Application.put_env(:operately, :conversion_analytics, previous) end)
+
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Analytics.provision_account(account)
+
+        conn =
+          ctx.conn
+          |> init_test_session(%{analytics_context: %{attribution: %{"utm_source" => "before-google"}}})
+          |> assign(:ueberauth_auth, %{info: %{email: account.email, name: account.full_name, image: "http://example.com/image.png"}})
+          |> get("/accounts/auth/google/callback", %{"provider" => "google"})
+
+        assert conn.status == 302
+        assert get_session(conn, :account_token)
+        refute get_session(conn, :analytics_context)
+        state = Operately.Repo.get!(Operately.Analytics.AccountState, account.id)
+        assert state.completed_at
+        assert state.attribution == %{"utm_source" => "before-google"}
+
+        jobs = Operately.Repo.all(Oban.Job) |> Enum.filter(&(&1.worker == "Operately.Analytics.Delivery"))
+        assert [job] = jobs
+        assert job.args["event"]["event"] == "signup_completed"
+        assert job.args["event"]["properties"]["acquisition"] == state.attribution
+      end)
+    end
+
     test "creating a new account while attempting log in", ctx do
       conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
         info: %{

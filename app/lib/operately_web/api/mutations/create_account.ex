@@ -23,8 +23,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
     field?(:join_error_details, :json, null: true)
   end
 
-  def call(_conn, inputs) do
-    case AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs[:code], inputs[:invite_token]) do
+  def call(conn, inputs) do
+    case AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs[:code], inputs[:invite_token], OperatelyWeb.Analytics.context(conn)) do
       {:ok, _account, invite_context} ->
         {:ok, build_response(invite_context)}
 

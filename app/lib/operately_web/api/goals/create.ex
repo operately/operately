@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Goals.Create do
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:champion_validation, fn ctx -> validate_champion_permissions(ctx.me, inputs) end)
     |> run(:reviewer_validation, fn ctx -> validate_reviewer_permissions(ctx.me, inputs) end)
-    |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, ctx.inputs) end)
+    |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, ctx.inputs, OperatelyWeb.Analytics.context(conn)) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end

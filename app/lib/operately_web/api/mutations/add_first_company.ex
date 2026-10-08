@@ -14,11 +14,11 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompany do
     field? :company, :company, null: true
   end
 
-  def call(_conn, inputs) do
+  def call(conn, inputs) do
     allowed = not Operately.Setup.configured?()
 
     if allowed do
-      {:ok, company} = Operately.Operations.CompanyAdding.run(inputs)
+      {:ok, company} = Operately.Operations.CompanyAdding.run(inputs, nil, OperatelyWeb.Analytics.context(conn))
       {:ok, _} = promote_to_admin(inputs.email)
       {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
     else

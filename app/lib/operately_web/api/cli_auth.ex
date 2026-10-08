@@ -269,7 +269,7 @@ defmodule OperatelyWeb.Api.CliAuth do
 
     def call(_conn, inputs) do
       with {:ok, invite_link} <- validate(inputs),
-           {:ok, %{member_account: account}} <- Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link) do
+           {:ok, %{member_account: account}} <- Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link, %{channel: "cli"}) do
         companies = CliAuthSession.eligible_companies(account)
 
         case create_authenticated_response(account, companies) do
@@ -526,7 +526,7 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
 
     def call(_conn, inputs) do
-      with {:ok, account, _invite_context} <- AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs.code),
+      with {:ok, account, _invite_context} <- AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs.code, nil, %{channel: "cli"}),
            {:ok, _session, raw_token} <- CliAuthSession.create_authenticated_session(account, :password, :signup) do
         build_response(account, raw_token)
       else
@@ -623,7 +623,7 @@ defmodule OperatelyWeb.Api.CliAuth do
         title: inputs[:title]
       }
 
-      with {:ok, company} <- CompanyAdding.run(attrs, account),
+      with {:ok, company} <- CompanyAdding.run(attrs, account, %{channel: "cli"}),
            {:ok, _} <- Account.promote_to_admin(account) do
         person = Operately.People.get_person(account, company)
 
@@ -670,7 +670,7 @@ defmodule OperatelyWeb.Api.CliAuth do
           title: inputs[:title]
         }
 
-        with {:ok, company} <- CompanyAdding.run(attrs, account) do
+        with {:ok, company} <- CompanyAdding.run(attrs, account, %{channel: "cli"}) do
           person = Operately.People.get_person(account, company)
 
           if person do
@@ -823,6 +823,7 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
 
     def respond_with_authenticated_account(account, auth_method \\ :password, intent \\ :login) do
+      Operately.Analytics.on_login(account, %{channel: "cli"})
       companies = CliAuthSession.eligible_companies(account)
 
       case companies do
