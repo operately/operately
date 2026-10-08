@@ -15,14 +15,14 @@ const request = { params: {}, request: { url: document.URL } };
 let page: PageModule;
 beforeEach(() => {
   jest.clearAllMocks();
-  window.appConfig = { configured: true, account: { id: 1 } } as typeof window.appConfig;
+  window.appConfig = { configured: true, account: { id: "1" } } as typeof window.appConfig;
   page = { name: "ExamplePage", Page: () => null, loader: jest.fn(async () => ({ queryInput: {} })) };
 });
 
 it("exposes the data loader without navigation effects", async () => {
   page.onNavigate = jest.fn();
   const route = pageRoute("example", page);
-  window.appConfig.account = { id: 0 };
+  window.appConfig.account = { id: "" };
   await expect(route.handle.dataLoader(request)).resolves.toEqual({ queryInput: {} });
   expect(route.handle).toMatchObject({ preload: true, auth: true });
   expect(page.onNavigate).not.toHaveBeenCalled();
@@ -34,7 +34,7 @@ it("exposes the data loader without navigation effects", async () => {
 
 it("preserves authentication before navigation effects and fetching", async () => {
   page.onNavigate = jest.fn();
-  window.appConfig.account = { id: 0 };
+  window.appConfig.account = { id: "" };
   await expect(pageRoute("example", page).loader(request)).rejects.toEqual({ redirect: expect.any(String) });
   expect(page.onNavigate).not.toHaveBeenCalled();
   expect(page.loader).not.toHaveBeenCalled();
@@ -57,7 +57,7 @@ it("runs navigation preparation before fetching and records navigation timing", 
 });
 
 it("keeps excluded routes navigable and supports public routes", async () => {
-  window.appConfig.account = { id: 0 };
+  window.appConfig.account = { id: "" };
   const route = pageRoute("example", page, { auth: false, preload: false });
   expect(route.handle).toMatchObject({ preload: false, auth: false });
   await expect(route.loader(request)).resolves.toEqual({ queryInput: {} });
