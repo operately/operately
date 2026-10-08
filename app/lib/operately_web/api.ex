@@ -358,6 +358,10 @@ defmodule OperatelyWeb.Api do
     quote do
       query :get_language, OperatelyWeb.Api.Queries.GetLanguage
 
+      namespace :analytics do
+        mutation :sync_context, OperatelyWeb.Api.Analytics.SyncContext
+      end
+
       namespace :rich_content do
         query :resolve_links, OperatelyWeb.Api.RichContent.ResolveLinks
         mutation :set_task_item_checked, OperatelyWeb.Api.RichContent.SetTaskItemChecked

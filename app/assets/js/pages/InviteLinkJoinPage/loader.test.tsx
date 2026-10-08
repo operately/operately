@@ -37,7 +37,7 @@ beforeEach(() => {
 });
 
 it.each([false, true])("derives the invitation state for loggedIn=%s and observes link changes", async (loggedIn) => {
-  if (loggedIn) window.appConfig.account = { id: 1 };
+  if (loggedIn) window.appConfig.account = { id: "1" };
   const inputs = await loader(args);
   expect(inputs).toEqual({ queryInput: { token: "company-link" } });
   jest.mocked(Pages.useLoadedData).mockReturnValue(inputs);

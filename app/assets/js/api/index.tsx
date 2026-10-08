@@ -3205,10 +3205,10 @@ export type RichTextResourceType =
   | "document"
   | "project_check_in"
   | "project_retrospective"
+  | "goal_check_in"
   | "kpi"
   | "project_discussion"
   | "goal_discussion"
-  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -4355,6 +4355,16 @@ export interface AddFirstCompanyInput {
 
 export interface AddFirstCompanyResult {
   company?: Company | null;
+}
+
+export interface AnalyticsSyncContextInput {
+  context?: Json | null;
+}
+
+export interface AnalyticsSyncContextResult {
+  optedOut: boolean;
+  companyId?: string | null;
+  acquisition: Json;
 }
 
 export interface ApiTokensCreateInput {
@@ -7788,6 +7798,14 @@ class ApiNamespaceReactions {
   }
 }
 
+class ApiNamespaceAnalytics {
+  constructor(private client: ApiClient) {}
+
+  async syncContext(input: AnalyticsSyncContextInput): Promise<AnalyticsSyncContextResult> {
+    return this.client.post("/analytics/sync_context", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -7816,6 +7834,7 @@ export class ApiClient {
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceRichContent: ApiNamespaceRichContent;
   public apiNamespaceReactions: ApiNamespaceReactions;
+  public apiNamespaceAnalytics: ApiNamespaceAnalytics;
 
   constructor() {
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
@@ -7843,6 +7862,7 @@ export class ApiClient {
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
+    this.apiNamespaceAnalytics = new ApiNamespaceAnalytics(this);
   }
 
   setBasePath(basePath: string) {
@@ -12293,6 +12313,18 @@ export default {
     createMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: ReactionsCreateInput) => defaultApiClient.apiNamespaceReactions.create(input),
+      }),
+  },
+
+  analytics: {
+    syncContext: (input: AnalyticsSyncContextInput) => defaultApiClient.apiNamespaceAnalytics.syncContext(input),
+    useSyncContext: () =>
+      useMutation<AnalyticsSyncContextInput, AnalyticsSyncContextResult>((input) =>
+        defaultApiClient.apiNamespaceAnalytics.syncContext(input),
+      ),
+    syncContextMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: AnalyticsSyncContextInput) => defaultApiClient.apiNamespaceAnalytics.syncContext(input),
       }),
   },
 };

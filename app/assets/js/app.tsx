@@ -21,6 +21,7 @@ import { createAppRoutes } from "./routes";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import Api from "@/api";
+import { startAnalytics } from "@/analytics";
 import AdminApi from "@/ee/admin_api";
 import "./i18n";
 
@@ -61,6 +62,7 @@ const createRouter = window.appConfig.sentry.enabled
   ? Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
   : createBrowserRouter;
 const routes = createAppRoutes(createRouter);
+startAnalytics(routes);
 
 const rootElement: HTMLElement | null = document.getElementById("root");
 
