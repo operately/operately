@@ -33,6 +33,17 @@ config :operately, :beacon_enabled, System.get_env("OPERATELY_BEACON_ENABLED", "
 config :operately, :beacon_collector_enabled, System.get_env("OPERATELY_BEACON_COLLECTOR_ENABLED", "false") == "true"
 config :operately, :posthog_api_key, System.get_env("POSTHOG_API_KEY")
 
+# Reuse the beacon project's key; installations without one remain disabled by default.
+posthog_api_key = System.get_env("POSTHOG_API_KEY")
+analytics_enabled_by_default = String.trim(posthog_api_key || "") != ""
+analytics_cookie_domain = if System.get_env("OPERATELY_HOST") == "app.operately.com", do: ".operately.com"
+
+config :operately, :conversion_analytics,
+  enabled: System.get_env("OPERATELY_ANALYTICS_ENABLED", to_string(analytics_enabled_by_default)) == "true",
+  token: System.get_env("OPERATELY_ANALYTICS_TOKEN", posthog_api_key),
+  host: System.get_env("OPERATELY_ANALYTICS_HOST", "https://us.i.posthog.com"),
+  cookie_domain: System.get_env("OPERATELY_ANALYTICS_COOKIE_DOMAIN", analytics_cookie_domain)
+
 # Backend Sentry uses the same DSN as the frontend (OPERATELY_JS_SENTRY_*).
 dsn = Operately.Sentry.configured_dsn()
 

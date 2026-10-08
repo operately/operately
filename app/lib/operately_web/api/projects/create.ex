@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Projects.Create do
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.attrs.group_id, ctx.me.id) end)
     |> run(:enforced_attrs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, ctx.attrs)} end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit, company_read_only: company_read_only(conn)) end)
-    |> run(:operation, fn ctx -> ProjectCreation.run(ctx.enforced_attrs) end)
+    |> run(:operation, fn ctx -> ProjectCreation.run(%{ctx.enforced_attrs | analytics_context: OperatelyWeb.Analytics.context(conn)}) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end

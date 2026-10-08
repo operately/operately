@@ -5,13 +5,14 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
   alias Operately.Companies.Company
   alias Operately.People.Account
 
-  def run(attrs, invite_link) do
+  def run(attrs, invite_link, analytics_context \\ %{}) do
     invite_link = Repo.preload(invite_link, [:author, person: [:account]])
     member = invite_link.person
     admin = invite_link.author
 
     Multi.new()
     |> change_password(attrs, member.account)
+    |> track_invitation_completion(member.account, analytics_context)
     |> deactivate_invite_link(invite_link)
     |> insert_activity(invite_link, admin, member)
     |> insert_joined_activity(member)
@@ -21,6 +22,12 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
   defp change_password(multi, attrs, account) do
     multi
     |> Multi.update(:member_account, password_changeset(account, attrs))
+  end
+
+  defp track_invitation_completion(multi, account, analytics_context) do
+    Operately.Analytics.enqueue_step(multi, :analytics_signup, fn _ ->
+      Operately.Analytics.complete_invitation(account, analytics_context)
+    end)
   end
 
   defp deactivate_invite_link(multi, invite_link) do

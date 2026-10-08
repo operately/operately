@@ -26,11 +26,19 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
     |> Multi.run(:materialized_people, fn repo, %{copy_plan: plan, project: project} ->
       PeopleCreator.insert(repo, plan, project)
     end)
+    |> track_workspace_activation(params)
     |> Repo.transaction()
     |> extract_result()
   end
 
   def run(%__MODULE__{}), do: {:error, :start_date_required}
+
+  defp track_workspace_activation(multi, params) do
+    Operately.Analytics.enqueue_step(multi, :analytics_activation, fn %{project: project} ->
+      creator = Repo.get!(Operately.People.Person, params.project.creator_id)
+      Operately.Analytics.activate(params.project.company_id, creator.account_id, params.project.analytics_context || %{}, project.inserted_at)
+    end)
+  end
 
   defp build_copy_plan(repo, params) do
     with {:ok, template} <- load_template(repo, params),

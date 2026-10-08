@@ -19,8 +19,13 @@ defmodule OperatelyWeb.AccountAuth do
   It renews the session ID and clears the whole session
   to avoid fixation attacks. See the renew_session
   function to customize this behaviour.
+
+  OAuth callers can supply the analytics context saved before the redirect.
   """
-  def log_in_account(conn, account, params \\ %{}) do
+  def log_in_account(conn, account, params \\ %{}, analytics_context \\ nil) do
+    context = analytics_context || OperatelyWeb.Analytics.context(conn)
+    Operately.Analytics.on_login(account, context)
+
     People.mark_account_first_login(account)
 
     token = People.generate_account_session_token(account)

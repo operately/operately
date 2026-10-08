@@ -7,10 +7,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
     field? :email, :string, null: true
   end
 
-  def call(_conn, inputs) do
+  def call(conn, inputs) do
     with(
       {:ok, :allowed} <- check_signup_allowed(),
-      {:ok, _} <- Operately.People.EmailActivationCode.create(inputs.email)
+      {:ok, _} <- Operately.People.EmailActivationCode.create(inputs.email, OperatelyWeb.Analytics.context(conn))
     ) do
       {:ok, %{}}
     else

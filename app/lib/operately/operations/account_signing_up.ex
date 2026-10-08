@@ -21,14 +21,22 @@ defmodule Operately.Operations.AccountSigningUp do
     - `{:error, :invalid}` when the activation code has expired
     - `{:error, %Ecto.Changeset{}}` when account creation fails
   """
-  def run(full_name, email, password, code, invite_token \\ nil) do
+  def run(full_name, email, password, code, invite_token \\ nil, analytics_context \\ %{}) do
     with {:ok, :allowed} <- check_signup_allowed(),
          {:ok, _} <- check_email_available(email),
-         {:ok, _activation} <- EmailActivationCodeConsuming.run(email, code),
-         {:ok, account} <- Account.create(full_name, email, password),
+         {:ok, activation} <- EmailActivationCodeConsuming.run(email, code),
+         {:ok, account} <- Account.create(full_name, email, password, signup_context(activation, invite_token, analytics_context)),
          {:ok, invite_context} <- handle_invite_token(account, invite_token) do
       {:ok, account, invite_context}
     end
+  end
+
+  defp signup_context(activation, invite_token, request_context) do
+    context = Operately.Analytics.Context.normalize(activation.analytics_context)
+    context
+    |> Map.put(:channel, request_context[:channel] || "web")
+    |> Map.put(:signup_kind, if(invite_token, do: :invitation, else: :self_service))
+    |> Map.put(:preference, if(request_context[:preference] == "denied", do: "denied", else: context.preference))
   end
 
   defp check_signup_allowed do

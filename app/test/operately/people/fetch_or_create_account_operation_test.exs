@@ -5,6 +5,24 @@ defmodule Operately.People.FetchOrCreateAccountOperationTest do
   import Mock
   import Operately.PeopleFixtures
 
+  test "Google creates one signup event and existing logins preserve acquisition" do
+    previous = Application.get_env(:operately, :conversion_analytics)
+    Application.put_env(:operately, :conversion_analytics, enabled: true, token: "test")
+
+    on_exit(fn -> Application.put_env(:operately, :conversion_analytics, previous) end)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      attrs = %{email: "analytics-google@example.com", name: "Test", image: nil,
+        analytics_context: %{channel: "web", attribution: %{"utm_source" => "launch"}}}
+      assert {:ok, account, :created} = Operately.People.FetchOrCreateAccountOperation.call(attrs)
+      assert {:ok, _, :existing} = Operately.People.FetchOrCreateAccountOperation.call(%{attrs | analytics_context: %{attribution: %{"utm_source" => "later"}}})
+      assert Repo.get!(Operately.Analytics.AccountState, account.id).attribution == %{"utm_source" => "launch"}
+      import Ecto.Query
+      assert [job] = Repo.all(from j in Oban.Job, where: j.worker == "Operately.Analytics.Delivery")
+      assert job.args["event"]["event"] == "signup_completed"
+    end)
+  end
+
   describe "avatar syncing" do
     setup :register_and_log_in_account
 
