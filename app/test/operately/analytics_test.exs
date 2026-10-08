@@ -4,6 +4,7 @@ defmodule Operately.AnalyticsTest do
   alias Operately.{Analytics, Repo}
   alias Operately.Analytics.{AccountState, CompanyState, Activation, Delivery}
   alias Operately.Support.Factory
+  alias Ecto.Adapters.SQL.Sandbox
 
   setup do
     Process.put(:oban_testing, :manual)
@@ -166,19 +167,18 @@ defmodule Operately.AnalyticsTest do
     assert Repo.all(Activation) == []
   end
 
-  test "concurrent activation attempts create one record and one delivery", ctx do
-    Repo.transaction(fn -> Analytics.workspace_created(ctx.company, ctx.account, %{}) end)
-
-    1..5
-    |> Task.async_stream(fn _ ->
-      Oban.Testing.with_testing_mode(:manual, fn ->
-        Repo.transaction(fn -> Analytics.activate(ctx.company.id, ctx.account.id, %{channel: "api"}) end)
-      end)
+  test "concurrent activation transactions commit one record and one delivery" do
+    with_committed_workspace(fn ctx ->
+      assert {{:ok, :ok}, {:ok, :ok}} = race_activations(ctx, :commit)
+      assert_activation(ctx, "web")
     end)
-    |> Enum.each(fn result -> assert {:ok, {:ok, :ok}} = result end)
+  end
 
-    assert Repo.aggregate(Activation, :count) == 1
-    assert length(jobs("workspace_activated")) == 1
+  test "a waiting activation succeeds when the first transaction rolls back" do
+    with_committed_workspace(fn ctx ->
+      assert {{:error, :rolled_back}, {:ok, :ok}} = race_activations(ctx, :rollback)
+      assert_activation(ctx, "api")
+    end)
   end
 
   test "a teammate activates with their identity and the creator's attribution", ctx do
@@ -201,5 +201,120 @@ defmodule Operately.AnalyticsTest do
   defp jobs(event) do
     Repo.all(from j in Oban.Job, where: j.worker == "Operately.Analytics.Delivery")
     |> Enum.filter(&(&1.args["event"]["event"] == event))
+  end
+
+  defp with_committed_workspace(callback) do
+    # Separate connections cannot see DataCase's uncommitted fixtures. Keep this
+    # minimal committed fixture isolated, and remove it even when assertions fail.
+    supervisor = start_supervised!(Task.Supervisor)
+
+    Task.Supervisor.async_nolink(supervisor, fn ->
+      Sandbox.unboxed_run(Repo, fn ->
+        Oban.Testing.with_testing_mode(:manual, fn ->
+          ctx = create_committed_workspace()
+
+          try do
+            callback.(Map.put(ctx, :task_supervisor, supervisor))
+          after
+            delete_committed_workspace(ctx)
+          end
+        end)
+      end)
+    end)
+    |> Task.await(15_000)
+  end
+
+  defp create_committed_workspace do
+    {:ok, ctx} = Repo.transaction(fn ->
+      account = Repo.insert!(Operately.People.Account.registration_changeset(%{
+        full_name: "Analytics concurrency test",
+        email: "analytics-#{Ecto.UUID.generate()}@example.test",
+        password: "TestPassword123!"
+      }))
+      company = Repo.insert!(Operately.Companies.Company.changeset(%{name: "Analytics concurrency test"}))
+      Analytics.workspace_created(company, account, %{})
+      %{account: account, company: company}
+    end)
+
+    ctx
+  end
+
+  defp delete_committed_workspace(ctx) do
+    Repo.delete_all(from j in Oban.Job,
+      where: j.worker == "Operately.Analytics.Delivery",
+      where: fragment("?->'event'->'properties'->>'company_id'", j.args) == ^ctx.company.id
+    )
+    Repo.delete!(ctx.company)
+    Repo.delete!(ctx.account)
+  end
+
+  defp race_activations(ctx, first_outcome) do
+    parent = self()
+    first = activation_task(ctx, "web", fn ->
+      send(parent, {:activation_held, self()})
+
+      receive do
+        :commit -> :ok
+        :rollback -> Repo.rollback(:rolled_back)
+      after
+        10_000 -> raise "Timed out waiting to finish activation transaction"
+      end
+    end)
+
+    try do
+      assert_receive {:activation_started, first_pid, first_backend}, 5_000
+      assert first_pid == first.pid
+      assert_receive {:activation_held, ^first_pid}, 5_000
+
+      second = activation_task(ctx, "api", fn -> :ok end)
+
+      try do
+        assert_receive {:activation_started, second_pid, second_backend}, 5_000
+        assert second_pid == second.pid
+        refute first_backend == second_backend
+        assert_database_blocked(second_backend, first_backend, System.monotonic_time(:millisecond) + 3_000)
+
+        send(first.pid, first_outcome)
+        {Task.await(first, 5_000), Task.await(second, 5_000)}
+      after
+        Task.shutdown(second, :brutal_kill)
+      end
+    after
+      Task.shutdown(first, :brutal_kill)
+    end
+  end
+
+  defp activation_task(ctx, channel, after_activation) do
+    parent = self()
+
+    Task.Supervisor.async_nolink(ctx.task_supervisor, fn ->
+      Sandbox.unboxed_run(Repo, fn ->
+        Oban.Testing.with_testing_mode(:manual, fn ->
+          Repo.transaction(fn ->
+            [[backend]] = Repo.query!("SELECT pg_backend_pid()").rows
+            send(parent, {:activation_started, self(), backend})
+            Analytics.activate(ctx.company.id, ctx.account.id, %{channel: channel})
+            after_activation.()
+          end)
+        end)
+      end)
+    end)
+  end
+
+  defp assert_database_blocked(waiter, blocker, deadline) do
+    [[blocked]] = Repo.query!("SELECT $1 = ANY(pg_blocking_pids($2))", [blocker, waiter]).rows
+
+    unless blocked do
+      assert System.monotonic_time(:millisecond) < deadline, "Activation transactions did not contend for a database lock"
+      Process.sleep(10)
+      assert_database_blocked(waiter, blocker, deadline)
+    end
+  end
+
+  defp assert_activation(ctx, channel) do
+    assert [%Activation{rule_version: 1}] = Repo.all(from a in Activation, where: a.company_id == ^ctx.company.id)
+    [job] = Enum.filter(jobs("workspace_activated"), &(&1.args["event"]["properties"]["company_id"] == ctx.company.id))
+    assert job.args["event"]["distinct_id"] == ctx.account.id
+    assert job.args["event"]["properties"]["channel"] == channel
   end
 end
