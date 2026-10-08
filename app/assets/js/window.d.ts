@@ -1,3 +1,5 @@
+import type { AnalyticsConfig, AnalyticsSdk } from "./analytics/browser";
+
 declare global {
   interface SentryConfig {
     dsn: string;
@@ -26,8 +28,9 @@ declare global {
     api: ApiConfig;
 
     showDevBar: boolean;
+    analytics?: AnalyticsConfig;
     account: {
-      id: number;
+      id: string;
     };
 
     discordUrl: string;
@@ -38,6 +41,7 @@ declare global {
 
   interface Window {
     appConfig: AppConfig;
+    posthog?: AnalyticsSdk;
     __tests?: any;
   }
 }

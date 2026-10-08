@@ -41,6 +41,10 @@ defmodule OperatelyWeb.Analytics do
     end
   end
 
+  @doc """
+  Returns browser analytics configuration and the account's opt-out state.
+  PageController exposes it as window.appConfig.analytics to initialize the frontend tracker.
+  """
   def bootstrap(conn) do
     config = Operately.Analytics.config()
     account_id = conn.assigns[:current_account] && conn.assigns.current_account.id
