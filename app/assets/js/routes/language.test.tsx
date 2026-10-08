@@ -106,7 +106,7 @@ beforeEach(() => {
   window.appConfig = {
     ...window.appConfig,
     environment: "prod",
-    account: { id: 1 },
+    account: { id: "1" },
     configured: true,
   };
   Api.default.setBasePath("/api/v2");
