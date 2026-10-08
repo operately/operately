@@ -21,9 +21,10 @@ defmodule Operately.People.Account do
     timestamps()
   end
 
-  def create(full_name, email, password) do
+  def create(full_name, email, password, analytics_context \\ %{}) do
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:account, registration_changeset(%{full_name: full_name, email: email, password: password}))
+    |> Operately.Analytics.enqueue_step(:analytics_signup, fn %{account: account} -> Operately.Analytics.register_account(account, analytics_context) end)
     |> Oban.insert(:send_onboarding_email, fn %{account: account} -> OperatelyEE.AccountOnboardingJob.new(%{account_id: account.id}) end)
     |> Repo.transaction()
     |> Repo.extract_result(:account)

@@ -13,10 +13,10 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
     field :result, :string, null: false
   end
 
-  def call(_conn, inputs) do
+  def call(conn, inputs) do
     case validate(inputs) do
       {:ok, invite_link} ->
-        Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link)
+        Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link, OperatelyWeb.Analytics.context(conn))
         {:ok, %{result: gettext("Password successfully changed")}}
       {:error, reason} ->
         {:error, :bad_request, reason}

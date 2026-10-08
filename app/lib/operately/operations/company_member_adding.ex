@@ -43,6 +43,12 @@ defmodule Operately.Operations.CompanyMemberAdding do
             full_name: attrs.full_name
           })
           |> repo.insert()
+          |> case do
+            {:ok, account} ->
+              Operately.Analytics.provision_account(account)
+              {:ok, account}
+            error -> error
+          end
 
         existing_account ->
           {:ok, existing_account}

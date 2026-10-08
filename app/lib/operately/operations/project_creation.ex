@@ -27,7 +27,8 @@ defmodule Operately.Operations.ProjectCreation do
     :description,
     :anonymous_access_level,
     :company_access_level,
-    :space_access_level
+    :space_access_level,
+    :analytics_context
   ]
 
   def run(%__MODULE__{} = params) do
@@ -42,9 +43,17 @@ defmodule Operately.Operations.ProjectCreation do
     |> insert_bindings(params)
     |> insert_activity(params)
     |> Companies.mark_setup_completed(params.company_id)
+    |> track_workspace_activation(params)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
+  end
+
+  defp track_workspace_activation(multi, params) do
+    Operately.Analytics.enqueue_step(multi, :analytics_activation, fn %{project: project} ->
+      creator = Repo.get!(Operately.People.Person, params.creator_id)
+      Operately.Analytics.activate(params.company_id, creator.account_id, params.analytics_context || %{}, project.inserted_at)
+    end)
   end
 
   defp insert_project(multi, params) do

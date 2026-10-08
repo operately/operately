@@ -22,6 +22,7 @@ defmodule OperatelyWeb.AccountOauthController do
   """
   def store_redirect_in_state(conn, _opts) do
     conn
+    |> put_session(:analytics_context, OperatelyWeb.Analytics.context(conn))
     |> maybe_store_redirect(conn.params["redirect_to"])
     |> maybe_store_invite_token(conn.params["invite_token"])
   end
@@ -44,20 +45,24 @@ defmodule OperatelyWeb.AccountOauthController do
     account_attrs = %{
       email: account_info.email,
       name: account_info.name,
-      image: account_info.image
+      image: account_info.image,
+      analytics_context: oauth_analytics_context(conn, invite_token)
     }
+
+    conn = delete_session(conn, :analytics_context)
 
     case People.find_or_create_account_with_source(account_attrs) do
       {:ok, account, account_source} ->
         {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
 
         if cli_auth_session_id do
+          Operately.Analytics.on_login(account, account_attrs.analytics_context)
           complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params, account_source)
         else
           {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
 
           params = Map.put(redirect_params, "remember_me", "true")
-          AccountAuth.log_in_account(conn, account, params)
+          AccountAuth.log_in_account(conn, account, params, account_attrs.analytics_context)
         end
 
       e ->
@@ -70,6 +75,15 @@ defmodule OperatelyWeb.AccountOauthController do
     conn
     |> put_flash(:error, gettext("Authentication failed"))
     |> redirect(to: "/")
+  end
+
+  defp oauth_analytics_context(conn, invite_token) do
+    context = get_session(conn, :analytics_context) |> Operately.Analytics.Context.normalize()
+    context = if OperatelyWeb.Analytics.context(conn).preference == "denied", do: Map.put(context, :preference, "denied"), else: context
+
+    context
+    |> Map.put(:channel, if(get_session(conn, @cli_auth_session_key), do: "cli", else: "web"))
+    |> Map.put(:signup_kind, if(invite_token, do: :invitation, else: :self_service))
   end
 
   defp get_and_clear_redirect_params(conn, params) do
