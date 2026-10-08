@@ -27,7 +27,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp create_new_account(attrs) do
-    case Account.create(attrs[:name], attrs[:email], random_password()) do
+    case Account.create(attrs[:name], attrs[:email], random_password(), attrs[:analytics_context] || %{}) do
       {:ok, account} -> {:ok, account, :created}
       {:error, reason} -> {:error, reason}
     end

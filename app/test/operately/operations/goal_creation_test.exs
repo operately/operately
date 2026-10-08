@@ -37,6 +37,26 @@ defmodule Operately.Operations.GoalCreationTest do
     {:ok, attrs: attrs, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion}
   end
 
+  test "goal creation activates the workspace and a rollback removes activation", ctx do
+    previous = Application.get_env(:operately, :conversion_analytics)
+    Application.put_env(:operately, :conversion_analytics, enabled: true, token: "test")
+
+    on_exit(fn -> Application.put_env(:operately, :conversion_analytics, previous) end)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      account = Repo.get!(Operately.People.Account, ctx.creator.account_id)
+      Repo.transaction(fn -> Operately.Analytics.workspace_created(ctx.company, account, %{}) end)
+      Repo.transaction(fn ->
+        assert {:ok, _} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs, %{channel: "api"})
+        assert Repo.aggregate(Operately.Analytics.Activation, :count) == 1
+        Repo.rollback(:cancelled)
+      end)
+      assert Repo.all(Operately.Analytics.Activation) == []
+      assert {:ok, _} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs, %{channel: "api"})
+      assert Repo.aggregate(Operately.Analytics.Activation, :count) == 1
+    end)
+  end
+
   test "GoalCreation operation creates goal and context", ctx do
     assert Goals.list_goals() == []
 

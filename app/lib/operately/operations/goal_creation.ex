@@ -9,7 +9,7 @@ defmodule Operately.Operations.GoalCreation do
   alias Operately.ResourceHubs.ResourceHub
   alias Operately.Search.IndexUpdates
 
-  def run(creator, attrs) do
+  def run(creator, attrs, analytics_context \\ %{}) do
     Multi.new()
     |> insert_goal(creator, attrs)
     |> insert_default_resource_hub()
@@ -18,9 +18,16 @@ defmodule Operately.Operations.GoalCreation do
     |> insert_bindings(creator, attrs)
     |> insert_activity(creator)
     |> Companies.mark_setup_completed(creator.company_id)
+    |> track_workspace_activation(creator, analytics_context)
     |> IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.goal.id end)
     |> Repo.transaction()
     |> Repo.extract_result(:goal)
+  end
+
+  defp track_workspace_activation(multi, creator, analytics_context) do
+    Operately.Analytics.enqueue_step(multi, :analytics_activation, fn %{goal: goal} ->
+      Operately.Analytics.activate(creator.company_id, creator.account_id, analytics_context, goal.inserted_at)
+    end)
   end
 
   defp insert_goal(multi, creator, attrs) do

@@ -12,7 +12,7 @@ defmodule Operately.Operations.CompanyAdding do
   alias Operately.Access.{Context, Group, Binding, GroupMembership}
   alias Operately.Activities
 
-  def run(attrs, account \\ nil) do
+  def run(attrs, account \\ nil, analytics_context \\ %{}) do
     with :ok <- validate_billing_intent(attrs),
          :ok <- validate_company_name(attrs) do
       Multi.new()
@@ -24,11 +24,20 @@ defmodule Operately.Operations.CompanyAdding do
       |> maybe_remember_billing_intent(attrs)
       |> insert_account_if_doesnt_exists(attrs, account)
       |> insert_person(attrs)
+      |> track_company_creation(account, analytics_context)
       |> insert_activity()
       |> send_discord_notification()
       |> Repo.transaction()
       |> extract_company()
     end
+  end
+
+  defp track_company_creation(multi, account, analytics_context) do
+    Operately.Analytics.enqueue_step(multi, :analytics_company, fn changes ->
+      if is_nil(account), do: Operately.Analytics.register_account(changes.account, analytics_context)
+
+      Operately.Analytics.workspace_created(changes.company, changes.account, analytics_context)
+    end)
   end
 
   defp validate_company_name(attrs) do

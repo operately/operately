@@ -35,6 +35,23 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     {:ok, company: company, admin: admin}
   end
 
+  test "invitation provisioning waits for acceptance before emitting signup", ctx do
+    previous = Application.get_env(:operately, :conversion_analytics)
+    Application.put_env(:operately, :conversion_analytics, enabled: true, token: "test")
+
+    on_exit(fn -> Application.put_env(:operately, :conversion_analytics, previous) end)
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, ctx.company, @member_attrs)
+      account = People.get_account_by_email(@email)
+      assert %{signup_kind: :invitation, completed_at: nil} = Repo.get!(Operately.Analytics.AccountState, account.id)
+      assert Repo.all(from j in Oban.Job, where: j.worker == "Operately.Analytics.Delivery") == []
+      Operately.Analytics.complete_invitation(account, %{channel: "web"})
+      assert [job] = Repo.all(from j in Oban.Job, where: j.worker == "Operately.Analytics.Delivery")
+      assert job.args["event"]["properties"]["signup_kind"] == "invitation"
+    end)
+  end
+
   test "CompanyMemberAdding operation creates person", ctx do
     # company creator + company admin
     assert company_people_count(ctx.company.id) == 2

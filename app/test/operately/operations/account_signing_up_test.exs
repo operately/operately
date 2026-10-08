@@ -21,6 +21,22 @@ defmodule Operately.Operations.AccountSigningUpTest do
     :ok
   end
 
+  test "email signup preserves the context bound to the verification record" do
+    previous = Application.get_env(:operately, :conversion_analytics)
+    Application.put_env(:operately, :conversion_analytics, enabled: true, token: "test")
+    on_exit(fn -> Application.put_env(:operately, :conversion_analytics, previous) end)
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      anonymous_id = Ecto.UUID.generate()
+      {:ok, activation} = EmailActivationCode.create(@email, %{anonymous_id: anonymous_id, attribution: %{"utm_source" => "email-test"}})
+      {:ok, account, _} = AccountSigningUp.run(@full_name, @email, @password, activation.code, nil, %{channel: "web", attribution: %{"utm_source" => "wrong"}})
+      state = Repo.get!(Operately.Analytics.AccountState, account.id)
+      assert state.attribution == %{"utm_source" => "email-test"}
+      jobs = Repo.all(from j in Oban.Job, where: j.worker == "Operately.Analytics.Delivery")
+      assert Enum.sort(Enum.map(jobs, & &1.args["event"]["event"])) == ["$identify", "signup_completed"]
+      assert Enum.find(jobs, &(&1.args["event"]["event"] == "$identify")).args["event"]["properties"]["$anon_distinct_id"] == anonymous_id
+    end)
+  end
+
   describe "successful signup" do
     test "creates an account and returns it with an empty invite context" do
       {:ok, activation} = EmailActivationCode.create(@email)

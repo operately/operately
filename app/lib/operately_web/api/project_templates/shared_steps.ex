@@ -102,11 +102,11 @@ defmodule OperatelyWeb.Api.ProjectTemplates.SharedSteps do
   end
 
   def create_project_from_template(multi, inputs) do
-    Ecto.Multi.run(multi, :project, fn _repo, %{me: creator, space: space, template: template} ->
+    Ecto.Multi.run(multi, :project, fn _repo, %{me: creator, space: space, template: template, conn: conn} ->
       ProjectTemplateMaterialization.run(%ProjectTemplateMaterialization{
         template_id: template.id,
         start_date: inputs.start_date,
-        project: project_creation_attrs(creator, space, inputs)
+        project: %{project_creation_attrs(creator, space, inputs) | analytics_context: OperatelyWeb.Analytics.context(conn)}
       })
     end)
   end
