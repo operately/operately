@@ -24,6 +24,7 @@ Use the glossary for each target language:
 - [Deutsch](i18n/glossaries/de.md)
 - [Русский](i18n/glossaries/ru.md)
 - [Français](i18n/glossaries/fr.md)
+- [Español](i18n/glossaries/es.md)
 - [Glossary template](i18n/glossaries/template.md)
 
 Start each new language from the glossary template, then expand its glossary with as many terms, phrases, and usage notes as needed for consistent product copy and documentation. Each language can have its own additional entries.
