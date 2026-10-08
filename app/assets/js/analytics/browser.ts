@@ -84,6 +84,14 @@ export interface AnalyticsOptions {
 
 type EnabledAnalyticsConfig = AnalyticsConfig & { token: string; host: string };
 
+interface SignupAttempt {
+  id: string;
+  page: string;
+  kind: "invitation" | "self_service";
+}
+
+const SDK_RESET_COOKIE = "operately_analytics_reset_pending";
+
 export function createAnalytics(config: AnalyticsConfig, options: AnalyticsOptions = {}): AnalyticsTracker {
   if (!config?.enabled || !config.token || !config.host) {
     return { visit: async () => {}, logout() {}, context: () => ({}) };
@@ -112,6 +120,7 @@ export class BrowserAnalytics {
   private sdk: AnalyticsSdk | undefined;
   private lastVisitKey: string | undefined;
   private sessionVersion = 0;
+  private sdkResetPending = false;
   private ready: Promise<void>;
   private resolveReady: () => void = () => {};
 
@@ -201,6 +210,7 @@ export class BrowserAnalytics {
 
   private onSdkLoaded(instance: AnalyticsSdk) {
     this.sdk = instance;
+    this.resetSdkIfPending();
     this.saveContext();
     this.identifyAccount();
 
@@ -216,7 +226,7 @@ export class BrowserAnalytics {
     // Save context before SDK loading so a fast signup/OAuth navigation retains attribution.
     this.saveContext();
     this.recordFirstTouch(page.path);
-    this.startSignupAttempt(page);
+    const signupAttempt = this.startSignupAttempt(page);
 
     if (this.isTrackingDenied()) {
       await this.synchronizeContext(page);
@@ -236,7 +246,7 @@ export class BrowserAnalytics {
     this.sdk.resetGroups();
     const properties = this.visitProperties(page, synchronizedContext);
     this.sdk.capture("$pageview", { ...properties, $insert_id: this.generateEventId() });
-    this.captureSignupStarted(page, properties);
+    if (signupAttempt) this.captureSignupStarted(signupAttempt, properties);
   }
 
   private recordFirstTouch(path: string) {
@@ -277,16 +287,24 @@ export class BrowserAnalytics {
     return "direct";
   }
 
-  private startSignupAttempt(page: AnalyticsPage) {
+  private startSignupAttempt(page: AnalyticsPage): SignupAttempt | undefined {
     const isSignupPage = page.path === "/join" || /^\/sign_up(?:\/|$)/.test(page.path);
     if (this.surface !== "app" || !isSignupPage) return;
-    if (this.accountId || this.trackingContext.attempt_id || this.isTrackingDenied()) return;
+    if (this.accountId || this.isTrackingDenied()) return;
 
-    this.saveContext({
-      attempt_id: this.generateEventId(),
-      attempt_started_at: Date.now(),
-      attempt_pending: true,
-    });
+    if (!this.trackingContext.attempt_id) {
+      this.saveContext({
+        attempt_id: this.generateEventId(),
+        attempt_started_at: Date.now(),
+        attempt_pending: true,
+      });
+    }
+
+    if (!this.trackingContext.attempt_pending || !this.trackingContext.attempt_id) return;
+
+    const isInvitation =
+      page.path === "/join" || new URL(page.key, this.environment.location.origin).searchParams.has("invite_token");
+    return { id: this.trackingContext.attempt_id, page: page.path, kind: isInvitation ? "invitation" : "self_service" };
   }
 
   private visitProperties(page: AnalyticsPage, synchronizedContext: SynchronizedContext) {
@@ -306,20 +324,19 @@ export class BrowserAnalytics {
     };
   }
 
-  private captureSignupStarted(page: AnalyticsPage, properties: Record<string, unknown>) {
+  private captureSignupStarted(attempt: SignupAttempt, properties: Record<string, unknown>) {
     if (this.surface !== "app" || this.accountId || !this.sdk) return;
 
     // A different signup tab may have already captured this attempt while we awaited the SDK/server.
     this.saveContext();
-    if (!this.trackingContext.attempt_pending) return;
+    if (!this.trackingContext.attempt_pending || this.trackingContext.attempt_id !== attempt.id) return;
 
-    const isInvitation =
-      page.path === "/join" || new URL(page.key, this.environment.location.origin).searchParams.has("invite_token");
     this.sdk.capture("signup_started", {
       ...properties,
-      $insert_id: this.trackingContext.attempt_id,
-      attempt_id: this.trackingContext.attempt_id,
-      signup_kind: isInvitation ? "invitation" : "self_service",
+      page: attempt.page,
+      $insert_id: attempt.id,
+      attempt_id: attempt.id,
+      signup_kind: attempt.kind,
     });
 
     this.saveContext({ attempt_pending: false });
@@ -407,11 +424,39 @@ export class BrowserAnalytics {
   logout() {
     // Visits awaiting the SDK or context sync belong to the previous session.
     this.sessionVersion++;
-    this.sdk?.reset();
+    this.sdkResetPending = true;
+    this.writeSdkResetCookie("1");
+    this.resetSdkIfPending();
     this.accountId = null;
     this.lastVisitKey = undefined;
 
     this.resetContext();
+  }
+
+  private resetSdkIfPending() {
+    if (!this.sdk) return;
+
+    try {
+      this.sdkResetPending ||= this.document.cookie.split("; ").includes(SDK_RESET_COOKIE + "=1");
+    } catch {
+      /* The in-memory flag still handles logout when cookies are unavailable. */
+    }
+
+    if (!this.sdkResetPending) return;
+    this.sdk.reset();
+    this.sdkResetPending = false;
+    this.writeSdkResetCookie("");
+  }
+
+  private writeSdkResetCookie(value: "1" | "") {
+    // Host-only state survives the logout redirect independently of the shared attribution cookie.
+    try {
+      const secure = this.environment.location.protocol === "https:" ? "; Secure" : "";
+      const maxAge = value === "1" ? 31536000 : 0;
+      this.document.cookie = `${SDK_RESET_COOKIE}=${value}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+    } catch {
+      /* Tracking must never block logout. */
+    }
   }
 
   private isTrackingDenied() {

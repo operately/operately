@@ -20,6 +20,7 @@ interface BrowserOptions extends Pick<AnalyticsOptions, "surface" | "accountId" 
   optedOut?: boolean;
   url?: string;
   deferSdkLoad?: boolean;
+  loadViaScript?: boolean;
 }
 
 function browser({
@@ -33,6 +34,7 @@ function browser({
   url = "https://app.test/sign_up?utm_source=launch&token=secret",
   surface = "app",
   deferSdkLoad = false,
+  loadViaScript = false,
 }: BrowserOptions = {}) {
   const events: AnalyticsEvent[] = [];
   let identified = Boolean(sdkAccountId);
@@ -41,6 +43,8 @@ function browser({
   let resetCount = 0;
   const listeners = new Map<string, () => void>();
   const localStorage = new Map<string, string>();
+  const script: { src?: string; async?: boolean; crossOrigin?: string; onload?: () => void; onerror?: () => void } = {};
+  const appendScript = jest.fn((node) => node);
   const jar =
     sharedCookies ||
     new Map(
@@ -62,10 +66,8 @@ function browser({
       const [k = "", v = ""] = pair.split("=");
       jar.set(k, v);
     },
-    createElement: () => {
-      throw new Error("The SDK is already supplied by this fixture");
-    },
-    head: { appendChild: <T extends Node>(node: T) => node },
+    createElement: jest.fn().mockReturnValue(script),
+    head: { appendChild: appendScript },
   };
   const sdk: AnalyticsSdk = {
     init(_token, options) {
@@ -108,7 +110,7 @@ function browser({
       getItem: (key: string) => localStorage.get(key) ?? null,
       setItem: (key: string, value: string) => localStorage.set(key, value),
     },
-    posthog: sdk,
+    posthog: loadViaScript ? undefined : sdk,
     crypto: { randomUUID },
     addEventListener: (name: string, listener: () => void) => listeners.set(name, listener),
   };
@@ -121,6 +123,17 @@ function browser({
     events,
     doc,
     env,
+    script,
+    appendScript,
+    loadScript: () => {
+      env.posthog = sdk;
+      assert.ok(script.onload);
+      script.onload();
+    },
+    failScript: () => {
+      assert.ok(script.onerror);
+      script.onerror();
+    },
     loadSdk: () => {
       assert.ok(config);
       config.loaded(sdk);
@@ -222,7 +235,7 @@ test("logout discards a pending workspace visit and allows new anonymous visits"
   b.tracker.logout();
   completeSync({ optedOut: false, companyId: "old-company" });
   await oldVisit;
-  assert.deepEqual(b.events, []);
+  assert.equal(b.events.length, 0);
 
   const newVisit = b.tracker.visit({ path: "/log_in", key: "/log_in" });
   await new Promise((resolve) => setImmediate(resolve));
@@ -499,4 +512,109 @@ test("an expired shared attempt is not restored from an older tab's cache", asyn
   await reloaded.tracker.visit({ path: "/sign_up", key: "/sign_up" });
   assert.notEqual(reloaded.tracker.context().attempt_id, original.attempt_id);
   assert.equal(signupEvents(reloaded).length, 1);
+});
+
+for (const otherVisitTiming of ["before signup", "after signup"]) {
+  test(`a non-signup visit started ${otherVisitTiming} cannot consume the signup attempt`, async () => {
+    const responses = new Map<string, (context: SynchronizedContext) => void>();
+    const b = browser({
+      url: "https://app.test/sign_up?invite_token=private-invitation",
+      syncContext: (_, page) =>
+        new Promise((resolve) => {
+          responses.set(page.path ?? "", resolve);
+        }),
+    });
+    const signupPage = { path: "/sign_up", key: "/sign_up?invite_token=private-invitation" };
+    const otherPage = { path: "/log_in", key: "/log_in" };
+    const firstPage = otherVisitTiming === "before signup" ? otherPage : signupPage;
+    const secondPage = otherVisitTiming === "before signup" ? signupPage : otherPage;
+    const firstVisit = b.tracker.visit(firstPage);
+    const secondVisit = b.tracker.visit(secondPage);
+    await new Promise((resolve) => setImmediate(resolve));
+
+    const completeOtherVisit = responses.get(otherPage.path);
+    assert.ok(completeOtherVisit);
+    completeOtherVisit({ optedOut: false });
+    await (otherVisitTiming === "before signup" ? firstVisit : secondVisit);
+    assert.equal(signupEvents(b).length, 0);
+    assert.equal(b.tracker.context().attempt_pending, true);
+
+    const completeSignup = responses.get(signupPage.path);
+    assert.ok(completeSignup);
+    completeSignup({ optedOut: false });
+    await Promise.all([firstVisit, secondVisit]);
+    assert.equal(signupEvents(b).length, 1);
+    assert.equal(signupEvents(b)[0]?.properties.page, "/sign_up");
+    assert.equal(signupEvents(b)[0]?.properties.signup_kind, "invitation");
+  });
+}
+
+test("fresh-page startup inserts the SDK script and tracks after it loads", async () => {
+  const b = browser({ loadViaScript: true });
+  const visit = b.tracker.visit({ path: "/sign_up", key: "/sign_up" });
+  expect(b.doc.createElement).toHaveBeenCalledWith("script");
+  expect(b.appendScript).toHaveBeenCalledTimes(1);
+  expect(b.appendScript).toHaveBeenCalledWith(b.script);
+  assert.equal(b.script.src, "https://us-assets.i.posthog.com/static/array.js");
+  assert.equal(b.script.async, true);
+  assert.equal(b.script.crossOrigin, "anonymous");
+  assert.equal(b.events.length, 0);
+  assert.equal(b.tracker.context().attribution?.utm_source, "launch");
+
+  b.loadScript();
+  await visit;
+  assert.equal(b.events.filter((event) => event.event === "$pageview").length, 1);
+  assert.equal(signupEvents(b).length, 1);
+});
+
+test("SDK script failure resolves pending visits without sending events", async () => {
+  const syncContext = jest.fn(async () => ({ optedOut: false }));
+  const b = browser({ loadViaScript: true, syncContext });
+  const visit = b.tracker.visit({ path: "/sign_up", key: "/sign_up" });
+  b.failScript();
+  await visit;
+  await b.tracker.visit({ path: "/log_in", key: "/log_in" });
+  assert.equal(b.events.length, 0);
+  expect(syncContext).not.toHaveBeenCalled();
+});
+
+test("logout before script loading resets identity before subsequent visits", async () => {
+  const b = browser({ loadViaScript: true, accountId: "previous-account" });
+  const oldVisit = b.tracker.visit({ path: "/:companyId", key: "/old-company" });
+  b.tracker.logout();
+  b.loadScript();
+  await oldVisit;
+  assert.equal(b.events.length, 0);
+  await b.tracker.visit({ path: "/log_in", key: "/log_in" });
+  assert.equal(b.resetCount, 1);
+  assert.equal(b.events[0]?.properties.distinct_id, "22222222-2222-4222-8222-222222222222");
+  assert.equal(b.events[0]?.properties.account_id, null);
+});
+
+test("a pending logout reset survives redirect and is consumed once", async () => {
+  const sharedCookies = new Map<string, string>();
+  const oldPage = browser({ sharedCookies, loadViaScript: true, accountId: "previous-account" });
+  oldPage.tracker.logout();
+  oldPage.emit("pagehide");
+
+  const login = browser({
+    sharedCookies,
+    loadViaScript: true,
+    sdkAccountId: "previous-account",
+    url: "https://app.test/log_in",
+  });
+  login.loadScript();
+  await login.tracker.visit({ path: "/log_in", key: "/log_in" });
+  assert.equal(login.resetCount, 1);
+  assert.equal(login.events[0]?.properties.distinct_id, "22222222-2222-4222-8222-222222222222");
+
+  const reloaded = browser({ sharedCookies, sdkAccountId: null });
+  assert.equal(reloaded.resetCount, 0);
+});
+
+test("an expired app session alone does not reset the existing SDK identity", async () => {
+  const b = browser({ sdkAccountId: "previous-account" });
+  await b.tracker.visit({ path: "/log_in", key: "/log_in" });
+  assert.equal(b.resetCount, 0);
+  assert.equal(b.events[0]?.properties.distinct_id, "previous-account");
 });
