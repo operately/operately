@@ -399,6 +399,11 @@ class BrowserAnalytics {
   private identifyAccount() {
     if (this.isTrackingDenied() || !this.sdk) return;
 
+    if (this.surface === "app" && !this.accountId && this.sdk.get_property("$user_state") === "identified") {
+      // Authentication has expired; preserve the current signup attempt while starting a new anonymous identity.
+      this.sdk.reset();
+    }
+
     const id = this.sdk.get_distinct_id();
     if (this.accountId) {
       if (this.sdk.get_property("$user_state") === "identified" && id !== this.accountId) {

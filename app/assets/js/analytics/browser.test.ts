@@ -612,9 +612,46 @@ test("a pending logout reset survives redirect and is consumed once", async () =
   assert.equal(reloaded.resetCount, 0);
 });
 
-test("an expired app session alone does not reset the existing SDK identity", async () => {
+test("an expired app session resets the previous identity once before tracking public pages", async () => {
   const b = browser({ sdkAccountId: "previous-account" });
   await b.tracker.visit({ path: "/log_in", key: "/log_in" });
+  await b.tracker.visit({ path: "/forgot-password", key: "/forgot-password" });
+  assert.equal(b.resetCount, 1);
+  assert.equal(b.events.length, 2);
+  for (const event of b.events) {
+    assert.equal(event.properties.distinct_id, "22222222-2222-4222-8222-222222222222");
+    assert.equal(event.properties.account_id, null);
+  }
+  assert.equal(b.tracker.context().anonymous_id, "22222222-2222-4222-8222-222222222222");
+});
+
+test("delayed SDK loading resets stale identity without losing the signup attempt or attribution", async () => {
+  const synchronizedContexts: AnalyticsContext[] = [];
+  const b = browser({
+    sdkAccountId: "previous-account",
+    loadViaScript: true,
+    syncContext: async (context) => {
+      synchronizedContexts.push(context);
+      return { optedOut: false };
+    },
+  });
+  const visit = b.tracker.visit({ path: "/sign_up", key: "/sign_up" });
+  const attemptId = b.tracker.context().attempt_id;
+  assert.ok(attemptId);
+  b.loadScript();
+  await visit;
+
+  assert.equal(b.resetCount, 1);
+  assert.equal(signupEvents(b).length, 1);
+  assert.equal(signupEvents(b)[0]?.properties.distinct_id, "22222222-2222-4222-8222-222222222222");
+  assert.equal(signupEvents(b)[0]?.properties.attempt_id, attemptId);
+  assert.equal(synchronizedContexts[0]?.anonymous_id, "22222222-2222-4222-8222-222222222222");
+  assert.equal(synchronizedContexts[0]?.attribution?.utm_source, "launch");
+});
+
+test("website visits preserve identified identity without an app authentication context", async () => {
+  const b = browser({ surface: "website", sdkAccountId: "account", url: "https://operately.test/" });
+  await b.tracker.visit({ path: "/", key: "/" });
   assert.equal(b.resetCount, 0);
-  assert.equal(b.events[0]?.properties.distinct_id, "previous-account");
+  assert.equal(b.events[0]?.properties.distinct_id, "account");
 });
