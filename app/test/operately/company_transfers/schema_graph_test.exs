@@ -392,6 +392,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "classifies excluded tables" do
       assert Discovery.classify_table("schema_migrations") == :excluded
       assert Discovery.classify_table("oban_jobs") == :excluded
+      assert Discovery.classify_table("curated_templates") == :excluded
     end
 
     test "classifies polymorphic tables" do
