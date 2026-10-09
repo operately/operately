@@ -7,18 +7,16 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CuratedTemplates.Template 
       summary: template.summary,
       category: template.category,
       content_language: template.content_language,
+      state: template.state,
+      published_at: template.published_at,
+      archived_at: template.archived_at,
+      inserted_at: template.inserted_at,
       updated_at: template.updated_at
     }
   end
 
   def serialize(template, level: :full) do
     serialize(template, level: :essential)
-    |> Map.merge(%{
-      state: template.state,
-      definition: Jason.encode!(template.definition),
-      published_at: template.published_at,
-      archived_at: template.archived_at,
-      inserted_at: template.inserted_at
-    })
+    |> Map.put(:definition, Jason.encode!(template.definition))
   end
 end

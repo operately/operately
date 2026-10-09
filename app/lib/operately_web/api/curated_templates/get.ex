@@ -14,7 +14,10 @@ defmodule OperatelyWeb.Api.CuratedTemplates.Get do
   def call(_conn, inputs) do
     case CuratedTemplates.get_published(inputs.id) do
       nil -> {:error, :not_found}
-      template -> {:ok, %{template: Map.put(Serializer.serialize(template), :definition, Jason.encode!(template.definition))}}
+      template ->
+        serialized = Serializer.serialize(template, level: :full)
+        public_fields = [:__typename, :id, :type, :title, :summary, :category, :content_language, :updated_at, :definition]
+        {:ok, %{template: Map.take(serialized, public_fields)}}
     end
   end
 end

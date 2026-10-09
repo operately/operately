@@ -26,6 +26,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
         assert returned.state == "draft"
         {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(returned.id)
         {:ok, record} = OperatelyEE.AdminApi.CuratedTemplates.Shared.load(id)
+        assert record.definition["description"] == Operately.Support.RichText.curated_template_content()
         assert record.creator_account_id == ctx.account.id
         assert record.updater_account_id == ctx.account.id
         assert record.definition["name"] == Operately.Support.Factory.CuratedTemplates.definition(type)["name"]
@@ -42,6 +43,11 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
   end
 
   defp payload(type) do
-    %{title: "Example", type: Atom.to_string(type), content_language: "en", definition: Jason.encode!(Operately.Support.Factory.CuratedTemplates.definition(type))}
+    %{
+      title: "Example",
+      type: Atom.to_string(type),
+      content_language: "en",
+      definition: Jason.encode!(Map.put(Operately.Support.Factory.CuratedTemplates.definition(type), "description", Operately.Support.RichText.curated_template_content()))
+    }
   end
 end

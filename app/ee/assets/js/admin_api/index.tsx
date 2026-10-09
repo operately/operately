@@ -175,7 +175,7 @@ export interface CuratedTemplate {
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
-  definition: Json;
+  definition?: Json;
   publishedAt?: string | null;
   archivedAt?: string | null;
   insertedAt: string;

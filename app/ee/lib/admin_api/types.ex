@@ -160,7 +160,7 @@ defmodule OperatelyEE.AdminApi.Types do
     field? :summary, :string, null: true
     field? :category, :string, null: true
     field :content_language, :string
-    field :definition, :json
+    field? :definition, :json
     field? :published_at, :datetime, null: true
     field? :archived_at, :datetime, null: true
     field :inserted_at, :datetime

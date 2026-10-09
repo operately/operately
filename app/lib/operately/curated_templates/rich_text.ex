@@ -1,8 +1,8 @@
 defmodule Operately.CuratedTemplates.RichText do
   @moduledoc "Validates portable template text without people, uploads, or resource references."
-  @nodes ~w(doc paragraph text heading bulletList orderedList listItem blockquote codeBlock hardBreak horizontalRule table tableRow tableCell tableHeader)
+  @nodes ~w(doc paragraph text heading bulletList orderedList listItem taskList taskItem blockquote codeBlock hardBreak horizontalRule table tableRow tableCell tableHeader)
   @marks ~w(bold italic strike underline code link highlight textStyle)
-  @attrs ~w(level start language textAlign colspan rowspan colwidth href target rel class color backgroundColor)
+  @attrs ~w(level start language textAlign colspan rowspan colwidth href target rel class color backgroundColor highlight checked)
 
   def valid?(%{"type" => "doc"} = doc), do: byte_size(Jason.encode!(doc)) <= 100_000 and node?(doc, 0)
   def valid?(_), do: false
@@ -30,6 +30,8 @@ defmodule Operately.CuratedTemplates.RichText do
   end
 
   defp attrs?(_), do: false
+  defp attr?("checked", value), do: is_boolean(value)
+  defp attr?("highlight", value), do: is_nil(value) or is_binary(value)
   defp attr?("href", value) when is_binary(value), do: URI.parse(value).scheme in ["http", "https", "mailto"]
   defp attr?("href", _), do: false
   defp attr?(_, value), do: is_nil(value) or is_binary(value) or is_number(value) or (is_list(value) and Enum.all?(value, &is_number/1))

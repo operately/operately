@@ -19,6 +19,6 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.List do
 
   def call(_conn, inputs) do
     result = Operately.CuratedTemplates.list(inputs, :admin)
-    {:ok, %{templates: Serializer.serialize(result.templates, level: :full), total: result.total}}
+    {:ok, %{templates: Serializer.serialize(result.templates, level: :essential), total: result.total}}
   end
 end
