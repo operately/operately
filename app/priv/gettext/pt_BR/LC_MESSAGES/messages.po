@@ -4919,7 +4919,7 @@ msgstr "<icon/>Leitura confirmada por %{fullName}"
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:222
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:227
 msgid "<icon/>Add status"
 msgstr "<icon/>Adicionar status"
 
@@ -6407,7 +6407,7 @@ msgid "Authentication complete. Return to the CLI to finish the setup."
 msgstr "Autenticação concluída. Volte à CLI para concluir a configuração."
 
 #.elixir
-#: lib/operately_web/controllers/account_oauth_controller.ex:71
+#: lib/operately_web/controllers/account_oauth_controller.ex:76
 msgid "Authentication failed"
 msgstr "Falha na autenticação"
 
@@ -10025,7 +10025,7 @@ msgid "Email changed"
 msgstr "E-mail alterado"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:839
+#: lib/operately_web/api/cli_auth.ex:840
 msgid "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
 msgstr "O login com código por e-mail não está disponível porque o envio de e-mails não foi configurado. Entre em contato com o administrador da sua organização."
 
@@ -11998,7 +11998,7 @@ msgid "Invalid activity cursor"
 msgstr "Cursor de atividade inválido"
 
 #.elixir
-#: lib/operately/operations/company_adding.ex:238
+#: lib/operately/operations/company_adding.ex:247
 msgid "Invalid billing intent"
 msgstr "Intenção de faturamento inválida"
 
@@ -12049,7 +12049,7 @@ msgstr "Número inteiro inválido: %{value}"
 #: lib/operately_web/api/cli_auth.ex:738
 #: lib/operately_web/api/cli_auth.ex:811
 #: lib/operately_web/api/cli_auth.ex:821
-#: lib/operately_web/api/cli_auth.ex:907
+#: lib/operately_web/api/cli_auth.ex:908
 #: lib/operately_web/api/invitations.ex:171
 msgid "Invalid invite link"
 msgstr "Link de convite inválido"
@@ -13868,7 +13868,7 @@ msgid "No Space"
 msgstr "Sem espaço"
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:835
+#: lib/operately_web/api/cli_auth.ex:836
 msgid "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
 msgstr "Não existe uma conta para este e-mail. Use `operately auth signup` ou `operately auth join`."
 
@@ -18299,7 +18299,7 @@ msgstr "Ocorreu um erro ao participar. Tente novamente."
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:753
-#: lib/operately_web/api/cli_auth.ex:912
+#: lib/operately_web/api/cli_auth.ex:913
 #: lib/operately_web/api/invitations.ex:186
 msgid "Something went wrong while using this invite link."
 msgstr "Algo deu errado ao usar este link de convite."
@@ -19122,7 +19122,7 @@ msgstr "A tarefa foi removida do marco \"%{title}\""
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceKanbanPage/index.tsx:110
+#: ../turboui/src/SpaceKanbanPage/index.tsx:108
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
 #: ../turboui/src/TemplateProjectPage/index.tsx:31
 #: assets/js/features/SpaceTools/Tasks/RegularState.tsx:24
@@ -19218,6 +19218,11 @@ msgstr "Template não excluído"
 #: assets/js/pages/ProjectTemplatesPage/index.tsx:124
 msgid "Template not duplicated"
 msgstr "Template não duplicado"
+
+#.elixir
+#: ee/lib/admin_api/curated_templates/shared.ex:15
+msgid "Template not found"
+msgstr "Template não encontrado"
 
 #.frontend
 #: assets/js/pages/ProjectTemplatePage/index.tsx:228
@@ -20022,6 +20027,11 @@ msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 
 #.elixir
+#: ee/lib/admin_api/curated_templates/shared.ex:17
+msgid "This action is only available for draft templates."
+msgstr "Esta ação está disponível apenas para templates em rascunho."
+
+#.elixir
 #: lib/operately_web/controllers/cli_login_controller.ex:67
 msgid "This authentication session has expired. Please return to the CLI and try again."
 msgstr "Esta sessão de autenticação expirou. Volte à CLI e tente novamente."
@@ -20289,11 +20299,11 @@ msgstr "Este objetivo foi encerrado em uma data desconhecida."
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:741
 #: lib/operately_web/api/cli_auth.ex:747
-#: lib/operately_web/api/cli_auth.ex:897
-#: lib/operately_web/api/cli_auth.ex:900
+#: lib/operately_web/api/cli_auth.ex:898
 #: lib/operately_web/api/cli_auth.ex:901
-#: lib/operately_web/api/cli_auth.ex:908
-#: lib/operately_web/api/cli_auth.ex:910
+#: lib/operately_web/api/cli_auth.ex:902
+#: lib/operately_web/api/cli_auth.ex:909
+#: lib/operately_web/api/cli_auth.ex:911
 #: lib/operately_web/api/invitations.ex:174
 #: lib/operately_web/api/invitations.ex:180
 msgid "This invite link is no longer valid"
@@ -20301,8 +20311,8 @@ msgstr "Este link de convite não é mais válido"
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:744
-#: lib/operately_web/api/cli_auth.ex:898
-#: lib/operately_web/api/cli_auth.ex:909
+#: lib/operately_web/api/cli_auth.ex:899
+#: lib/operately_web/api/cli_auth.ex:910
 #: lib/operately_web/api/invitations.ex:177
 msgid "This invite link is restricted to specific email domains"
 msgstr "Este link de convite é restrito a domínios de e-mail específicos"
@@ -20501,6 +20511,11 @@ msgstr "Este status não pode ser excluído. O quadro Kanban deve ter pelo menos
 #: ee/assets/js/admin_api/staleClient.ts:23
 msgid "This tab is out of date. Reloading to get the latest version..."
 msgstr "Esta aba está desatualizada. Recarregando para obter a versão mais recente..."
+
+#.elixir
+#: ee/lib/admin_api/curated_templates/shared.ex:16
+msgid "This template has changed. Reload it before saving."
+msgstr "Este template foi alterado. Recarregue-o antes de salvar."
 
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:181
@@ -20901,7 +20916,7 @@ msgstr "Não foi possível adicionar o membro da equipe"
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:750
-#: lib/operately_web/api/cli_auth.ex:911
+#: lib/operately_web/api/cli_auth.ex:912
 #: lib/operately_web/api/invitations.ex:183
 msgid "Unable to add you to this company."
 msgstr "Não foi possível adicionar você a esta empresa."

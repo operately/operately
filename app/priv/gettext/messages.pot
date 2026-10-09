@@ -4852,7 +4852,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/StatusCustomization/index.tsx:164
-#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:222
+#: ../turboui/src/TaskBoard/KanbanView/Kanban.tsx:227
 msgid "<icon/>Add status"
 msgstr ""
 
@@ -6310,7 +6310,7 @@ msgid "Authentication complete. Return to the CLI to finish the setup."
 msgstr ""
 
 #.elixir
-#: lib/operately_web/controllers/account_oauth_controller.ex:71
+#: lib/operately_web/controllers/account_oauth_controller.ex:76
 msgid "Authentication failed"
 msgstr ""
 
@@ -9843,7 +9843,7 @@ msgid "Email changed"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:839
+#: lib/operately_web/api/cli_auth.ex:840
 msgid "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
 msgstr ""
 
@@ -11744,7 +11744,7 @@ msgid "Invalid activity cursor"
 msgstr ""
 
 #.elixir
-#: lib/operately/operations/company_adding.ex:238
+#: lib/operately/operations/company_adding.ex:247
 msgid "Invalid billing intent"
 msgstr ""
 
@@ -11795,7 +11795,7 @@ msgstr ""
 #: lib/operately_web/api/cli_auth.ex:738
 #: lib/operately_web/api/cli_auth.ex:811
 #: lib/operately_web/api/cli_auth.ex:821
-#: lib/operately_web/api/cli_auth.ex:907
+#: lib/operately_web/api/cli_auth.ex:908
 #: lib/operately_web/api/invitations.ex:171
 msgid "Invalid invite link"
 msgstr ""
@@ -13566,7 +13566,7 @@ msgid "No Space"
 msgstr ""
 
 #.elixir
-#: lib/operately_web/api/cli_auth.ex:835
+#: lib/operately_web/api/cli_auth.ex:836
 msgid "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
 msgstr ""
 
@@ -17918,7 +17918,7 @@ msgstr ""
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:753
-#: lib/operately_web/api/cli_auth.ex:912
+#: lib/operately_web/api/cli_auth.ex:913
 #: lib/operately_web/api/invitations.ex:186
 msgid "Something went wrong while using this invite link."
 msgstr ""
@@ -18741,7 +18741,7 @@ msgstr ""
 #: ../turboui/src/ProjectPageLayout/useProjectPageTabs.tsx:34
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:261
 #: ../turboui/src/SearchPage/filterOptions.ts:13
-#: ../turboui/src/SpaceKanbanPage/index.tsx:110
+#: ../turboui/src/SpaceKanbanPage/index.tsx:108
 #: ../turboui/src/SpaceToolsConfigurationPage/index.tsx:69
 #: ../turboui/src/TemplateProjectPage/index.tsx:31
 #: assets/js/features/SpaceTools/Tasks/RegularState.tsx:24
@@ -18836,6 +18836,11 @@ msgstr ""
 #: assets/js/pages/ProjectTemplatePage/index.tsx:200
 #: assets/js/pages/ProjectTemplatesPage/index.tsx:124
 msgid "Template not duplicated"
+msgstr ""
+
+#.elixir
+#: ee/lib/admin_api/curated_templates/shared.ex:15
+msgid "Template not found"
 msgstr ""
 
 #.frontend
@@ -19631,6 +19636,11 @@ msgid "This action cannot be undone."
 msgstr ""
 
 #.elixir
+#: ee/lib/admin_api/curated_templates/shared.ex:17
+msgid "This action is only available for draft templates."
+msgstr ""
+
+#.elixir
 #: lib/operately_web/controllers/cli_login_controller.ex:67
 msgid "This authentication session has expired. Please return to the CLI and try again."
 msgstr ""
@@ -19881,11 +19891,11 @@ msgstr ""
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:741
 #: lib/operately_web/api/cli_auth.ex:747
-#: lib/operately_web/api/cli_auth.ex:897
-#: lib/operately_web/api/cli_auth.ex:900
+#: lib/operately_web/api/cli_auth.ex:898
 #: lib/operately_web/api/cli_auth.ex:901
-#: lib/operately_web/api/cli_auth.ex:908
-#: lib/operately_web/api/cli_auth.ex:910
+#: lib/operately_web/api/cli_auth.ex:902
+#: lib/operately_web/api/cli_auth.ex:909
+#: lib/operately_web/api/cli_auth.ex:911
 #: lib/operately_web/api/invitations.ex:174
 #: lib/operately_web/api/invitations.ex:180
 msgid "This invite link is no longer valid"
@@ -19893,8 +19903,8 @@ msgstr ""
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:744
-#: lib/operately_web/api/cli_auth.ex:898
-#: lib/operately_web/api/cli_auth.ex:909
+#: lib/operately_web/api/cli_auth.ex:899
+#: lib/operately_web/api/cli_auth.ex:910
 #: lib/operately_web/api/invitations.ex:177
 msgid "This invite link is restricted to specific email domains"
 msgstr ""
@@ -20087,6 +20097,11 @@ msgstr ""
 #: assets/js/api/staleClient.ts:35
 #: ee/assets/js/admin_api/staleClient.ts:23
 msgid "This tab is out of date. Reloading to get the latest version..."
+msgstr ""
+
+#.elixir
+#: ee/lib/admin_api/curated_templates/shared.ex:16
+msgid "This template has changed. Reload it before saving."
 msgstr ""
 
 #.frontend
@@ -20488,7 +20503,7 @@ msgstr ""
 
 #.elixir
 #: lib/operately_web/api/cli_auth.ex:750
-#: lib/operately_web/api/cli_auth.ex:911
+#: lib/operately_web/api/cli_auth.ex:912
 #: lib/operately_web/api/invitations.ex:183
 msgid "Unable to add you to this company."
 msgstr ""
