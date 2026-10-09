@@ -1,6 +1,12 @@
 defmodule OperatelyEE.AdminApi.Types do
   use TurboConnect.Types
 
+  primitive(:id,
+    encoded_type: :string,
+    decoded_type: :string,
+    decode_with: &OperatelyWeb.Api.Types.Id.decode/1
+  )
+
   primitive(:company_id,
     encoded_type: :string,
     decoded_type: :number,
@@ -141,5 +147,28 @@ defmodule OperatelyEE.AdminApi.Types do
     field? :company_ids, list_of(:string)
     field :inserted_at, :datetime
     field? :updated_at, :datetime
+  end
+
+  enum(:curated_template_type, values: Operately.CuratedTemplates.Template.types())
+  enum(:curated_template_state, values: Operately.CuratedTemplates.Template.states())
+
+  object :curated_template, for: Operately.CuratedTemplates.Template do
+    field :id, :id
+    field :type, :curated_template_type
+    field :state, :curated_template_state
+    field :title, :string
+    field? :summary, :string, null: true
+    field? :category, :string, null: true
+    field :content_language, :string
+    field :definition, :json
+    field? :published_at, :datetime, null: true
+    field? :archived_at, :datetime, null: true
+    field :inserted_at, :datetime
+    field :updated_at, :datetime
+  end
+
+  object :curated_template_validation_error do
+    field :path, :string
+    field :message, :string
   end
 end

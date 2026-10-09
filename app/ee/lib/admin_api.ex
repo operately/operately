@@ -5,6 +5,7 @@ defmodule OperatelyEE.AdminApi do
 
   plug OperatelyEE.AdminApi.Plugs.RequireSiteAdmin
 
+  alias OperatelyEE.AdminApi.CuratedTemplates
   alias OperatelyEE.AdminApi.Queries, as: Q
   alias OperatelyEE.AdminApi.Mutations, as: M
 
@@ -41,4 +42,15 @@ defmodule OperatelyEE.AdminApi do
   mutation :update_site_message, M.UpdateSiteMessage
   mutation :delete_site_message, M.DeleteSiteMessage
   mutation :start_search_index_maintenance, M.StartSearchIndexMaintenance
+
+  namespace :curated_templates do
+    query :list, CuratedTemplates.List
+    query :get, CuratedTemplates.Get
+    mutation :create, CuratedTemplates.Create
+    mutation :update, CuratedTemplates.Update
+    mutation :validate, CuratedTemplates.Validate
+    mutation :publish, CuratedTemplates.Publish
+    mutation :update_metadata, CuratedTemplates.UpdateMetadata
+    mutation :delete, CuratedTemplates.Delete
+  end
 end
