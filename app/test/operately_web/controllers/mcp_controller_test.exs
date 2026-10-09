@@ -731,6 +731,62 @@ defmodule OperatelyWeb.McpControllerTest do
     refute OperatelyWeb.Paths.project_id(other_project) in project_ids
   end
 
+  test "protocol rejections include the reason, HTTP status, and supplied version", %{account: account, company: company, client: client} do
+    %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
+    session = create_session(access_token)
+    closed_session = create_session(access_token)
+    {:ok, _} = Mcp.close_session(closed_session)
+
+    handler_id = "mcp-protocol-rejections-#{System.unique_integer([:positive])}"
+
+    :ok =
+      :telemetry.attach_many(
+        handler_id,
+        [[:operately, :mcp, :rpc, :stop], [:operately, :mcp, :tools_call, :stop]],
+        fn event, _measurements, metadata, pid -> send(pid, {:protocol_telemetry, event, metadata}) end,
+        self()
+      )
+
+    on_exit(fn -> :telemetry.detach(handler_id) end)
+
+    scenarios = [
+      {nil, Mcp.latest_protocol_version(), "missing_session", 400},
+      {Ecto.UUID.generate(), Mcp.latest_protocol_version(), "unknown_session", 404},
+      {closed_session.id, Mcp.latest_protocol_version(), "unknown_session", 404},
+      {session.id, nil, "unsupported_protocol_version", 400},
+      {session.id, "2024-11-05", "unsupported_protocol_version", 400}
+    ]
+
+    for method <- ["tools/list", "ping", "notifications/initialized", "tools/call"],
+        {session_id, version, reason, status} <- scenarios do
+      conn = build_conn() |> authenticated_mcp_headers(access_token)
+      conn = if session_id, do: put_req_header(conn, "mcp-session-id", session_id), else: conn
+      conn = if version, do: put_req_header(conn, "mcp-protocol-version", version), else: conn
+
+      conn = post(conn, "/mcp", %{"jsonrpc" => "2.0", "id" => 0, "method" => method, "params" => %{"name" => "get_current_company"}})
+
+      assert conn.status == status
+      assert conn.resp_body == ""
+      event = if method == "tools/call", do: [:operately, :mcp, :tools_call, :stop], else: [:operately, :mcp, :rpc, :stop]
+      assert_receive {:protocol_telemetry, ^event, metadata}
+      assert metadata.outcome == "protocol_error"
+      assert metadata.reason == reason
+      assert metadata.http_status == status
+      assert metadata.protocol_version == (version || "missing")
+      assert metadata.company_id == company.id
+      assert metadata.client_id == client.client_id
+      refute Map.has_key?(metadata, :session_id)
+      refute Map.has_key?(metadata, :access_token)
+
+      if method == "tools/call" do
+        assert metadata.tool == "get_current_company"
+        assert is_integer(metadata.duration_ms)
+      else
+        assert metadata.method == method
+      end
+    end
+  end
+
   test "requires session and protocol version for tools/call", %{account: account, company: company, client: client} do
     %{access_token: access_token} = authorize_and_issue_tokens(account, company, client)
     {_initialize_conn, session_id} = initialize_session(access_token)

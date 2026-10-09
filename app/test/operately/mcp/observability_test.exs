@@ -1,6 +1,8 @@
 defmodule Operately.Mcp.ObservabilityTest do
   use ExUnit.Case, async: true
 
+  import ExUnit.CaptureLog
+
   alias Operately.Mcp.Observability
 
   setup do
@@ -41,6 +43,46 @@ defmodule Operately.Mcp.ObservabilityTest do
     assert metadata[:method] == "ping"
     assert metadata[:outcome] == "ok"
     assert metadata[:grant_id] == "grant-1"
+  end
+
+  test "protocol rejections preserve diagnostics without credentials and log at warning level" do
+    for {emit, event} <- [
+          {&Observability.rpc_request/1, [:operately, :mcp, :rpc, :stop]},
+          {&Observability.tools_call/1, [:operately, :mcp, :tools_call, :stop]}
+        ] do
+      log =
+        capture_log(fn ->
+          emit.(%{
+            method: "tools/list",
+            outcome: "protocol_error",
+            reason: "unsupported_protocol_version",
+            http_status: 400,
+            protocol_version: "2024-11-05",
+            session_id: "private-session",
+            access_token: "private-token"
+          })
+        end)
+
+      assert_receive {:telemetry_event, ^event, %{count: 1}, metadata}
+      assert metadata.reason == "unsupported_protocol_version"
+      assert metadata.http_status == 400
+      assert metadata.protocol_version == "2024-11-05"
+      refute Map.has_key?(metadata, :session_id)
+      refute Map.has_key?(metadata, :access_token)
+      assert log =~ "[warning]"
+      assert log =~ "unsupported_protocol_version"
+      assert log =~ "2024-11-05"
+      refute log =~ "[error]"
+      refute log =~ "private-session"
+      refute log =~ "private-token"
+    end
+  end
+
+  test "unexpected RPC failures remain error logs" do
+    log = capture_log(fn -> Observability.rpc_request(%{method: "ping", outcome: "internal_error"}) end)
+
+    assert log =~ "[error]"
+    assert log =~ "internal_error"
   end
 
   test "tools_call emits telemetry with tool and safety classification" do
