@@ -3,6 +3,8 @@ defmodule Operately.Mcp.Observability do
 
   require Logger
 
+  @protocol_metadata [:reason, :http_status, :protocol_version]
+
   @rpc_event [:operately, :mcp, :rpc, :stop]
   @tools_call_event [:operately, :mcp, :tools_call, :stop]
   @oauth_event [:operately, :mcp, :oauth, :stop]
@@ -111,7 +113,7 @@ defmodule Operately.Mcp.Observability do
 
   defp build_rpc_metadata(attrs) do
     attrs
-    |> Map.take([:method, :outcome, :grant_id, :client_id, :company_id, :duration_ms])
+    |> Map.take([:method, :outcome, :grant_id, :client_id, :company_id, :duration_ms] ++ @protocol_metadata)
     |> Map.put(:method, normalize_string(Map.get(attrs, :method), "unknown"))
     |> Map.put(:outcome, normalize_string(Map.get(attrs, :outcome), "unknown"))
     |> reject_nil_values()
@@ -119,7 +121,7 @@ defmodule Operately.Mcp.Observability do
 
   defp build_tools_call_metadata(attrs) do
     attrs
-    |> Map.take([:tool, :outcome, :safety_classification, :grant_id, :client_id, :company_id, :duration_ms])
+    |> Map.take([:tool, :outcome, :safety_classification, :grant_id, :client_id, :company_id, :duration_ms] ++ @protocol_metadata)
     |> Map.put(:tool, normalize_string(Map.get(attrs, :tool), "unknown"))
     |> Map.put(:outcome, normalize_string(Map.get(attrs, :outcome), "unknown"))
     |> Map.put(:safety_classification, normalize_safety_classification(Map.get(attrs, :safety_classification)))
@@ -175,15 +177,15 @@ defmodule Operately.Mcp.Observability do
   end
 
   defp log_rpc(metadata) do
-    if metadata[:outcome] in ["internal_error", "protocol_error"] do
-      Logger.error("MCP request: #{inspect(metadata)}")
-    else
-      Logger.info("MCP request: #{inspect(metadata)}")
+    case metadata[:outcome] do
+      "internal_error" -> Logger.error("MCP request: #{inspect(metadata)}")
+      "protocol_error" -> Logger.warning("MCP request: #{inspect(metadata)}")
+      _ -> Logger.info("MCP request: #{inspect(metadata)}")
     end
   end
 
   defp log_tools_call(metadata) do
-    if metadata[:outcome] in ["internal_error", "tool_error"] do
+    if metadata[:outcome] in ["internal_error", "tool_error", "protocol_error"] do
       Logger.warning("MCP tools/call: #{inspect(metadata)}")
     else
       Logger.info("MCP tools/call: #{inspect(metadata)}")

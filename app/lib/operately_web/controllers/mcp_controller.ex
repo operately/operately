@@ -14,6 +14,7 @@ defmodule OperatelyWeb.McpController do
   alias Operately.Mcp.Observability
 
   @jsonrpc_version "2.0"
+  @protocol_errors [:missing_session, :unknown_session, :unsupported_protocol_version]
 
   plug OperatelyWeb.Mcp.Plugs.RateLimitToolsCall when action in [:post]
 
@@ -117,17 +118,8 @@ defmodule OperatelyWeb.McpController do
       observe_rpc(conn, "notifications/initialized", "ok")
       send_resp(conn, 202, "")
     else
-      {:error, :missing_session} ->
-        observe_rpc(conn, "notifications/initialized", "protocol_error")
-        send_resp(conn, 400, "")
-
-      {:error, :unknown_session} ->
-        observe_rpc(conn, "notifications/initialized", "protocol_error")
-        send_resp(conn, 404, "")
-
-      {:error, :unsupported_protocol_version} ->
-        observe_rpc(conn, "notifications/initialized", "protocol_error")
-        send_resp(conn, 400, "")
+      {:error, reason} when reason in @protocol_errors ->
+        protocol_error_response(conn, request, reason)
 
       _ ->
         observe_rpc(conn, "notifications/initialized", "invalid_params")
@@ -147,17 +139,8 @@ defmodule OperatelyWeb.McpController do
         result: %{}
       })
     else
-      {:error, :missing_session} ->
-        observe_rpc(conn, "ping", "protocol_error")
-        send_resp(conn, 400, "")
-
-      {:error, :unknown_session} ->
-        observe_rpc(conn, "ping", "protocol_error")
-        send_resp(conn, 404, "")
-
-      {:error, :unsupported_protocol_version} ->
-        observe_rpc(conn, "ping", "protocol_error")
-        send_resp(conn, 400, "")
+      {:error, reason} when reason in @protocol_errors ->
+        protocol_error_response(conn, request, reason)
     end
   end
 
@@ -174,17 +157,8 @@ defmodule OperatelyWeb.McpController do
         }
       })
     else
-      {:error, :missing_session} ->
-        observe_rpc(conn, "tools/list", "protocol_error")
-        send_resp(conn, 400, "")
-
-      {:error, :unknown_session} ->
-        observe_rpc(conn, "tools/list", "protocol_error")
-        send_resp(conn, 404, "")
-
-      {:error, :unsupported_protocol_version} ->
-        observe_rpc(conn, "tools/list", "protocol_error")
-        send_resp(conn, 400, "")
+      {:error, reason} when reason in @protocol_errors ->
+        protocol_error_response(conn, request, reason)
     end
   end
 
@@ -205,17 +179,8 @@ defmodule OperatelyWeb.McpController do
         result: result
       })
     else
-      {:error, :missing_session} ->
-        observe_tools_call(conn, tool_name_from_request(request), "protocol_error", nil, start_time)
-        send_resp(conn, 400, "")
-
-      {:error, :unknown_session} ->
-        observe_tools_call(conn, tool_name_from_request(request), "protocol_error", nil, start_time)
-        send_resp(conn, 404, "")
-
-      {:error, :unsupported_protocol_version} ->
-        observe_tools_call(conn, tool_name_from_request(request), "protocol_error", nil, start_time)
-        send_resp(conn, 400, "")
+      {:error, reason} when reason in @protocol_errors ->
+        protocol_error_response(conn, request, reason, start_time)
 
       {:error, :unknown_tool} ->
         observe_tools_call(conn, tool_name_from_request(request), "unknown_tool", nil, start_time)
@@ -391,6 +356,28 @@ defmodule OperatelyWeb.McpController do
   end
 
   defp negotiate_protocol_version(_requested_version), do: Mcp.latest_protocol_version()
+
+  defp protocol_error_response(conn, request, reason, start_time \\ nil) do
+    status = if reason == :unknown_session, do: 404, else: 400
+
+    attrs =
+      Map.merge(grant_context(conn), %{
+        method: request["method"],
+        outcome: "protocol_error",
+        reason: Atom.to_string(reason),
+        http_status: status,
+        protocol_version: List.first(get_req_header(conn, "mcp-protocol-version")) || "missing"
+      })
+
+    if request["method"] == "tools/call" do
+      duration_ms = System.convert_time_unit(System.monotonic_time() - start_time, :native, :millisecond)
+      Observability.tools_call(Map.merge(attrs, %{tool: tool_name_from_request(request), duration_ms: duration_ms}))
+    else
+      Observability.rpc_request(attrs)
+    end
+
+    send_resp(conn, status, "")
+  end
 
   defp jsonrpc_http_error(conn, status, code, message, id \\ nil) do
     conn
