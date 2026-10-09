@@ -553,6 +553,10 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(project.name, id)
   end
 
+  def curated_template_id(%{id: id, title: title}) do
+    OperatelyWeb.Api.Helpers.id_with_comments(title, Operately.ShortUuid.encode!(id))
+  end
+
   def project_template_id(id) when is_binary(id), do: Operately.ShortUuid.encode!(id)
   def project_template_id(%{id: id}), do: project_template_id(id)
 

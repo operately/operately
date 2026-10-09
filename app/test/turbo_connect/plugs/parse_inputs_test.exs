@@ -12,6 +12,16 @@ defmodule TurboConnect.Plugs.ParseInputsTest do
     end)
   end
 
+  test "rejects malformed query integers without returning a server error" do
+    types = %{primitives: %{}, objects: %{}, enums: %{}, int_enums: %{}}
+
+    for value <- ["abc", "1.5", ["20"], %{"value" => "20"}] do
+      assert {:error, 400, _} = ParseInputs.parse_input(:integer, types, value, false)
+    end
+
+    assert {:ok, 20} = ParseInputs.parse_input(:integer, types, "20", false)
+  end
+
   test "rejects malformed lists in queries and mutations" do
     for strict <- [false, true], value <- ["not-a-list", %{"url" => "/bad"}, 123, false] do
       assert {:error, 400, _} = ParseInputs.parse_input({:list, :string}, %{}, value, strict)

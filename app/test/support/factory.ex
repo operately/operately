@@ -75,6 +75,9 @@ defmodule Operately.Support.Factory do
   defdelegate add_project_task(ctx, testid, milestone_name, opts \\ []), to: Factory.Projects
   defdelegate add_task_assignee(ctx, testid, task_name, person_name), to: Factory.Projects
 
+  # curated templates
+  defdelegate add_curated_template(ctx, testid, opts \\ []), to: Factory.CuratedTemplates
+
   # project templates
   defdelegate add_project_template(ctx, testid, space_name, opts \\ []), to: Factory.ProjectTemplates
   defdelegate add_project_template_milestone(ctx, testid, template_name, opts \\ []), to: Factory.ProjectTemplates
