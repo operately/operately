@@ -372,6 +372,11 @@ defmodule OperatelyWeb.Api do
         mutation :update_public_sharing, OperatelyWeb.Api.Documents.UpdatePublicSharing
       end
 
+      namespace :curated_templates do
+        query :list, OperatelyWeb.Api.CuratedTemplates.List
+        query :get, OperatelyWeb.Api.CuratedTemplates.Get
+      end
+
       common_endpoints()
 
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)

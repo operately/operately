@@ -1461,6 +1461,18 @@ export interface CreateTargetInput {
   index?: number | null;
 }
 
+export interface CuratedTemplate {
+  __typename: "curated_template";
+  id: Id;
+  type: CuratedTemplateType;
+  title: string;
+  summary?: string | null;
+  category?: string | null;
+  contentLanguage: string;
+  updatedAt: string;
+  definition?: Json;
+}
+
 export interface DeletedStatusReplacement {
   deletedStatusId: string;
   replacementStatusId: string;
@@ -2964,6 +2976,8 @@ export type CommentParentType =
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
+export type CuratedTemplateType = "kpi" | "goal" | "project";
+
 export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
@@ -3107,12 +3121,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
+  | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "goal_check_in"
-  | "kpi"
   | "project_discussion"
   | "goal_discussion"
+  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"

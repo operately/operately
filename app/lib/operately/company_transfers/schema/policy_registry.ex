@@ -9,6 +9,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   1. **Excluded tables** - System tables not exported:
      - `schema_migrations`, `oban_*` - System/infrastructure
      - `company_export_runs`, `company_import_runs` - Transfer metadata
+     - `curated_templates` - Global catalog, not company-owned
      - `accounts_tokens`, `api_tokens`, `cli_auth_sessions`, `email_activation_codes`, `invite_links` - Authentication/invitation tokens
      - `email_change_requests` - Account-level email verification requests
      - `mcp_*` - OAuth grants, tokens, and transport sessions for remote MCP clients
@@ -80,6 +81,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "billing_webhook_events",
     "cli_auth_sessions",
     "company_billing_accounts",
+    "curated_templates",
     "email_activation_codes",
     "email_change_requests",
     "invite_links",

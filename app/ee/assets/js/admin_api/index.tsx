@@ -101,6 +101,8 @@ export function useMutation<InputT, ResultT>(
 
 export type CompanyId = string;
 
+export type Id = string;
+
 export type Json = string;
 
 export interface Account {
@@ -162,6 +164,27 @@ export interface Company {
   uuid?: string;
   shortId?: string;
   enabledFeatures?: string[];
+}
+
+export interface CuratedTemplate {
+  __typename: "curated_template";
+  id: Id;
+  type: CuratedTemplateType;
+  state: CuratedTemplateState;
+  title: string;
+  summary?: string | null;
+  category?: string | null;
+  contentLanguage: string;
+  definition?: Json;
+  publishedAt?: string | null;
+  archivedAt?: string | null;
+  insertedAt: string;
+  updatedAt: string;
+}
+
+export interface CuratedTemplateValidationError {
+  path: string;
+  message: string;
 }
 
 export interface EmailSettings {
@@ -227,6 +250,10 @@ export interface SmtpSettings {
 
 export type BillingBehavior = "internal" | "provider_managed";
 
+export type CuratedTemplateState = "draft" | "published";
+
+export type CuratedTemplateType = "kpi" | "goal" | "project";
+
 export type EmailProvider = "smtp" | "sendgrid";
 
 export type SearchIndexMaintenanceKind = "backfill" | "reconciliation";
@@ -249,6 +276,29 @@ export type SearchIndexSourceType =
   | "resource_hub_folder"
   | "resource_hub_file"
   | "resource_hub_link";
+
+export interface CuratedTemplatesGetInput {
+  id: Id;
+}
+
+export interface CuratedTemplatesGetResult {
+  template: CuratedTemplate;
+}
+
+export interface CuratedTemplatesListInput {
+  type?: CuratedTemplateType;
+  state?: CuratedTemplateState;
+  category?: string;
+  search?: string;
+  archived?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CuratedTemplatesListResult {
+  templates: CuratedTemplate[];
+  total: number;
+}
 
 export interface GetAccountsInput {}
 
@@ -374,6 +424,82 @@ export interface CreateSiteMessageInput {
 
 export interface CreateSiteMessageResult {
   message: SiteMessage;
+}
+
+export interface CuratedTemplatesCreateInput {
+  type: CuratedTemplateType;
+  title: string;
+  summary?: string | null;
+  category?: string | null;
+  contentLanguage: string;
+  definition: Json;
+}
+
+export interface CuratedTemplatesCreateResult {
+  template?: CuratedTemplate | null;
+  errors: CuratedTemplateValidationError[];
+}
+
+export interface CuratedTemplatesDeleteInput {
+  id: Id;
+  expectedUpdatedAt: string;
+}
+
+export interface CuratedTemplatesDeleteResult {
+  template?: CuratedTemplate | null;
+  errors: CuratedTemplateValidationError[];
+}
+
+export interface CuratedTemplatesPublishInput {
+  id: Id;
+  expectedUpdatedAt: string;
+}
+
+export interface CuratedTemplatesPublishResult {
+  template?: CuratedTemplate | null;
+  errors: CuratedTemplateValidationError[];
+}
+
+export interface CuratedTemplatesUpdateInput {
+  id: Id;
+  expectedUpdatedAt: string;
+  type: CuratedTemplateType;
+  title: string;
+  summary?: string | null;
+  category?: string | null;
+  contentLanguage: string;
+  definition: Json;
+}
+
+export interface CuratedTemplatesUpdateResult {
+  template?: CuratedTemplate | null;
+  errors: CuratedTemplateValidationError[];
+}
+
+export interface CuratedTemplatesUpdateMetadataInput {
+  id: Id;
+  expectedUpdatedAt: string;
+  category?: string | null;
+  archived?: boolean;
+}
+
+export interface CuratedTemplatesUpdateMetadataResult {
+  template?: CuratedTemplate | null;
+  errors: CuratedTemplateValidationError[];
+}
+
+export interface CuratedTemplatesValidateInput {
+  type: CuratedTemplateType;
+  title: string;
+  summary?: string | null;
+  category?: string | null;
+  contentLanguage: string;
+  definition: Json;
+}
+
+export interface CuratedTemplatesValidateResult {
+  valid: boolean;
+  errors: CuratedTemplateValidationError[];
 }
 
 export interface DeleteAccountInput {
@@ -540,6 +666,34 @@ export interface UpdateUpdateBadgeSettingsResult {
   enabled: boolean;
 }
 
+class ApiNamespaceCuratedTemplates {
+  constructor(private client: ApiClient) {}
+
+  async create(input: CuratedTemplatesCreateInput): Promise<CuratedTemplatesCreateResult> {
+    return this.client.post("/curated_templates/create", input);
+  }
+
+  async delete(input: CuratedTemplatesDeleteInput): Promise<CuratedTemplatesDeleteResult> {
+    return this.client.post("/curated_templates/delete", input);
+  }
+
+  async publish(input: CuratedTemplatesPublishInput): Promise<CuratedTemplatesPublishResult> {
+    return this.client.post("/curated_templates/publish", input);
+  }
+
+  async update(input: CuratedTemplatesUpdateInput): Promise<CuratedTemplatesUpdateResult> {
+    return this.client.post("/curated_templates/update", input);
+  }
+
+  async updateMetadata(input: CuratedTemplatesUpdateMetadataInput): Promise<CuratedTemplatesUpdateMetadataResult> {
+    return this.client.post("/curated_templates/update_metadata", input);
+  }
+
+  async validate(input: CuratedTemplatesValidateInput): Promise<CuratedTemplatesValidateResult> {
+    return this.client.post("/curated_templates/validate", input);
+  }
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -643,9 +797,11 @@ class ApiNamespaceRoot {
 export class ApiClient {
   private basePath: string;
   private headers: any;
+  public apiNamespaceCuratedTemplates: ApiNamespaceCuratedTemplates;
   public apiNamespaceRoot: ApiNamespaceRoot;
 
   constructor() {
+    this.apiNamespaceCuratedTemplates = new ApiNamespaceCuratedTemplates(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
   }
 
@@ -1513,4 +1669,108 @@ export default {
   updateUpdateBadgeSettings,
   useUpdateUpdateBadgeSettings,
   updateUpdateBadgeSettingsMutationOptions,
+
+  curated_templates: {
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/get"),
+    getQueryKey: (input: CuratedTemplatesGetInput) =>
+      buildApiQueryKey(defaultApiClient, "/curated_templates/get", input),
+    getQueryOptions: (input: CuratedTemplatesGetInput) =>
+      buildApiQueryOptions<CuratedTemplatesGetInput, CuratedTemplatesGetResult>(
+        defaultApiClient,
+        "/curated_templates/get",
+        input,
+      ),
+    getQuery: (input: CuratedTemplatesGetInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<CuratedTemplatesGetInput, CuratedTemplatesGetResult>(
+          defaultApiClient,
+          "/curated_templates/get",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/list"),
+    listQueryKey: (input: CuratedTemplatesListInput) =>
+      buildApiQueryKey(defaultApiClient, "/curated_templates/list", input),
+    listQueryOptions: (input: CuratedTemplatesListInput) =>
+      buildApiQueryOptions<CuratedTemplatesListInput, CuratedTemplatesListResult>(
+        defaultApiClient,
+        "/curated_templates/list",
+        input,
+      ),
+    listQuery: (input: CuratedTemplatesListInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<CuratedTemplatesListInput, CuratedTemplatesListResult>(
+          defaultApiClient,
+          "/curated_templates/list",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    create: (input: CuratedTemplatesCreateInput) => defaultApiClient.apiNamespaceCuratedTemplates.create(input),
+    useCreate: () =>
+      useMutation<CuratedTemplatesCreateInput, CuratedTemplatesCreateResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.create(input),
+      ),
+    createMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesCreateInput) => defaultApiClient.apiNamespaceCuratedTemplates.create(input),
+      }),
+
+    delete: (input: CuratedTemplatesDeleteInput) => defaultApiClient.apiNamespaceCuratedTemplates.delete(input),
+    useDelete: () =>
+      useMutation<CuratedTemplatesDeleteInput, CuratedTemplatesDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.delete(input),
+      ),
+    deleteMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesDeleteInput) => defaultApiClient.apiNamespaceCuratedTemplates.delete(input),
+      }),
+
+    publish: (input: CuratedTemplatesPublishInput) => defaultApiClient.apiNamespaceCuratedTemplates.publish(input),
+    usePublish: () =>
+      useMutation<CuratedTemplatesPublishInput, CuratedTemplatesPublishResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.publish(input),
+      ),
+    publishMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesPublishInput) =>
+          defaultApiClient.apiNamespaceCuratedTemplates.publish(input),
+      }),
+
+    update: (input: CuratedTemplatesUpdateInput) => defaultApiClient.apiNamespaceCuratedTemplates.update(input),
+    useUpdate: () =>
+      useMutation<CuratedTemplatesUpdateInput, CuratedTemplatesUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.update(input),
+      ),
+    updateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesUpdateInput) => defaultApiClient.apiNamespaceCuratedTemplates.update(input),
+      }),
+
+    updateMetadata: (input: CuratedTemplatesUpdateMetadataInput) =>
+      defaultApiClient.apiNamespaceCuratedTemplates.updateMetadata(input),
+    useUpdateMetadata: () =>
+      useMutation<CuratedTemplatesUpdateMetadataInput, CuratedTemplatesUpdateMetadataResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.updateMetadata(input),
+      ),
+    updateMetadataMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesUpdateMetadataInput) =>
+          defaultApiClient.apiNamespaceCuratedTemplates.updateMetadata(input),
+      }),
+
+    validate: (input: CuratedTemplatesValidateInput) => defaultApiClient.apiNamespaceCuratedTemplates.validate(input),
+    useValidate: () =>
+      useMutation<CuratedTemplatesValidateInput, CuratedTemplatesValidateResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.validate(input),
+      ),
+    validateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesValidateInput) =>
+          defaultApiClient.apiNamespaceCuratedTemplates.validate(input),
+      }),
+  },
 };

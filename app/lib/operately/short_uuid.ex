@@ -46,9 +46,12 @@ defmodule Operately.ShortUuid do
         {:ok, number} -> 
           bits = number |> :binary.encode_unsigned() 
           pad = 128 - bit_size(bits)
-          bits = <<0::size(pad)>> <> bits
 
-          Ecto.UUID.load(bits)
+          if pad >= 0 do
+            Ecto.UUID.load(<<0::size(pad)>> <> bits)
+          else
+            {:error, "Invalid short UUID"}
+          end
         :error -> {:error, "Invalid short UUID"}
       end
     else

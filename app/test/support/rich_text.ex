@@ -1,4 +1,37 @@
 defmodule Operately.Support.RichText do
+  def curated_template_content do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "paragraph",
+          "content" => [
+            %{
+              "type" => "text",
+              "text" => "Important",
+              "marks" => [%{"type" => "highlight", "attrs" => %{"highlight" => "textYellow"}}]
+            }
+          ]
+        },
+        %{
+          "type" => "taskList",
+          "content" => [
+            %{
+              "type" => "taskItem",
+              "attrs" => %{"checked" => false},
+              "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Review"}]}]
+            },
+            %{
+              "type" => "taskItem",
+              "attrs" => %{"checked" => true},
+              "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Done"}]}]
+            }
+          ]
+        }
+      ]
+    }
+  end
+
   def resource_link(href) do
     %{
       "type" => "doc",
