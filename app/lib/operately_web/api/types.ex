@@ -2,6 +2,19 @@ defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
   alias Operately.Access.Binding
 
+  enum :curated_template_type, values: Operately.CuratedTemplates.Template.types()
+
+  object :curated_template, for: Operately.CuratedTemplates.Template do
+    field :id, :id
+    field :type, :curated_template_type
+    field :title, :string
+    field? :summary, :string, null: true
+    field? :category, :string, null: true
+    field :content_language, :string
+    field :updated_at, :datetime
+    field? :definition, :json
+  end
+
   enum :rich_text_resource_type, values: OperatelyWeb.Api.RichContent.Resources.types()
   enum :rich_text_field, values: OperatelyWeb.Api.RichContent.Resources.fields()
 

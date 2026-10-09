@@ -16,6 +16,7 @@ defmodule OperatelyWeb.Router do
   end
 
   pipeline :api do
+    plug OperatelyWeb.Api.Plugs.PublicCuratedTemplateHeaders
     plug(:accepts, ["json"])
     plug(:fetch_session)
     plug(:fetch_current_account)

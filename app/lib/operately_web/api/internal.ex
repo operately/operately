@@ -11,6 +11,8 @@ defmodule OperatelyWeb.Api.Internal do
       {:mutation, "analytics/sync_context"},
       {:query, "get_language"},
       {:query, "documents/get_public"},
+      {:query, "curated_templates/list"},
+      {:query, "curated_templates/get"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
       {:mutation, "cli_auth/auth_password"},

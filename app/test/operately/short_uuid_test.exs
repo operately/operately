@@ -33,6 +33,12 @@ defmodule Operately.ShortUuidTest do
     assert Operately.ShortUuid.decode("!@#$%^&*()") == {:error, "Invalid short UUID"}
   end
 
+  test "decode/1 rejects base62 values larger than a UUID" do
+    assert Operately.ShortUuid.decode(String.duplicate("9", 22)) == {:error, "Invalid short UUID"}
+    uuid = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+    assert uuid |> Operately.ShortUuid.encode!() |> Operately.ShortUuid.decode() == {:ok, uuid}
+  end
+
   test "encoding is performant" do
     {time, _} = :timer.tc(fn ->
       1..1000 |> Enum.each(fn _ ->

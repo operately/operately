@@ -1557,6 +1557,18 @@ export interface CreateTargetInput {
   index?: number | null;
 }
 
+export interface CuratedTemplate {
+  __typename: "curated_template";
+  id: Id;
+  type: CuratedTemplateType;
+  title: string;
+  summary?: string | null;
+  category?: string | null;
+  contentLanguage: string;
+  updatedAt: string;
+  definition?: Json;
+}
+
 export interface DeletedStatusReplacement {
   deletedStatusId: string;
   replacementStatusId: string;
@@ -3060,6 +3072,8 @@ export type CommentParentType =
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
+export type CuratedTemplateType = "kpi" | "goal" | "project";
+
 export type DiscussionState = "draft" | "scheduled" | "published";
 
 export type DocumentState = "draft" | "published";
@@ -3203,12 +3217,12 @@ export type RichTextResourceType =
   | "goal"
   | "milestone"
   | "document"
+  | "kpi"
   | "project_check_in"
   | "project_retrospective"
-  | "goal_check_in"
-  | "kpi"
   | "project_discussion"
   | "goal_discussion"
+  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
@@ -3479,6 +3493,26 @@ export interface CompanyTransfersListImportRunsInput {}
 
 export interface CompanyTransfersListImportRunsResult {
   importRuns: CompanyImportRun[];
+}
+
+export interface CuratedTemplatesGetInput {
+  id: Id;
+}
+
+export interface CuratedTemplatesGetResult {
+  template: CuratedTemplate;
+}
+
+export interface CuratedTemplatesListInput {
+  type?: CuratedTemplateType;
+  category?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CuratedTemplatesListResult {
+  templates: CuratedTemplate[];
+  total: number;
 }
 
 export interface DocumentsGetInput {
@@ -12258,6 +12292,46 @@ export default {
     updateReviewerMutationOptions: () =>
       mutationOptions({
         mutationFn: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),
+      }),
+  },
+
+  curated_templates: {
+    getQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/get"),
+    getQueryKey: (input: CuratedTemplatesGetInput) =>
+      buildApiQueryKey(defaultApiClient, "/curated_templates/get", input),
+    getQueryOptions: (input: CuratedTemplatesGetInput) =>
+      buildApiQueryOptions<CuratedTemplatesGetInput, CuratedTemplatesGetResult>(
+        defaultApiClient,
+        "/curated_templates/get",
+        input,
+      ),
+    getQuery: (input: CuratedTemplatesGetInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<CuratedTemplatesGetInput, CuratedTemplatesGetResult>(
+          defaultApiClient,
+          "/curated_templates/get",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    listQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/list"),
+    listQueryKey: (input: CuratedTemplatesListInput) =>
+      buildApiQueryKey(defaultApiClient, "/curated_templates/list", input),
+    listQueryOptions: (input: CuratedTemplatesListInput) =>
+      buildApiQueryOptions<CuratedTemplatesListInput, CuratedTemplatesListResult>(
+        defaultApiClient,
+        "/curated_templates/list",
+        input,
+      ),
+    listQuery: (input: CuratedTemplatesListInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<CuratedTemplatesListInput, CuratedTemplatesListResult>(
+          defaultApiClient,
+          "/curated_templates/list",
+          input,
+        ),
+        staleTime: Infinity,
       }),
   },
 

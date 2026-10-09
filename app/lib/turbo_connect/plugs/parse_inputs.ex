@@ -92,10 +92,10 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def parse_input(:integer, _types, value, true) when is_integer(value), do: {:ok, value}
 
-  def parse_input(:integer, _types, value, false) do
+  def parse_input(:integer, _types, value, false) when is_binary(value) do
     case Integer.parse(value) do
       {int, ""} -> {:ok, int}
-      _ -> {:error, 422, gettext("Invalid integer: %{value}", value: value)}
+      _ -> {:error, 400, gettext("Invalid integer: %{value}", value: value)}
     end
   end
 
