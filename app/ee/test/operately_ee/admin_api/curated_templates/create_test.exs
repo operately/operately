@@ -24,7 +24,8 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
         inputs = payload(type)
         assert {200, %{template: returned, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], inputs)
         assert returned.state == "draft"
-        {:ok, record} = OperatelyEE.AdminApi.CuratedTemplates.Shared.load(returned.id)
+        {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(returned.id)
+        {:ok, record} = OperatelyEE.AdminApi.CuratedTemplates.Shared.load(id)
         assert record.creator_account_id == ctx.account.id
         assert record.updater_account_id == ctx.account.id
         assert record.definition["name"] == Operately.Support.Factory.CuratedTemplates.definition(type)["name"]
