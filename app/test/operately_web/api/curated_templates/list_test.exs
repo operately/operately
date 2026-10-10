@@ -7,7 +7,6 @@ defmodule OperatelyWeb.Api.CuratedTemplates.ListTest do
     |> Factory.add_curated_template(:draft)
     |> Factory.add_curated_template(:published, published: true, title: "A", category: "Sales")
     |> Factory.add_curated_template(:goal, published: true, type: :goal, title: "B")
-    |> Factory.add_curated_template(:archived, published: true, archived: true)
   end
 
   test "anonymous readers receive only discoverable summaries", ctx do

@@ -23,8 +23,8 @@ defmodule Operately.CuratedTemplatesTest do
   end
 
   describe "delete/2" do
-    test "permanently deletes draft, published and archived templates", ctx do
-      for opts <- [[], [published: true], [archived: true], [published: true, archived: true]] do
+    test "permanently deletes draft and published templates", ctx do
+      for opts <- [[], [published: true]] do
         ctx = Factory.add_curated_template(ctx, :template, opts)
         assert {:ok, deleted} = CuratedTemplates.delete(ctx.template, ctx.template.updated_at)
         assert deleted.id == ctx.template.id
@@ -52,31 +52,25 @@ defmodule Operately.CuratedTemplatesTest do
       assert CuratedTemplates.list(%{category: "Engineering"}, :admin) == %{templates: [], total: 0}
     end
 
-    test "public visibility excludes drafts and archived templates even with explicit filters", ctx do
+    test "public visibility excludes drafts even with explicit filters", ctx do
       ctx =
         ctx
         |> Factory.add_curated_template(:draft)
         |> Factory.add_curated_template(:published, published: true)
-        |> Factory.add_curated_template(:archived, published: true, archived: true)
 
       assert %{templates: [template], total: 1} = CuratedTemplates.list(%{}, :public)
       assert template.id == ctx.published.id
       assert CuratedTemplates.list(%{state: :draft}, :public) == %{templates: [], total: 0}
-      assert CuratedTemplates.list(%{archived: true}, :public) == %{templates: [], total: 0}
     end
 
-    test "admin visibility includes all states and supports archive filters", ctx do
+    test "admin visibility includes drafts and published templates", ctx do
       ctx =
         ctx
         |> Factory.add_curated_template(:draft)
         |> Factory.add_curated_template(:published, published: true)
-        |> Factory.add_curated_template(:archived, published: true, archived: true)
 
-      assert %{total: 3} = CuratedTemplates.list(%{}, :admin)
-      assert %{templates: [template], total: 1} = CuratedTemplates.list(%{archived: true}, :admin)
-      assert template.id == ctx.archived.id
+      assert %{templates: templates, total: 2} = CuratedTemplates.list(%{}, :admin)
 
-      assert %{templates: templates, total: 2} = CuratedTemplates.list(%{archived: false}, :admin)
       assert MapSet.new(templates, & &1.id) == MapSet.new([ctx.draft.id, ctx.published.id])
     end
 
@@ -140,14 +134,14 @@ defmodule Operately.CuratedTemplatesTest do
       assert template.id == first_id
     end
 
-    test "defaults to 20 results and caps the limit at 100", ctx do
+    test "public catalog defaults to 20 results and caps the limit at 100", ctx do
       for index <- 1..101 do
-        Factory.add_curated_template(ctx, :template, title: "Template #{index}")
+        Factory.add_curated_template(ctx, :template, title: "Template #{index}", published: true)
       end
 
-      assert %{templates: templates, total: 101} = CuratedTemplates.list(%{}, :admin)
+      assert %{templates: templates, total: 101} = CuratedTemplates.list(%{}, :public)
       assert length(templates) == 20
-      assert %{templates: templates, total: 101} = CuratedTemplates.list(%{limit: 200}, :admin)
+      assert %{templates: templates, total: 101} = CuratedTemplates.list(%{limit: 200}, :public)
       assert length(templates) == 100
     end
 
@@ -162,7 +156,6 @@ defmodule Operately.CuratedTemplatesTest do
       assert template.category == "Sales"
       assert template.content_language == "en"
       assert template.published_at == ctx.template.published_at
-      assert template.archived_at == nil
       assert %Template{} = template
       assert template.summary == ctx.template.summary
       assert template.updated_at == ctx.template.updated_at
