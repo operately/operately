@@ -1,3 +1,5 @@
+import * as SaasAdminCuratedTemplatesPage from "./SaasAdminCuratedTemplatesPage";
+import * as SaasAdminCuratedTemplatePage from "./SaasAdminCuratedTemplatePage";
 import * as SaasAdminBillingCatalogPage from "./SaasAdminBillingCatalogPage";
 import * as SaasAdminCompanyPage from "./SaasAdminCompanyPage";
 import * as SaasAdminEmailSettingsPage from "./SaasAdminEmailSettingsPage";
@@ -7,6 +9,16 @@ import * as SaasAdminSearchIndexPage from "./SaasAdminSearchIndexPage";
 import * as SaasAdminUpdateBadgePage from "./SaasAdminUpdateBadgePage";
 
 export default {
+  SaasAdminCuratedTemplatesPage: {
+    name: "SaasAdminCuratedTemplatesPage",
+    loader: SaasAdminCuratedTemplatesPage.loader,
+    Page: SaasAdminCuratedTemplatesPage.Page,
+  },
+  SaasAdminCuratedTemplatePage: {
+    name: "SaasAdminCuratedTemplatePage",
+    loader: SaasAdminCuratedTemplatePage.loader,
+    Page: SaasAdminCuratedTemplatePage.Page,
+  },
   SaasAdminPage: {
     name: "SaasAdminPage",
     loader: SaasAdminPage.loader,

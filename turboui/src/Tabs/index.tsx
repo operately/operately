@@ -57,7 +57,16 @@ function useTabPath(tabId: string, urlPath?: string) {
   return `${pathname}?${searchParams.toString()}`;
 }
 
-export function Tabs({ tabs, showBorder = true }: { tabs: TabsState; showBorder?: boolean }) {
+// Supply onChange for local state; omit it for the existing URL-based navigation.
+export function Tabs({
+  tabs,
+  showBorder = true,
+  onChange,
+}: {
+  tabs: TabsState;
+  showBorder?: boolean;
+  onChange?: (id: string) => void;
+}) {
   return (
     <div
       className={classNames("pl-1 mt-2 overflow-x-auto sm:pl-4", {
@@ -66,14 +75,24 @@ export function Tabs({ tabs, showBorder = true }: { tabs: TabsState; showBorder?
     >
       <nav className="flex gap-2 px-1 whitespace-nowrap sm:gap-4 sm:px-0">
         {tabs.tabs.map((tab) => (
-          <TabItem key={tab.id} tab={tab} activeTab={tabs.active} urlPath={tabs.urlPath} />
+          <TabItem key={tab.id} tab={tab} activeTab={tabs.active} urlPath={tabs.urlPath} onChange={onChange} />
         ))}
       </nav>
     </div>
   );
 }
 
-function TabItem({ tab, activeTab, urlPath }: { tab: Tab; activeTab: string; urlPath?: string }) {
+function TabItem({
+  tab,
+  activeTab,
+  urlPath,
+  onChange,
+}: {
+  tab: Tab;
+  activeTab: string;
+  urlPath?: string;
+  onChange?: (id: string) => void;
+}) {
   const tabPath = useTabPath(tab.id, urlPath);
   const testId = `tab-${(tab.testId ?? tab.label).toLowerCase()}`;
 
@@ -86,13 +105,31 @@ function TabItem({ tab, activeTab, urlPath }: { tab: Tab; activeTab: string; url
     },
   );
 
+  const content = (
+    <>
+      <span className="hidden flex-shrink-0 sm:inline-flex">{tab.icon}</span>
+      <span className="leading-none whitespace-nowrap sm:ml-1">{tab.label}</span>
+      <TabCountBadge count={tab.count} />
+    </>
+  );
+
   return (
     <div className="relative pb-1.5">
-      <DivLink className={labelClass} to={tabPath} testId={testId}>
-        <span className="hidden flex-shrink-0 sm:inline-flex">{tab.icon}</span>
-        <span className="leading-none whitespace-nowrap sm:ml-1">{tab.label}</span>
-        <TabCountBadge count={tab.count} />
-      </DivLink>
+      {onChange ? (
+        <button
+          type="button"
+          className={labelClass}
+          onClick={() => onChange(tab.id)}
+          aria-pressed={activeTab === tab.id}
+          data-test-id={testId}
+        >
+          {content}
+        </button>
+      ) : (
+        <DivLink className={labelClass} to={tabPath} testId={testId}>
+          {content}
+        </DivLink>
+      )}
 
       <TabUnderline isActive={activeTab === tab.id} />
     </div>

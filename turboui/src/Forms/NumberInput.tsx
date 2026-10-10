@@ -24,6 +24,7 @@ export function NumberInput(props: NumberInputProps) {
           data-test-id={props.testId ?? createTestId(field)}
           className={inputStyles(!!error)}
           type="number"
+          step={props.step}
           value={value ?? ""}
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={(event) => {

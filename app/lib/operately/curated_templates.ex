@@ -23,8 +23,8 @@ defmodule Operately.CuratedTemplates do
   end
 
   def list(filters, visibility) do
-    # Public catalogs include only published, unarchived templates.
-    query = if visibility == :public, do: from(t in Template, where: t.state == :published and is_nil(t.archived_at)), else: Template
+    # Public catalogs include only published templates.
+    query = if visibility == :public, do: from(t in Template, where: t.state == :published), else: Template
 
     # Apply exact-match filters, ignoring missing or empty values.
     query =
@@ -36,14 +36,6 @@ defmodule Operately.CuratedTemplates do
         end
       end)
 
-    # Optionally restrict results to archived or unarchived templates.
-    query =
-      case filters[:archived] do
-        true -> where(query, [t], not is_nil(t.archived_at))
-        false -> where(query, [t], is_nil(t.archived_at))
-        nil -> query
-      end
-
     # Search titles case-insensitively, treating wildcard characters literally.
     query =
       case filters[:search] do
@@ -51,16 +43,25 @@ defmodule Operately.CuratedTemplates do
         _ -> query
       end
 
-    limit = min(max(filters[:limit] || 20, 1), 100)
     offset = max(filters[:offset] || 0, 0)
     total = Repo.aggregate(query, :count)
+
+    # Admin callers can omit the limit to fetch the entire catalog.
+    query =
+      case {visibility, filters[:limit]} do
+        {:admin, nil} ->
+          query
+
+        {_, requested_limit} ->
+          limit = min(max(requested_limit || 20, 1), 100)
+          limit(query, ^limit)
+      end
 
     templates =
       query
       |> order_by([t], asc: t.title, asc: t.id)
-      |> limit(^limit)
       |> offset(^offset)
-      |> select([t], struct(t, [:id, :title, :summary, :state, :type, :category, :content_language, :published_at, :archived_at, :inserted_at, :updated_at]))
+      |> select([t], struct(t, [:id, :title, :summary, :state, :type, :category, :content_language, :published_at, :inserted_at, :updated_at]))
       |> Repo.all()
 
     %{templates: templates, total: total}

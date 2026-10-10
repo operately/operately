@@ -177,7 +177,6 @@ export interface CuratedTemplate {
   contentLanguage: string;
   definition?: Json;
   publishedAt?: string | null;
-  archivedAt?: string | null;
   insertedAt: string;
   updatedAt: string;
 }
@@ -290,7 +289,6 @@ export interface CuratedTemplatesListInput {
   state?: CuratedTemplateState;
   category?: string;
   search?: string;
-  archived?: boolean;
   limit?: number;
   offset?: number;
 }
@@ -480,7 +478,6 @@ export interface CuratedTemplatesUpdateMetadataInput {
   id: Id;
   expectedUpdatedAt: string;
   category?: string | null;
-  archived?: boolean;
 }
 
 export interface CuratedTemplatesUpdateMetadataResult {

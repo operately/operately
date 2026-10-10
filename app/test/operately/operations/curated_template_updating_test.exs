@@ -22,7 +22,7 @@ defmodule Operately.Operations.CuratedTemplateUpdatingTest do
   test "stale writes cannot overwrite a newer edit", ctx do
     assert {:ok, updated} = Updating.run(ctx.template, ctx.account, ctx.template.updated_at, {:update, %{title: "New"}})
 
-    for action <- [:publish, {:metadata, %{archived: true}}, {:update, %{title: "Stale"}}] do
+    for action <- [:publish, {:metadata, %{category: "Sales"}}, {:update, %{title: "Stale"}}] do
       assert {:error, :conflict} = Updating.run(ctx.template, ctx.account, ctx.template.updated_at, action)
     end
 
@@ -39,14 +39,5 @@ defmodule Operately.Operations.CuratedTemplateUpdatingTest do
     {:ok, published} = Updating.run(ctx.template, ctx.account, ctx.template.updated_at, :publish)
     assert {:error, %Ecto.Changeset{}} = Updating.run(published, ctx.account, published.updated_at, {:update, %{definition: %{}}})
     assert CuratedTemplates.get(published.id).definition["name"] == "Revenue"
-  end
-
-  test "archive removes discovery but preserves published detail; restore reverses it", ctx do
-    {:ok, published} = Updating.run(ctx.template, ctx.account, ctx.template.updated_at, :publish)
-    {:ok, archived} = Updating.run(published, ctx.account, published.updated_at, {:metadata, %{archived: true}})
-    assert CuratedTemplates.list(%{}, :public).templates == []
-    assert CuratedTemplates.get_published(archived.id)
-    {:ok, _} = Updating.run(archived, ctx.account, archived.updated_at, {:metadata, %{archived: false}})
-    assert length(CuratedTemplates.list(%{}, :public).templates) == 1
   end
 end
