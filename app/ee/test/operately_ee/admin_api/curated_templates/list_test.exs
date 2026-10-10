@@ -28,12 +28,20 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.ListTest do
       assert {200, %{templates: [], total: 0}} = admin_query(ctx.conn, [:curated_templates, :list], %{category: "missing"})
     end
 
+    test "returns all templates when limit is omitted", ctx do
+      for index <- 1..101 do
+        Factory.add_curated_template(ctx, :template, title: "Template #{index}")
+      end
+
+      assert {200, %{templates: templates, total: 101}} = admin_query(ctx.conn, [:curated_templates, :list], %{})
+      assert length(templates) == 101
+    end
+
     test "returns summaries without a placeholder definition", ctx do
-      ctx = Factory.add_curated_template(ctx, :template, published: true, archived: true)
+      ctx = Factory.add_curated_template(ctx, :template, published: true)
       assert {200, %{templates: [summary]}} = admin_query(ctx.conn, [:curated_templates, :list], %{})
       assert summary.__typename == "curated_template"
       assert summary.state == "published"
-      assert summary.archived_at == DateTime.to_iso8601(ctx.template.archived_at)
       assert summary.published_at == DateTime.to_iso8601(ctx.template.published_at)
       assert summary.updated_at == DateTime.to_iso8601(ctx.template.updated_at)
       refute Map.has_key?(summary, :definition)

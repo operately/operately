@@ -6,15 +6,12 @@ defmodule OperatelyWeb.Api.CuratedTemplates.GetTest do
     |> Factory.setup()
     |> Factory.add_curated_template(:draft)
     |> Factory.add_curated_template(:published, published: true)
-    |> Factory.add_curated_template(:archived, published: true, archived: true)
   end
 
-  test "anonymous readers receive published content including archived templates", ctx do
-    for template <- [ctx.published, ctx.archived] do
-      assert {200, %{template: returned}} = query(ctx.conn, [:curated_templates, :get], %{id: Paths.curated_template_id(template)})
-      assert Jason.decode!(returned.definition) == template.definition
-      assert Enum.sort(Map.keys(returned)) == Enum.sort([:__typename, :id, :type, :title, :summary, :category, :content_language, :updated_at, :definition])
-    end
+  test "anonymous readers receive published content", ctx do
+    assert {200, %{template: returned}} = query(ctx.conn, [:curated_templates, :get], %{id: Paths.curated_template_id(ctx.published)})
+    assert Jason.decode!(returned.definition) == ctx.published.definition
+    assert Enum.sort(Map.keys(returned)) == Enum.sort([:__typename, :id, :type, :title, :summary, :category, :content_language, :updated_at, :definition])
   end
 
   test "signed-in readers can read published templates", ctx do

@@ -5,10 +5,9 @@ defmodule Operately.Support.Factory.CuratedTemplates do
   def add_curated_template(ctx, key, opts \\ []) do
     type = Keyword.get(opts, :type, :kpi)
     attrs = %{title: "Example template", type: type, content_language: "en", definition: definition(type)}
-    attrs = Map.merge(attrs, opts |> Keyword.drop([:published, :archived]) |> Map.new())
+    attrs = Map.merge(attrs, opts |> Keyword.drop([:published]) |> Map.new())
     {:ok, template} = CuratedTemplates.create(ctx.account, attrs)
     template = if opts[:published], do: publish(template, ctx.account), else: template
-    template = if opts[:archived], do: archive(template, ctx.account), else: template
     Map.put(ctx, key, template)
   end
 
@@ -18,11 +17,6 @@ defmodule Operately.Support.Factory.CuratedTemplates do
 
   defp publish(template, account) do
     {:ok, template} = CuratedTemplateUpdating.run(template, account, template.updated_at, :publish)
-    template
-  end
-
-  defp archive(template, account) do
-    {:ok, template} = CuratedTemplateUpdating.run(template, account, template.updated_at, {:metadata, %{archived: true}})
     template
   end
 end

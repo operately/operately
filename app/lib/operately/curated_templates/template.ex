@@ -17,7 +17,6 @@ defmodule Operately.CuratedTemplates.Template do
     field :definition, :map, default: %{}
 
     field :published_at, :utc_datetime_usec
-    field :archived_at, :utc_datetime_usec
 
     timestamps(type: :utc_datetime_usec)
   end

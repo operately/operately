@@ -9,7 +9,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CuratedTemplates.Template 
       content_language: template.content_language,
       state: template.state,
       published_at: template.published_at,
-      archived_at: template.archived_at,
       inserted_at: template.inserted_at,
       updated_at: template.updated_at
     }

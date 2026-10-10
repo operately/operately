@@ -409,6 +409,7 @@ function Options() {
     <PageOptions.Root testId="options-button">
       <PageOptions.Link icon={IconMail} title={t("Email Configuration")} to="/admin/email-settings" />
       <PageOptions.Link icon={IconSparkles} title={t("Update Badge")} to="/admin/update-badge" />
+      <PageOptions.Link icon={IconInfoCircle} title={t("Curated templates")} to="/admin/curated-templates" />
       <PageOptions.Link icon={IconInfoCircle} title={t("Site Messages")} to="/admin/site-messages" />
       <PageOptions.Link icon={IconSearch} title={t("Search Index")} to="/admin/search-index" />
       {window.appConfig.billingEnabled && (
