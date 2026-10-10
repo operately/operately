@@ -41,7 +41,8 @@ defmodule OperatelyWeb.Api.Projects.Get do
 
   def call(conn, inputs) do
     with :ok <- check_inputs(inputs),
-         {:ok, project} <- load(me(conn), inputs.id, inputs, company_read_only(conn)) do
+         {:ok, person} <- find_me(conn),
+         {:ok, project} <- load(person, inputs.id, inputs, company_read_only(conn)) do
       serialize(project, inputs[:include_markdown])
     end
   end
