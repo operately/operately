@@ -6,7 +6,6 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.UpdateMetadata do
     field :id, :id, null: false
     field :expected_updated_at, :datetime
     field? :category, :string, null: true
-    field? :archived, :boolean
   end
 
   outputs do

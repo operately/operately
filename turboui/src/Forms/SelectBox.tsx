@@ -35,6 +35,13 @@ function SelectBoxInput({ field, placeholder, options }: SelectBoxProps) {
         value={options.find(({ value: optionValue }) => optionValue === value)}
         onChange={(option) => setValue(option?.value)}
         options={options}
+        formatOptionLabel={(option, { context }) =>
+          context === "menu" ? (
+            <span data-test-id={createTestId(field, "option", String(option.value))}>{option.label}</span>
+          ) : (
+            option.label
+          )
+        }
         styles={selectBoxStyles()}
       />
     </div>

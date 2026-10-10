@@ -226,6 +226,7 @@ export interface PasswordInputProps {
 
 export interface NumberInputProps {
   field: string;
+  step?: number | "any";
   label?: string;
   autoFocus?: boolean;
   placeholder?: string;

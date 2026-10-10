@@ -7,7 +7,6 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.List do
     field? :state, :curated_template_state
     field? :category, :string
     field? :search, :string
-    field? :archived, :boolean
     field? :limit, :integer
     field? :offset, :integer
   end

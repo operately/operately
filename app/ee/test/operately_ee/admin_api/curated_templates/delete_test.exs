@@ -19,8 +19,8 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.DeleteTest do
       ctx |> Map.put(:account, account) |> Factory.log_in_account(:account)
     end
 
-    test "deletes templates regardless of publication or archive state", ctx do
-      for opts <- [[], [published: true], [archived: true], [published: true, archived: true]] do
+    test "deletes templates regardless of publication state", ctx do
+      for opts <- [[], [published: true]] do
         ctx = Factory.add_curated_template(ctx, :template, opts)
         assert {200, %{template: deleted, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :delete], identity(ctx.template))
         assert deleted.id == Paths.curated_template_id(ctx.template)

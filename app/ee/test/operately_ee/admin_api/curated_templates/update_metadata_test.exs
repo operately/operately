@@ -19,13 +19,10 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.UpdateMetadataTest do
       ctx |> Map.put(:account, account) |> Factory.log_in_account(:account)
     end
 
-    test "changes category, archives, and restores", ctx do
+    test "changes category", ctx do
       ctx = Factory.add_curated_template(ctx, :template, published: true)
-      assert {200, %{template: archived, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :update_metadata], Map.merge(identity(ctx.template), %{category: "Sales", archived: true}))
-      assert archived.archived_at
-      assert archived.category == "Sales"
-      assert {200, %{template: restored, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :update_metadata], %{id: archived.id, expected_updated_at: archived.updated_at, archived: false})
-      assert restored.archived_at == nil
+      assert {200, %{template: updated, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :update_metadata], Map.merge(identity(ctx.template), %{category: "Sales"}))
+      assert updated.category == "Sales"
     end
 
     test "rejects stale metadata changes", ctx do

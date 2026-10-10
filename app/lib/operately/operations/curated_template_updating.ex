@@ -37,16 +37,7 @@ defmodule Operately.Operations.CuratedTemplateUpdating do
   end
 
   defp apply_action(repo, template, account, {:metadata, attrs}) do
-    cs = Template.changeset(template, Map.take(attrs, [:category]))
-
-    cs =
-      case Map.fetch(attrs, :archived) do
-        {:ok, true} -> put_change(cs, :archived_at, template.archived_at || DateTime.utc_now())
-        {:ok, false} -> put_change(cs, :archived_at, nil)
-        :error -> cs
-      end
-
-    persist(cs, repo, account)
+    template |> Template.changeset(Map.take(attrs, [:category])) |> persist(repo, account)
   end
 
   defp persist(cs, repo, account) do

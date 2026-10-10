@@ -85,10 +85,16 @@ export function ConfirmDialog({
           <p className="text-content-base">{message}</p>
 
           <div className="flex flex-wrap gap-3 justify-end">
-            <SecondaryButton onClick={onCancel} disabled={confirming} className="max-w-full !whitespace-normal">
+            <SecondaryButton
+              testId={testId ? `${testId}-cancel` : undefined}
+              onClick={onCancel}
+              disabled={confirming}
+              className="max-w-full !whitespace-normal"
+            >
               {resolvedCancelText}
             </SecondaryButton>
             <ConfirmButton
+              testId={testId ? `${testId}-confirm` : undefined}
               onClick={onConfirm}
               loading={confirming}
               disabled={confirming}
