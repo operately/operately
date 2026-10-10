@@ -14,21 +14,21 @@ export async function invalidateCuratedTemplates(client: QueryClient) {
   ]);
 }
 
-export function useCreateCuratedTemplate() {
+function useCreateCuratedTemplate() {
   const client = useQueryClient();
   return useMutation({
     ...AdminApi.curated_templates.createMutationOptions(),
     onSuccess: () => invalidateCuratedTemplates(client),
   });
 }
-export function useUpdateCuratedTemplate() {
+function useUpdateCuratedTemplate() {
   const client = useQueryClient();
   return useMutation({
     ...AdminApi.curated_templates.updateMutationOptions(),
     onSuccess: () => invalidateCuratedTemplates(client),
   });
 }
-export function usePublishCuratedTemplate() {
+function usePublishCuratedTemplate() {
   const client = useQueryClient();
   return useMutation({
     ...AdminApi.curated_templates.publishMutationOptions(),

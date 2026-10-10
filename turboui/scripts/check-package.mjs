@@ -80,7 +80,6 @@ function runNpm(args, directory) {
   execFileSync("npm", ["--no-audit", "--no-fund", ...args], {
     cwd: directory,
     stdio: "inherit",
-    env: { ...process.env, npm_config_fetch_retries: "0", npm_config_fetch_timeout: "30000" },
   });
 }
 
