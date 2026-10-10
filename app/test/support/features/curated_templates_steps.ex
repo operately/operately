@@ -8,8 +8,9 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     |> UI.click(testid: "create-template")
     |> UI.fill(testid: "title", with: "Retention KPI template")
     |> UI.fill(testid: "definition-unit", with: "%")
-    |> UI.select(testid: "definition-cadence", option: "Monthly")
-    |> UI.click(testid: "submit")
+    |> UI.click(testid: "definition-cadence")
+    |> UI.click(testid: "definition-cadence-option-monthly")
+    |> UI.click(testid: "save-template-draft")
     |> UI.assert_has(css: "[data-test-id='template-state'][data-state='draft']")
     |> then(fn ctx ->
       template = Repo.get_by!(Template, title: "Retention KPI template")
@@ -34,7 +35,7 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
 
     ctx
     |> UI.fill(testid: "title", with: "Updated retention")
-    |> UI.click(testid: "submit")
+    |> UI.click(testid: "update-template")
     |> UI.refute_has(css: "[data-test-id='template-state'][data-updated-at='#{previous_update}']")
     |> UI.visit("/admin/curated-templates/" <> Paths.curated_template_id(ctx.template))
     |> UI.assert_has(testid: "title", value: "Updated retention")

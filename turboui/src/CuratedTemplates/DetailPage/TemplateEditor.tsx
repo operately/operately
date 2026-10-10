@@ -109,7 +109,7 @@ export function TemplateEditor(props: TemplateEditorProps) {
         <PrimaryButton
           type="submit"
           size="sm"
-          testId={published ? "submit" : "publish-template"}
+          testId={published ? "update-template" : "publish-template"}
           loading={form.state === "submitting" && saveIntent === "publish"}
           disabled={form.state !== "idle"}
         >
@@ -119,7 +119,7 @@ export function TemplateEditor(props: TemplateEditorProps) {
           <SecondaryButton
             type="button"
             size="sm"
-            testId="submit"
+            testId="save-template-draft"
             loading={form.state === "submitting" && saveIntent === "draft"}
             disabled={form.state !== "idle"}
             onClick={() => form.actions.submit("draft")}

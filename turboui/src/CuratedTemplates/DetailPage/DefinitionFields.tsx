@@ -88,7 +88,10 @@ export function DefinitionFields({ type, definition }: { type: TemplateType; def
                 onMove={(delta) => reorder("milestones", index, delta)}
                 onRemove={() => remove("milestones", index)}
               >
-                <Forms.TextInput field={`definition.milestones.${index}.title`} label={t("Title", { context: "resource" })} />
+                <Forms.TextInput
+                  field={`definition.milestones.${index}.title`}
+                  label={t("Title", { context: "resource" })}
+                />
                 <Forms.NumberInput
                   field={`definition.milestones.${index}.due_offset_days`}
                   label={t("Days after start")}
@@ -162,13 +165,25 @@ function Row({
     <div className="space-y-3 rounded-lg border border-surface-outline p-4" data-test-id="template-child-row">
       {children}
       <div className="flex gap-2">
-        <SecondaryButton type="button" size="xs" disabled={index === 0} onClick={() => onMove(-1)}>
+        <SecondaryButton
+          type="button"
+          size="xs"
+          disabled={index === 0}
+          testId="move-child-up"
+          onClick={() => onMove(-1)}
+        >
           {t("Move up")}
         </SecondaryButton>
-        <SecondaryButton type="button" size="xs" disabled={index === count - 1} onClick={() => onMove(1)}>
+        <SecondaryButton
+          type="button"
+          size="xs"
+          disabled={index === count - 1}
+          testId="move-child-down"
+          onClick={() => onMove(1)}
+        >
           {t("Move down")}
         </SecondaryButton>
-        <SecondaryButton type="button" size="xs" onClick={onRemove}>
+        <SecondaryButton type="button" size="xs" testId="remove-child" onClick={onRemove}>
           {t("Remove")}
         </SecondaryButton>
       </div>

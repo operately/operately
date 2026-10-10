@@ -59,21 +59,22 @@ test("switching tabs filters the loaded catalog without navigation", () => {
   expect(screen.getByTestId("location").textContent).toBe("/");
 });
 
-test("pagination is local and switching tabs resets it", () => {
+test("all templates in the selected tab are shown without pagination", () => {
   const projects = Array.from({ length: 21 }, (_, i) => ({
     ...templateFixture("project"),
     id: `project-${i}`,
     title: `Project ${i}`,
   }));
   setup({ templates: [...projects, templateFixture("goal")] });
-  expect(screen.getByTestId("previous-template-page")).toBeDisabled();
-  fireEvent.click(screen.getByTestId("next-template-page"));
-  expect(screen.getByText("Project 20")).toBeInTheDocument();
-  expect(screen.queryByText("Project 0")).not.toBeInTheDocument();
-  fireEvent.click(screen.getByTestId("tab-goal"));
+  for (const project of projects) {
+    expect(screen.getByText(project.title)).toBeInTheDocument();
+  }
   expect(screen.queryByTestId("catalog-pagination")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByTestId("tab-goal"));
+  expect(screen.queryByText("Project 0")).not.toBeInTheDocument();
   fireEvent.click(screen.getByTestId("tab-project"));
-  expect(screen.getByText("Project 0")).toBeInTheDocument();
-  expect(screen.getByTestId("previous-template-page")).toBeDisabled();
+  for (const project of projects) {
+    expect(screen.getByText(project.title)).toBeInTheDocument();
+  }
   expect(screen.getByTestId("location").textContent).toBe("/");
 });

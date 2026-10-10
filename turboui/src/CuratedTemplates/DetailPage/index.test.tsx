@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, screen, waitFor, within, configure } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor, configure } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router";
 import { CuratedTemplateDetailPage } from "./index";
@@ -48,6 +48,6 @@ test.each(["draft", "published"] as const)("deletes a %s template after confirma
   fireEvent.keyDown(screen.getByTestId("template-actions"), { key: "ArrowDown" });
   fireEvent.click(await screen.findByTestId("delete-template"));
   expect(onDelete).not.toHaveBeenCalled();
-  fireEvent.click(within(screen.getByTestId("template-action-confirmation")).getByRole("button", { name: "Delete" }));
+  fireEvent.click(screen.getByTestId("template-action-confirmation-confirm"));
   await waitFor(() => expect(onDelete).toHaveBeenCalledTimes(1));
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Tabs } from "../../Tabs";
-import { PrimaryButton, SecondaryButton } from "../../Button";
+import { PrimaryButton } from "../../Button";
 import { Page } from "../../Page";
 import { Link } from "../../Link";
 import { FormattedTime, FormattedTimePreferences } from "../../FormattedTime";
@@ -18,13 +18,8 @@ export interface CuratedTemplatesCatalogProps {
 export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps) {
   const { t } = useTranslation();
   const typeLabel = { project: t("Projects"), goal: t("Goals"), kpi: t("KPIs") };
-  const [selection, setSelection] = React.useState<{ type: TemplateType; offset: number }>({
-    type: "project",
-    offset: 0,
-  });
-  const filtered = props.templates.filter((template) => template.type === selection.type);
-  const templates = filtered.slice(selection.offset, selection.offset + 20);
-  const showPagination = selection.offset > 0 || filtered.length > 20;
+  const [selectedType, setSelectedType] = React.useState<TemplateType>("project");
+  const templates = props.templates.filter((template) => template.type === selectedType);
 
   return (
     <Page
@@ -42,10 +37,10 @@ export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps)
         </div>
         <Tabs
           onChange={(type) => {
-            if (type === "project" || type === "goal" || type === "kpi") setSelection({ type, offset: 0 });
+            if (type === "project" || type === "goal" || type === "kpi") setSelectedType(type);
           }}
           tabs={{
-            active: selection.type,
+            active: selectedType,
             tabs: (["project", "goal", "kpi"] as const).map((type) => ({
               id: type,
               label: typeLabel[type],
@@ -77,26 +72,6 @@ export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps)
             </div>
           ))}
         </div>
-        {showPagination && (
-          <div className="mt-6 flex justify-end gap-3" data-test-id="catalog-pagination">
-            <SecondaryButton
-              size="sm"
-              testId="previous-template-page"
-              disabled={selection.offset === 0}
-              onClick={() => setSelection({ ...selection, offset: Math.max(0, selection.offset - 20) })}
-            >
-              {t("Previous")}
-            </SecondaryButton>
-            <SecondaryButton
-              size="sm"
-              testId="next-template-page"
-              disabled={selection.offset + templates.length >= filtered.length}
-              onClick={() => setSelection({ ...selection, offset: selection.offset + 20 })}
-            >
-              {t("Next")}
-            </SecondaryButton>
-          </div>
-        )}
       </div>
     </Page>
   );
