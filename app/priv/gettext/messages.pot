@@ -5478,6 +5478,7 @@ msgid "Add members to %{name}"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:104
 #: ../turboui/src/MilestoneList/AddMilestoneForm.tsx:110
 #: ../turboui/src/MilestoneList/index.tsx:128
 msgid "Add milestone"
@@ -5565,11 +5566,17 @@ msgid "Add status"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:72
+msgid "Add target"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/GoalPage/Targets.tsx:29
 msgid "Add targets to track quantitative progress with numbers."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:138
 #: ../turboui/src/MilestonePage/components/ProjectTasksSection.tsx:108
 #: ../turboui/src/MilestonePage/components/TemplateTasksSection.tsx:107
 #: ../turboui/src/TaskBoard/KanbanView/Column.tsx:280
@@ -5764,6 +5771,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:57
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:33
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/index.tsx:18
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:58
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:55
@@ -6468,6 +6476,11 @@ msgid "Base Path"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:66
+msgid "Baseline"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:120
 msgid "Batch window"
 msgstr ""
@@ -6523,7 +6536,7 @@ msgstr ""
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:133
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:179
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:415
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:416
 msgid "Billing Catalog"
 msgstr ""
 
@@ -6686,6 +6699,7 @@ msgid "CONTRIBUTOR"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:42
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:240
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:80
 msgid "Cadence"
@@ -6774,6 +6788,8 @@ msgstr ""
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
 #: ../turboui/src/ConfirmDialog/index.tsx:59
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:176
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:131
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:86
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
 #: ../turboui/src/DocumentEditPage/index.tsx:96
@@ -7422,7 +7438,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:169
 #: ../turboui/src/ResourceHub/Search.tsx:40
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:448
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:449
 msgid "Clear search"
 msgstr ""
 
@@ -8088,6 +8104,11 @@ msgstr ""
 msgid "Content is required"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:93
+msgid "Content language"
+msgstr ""
+
 #.elixir
 #: lib/operately_web/api/types/json.ex:15
 msgid "Content must be a string or nil"
@@ -8403,6 +8424,11 @@ msgid "Create a project template"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:62
+msgid "Create a reusable template for a KPI, goal, or project."
+msgstr ""
+
+#.frontend
 #: ../turboui/src/SpaceTemplatesTool/index.tsx:40
 msgid "Create a template"
 msgstr ""
@@ -8482,7 +8508,11 @@ msgid "Create task"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:40
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:39
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:48
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:435
+#: ee/assets/js/pages/SaasAdminCuratedTemplatePage/index.tsx:40
 msgid "Create template"
 msgstr ""
 
@@ -8594,6 +8624,15 @@ msgstr ""
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:85
 msgid "Ctrl"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:31
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:38
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:41
+#: ee/assets/js/pages/SaasAdminCuratedTemplatesPage/index.tsx:16
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:412
+msgid "Curated templates"
 msgstr ""
 
 #.frontend
@@ -8720,6 +8759,12 @@ msgid "Day"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:94
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:134
+msgid "Days after start"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/TaskPage/Sidebar.tsx:197
 msgid "Days before due date"
 msgstr ""
@@ -8739,6 +8784,8 @@ msgstr ""
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:516
 #: ../turboui/src/CommentSection/CommentItem.tsx:225
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:64
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:85
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
 #: ../turboui/src/GoalTargetList/DeleteButton.tsx:17
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:227
@@ -8900,6 +8947,7 @@ msgid "Delete table"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:83
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:182
 msgid "Delete template"
 msgstr ""
@@ -9076,6 +9124,8 @@ msgstr ""
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:36
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:120
 #: ../turboui/src/ProjectPage/Overview.tsx:52
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:112
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:88
@@ -9397,6 +9447,8 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CheckInCard/index.tsx:72
 #: ../turboui/src/CheckInHeader/index.tsx:38
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:73
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:57
 #: ../turboui/src/DiscussionCard/index.tsx:58
 msgid "Draft"
 msgstr ""
@@ -9556,6 +9608,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:92
 msgid "Duplicate template"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:50
+msgid "Duration in days"
 msgstr ""
 
 #.frontend
@@ -11281,6 +11338,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:11
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:86
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
@@ -11373,6 +11431,7 @@ msgid "Goal timeframe change"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:20
 #: ../turboui/src/GoalPage/PageHeader.tsx:17
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:259
 #: ../turboui/src/SearchPage/filterOptions.ts:11
@@ -12122,6 +12181,7 @@ msgid "Join this Space"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:85
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 msgid "KPI"
 msgstr ""
@@ -12157,6 +12217,7 @@ msgid "KPI: %{value}"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:20
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:70
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:116
 #: ../turboui/src/SpaceKpisPage/index.tsx:75
@@ -12915,6 +12976,7 @@ msgstr ""
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:125
 #: ../turboui/src/SearchPage/index.tsx:319
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:89
 #: ../turboui/src/TaskCreationModal/index.tsx:161
@@ -13023,6 +13085,7 @@ msgstr ""
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:79
 #: ../turboui/src/MilestoneList/index.tsx:119
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:260
 #: ../turboui/src/SearchPage/filterOptions.ts:12
@@ -13091,6 +13154,7 @@ msgstr ""
 #.frontend
 #: ../turboui/src/CompanyBilling/formatting.ts:15
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:95
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:45
 #: ../turboui/src/SpaceKpisPage/utils.ts:10
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:103
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:137
@@ -13154,6 +13218,11 @@ msgid "Move Here"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:169
+msgid "Move down"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/Modal/MoveModal.tsx:54
 msgid "Move goal to another space"
 msgstr ""
@@ -13178,6 +13247,11 @@ msgstr ""
 #: ../turboui/src/GoalPage/Sidebar.tsx:390
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:341
 msgid "Move to another space"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:166
+msgid "Move up"
 msgstr ""
 
 #.frontend
@@ -13253,6 +13327,8 @@ msgid "NPS score"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:63
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:117
 #: ../turboui/src/GoalAddForm/index.tsx:93
 #: ../turboui/src/GoalTargetList/index.tsx:176
 #: ../turboui/src/GoalTargetList/index.tsx:240
@@ -13501,6 +13577,7 @@ msgid "New timeframe: %{new_start_date} → %{new_end_date}"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:96
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:97
 msgid "Next"
 msgstr ""
@@ -13576,7 +13653,7 @@ msgid "No accounts found"
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:467
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:468
 msgid "No accounts matched <query>“%{searchQuery}”</query>."
 msgstr ""
 
@@ -13650,7 +13727,7 @@ msgid "No companies match your search."
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:473
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:474
 msgid "No companies matched <query>“%{searchQuery}”</query>."
 msgstr ""
 
@@ -13783,12 +13860,12 @@ msgid "No imports yet. Upload a package above to create the first one."
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:463
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:464
 msgid "No matching accounts found"
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:463
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:464
 msgid "No matching companies found"
 msgstr ""
 
@@ -14055,6 +14132,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:105
 msgid "No template"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:60
+msgid "No templates in this tab yet."
 msgstr ""
 
 #.frontend
@@ -15270,6 +15352,11 @@ msgstr ""
 msgid "Preview: %{size}"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:88
+msgid "Previous"
+msgstr ""
+
 #.elixir
 #: lib/operately_email/templates/company_members_permissions_edited.html.eex:9
 #: lib/operately_email/templates/company_members_permissions_edited.text.eex:3
@@ -15485,6 +15572,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:12
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:87
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
@@ -15576,6 +15664,11 @@ msgid "Project duration"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:127
+msgid "Project level"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:166
 msgid "Project name"
 msgstr ""
@@ -15647,6 +15740,7 @@ msgid "Project: %{projectName}"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:20
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:258
 #: ../turboui/src/SearchPage/filterOptions.ts:10
@@ -15704,6 +15798,11 @@ msgid "Public sharing is off. Enable it to create a link."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:116
+msgid "Publish"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/DocumentEditPage/index.tsx:91
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
 msgid "Publish Now"
@@ -15720,6 +15819,17 @@ msgstr ""
 #.elixir
 #: lib/operately_web/api/documents/update_public_sharing.ex:28
 msgid "Publish the document before sharing it publicly"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:73
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:57
+msgid "Published"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:79
+msgid "Published changes take effect immediately."
 msgstr ""
 
 #.frontend
@@ -16117,6 +16227,7 @@ msgid "Reminders"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:172
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:130
 msgid "Remove"
 msgstr ""
@@ -16238,6 +16349,11 @@ msgstr ""
 #.frontend
 #: assets/js/features/activities/ProjectContributorRemoved/index.tsx:77
 msgid "Removed you from the project"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:81
+msgid "Removing a milestone keeps its tasks at the project level."
 msgstr ""
 
 #.frontend
@@ -16960,6 +17076,7 @@ msgid "Save contributor"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:127
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
@@ -17051,12 +17168,12 @@ msgid "Search"
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:413
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:414
 msgid "Search Index"
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:486
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:487
 msgid "Search accounts by name or email"
 msgstr ""
 
@@ -17076,7 +17193,7 @@ msgid "Search companies"
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:489
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:490
 msgid "Search companies by name"
 msgstr ""
 
@@ -17825,7 +17942,7 @@ msgid "Site Admin"
 msgstr ""
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/index.tsx:412
+#: ee/assets/js/pages/SaasAdminPage/index.tsx:413
 msgid "Site Messages"
 msgstr ""
 
@@ -18564,8 +18681,14 @@ msgstr ""
 msgid "Target not found"
 msgstr ""
 
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:67
+msgid "Target value"
+msgstr ""
+
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:54
 #: ../turboui/src/GoalPage/Targets.tsx:16
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:45
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:492
@@ -18735,6 +18858,7 @@ msgstr ""
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:108
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
 #: ../turboui/src/ProfilePage/index.tsx:123
@@ -18966,6 +19090,11 @@ msgstr ""
 #.elixir
 #: lib/operately_web/controllers/mcp_oauth_controller.ex:200
 msgid "The OAuth client is not registered for this Operately MCP server."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:28
+msgid "The action could not be completed. Reload if another admin has changed the template."
 msgstr ""
 
 #.elixir
@@ -19476,6 +19605,11 @@ msgid "The template could not be duplicated. Try again."
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:45
+msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
+msgstr ""
+
+#.frontend
 #: assets/js/pages/ProjectTemplatePage/index.tsx:215
 #: assets/js/pages/ProjectTemplatePage/index.tsx:229
 #: assets/js/pages/ProjectTemplatePage/index.tsx:243
@@ -19631,6 +19765,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:223
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:84
 #: assets/js/pages/SpacePage/page.tsx:255
 msgid "This action cannot be undone."
 msgstr ""
@@ -20470,6 +20605,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:83
 #: lib/operately/md/space.ex:20
 #: lib/operately/md/task.ex:18
 msgid "Type"
@@ -20626,6 +20762,8 @@ msgid "Unexpected error"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:39
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:65
 #: ../turboui/src/GoalTargetList/index.tsx:269
 #: ../turboui/src/GoalTargetList/index.tsx:390
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:248
@@ -20765,6 +20903,12 @@ msgid "Untitled"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:130
+msgid "Untitled milestone"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:116
 #: ../turboui/src/GoalTargetList/UpdateButton.tsx:17
 msgid "Update"
 msgstr ""
@@ -21659,6 +21803,7 @@ msgid "We've sent you a 6-character code to <email>%{email}</email>. The code ex
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:44
 #: ../turboui/src/SpaceKpisPage/utils.ts:8
 msgid "Weekly"
 msgstr ""
@@ -24583,4 +24728,11 @@ msgstr ""
 #: ../turboui/src/ProfilePage/components/Colleagues.tsx:80
 msgctxt "people"
 msgid "Reports"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:91
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:77
+msgctxt "resource"
+msgid "Title"
 msgstr ""

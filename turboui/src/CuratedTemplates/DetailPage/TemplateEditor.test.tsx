@@ -4,6 +4,9 @@ import { render, fireEvent, screen, waitFor, within, configure } from "@testing-
 import "@testing-library/jest-dom";
 import { TemplateEditor } from "./TemplateEditor";
 import { templateFixture } from "../mockData";
+import { i18n, setupTestCatalog } from "../../../test/i18n";
+
+setupTestCatalog();
 
 Object.defineProperty(globalThis.crypto, "randomUUID", { value: randomUUID, configurable: true });
 
@@ -16,6 +19,14 @@ function setup(fail = false) {
   const result = render(<TemplateEditor template={templateFixture()} onSave={onSave} onCancel={jest.fn()} />);
   return { ...result, onSave };
 }
+
+test("translates template and milestone titles without using the job-title translation", async () => {
+  await i18n.changeLanguage("pt-BR");
+  setup();
+  expect(screen.getByTestId("title")).toHaveAccessibleName(/^Título/);
+  expect(screen.getByTestId("definition-milestones-0-title")).toHaveAccessibleName("Título");
+  expect(i18n.t("Title")).toBe("Cargo");
+});
 
 test("adds and orders tasks, then submits the full definition", async () => {
   const { container, onSave } = setup();

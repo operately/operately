@@ -74,7 +74,7 @@ export function TemplateEditor(props: TemplateEditorProps) {
   return (
     <Forms.Form form={form} testId="curated-template-form">
       <Forms.FieldGroup>
-        <Forms.TextInput field="title" label={t("Title")} required autoFocus />
+        <Forms.TextInput field="title" label={t("Title", { context: "resource" })} required autoFocus />
         {props.template?.state === "published" ? (
           <p>{t("Published changes take effect immediately.")}</p>
         ) : (

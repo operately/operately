@@ -88,7 +88,7 @@ export function DefinitionFields({ type, definition }: { type: TemplateType; def
                 onMove={(delta) => reorder("milestones", index, delta)}
                 onRemove={() => remove("milestones", index)}
               >
-                <Forms.TextInput field={`definition.milestones.${index}.title`} label={t("Title")} />
+                <Forms.TextInput field={`definition.milestones.${index}.title`} label={t("Title", { context: "resource" })} />
                 <Forms.NumberInput
                   field={`definition.milestones.${index}.due_offset_days`}
                   label={t("Days after start")}
