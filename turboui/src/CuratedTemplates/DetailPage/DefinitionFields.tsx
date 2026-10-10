@@ -63,8 +63,8 @@ export function DefinitionFields({ type, definition }: { type: TemplateType; def
               <Forms.TextInput field={`definition.targets.${index}.name`} label={t("Name")} />
               <Forms.FieldGroup layout="grid" layoutOptions={{ columns: 3 }}>
                 <Forms.TextInput field={`definition.targets.${index}.unit`} label={t("Unit")} />
-                <Forms.NumberInput field={`definition.targets.${index}.from`} label={t("Baseline")} />
-                <Forms.NumberInput field={`definition.targets.${index}.to`} label={t("Target value")} />
+                <Forms.NumberInput field={`definition.targets.${index}.from`} label={t("Baseline")} step="any" />
+                <Forms.NumberInput field={`definition.targets.${index}.to`} label={t("Target value")} step="any" />
               </Forms.FieldGroup>
             </Row>
           ))}

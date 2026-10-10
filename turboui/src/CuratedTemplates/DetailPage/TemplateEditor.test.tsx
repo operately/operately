@@ -184,3 +184,23 @@ test.each(["kpi", "goal", "project"] as const)("uses the title as the saved %s r
   expect(onSave.mock.calls[0][0].title).toBe("One title");
   expect(JSON.parse(onSave.mock.calls[0][0].definition).name).toBe("One title");
 });
+
+test.each(["draft", "published"] as const)("submits decimal targets from a %s template", async (state) => {
+  const onSave = jest.fn().mockResolvedValue({ errors: [] });
+  render(<TemplateEditor template={{ ...templateFixture("goal"), state }} onSave={onSave} onCancel={jest.fn()} />);
+
+  const baseline = screen.getByTestId("definition-targets-0-from");
+  baseline.focus();
+  fireEvent.change(baseline, { target: { value: "1.5" } });
+  expect(baseline).toBeValid();
+
+  const target = screen.getByTestId("definition-targets-0-to");
+  target.focus();
+  fireEvent.change(target, { target: { value: "2.75" } });
+  expect(target).toBeValid();
+
+  fireEvent.click(screen.getByTestId(state === "draft" ? "publish-template" : "submit"));
+  await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+  expect(onSave.mock.calls[0][1]).toBe("publish");
+  expect(JSON.parse(onSave.mock.calls[0][0].definition).targets[0]).toMatchObject({ from: 1.5, to: 2.75 });
+});
