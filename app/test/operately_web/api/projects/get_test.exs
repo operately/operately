@@ -40,6 +40,19 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
       assert {401, _} = query(ctx.conn, [:projects, :get], %{})
     end
 
+    test "returns 404 for an authenticated request without a company header", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.log_in_person(:creator)
+
+      conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
+
+      assert {404, _} = query(conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+    end
+
     test "returns 400 for extra query keys that are not existing atoms", ctx do
       assert {400, result} = query(ctx.conn, [:projects, :get], %{"zzq_unknown_input_field" => "1", id: "1"})
       assert result.message == "Unknown input field: zzq_unknown_input_field"
