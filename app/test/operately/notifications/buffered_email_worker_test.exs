@@ -27,8 +27,9 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
   end
 
   test "mixed-language recipients get localized buffered items and flag rollback restores English", ctx do
-    ctx = ctx |> Factory.add_project(:project, :space, name: "Project <literal>") |> Factory.add_company_member(:portuguese)
+    ctx = ctx |> Factory.add_project(:project, :space, name: "Project <literal>") |> Factory.add_company_member(:portuguese) |> Factory.add_company_member(:german)
     {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
+    {:ok, _} = Operately.People.update_person(ctx.german, %{language: "de"})
     {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     activities = for action <- ["project_created", "project_archived"] do
       activity_fixture(author_id: ctx.creator.id, action: action, content: %{"project_id" => ctx.project.id})
@@ -37,6 +38,7 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
 
     for {person, subject, headline} <- [
           {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"},
+          {ctx.german, "Du hast 2 neue Updates", "hat das Projekt archiviert"},
           {ctx.creator, "You have 2 new updates", "archived the project"},
           {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"}
         ] do
@@ -46,6 +48,8 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
 
     {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
     deliver_localized_batch(ctx.portuguese, activities, "You have 2 new updates", "archived the project")
+    deliver_localized_batch(ctx.german, activities, "You have 2 new updates", "archived the project")
+    assert Operately.People.get_person!(ctx.german.id).language == "de"
     assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
   end

@@ -3110,7 +3110,7 @@ export type GoalStatus =
   | "pending"
   | "outdated";
 
-export type Language = "en" | "pt-BR";
+export type Language = "en" | "pt-BR" | "de";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 

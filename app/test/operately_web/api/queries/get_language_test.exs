@@ -5,22 +5,24 @@ defmodule OperatelyWeb.Api.Queries.GetLanguageTest do
     assert {200, %{language: "en"}} = query(ctx.conn, :get_language, %{})
   end
 
-  test "account and company resolution respect membership and flag rollback", ctx do
-    ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
-    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
-    conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
-    company_id = OperatelyWeb.Paths.company_id(ctx.company)
+  for language <- ["pt-BR", "de"] do
+    test "#{language} account and company resolution respect membership and flag rollback", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
+      {:ok, person} = Operately.People.update_person(ctx.creator, %{language: unquote(language)})
+      conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
+      company_id = OperatelyWeb.Paths.company_id(ctx.company)
 
-    assert {200, %{language: "pt-BR"}} = query(conn, :get_language, %{})
-    assert {200, %{language: "pt-BR"}} = query(conn, :get_language, %{company_id: company_id})
+      assert {200, %{language: unquote(language)}} = query(conn, :get_language, %{})
+      assert {200, %{language: unquote(language)}} = query(conn, :get_language, %{company_id: company_id})
 
-    other = Operately.CompaniesFixtures.company_fixture()
-    Operately.PeopleFixtures.person_fixture(%{company_id: other.id, account_id: person.account_id})
-    assert {200, %{language: "en"}} = query(conn, :get_language, %{})
-    assert {200, %{language: "pt-BR"}} = query(conn, :get_language, %{company_id: company_id})
+      other = Operately.CompaniesFixtures.company_fixture()
+      Operately.PeopleFixtures.person_fixture(%{company_id: other.id, account_id: person.account_id})
+      assert {200, %{language: "en"}} = query(conn, :get_language, %{})
+      assert {200, %{language: unquote(language)}} = query(conn, :get_language, %{company_id: company_id})
 
-    Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
-    assert {200, %{language: "en"}} = query(conn, :get_language, %{company_id: company_id})
+      Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+      assert {200, %{language: "en"}} = query(conn, :get_language, %{company_id: company_id})
+    end
   end
 
   test "missing, inaccessible and suspended company contexts use English", ctx do

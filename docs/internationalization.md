@@ -2,7 +2,7 @@
 
 Operately uses one Gettext catalog for Elixir, React, and TurboUI. English source text is the message identifier; context distinguishes ambiguous wording. Elixir and email rendering use Gettext, while the frontend uses i18next resources generated from the same catalog.
 
-So far supported languages are English (`en`) and Brazilian Portuguese (`pt-BR`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
+So far supported languages are English (`en`), Brazilian Portuguese (`pt-BR`), and German (`de`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
 
 To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary preparation.
 

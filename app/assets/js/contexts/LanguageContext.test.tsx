@@ -39,8 +39,8 @@ function renderProvider() {
   renderHook(() => null, { initialProps: undefined, wrapper });
 }
 
-it("applies English when the i18n flag is off even if pt-BR is saved", () => {
-  jest.mocked(useMe).mockReturnValue({ language: "pt-BR" } as ReturnType<typeof useMe>);
+it.each(["pt-BR", "de"])("applies English with the flag off and %s saved", (language) => {
+  jest.mocked(useMe).mockReturnValue({ language } as ReturnType<typeof useMe>);
   mockCompanyLoader([]);
 
   renderProvider();
@@ -48,13 +48,13 @@ it("applies English when the i18n flag is off even if pt-BR is saved", () => {
   expect(applyLanguage).toHaveBeenCalledWith("en");
 });
 
-it("applies the saved language when the i18n flag is on", () => {
-  jest.mocked(useMe).mockReturnValue({ language: "pt-BR" } as ReturnType<typeof useMe>);
+it.each(["pt-BR", "de"])("applies saved %s when the flag is on", (language) => {
+  jest.mocked(useMe).mockReturnValue({ language } as ReturnType<typeof useMe>);
   mockCompanyLoader(["i18n"]);
 
   renderProvider();
 
-  expect(applyLanguage).toHaveBeenCalledWith("pt-BR");
+  expect(applyLanguage).toHaveBeenCalledWith(language);
 });
 
 it("applies English when no language preference is saved", () => {
