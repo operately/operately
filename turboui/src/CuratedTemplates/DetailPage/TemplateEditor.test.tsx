@@ -25,7 +25,7 @@ test("translates template and milestone titles without using the job-title trans
   setup();
   expect(screen.getByTestId("title")).toHaveAccessibleName(/^Título/);
   expect(screen.getByTestId("definition-milestones-0-title")).toHaveAccessibleName("Título");
-  expect(i18n.t("Title")).toBe("Cargo");
+  expect(i18n.t("Title", { context: "person" })).toBe("Cargo");
 });
 
 test("adds and orders tasks, then submits the full definition", async () => {
