@@ -375,6 +375,7 @@ defmodule OperatelyWeb.Api do
       namespace :curated_templates do
         query :list, OperatelyWeb.Api.CuratedTemplates.List
         query :get, OperatelyWeb.Api.CuratedTemplates.Get
+        mutation :instantiate, OperatelyWeb.Api.CuratedTemplates.Instantiate
       end
 
       common_endpoints()

@@ -76,6 +76,28 @@ defmodule Operately.People do
     if Operately.People.Account.valid_password?(account, password), do: account
   end
 
+  @doc """
+  Validates that every supplied person belongs to the company and is active.
+
+  Accepts decoded person IDs, ignoring nil entries and duplicates. Returns
+  `:ok` or `{:error, :invalid_company_member}` without exposing which ID failed.
+
+  This checks membership independently of the caller's visibility, so guests
+  can use it. Callers must authorize the action and destination separately.
+  """
+  def validate_active_company_members(company_id, person_ids) do
+    person_ids = person_ids |> Enum.reject(&is_nil/1) |> Enum.uniq()
+
+    active_count =
+      from(p in Person,
+        where: p.company_id == ^company_id and p.id in ^person_ids,
+        where: p.suspended == false and is_nil(p.suspended_at)
+      )
+      |> Repo.aggregate(:count)
+
+    if active_count == length(person_ids), do: :ok, else: {:error, :invalid_company_member}
+  end
+
   def account_used?(email) when is_binary(email) do
     Repo.exists?(
       from(a in Account,

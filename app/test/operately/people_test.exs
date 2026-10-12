@@ -10,6 +10,43 @@ defmodule Operately.PeopleTest do
   alias Operately.Groups.Member
   alias Operately.Access
 
+  describe "validate_active_company_members/2" do
+    setup ctx do
+      ctx |> Factory.setup() |> Factory.add_company_member(:member)
+    end
+
+    test "accepts active company members and ignores nil and duplicate IDs", ctx do
+      assert :ok = People.validate_active_company_members(ctx.company.id, [ctx.creator.id, nil, ctx.member.id, ctx.member.id])
+      assert :ok = People.validate_active_company_members(ctx.company.id, [])
+      assert :ok = People.validate_active_company_members(ctx.company.id, [nil])
+    end
+
+    test "accepts active guests without company-wide visibility", ctx do
+      {:ok, guest} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.creator, ctx.member)
+      assert {:error, :not_found} = Person.get(guest, id: guest.id)
+      assert :ok = People.validate_active_company_members(ctx.company.id, [guest.id])
+    end
+
+    test "rejects a list containing a person from another company", ctx do
+      other = Factory.setup(%{})
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.member.id, other.creator.id])
+    end
+
+    test "rejects a list containing a missing person", ctx do
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.member.id, Ecto.UUID.generate()])
+    end
+
+    test "rejects a person flagged as suspended", ctx do
+      ctx.member |> Ecto.Changeset.change(suspended: true) |> Repo.update!()
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.creator.id, ctx.member.id])
+    end
+
+    test "rejects a person with a suspension timestamp", ctx do
+      ctx.member |> Ecto.Changeset.change(suspended_at: DateTime.utc_now() |> DateTime.truncate(:second)) |> Repo.update!()
+      assert {:error, :invalid_company_member} = People.validate_active_company_members(ctx.company.id, [ctx.creator.id, ctx.member.id])
+    end
+  end
+
   describe "people" do
     import Operately.PeopleFixtures
     import Operately.CompaniesFixtures
