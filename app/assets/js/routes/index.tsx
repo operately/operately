@@ -58,6 +58,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
         pageRoute("/company-import", pages.CompanyImportPage, { preload: false }),
         pageRoute("/billing/pick-company", pages.BillingPickCompanyPage, { preload: false }),
         pageRoute("/new", pages.NewCompanyPage),
+        pageRoute("/templates/:templateId/use", pages.CuratedTemplateEntryPage, { preload: false }),
         pageRoute("/setup", pages.SetupPage, { auth: false, preload: false }),
         pageRoute("/join", pages.JoinPage, { auth: false, preload: false }),
         pageRoute("/join/:token", pages.InviteLinkJoinPage, { auth: false, preload: false }),
@@ -78,6 +79,7 @@ export function createAppRoutes(createRouter: typeof createBrowserRouter = creat
       shouldRevalidate: companyShouldRevalidate,
       children: [
         pageRoute("", pages.HomePage),
+        pageRoute("templates/:templateId/use", pages.CuratedTemplateUsePage),
         pageRoute("search", pages.SearchPage),
         pageRoute("invite-team", pages.InviteTeamPage, { preload: false }),
         pageRoute("invite-people", pages.MemberTypeSelectionPage),

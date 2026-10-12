@@ -1,3 +1,4 @@
+import { internalReturnPath, Paths } from "@/routes/paths";
 import * as Api from "@/api";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
@@ -12,7 +13,6 @@ import { validatePassword } from "@/features/auth/validatePassword";
 
 import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
-import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { match } from "ts-pattern";
 import { Forms } from "turboui";
@@ -36,7 +36,7 @@ type PageState = "form" | "code-verification";
 function Page() {
   const { t } = useTranslation();
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
-  const redirectToParam = new URLSearchParams(window.location.search).get("redirect_to");
+  const redirectToParam = internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to"));
   const [pageState, setPageState] = React.useState<PageState>("form");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
@@ -302,5 +302,5 @@ function buildPostSignupRedirect({
     return `/${companyId}`;
   }
 
-  return redirectToParam || "/";
+  return internalReturnPath(redirectToParam) || "/";
 }

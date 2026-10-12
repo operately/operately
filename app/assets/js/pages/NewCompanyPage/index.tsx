@@ -1,3 +1,4 @@
+import { internalReturnPath, Paths } from "@/routes/paths";
 import { loader, useLoadedData } from "./loader";
 import * as Companies from "@/models/companies";
 import * as Pages from "@/components/Pages";
@@ -6,7 +7,6 @@ import * as React from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router";
 
 import { Forms, Link } from "turboui";
@@ -41,7 +41,10 @@ function Page() {
         billingPeriod: billingIntent.billingPeriod,
       });
 
-      navigate(Paths.companyWorkMapPath(res.company.id));
+      navigate(
+        internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to")) ||
+          Paths.companyWorkMapPath(res.company.id),
+      );
     },
   });
 

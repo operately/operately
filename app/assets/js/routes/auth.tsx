@@ -1,3 +1,4 @@
+import { internalReturnPath } from "./paths";
 import { disablePreloading } from "./preloading/preloadSession";
 import { queryClient } from "@/api/queryClient";
 
@@ -42,7 +43,7 @@ export async function logIn(email: string, password: string, options: LogInOptio
 
     if (!skipRedirect) {
       if (redirectTo) {
-        window.location.href = redirectTo;
+        window.location.href = internalReturnPath(redirectTo) || "/";
       } else if (res.redirected) {
         window.location.href = res.url;
       } else {

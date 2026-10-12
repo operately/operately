@@ -11,3 +11,5 @@ export type {
 
 export { CuratedTemplatePreviewPage } from "./PreviewPage";
 export { getTemplatePreviewReferenceDate } from "./PreviewPage/adapters";
+export { CuratedTemplateUsePage, CuratedTemplateCompanyPicker } from "./UsePage";
+export type { TemplateSettings } from "./UsePage";
