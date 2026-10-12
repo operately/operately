@@ -19,6 +19,7 @@ function setup(state: "draft" | "published" = "draft") {
           state,
         }}
         catalogPath="/"
+        previewPath="/preview"
         onSave={onPublish}
         onCancel={jest.fn()}
         onDelete={onDelete}
@@ -50,4 +51,14 @@ test.each(["draft", "published"] as const)("deletes a %s template after confirma
   expect(onDelete).not.toHaveBeenCalled();
   fireEvent.click(screen.getByTestId("template-action-confirmation-confirm"));
   await waitFor(() => expect(onDelete).toHaveBeenCalledTimes(1));
+});
+
+test("preview opens saved content from the menu without saving editor changes", async () => {
+  const { onPublish } = setup();
+  fireEvent.change(screen.getByTestId("title"), { target: { value: "Unsaved title" } });
+  expect(screen.queryByTestId("preview-template")).not.toBeInTheDocument();
+  fireEvent.keyDown(screen.getByTestId("template-actions"), { key: "ArrowDown" });
+  expect(await screen.findByTestId("preview-template")).toHaveAttribute("href", "/preview");
+  expect(screen.getByTestId("preview-template")).toHaveAttribute("target", "_blank");
+  expect(onPublish).not.toHaveBeenCalled();
 });

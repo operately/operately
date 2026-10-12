@@ -20,6 +20,46 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     end)
   end
 
+  step :preview_template, ctx do
+    path = "/admin/curated-templates/" <> Paths.curated_template_id(ctx.template)
+    resource_test_id = %{kpi: "kpi-detail", goal: "goal-page", project: "project-page"}[ctx.template.type]
+
+    ctx
+    |> UI.visit(path)
+    |> UI.click(testid: "template-actions")
+    |> UI.assert_has(css: "[data-test-id='preview-template'][target='_blank']")
+    |> UI.visit(path <> "/preview")
+    |> UI.assert_has(testid: "template-preview")
+    |> UI.assert_has(testid: resource_test_id)
+    |> UI.refute_has(css: "input, textarea, [contenteditable='true'], [draggable='true']")
+    |> UI.refute_has(testid: "chart-log-update")
+    |> UI.take_screenshot()
+    |> UI.click(testid: "back-to-template-editor")
+    |> UI.assert_has(testid: "title", value: ctx.template.title)
+    |> then(fn ctx ->
+      assert Repo.get!(Template, ctx.template.id).updated_at == ctx.template.updated_at
+      ctx
+    end)
+  end
+
+  step :preview_project_tasks, ctx do
+    path = "/admin/curated-templates/" <> Paths.curated_template_id(ctx.template)
+
+    ctx
+    |> UI.visit(path <> "/preview?tab=tasks")
+    |> UI.assert_has(testid: "tasks-board")
+    |> UI.refute_has(testid: "milestone-add-task")
+    |> UI.refute_has(css: "[draggable='true']")
+    |> UI.click(testid: "task-title-build")
+    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.refute_has(css: "[data-test-id='task-slide-in'] input, [data-test-id='task-slide-in'] textarea, [contenteditable='true']")
+    |> UI.take_screenshot()
+    |> then(fn ctx ->
+      assert Repo.get!(Template, ctx.template.id).updated_at == ctx.template.updated_at
+      ctx
+    end)
+  end
+
   step :publish_template, ctx do
     ctx
     |> UI.click(testid: "publish-template")

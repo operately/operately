@@ -36,21 +36,14 @@ const meta: Meta<typeof MilestoneCard> = {
           if (args.milestone) setMilestone({ ...args.milestone });
         }, [context.args]);
 
-        // Handle drop events to update task order
-        const handleTaskMove = React.useCallback(
-          (move: BoardMove) => {
-            console.log(
-              `Dragged item ${move.itemId} was dropped onto ${move.destination.containerId} at index ${move.destination.index}`,
-            );
-
-            // Use the utility function to reorder tasks
-            const updatedTasks = reorderTasksInList(tasks, move.itemId, move.destination.index);
-
-            // Update state
-            setTasks(updatedTasks);
+        const onTaskMilestoneChange = React.useCallback(
+          (taskId: string, _milestoneId: string | null, index: number) => {
+            setTasks((previous) => reorderTasksInList(previous, taskId, index));
           },
-          [tasks],
+          [],
         );
+        const handleTaskMove = (move: BoardMove) =>
+          onTaskMilestoneChange(move.itemId, move.destination.containerId, move.destination.index);
 
         const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
 
@@ -101,6 +94,7 @@ const meta: Meta<typeof MilestoneCard> = {
           <MilestoneCard
             milestone={milestone}
             tasks={tasks}
+            onTaskMilestoneChange={onTaskMilestoneChange}
             showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
             onTaskCreate={handleTaskCreate}
             onTaskAssigneeChange={(taskId, assignees) => {
