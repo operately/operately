@@ -9,6 +9,7 @@ defmodule Operately.Operations.CuratedTemplateInstantiation do
   alias __MODULE__.ProjectChildren
 
   defmodule Result do
+    def __api_typename__, do: "curated_template_instantiation"
     defstruct [:resource_type, :resource_id, :space_id]
   end
 

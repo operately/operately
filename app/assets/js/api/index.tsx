@@ -1569,6 +1569,13 @@ export interface CuratedTemplate {
   definition?: Json;
 }
 
+export interface CuratedTemplateInstantiation {
+  __typename: "curated_template_instantiation";
+  resourceType: CuratedTemplateType;
+  resourceId: Id;
+  spaceId: Id;
+}
+
 export interface DeletedStatusReplacement {
   deletedStatusId: string;
   replacementStatusId: string;
