@@ -169,22 +169,22 @@ function projectPreview(template: CuratedTemplate, definition: TemplateDefinitio
     closed: false,
   };
   const milestones: ProjectPage.Milestone[] = (definition.milestones ?? []).map((milestone) => ({
-    id: milestone.key,
+    id: previewId(milestone.key),
     name: milestone.title || options.labels.missing,
     status: "pending",
     dueDate: dateAt(options.referenceDate, milestone.due_offset_days),
     link: "?tab=tasks",
     tasksOrderingState: (definition.tasks ?? [])
       .filter((task) => task.milestone_key === milestone.key)
-      .map((task) => task.key),
+      .map((task) => previewId(task.key)),
   }));
-  const tasks: ProjectPage.Task[] = (definition.tasks ?? []).map((task) => ({
-    id: task.key,
+  const tasks: ProjectPage.Task[] = (definition.tasks ?? []).map(({ milestone_key: milestoneKey, ...task }) => ({
+    id: previewId(task.key),
     title: task.name || options.labels.missing,
     type: "project",
     status,
     description: task.description ? JSON.stringify(task.description) : null,
-    milestone: milestones.find((milestone) => milestone.id === task.milestone_key) ?? null,
+    milestone: milestoneKey ? (milestones.find((milestone) => milestone.id === previewId(milestoneKey)) ?? null) : null,
     dueDate: dateAt(options.referenceDate, task.due_offset_days),
     assignees: [],
     link: "",
@@ -226,6 +226,11 @@ function projectPreview(template: CuratedTemplate, definition: TemplateDefinitio
       (definition.tasks ?? []).some((task) => !task.name) ||
       !definition.name,
   };
+}
+
+function previewId(key: string): string {
+  // Shared ID helpers treat hyphens as slug separators. Escape them to preserve the entire template key.
+  return encodeURIComponent(key).replace(/-/g, "%2D");
 }
 
 function taskPreview(
