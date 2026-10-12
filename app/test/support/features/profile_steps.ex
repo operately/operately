@@ -57,6 +57,39 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person) <> "/profile/edit")
   end
 
+  step :use_narrow_window, ctx do
+    Map.update!(ctx, :session, &Wallaby.Browser.resize_window(&1, 390, 844))
+  end
+
+  step :select_german, ctx do
+    ctx
+    |> UI.click(testid: "language")
+    |> UI.click(testid: "language-option-de")
+  end
+
+  step :assert_german_account, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "de"
+
+    ctx
+    |> UI.assert_text("Mein Konto")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_german_preference, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Deutsch"))
+    |> UI.assert_text("Sprache")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_language_feature_disabled, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "de"
+
+    ctx
+    |> UI.refute_has(testid: "language")
+    |> UI.assert_text("Title in Company")
+  end
+
   step :visit_notification_settings_page, ctx do
     UI.visit(ctx, Paths.account_notification_settings_path(ctx.company))
   end

@@ -52,6 +52,55 @@ describe("i18n", () => {
     expect(i18n.t(key)).toEqual(key);
   });
 
+  describe("German", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses glossary terms and distinguishes labels by meaning", async () => {
+      await applyLanguage("de");
+
+      expect(i18n.t("My Account")).toBe("Mein Konto");
+      expect(i18n.t("Due date")).toBe("Fälligkeitsdatum");
+      expect(i18n.t("Start")).toBe("Ausgangswert");
+      expect(i18n.t("Target")).toBe("Zielwert");
+      expect(i18n.t("Edit Access")).toBe("Bearbeitungszugriff");
+      expect(i18n.t("Edit access")).toBe("Zugriff bearbeiten");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Noch nicht begonnen");
+      expect(i18n.t("Pending")).toBe("Ausstehend");
+      expect(i18n.t("Title", { context: "person" })).toBe("Position");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Titel");
+      expect(i18n.t("Return")).toBe("Enter");
+      expect(i18n.t("Assign an owner")).toBe("Verantwortliche Person zuweisen");
+      expect(i18n.t("Provider")).toBe("Zahlungsanbieter");
+      expect(i18n.t("Provider", { context: "email" })).toBe("E-Mail-Anbieter");
+    });
+
+    it("selects German plurals at zero, one, fractions, and large counts", async () => {
+      await applyLanguage("de");
+
+      for (const count of [0, 0.5, 1, 1.5, 2, 1_000_000]) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(count === 1 ? "1 Aufgabe" : `${count} Aufgaben`);
+      }
+    });
+
+    it("preserves user content and rich-text tags and falls back for missing messages", async () => {
+      await applyLanguage("de");
+
+      expect(i18n.t("Archive “{{name}}”?", { name: "Launch <QA>" })).toBe("„Launch <QA>“ archivieren?");
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
+    });
+
+    it("returns to English when the company disables translations", async () => {
+      await applyLanguage(resolveEffectiveLanguage("de", true));
+      expect(i18n.t("My Account")).toBe("Mein Konto");
+
+      await applyLanguage(resolveEffectiveLanguage("de", false));
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
+  });
+
   describe("Brazilian Portuguese", () => {
     afterEach(async () => {
       await applyLanguage("en");
@@ -171,6 +220,7 @@ describe.each([true, false])("initialization with TurboUI first: %s", (turboFirs
       runtime.addResourceBundle("en", "translation", { "Close|button": "Close dialog" }, true, true);
       expect(runtime.t("Close", { context: "button" })).toBe("Close dialog");
       expect(runtime.language).toBe("en");
+      expect(runtime.t("My Account", { lng: "de" })).toBe("Mein Konto");
       expect(runtime.t("intlDateTime", { val: new Date("2026-01-01T12:00:00Z") })).not.toBe("intlDateTime");
     });
   });

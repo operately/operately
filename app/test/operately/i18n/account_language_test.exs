@@ -4,28 +4,36 @@ defmodule Operately.I18n.AccountLanguageTest do
   alias Operately.I18n.AccountLanguage
   alias Operately.Support.Factory
 
-  test "account emails use a shared effective language and fall back when memberships disagree" do
-    ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
-    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
-    account = Operately.Repo.preload(person, :account).account
-    assert AccountLanguage.resolve(account) == "pt-BR"
-    assert AccountLanguage.resolve(account.email) == "pt-BR"
+  for language <- ["pt-BR", "de"] do
+    describe language do
+      test "account emails use a shared effective language and fall back when memberships disagree" do
+        ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
+        {:ok, person} = Operately.People.update_person(ctx.creator, %{language: unquote(language)})
+        account = Operately.Repo.preload(person, :account).account
+        assert AccountLanguage.resolve(account) == unquote(language)
+        assert AccountLanguage.resolve(account.email) == unquote(language)
 
-    other = Operately.CompaniesFixtures.company_fixture()
-    member = Operately.PeopleFixtures.person_fixture(%{company_id: other.id, account_id: account.id})
-    assert AccountLanguage.resolve(account) == "en"
+        other = Operately.CompaniesFixtures.company_fixture()
+        member = Operately.PeopleFixtures.person_fixture(%{company_id: other.id, account_id: account.id})
+        assert AccountLanguage.resolve(account) == "en"
 
-    {:ok, other} = Operately.Companies.enable_experimental_feature(other, "i18n")
-    {:ok, member} = Operately.People.update_person(member, %{language: "pt-BR"})
-    assert AccountLanguage.resolve(account) == "pt-BR"
-    Operately.Companies.disable_experimental_feature(other, "i18n")
-    assert AccountLanguage.resolve(account) == "en"
+        {:ok, other} = Operately.Companies.enable_experimental_feature(other, "i18n")
+        other_language = if unquote(language) == "de", do: "pt-BR", else: "de"
+        {:ok, member} = Operately.People.update_person(member, %{language: other_language})
+        assert AccountLanguage.resolve(account) == "en"
 
-    {:ok, _} = Operately.People.update_person(member, %{suspended: true})
-    assert AccountLanguage.resolve(account) == "pt-BR"
-    Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
-    assert AccountLanguage.resolve(account) == "en"
-    assert Operately.Repo.reload!(person).language == "pt-BR"
+        {:ok, member} = Operately.People.update_person(member, %{language: unquote(language)})
+        assert AccountLanguage.resolve(account) == unquote(language)
+        Operately.Companies.disable_experimental_feature(other, "i18n")
+        assert AccountLanguage.resolve(account) == "en"
+
+        {:ok, _} = Operately.People.update_person(member, %{suspended: true})
+        assert AccountLanguage.resolve(account) == unquote(language)
+        Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+        assert AccountLanguage.resolve(account) == "en"
+        assert Operately.Repo.reload!(person).language == unquote(language)
+      end
+    end
   end
 
   test "unknown recipients use English and locale is restored on failure" do

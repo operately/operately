@@ -7154,7 +7154,7 @@ msgid "Change password"
 msgstr "Alterar senha"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:334
+#: ../turboui/src/ProfileEditPage/index.tsx:335
 msgid "Change photo"
 msgstr "Alterar foto"
 
@@ -9843,7 +9843,7 @@ msgstr "Versão anterior"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:328
+#: ../turboui/src/ProfileEditPage/index.tsx:329
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -12643,7 +12643,7 @@ msgid "LINKS"
 msgstr "LINKS"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:225
+#: ../turboui/src/ProfileEditPage/index.tsx:226
 msgid "Language"
 msgstr "Idioma"
 
@@ -15419,10 +15419,7 @@ msgid "Peers"
 msgstr "Pares"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:26
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:274
-#: ../turboui/src/SmallStatusIndicator/constants.ts:28
-#: ../turboui/src/StatusBadge/index.tsx:159
 msgid "Pending"
 msgstr "Pendente"
 
@@ -16219,7 +16216,6 @@ msgstr "Promoveu você a proprietário da conta"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:252
-#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
 msgid "Provider"
 msgstr "Provedor"
 
@@ -16756,7 +16752,7 @@ msgstr "Remover pessoas"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:342
+#: ../turboui/src/ProfileEditPage/index.tsx:343
 msgid "Remove photo"
 msgstr "Remover foto"
 
@@ -17595,7 +17591,7 @@ msgid "Save selection"
 msgstr "Salvar seleção"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:354
+#: ../turboui/src/ProfileEditPage/index.tsx:355
 msgid "Saving..."
 msgstr "Salvando..."
 
@@ -18264,7 +18260,7 @@ msgid "Share a link"
 msgstr "Compartilhar um link"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:258
+#: ../turboui/src/ProfileEditPage/index.tsx:259
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Conte um pouco sobre você, seu trabalho ou o que gostaria que outras pessoas soubessem."
 
@@ -20946,11 +20942,11 @@ msgstr "Dica: Mencione alguém com @ para notificá-lo sobre esta tarefa."
 msgid "Tip: Subscribe if you want notifications too."
 msgstr "Dica: Inscreva-se se também quiser receber notificações."
 
-#.frontend
-#: ../turboui/src/InviteMemberForm/index.tsx:79
-#: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
-msgid "Title"
-msgstr "Cargo"
+#~ #.frontend
+#~ #: ../turboui/src/InviteMemberForm/index.tsx:79
+#~ #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
+#~ msgid "Title"
+#~ msgstr "Cargo"
 
 #.elixir
 #: lib/operately_web/api/projects/milestones.ex:364
@@ -21742,7 +21738,7 @@ msgid "Uploading %{name}..."
 msgstr "Enviando %{name}..."
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:353
+#: ../turboui/src/ProfileEditPage/index.tsx:354
 msgid "Uploading %{progress}%"
 msgstr "Enviando %{progress}%"
 
@@ -24516,6 +24512,12 @@ msgid "Sep"
 msgstr "set."
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
+msgctxt "email"
+msgid "Provider"
+msgstr "Provedor"
+
+#.frontend
 #: ../turboui/src/Reactions/index.tsx:275
 msgctxt "emoji search"
 msgid "100, perfect, agree, correct, absolutely"
@@ -25478,8 +25480,23 @@ msgid "Reports"
 msgstr "Subordinados"
 
 #.frontend
+#: ../turboui/src/InviteMemberForm/index.tsx:79
+msgctxt "person"
+msgid "Title"
+msgstr "Cargo"
+
+#.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:77
+#: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
 msgid "Title"
 msgstr "Título"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:26
+#: ../turboui/src/SmallStatusIndicator/constants.ts:28
+#: ../turboui/src/StatusBadge/index.tsx:159
+msgctxt "work status"
+msgid "Pending"
+msgstr "Pendente"

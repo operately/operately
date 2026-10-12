@@ -7,6 +7,21 @@ defmodule Operately.Features.ProfileTest do
     Operately.Support.Features.UI.login_as(ctx, ctx.person)
   end
 
+  feature "German selection persists and translations stay behind the company flag", ctx do
+    ctx
+    |> Factory.enable_feature("i18n")
+    |> Steps.use_narrow_window()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.select_german()
+    |> Steps.submit_profile_changes()
+    |> Steps.assert_german_account()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_german_preference()
+    |> Factory.disable_feature("i18n")
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_language_feature_disabled()
+  end
+
   feature "view recent activity", ctx do
     ctx
     |> Steps.given_projects_exist_for_person()

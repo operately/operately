@@ -78,12 +78,15 @@ it("preserves not-found rendering without company loader data", async () => {
 });
 
 it.each([
-  ["prod", true],
-  ["prod", false],
-  ["dev", true],
-  ["test", true],
-] as const)("diagnostics and flag rollback: %s, %s", async (environment, enabled) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["prod", true, "pt-BR", "Ops! Algo deu errado."],
+  ["prod", false, "pt-BR", "Oops! Something went wrong."],
+  ["dev", true, "pt-BR", "Ops! Algo deu errado."],
+  ["test", true, "pt-BR", "Ops! Algo deu errado."],
+  ["prod", true, "de", "Etwas ist schiefgelaufen."],
+  ["prod", false, "de", "Oops! Something went wrong."],
+  ["dev", true, "de", "Etwas ist schiefgelaufen."],
+] as const)("diagnostics and flag rollback: %s, %s, %s", async (environment, enabled, language, expected) => {
+  await applyLanguage(resolveEffectiveLanguage(language, enabled));
   window.appConfig = { environment } as typeof window.appConfig;
   jest.mocked(useRouteLoaderData).mockReturnValue({ companyId: "company" });
   const error = new Error("Literal diagnostic");
@@ -102,7 +105,7 @@ it.each([
       ),
     );
 
-    expect(element.textContent).toContain(enabled ? "Ops! Algo deu errado." : "Oops! Something went wrong.");
+    expect(element.textContent).toContain(expected);
     expect(element.querySelector("pre")?.textContent ?? null).toBe(environment === "prod" ? null : error.stack);
     expect(element.querySelector("script")).toBeNull();
     expect(captureException).toHaveBeenCalledWith(error, { level: "fatal" });
