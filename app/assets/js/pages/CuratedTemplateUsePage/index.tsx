@@ -77,6 +77,11 @@ function CreationForm({
       today={today}
       people={(peopleQuery.data?.people ?? []).filter((person) => !person.suspended)}
       peopleSpaceId={peopleQuery.isSuccess ? spaceId : null}
+      peopleError={peopleQuery.isError}
+      peopleLoading={peopleQuery.isFetching}
+      onRetryPeople={() => {
+        void peopleQuery.refetch();
+      }}
       onSpaceChange={setSpaceId}
       onCreate={onCreate}
       onCancel={() => navigate(paths.homePath())}

@@ -87,4 +87,18 @@ describe("authentication return paths", () => {
       ),
     ).toBe(path);
   });
+
+  test.each([
+    "/templates/example/use?source=%2Fcatalog#form",
+    "/templates/example/use?source=%5Ccatalog&next=%2F%2Fevil.test#form",
+    "/templates/example/use#section%2Fdetails",
+  ])("preserves encoded query and fragment values: %s", (path) => {
+    expect(internalReturnPath(path)).toBe(path);
+    const search = new URLSearchParams({ redirect_to: path, invite_token: "invite" }).toString();
+    for (const destination of ["/log_in", "/sign_up"]) {
+      const url = new URL(authPath(destination, search), "https://operately.test");
+      expect(url.searchParams.get("redirect_to")).toBe(path);
+      expect(url.searchParams.get("invite_token")).toBe("invite");
+    }
+  });
 });

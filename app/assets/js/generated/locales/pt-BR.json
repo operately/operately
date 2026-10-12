@@ -3397,6 +3397,7 @@
   "Unable to load check-ins.": "Não foi possível carregar os check-ins.",
   "Unable to load discussions.": "Não foi possível carregar as discussões.",
   "Unable to load docs and files.": "Não foi possível carregar os documentos e arquivos.",
+  "Unable to load people. Retry to continue creating this resource.": "Não foi possível carregar as pessoas. Tente novamente para continuar criando este recurso.",
   "Unable to load subgoals and projects.": "Não foi possível carregar os subobjetivos e projetos.",
   "Unable to load tasks.": "Não foi possível carregar as tarefas.",
   "Unable to load this comparison": "Não foi possível carregar esta comparação",

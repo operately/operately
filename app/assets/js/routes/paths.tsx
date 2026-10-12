@@ -730,10 +730,14 @@ export function encodeUrlParams(params?: Record<any, any>) {
   return queryStr ? "?" + queryStr : "";
 }
 
-/** Return destinations are app-relative paths, never origins or encoded separators. */
+/** Return destinations are app-relative; encoded query and fragment values are preserved. */
 export function internalReturnPath(value: string | null | undefined): string | null {
   if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
-  if (/[\\\u0000-\u0020\u007f]/.test(value) || /%(?:2f|5c|0[0-9a-f]|1[0-9a-f]|7f)/i.test(value)) return null;
+  if (/[\\\u0000-\u0020\u007f]/.test(value)) return null;
+
+  const [pathname = ""] = value.split(/[?#]/, 1);
+
+  if (/%(?:2f|5c|0[0-9a-f]|1[0-9a-f]|7f)/i.test(pathname)) return null;
   return value;
 }
 

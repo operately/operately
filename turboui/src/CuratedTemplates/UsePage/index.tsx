@@ -4,6 +4,8 @@ import * as Forms from "../../Forms";
 import { Page } from "../../Page";
 import { Link } from "../../Link";
 import { CompanyPickerPage } from "../../CompanyPickerPage";
+import { SecondaryButton } from "../../Button";
+import { ErrorCallout } from "../../Callouts";
 import type { Company, CuratedTemplate, Space } from "../../ApiTypes";
 
 export type TemplateSettings = {
@@ -20,6 +22,9 @@ export interface CuratedTemplateUsePageProps {
   today: string;
   people: Forms.SelectPersonPerson[];
   peopleSpaceId: string | null;
+  peopleError: boolean;
+  peopleLoading: boolean;
+  onRetryPeople: () => void;
   onSpaceChange: (id: string) => void;
   onCreate: (settings: TemplateSettings) => Promise<void>;
   onCancel: () => void;
@@ -106,6 +111,21 @@ export function CuratedTemplateUsePage(props: CuratedTemplateUsePageProps) {
               )}
               {!isKpi && <Forms.DateInput field="startDate" label={t("Start date")} required />}
             </Forms.FieldGroup>
+            {props.peopleError && (
+              <div role="alert" className="mt-4" data-test-id="people-error">
+                <ErrorCallout message={t("Unable to load people. Retry to continue creating this resource.")} />
+                <SecondaryButton
+                  size="xs"
+                  className="mt-3"
+                  onClick={props.onRetryPeople}
+                  loading={props.peopleLoading}
+                  disabled={props.peopleLoading}
+                  testId="retry-people"
+                >
+                  {t("Retry")}
+                </SecondaryButton>
+              </div>
+            )}
             <Forms.FormError
               when={error}
               message={t("Couldn't create this resource. Your settings are saved. Please try again.")}

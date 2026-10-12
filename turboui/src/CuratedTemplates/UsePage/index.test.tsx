@@ -36,6 +36,9 @@ const defaults: CuratedTemplateUsePageProps = {
   today: "2026-10-12",
   people: [{ id: "alex", fullName: "Alex", avatarUrl: null }],
   peopleSpaceId: "general",
+  peopleError: false,
+  peopleLoading: false,
+  onRetryPeople: jest.fn(),
   onSpaceChange: jest.fn(),
   onCreate: jest.fn(),
   onCancel: jest.fn(),
@@ -47,6 +50,48 @@ function field(container: HTMLElement, name: string) {
   if (!element) throw new Error(`Missing field ${name}`);
   return element;
 }
+
+test("retries failed people loading without submitting or losing form settings", async () => {
+  const onCreate = jest.fn();
+  const onRetryPeople = jest.fn();
+  const props = {
+    ...defaults,
+    spaces: [...defaults.spaces, { id: "private", name: "Private" }],
+    onCreate,
+    onRetryPeople,
+    peopleError: true,
+    peopleLoading: false,
+    peopleSpaceId: null,
+  };
+  const { container, rerender } = render(<CuratedTemplateUsePage {...props} />);
+
+  const spaceInput = field(container, "spaceid").querySelector("input");
+  if (!spaceInput) throw new Error("Missing space input");
+  fireEvent.keyDown(spaceInput, { key: "ArrowDown" });
+  fireEvent.click(await screen.findByText("Private"));
+
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  expect(field(container, "submit")).toBeDisabled();
+  fireEvent.click(field(container, "retry-people"));
+  expect(onRetryPeople).toHaveBeenCalledTimes(1);
+  expect(onCreate).not.toHaveBeenCalled();
+
+  rerender(<CuratedTemplateUsePage {...props} peopleLoading />);
+  expect(field(container, "retry-people")).toBeDisabled();
+
+  rerender(<CuratedTemplateUsePage {...props} peopleError={false} peopleSpaceId="private" />);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(field(container, "submit")).toBeEnabled();
+  fireEvent.click(field(container, "submit"));
+  await waitFor(() =>
+    expect(onCreate).toHaveBeenCalledWith({
+      spaceId: "private",
+      championId: null,
+      reviewerId: null,
+      startDate: defaults.today,
+    }),
+  );
+});
 
 test.each(["goal", "project", "kpi"] as const)("shows settings for %s without creating on mount", (type) => {
   const onCreate = jest.fn();
