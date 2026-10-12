@@ -23,7 +23,7 @@ export function CuratedTemplatePreviewPage(props: CuratedTemplatePreviewProps) {
       buildPreview(props.template, {
         referenceDate: props.referenceDate,
         formattedTimePreferences: props.formattedTimePreferences,
-        labels: { missing: t("Not set"), pending: t("Pending") },
+        labels: { missing: t("Not set"), pending: t("Pending", { context: "work status" }) },
       }),
     [props.template, props.referenceDate, props.formattedTimePreferences, t],
   );

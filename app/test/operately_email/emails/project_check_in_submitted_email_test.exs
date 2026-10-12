@@ -23,32 +23,37 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
     |> then(&{:ok, &1})
   end
 
-  test "renders Portuguese for enabled recipients and English when the flag is disabled", ctx do
-    {:ok, person} = Operately.People.update_person(ctx.reviewer, %{language: "pt-BR"})
-    {:ok, enabled_company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
-    previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
+  for {language, headline, action} <- [
+        {"pt-BR", "enviou um check-in", "Confirmar leitura"},
+        {"de", "hat einen Check-in veröffentlicht", "Als gelesen bestätigen"}
+      ] do
+    test "renders #{language} for enabled recipients and English when the flag is disabled", ctx do
+      {:ok, person} = Operately.People.update_person(ctx.reviewer, %{language: unquote(language)})
+      {:ok, enabled_company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+      previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
-    for {company, portuguese?} <- [{enabled_company, true}, {ctx.company, false}] do
-      person = %{person | company: company}
+      for {company, translated?} <- [{enabled_company, true}, {ctx.company, false}] do
+        person = %{person | company: company}
 
-      Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
-        send_check_in_email(ctx, person)
-      end)
+        Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+          send_check_in_email(ctx, person)
+        end)
 
-      assert_email_sent(fn email ->
-        if portuguese? do
-          assert email.subject =~ "enviou um check-in"
-          assert email.html_body =~ "Confirmar leitura"
-          assert email.text_body =~ "enviou um check-in"
-        else
-          refute email.subject =~ "enviou um check-in"
-          refute email.html_body =~ "Confirmar leitura"
-        end
-        refute email.html_body =~ "%{"
-        refute email.text_body =~ "%{"
-        true
-      end)
-      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+        assert_email_sent(fn email ->
+          if translated? do
+            assert email.subject =~ unquote(headline)
+            assert email.html_body =~ unquote(action)
+            assert email.text_body =~ unquote(headline)
+          else
+            refute email.subject =~ unquote(headline)
+            refute email.html_body =~ unquote(action)
+          end
+          refute email.html_body =~ "%{"
+          refute email.text_body =~ "%{"
+          true
+        end)
+        assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
+      end
     end
   end
 

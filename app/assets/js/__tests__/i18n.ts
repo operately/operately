@@ -3,12 +3,14 @@ import { act } from "react";
 
 // Restore complete bundles so substituted translations never leak between tests.
 export function setupTestCatalog() {
+  const german = { ...i18n.getResourceBundle("de", "translation") };
   const english = { ...i18n.getResourceBundle("en", "translation") };
   const portuguese = { ...i18n.getResourceBundle("pt-BR", "translation") };
 
   afterEach(async () => {
     for (const [language, resources] of [
       ["en", english],
+      ["de", german],
       ["pt-BR", portuguese],
     ] as const) {
       i18n.removeResourceBundle(language, "translation");

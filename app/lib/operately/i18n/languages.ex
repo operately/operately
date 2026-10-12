@@ -2,7 +2,7 @@ defmodule Operately.I18n.Languages do
   @moduledoc false
 
   @default "en"
-  @supported ~w(en pt-BR)
+  @supported ~w(en pt-BR de)
   @feature_flag "i18n"
 
   def default, do: @default

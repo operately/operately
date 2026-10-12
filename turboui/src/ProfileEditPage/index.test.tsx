@@ -1,5 +1,5 @@
 import React from "react";
-import { configure, render, screen } from "@testing-library/react";
+import { configure, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import "@testing-library/jest-dom";
 import "../i18n";
@@ -61,9 +61,25 @@ test("associates the language label with the language dropdown", () => {
 });
 
 test("hides the language picker when the parent does not request it", () => {
-  renderPage({ showLanguageSelector: false });
+  renderPage({ showLanguageSelector: false, language: "de" });
 
   expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+});
+
+test("lets the user select German", () => {
+  const onLanguageChange = jest.fn();
+  renderPage({ onLanguageChange });
+
+  fireEvent.click(screen.getByTestId("language"));
+  fireEvent.click(screen.getByTestId("language-option-de"));
+
+  expect(onLanguageChange).toHaveBeenCalledWith("de");
+});
+
+test("displays a saved German preference", () => {
+  renderPage({ language: "de" });
+
+  expect(screen.getByTestId("language")).toHaveTextContent("Deutsch");
 });
 
 test("hides the language picker when editing someone else", () => {

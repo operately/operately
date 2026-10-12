@@ -25,7 +25,7 @@ export const TITLES = {
     return i18n.t("Outdated");
   },
   get pending() {
-    return i18n.t("Pending");
+    return i18n.t("Pending", { context: "work status" });
   },
 } as const;
 

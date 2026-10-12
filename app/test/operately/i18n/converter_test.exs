@@ -18,6 +18,19 @@ defmodule Operately.I18n.ConverterTest do
              ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "1000000 tasks"]
   end
 
+  test "German uses singular only for one and plural for zero, fractions, and millions" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 Aufgabe"
+    msgstr[1] "%{count} Aufgaben"
+    """
+
+    assert render_task_counts(po, "de", [0, 0.5, 1, 1.5, 2, 1_000_000]) ==
+             ["0 Aufgaben", "0.5 Aufgaben", "1 Aufgabe", "1.5 Aufgaben", "2 Aufgaben", "1000000 Aufgaben"]
+  end
+
   test "missing Portuguese singular translations fall back while translated plurals remain available" do
     po = """
     msgctxt "inbox"
