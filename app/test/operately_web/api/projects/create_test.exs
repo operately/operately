@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
       %{permissions: :view_access, expected: 403},
       %{permissions: :comment_access, expected: 403},
       %{permissions: :edit_access, expected: 200},
-      %{permissions: :full_access, expected: 200}
+      %{permissions: :full_access, expected: 200},
     ]
 
     setup ctx do
@@ -29,8 +29,7 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
 
     tabletest @table do
       test "company member with #{@test.permissions} can #{if @test.expected == 200, do: "create", else: "not create"} project", ctx do
-        ctx =
-          ctx
+        ctx = ctx
           |> Factory.add_space(:space, company_permissions: Binding.from_atom(@test.permissions))
           |> Factory.add_goal(:goal, :space)
 
@@ -40,7 +39,6 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
         case @test.expected do
           200 ->
             assert_project_created(res, ctx.space.id)
-
           403 ->
             assert res.message == "You don't have permission to perform this action"
         end
@@ -50,11 +48,11 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
 
   describe "space permissions" do
     @table [
-      %{space: :no_access, expected: 404},
-      %{space: :view_access, expected: 403},
+      %{space: :no_access,      expected: 404},
+      %{space: :view_access,    expected: 403},
       %{space: :comment_access, expected: 403},
-      %{space: :edit_access, expected: 200},
-      %{space: :full_access, expected: 200}
+      %{space: :edit_access,    expected: 200},
+      %{space: :full_access,    expected: 200},
     ]
 
     setup ctx do
@@ -75,10 +73,8 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
         case @test.expected do
           200 ->
             assert_project_created(res, ctx.space.id)
-
           403 ->
             assert res.message == "You don't have permission to perform this action"
-
           404 ->
             assert res.message == "The requested resource was not found"
         end
@@ -113,12 +109,11 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
       private_space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
       goal = goal_fixture(ctx.person, %{space_id: private_space.id})
 
-      assert {200, res} =
-               request(ctx.conn, ctx,
-                 space_id: Paths.space_id(private_space),
-                 goal_id: Paths.goal_id(goal),
-                 company_access_level: Binding.full_access()
-               )
+      assert {200, res} = request(ctx.conn, ctx,
+               space_id: Paths.space_id(private_space),
+               goal_id: Paths.goal_id(goal),
+               company_access_level: Binding.full_access()
+             )
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.project.id)
       context = Operately.Access.get_context!(project_id: id)
@@ -134,20 +129,16 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
   #
 
   defp request(conn, ctx, attrs \\ []) do
-    mutation(
-      conn,
-      [:projects, :create],
-      Enum.into(attrs, %{
-        space_id: Paths.space_id(ctx.space),
-        name: "project",
-        reviewer_id: Paths.person_id(ctx.person),
-        champion_id: Paths.person_id(ctx.person),
-        goal_id: Paths.goal_id(ctx.goal),
-        anonymous_access_level: Binding.no_access(),
-        company_access_level: Binding.view_access(),
-        space_access_level: Binding.edit_access()
-      })
-    )
+    mutation(conn, [:projects, :create], Enum.into(attrs, %{
+      space_id: Paths.space_id(ctx.space),
+      name: "project",
+      reviewer_id: Paths.person_id(ctx.person),
+      champion_id: Paths.person_id(ctx.person),
+      goal_id: Paths.goal_id(ctx.goal),
+      anonymous_access_level: Binding.no_access(),
+      company_access_level: Binding.view_access(),
+      space_access_level: Binding.edit_access(),
+    }))
   end
 
   defp assert_project_created(res, space_id) do
@@ -164,12 +155,10 @@ defmodule OperatelyWeb.Api.Projects.CreateTest do
   #
 
   defp add_person_to_space(ctx, access_level) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [
-      %{
-        id: ctx.person.id,
-        access_level: access_level
-      }
-    ])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
+      id: ctx.person.id,
+      access_level: access_level,
+    }])
   end
 
   describe "company member boundaries" do
