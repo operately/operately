@@ -4839,6 +4839,20 @@ export interface CreateEmailActivationCodeInput {
 
 export interface CreateEmailActivationCodeResult {}
 
+export interface CuratedTemplatesInstantiateInput {
+  templateId: Id;
+  spaceId: Id;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  startDate?: string | null;
+}
+
+export interface CuratedTemplatesInstantiateResult {
+  resourceType: CuratedTemplateType;
+  resourceId: Id;
+  spaceId: Id;
+}
+
 export interface DeleteCompanyInput {}
 
 export interface DeleteCompanyResult {
@@ -7812,6 +7826,14 @@ class ApiNamespaceGoals {
   }
 }
 
+class ApiNamespaceCuratedTemplates {
+  constructor(private client: ApiClient) {}
+
+  async instantiate(input: CuratedTemplatesInstantiateInput): Promise<CuratedTemplatesInstantiateResult> {
+    return this.client.post("/curated_templates/instantiate", input);
+  }
+}
+
 class ApiNamespaceRichContent {
   constructor(private client: ApiClient) {}
 
@@ -7866,6 +7888,7 @@ export class ApiClient {
   public apiNamespaceProjectTemplates: ApiNamespaceProjectTemplates;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
+  public apiNamespaceCuratedTemplates: ApiNamespaceCuratedTemplates;
   public apiNamespaceRichContent: ApiNamespaceRichContent;
   public apiNamespaceReactions: ApiNamespaceReactions;
   public apiNamespaceAnalytics: ApiNamespaceAnalytics;
@@ -7894,6 +7917,7 @@ export class ApiClient {
     this.apiNamespaceProjectTemplates = new ApiNamespaceProjectTemplates(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
+    this.apiNamespaceCuratedTemplates = new ApiNamespaceCuratedTemplates(this);
     this.apiNamespaceRichContent = new ApiNamespaceRichContent(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
     this.apiNamespaceAnalytics = new ApiNamespaceAnalytics(this);
@@ -12332,6 +12356,18 @@ export default {
           input,
         ),
         staleTime: Infinity,
+      }),
+
+    instantiate: (input: CuratedTemplatesInstantiateInput) =>
+      defaultApiClient.apiNamespaceCuratedTemplates.instantiate(input),
+    useInstantiate: () =>
+      useMutation<CuratedTemplatesInstantiateInput, CuratedTemplatesInstantiateResult>((input) =>
+        defaultApiClient.apiNamespaceCuratedTemplates.instantiate(input),
+      ),
+    instantiateMutationOptions: () =>
+      mutationOptions({
+        mutationFn: (input: CuratedTemplatesInstantiateInput) =>
+          defaultApiClient.apiNamespaceCuratedTemplates.instantiate(input),
       }),
   },
 
