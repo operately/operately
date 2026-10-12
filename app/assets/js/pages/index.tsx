@@ -28,6 +28,8 @@ import CompanyImportPage from "./CompanyImportPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
+import CuratedTemplateEntryPage from "./CuratedTemplateEntryPage";
+import CuratedTemplateUsePage from "./CuratedTemplateUsePage";
 import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
 import DiscussionNewPage from "./DiscussionNewPage";
@@ -154,6 +156,8 @@ export default {
   CompanyPermissionsPage,
   CompanyRenamePage,
   CompanyWorkMapPage,
+  CuratedTemplateEntryPage,
+  CuratedTemplateUsePage,
   DiscussionDraftsPage,
   DiscussionEditPage,
   DiscussionNewPage,

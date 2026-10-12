@@ -4881,7 +4881,7 @@ msgid "<author>%{name}</author> on <date/>"
 msgstr "<author>%{name}</author> em <date/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:186
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:189
 msgid "<bold>What happens next?</bold> Operately will send you a code to verify your email address."
 msgstr "<bold>O que acontece a seguir?</bold> Operately enviará um código para verificar seu endereço de e-mail."
 
@@ -5989,7 +5989,7 @@ msgid "All work"
 msgstr "Todo o trabalho"
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:59
+#: assets/js/pages/SignUpPage/index.tsx:60
 msgid "Already have an account? <actionLink>Sign in</actionLink>"
 msgstr "Já tem uma conta? <actionLink>Entrar</actionLink>"
 
@@ -6380,8 +6380,8 @@ msgstr "Pelo menos 1 letra maiúscula"
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:79
 #: assets/js/pages/SetupPage/page.tsx:152
 #: assets/js/pages/SetupPage/page.tsx:164
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:147
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:159
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:150
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:162
 msgid "At least 12 characters"
 msgstr "Pelo menos 12 caracteres"
 
@@ -6553,7 +6553,7 @@ msgstr "Voltar ao início"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:54
-#: assets/js/pages/NewCompanyPage/index.tsx:51
+#: assets/js/pages/NewCompanyPage/index.tsx:55
 msgid "Back to the Lobby"
 msgstr "Voltar à recepção"
 
@@ -7047,7 +7047,7 @@ msgid "Can’t find your code? Check your spam folder or request another."
 msgstr "Não encontrou seu código? Verifique a pasta de spam ou solicite outro."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:224
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:227
 msgid "Can’t find your code? Check your spam folder."
 msgstr "Não encontrou seu código? Verifique a pasta de spam."
 
@@ -7085,6 +7085,7 @@ msgstr "Ações da célula"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:86
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:168
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:222
@@ -7101,6 +7102,11 @@ msgstr "Ações da célula"
 #: lib/operately_email/emails/project_created_email.ex:50
 msgid "Champion"
 msgstr "Champion"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:37
+msgid "Champion and reviewer must be different people"
+msgstr "O champion e o reviewer devem ser pessoas diferentes"
 
 #.elixir
 #: lib/operately/md/goal.ex:132
@@ -7282,7 +7288,7 @@ msgid "Check your current inbox"
 msgstr "Verifique sua caixa de entrada atual"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:210
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:213
 msgid "Check your email for a code"
 msgstr "Confira o código no seu e-mail"
 
@@ -8164,7 +8170,7 @@ msgstr "Confirmar nova senha"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:82
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:157
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:160
 msgid "Confirm Password"
 msgstr "Confirmar senha"
 
@@ -8277,8 +8283,8 @@ msgid "Continue"
 msgstr "Continuar"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:168
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:221
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:171
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:224
 msgid "Continue ->"
 msgstr "Continuar ->"
 
@@ -8471,6 +8477,11 @@ msgid "Could not update setting"
 msgstr "Não foi possível atualizar a configuração"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:110
+msgid "Couldn't create this resource. Your settings are saved. Please try again."
+msgstr "Não foi possível criar este recurso. Suas configurações foram mantidas. Tente novamente."
+
+#.frontend
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:78
 msgid "Couldn't delete the draft. Please try again."
 msgstr "Não foi possível excluir o rascunho. Tente novamente."
@@ -8523,7 +8534,7 @@ msgid "Create API token"
 msgstr "Criar token de API"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:82
+#: assets/js/pages/NewCompanyPage/index.tsx:86
 msgid "Create Company"
 msgstr "Criar empresa"
 
@@ -8533,6 +8544,12 @@ msgid "Create Copy"
 msgstr "Criar cópia"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:59
+msgid "Create Goal"
+msgstr "Criar objetivo"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:59
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
 msgid "Create KPI"
 msgstr "Criar KPI"
@@ -8542,6 +8559,11 @@ msgstr "Criar KPI"
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:49
 msgid "Create Milestone"
 msgstr "Criar marco"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:59
+msgid "Create Project"
+msgstr "Criar projeto"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:74
@@ -9523,7 +9545,7 @@ msgid "Divider"
 msgstr "Divisor"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:86
+#: assets/js/pages/NewCompanyPage/index.tsx:90
 msgid "Do you have an existing company? <actionLink>Import it here</actionLink>"
 msgstr "Você já tem uma empresa? <actionLink>Importe aqui</actionLink>"
 
@@ -9615,7 +9637,7 @@ msgid "Documents & Files"
 msgstr "Docs & Arquivos"
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:84
+#: assets/js/pages/LoginPage/index.tsx:85
 msgid "Don't have an account? <actionLink>Create an account</actionLink>"
 msgstr "Não tem uma conta? <actionLink>Criar uma conta</actionLink>"
 
@@ -10102,7 +10124,7 @@ msgstr "Vigente a partir de: %{date}."
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:66
 #: assets/js/pages/ForgotPasswordPage/index.tsx:57
-#: assets/js/pages/LoginPage/index.tsx:110
+#: assets/js/pages/LoginPage/index.tsx:111
 #: assets/js/pages/ResetPasswordPage/index.tsx:66
 #: assets/js/pages/SetupPage/page.tsx:140
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:312
@@ -10338,7 +10360,7 @@ msgid "Enter your current password"
 msgstr "Digite sua senha atual"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:138
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:141
 msgid "Enter your full name"
 msgstr "Digite seu nome completo"
 
@@ -11487,7 +11509,7 @@ msgid "Forgot Password?"
 msgstr "Esqueceu sua senha?"
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:149
+#: assets/js/pages/LoginPage/index.tsx:150
 msgid "Forgot password?"
 msgstr "Esqueceu sua senha?"
 
@@ -11567,7 +11589,7 @@ msgstr "Acesso total"
 
 #.frontend
 #: ../turboui/src/InviteMemberForm/index.tsx:52
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:137
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:140
 msgid "Full Name"
 msgstr "Nome completo"
 
@@ -11625,7 +11647,7 @@ msgid "Get reset instructions via email."
 msgstr "Receba as instruções para redefinir sua senha por e-mail."
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:51
+#: assets/js/pages/SignUpPage/index.tsx:52
 msgid "Get started in a minute. No credit card required."
 msgstr "Comece em um minuto. Não é necessário cartão de crédito."
 
@@ -11643,6 +11665,11 @@ msgstr "Voltar para o Início"
 #: ../turboui/src/ErrorPage/index.tsx:33
 msgid "Go back to Lobby"
 msgstr "Voltar para o Lobby"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:71
+msgid "Go to Home"
+msgstr "Ir para o Início"
 
 #.elixir
 #.frontend
@@ -12138,7 +12165,7 @@ msgstr "Modo de exibição inválido"
 
 #.elixir
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:41
+#: assets/js/pages/LoginPage/index.tsx:42
 #: lib/operately_web/api/cli_auth.ex:36
 msgid "Invalid email or password"
 msgstr "E-mail ou senha inválidos"
@@ -12397,7 +12424,7 @@ msgid "Invited you as an outside collaborator"
 msgstr "Convidou você como colaborador externo"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:73
+#: assets/js/pages/NewCompanyPage/index.tsx:77
 msgid "Is this a demo company?"
 msgstr "Esta é uma empresa de demonstração?"
 
@@ -12775,7 +12802,7 @@ msgid "Let's get you started"
 msgstr "Vamos começar"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:106
+#: assets/js/pages/NewCompanyPage/index.tsx:110
 msgid "Let's set up your company in Operately."
 msgstr "Vamos configurar sua empresa no Operately."
 
@@ -13719,7 +13746,7 @@ msgstr "O nome é obrigatório"
 #~ msgstr "O nome deve conter @ e não pode ter espaços"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:59
+#: assets/js/pages/NewCompanyPage/index.tsx:63
 #: assets/js/pages/SetupPage/page.tsx:109
 msgid "Name of the company"
 msgstr "Nome da empresa"
@@ -13789,8 +13816,8 @@ msgid "New Access Level:"
 msgstr "Novo nível de acesso:"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:49
-#: assets/js/pages/NewCompanyPage/index.tsx:105
+#: assets/js/pages/NewCompanyPage/index.tsx:53
+#: assets/js/pages/NewCompanyPage/index.tsx:109
 msgid "New Company"
 msgstr "Nova empresa"
 
@@ -13962,7 +13989,7 @@ msgstr "Próxima etapa"
 #.frontend
 #: assets/js/features/ProjectRetrospective/Form.tsx:95
 #: assets/js/pages/GoalClosingPage/Form.tsx:75
-#: assets/js/pages/NewCompanyPage/index.tsx:76
+#: assets/js/pages/NewCompanyPage/index.tsx:80
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:117
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:123
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:334
@@ -14957,7 +14984,7 @@ msgstr "Tarefas em aberto"
 
 #.frontend
 #: ../turboui/src/InviteLinkJoinPage/index.tsx:50
-#: assets/js/pages/LoginPage/index.tsx:75
+#: assets/js/pages/LoginPage/index.tsx:76
 #: ee/assets/js/layouts/SaasAdminLayout.tsx:36
 msgid "Operately"
 msgstr "Operately"
@@ -15260,11 +15287,11 @@ msgid "Parent goal"
 msgstr "Objetivo superior"
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:134
-#: assets/js/pages/LoginPage/index.tsx:138
+#: assets/js/pages/LoginPage/index.tsx:135
+#: assets/js/pages/LoginPage/index.tsx:139
 #: assets/js/pages/ResetPasswordPage/index.tsx:74
 #: assets/js/pages/SetupPage/page.tsx:149
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:145
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:148
 msgid "Password"
 msgstr "Senha"
 
@@ -15316,7 +15343,7 @@ msgstr "Senha alterada com sucesso"
 #: assets/js/pages/JoinPage/index.tsx:93
 #: assets/js/pages/ResetPasswordPage/index.tsx:34
 #: assets/js/pages/SetupPage/page.tsx:72
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:54
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:57
 msgid "Passwords do not match"
 msgstr "As senhas não são iguais"
 
@@ -15612,14 +15639,14 @@ msgid "Please confirm the package finished uploading and try again."
 msgstr "Confirme se o envio do pacote foi concluído e tente novamente."
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:76
+#: assets/js/pages/LoginPage/index.tsx:77
 msgid "Please enter your details to sign in"
 msgstr "Informe seus dados para entrar"
 
 #.frontend
 #: assets/js/pages/ResetPasswordPage/index.tsx:114
 #: assets/js/pages/SetupPage/page.tsx:208
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:168
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:171
 msgid "Please fill in all fields"
 msgstr "Preencha todos os campos"
 
@@ -17333,6 +17360,7 @@ msgstr "Revisar check-in semanal"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:98
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:215
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:165
@@ -17865,6 +17893,8 @@ msgstr "Selecione um status de tarefa encerrada."
 
 #.frontend
 #: ../turboui/src/BillingPickCompanyPage/index.tsx:32
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:128
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:130
 msgid "Select a company"
 msgstr "Selecione uma empresa"
 
@@ -17899,6 +17929,11 @@ msgstr "Selecione um status substituto"
 #: ../turboui/src/StatusCustomization/index.tsx:171
 msgid "Select a replacement status for each deleted status. Tasks using deleted statuses will be moved to the selected replacements."
 msgstr "Selecione um status substituto para cada status excluído. As tarefas que usam status excluídos serão movidas para os substitutos selecionados."
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:35
+msgid "Select a space"
+msgstr "Selecione um espaço"
 
 #.frontend
 #: ../turboui/src/Forms/SelectStatus.tsx:138
@@ -18359,7 +18394,7 @@ msgid "Shows what needs to happen next for this work to progress."
 msgstr "Mostra o que precisa acontecer a seguir para este trabalho avançar."
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:70
+#: assets/js/pages/LoginPage/index.tsx:71
 msgid "Sign In"
 msgstr "Entrar"
 
@@ -18370,9 +18405,9 @@ msgid "Sign Out"
 msgstr "Sair"
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:22
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:111
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:204
+#: assets/js/pages/SignUpPage/index.tsx:23
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:114
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:207
 msgid "Sign Up"
 msgstr "Cadastrar-se"
 
@@ -18382,28 +18417,28 @@ msgid "Sign Up & Join %{companyName}"
 msgstr "Cadastrar-se e entrar para %{companyName}"
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:174
+#: assets/js/pages/LoginPage/index.tsx:175
 msgid "Sign in"
 msgstr "Entrar"
 
 #.frontend
-#: assets/js/features/auth/Buttons.tsx:30
+#: assets/js/features/auth/Buttons.tsx:31
 msgid "Sign in with Google"
 msgstr "Entrar com o Google"
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:50
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:116
+#: assets/js/pages/SignUpPage/index.tsx:51
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:119
 msgid "Sign up for Operately"
 msgstr "Cadastre-se no Operately"
 
 #.frontend
-#: assets/js/features/auth/Buttons.tsx:44
+#: assets/js/features/auth/Buttons.tsx:45
 msgid "Sign up with Google"
 msgstr "Cadastrar-se com o Google"
 
 #.frontend
-#: assets/js/features/auth/Buttons.tsx:17
+#: assets/js/features/auth/Buttons.tsx:18
 msgid "Sign up with email"
 msgstr "Cadastrar-se com e-mail"
 
@@ -18522,7 +18557,7 @@ msgstr "Algo deu errado"
 
 #.frontend
 #: assets/js/pages/InviteLinkJoinPage/index.tsx:54
-#: assets/js/pages/LoginPage/index.tsx:63
+#: assets/js/pages/LoginPage/index.tsx:64
 msgid "Something went wrong while joining. Please try again."
 msgstr "Ocorreu um erro ao participar. Tente novamente."
 
@@ -18587,6 +18622,7 @@ msgstr "Varredura da fonte"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:10
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:78
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
@@ -18781,6 +18817,7 @@ msgid "Start checkout again for %{plan}."
 msgstr "Inicie novamente o pagamento do plano %{plan}."
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:106
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:135
 msgid "Start date"
 msgstr "Data de início"
@@ -20230,7 +20267,7 @@ msgstr "Ocorreu um erro ao atualizar sua senha. Tente novamente."
 
 #.frontend
 #: assets/js/pages/SetupPage/page.tsx:95
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:95
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:98
 #: assets/js/pages/SpaceAddPage/index.tsx:50
 msgid "There was an unexpected error. Please try again later."
 msgstr "Ocorreu um erro inesperado. Tente novamente mais tarde."
@@ -21274,6 +21311,8 @@ msgstr "Desarquivar"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:89
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:101
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:72
 #: lib/operately/md/milestone.ex:81
 #: lib/operately/md/task.ex:139
@@ -21846,7 +21885,7 @@ msgid "Use this URL to create a connection in your AI client."
 msgstr "Use esta URL para criar uma conexão no seu cliente de IA."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:117
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:120
 msgid "Use your work email — keep work and life separate."
 msgstr "Use seu e-mail profissional — separe trabalho e vida pessoal."
 
@@ -22403,7 +22442,7 @@ msgid "We're waiting for your upgrade to finish. This page will update automatic
 msgstr "Estamos aguardando a conclusão da sua mudança para um plano superior. Esta página será atualizada automaticamente quando seu novo plano ficar ativo."
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:238
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:241
 msgid "We've sent you a 6-character code to <email>%{email}</email>. The code expires in 5 minutes, so please enter it soon."
 msgstr "Enviamos um código de 6 caracteres para <email>%{email}</email>. O código expira em 5 minutos, então digite-o em breve."
 
@@ -22520,7 +22559,7 @@ msgid "What's your role?"
 msgstr "Qual é seu cargo?"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:66
+#: assets/js/pages/NewCompanyPage/index.tsx:70
 msgid "What's your title in the company?"
 msgstr "Qual é seu cargo na empresa?"
 
@@ -22592,7 +22631,7 @@ msgid "Will be posted on <date/> at <time/>"
 msgstr "Será publicado em <date/> às <time/>"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:129
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:132
 msgid "Work Email"
 msgstr "E-mail profissional"
 
@@ -22733,7 +22772,7 @@ msgstr "Objetivo anual"
 #.frontend
 #: assets/js/features/ProjectRetrospective/Form.tsx:94
 #: assets/js/pages/GoalClosingPage/Form.tsx:74
-#: assets/js/pages/NewCompanyPage/index.tsx:75
+#: assets/js/pages/NewCompanyPage/index.tsx:79
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:124
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:334
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:329
@@ -22883,6 +22922,11 @@ msgstr "Você foi removido como proprietário da empresa por %{author}"
 #: lib/operately_email/templates/company_owner_removing.text.eex:1
 msgid "You have been removed as a company owner by %{author}."
 msgstr "Você foi removido como proprietário da empresa por %{author}."
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:69
+msgid "You need edit access to a space to use this template. Ask a company admin for access."
+msgstr "Você precisa de acesso de edição a um espaço para usar este Template. Peça acesso a um administrador da empresa."
 
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:28
@@ -23738,7 +23782,7 @@ msgid "e.g. 15000"
 msgstr "ex.: 15000"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:60
+#: assets/js/pages/NewCompanyPage/index.tsx:64
 #: assets/js/pages/SetupPage/page.tsx:110
 msgid "e.g. Acme Co."
 msgstr "Ex.: Acme Co."
@@ -23754,7 +23798,7 @@ msgid "e.g. Create product awareness and bring new leads"
 msgstr "Ex.: Criar reconhecimento do produto e gerar novos leads"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:67
+#: assets/js/pages/NewCompanyPage/index.tsx:71
 #: assets/js/pages/SetupPage/page.tsx:133
 msgid "e.g. Founder"
 msgstr "Ex.: Fundador"
@@ -23994,7 +24038,7 @@ msgid "name can't be blank"
 msgstr "o nome não pode ficar em branco"
 
 #.frontend
-#: assets/js/pages/SignUpWithEmailPage/index.tsx:130
+#: assets/js/pages/SignUpWithEmailPage/index.tsx:133
 msgid "name@company.com"
 msgstr "nome@empresa.com"
 
@@ -24011,7 +24055,7 @@ msgstr "em"
 
 #.frontend
 #: assets/js/pages/JoinPage/index.tsx:163
-#: assets/js/pages/LoginPage/index.tsx:185
+#: assets/js/pages/LoginPage/index.tsx:186
 msgid "or"
 msgstr "ou"
 
@@ -24400,7 +24444,7 @@ msgid "yearly"
 msgstr "anual"
 
 #.frontend
-#: assets/js/pages/LoginPage/index.tsx:111
+#: assets/js/pages/LoginPage/index.tsx:112
 msgid "your@email.com"
 msgstr "seu@email.com"
 
