@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
 import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
-import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
 import { IconPlus } from "../../icons";
 import { TaskCreationModal } from "../../TaskCreationModal";
@@ -98,6 +97,7 @@ export function TaskBoard({
     creatorRef: noMilestoneCreatorRef,
     hoverBind: noMilestoneHoverBind,
   } = useInlineTaskCreator({
+    enabled: Boolean(onTaskCreate) && canCreateTask,
     onOpen: clearTaskSelection,
     isActive: () => {
       const activeElement = document.activeElement;
@@ -185,11 +185,9 @@ export function TaskBoard({
       onTaskDueDateChange,
       onTaskRemindersChange,
       onTaskStatusChange,
-      onTaskMilestoneChange: (taskId, milestone) => {
-        const indexInMilestone = 1000;
-        const milestoneId = milestone?.id ?? null;
-        onTaskMilestoneChange?.(taskId, milestoneId, indexInMilestone);
-      },
+      onTaskMilestoneChange: onTaskMilestoneChange
+        ? (taskId, milestone) => onTaskMilestoneChange(taskId, milestone?.id ?? null, 1000)
+        : undefined,
       onTaskDescriptionChange,
       onTaskNameChange,
       onTaskDelete,
@@ -251,35 +249,18 @@ export function TaskBoard({
 
   const handleTaskMove = useCallback(
     (move: BoardMove) => {
-      const dropZoneId = move.destination.containerId;
-      const indexInDropZone = move.destination.index;
-
-      if (onTaskMilestoneChange) {
-        onTaskMilestoneChange(move.itemId, dropZoneId, indexInDropZone);
-        return;
-      }
-
-      // Use the utility function to handle reordering
-      const updatedTasks = reorderTasks(
-        internalTasks,
-        dropZoneId,
-        move.itemId,
-        indexInDropZone,
-        { addHelperTasks: true },
-        allMilestones,
-      );
-
-      // Update state with the reordered tasks
-      setInternalTasks(updatedTasks);
+      onTaskMilestoneChange?.(move.itemId, move.destination.containerId, move.destination.index);
     },
-    [allMilestones, internalTasks, onTaskMilestoneChange],
+    [onTaskMilestoneChange],
   );
 
-  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove, {
+    enabled: Boolean(onTaskMilestoneChange),
+  });
 
   return (
     <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto pb-8">
-      {richTextHandlers && (
+      {onTaskCreate && canCreateTask && richTextHandlers && (
         <TaskCreationModal
           variant="project"
           isOpen={isTaskModalOpen}
@@ -294,22 +275,24 @@ export function TaskBoard({
         />
       )}
 
-      <MilestoneCreationModal
-        isOpen={isMilestoneModalOpen}
-        onClose={closeMilestoneModal}
-        onCreateMilestone={(attrs) => {
-          const newMilestone: Types.Milestone = {
-            id:
-              typeof globalThis.crypto !== "undefined" && typeof globalThis.crypto.randomUUID === "function"
-                ? globalThis.crypto.randomUUID()
-                : `temp-milestone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-            ...attrs,
-          };
+      {onMilestoneCreate && canCreateMilestone && (
+        <MilestoneCreationModal
+          isOpen={isMilestoneModalOpen}
+          onClose={closeMilestoneModal}
+          onCreateMilestone={(attrs) => {
+            const newMilestone: Types.Milestone = {
+              id:
+                typeof globalThis.crypto !== "undefined" && typeof globalThis.crypto.randomUUID === "function"
+                  ? globalThis.crypto.randomUUID()
+                  : `temp-milestone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+              ...attrs,
+            };
 
-          setInternalMilestones((previous) => [...previous, newMilestone]);
-          onMilestoneCreate?.(attrs);
-        }}
-      />
+            setInternalMilestones((previous) => [...previous, newMilestone]);
+            onMilestoneCreate(attrs);
+          }}
+        />
+      )}
 
       <TaskSlideIn
         isOpen={Boolean(selectedSlideInTaskId)}
@@ -325,9 +308,9 @@ export function TaskBoard({
         internalTasks={internalTasks}
         onSaveCustomStatuses={onSaveCustomStatuses}
         statuses={statuses}
-        canManageStatuses={canManageStatuses}
-        canCreateMilestone={canCreateMilestone}
-        canCreateTask={canCreateTask}
+        canManageStatuses={Boolean(onSaveCustomStatuses) && canManageStatuses}
+        canCreateMilestone={Boolean(onMilestoneCreate) && canCreateMilestone}
+        canCreateTask={Boolean(onTaskCreate) && canCreateTask}
         displayMode={displayMode}
         onDisplayModeChange={onDisplayModeChange}
       />
@@ -344,19 +327,20 @@ export function TaskBoard({
               {/* If no tasks at all */}
               {showNoTasksMsg && (
                 <li className="py-4 text-center text-content-subtle">
-                  {t("Add the first task to start breaking down the work.")}
+                  {!onTaskCreate ? t("No tasks yet.") : t("Add the first task to start breaking down the work.")}
                 </li>
               )}
 
               {/* Open milestones */}
               {openMilestones.map((milestoneData) => (
                 <MilestoneCard
+                  onTaskMilestoneChange={onTaskMilestoneChange}
                   key={milestoneData.milestone.id}
                   milestone={milestoneData.milestone}
                   tasks={groupedTasks[milestoneData.milestone.id] || []}
                   showHiddenTasksToggle={showHiddenTasksToggle}
                   stats={milestoneData.stats}
-                  onTaskCreate={onTaskCreate}
+                  onTaskCreate={canCreateTask ? onTaskCreate : undefined}
                   onTaskAssigneeChange={onTaskAssigneeChange}
                   onTaskDueDateChange={onTaskDueDateChange}
                   onTaskStatusChange={onTaskStatusChange}
@@ -385,21 +369,25 @@ export function TaskBoard({
                       <span className="text-sm font-semibold text-content-base">{t("No milestone")}</span>
                       {/* No indicators for 'No milestone' header */}
                     </div>
-                    <SecondaryButton
-                      size="xs"
-                      icon={IconPlus}
-                      className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-                      onClick={openNoMilestoneCreator}
-                      testId="no-milestone-add-task"
-                    >
-                      <span className="sr-only">{t("Add task")}</span>
-                    </SecondaryButton>
+                    {Boolean(onTaskCreate) && canCreateTask && (
+                      <SecondaryButton
+                        size="xs"
+                        icon={IconPlus}
+                        className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
+                        onClick={openNoMilestoneCreator}
+                        testId="no-milestone-add-task"
+                      >
+                        <span className="sr-only">{t("Add task")}</span>
+                      </SecondaryButton>
+                    )}
                   </div>
 
                   {/* Tasks with no milestone */}
                   <TaskList
+                    onTaskMilestoneChange={onTaskMilestoneChange}
                     tasks={groupedTasks["no_milestone"] || []}
                     showHiddenTasksToggle={showHiddenTasksToggle}
+                    suppressEmptyStateWhenOnlyHiddenTasks={!onTaskCreate || !canCreateTask}
                     milestoneId="no-milestone"
                     onTaskAssigneeChange={onTaskAssigneeChange}
                     onTaskDueDateChange={onTaskDueDateChange}
@@ -412,7 +400,7 @@ export function TaskBoard({
                     selectedTaskId={selectedTaskId}
                     onTaskClick={slideInEnabled ? setSelectedSlideInTaskId : undefined}
                     inlineCreateRow={
-                      noMilestoneCreatorOpen ? (
+                      onTaskCreate && canCreateTask && noMilestoneCreatorOpen ? (
                         <InlineTaskCreator
                           ref={noMilestoneCreatorRef}
                           onCreate={(title) => onTaskCreate({ title, milestone: null, dueDate: null, assignees: [] })}
@@ -449,7 +437,7 @@ interface ActionBarProps {
   onFiltersChange?: (filters: Types.FilterCondition[]) => void;
   filters: Types.FilterCondition[];
   internalTasks: Types.Task[];
-  onSaveCustomStatuses: (data: {
+  onSaveCustomStatuses?: (data: {
     nextStatuses: StatusSelector.StatusOption[];
     deletedStatusReplacements: Record<string, string>;
   }) => void;
@@ -506,11 +494,13 @@ function StickyActionBar({
       </div>
 
       <div className="flex flex-shrink-0 items-center gap-1 sm:-mb-2">
-        <TasksMenu
-          canManageStatuses={canManageStatuses}
-          statuses={statuses}
-          onSaveCustomStatuses={onSaveCustomStatuses}
-        />
+        {onSaveCustomStatuses && (
+          <TasksMenu
+            canManageStatuses={canManageStatuses}
+            statuses={statuses}
+            onSaveCustomStatuses={onSaveCustomStatuses}
+          />
+        )}
 
         <TaskDisplayMenu mode={displayMode} onChange={onDisplayModeChange} />
       </div>

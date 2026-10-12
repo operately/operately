@@ -3,6 +3,7 @@ import * as DropdownMenu from "../Embedding/DropdownMenu";
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
+import { DivLink } from "../Link";
 import { IconChevronRight, IconDots } from "../icons";
 
 import { TestableElement, createTestId } from "../TestableElement";
@@ -35,6 +36,7 @@ interface MenuItemProps extends TestableElement {
 
 interface MenuLinkItemProps extends MenuItemProps {
   to: string;
+  target?: string;
 }
 
 interface MenuActionItemProps extends MenuItemProps {
@@ -174,6 +176,16 @@ export function MenuLinkItem(props: MenuLinkItemProps) {
   const navigate = useNavigate();
 
   if (props.hidden) return null;
+
+  if (props.target) {
+    return (
+      <DropdownMenu.Item asChild className={menuItemClassNames(props)}>
+        <DivLink to={props.to} target={props.target} testId={props.testId}>
+          <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
+        </DivLink>
+      </DropdownMenu.Item>
+    );
+  }
 
   const handleClick = () => {
     navigate(props.to);

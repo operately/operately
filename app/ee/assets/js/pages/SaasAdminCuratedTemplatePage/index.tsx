@@ -7,6 +7,7 @@ import { useLoadedData } from "./loader";
 import {
   curatedTemplatesPath,
   curatedTemplatePath,
+  curatedTemplatePreviewPath,
   useSaveCuratedTemplate,
   useDeleteCuratedTemplate,
 } from "@/ee/models/curatedTemplateLifecycle";
@@ -41,6 +42,7 @@ function TemplatePage({ initialTemplate }: { initialTemplate?: CuratedTemplate }
       <CuratedTemplateDetailPage
         template={template}
         catalogPath={curatedTemplatesPath}
+        previewPath={template ? curatedTemplatePreviewPath(template.id) : undefined}
         onCancel={() => navigate(curatedTemplatesPath)}
         onSave={save}
         onDelete={async () => {

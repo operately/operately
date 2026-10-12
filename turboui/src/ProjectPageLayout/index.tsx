@@ -40,6 +40,7 @@ export namespace ProjectPageLayout {
   export type Props = SpaceProps & {
     formattedTimePreferences: FormattedTimePreferences;
     mode?: "project" | "template";
+    preview?: boolean;
     title: string[];
     testId?: string;
     options?: Page.Option[];

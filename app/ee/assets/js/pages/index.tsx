@@ -1,3 +1,4 @@
+import * as SaasAdminCuratedTemplatePreviewPage from "./SaasAdminCuratedTemplatePreviewPage";
 import * as SaasAdminCuratedTemplatesPage from "./SaasAdminCuratedTemplatesPage";
 import * as SaasAdminCuratedTemplatePage from "./SaasAdminCuratedTemplatePage";
 import * as SaasAdminBillingCatalogPage from "./SaasAdminBillingCatalogPage";
@@ -9,6 +10,11 @@ import * as SaasAdminSearchIndexPage from "./SaasAdminSearchIndexPage";
 import * as SaasAdminUpdateBadgePage from "./SaasAdminUpdateBadgePage";
 
 export default {
+  SaasAdminCuratedTemplatePreviewPage: {
+    name: "SaasAdminCuratedTemplatePreviewPage",
+    loader: SaasAdminCuratedTemplatePreviewPage.loader,
+    Page: SaasAdminCuratedTemplatePreviewPage.Page,
+  },
   SaasAdminCuratedTemplatesPage: {
     name: "SaasAdminCuratedTemplatesPage",
     loader: SaasAdminCuratedTemplatesPage.loader,

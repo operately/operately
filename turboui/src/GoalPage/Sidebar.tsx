@@ -43,8 +43,8 @@ export function Sidebar(props: GoalPage.State) {
       <DueDate {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
-      <Privacy {...props} />
-      <Actions {...props} />
+      {!props.preview && <Privacy {...props} />}
+      {!props.preview && <Actions {...props} />}
     </div>
   );
 }

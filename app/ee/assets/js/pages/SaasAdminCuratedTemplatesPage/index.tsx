@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CuratedTemplatesCatalogPage } from "turboui";
 import * as Pages from "@/components/Pages";
 import { useFormattedTimePreferences } from "@/hooks/useFormattedTimePreferences";
-import { curatedTemplatesPath, curatedTemplatePath } from "@/ee/models/curatedTemplateLifecycle";
+import { curatedTemplatesPath, curatedTemplatePath, curatedTemplatePreviewPath } from "@/ee/models/curatedTemplateLifecycle";
 import { useLoadedData } from "./loader";
 export { loader } from "./loader";
 
@@ -19,6 +19,7 @@ export function Page() {
         createPath={`${curatedTemplatesPath}/new`}
         administrationPath="/admin"
         templatePath={(template) => curatedTemplatePath(template.id)}
+        previewPath={(template) => curatedTemplatePreviewPath(template.id)}
         formattedTimePreferences={formattedTimePreferences}
       />
     </Pages.Page>

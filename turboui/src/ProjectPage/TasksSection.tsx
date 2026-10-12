@@ -38,10 +38,10 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
   const onKanbanTaskCreate = React.useCallback(
     (task: TaskBoardTypes.NewTaskPayload) => {
       if (!selectedMilestone) {
-        return state.onTaskCreate(task);
+        return state.onTaskCreate?.(task);
       }
 
-      return state.onTaskCreate({
+      return state.onTaskCreate?.({
         ...task,
         milestone: selectedMilestone,
       });
@@ -86,13 +86,13 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
         statuses={state.statuses}
         kanbanState={state.kanbanState}
         onTaskKanbanChange={state.onTaskKanbanChange}
-        onTaskCreate={onKanbanTaskCreate}
+        onTaskCreate={canEdit && state.onTaskCreate ? onKanbanTaskCreate : undefined}
         onTaskNameChange={state.onTaskNameChange}
         onTaskAssigneeChange={state.onTaskAssigneeChange}
         onTaskDueDateChange={state.onTaskDueDateChange}
         onTaskRemindersChange={state.onTaskRemindersChange}
         onTaskStatusChange={state.onTaskStatusChange}
-        onTaskMilestoneChange={handleTaskMilestoneChange}
+        onTaskMilestoneChange={canEdit && state.onTaskMilestoneChange ? handleTaskMilestoneChange : undefined}
         onTaskDelete={state.onTaskDelete}
         milestones={state.milestones}
         onMilestoneSearch={state.onMilestoneSearch}
@@ -112,17 +112,17 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
         tasks={tasks}
         milestones={state.milestones}
         searchableMilestones={state.searchableMilestones}
-        onTaskCreate={state.onTaskCreate}
-        onMilestoneCreate={state.onMilestoneCreate}
-        onTaskAssigneeChange={state.onTaskAssigneeChange}
-        onTaskDueDateChange={state.onTaskDueDateChange}
-        onTaskRemindersChange={state.onTaskRemindersChange}
-        onTaskStatusChange={state.onTaskStatusChange}
-        onTaskMilestoneChange={state.onTaskMilestoneChange}
-        onTaskNameChange={state.onTaskNameChange}
-        onTaskDescriptionChange={state.onTaskDescriptionChange}
-        onTaskDelete={state.onTaskDelete}
-        onMilestoneUpdate={state.onMilestoneUpdate}
+        onTaskCreate={canEdit ? state.onTaskCreate : undefined}
+        onMilestoneCreate={canEdit ? state.onMilestoneCreate : undefined}
+        onTaskAssigneeChange={canEdit ? state.onTaskAssigneeChange : undefined}
+        onTaskDueDateChange={canEdit ? state.onTaskDueDateChange : undefined}
+        onTaskRemindersChange={canEdit ? state.onTaskRemindersChange : undefined}
+        onTaskStatusChange={canEdit ? state.onTaskStatusChange : undefined}
+        onTaskMilestoneChange={canEdit ? state.onTaskMilestoneChange : undefined}
+        onTaskNameChange={canEdit ? state.onTaskNameChange : undefined}
+        onTaskDescriptionChange={canEdit ? state.onTaskDescriptionChange : undefined}
+        onTaskDelete={canEdit ? state.onTaskDelete : undefined}
+        onMilestoneUpdate={canEdit ? state.onMilestoneUpdate : undefined}
         onMilestoneSearch={state.onMilestoneSearch}
         assigneePersonSearch={state.assigneePersonSearch}
         richTextHandlers={state.richTextHandlers}
@@ -133,7 +133,7 @@ function LoadedTasksSection({ state }: { state: ProjectPage.State }) {
         canManageStatuses={canEdit}
         canCreateMilestone={canEdit}
         canCreateTask={canEdit}
-        onSaveCustomStatuses={state.onSaveCustomStatuses}
+        onSaveCustomStatuses={canEdit ? state.onSaveCustomStatuses : undefined}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}
         formattedTimePreferences={state.formattedTimePreferences}
