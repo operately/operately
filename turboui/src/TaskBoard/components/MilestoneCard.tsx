@@ -22,13 +22,14 @@ import type { RichTextHandlers } from "../../RichContent/types";
 import type { FormattedTimePreferences } from "../../FormattedTime";
 
 export interface MilestoneCardProps {
+  onTaskMilestoneChange?: Types.TaskBoardProps["onTaskMilestoneChange"];
   milestone: Types.Milestone;
   tasks: Types.Task[];
   showHiddenTasksToggle?: boolean;
-  onTaskCreate: (task: Types.NewTaskPayload) => void;
-  onTaskAssigneeChange: (taskId: string, assignees: Types.Person[]) => void;
-  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
+  onTaskCreate?: (task: Types.NewTaskPayload) => void;
+  onTaskAssigneeChange?: (taskId: string, assignees: Types.Person[]) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskStatusChange?: (taskId: string, status: Types.Status | null) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
@@ -54,6 +55,7 @@ export interface MilestoneCardProps {
  */
 export function MilestoneCard({
   milestone,
+  onTaskMilestoneChange,
   tasks,
   showHiddenTasksToggle = false,
   onTaskCreate,
@@ -97,6 +99,7 @@ export function MilestoneCard({
     creatorRef,
     hoverBind,
   } = useInlineTaskCreator({
+    enabled: Boolean(onTaskCreate),
     onOpen: onInlineCreateOpen,
     isActive: () => {
       const activeElement = document.activeElement;
@@ -203,7 +206,7 @@ export function MilestoneCard({
                       variant="inline"
                       showOverdueWarning={showOverdueWarning}
                       placeholder={t("Set due date")}
-                      readonly={false}
+                      readonly={!onMilestoneUpdate}
                       size="small"
                     />
                   </div>
@@ -212,22 +215,25 @@ export function MilestoneCard({
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <SecondaryButton
-              size="xs"
-              icon={IconPlus}
-              className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
-              onClick={openCreator}
-              testId="milestone-add-task"
-            >
-              {/* icon-only for reduced repetition; keep accessible label */}
-              <span className="sr-only">{t("Add task")}</span>
-            </SecondaryButton>
+            {onTaskCreate && (
+              <SecondaryButton
+                size="xs"
+                icon={IconPlus}
+                className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
+                onClick={openCreator}
+                testId="milestone-add-task"
+              >
+                {/* icon-only for reduced repetition; keep accessible label */}
+                <span className="sr-only">{t("Add task")}</span>
+              </SecondaryButton>
+            )}
           </div>
         </div>
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
         {sortedTasks && sortedTasks.length > 0 ? (
           <TaskList
+            onTaskMilestoneChange={onTaskMilestoneChange}
             tasks={sortedTasks}
             showHiddenTasksToggle={showHiddenTasksToggle}
             milestoneId={milestone.id}
@@ -241,9 +247,9 @@ export function MilestoneCard({
             placeholderHeight={placeholderHeight}
             selectedTaskId={selectedTaskId}
             onTaskClick={onTaskClick}
-            suppressEmptyStateWhenOnlyHiddenTasks={isCompleted}
+            suppressEmptyStateWhenOnlyHiddenTasks={isCompleted || !onTaskCreate}
             inlineCreateRow={
-              creatorOpen ? (
+              onTaskCreate && creatorOpen ? (
                 <InlineTaskCreator
                   ref={creatorRef}
                   onCreate={handleInlineTaskCreate}
@@ -255,14 +261,17 @@ export function MilestoneCard({
               ) : undefined
             }
           />
+        ) : !onTaskCreate && !onTaskMilestoneChange ? (
+          <p className="px-4 py-3 text-sm text-content-subtle">{t("No tasks yet.")}</p>
         ) : (
           <EmptyMilestoneDropZone
             milestoneId={milestone.id}
+            disabled={!onTaskMilestoneChange}
             draggedItemId={draggedItemId}
             targetLocation={targetLocation}
             placeholderHeight={placeholderHeight}
           >
-            {creatorOpen ? (
+            {onTaskCreate && creatorOpen ? (
               <>
                 <InlineTaskCreator
                   ref={creatorRef}
@@ -276,19 +285,21 @@ export function MilestoneCard({
                   {t("Press Enter to add. You can also drag tasks here.")}
                 </div>
               </>
-            ) : (
+            ) : onTaskCreate ? (
               <div className="text-left text-content-subtle text-sm sm:text-center">
                 <span className="sm:hidden">{t("Tap + to add a task.")}</span>
                 <span className="hidden sm:inline">
                   {t("Click + or press 'c' to add a task, or drag a task here.")}
                 </span>
               </div>
+            ) : (
+              <p className="text-sm text-content-subtle">{t("No tasks yet.")}</p>
             )}
           </EmptyMilestoneDropZone>
         )}
       </li>
 
-      {richTextHandlers && (
+      {onTaskCreate && richTextHandlers && (
         <TaskCreationModal
           variant="project"
           assigneePersonSearch={assigneePersonSearch}

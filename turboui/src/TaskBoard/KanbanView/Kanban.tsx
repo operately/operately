@@ -126,16 +126,18 @@ export function Kanban({
           draggedItemId={draggedItemId}
           targetLocation={targetLocation}
           placeholderHeight={placeholderHeight}
-          onTaskAssigneeChange={onTaskAssigneeChange}
-          onTaskDueDateChange={onTaskDueDateChange}
-          onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
-          assigneePersonSearch={assigneePersonSearch}
+          onTaskAssigneeChange={canEdit ? onTaskAssigneeChange : undefined}
+          onTaskDueDateChange={canEdit ? onTaskDueDateChange : undefined}
+          onTaskDueOffsetDaysChange={canEdit ? onTaskDueOffsetDaysChange : undefined}
+          assigneePersonSearch={canEdit ? assigneePersonSearch : undefined}
           onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
           dragHandleRef={dragHandleRef}
           isStatusDraggable={canManageStatuses}
           allStatuses={statuses}
           canManageStatuses={canManageStatuses}
+          disableDnD={!canEdit}
           canCreateTask={canEdit}
+          canEdit={canEdit}
           onEditStatus={onEditStatus}
           onDeleteStatus={onDeleteStatus}
           onTaskClick={onTaskClick}
@@ -179,10 +181,10 @@ export function Kanban({
                 draggedItemId={draggedItemId}
                 targetLocation={targetLocation}
                 placeholderHeight={placeholderHeight}
-                onTaskAssigneeChange={onTaskAssigneeChange}
-                onTaskDueDateChange={onTaskDueDateChange}
-                onTaskDueOffsetDaysChange={onTaskDueOffsetDaysChange}
-                assigneePersonSearch={assigneePersonSearch}
+                onTaskAssigneeChange={canEdit ? onTaskAssigneeChange : undefined}
+                onTaskDueDateChange={canEdit ? onTaskDueDateChange : undefined}
+                onTaskDueOffsetDaysChange={canEdit ? onTaskDueOffsetDaysChange : undefined}
+                assigneePersonSearch={canEdit ? assigneePersonSearch : undefined}
                 onCreateTask={undefined}
                 dragHandleRef={undefined}
                 isStatusDraggable={false}
@@ -192,6 +194,7 @@ export function Kanban({
                 onDeleteStatus={undefined}
                 onTaskClick={onTaskClick}
                 canCreateTask={canEdit}
+                canEdit={canEdit}
                 selectedTaskId={keyboardSelectedTaskId}
                 hideStatusIcon
                 disableDnD

@@ -35,6 +35,7 @@ export function Targets(props: GoalPage.State) {
       <div className="mt-3">
         <GoalTargetList
           targets={props.targets}
+          canReorder={props.permissions.canEdit}
           showEditButton={props.permissions.canEdit}
           showUpdateButton={props.permissions.canEdit}
           addActive={addActive}

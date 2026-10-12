@@ -7,17 +7,18 @@ import { DateField } from "../../DateField";
 import { defaultFormattedTimePreferences } from "../../utils/storybook/formattedTime";
 import * as Types from "../types";
 import { TaskBoard } from "./index";
+import { useBoardDnD, useSortableItem } from "../../utils/PragmaticDragAndDrop";
 
 jest.mock("../../utils/PragmaticDragAndDrop", () => ({
-  useBoardDnD: () => ({
+  useBoardDnD: jest.fn(() => ({
     draggedItemId: null,
     destination: null,
     draggedItemDimensions: null,
-  }),
-  useSortableItem: () => ({
+  })),
+  useSortableItem: jest.fn(() => ({
     ref: { current: null },
     isDragging: false,
-  }),
+  })),
   projectItemsWithPlaceholder: ({ items }: { items: unknown[] }) => ({
     items,
     placeholderIndex: null,
@@ -124,7 +125,7 @@ const tasks: Types.Task[] = [
   },
 ];
 
-function renderTaskBoard() {
+function renderTaskBoard(overrides: Partial<Types.TaskBoardProps> = {}) {
   return render(
     <MemoryRouter>
       <TaskBoard
@@ -144,6 +145,7 @@ function renderTaskBoard() {
         displayMode="list"
         onDisplayModeChange={jest.fn()}
         formattedTimePreferences={defaultFormattedTimePreferences}
+        {...overrides}
       />
     </MemoryRouter>,
   );
@@ -184,4 +186,78 @@ describe("TaskBoard completed milestones", () => {
     expect(screen.queryByText("Open task in completed milestone")).not.toBeInTheDocument();
     expect(screen.queryByText(/click \+ or press c to add a task/i)).not.toBeInTheDocument();
   });
+});
+
+test("boards without mutation callbacks hide creation and editing controls", () => {
+  const { container } = renderTaskBoard({
+    onTaskCreate: undefined,
+    onTaskAssigneeChange: undefined,
+    onTaskDueDateChange: undefined,
+    onTaskStatusChange: undefined,
+    onSaveCustomStatuses: undefined,
+    canCreateTask: true,
+    canCreateMilestone: true,
+    canManageStatuses: true,
+  });
+  expect(
+    container.querySelector(
+      '[data-test-id="milestone-add-task"], [data-test-id="no-milestone-add-task"], [data-test-id="add-task"], [data-test-id="add-milestone"]',
+    ),
+  ).toBeNull();
+  expect(container.querySelector('input, textarea, [contenteditable="true"]')).toBeNull();
+  expect(container.querySelector('[data-test-id="task-open-task"] [data-test-id="task-status"]')).not.toHaveAttribute(
+    "aria-haspopup",
+  );
+  expect(container.querySelector('[data-test-id="task-open-task"] [data-test-id="task-due-date"]')).toBeDisabled();
+  expect(useBoardDnD).toHaveBeenLastCalledWith(expect.any(Function), { enabled: false });
+  expect(useSortableItem).toHaveBeenLastCalledWith(expect.objectContaining({ disabled: true }));
+});
+
+test("status editing works independently of creation, assignment, dates, and dragging", () => {
+  const onTaskStatusChange = jest.fn();
+  const { container } = renderTaskBoard({
+    onTaskCreate: undefined,
+    onTaskAssigneeChange: undefined,
+    onTaskDueDateChange: undefined,
+    onTaskStatusChange,
+    assigneePersonSearch: { people: [], onSearch: jest.fn() },
+  });
+  const task = container.querySelector('[data-test-id="task-open-task"]');
+  if (!(task instanceof HTMLElement)) throw new Error("Expected task row");
+
+  const statusField = task.querySelector('[data-test-id="task-status"]');
+  if (!(statusField instanceof HTMLElement)) throw new Error("Expected editable status field");
+  expect(statusField).toHaveAttribute("aria-haspopup", "dialog");
+  expect(task.querySelector('[data-test-id="task-due-date"]')).toBeDisabled();
+  const assigneeField = task.querySelector('[data-test-id="assignees-field"]');
+  if (!(assigneeField instanceof HTMLElement)) throw new Error("Expected assignees field");
+  fireEvent.click(assigneeField);
+  expect(screen.queryByRole("dialog")).toBeNull();
+  fireEvent.click(statusField);
+  const option = document.querySelector('[data-test-id="status-option-done"]');
+  if (!(option instanceof HTMLElement)) throw new Error("Expected status option");
+  fireEvent.click(option);
+  expect(onTaskStatusChange).toHaveBeenCalledWith("open-task", DONE_STATUS);
+  expect(useBoardDnD).toHaveBeenLastCalledWith(expect.any(Function), { enabled: false });
+});
+
+test("creation and dragging are enabled by their callbacks", () => {
+  const onTaskCreate = jest.fn();
+  const { container } = renderTaskBoard({
+    onTaskCreate,
+    onTaskMilestoneChange: jest.fn(),
+    canCreateTask: true,
+    onTaskAssigneeChange: undefined,
+    onTaskDueDateChange: undefined,
+    onTaskStatusChange: undefined,
+  });
+  const addTask = container.querySelector('[data-test-id="no-milestone-add-task"]');
+  if (!(addTask instanceof HTMLElement)) throw new Error("Expected creation control");
+  fireEvent.click(addTask);
+  const input = screen.getByRole("textbox");
+  fireEvent.change(input, { target: { value: "New task" } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(onTaskCreate).toHaveBeenCalledWith(expect.objectContaining({ title: "New task", milestone: null }));
+  expect(useBoardDnD).toHaveBeenLastCalledWith(expect.any(Function), { enabled: true });
+  expect(useSortableItem).toHaveBeenLastCalledWith(expect.objectContaining({ disabled: false }));
 });

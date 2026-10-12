@@ -34,6 +34,7 @@ interface Props {
   disableDnD?: boolean;
   onTaskClick?: (taskId: string) => void;
   canCreateTask: boolean;
+  canEdit: boolean;
   selectedTaskId?: string | null;
 }
 
@@ -58,6 +59,7 @@ export function Column({
   disableDnD,
   onTaskClick,
   canCreateTask,
+  canEdit,
   selectedTaskId,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
@@ -154,6 +156,7 @@ export function Column({
                 <DropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
               )}
               <Card
+                draggingDisabled={!canEdit}
                 task={task}
                 containerId={containerId}
                 index={index}

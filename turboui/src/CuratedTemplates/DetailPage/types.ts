@@ -14,5 +14,6 @@ export interface TemplateEditorProps {
 }
 export interface TemplateDetailProps extends TemplateEditorProps {
   catalogPath: string;
+  previewPath?: string;
   onDelete: () => Promise<void>;
 }

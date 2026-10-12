@@ -89,6 +89,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
       },
       [kanbanState, milestone?.id, onTaskKanbanChange, statusKeys, orderedStatuses],
     ),
+    { enabled: props.canEdit },
   );
 
   const containerClassName = props.unstyled

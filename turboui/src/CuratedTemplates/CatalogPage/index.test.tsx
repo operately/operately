@@ -1,6 +1,7 @@
 import React from "react";
 import { configure, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, useLocation } from "react-router";
 import { defaultFormattedTimePreferences } from "../../FormattedTime";
 import { CuratedTemplatesCatalogPage, CuratedTemplatesCatalogProps } from "./index";
@@ -14,6 +15,7 @@ function setup(overrides: Partial<CuratedTemplatesCatalogProps> = {}) {
     createPath: "/new",
     administrationPath: "/admin",
     templatePath: () => "/template",
+    previewPath: (template) => `/template/${template.id}/preview`,
     formattedTimePreferences: defaultFormattedTimePreferences,
     ...overrides,
   };
@@ -77,4 +79,17 @@ test("all templates in the selected tab are shown without pagination", () => {
     expect(screen.getByText(project.title)).toBeInTheDocument();
   }
   expect(screen.getByTestId("location").textContent).toBe("/");
+});
+
+test("catalog preview links open in a new tab and explain the icon on hover", async () => {
+  const user = userEvent.setup();
+  const template = templateFixture("project");
+  setup({ templates: [template] });
+  const link = screen.getByTestId(`preview-template-${template.id}`);
+  expect(link).toHaveAttribute("href", `/template/${template.id}/preview`);
+  expect(link).toHaveAttribute("target", "_blank");
+  expect(link).toHaveAccessibleName();
+  await user.hover(link);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(tooltip).toHaveTextContent(link.getAttribute("aria-label") ?? "");
 });

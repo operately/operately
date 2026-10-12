@@ -15,6 +15,7 @@ function CatalogStory({ empty = false }: { empty?: boolean }) {
       createPath="/"
       administrationPath="/"
       templatePath={() => "/"}
+      previewPath={(template) => `/?path=/story/pages-curatedtemplates-preview--${template.type}`}
       formattedTimePreferences={defaultFormattedTimePreferences}
     />
   );

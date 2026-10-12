@@ -8,3 +8,6 @@ export type {
   TemplateDefinition,
   TemplateType,
 } from "./types";
+
+export { CuratedTemplatePreviewPage } from "./PreviewPage";
+export { getTemplatePreviewReferenceDate } from "./PreviewPage/adapters";
