@@ -6,10 +6,10 @@ defmodule OperatelyWeb.Api.Projects.Create do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Groups
-  alias Operately.Groups.Permissions
   alias Operately.Access.Binding
+  alias Operately.Groups.{Group, Permissions}
   alias Operately.Operations.ProjectCreation
+  alias Operately.People
 
   inputs do
     field :space_id, :id, null: false
@@ -30,10 +30,13 @@ defmodule OperatelyWeb.Api.Projects.Create do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn ctx -> decode_inputs(ctx.me, inputs) end)
-    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.attrs.group_id, ctx.me.id) end)
+    |> run(:space, fn ctx -> authorize_destination(ctx.me, inputs.space_id) end)
+    |> run(:check_permissions, fn ctx ->
+      Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn))
+    end)
+    |> run(:owners, fn ctx -> validate_owners(ctx.space, inputs) end)
+    |> run(:attrs, fn ctx -> decode_inputs(ctx.me, ctx.space, inputs) end)
     |> run(:enforced_attrs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, ctx.attrs)} end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit, company_read_only: company_read_only(conn)) end)
     |> run(:operation, fn ctx -> ProjectCreation.run(%{ctx.enforced_attrs | analytics_context: OperatelyWeb.Analytics.context(conn)}) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -42,34 +45,53 @@ defmodule OperatelyWeb.Api.Projects.Create do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :owners, _} -> {:error, :bad_request}
+      {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
   end
 
-  defp decode_inputs(person, inputs) do
-    {:ok, %ProjectCreation{
-      name: inputs.name,
-      champion_id: inputs[:champion_id],
-      reviewer_id: inputs[:reviewer_id],
-      creator_role: "Contributor",
-      visibility: "everyone",
-      creator_id: person.id,
-      company_id: person.company_id,
-      group_id: inputs[:space_id],
-      goal_id: inputs[:goal_id],
-      description: inputs[:description],
-      anonymous_access_level: inputs.anonymous_access_level,
-      company_access_level: inputs.company_access_level,
-      space_access_level: inputs.space_access_level,
-    }}
+  defp authorize_destination(person, space_id) do
+    with {:ok, space} <- Group.get(person, id: space_id, company_id: person.company_id),
+         :ok <- ensure_destination_company(space, person) do
+      {:ok, space}
+    end
+  end
+
+  defp ensure_destination_company(%{company_id: company_id}, %{company_id: company_id}), do: :ok
+  defp ensure_destination_company(_space, _person), do: {:error, :not_found}
+
+  defp validate_owners(space, inputs) do
+    case People.validate_active_company_members(space.company_id, [inputs[:champion_id], inputs[:reviewer_id]]) do
+      :ok -> {:ok, :valid}
+      {:error, :invalid_company_member} = error -> error
+    end
+  end
+
+  defp decode_inputs(person, space, inputs) do
+    {:ok,
+     %ProjectCreation{
+       name: inputs.name,
+       champion_id: inputs[:champion_id],
+       reviewer_id: inputs[:reviewer_id],
+       creator_role: "Contributor",
+       visibility: "everyone",
+       creator_id: person.id,
+       company_id: space.company_id,
+       group_id: space.id,
+       goal_id: inputs[:goal_id],
+       description: inputs[:description],
+       anonymous_access_level: inputs.anonymous_access_level,
+       company_access_level: inputs.company_access_level,
+       space_access_level: inputs.space_access_level
+     }}
   end
 
   defp sanitize_company_access_level(space, attrs) do
-    space = Operately.Groups.Group.preload_access_levels(space)
+    space = Group.preload_access_levels(space)
 
     if space.access_levels.company == Binding.no_access() do
       Map.put(attrs, :company_access_level, Binding.no_access())
