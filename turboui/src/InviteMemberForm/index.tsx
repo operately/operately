@@ -76,7 +76,7 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
             />
           </FormRow>
 
-          <FormRow label={t("Title")} htmlFor="invite-title">
+          <FormRow label={t("Title in Company")} htmlFor="invite-title">
             <Textfield
               id="invite-title"
               value={props.values.title}

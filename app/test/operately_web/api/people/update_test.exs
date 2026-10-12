@@ -100,6 +100,17 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
   describe "updating my own profile" do
     setup :register_and_log_in_account
 
+    test "persists Spanish independently of timezone and user-authored fields", ctx do
+      Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+      assert {200, %{person: %{}}} = mutation(ctx.conn, [:people, :update], %{
+        id: Paths.person_id(ctx.person), language: "es"
+      })
+      person = Operately.People.get_person!(ctx.person.id)
+      assert person.language == "es"
+      assert person.full_name == ctx.person.full_name
+      assert person.timezone == ctx.person.timezone
+    end
+
     test "it updates the profile", ctx do
       assert {200, %{person: %{}}} =
                mutation(ctx.conn, [:people, :update], %{

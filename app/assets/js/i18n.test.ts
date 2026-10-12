@@ -2,6 +2,28 @@ import i18n, { applyLanguage, tn } from "./i18n";
 import { resolveEffectiveLanguage } from "./i18n/languages";
 
 describe("i18n", () => {
+  describe("Spanish", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("switches explicit Spanish selection and restores English with the flag off", async () => {
+      await applyLanguage(resolveEffectiveLanguage("es", true));
+      expect(i18n.t("Home")).toBe("Inicio");
+      expect(i18n.t("Champion")).toBe("Responsable");
+      expect(i18n.t("Title in Company")).toBe("Cargo");
+      expect(i18n.t("Reports", { context: "people" })).toBe("Personas a cargo");
+      await applyLanguage(resolveEffectiveLanguage("es", false));
+      expect(i18n.t("Home")).toBe("Home");
+    });
+
+    it("renders actual task counts across Spanish CLDR boundaries", async () => {
+      await applyLanguage("es");
+      for (const count of [0, 1, 2, 0.5, 1.5, 2.5, 999_999, 1_000_000, 1_000_001, 2_000_000, 2_000_001]) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(`${count} ${count === 1 ? "tarea" : "tareas"}`);
+      }
+    });
+  });
   it("keeps work-management copy English with the flag off and a saved Portuguese preference", async () => {
     await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
     expect(i18n.t("Create milestone")).toBe("Create milestone");
@@ -172,6 +194,8 @@ describe.each([true, false])("initialization with TurboUI first: %s", (turboFirs
       expect(runtime.t("Close", { context: "button" })).toBe("Close dialog");
       expect(runtime.language).toBe("en");
       expect(runtime.t("intlDateTime", { val: new Date("2026-01-01T12:00:00Z") })).not.toBe("intlDateTime");
+      expect(runtime.getResource("es", "translation", "Home")).toBe("Inicio");
+      expect(runtime.getResource("es", "translation", "intlRelativeDateTime")).toBe("{{val, relativetime}}");
     });
   });
 });

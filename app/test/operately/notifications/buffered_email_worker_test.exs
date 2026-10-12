@@ -50,6 +50,21 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
   end
 
+  test "Spanish buffered delivery preserves escaping and falls back after company rollback", ctx do
+    ctx = ctx |> Factory.add_project(:project, :space, name: "Project <literal>") |> Factory.add_company_member(:spanish)
+    {:ok, person} = Operately.People.update_person(ctx.spanish, %{language: "es"})
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    activities = for action <- ["project_created", "project_archived"] do
+      activity_fixture(author_id: ctx.creator.id, action: action, content: %{"project_id" => ctx.project.id})
+    end
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+    deliver_localized_batch(person, activities, "Tienes 2 nuevas actualizaciones", "archivó el proyecto")
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
+    Operately.Companies.disable_experimental_feature(company, "i18n")
+    deliver_localized_batch(person, activities, "You have 2 new updates", "archived the project")
+    assert Operately.Repo.reload!(person).language == "es"
+  end
+
   defp deliver_localized_batch(person, activities, subject, headline) do
     {:ok, batch} = Notifications.create_email_batch(%{
       person_id: person.id, status: :scheduled, window_minutes: 5,

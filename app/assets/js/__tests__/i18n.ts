@@ -5,11 +5,13 @@ import { act } from "react";
 export function setupTestCatalog() {
   const english = { ...i18n.getResourceBundle("en", "translation") };
   const portuguese = { ...i18n.getResourceBundle("pt-BR", "translation") };
+  const spanish = { ...i18n.getResourceBundle("es", "translation") };
 
   afterEach(async () => {
     for (const [language, resources] of [
       ["en", english],
       ["pt-BR", portuguese],
+      ["es", spanish],
     ] as const) {
       i18n.removeResourceBundle(language, "translation");
       i18n.addResourceBundle(language, "translation", resources);

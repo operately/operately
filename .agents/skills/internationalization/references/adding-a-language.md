@@ -38,7 +38,7 @@ make gen.i18n
 
 The merge creates `app/priv/gettext/de/LC_MESSAGES/messages.po`. `make gen.i18n` merges existing PO files but does not create new language directories. Use the shared extraction command above, not plain `mix gettext.extract`, so frontend messages stay included.
 
-Verify the PO `Language` and `Plural-Forms` headers for the target language. Gettext uses numbered `msgstr[n]` forms; i18next uses named categories. The mapping in `Locale` must agree with the PO rules. Add every required form: the shared PO writer initially creates indexes 0 and 1 for new plural entries, so languages with other counts need their forms adjusted. Do not copy Portuguese rules. Test zero, one, many, and language-specific boundaries/fractions, including any necessary i18next `zero` override.
+Verify the PO `Language` and `Plural-Forms` headers for the target language. Gettext uses numbered `msgstr[n]` forms; i18next uses named categories. The mapping in `Locale` must agree with the PO rules. The shared merger now adds missing indexes according to the catalog's `nplurals` header; verify every form after creating a new locale with Gettext merge. Do not copy Portuguese rules. Test zero, one, many, and language-specific boundaries/fractions, including any necessary i18next `zero` override.
 
 Translate every active message/context and required plural form using the glossary. AI may draft the entire catalog. Preserve `%{name}` placeholders, catalog-owned tags, and user content; do not edit English message identifiers or use English fallback to fill gaps. Resolve fuzzy entries before removing their flag. `intlRelativeDateTime` is the documented technical exception. Existing languages' translations must remain intact.
 

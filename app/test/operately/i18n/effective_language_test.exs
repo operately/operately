@@ -16,6 +16,18 @@ defmodule Operately.I18n.EffectiveLanguageTest do
   end
 
   describe "resolve/2" do
+    test "Spanish selection follows the company flag and scopes each recipient" do
+      person = %Person{language: "es", company: enabled_company()}
+      assert EffectiveLanguage.resolve(person) == "es"
+      assert EffectiveLanguage.resolve(person, %Company{enabled_experimental_features: []}) == "en"
+      assert person.language == "es"
+
+      EffectiveLanguage.with_locale(person, fn ->
+        assert Gettext.get_locale(@backend) == "es"
+      end)
+
+      assert Gettext.get_locale(@backend) == "en"
+    end
     test "uses English when no preference is saved" do
       person = %Person{language: nil}
       company = enabled_company()

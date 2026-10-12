@@ -50,6 +50,14 @@ defmodule Operately.I18n.PoTest do
     assert message.msgstr_plural == translations
   end
 
+  test "new Spanish plural entries include all forms required by the catalog header", %{path: path} do
+    headers = ["Language: es\n", "Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n != 0 && n % 1000000 == 0 ? 1 : 2));\n"]
+    Po.write!(path, [], headers: headers)
+    Po.merge_file!(path, [%Message{msgid: "1 task", msgid_plural: "%{count} tasks"}])
+    assert [message] = Po.parse_file!(path)
+    assert message.msgstr_plural == %{0 => "", 1 => "", 2 => ""}
+  end
+
   test "merging preserves translator metadata through removal and restoration", %{path: path} do
 
     File.write!(path, """

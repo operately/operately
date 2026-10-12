@@ -2,7 +2,7 @@
 
 Operately uses one Gettext catalog for Elixir, React, and TurboUI. English source text is the message identifier; context distinguishes ambiguous wording. Elixir and email rendering use Gettext, while the frontend uses i18next resources generated from the same catalog.
 
-So far supported languages are English (`en`) and Brazilian Portuguese (`pt-BR`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
+Supported languages are English (`en`), Brazilian Portuguese (`pt-BR`), and Spanish (`es`, Español). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
 
 To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary preparation.
 
@@ -135,3 +135,5 @@ To fix failures, run `make gen.i18n`, complete the reported PO entries, regenera
 This checks completeness only. Unwrapped copy, generated-file freshness, language configuration, placeholders, tags, and translation quality still require review.
 
 Runtime English fallback remains a safeguard, not permission to ship missing translations. Preserve fallback behavior and its tests. Plural conversion uses explicit locale mappings; for Portuguese, the frontend's `zero`, `many`, and `other` categories use `msgstr[1]`, while `one` uses `msgstr[0]`. The zero override prevents a zero count from displaying a hardcoded singular. Missing plural forms fall back using English plural rules.
+
+Spanish uses three catalog indexes: `one` → `msgstr[0]`, `many` → `msgstr[1]`, and `other` → `msgstr[2]`. Exactly 1 selects `one`; zero and fractions select `other`; whole millions select `many`. The two plural translations normally have the same wording but remain separate required forms. Language selection does not override regional formatting preferences or timezone.

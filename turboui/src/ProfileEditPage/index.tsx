@@ -27,7 +27,7 @@ export namespace ProfileEditPage {
   }
 
   export type TimeFormat = "automatic" | "hour_12" | "hour_24";
-  export type Language = "en" | "pt-BR";
+  export type Language = "en" | "pt-BR" | "es";
 
   export interface Props {
     // Person data
@@ -210,6 +210,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
 const LANGUAGE_OPTIONS: (Dropdown.Item & { id: ProfileEditPage.Language })[] = [
   { id: "en", name: "English", testId: "language-option-en" },
   { id: "pt-BR", name: "Português (Brasil)", testId: "language-option-pt-BR" },
+  { id: "es", name: "Español", testId: "language-option-es" },
 ];
 
 function LanguageField({

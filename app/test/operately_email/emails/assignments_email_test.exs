@@ -56,6 +56,22 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     end)
   end
 
+  test "Spanish work-summary digest preserves task names and recipient locale isolation", ctx do
+    flush_emails()
+    Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.first_assignee, %{language: "es"})
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+    Operately.I18n.EffectiveLanguage.with_locale(person, fn -> AssignmentsEmail.send(person) end)
+    assert_email_sent(fn email ->
+      assert email.subject == "#{ctx.company.name}: Tu trabajo de hoy"
+      assert email.html_body =~ "Tareas, recordatorios y revisiones que necesitan tu atención hoy."
+      assert email.text_body =~ "Shared urgent task"
+      assert email.html_body =~ Paths.to_url(Paths.task_path(ctx.company, ctx.task))
+      true
+    end)
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
+  end
+
   test "includes pending KPI updates for the champion", ctx do
     flush_emails()
 

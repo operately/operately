@@ -135,15 +135,18 @@ it("hides the language selector and does not persist language when editing someo
   expect(applyLanguage).not.toHaveBeenCalled();
 });
 
-it.each(["en", "pt-BR"] as const)("shows the language selector and persists %s when i18n is on", async (language) => {
-  mockCompanyLoader(["i18n"]);
-  await mountPage();
-  expect(props().showLanguageSelector).toBe(true);
-  act(() => props().onLanguageChange?.(language));
-  await act(() => props().onSubmit());
-  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language });
-  expect(applyLanguage).toHaveBeenCalledWith(language);
-});
+it.each(["en", "pt-BR", "es"] as const)(
+  "shows the language selector and persists %s when i18n is on",
+  async (language) => {
+    mockCompanyLoader(["i18n"]);
+    await mountPage();
+    expect(props().showLanguageSelector).toBe(true);
+    act(() => props().onLanguageChange?.(language));
+    await act(() => props().onSubmit());
+    expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language });
+    expect(applyLanguage).toHaveBeenCalledWith(language);
+  },
+);
 
 it("navigates after a successful save even if applying language fails", async () => {
   mockCompanyLoader(["i18n"]);

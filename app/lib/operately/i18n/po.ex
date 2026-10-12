@@ -50,7 +50,8 @@ defmodule Operately.I18n.Po do
     existing_by_key = Map.new(catalog.messages, &{Expo.Message.key(&1), &1})
     active_keys = MapSet.new(messages, &Message.key/1)
 
-    active = Enum.map(messages, &merge_translation(&1, existing_by_key))
+    plural_count = plural_count(catalog.headers)
+    active = Enum.map(messages, &(&1 |> merge_translation(existing_by_key) |> ensure_plural_forms(plural_count)))
 
     obsolete =
       catalog.messages
@@ -61,6 +62,20 @@ defmodule Operately.I18n.Po do
     content = Expo.PO.compose(%{catalog | messages: merged})
     File.write!(path, content)
   end
+
+  defp plural_count(headers) do
+    case Regex.run(~r/nplurals\s*=\s*(\d+)/, IO.iodata_to_binary(headers)) do
+      [_, count] -> String.to_integer(count)
+      nil -> 2
+    end
+  end
+
+  defp ensure_plural_forms(%Plural{} = message, count) do
+    forms = Enum.reduce(0..(count - 1), message.msgstr, &Map.put_new(&2, &1, [""]))
+    %{message | msgstr: forms}
+  end
+
+  defp ensure_plural_forms(message, _count), do: message
 
   defp merge_translation(message, existing_by_key) do
     case Map.get(existing_by_key, Message.key(message)) do

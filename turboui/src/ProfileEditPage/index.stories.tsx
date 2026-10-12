@@ -5,6 +5,10 @@ import { genPerson, genPeople } from "../utils/storybook/genPeople";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
+import { createInstance } from "i18next";
+import { I18nextProvider } from "react-i18next";
+import { i18nOptions } from "../i18nOptions";
+import es from "../../../app/assets/js/generated/locales/es.json";
 
 const meta: Meta<typeof ProfileEditPage> = {
   title: "Pages/ProfileEditPage",
@@ -42,7 +46,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
   );
   const [timezone, setTimezone] = useState("America/New_York");
   const [timeFormat, setTimeFormat] = useState<ProfileEditPage.TimeFormat>("automatic");
-  const [language, setLanguage] = useState<ProfileEditPage.Language>("en");
+  const [language, setLanguage] = useState<ProfileEditPage.Language>(args.language ?? "en");
 
   const [manager, setManager] = useState<ProfileEditPage.Person | null>(() => {
     if ("manager" in args) {
@@ -144,6 +148,17 @@ export const UserEditingOwnProfile: Story = {
 
 export const LanguageSelectorEnabled: Story = {
   render: () => <DefaultStory isCurrentUser={true} showLanguageSelector={true} />,
+};
+
+const spanishCatalog = createInstance();
+void spanishCatalog.init({ ...i18nOptions, lng: "es", initImmediate: false, resources: { es: { translation: es } } });
+
+export const Spanish: Story = {
+  render: () => (
+    <I18nextProvider i18n={spanishCatalog}>
+      <DefaultStory isCurrentUser={true} showLanguageSelector={true} language="es" />
+    </I18nextProvider>
+  ),
 };
 
 export const AdminEditingOtherUser: Story = {

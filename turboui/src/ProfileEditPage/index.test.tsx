@@ -1,5 +1,5 @@
 import React from "react";
-import { configure, render, screen } from "@testing-library/react";
+import { configure, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import "@testing-library/jest-dom";
 import "../i18n";
@@ -70,4 +70,14 @@ test("hides the language picker when editing someone else", () => {
   renderPage({ isCurrentUser: false, showLanguageSelector: true });
 
   expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+});
+
+test("selects Español using the stable language option", () => {
+  const onLanguageChange = jest.fn();
+  renderPage({ onLanguageChange });
+  fireEvent.click(screen.getByTestId("language"));
+  const option = screen.getByTestId("language-option-es");
+  expect(option).toHaveTextContent("Español");
+  fireEvent.click(option);
+  expect(onLanguageChange).toHaveBeenCalledWith("es");
 });

@@ -6,6 +6,9 @@ describe("resolveEffectiveLanguage", () => {
   });
 
   it("uses an explicit supported language when the flag is on", () => {
+    expect(resolveEffectiveLanguage("es", true)).toBe("es");
+    expect(resolveEffectiveLanguage("es", false)).toBe("en");
+    expect(isSupportedLanguage("es-ES")).toBe(false);
     expect(resolveEffectiveLanguage("pt-BR", true)).toBe("pt-BR");
     expect(resolveEffectiveLanguage("en", true)).toBe("en");
   });

@@ -4,6 +4,21 @@ defmodule OperatelyEmail.Emails.ResetPasswordEmailTest do
   alias Operately.Support.Factory
   alias OperatelyEmail.Emails.ResetPasswordEmail
 
+  test "Spanish security email preserves the reset token and restores locale" do
+    ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
+    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "es"})
+    account = Operately.Repo.preload(person, :account).account
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+    assert {:ok, _} = ResetPasswordEmail.send(account, "literal-spanish-token")
+    assert_email_sent(fn email ->
+      assert email.subject == "Instrucciones para restablecer la contraseña"
+      assert email.html_body =~ "literal-spanish-token"
+      assert email.text_body =~ "literal-spanish-token"
+      true
+    end)
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
+  end
+
   test "recipient language is scoped, literal values survive, and flag rollback restores English" do
     ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})

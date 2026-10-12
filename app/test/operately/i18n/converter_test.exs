@@ -11,6 +11,23 @@ defmodule Operately.I18n.ConverterTest do
   msgstr[1] ""
   """
 
+  test "Spanish preserves singular, fractional, zero, and whole-million counts" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 tarea"
+    msgstr[1] "%{count} tareas (millones)"
+    msgstr[2] "%{count} tareas"
+    """
+
+    counts = [0, 1, 2, 0.5, 1.5, 2.5, 999_999, 1_000_000, 1_000_001, 2_000_000, 2_000_001]
+
+    assert render_task_counts(po, "es", counts) ==
+             ["0 tareas", "1 tarea", "2 tareas", "0.5 tareas", "1.5 tareas", "2.5 tareas", "999999 tareas",
+              "1000000 tareas (millones)", "1000001 tareas", "2000000 tareas (millones)", "2000001 tareas"]
+  end
+
   test "untranslated Portuguese plurals fall back using English plural rules" do
     assert Converter.from_po(@untranslated_tasks, "pt-BR") == %{}
 

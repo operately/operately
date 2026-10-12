@@ -42,6 +42,31 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     end)
   end
 
+  test "Spanish immediate and buffered copy preserves names and destinations", ctx do
+    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "es"})
+    person = %{person | company: company}
+    activity = task_adding_activity(ctx)
+    previous = Gettext.get_locale(OperatelyWeb.Gettext)
+
+    item = Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
+      TaskAddingEmail.send(person, activity)
+      TaskAddingEmail.buffered_item(person, activity)
+    end)
+
+    assert item.headline == "creó la tarea «Call leads»"
+    assert item.parent_name == ctx.project.name
+    assert_email_sent(fn email ->
+      assert email.subject == "(Paper Expansion) Michael S. agregó la tarea «Call leads»"
+      assert email.html_body =~ "Ver tarea"
+      assert email.text_body =~ "Call leads"
+      assert email.text_body =~ OperatelyWeb.Paths.task_path(ctx.company, ctx.task)
+      refute email.html_body =~ "%{"
+      true
+    end)
+    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
+  end
+
   test "renders English copy when the recipient is mentioned", ctx do
     description = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
     activity = task_adding_activity(ctx, %{"description" => description})

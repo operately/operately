@@ -1,12 +1,12 @@
 export const DEFAULT_LANGUAGE = "en";
 export const I18N_FEATURE_FLAG = "i18n";
 
-export const SUPPORTED_LANGUAGES = ["en", "pt-BR"] as const;
+export const SUPPORTED_LANGUAGES = ["en", "pt-BR", "es"] as const;
 
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export function isSupportedLanguage(value: string | null | undefined): value is SupportedLanguage {
-  return value === "en" || value === "pt-BR";
+  return value === "en" || value === "pt-BR" || value === "es";
 }
 
 export function resolveEffectiveLanguage(

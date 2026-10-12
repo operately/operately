@@ -5,6 +5,7 @@ import { i18nOptions } from "turboui";
 
 import en from "./generated/locales/en.json";
 import ptBR from "./generated/locales/pt-BR.json";
+import es from "./generated/locales/es.json";
 import { DEFAULT_LANGUAGE, isSupportedLanguage, SUPPORTED_LANGUAGES } from "./i18n/languages";
 
 // The app and TurboUI install separate package types but share this runtime setting.
@@ -29,10 +30,18 @@ const portugueseResources = {
   ...FORMAT_MESSAGES,
 };
 
+const spanishResources = {
+  ...es,
+  ...FORMAT_MESSAGES,
+};
+
 const initOptions = {
   ...i18nOptions,
   supportedLngs: [...SUPPORTED_LANGUAGES],
   resources: {
+    es: {
+      translation: spanishResources,
+    },
     en: {
       translation: englishResources,
     },
@@ -49,6 +58,7 @@ if (!i18n.isInitialized) {
 } else {
   i18n.addResourceBundle("en", "translation", englishResources, true, true);
   i18n.addResourceBundle("pt-BR", "translation", portugueseResources, true, true);
+  i18n.addResourceBundle("es", "translation", spanishResources, true, true);
   i18n.options.supportedLngs = [...SUPPORTED_LANGUAGES];
 }
 

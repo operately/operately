@@ -103,8 +103,36 @@ defmodule Operately.I18n.CatalogTest do
   end
 
   test "maps gettext directory names to BCP 47 locale codes" do
+    assert Locale.to_bcp47("es") == "es"
+    assert Locale.to_gettext("es") == "es"
     assert Locale.to_bcp47("pt_BR") == "pt-BR"
     assert Locale.to_gettext("pt-BR") == "pt_BR"
+  end
+
+  test "repeated generation preserves every Spanish plural index and locale header", ctx do
+    path = Path.join(ctx.po_root, "es/LC_MESSAGES/messages.po")
+    File.mkdir_p!(Path.dirname(path))
+    File.write!(path, """
+    msgid ""
+    msgstr ""
+    "Language: es\\n"
+    "Plural-Forms: nplurals=3; plural=(n == 1 ? 0 : (n != 0 && n % 1000000 == 0 ? 1 : 2));\\n"
+
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "1 tarea"
+    msgstr[1] "%{count} tareas"
+    msgstr[2] "%{count} tareas"
+    """)
+    opts = extract_opts(ctx.pot_path, ctx.po_root) ++ [json_dir: ctx.json_dir]
+    Catalog.extract_and_convert(opts)
+    first = File.read!(path)
+    resources = File.read!(Path.join(ctx.json_dir, "es.json"))
+    Catalog.extract_and_convert(opts)
+    assert File.read!(path) == first
+    assert File.read!(Path.join(ctx.json_dir, "es.json")) == resources
+    assert json(ctx.json_dir, "es.json")["1 task_many"] == "{{count}} tareas"
+    assert json(ctx.json_dir, "es.json")["1 task_other"] == "{{count}} tareas"
   end
 
   test "preserves locale headers during extraction", %{pot_path: pot_path, po_root: po_root, po_path: po_path} do

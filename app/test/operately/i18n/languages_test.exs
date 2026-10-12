@@ -5,13 +5,14 @@ defmodule Operately.I18n.LanguagesTest do
 
   test "defaults to English and lists supported languages" do
     assert Languages.default() == "en"
-    assert Languages.supported() == ["en", "pt-BR"]
+    assert Languages.supported() == ["en", "pt-BR", "es"]
     assert Languages.feature_flag() == "i18n"
   end
 
   test "accepts only supported language tags" do
     assert Languages.supported?("en")
     assert Languages.supported?("pt-BR")
+    assert Languages.supported?("es")
     refute Languages.supported?("pt")
     refute Languages.supported?("fr")
     refute Languages.supported?(nil)
@@ -19,6 +20,6 @@ defmodule Operately.I18n.LanguagesTest do
   end
 
   test "exposes API enum atoms for supported languages" do
-    assert Languages.api_values() == [:en, :"pt-BR"]
+    assert Languages.api_values() == [:en, :"pt-BR", :es]
   end
 end

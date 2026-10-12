@@ -4,6 +4,21 @@ defmodule Operately.I18n.AccountLanguageTest do
   alias Operately.I18n.AccountLanguage
   alias Operately.Support.Factory
 
+  test "Spanish account language falls back for a conflicting Portuguese membership" do
+    ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
+    {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "es"})
+    account = Operately.Repo.preload(person, :account).account
+    assert AccountLanguage.resolve(account) == "es"
+
+    other = Operately.CompaniesFixtures.company_fixture()
+    {:ok, other} = Operately.Companies.enable_experimental_feature(other, "i18n")
+    member = Operately.PeopleFixtures.person_fixture(%{company_id: other.id, account_id: account.id})
+    {:ok, member} = Operately.People.update_person(member, %{language: "pt-BR"})
+    assert AccountLanguage.resolve(account) == "en"
+    {:ok, _} = Operately.People.update_person(member, %{suspended: true})
+    assert AccountLanguage.resolve(account) == "es"
+  end
+
   test "account emails use a shared effective language and fall back when memberships disagree" do
     ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})

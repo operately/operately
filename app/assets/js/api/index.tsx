@@ -3110,7 +3110,7 @@ export type GoalStatus =
   | "pending"
   | "outdated";
 
-export type Language = "en" | "pt-BR";
+export type Language = "en" | "pt-BR" | "es";
 
 export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
@@ -3220,9 +3220,9 @@ export type RichTextResourceType =
   | "kpi"
   | "project_check_in"
   | "project_retrospective"
+  | "goal_check_in"
   | "project_discussion"
   | "goal_discussion"
-  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
