@@ -1208,6 +1208,150 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       after_count = count_activities(ctx.project.id, "project_champion_updating")
       assert after_count == before_count + 1
     end
+
+    for invalid_champion <- [:other_company, :missing, :suspended, :suspended_at, :same_account] do
+      test "rejects a #{invalid_champion} champion without changing assignments", ctx do
+        ctx = Factory.log_in_person(ctx, :creator)
+        champion_id = invalid_champion_id(ctx, unquote(invalid_champion))
+        before = champion_assignment_snapshot(ctx.project)
+
+        assert {400, %{message: "The request was malformed"}} =
+                 mutation(ctx.conn, [:projects, :update_champion], %{
+                   project_id: Paths.project_id(ctx.project),
+                   champion_id: champion_id
+                 })
+
+        assert champion_assignment_snapshot(ctx.project) == before
+      end
+    end
+
+    test "rejects a project from another company", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      other = Factory.setup(%{}) |> Factory.add_space(:space) |> Factory.add_project(:project, :space)
+      before = champion_assignment_snapshot(other.project)
+
+      assert {404, _} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(other.project),
+                 champion_id: Paths.person_id(ctx.new_champion)
+               })
+
+      assert champion_assignment_snapshot(other.project) == before
+    end
+
+    test "accepts an active guest without space access", ctx do
+      ctx = ctx |> Factory.add_company_member(:guest) |> Factory.log_in_person(:creator)
+      {:ok, guest} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.creator, ctx.guest)
+      assert guest.type == :guest
+      assert {:error, :not_found} = Operately.People.Person.get(guest, id: guest.id)
+      assert {:error, :not_found} = Operately.Groups.Group.get(guest, id: ctx.engineering.id)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(guest)
+               })
+
+      assert Repo.reload(ctx.project) |> Repo.preload(:champion) |> then(& &1.champion.id) == guest.id
+    end
+
+    test "accepts an active member who is not in the space", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      assert {:error, :not_found} = Operately.Groups.Group.get(ctx.member, id: ctx.engineering.id)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.member)
+               })
+
+      assert Repo.reload(ctx.project) |> Repo.preload(:champion) |> then(& &1.champion.id) == ctx.member.id
+    end
+
+    test "a guest with full access can assign a member they cannot see", ctx do
+      ctx = ctx |> Factory.add_company_member(:guest) |> Factory.add_company_member(:member)
+      {:ok, guest} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.creator, ctx.guest)
+      project = Repo.preload(ctx.project, :access_context)
+      assert {:ok, _} = Operately.Access.bind_person(project.access_context, guest.id, Binding.full_access())
+      assert {:error, :not_found} = Operately.People.Person.get(guest, id: ctx.member.id)
+
+      ctx = ctx |> Map.put(:guest, guest) |> Factory.log_in_person(:guest)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.member)
+               })
+
+      assert Repo.reload(ctx.project) |> Repo.preload(:champion) |> then(& &1.champion.id) == ctx.member.id
+    end
+
+    test "keeps a single champion when the current champion is submitted again", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.creator)
+               })
+
+      assert Repo.reload(ctx.project) |> Repo.preload(:contributors) |> then(fn project ->
+               project.contributors |> Enum.filter(&(&1.role == :champion)) |> Enum.map(& &1.person_id)
+             end) == [ctx.creator.id]
+    end
+
+    test "treats an empty champion id as clearing the champion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: ""
+               })
+
+      assert Repo.reload(ctx.project) |> Repo.preload(:champion) |> then(& &1.champion) == nil
+    end
+
+    test "rejects updates when the company is read-only", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      put_company_in_read_only(ctx.company)
+      before = champion_assignment_snapshot(ctx.project)
+
+      assert {403, _} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.new_champion)
+               })
+
+      assert champion_assignment_snapshot(ctx.project) == before
+    end
+
+    test "a write token cannot assign a foreign champion", ctx do
+      ctx = Factory.add_api_token(ctx, :token, :creator, read_only: false)
+      other = Factory.setup(%{})
+      before = champion_assignment_snapshot(ctx.project)
+
+      assert {400, %{message: "The request was malformed"}} =
+               external_mutation(ctx.conn, ctx.token, "projects/update_champion", %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(other.creator)
+               })
+
+      assert champion_assignment_snapshot(ctx.project) == before
+    end
+
+    test "a read-only token cannot update the champion", ctx do
+      ctx = Factory.add_api_token(ctx, :token, :creator, read_only: true)
+      before = champion_assignment_snapshot(ctx.project)
+
+      assert {403, "Read-only API tokens cannot execute mutations"} =
+               external_mutation(ctx.conn, ctx.token, "projects/update_champion", %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.new_champion)
+               })
+
+      assert champion_assignment_snapshot(ctx.project) == before
+    end
   end
 
   describe "update parent goal" do
@@ -2199,6 +2343,77 @@ defmodule OperatelyWeb.Api.ProjectsTest do
   #
 
   import Ecto.Query, only: [from: 2]
+
+  defp invalid_champion_id(_ctx, :other_company) do
+    Paths.person_id(Factory.setup(%{}).creator)
+  end
+
+  defp invalid_champion_id(_ctx, :missing) do
+    Operately.ShortUuid.encode!(Ecto.UUID.generate())
+  end
+
+  defp invalid_champion_id(ctx, :suspended) do
+    ctx = Factory.add_company_member(ctx, :invalid_champion)
+    ctx.invalid_champion |> Ecto.Changeset.change(suspended: true) |> Repo.update!()
+    Paths.person_id(ctx.invalid_champion)
+  end
+
+  defp invalid_champion_id(ctx, :suspended_at) do
+    ctx = Factory.add_company_member(ctx, :invalid_champion)
+
+    ctx.invalid_champion
+    |> Ecto.Changeset.change(suspended_at: DateTime.utc_now() |> DateTime.truncate(:second))
+    |> Repo.update!()
+
+    Paths.person_id(ctx.invalid_champion)
+  end
+
+  defp invalid_champion_id(ctx, :same_account) do
+    ctx = Factory.add_company(ctx, :other_company, ctx.account, name: "Other Co")
+    person = Operately.People.get_person!(ctx.account, ctx.other_company)
+    assert person.account_id == ctx.creator.account_id
+    assert person.company_id != ctx.company.id
+    Paths.person_id(person)
+  end
+
+  defp champion_assignment_snapshot(project) do
+    project = Repo.reload(project) |> Repo.preload(:champion)
+    context_id = Operately.Access.get_context!(project_id: project.id).id
+
+    %{
+      champion_id: project.champion && project.champion.id,
+      project: Map.take(project, [:name, :company_id, :group_id, :updated_at]),
+      contributors: assignment_rows(Operately.Projects.Contributor, :project_id, project.id, [:id, :person_id, :role]),
+      bindings: assignment_rows(Operately.Access.Binding, :context_id, context_id, [:id, :group_id, :access_level, :tag]),
+      subscriptions:
+        assignment_rows(Operately.Notifications.Subscription, :subscription_list_id, project.subscription_list_id, [
+          :id,
+          :person_id,
+          :type,
+          :canceled
+        ]),
+      activities: count_activities(project.id, "project_champion_updating"),
+      memberships: Repo.aggregate(Operately.Access.GroupMembership, :count),
+      space_members: Repo.aggregate(Operately.Groups.Member, :count)
+    }
+  end
+
+  defp assignment_rows(schema, field, id, columns) do
+    from(row in schema, where: field(row, ^field) == ^id, order_by: row.id, select: map(row, ^columns))
+    |> Repo.all()
+  end
+
+  defp put_company_in_read_only(company) do
+    {:ok, account} = Operately.Billing.get_or_create_billing_account(company)
+
+    {:ok, _} =
+      Operately.Billing.update_billing_account(account, %{
+        access_state: :read_only,
+        access_state_reason: :past_due,
+        access_state_started_at: DateTime.utc_now(),
+        access_state_ends_at: nil
+      })
+  end
 
   defp count_activities(project_id, action) do
     from(a in Operately.Activities.Activity,
