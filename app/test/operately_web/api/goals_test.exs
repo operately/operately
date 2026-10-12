@@ -310,6 +310,24 @@ defmodule OperatelyWeb.Api.GoalsTest do
       refute direct_binding(ctx.goal, foreign)
     end
 
+    test "rejects a mixed batch without changing an existing access level", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      foreign = foreign_person()
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, binding} = Access.bind_person(context, ctx.member.id, Binding.comment_access())
+
+      assert_members_rejected(ctx, [
+        %{id: Paths.person_id(ctx.member), access_level: Binding.full_access()},
+        %{id: Paths.person_id(foreign), access_level: Binding.edit_access()}
+      ])
+
+      unchanged = direct_binding(ctx.goal, ctx.member)
+      assert unchanged.id == binding.id
+      assert unchanged.access_level == Binding.comment_access()
+      assert unchanged.updated_at == binding.updated_at
+      refute direct_binding(ctx.goal, foreign)
+    end
+
     test "rejects a missing person without granting the rest of the batch", ctx do
       ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
 
