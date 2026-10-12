@@ -15785,7 +15785,6 @@ msgstr ""
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:252
-#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
 msgid "Provider"
 msgstr ""
 
@@ -23788,6 +23787,12 @@ msgstr ""
 #: lib/operately_email/date_formatting.ex:33
 msgctxt "abbreviated month"
 msgid "Sep"
+msgstr ""
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
+msgctxt "email"
+msgid "Provider"
 msgstr ""
 
 #.frontend

@@ -6161,7 +6161,7 @@ msgstr "Mit Inhaberrechten kannst du:"
 #.frontend
 #: assets/js/features/SpaceTools/Tasks/ZeroState.tsx:36
 msgid "Assign an owner"
-msgstr "Inhaberrechte zuweisen"
+msgstr "Verantwortliche Person zuweisen"
 
 #.frontend
 #: ../turboui/src/GoalPage/Sidebar.tsx:219
@@ -15786,7 +15786,6 @@ msgstr "Dir Inhaberrechte erteilt"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:252
-#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
 msgid "Provider"
 msgstr "Zahlungsanbieter"
 
@@ -16716,7 +16715,7 @@ msgstr "Erneut versuchen"
 #.frontend
 #: assets/js/layouts/CompanyLayout/KeyboardShortcutsModal.tsx:94
 msgid "Return"
-msgstr "Zurück"
+msgstr "Enter"
 
 #.elixir
 #: lib/operately/md/workmap.ex:7
@@ -23796,6 +23795,12 @@ msgstr "Okt."
 msgctxt "abbreviated month"
 msgid "Sep"
 msgstr "Sept."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
+msgctxt "email"
+msgid "Provider"
+msgstr "E-Mail-Anbieter"
 
 #.frontend
 #: ../turboui/src/Reactions/index.tsx:275

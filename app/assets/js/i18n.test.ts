@@ -70,6 +70,10 @@ describe("i18n", () => {
       expect(i18n.t("Pending")).toBe("Ausstehend");
       expect(i18n.t("Title", { context: "person" })).toBe("Position");
       expect(i18n.t("Title", { context: "resource" })).toBe("Titel");
+      expect(i18n.t("Return")).toBe("Enter");
+      expect(i18n.t("Assign an owner")).toBe("Verantwortliche Person zuweisen");
+      expect(i18n.t("Provider")).toBe("Zahlungsanbieter");
+      expect(i18n.t("Provider", { context: "email" })).toBe("E-Mail-Anbieter");
     });
 
     it("selects German plurals at zero, one, fractions, and large counts", async () => {

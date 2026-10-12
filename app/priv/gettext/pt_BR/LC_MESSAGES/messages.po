@@ -16216,7 +16216,6 @@ msgstr "Promoveu você a proprietário da conta"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:252
-#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
 msgid "Provider"
 msgstr "Provedor"
 
@@ -24511,6 +24510,12 @@ msgstr "out."
 msgctxt "abbreviated month"
 msgid "Sep"
 msgstr "set."
+
+#.frontend
+#: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:105
+msgctxt "email"
+msgid "Provider"
+msgstr "Provedor"
 
 #.frontend
 #: ../turboui/src/Reactions/index.tsx:275
