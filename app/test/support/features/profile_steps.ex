@@ -79,6 +79,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     ctx
     |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Deutsch"))
     |> UI.assert_text("Sprache")
+    |> UI.assert_has(css: "[data-test-id='about-me'] [data-placeholder^='Erzähle kurz etwas über dich']")
     |> UI.take_screenshot()
   end
 

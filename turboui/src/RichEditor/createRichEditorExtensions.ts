@@ -1,5 +1,5 @@
 import type { Extensions } from "@tiptap/core";
-import { Placeholder } from "@tiptap/extensions";
+import { Placeholder, type PlaceholderOptions } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import { TaskList } from "@tiptap/extension-list";
 import { tableExtensions } from "./extensions/Table";
@@ -15,7 +15,7 @@ import type { RichEditorHandlers } from "./useEditor";
 
 export type CreateRichEditorExtensionsOptions = {
   editable?: boolean;
-  placeholder?: string;
+  placeholder?: PlaceholderOptions["placeholder"];
   thumbnailBlobs?: boolean;
   portalContainer?: HTMLElement;
 };
