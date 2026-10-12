@@ -28,10 +28,17 @@ defmodule Operately.Operations.ProjectCreation do
     :anonymous_access_level,
     :company_access_level,
     :space_access_level,
-    :analytics_context
+    :analytics_context,
+    :timeframe
   ]
 
   def run(%__MODULE__{} = params) do
+    build(params)
+    |> Repo.transaction()
+    |> Repo.extract_result(:project)
+  end
+
+  def build(params) do
     Multi.new()
     |> insert_project(params)
     |> insert_default_resource_hub()
@@ -45,8 +52,6 @@ defmodule Operately.Operations.ProjectCreation do
     |> Companies.mark_setup_completed(params.company_id)
     |> track_workspace_activation(params)
     |> IndexUpdates.enqueue(:search_project, "project", fn changes -> changes.project.id end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:project)
   end
 
   defp track_workspace_activation(multi, params) do
@@ -69,7 +74,7 @@ defmodule Operately.Operations.ProjectCreation do
         :private => is_private(params.visibility),
         :creator_id => params.creator_id,
         :started_at => DateTime.utc_now(),
-        :timeframe => %{
+        :timeframe => params.timeframe || %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
           contextual_end_date: nil,
         },
