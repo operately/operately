@@ -106,9 +106,8 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
     assert Repo.aggregate(Operately.Kpis.Kpi, :count) == 0
   end
 
-  test "validates ownership against the destination and disallows identical owners", ctx do
-    ctx = ctx |> Factory.add_curated_template(:template, type: :goal, published: true) |> Factory.add_company_member(:outsider) |> Factory.add_space_member(:champion, :space)
-    assert {400, _} = mutation(ctx.conn, [:curated_templates, :instantiate], Map.put(inputs(ctx), :champion_id, ctx.outsider.id))
+  test "disallows identical owners and preserves private space access defaults", ctx do
+    ctx = ctx |> Factory.add_curated_template(:template, type: :goal, published: true) |> Factory.add_space_member(:champion, :space)
     assert {400, _} = mutation(ctx.conn, [:curated_templates, :instantiate], Map.merge(inputs(ctx), %{champion_id: ctx.champion.id, reviewer_id: ctx.champion.id}))
     assert {200, result} = mutation(ctx.conn, [:curated_templates, :instantiate], Map.merge(inputs(ctx), %{champion_id: ctx.champion.id, reviewer_id: ctx.creator.id}))
     goal = Repo.get!(Operately.Goals.Goal, Operately.ShortUuid.decode!(result.resource_id))
@@ -118,6 +117,63 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
     assert levels.public == 0
     assert levels.company == 0
     assert levels.space == Operately.Access.Binding.comment_access()
+  end
+
+  for type <- [:goal, :project, :kpi], champion <- [:guest, :champion] do
+    test "guest with edit access creates #{type} with #{champion} as champion", ctx do
+      type = unquote(type)
+      ctx =
+        ctx
+        |> Factory.add_curated_template(:template, type: type, published: true)
+        |> Factory.add_company_member(:guest)
+        |> Factory.add_space_member(:champion, :space)
+        |> Factory.add_space_member(:reviewer, :space)
+
+      {:ok, guest} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.creator, ctx.guest)
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{id: guest.id, access_level: Operately.Access.Binding.edit_access()}])
+      ctx = ctx |> Map.put(:guest, guest) |> Factory.log_in_person(:guest)
+
+      assert {:error, :not_found} = Operately.People.Person.get(ctx.guest, id: ctx.guest.id)
+      champion_id = Map.fetch!(ctx, unquote(champion)).id
+      reviewer_id = if type == :kpi, do: nil, else: ctx.reviewer.id
+      inputs = Map.merge(inputs(ctx), %{champion_id: champion_id, reviewer_id: reviewer_id})
+
+      assert {200, result} = mutation(ctx.conn, [:curated_templates, :instantiate], inputs)
+      resource_id = Operately.ShortUuid.decode!(result.resource_id)
+
+      case type do
+        :goal ->
+          goal = Repo.get!(Operately.Goals.Goal, resource_id)
+          assert goal.champion_id == champion_id
+          assert goal.reviewer_id == reviewer_id
+
+        :project ->
+          project = Repo.get!(Operately.Projects.Project, resource_id) |> Repo.preload(:contributors)
+          owners = Map.new(project.contributors, &{&1.role, &1.person_id})
+          assert owners[:champion] == champion_id
+          assert owners[:reviewer] == reviewer_id
+
+        :kpi ->
+          assert Repo.get!(Operately.Kpis.Kpi, resource_id).champion_id == champion_id
+      end
+    end
+  end
+
+  test "accepts project owners without existing destination access, like normal project creation", ctx do
+    ctx =
+      ctx
+      |> Factory.add_curated_template(:template, type: :project, published: true)
+      |> Factory.add_company_member(:champion)
+      |> Factory.add_company_member(:reviewer)
+
+    assert {:error, :not_found} = Operately.Groups.Group.get(ctx.champion, id: ctx.space.id)
+    assert {:error, :not_found} = Operately.Groups.Group.get(ctx.reviewer, id: ctx.space.id)
+    inputs = Map.merge(inputs(ctx), %{champion_id: ctx.champion.id, reviewer_id: ctx.reviewer.id})
+    assert {200, result} = mutation(ctx.conn, [:curated_templates, :instantiate], inputs)
+    project = Repo.get!(Operately.Projects.Project, Operately.ShortUuid.decode!(result.resource_id)) |> Repo.preload(:contributors)
+    owners = Map.new(project.contributors, &{&1.role, &1.person_id})
+    assert owners[:champion] == ctx.champion.id
+    assert owners[:reviewer] == ctx.reviewer.id
   end
 
   test "requires start dates for goals and projects", ctx do
