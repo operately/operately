@@ -1,10 +1,10 @@
 import { isUnauthorizedError, loginPath } from "./unauthorized";
 
-function stubLocation(pathname: string) {
+function stubLocation(pathname: string, search = "", hash = "") {
   Object.defineProperty(global, "window", {
     configurable: true,
     value: {
-      location: { pathname, assign: jest.fn() },
+      location: { pathname, search, hash, assign: jest.fn() },
     },
   });
 }
@@ -35,6 +35,13 @@ describe("loginPath", () => {
     stubLocation("/");
 
     expect(loginPath()).toBe("/log_in");
+  });
+
+  it("preserves the full template destination", () => {
+    stubLocation("/templates/example/use", "?source=website", "#form");
+    expect(new URLSearchParams(loginPath().split("?")[1]).get("redirect_to")).toBe(
+      "/templates/example/use?source=website#form",
+    );
   });
 
   it("includes redirect_to for nested paths", () => {

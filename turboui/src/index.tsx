@@ -296,6 +296,7 @@ export { SiteMessageBanner } from "./SiteMessageBanner";
 
 export { ErrorPage } from "./ErrorPage";
 export { BillingPickCompanyPage } from "./BillingPickCompanyPage";
+export { CompanyPickerPage } from "./CompanyPickerPage";
 
 export { formatDate } from "./utils/formatting";
 

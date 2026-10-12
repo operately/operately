@@ -25,8 +25,16 @@ export class Paths {
     return "/forgot-password";
   }
 
-  static newCompanyPath() {
-    return "/new";
+  static newCompanyPath(params?: { redirectTo: string }) {
+    return "/new" + encodeUrlParams(params ? { redirect_to: params.redirectTo } : undefined);
+  }
+
+  static curatedTemplateEntryPath(templateId: string) {
+    return `/templates/${encodeURIComponent(templateId)}/use`;
+  }
+
+  curatedTemplateUsePath(templateId: string) {
+    return this.createCompanyPath(["templates", encodeURIComponent(templateId), "use"]);
   }
 
   static companyImportPath() {
@@ -720,4 +728,23 @@ export function encodeUrlParams(params?: Record<any, any>) {
     .join("&");
 
   return queryStr ? "?" + queryStr : "";
+}
+
+/** Return destinations are app-relative paths, never origins or encoded separators. */
+export function internalReturnPath(value: string | null | undefined): string | null {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
+  if (/[\\\u0000-\u0020\u007f]/.test(value) || /%(?:2f|5c|0[0-9a-f]|1[0-9a-f]|7f)/i.test(value)) return null;
+  return value;
+}
+
+export function authPath(path: string, search = window.location.search): string {
+  const current = new URLSearchParams(search);
+  const params = new URLSearchParams();
+  const returnTo = internalReturnPath(current.get("redirect_to"));
+  const invite = current.get("invite_token");
+
+  if (returnTo) params.set("redirect_to", returnTo);
+  if (invite) params.set("invite_token", invite);
+
+  return params.size ? `${path}?${params}` : path;
 }
