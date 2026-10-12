@@ -95,12 +95,14 @@ export function useEditor(props: UseEditorProps): EditorState {
   const sourceContent = props.editable ? (restoredDraft ?? baseContent) : baseContent;
   const initialContent = normalizeRichTextContent(props.transformContent?.(sourceContent) ?? sourceContent);
   const [empty, setEmpty] = React.useState(isRichTextEmpty(initialContent));
+  const placeholderRef = React.useRef(props.placeholder);
+  const placeholder = React.useCallback(() => placeholderRef.current ?? "", []);
 
   const extensions = React.useMemo(
     () =>
       createRichEditorExtensions(props.handlers, {
         editable: props.editable,
-        placeholder: props.placeholder,
+        placeholder,
         thumbnailBlobs: props.thumbnailBlobs,
         portalContainer: embedding?.portalContainer,
       }),
@@ -108,7 +110,7 @@ export function useEditor(props: UseEditorProps): EditorState {
       props.handlers.uploadFile,
       props.handlers.peopleSearch,
       props.editable,
-      props.placeholder,
+      placeholder,
       props.thumbnailBlobs,
       embedding?.portalContainer,
     ],
@@ -176,6 +178,14 @@ export function useEditor(props: UseEditorProps): EditorState {
       }
     },
   });
+
+  React.useEffect(() => {
+    placeholderRef.current = props.placeholder;
+    if (!editor || editor.isDestroyed) return;
+
+    // Refresh placeholder decorations without changing the document, selection, or undo history.
+    editor.view.dispatch(editor.state.tr);
+  }, [editor, props.placeholder]);
 
   React.useEffect(() => {
     if (!editor || !props.editable || !props.handlers.resolveResourceLinks) return;
