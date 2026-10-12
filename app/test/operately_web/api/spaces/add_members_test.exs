@@ -62,6 +62,165 @@ defmodule OperatelyWeb.Api.Spaces.AddMembersTest do
     end
   end
 
+  describe "company boundary validation" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
+      add_manager_to_space(ctx, space)
+
+      Map.merge(ctx, %{space: space})
+    end
+
+    test "rejects spaces from another company", ctx do
+      other_company = Operately.CompaniesFixtures.company_fixture()
+      other_creator = Ecto.assoc(other_company, :people) |> Repo.all() |> hd()
+      other_space = group_fixture(other_creator, %{company_id: other_company.id})
+
+      assert {404, res} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(other_space),
+        members: [%{id: Paths.person_id(ctx.person), access_level: Binding.comment_access()}],
+      })
+
+      assert res.message == "The requested resource was not found"
+    end
+
+    test "rejects people from another company", ctx do
+      foreign = foreign_person_fixture()
+      ctx = Factory.add_project(ctx, :project, :space, creator: :company_creator)
+
+      before = access_snapshot()
+
+      assert {400, res} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Paths.person_id(foreign), access_level: Binding.comment_access()}],
+      })
+
+      assert res.message == "The request was malformed"
+      assert access_snapshot() == before
+      refute member_record(ctx.space, foreign)
+      refute foreign_has_space_binding?(ctx.space, foreign)
+      assert {:error, :not_found} = Operately.Projects.Project.get(foreign, id: ctx.project.id)
+    end
+
+    test "rejects same-account person records from another company", ctx do
+      other_company = Operately.CompaniesFixtures.company_fixture()
+      foreign = person_fixture(%{company_id: other_company.id, account_id: ctx.account.id, email: ctx.account.email})
+
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Paths.person_id(foreign), access_level: Binding.comment_access()}],
+      })
+
+      assert access_snapshot() == before
+      refute member_record(ctx.space, foreign)
+      refute foreign_has_space_binding?(ctx.space, foreign)
+    end
+
+    test "rejects suspended people (suspended flag)", ctx do
+      suspended = person_fixture(%{company_id: ctx.company.id})
+      suspended |> Ecto.Changeset.change(suspended: true) |> Repo.update!()
+
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Paths.person_id(suspended), access_level: Binding.comment_access()}],
+      })
+
+      assert access_snapshot() == before
+      refute member_record(ctx.space, suspended)
+    end
+
+    test "rejects suspended people (suspended_at timestamp)", ctx do
+      suspended = person_fixture(%{company_id: ctx.company.id})
+      suspended |> Ecto.Changeset.change(suspended_at: DateTime.utc_now() |> DateTime.truncate(:second)) |> Repo.update!()
+
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Paths.person_id(suspended), access_level: Binding.comment_access()}],
+      })
+
+      assert access_snapshot() == before
+      refute member_record(ctx.space, suspended)
+    end
+
+    test "rejects missing people", ctx do
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Ecto.UUID.generate(), access_level: Binding.comment_access()}],
+      })
+
+      assert access_snapshot() == before
+    end
+
+    test "rejects mixed batches without adding the valid members", ctx do
+      valid = person_fixture(%{company_id: ctx.company.id})
+      foreign = foreign_person_fixture()
+
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [
+          %{id: Paths.person_id(valid), access_level: Binding.comment_access()},
+          %{id: Paths.person_id(foreign), access_level: Binding.comment_access()},
+          %{id: Paths.person_id(valid), access_level: Binding.comment_access()},
+        ],
+      })
+
+      assert access_snapshot() == before
+      refute member_record(ctx.space, valid)
+      refute member_record(ctx.space, foreign)
+      refute foreign_has_space_binding?(ctx.space, foreign)
+    end
+
+    test "rejects duplicated foreign members", ctx do
+      foreign = foreign_person_fixture()
+
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [
+          %{id: Paths.person_id(foreign), access_level: Binding.comment_access()},
+          %{id: Paths.person_id(foreign), access_level: Binding.full_access()},
+        ],
+      })
+
+      assert access_snapshot() == before
+      refute member_record(ctx.space, foreign)
+      refute foreign_has_space_binding?(ctx.space, foreign)
+    end
+
+    test "rejects nil member ids", ctx do
+      before = access_snapshot()
+
+      assert {400, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: nil, access_level: Binding.comment_access()}],
+      })
+
+      assert access_snapshot() == before
+    end
+
+    test "accepts active guests", ctx do
+      ctx = Factory.add_outside_collaborator(ctx, :guest, :company_creator)
+
+      assert {200, _} = mutation(ctx.conn, [:spaces, :add_members], %{
+        space_id: Paths.space_id(ctx.space),
+        members: [%{id: Paths.person_id(ctx.guest), access_level: Binding.comment_access()}],
+      })
+
+      assert Groups.is_member?(ctx.space, ctx.guest)
+    end
+  end
+
   describe "add_space_members functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
@@ -124,5 +283,34 @@ defmodule OperatelyWeb.Api.Spaces.AddMembersTest do
       id: ctx.person.id,
       access_level: Binding.full_access(),
     }])
+  end
+
+  defp foreign_person_fixture do
+    other_company = Operately.CompaniesFixtures.company_fixture()
+    person_fixture(%{company_id: other_company.id})
+  end
+
+  defp member_record(space, person) do
+    Repo.get_by(Operately.Groups.Member, group_id: space.id, person_id: person.id)
+  end
+
+  defp foreign_has_space_binding?(space, person) do
+    context = Operately.Access.get_context!(group_id: space.id)
+    access_group = Operately.Access.get_group!(person_id: person.id)
+
+    Repo.get_by(Operately.Access.Binding, group_id: access_group.id, context_id: context.id) != nil
+  end
+
+  defp access_snapshot do
+    schemas = [
+      Operately.Groups.Member,
+      Operately.Access.GroupMembership,
+      Operately.Access.Binding,
+      Operately.Activities.Activity,
+      Operately.Notifications.Subscription,
+      Operately.Notifications.SubscriptionList,
+    ]
+
+    Enum.map(schemas, &Repo.aggregate(&1, :count))
   end
 end
