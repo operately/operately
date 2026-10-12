@@ -17,7 +17,7 @@ import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
-import { RichTextHandlers } from "../RichContent/types";
+import { RichTextHandlers, RichTextJSON } from "../RichContent/types";
 import { SidebarNotificationSection } from "../SidebarSection";
 import { TasksSection } from "./TasksSection";
 import { getTaskCompletionStats } from "./taskCompletion";
@@ -98,6 +98,7 @@ export namespace ProjectPage {
   export type DocsAndFiles = PageDocsAndFiles;
 
   interface CommonProps {
+    preview?: boolean;
     closeLink: string;
     reopenLink: string;
     pauseLink: string;
@@ -143,7 +144,7 @@ export namespace ProjectPage {
 
     updateProjectName: (name: string) => Promise<boolean>;
 
-    description: string;
+    description: RichTextJSON | string | null;
     onDescriptionChange: (description: string | null) => Promise<boolean>;
 
     activityFeed: React.ReactNode;
@@ -160,16 +161,16 @@ export namespace ProjectPage {
 
     // Kanban props
     kanbanState: KanbanState;
-    onTaskKanbanChange: KanbanBoardProps["onTaskKanbanChange"];
+    onTaskKanbanChange?: KanbanBoardProps["onTaskKanbanChange"];
 
-    onTaskCreate: (task: NewTaskPayload) => void;
-    onTaskNameChange: (taskId: string, name: string) => void;
-    onTaskAssigneeChange: (taskId: string, assignees: TaskBoardTypes.Person[]) => void;
-    onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+    onTaskCreate?: (task: NewTaskPayload) => void;
+    onTaskNameChange?: (taskId: string, name: string) => void;
+    onTaskAssigneeChange?: (taskId: string, assignees: TaskBoardTypes.Person[]) => void;
+    onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskRemindersChange?: TaskBoardTypes.TaskBoardProps["onTaskRemindersChange"];
-    onTaskStatusChange: (taskId: string, status: TaskBoardTypes.Status | null) => void;
+    onTaskStatusChange?: (taskId: string, status: TaskBoardTypes.Status | null) => void;
     onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
-    onTaskDelete: (taskId: string) => void | Promise<{ success: boolean }>;
+    onTaskDelete?: (taskId: string) => void | Promise<{ success: boolean }>;
     onMilestoneCreate: (
       milestone: NewMilestonePayload,
     ) => void | MilestoneCreationResult | Promise<MilestoneCreationResult>;
@@ -181,7 +182,7 @@ export namespace ProjectPage {
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
     statuses: TaskBoardTypes.Status[];
-    onSaveCustomStatuses: (data: {
+    onSaveCustomStatuses?: (data: {
       nextStatuses: TaskBoardTypes.Status[];
       deletedStatusReplacements: Record<string, string>;
     }) => void;
@@ -213,7 +214,7 @@ export namespace ProjectPage {
     richTextHandlers: RichTextHandlers;
     localDraftKeyBase?: string;
 
-    onTaskDescriptionChange: (taskId: string, description: any) => Promise<boolean>;
+    onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
     getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
 
     moveModalOpen?: boolean;

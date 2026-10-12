@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Menu, MenuActionItem } from "../../Menu";
+import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
 import { ConfirmDialog } from "../../ConfirmDialog";
 import { Page } from "../../Page";
 import { TemplateEditor } from "./TemplateEditor";
@@ -60,6 +60,11 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
           </div>
           {template && (
             <Menu testId="template-actions" align="end" readonly={busy}>
+              {props.previewPath && (
+                <MenuLinkItem to={props.previewPath} target="_blank" testId="preview-template">
+                  {t("Preview")}
+                </MenuLinkItem>
+              )}
               <MenuActionItem danger testId="delete-template" disabled={busy} onClick={() => setAction("delete")}>
                 {t("Delete")}
               </MenuActionItem>

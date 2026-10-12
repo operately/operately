@@ -184,13 +184,13 @@ export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
   searchableMilestones: Milestone[]; // Filtered milestones for task creation modal
-  onTaskCreate: (task: NewTaskPayload) => void;
+  onTaskCreate?: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
-  onTaskAssigneeChange: (taskId: string, assignees: Person[]) => void;
-  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskAssigneeChange?: (taskId: string, assignees: Person[]) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskDueOffsetDaysChange?: (taskId: string, dueOffsetDays: number | null) => void;
   onTaskRemindersChange?: (taskId: string, reminders: TaskPage.Reminder[]) => Promise<boolean> | boolean;
-  onTaskStatusChange: (taskId: string, status: Status | null) => void;
+  onTaskStatusChange?: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onTaskNameChange?: (taskId: string, name: string) => void;
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
@@ -210,7 +210,7 @@ export interface TaskBoardProps {
 
   // Status customization
   statuses: StatusSelector.StatusOption[];
-  onSaveCustomStatuses: (data: {
+  onSaveCustomStatuses?: (data: {
     nextStatuses: StatusSelector.StatusOption[];
     deletedStatusReplacements: Record<string, string>;
   }) => void;

@@ -41,14 +41,16 @@ export function OverviewSidebar(props: ProjectPage.State) {
         <Champion {...props} />
         <Reviewer {...props} />
         <Contributors {...props} />
-        <Privacy {...props} />
+        {!props.preview && <Privacy {...props} />}
       </div>
 
       <SidebarNotificationSection {...props.subscriptions} className="pt-6 mt-6 border-t border-surface-outline" />
 
-      <div className="pt-6 mt-6 border-t border-surface-outline">
-        <Actions {...props} />
-      </div>
+      {!props.preview && (
+        <div className="pt-6 mt-6 border-t border-surface-outline">
+          <Actions {...props} />
+        </div>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import AdminApi from "@/ee/admin_api";
 
 export const curatedTemplatesPath = "/admin/curated-templates";
 export const curatedTemplatePath = (id: string) => `${curatedTemplatesPath}/${id}`;
+export const curatedTemplatePreviewPath = (id: string) => `${curatedTemplatePath(id)}/preview`;
 
 export async function invalidateCuratedTemplates(client: QueryClient) {
   await Promise.all([

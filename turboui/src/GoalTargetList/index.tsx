@@ -68,6 +68,7 @@ export namespace GoalTargetList {
   export interface Props {
     targets: Target[];
 
+    canReorder?: boolean;
     showEditButton?: boolean;
     showUpdateButton?: boolean;
 
@@ -96,9 +97,12 @@ function TargetList({ state }: { state: State }) {
     return [...state.targets].sort((a, b) => a.index - b.index);
   }, [state.targets]);
 
-  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(({ itemId, destination }) => {
-    state.reorder(itemId, destination.index);
-  });
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(
+    ({ itemId, destination }) => {
+      state.reorder(itemId, destination.index);
+    },
+    { enabled: state.canReorder },
+  );
 
   const { items: projectedTargets, placeholderIndex } = React.useMemo(
     () =>
@@ -118,7 +122,7 @@ function TargetList({ state }: { state: State }) {
 
   React.useEffect(() => {
     const element = containerRef.current;
-    if (!element) return;
+    if (!element || !state.canReorder) return;
 
     return dropTargetForElements({
       element,
@@ -127,7 +131,7 @@ function TargetList({ state }: { state: State }) {
         index: targetsWithIndex.length,
       }),
     });
-  }, [containerId, targetsWithIndex.length]);
+  }, [containerId, targetsWithIndex.length, state.canReorder]);
 
   const placeholderHeight = draggedItemDimensions?.height ?? null;
 
@@ -444,7 +448,8 @@ function InlineModal({ index, children }: { index: number; children: React.React
 
 function TargetView({ state, target, containerId }: { state: State; target: TargetState; containerId: string }) {
   const { ref, dragHandleRef, isDragging } = useSortableItem({
-    itemId: target.id!,
+    itemId: target.id,
+    disabled: !state.canReorder,
     index: target.index,
     containerId,
   });
@@ -463,7 +468,8 @@ function TargetView({ state, target, containerId }: { state: State; target: Targ
     "grid-cols-[1fr_auto_14px]": !target.updateButtonVisible,
   });
 
-  const groupClass = classNames("group relative flex items-start w-[calc(100% + 16px)] -ml-[16px]", {
+  const groupClass = classNames("group relative flex items-start", {
+    "w-[calc(100% + 16px)] -ml-[16px]": state.canReorder,
     "opacity-40": isDragging,
   });
 
@@ -473,9 +479,11 @@ function TargetView({ state, target, containerId }: { state: State; target: Targ
       ref={ref as React.RefObject<HTMLDivElement>}
       data-test-id={createTestId("target", target.name)}
     >
-      <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
-        <DragHandle isDragging={isDragging} className="mr-1 mt-[14px]" />
-      </div>
+      {state.canReorder && (
+        <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
+          <DragHandle isDragging={isDragging} className="mr-1 mt-[14px]" />
+        </div>
+      )}
 
       <div className={outerClass}>
         <div onClick={toggleExpand} className={innerClass}>
@@ -563,10 +571,12 @@ function TargetDetails({ state, target }: { state: State; target: TargetState })
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mt-4">
-        <EditButton state={state} target={target} />
-        <DeleteButton state={state} target={target} />
-      </div>
+      {target.editButtonVisible && (
+        <div className="flex items-center gap-2 mt-4">
+          <EditButton state={state} target={target} />
+          <DeleteButton state={state} target={target} />
+        </div>
+      )}
     </div>
   );
 }
