@@ -54,47 +54,49 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmailTest do
     assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_073_741_824) == "1.0 GB"
     assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_125_899_906_842_624) == "1.0 PB"
   end
-  test "mixed-language recipients receive localized billing messages and flag rollback uses English", ctx do
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
-    {:ok, portuguese} = Operately.People.update_person(ctx.admin, %{language: "pt-BR"})
-    previous = Gettext.get_locale(OperatelyWeb.Gettext)
-    status = NearLimitAlerting.snapshot(:member_count, 20, 20)
-    assert {:ok, _} = BillingNearLimitWarningEmail.send([portuguese, ctx.owner], company, status)
-    emails = for _ <- 1..2 do
-      assert_receive {:email, email}
-      email
-    end
-    translated = Enum.find(emails, &(&1.to == [{portuguese.full_name, portuguese.email}]))
-    english = Enum.find(emails, &(&1.to == [{ctx.owner.full_name, ctx.owner.email}]))
-    assert translated.subject =~ "plano Gratuito"
-    assert translated.html_body =~ "Revisar faturamento"
-    assert translated.text_body =~ "Revisar faturamento"
-    assert english.subject =~ "Free plan"
-    assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
+  for {language, subject, action} <- [{"pt-BR", "plano Gratuito", "Revisar faturamento"}, {"de", "kostenlosen Tarifs", "Abrechnung prüfen"}] do
+    test "#{language} billing recipients get translations and flag rollback uses English", ctx do
+      {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+      {:ok, recipient} = Operately.People.update_person(ctx.admin, %{language: unquote(language)})
+      previous = Gettext.get_locale(OperatelyWeb.Gettext)
+      status = NearLimitAlerting.snapshot(:member_count, 20, 20)
+      assert {:ok, _} = BillingNearLimitWarningEmail.send([recipient, ctx.owner], company, status)
+      emails = for _ <- 1..2 do
+        assert_receive {:email, email}
+        email
+      end
+      translated = Enum.find(emails, &(&1.to == [{recipient.full_name, recipient.email}]))
+      english = Enum.find(emails, &(&1.to == [{ctx.owner.full_name, ctx.owner.email}]))
+      assert translated.subject =~ unquote(subject)
+      assert translated.html_body =~ unquote(action)
+      assert translated.text_body =~ unquote(action)
+      assert english.subject =~ "Free plan"
+      assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
 
-    {:ok, company} = Operately.Companies.disable_experimental_feature(company, "i18n")
-    assert {:ok, _} = BillingNearLimitWarningEmail.send([portuguese, ctx.owner], company, status)
-    assert_email_sent(fn email ->
-      assert length(email.to) == 2
-      assert email.subject =~ "Free plan"
-      true
-    end)
-    assert Operately.Repo.reload!(portuguese).language == "pt-BR"
+      {:ok, company} = Operately.Companies.disable_experimental_feature(company, "i18n")
+      assert {:ok, _} = BillingNearLimitWarningEmail.send([recipient, ctx.owner], company, status)
+      assert_email_sent(fn email ->
+        assert length(email.to) == 2
+        assert email.subject =~ "Free plan"
+        true
+      end)
+      assert Operately.Repo.reload!(recipient).language == unquote(language)
+    end
   end
 
-  test "billing renders Portuguese and missing-locale fallback with escaped names", ctx do
+  test "billing renders translations and missing-locale fallback with escaped names", ctx do
     company = %{ctx.company | name: "Company <literal> & name"}
-    for key <- [:member_count, :storage_bytes], usage <- [0, 1, 20] do
+    for locale <- ["pt_BR", "de"], key <- [:member_count, :storage_bytes], usage <- [0, 1, 20] do
       status = NearLimitAlerting.snapshot(key, usage, 20)
       english = Gettext.with_locale(OperatelyWeb.Gettext, "en", fn -> BillingNearLimitWarningEmail.build([ctx.admin], company, status) end)
       fallback = Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> BillingNearLimitWarningEmail.build([ctx.admin], company, status) end)
-      portuguese = Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn -> BillingNearLimitWarningEmail.build([ctx.admin], company, status) end)
+      translated = Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> BillingNearLimitWarningEmail.build([ctx.admin], company, status) end)
       assert english == fallback
-      assert portuguese.subject != english.subject
-      assert portuguese.html_body =~ "Company &lt;literal&gt; &amp; name"
-      assert portuguese.text_body =~ company.name
-      assert portuguese.text_body =~ "#{usage}"
-      assert portuguese.to == english.to
+      assert translated.subject != english.subject
+      assert translated.html_body =~ "Company &lt;literal&gt; &amp; name"
+      assert translated.text_body =~ company.name
+      assert translated.text_body =~ "#{usage}"
+      assert translated.to == english.to
     end
   end
 

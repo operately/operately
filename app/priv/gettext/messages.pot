@@ -7032,7 +7032,7 @@ msgid "Change password"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:334
+#: ../turboui/src/ProfileEditPage/index.tsx:335
 msgid "Change photo"
 msgstr ""
 
@@ -9631,7 +9631,7 @@ msgstr ""
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:328
+#: ../turboui/src/ProfileEditPage/index.tsx:329
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -12334,7 +12334,7 @@ msgid "LINKS"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:225
+#: ../turboui/src/ProfileEditPage/index.tsx:226
 msgid "Language"
 msgstr ""
 
@@ -15001,10 +15001,7 @@ msgid "Peers"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:26
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:274
-#: ../turboui/src/SmallStatusIndicator/constants.ts:28
-#: ../turboui/src/StatusBadge/index.tsx:159
 msgid "Pending"
 msgstr ""
 
@@ -16310,7 +16307,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:342
+#: ../turboui/src/ProfileEditPage/index.tsx:343
 msgid "Remove photo"
 msgstr ""
 
@@ -17129,7 +17126,7 @@ msgid "Save selection"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:354
+#: ../turboui/src/ProfileEditPage/index.tsx:355
 msgid "Saving..."
 msgstr ""
 
@@ -17793,7 +17790,7 @@ msgid "Share a link"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:258
+#: ../turboui/src/ProfileEditPage/index.tsx:259
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr ""
 
@@ -20413,12 +20410,6 @@ msgstr ""
 msgid "Tip: Subscribe if you want notifications too."
 msgstr ""
 
-#.frontend
-#: ../turboui/src/InviteMemberForm/index.tsx:79
-#: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
-msgid "Title"
-msgstr ""
-
 #.elixir
 #: lib/operately_web/api/projects/milestones.ex:364
 msgid "Title cannot be empty"
@@ -21179,7 +21170,7 @@ msgid "Uploading %{name}..."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:353
+#: ../turboui/src/ProfileEditPage/index.tsx:354
 msgid "Uploading %{progress}%"
 msgstr ""
 
@@ -24762,8 +24753,23 @@ msgid "Reports"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/InviteMemberForm/index.tsx:79
+msgctxt "person"
+msgid "Title"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:77
+#: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
 msgid "Title"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:26
+#: ../turboui/src/SmallStatusIndicator/constants.ts:28
+#: ../turboui/src/StatusBadge/index.tsx:159
+msgctxt "work status"
+msgid "Pending"
 msgstr ""

@@ -186,33 +186,35 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert Operately.People.Person.time_format(person) == :hour_24
     end
 
-    test "it persists language independently of timezone and time format", ctx do
-      assert {200, %{person: %{}}} =
-               mutation(ctx.conn, [:people, :update], %{
-                 id: Paths.person_id(ctx.person),
-                 language: "pt-BR",
-                 timezone: "America/Sao_Paulo",
-                 time_format: "hour_24"
-               })
+    for language <- ["pt-BR", "de"] do
+      test "it persists #{language} independently of timezone and time format", ctx do
+        assert {200, %{person: %{}}} =
+                 mutation(ctx.conn, [:people, :update], %{
+                   id: Paths.person_id(ctx.person),
+                   language: unquote(language),
+                   timezone: "America/Sao_Paulo",
+                   time_format: "hour_24"
+                 })
 
-      person = Operately.People.get_person!(ctx.person.id)
+        person = Operately.People.get_person!(ctx.person.id)
 
-      assert person.language == "pt-BR"
-      assert person.timezone == "America/Sao_Paulo"
-      assert Operately.People.Person.time_format(person) == :hour_24
-    end
+        assert person.language == unquote(language)
+        assert person.timezone == "America/Sao_Paulo"
+        assert Operately.People.Person.time_format(person) == :hour_24
+      end
 
-    test "it keeps a saved language when the i18n flag is off", ctx do
-      assert {200, %{person: %{}}} =
-               mutation(ctx.conn, [:people, :update], %{
-                 id: Paths.person_id(ctx.person),
-                 language: "pt-BR"
-               })
+      test "it keeps saved #{language} when the i18n flag is off", ctx do
+        assert {200, %{person: %{}}} =
+                 mutation(ctx.conn, [:people, :update], %{
+                   id: Paths.person_id(ctx.person),
+                   language: unquote(language)
+                 })
 
-      person = Operately.People.get_person!(ctx.person.id)
+        person = Operately.People.get_person!(ctx.person.id)
 
-      assert person.language == "pt-BR"
-      refute Operately.Companies.has_experimental_feature?(ctx.company, "i18n")
+        assert person.language == unquote(language)
+        refute Operately.Companies.has_experimental_feature?(ctx.company, "i18n")
+      end
     end
 
     test "it rejects unsupported languages", ctx do

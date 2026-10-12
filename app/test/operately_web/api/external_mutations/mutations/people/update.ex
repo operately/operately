@@ -18,13 +18,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.People.Update do
       id: Paths.person_id(ctx.creator),
       full_name: "External Member",
       title: "Updated Title",
-      timezone: "Etc/UTC"
+      timezone: "Etc/UTC",
+      language: "de"
     }
   end
 
   @impl true
-  def assert(response, _ctx) do
+  def assert(response, ctx) do
     assert response.person.id
+    assert Operately.Repo.reload!(ctx.creator).language == "de"
     refute Map.has_key?(response, :error)
   end
 end
