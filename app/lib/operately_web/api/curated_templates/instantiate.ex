@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.Instantiate do
 
   alias Operately.Groups.{Group, Permissions}
   alias Operately.Operations.CuratedTemplateInstantiation
+  alias Operately.People
 
   inputs do
     field :template_id, :id, null: false
@@ -23,9 +24,11 @@ defmodule OperatelyWeb.Api.CuratedTemplates.Instantiate do
     with {:ok, person} <- find_me(conn),
          {:ok, space} <- Group.get(person, id: inputs.space_id, company_id: person.company_id),
          {:ok, _} <- Permissions.check(space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn)),
+         :ok <- People.validate_active_company_members(space.company_id, [inputs[:champion_id], inputs[:reviewer_id]]),
          {:ok, result} <- CuratedTemplateInstantiation.run(person, Group.preload_access_levels(space), inputs) do
       {:ok, Serializer.serialize(result)}
     else
+      {:error, :invalid_company_member} -> {:error, :bad_request}
       {:error, reason} when reason in [:not_found, :forbidden, :bad_request] -> {:error, reason}
       {:error, _} -> {:error, :internal_server_error}
     end

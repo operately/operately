@@ -183,6 +183,29 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
     end
   end
 
+  for type <- [:goal, :project, :kpi], role <- [:champion_id, :reviewer_id], type != :kpi or role == :champion_id do
+    for invalid_owner <- [:other_company, :missing, :suspended, :suspended_at] do
+      test "rejects #{invalid_owner} #{role} for #{type} without creating anything", ctx do
+        ctx = Factory.add_curated_template(ctx, :template, type: unquote(type), published: true)
+        owner_id = invalid_owner_id(ctx, unquote(invalid_owner))
+
+        schemas = [
+          Operately.Goals.Goal,
+          Operately.Projects.Project,
+          Operately.Kpis.Kpi,
+          Operately.Access.Binding,
+          Operately.Activities.Activity,
+          Operately.Notifications.SubscriptionList,
+          Operately.Notifications.Subscription
+        ]
+
+        before = Enum.map(schemas, &Repo.aggregate(&1, :count))
+        assert {400, _} = mutation(ctx.conn, [:curated_templates, :instantiate], Map.put(inputs(ctx), unquote(role), owner_id))
+        assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == before
+      end
+    end
+  end
+
   test "a child failure rolls back the parent, subscriptions, activities and access records", ctx do
     ctx = Factory.add_curated_template(ctx, :template, type: :project, published: true)
     # Simulate an invalid stored child to exercise failure after parent creation.
@@ -224,5 +247,15 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
 
   defp inputs(ctx) do
     %{template_id: ctx.template.id, space_id: ctx.space.id, start_date: "2026-10-12"}
+  end
+
+  defp invalid_owner_id(_ctx, :other_company), do: Factory.setup(%{}).creator.id
+  defp invalid_owner_id(_ctx, :missing), do: Ecto.UUID.generate()
+
+  defp invalid_owner_id(ctx, suspension_field) do
+    ctx = Factory.add_company_member(ctx, :invalid_owner)
+    value = if suspension_field == :suspended, do: true, else: DateTime.utc_now() |> DateTime.truncate(:second)
+    ctx.invalid_owner |> Ecto.Changeset.change(%{suspension_field => value}) |> Repo.update!()
+    ctx.invalid_owner.id
   end
 end
