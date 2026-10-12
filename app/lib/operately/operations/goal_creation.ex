@@ -10,6 +10,12 @@ defmodule Operately.Operations.GoalCreation do
   alias Operately.Search.IndexUpdates
 
   def run(creator, attrs, analytics_context \\ %{}) do
+    build(creator, attrs, analytics_context)
+    |> Repo.transaction()
+    |> Repo.extract_result(:goal)
+  end
+
+  def build(creator, attrs, analytics_context) do
     Multi.new()
     |> insert_goal(creator, attrs)
     |> insert_default_resource_hub()
@@ -20,8 +26,6 @@ defmodule Operately.Operations.GoalCreation do
     |> Companies.mark_setup_completed(creator.company_id)
     |> track_workspace_activation(creator, analytics_context)
     |> IndexUpdates.enqueue(:search_goal, "goal", fn changes -> changes.goal.id end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:goal)
   end
 
   defp track_workspace_activation(multi, creator, analytics_context) do

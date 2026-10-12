@@ -551,6 +551,13 @@ defmodule Operately.Operations.ProjectTemplateMaterialization do
       end
     end
 
+    def insert_work_items(repo, plan, project) do
+      with {:ok, milestones} <- insert_milestones(repo, plan.milestones, project),
+           {:ok, tasks} <- insert_tasks(repo, plan.tasks, project, plan.task_statuses) do
+        {:ok, %{milestones: milestones, tasks: tasks}}
+      end
+    end
+
     defp insert_milestones(repo, milestones, project) do
       Enum.reduce_while(milestones, {:ok, []}, fn planned, {:ok, inserted} ->
         with {:ok, subscription_list} <- insert_subscription_list(repo, planned.target.id, :project_milestone),

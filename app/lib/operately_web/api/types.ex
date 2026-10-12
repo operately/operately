@@ -15,6 +15,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :definition, :json
   end
 
+  object :curated_template_instantiation, for: Operately.Operations.CuratedTemplateInstantiation.Result do
+    field :resource_type, :curated_template_type, null: false
+    field :resource_id, :id, null: false
+    field :space_id, :id, null: false
+  end
+
   enum :rich_text_resource_type, values: OperatelyWeb.Api.RichContent.Resources.types()
   enum :rich_text_field, values: OperatelyWeb.Api.RichContent.Resources.fields()
 

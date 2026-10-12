@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.TypeNamesTest do
     assert TypeNames.for_module(Operately.Messages.Message) == "discussion"
     assert TypeNames.for_module(Operately.People.Permissions) == "person_permissions"
     assert TypeNames.for_module(Operately.Search.IndexRun) == "search_index_run"
+    assert TypeNames.for_module(Operately.Operations.CuratedTemplateInstantiation.Result) == "curated_template_instantiation"
   end
 
   test "supports multiple modules for one object" do
