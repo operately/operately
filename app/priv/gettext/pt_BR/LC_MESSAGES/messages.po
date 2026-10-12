@@ -4418,7 +4418,7 @@ msgstr[0] "1 item"
 msgstr[1] "%{count} itens"
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:76
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:54
 #: ../turboui/src/LobbyPage/index.tsx:97
 msgid "1 member"
 msgid_plural "%{count} members"
@@ -5989,7 +5989,7 @@ msgid "All work"
 msgstr "Todo o trabalho"
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:59
+#: assets/js/pages/SignUpPage/index.tsx:60
 msgid "Already have an account? <actionLink>Sign in</actionLink>"
 msgstr "Já tem uma conta? <actionLink>Entrar</actionLink>"
 
@@ -6553,7 +6553,7 @@ msgstr "Voltar ao início"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:54
-#: assets/js/pages/NewCompanyPage/index.tsx:51
+#: assets/js/pages/NewCompanyPage/index.tsx:54
 msgid "Back to the Lobby"
 msgstr "Voltar à recepção"
 
@@ -7085,6 +7085,7 @@ msgstr "Ações da célula"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:92
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:168
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:222
@@ -7101,6 +7102,11 @@ msgstr "Ações da célula"
 #: lib/operately_email/emails/project_created_email.ex:50
 msgid "Champion"
 msgstr "Champion"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:43
+msgid "Champion and reviewer must be different people"
+msgstr "O champion e o reviewer devem ser pessoas diferentes"
 
 #.elixir
 #: lib/operately/md/goal.ex:132
@@ -8471,6 +8477,11 @@ msgid "Could not update setting"
 msgstr "Não foi possível atualizar a configuração"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:131
+msgid "Couldn't create this resource. Your settings are saved. Please try again."
+msgstr "Não foi possível criar este recurso. Suas configurações foram mantidas. Tente novamente."
+
+#.frontend
 #: ../turboui/src/ResourceHub/DraftNodesList.tsx:78
 msgid "Couldn't delete the draft. Please try again."
 msgstr "Não foi possível excluir o rascunho. Tente novamente."
@@ -8523,7 +8534,7 @@ msgid "Create API token"
 msgstr "Criar token de API"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:82
+#: assets/js/pages/NewCompanyPage/index.tsx:85
 msgid "Create Company"
 msgstr "Criar empresa"
 
@@ -8533,6 +8544,12 @@ msgid "Create Copy"
 msgstr "Criar cópia"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+msgid "Create Goal"
+msgstr "Criar objetivo"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
 msgid "Create KPI"
 msgstr "Criar KPI"
@@ -8542,6 +8559,11 @@ msgstr "Criar KPI"
 #: ../turboui/src/TemplateProjectPage/MilestoneFormModal.tsx:49
 msgid "Create Milestone"
 msgstr "Criar marco"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+msgid "Create Project"
+msgstr "Criar projeto"
 
 #.frontend
 #: assets/js/pages/SpaceAddPage/index.tsx:74
@@ -9523,7 +9545,7 @@ msgid "Divider"
 msgstr "Divisor"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:86
+#: assets/js/pages/NewCompanyPage/index.tsx:89
 msgid "Do you have an existing company? <actionLink>Import it here</actionLink>"
 msgstr "Você já tem uma empresa? <actionLink>Importe aqui</actionLink>"
 
@@ -11625,7 +11647,7 @@ msgid "Get reset instructions via email."
 msgstr "Receba as instruções para redefinir sua senha por e-mail."
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:51
+#: assets/js/pages/SignUpPage/index.tsx:52
 msgid "Get started in a minute. No credit card required."
 msgstr "Comece em um minuto. Não é necessário cartão de crédito."
 
@@ -11643,6 +11665,11 @@ msgstr "Voltar para o Início"
 #: ../turboui/src/ErrorPage/index.tsx:33
 msgid "Go back to Lobby"
 msgstr "Voltar para o Lobby"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:77
+msgid "Go to Home"
+msgstr "Ir para o Início"
 
 #.elixir
 #.frontend
@@ -12397,7 +12424,7 @@ msgid "Invited you as an outside collaborator"
 msgstr "Convidou você como colaborador externo"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:73
+#: assets/js/pages/NewCompanyPage/index.tsx:76
 msgid "Is this a demo company?"
 msgstr "Esta é uma empresa de demonstração?"
 
@@ -12775,7 +12802,7 @@ msgid "Let's get you started"
 msgstr "Vamos começar"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:106
+#: assets/js/pages/NewCompanyPage/index.tsx:109
 msgid "Let's set up your company in Operately."
 msgstr "Vamos configurar sua empresa no Operately."
 
@@ -13719,7 +13746,7 @@ msgstr "O nome é obrigatório"
 #~ msgstr "O nome deve conter @ e não pode ter espaços"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:59
+#: assets/js/pages/NewCompanyPage/index.tsx:62
 #: assets/js/pages/SetupPage/page.tsx:109
 msgid "Name of the company"
 msgstr "Nome da empresa"
@@ -13789,8 +13816,8 @@ msgid "New Access Level:"
 msgstr "Novo nível de acesso:"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:49
-#: assets/js/pages/NewCompanyPage/index.tsx:105
+#: assets/js/pages/NewCompanyPage/index.tsx:52
+#: assets/js/pages/NewCompanyPage/index.tsx:108
 msgid "New Company"
 msgstr "Nova empresa"
 
@@ -13962,7 +13989,7 @@ msgstr "Próxima etapa"
 #.frontend
 #: assets/js/features/ProjectRetrospective/Form.tsx:95
 #: assets/js/pages/GoalClosingPage/Form.tsx:75
-#: assets/js/pages/NewCompanyPage/index.tsx:76
+#: assets/js/pages/NewCompanyPage/index.tsx:79
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:117
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:123
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:334
@@ -17173,6 +17200,7 @@ msgstr "Notas da retrospectiva:"
 
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:125
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
 msgid "Retry"
 msgstr "Tentar novamente"
@@ -17333,6 +17361,7 @@ msgstr "Revisar check-in semanal"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:104
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:215
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:165
@@ -17839,7 +17868,7 @@ msgid "Select"
 msgstr "Selecionar"
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:27
+#: ../turboui/src/CompanyPickerPage/index.tsx:31
 msgid "Select Company"
 msgstr "Selecionar empresa"
 
@@ -17864,7 +17893,7 @@ msgid "Select a closed task status."
 msgstr "Selecione um status de tarefa encerrada."
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:32
+#: ../turboui/src/CompanyPickerPage/index.tsx:36
 msgid "Select a company"
 msgstr "Selecione uma empresa"
 
@@ -17899,6 +17928,11 @@ msgstr "Selecione um status substituto"
 #: ../turboui/src/StatusCustomization/index.tsx:171
 msgid "Select a replacement status for each deleted status. Tasks using deleted statuses will be moved to the selected replacements."
 msgstr "Selecione um status substituto para cada status excluído. As tarefas que usam status excluídos serão movidas para os substitutos selecionados."
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:41
+msgid "Select a space"
+msgstr "Selecione um espaço"
 
 #.frontend
 #: ../turboui/src/Forms/SelectStatus.tsx:138
@@ -18056,12 +18090,12 @@ msgid "Selected"
 msgstr "Selecionado"
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:46
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:43
 msgid "Selected plan: <plan>%{plan}</plan>"
 msgstr "Plano selecionado: <plan>%{plan}</plan>"
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:37
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:34
 msgid "Selected plan: <plan>%{plan}</plan> <interval>(%{interval})</interval>"
 msgstr "Plano selecionado: <plan>%{plan}</plan> <interval>(%{interval})</interval>"
 
@@ -18370,7 +18404,7 @@ msgid "Sign Out"
 msgstr "Sair"
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:22
+#: assets/js/pages/SignUpPage/index.tsx:23
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:111
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:204
 msgid "Sign Up"
@@ -18387,23 +18421,23 @@ msgid "Sign in"
 msgstr "Entrar"
 
 #.frontend
-#: assets/js/features/auth/Buttons.tsx:30
+#: assets/js/features/auth/Buttons.tsx:31
 msgid "Sign in with Google"
 msgstr "Entrar com o Google"
 
 #.frontend
-#: assets/js/pages/SignUpPage/index.tsx:50
+#: assets/js/pages/SignUpPage/index.tsx:51
 #: assets/js/pages/SignUpWithEmailPage/index.tsx:116
 msgid "Sign up for Operately"
 msgstr "Cadastre-se no Operately"
 
 #.frontend
-#: assets/js/features/auth/Buttons.tsx:44
+#: assets/js/features/auth/Buttons.tsx:45
 msgid "Sign up with Google"
 msgstr "Cadastrar-se com o Google"
 
 #.frontend
-#: assets/js/features/auth/Buttons.tsx:17
+#: assets/js/features/auth/Buttons.tsx:18
 msgid "Sign up with email"
 msgstr "Cadastrar-se com e-mail"
 
@@ -18587,6 +18621,7 @@ msgstr "Varredura da fonte"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:10
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:84
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
@@ -18781,6 +18816,7 @@ msgid "Start checkout again for %{plan}."
 msgstr "Inicie novamente o pagamento do plano %{plan}."
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:112
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:135
 msgid "Start date"
 msgstr "Data de início"
@@ -21248,6 +21284,11 @@ msgid "Unable to load docs and files."
 msgstr "Não foi possível carregar os documentos e arquivos."
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:116
+msgid "Unable to load people. Retry to continue creating this resource."
+msgstr "Não foi possível carregar as pessoas. Tente novamente para continuar criando este recurso."
+
+#.frontend
 #: ../turboui/src/ContentListState/index.tsx:23
 msgid "Unable to load subgoals and projects."
 msgstr "Não foi possível carregar os subobjetivos e projetos."
@@ -21274,6 +21315,8 @@ msgstr "Desarquivar"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:95
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:107
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:72
 #: lib/operately/md/milestone.ex:81
 #: lib/operately/md/task.ex:139
@@ -22520,7 +22563,7 @@ msgid "What's your role?"
 msgstr "Qual é seu cargo?"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:66
+#: assets/js/pages/NewCompanyPage/index.tsx:69
 msgid "What's your title in the company?"
 msgstr "Qual é seu cargo na empresa?"
 
@@ -22536,7 +22579,7 @@ msgid "When enabled, the navbar shows a badge when a newer Operately release is 
 msgstr "Quando ativado, a barra de navegação exibe um indicador quando uma nova versão do Operately está disponível. Essa configuração se aplica a todas as empresas."
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:33
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:30
 msgid "Which company would you like to manage billing for?"
 msgstr "De qual empresa você gostaria de gerenciar o faturamento?"
 
@@ -22733,7 +22776,7 @@ msgstr "Objetivo anual"
 #.frontend
 #: assets/js/features/ProjectRetrospective/Form.tsx:94
 #: assets/js/pages/GoalClosingPage/Form.tsx:74
-#: assets/js/pages/NewCompanyPage/index.tsx:75
+#: assets/js/pages/NewCompanyPage/index.tsx:78
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/PlanDefinitionModal.tsx:124
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:334
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:329
@@ -22823,7 +22866,7 @@ msgid "You do not have permission to perform this operation, or the company is r
 msgstr "Você não tem permissão para realizar esta operação ou a empresa está no modo somente leitura."
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:62
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:53
 msgid "You don't have access to manage billing for any companies yet."
 msgstr "Você ainda não tem acesso para gerenciar o faturamento de nenhuma empresa."
 
@@ -22883,6 +22926,11 @@ msgstr "Você foi removido como proprietário da empresa por %{author}"
 #: lib/operately_email/templates/company_owner_removing.text.eex:1
 msgid "You have been removed as a company owner by %{author}."
 msgstr "Você foi removido como proprietário da empresa por %{author}."
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:75
+msgid "You need edit access to a space to use this template. Ask a company admin for access."
+msgstr "Você precisa de acesso de edição a um espaço para usar este Template. Peça acesso a um administrador da empresa."
 
 #.frontend
 #: ../turboui/src/GoalPage/DeleteModal.tsx:28
@@ -23738,7 +23786,7 @@ msgid "e.g. 15000"
 msgstr "ex.: 15000"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:60
+#: assets/js/pages/NewCompanyPage/index.tsx:63
 #: assets/js/pages/SetupPage/page.tsx:110
 msgid "e.g. Acme Co."
 msgstr "Ex.: Acme Co."
@@ -23754,7 +23802,7 @@ msgid "e.g. Create product awareness and bring new leads"
 msgstr "Ex.: Criar reconhecimento do produto e gerar novos leads"
 
 #.frontend
-#: assets/js/pages/NewCompanyPage/index.tsx:67
+#: assets/js/pages/NewCompanyPage/index.tsx:70
 #: assets/js/pages/SetupPage/page.tsx:133
 msgid "e.g. Founder"
 msgstr "Ex.: Fundador"
@@ -23969,7 +24017,7 @@ msgid "minutes"
 msgstr "minutos"
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:24
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:21
 msgid "monthly"
 msgstr "mensal"
 
@@ -24395,7 +24443,7 @@ msgid "user@example.com"
 msgstr "usuario@example.com"
 
 #.frontend
-#: ../turboui/src/BillingPickCompanyPage/index.tsx:24
+#: ../turboui/src/BillingPickCompanyPage/index.tsx:21
 msgid "yearly"
 msgstr "anual"
 

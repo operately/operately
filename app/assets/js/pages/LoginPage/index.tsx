@@ -1,3 +1,4 @@
+import { authPath, internalReturnPath, Paths } from "@/routes/paths";
 import * as Invitations from "@/models/invitations";
 import * as Billing from "@/models/billing";
 import * as Pages from "@/components/Pages";
@@ -10,7 +11,6 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { translationText } from "@/i18n";
 import { logIn } from "@/routes/auth";
-import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import classNames from "classnames";
 import { Forms, DimmedLink, Link, type FormState } from "turboui";
@@ -83,7 +83,7 @@ function Page() {
                 <div className="mt-8 text-center text-sm font-medium">
                   <Trans
                     i18nKey="Don't have an account? <actionLink>Create an account</actionLink>"
-                    components={{ actionLink: <Link to="/sign_up" /> }}
+                    components={{ actionLink: <Link to={authPath("/sign_up")} /> }}
                   />
                 </div>
               )}
@@ -189,14 +189,5 @@ function OrSeparator() {
 }
 
 function getRedirectTo(): string | null {
-  const query = new URLSearchParams(window.location.search);
-  const redirectTo = query.get("redirect_to");
-
-  if (redirectTo) {
-    const decoded = decodeURIComponent(redirectTo);
-
-    return decoded.startsWith("/") ? decoded : null;
-  } else {
-    return null;
-  }
+  return internalReturnPath(new URLSearchParams(window.location.search).get("redirect_to"));
 }
