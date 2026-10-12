@@ -296,6 +296,226 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "create access members - company boundary" do
+    test "rejects people from another company without granting the rest of the batch", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      foreign = foreign_person()
+
+      assert_members_rejected(ctx, [
+        %{id: Paths.person_id(ctx.member), access_level: Binding.full_access()},
+        %{id: Paths.person_id(foreign), access_level: Binding.edit_access()}
+      ])
+
+      refute direct_binding(ctx.goal, ctx.member)
+      refute direct_binding(ctx.goal, foreign)
+    end
+
+    test "rejects a mixed batch without changing an existing access level", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      foreign = foreign_person()
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, binding} = Access.bind_person(context, ctx.member.id, Binding.comment_access())
+
+      assert_members_rejected(ctx, [
+        %{id: Paths.person_id(ctx.member), access_level: Binding.full_access()},
+        %{id: Paths.person_id(foreign), access_level: Binding.edit_access()}
+      ])
+
+      unchanged = direct_binding(ctx.goal, ctx.member)
+      assert unchanged.id == binding.id
+      assert unchanged.access_level == Binding.comment_access()
+      assert unchanged.updated_at == binding.updated_at
+      refute direct_binding(ctx.goal, foreign)
+    end
+
+    test "rejects a missing person without granting the rest of the batch", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+
+      assert_members_rejected(ctx, [
+        %{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()},
+        %{id: Ecto.UUID.generate(), access_level: Binding.view_access()}
+      ])
+
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+
+    for suspension_field <- [:suspended, :suspended_at] do
+      test "rejects a person with #{suspension_field} set without granting the rest of the batch", ctx do
+        ctx = ctx |> Factory.add_company_member(:member) |> Factory.add_company_member(:suspended_member) |> Factory.log_in_person(:creator)
+        suspended = suspend_person(ctx.suspended_member, unquote(suspension_field))
+
+        assert_members_rejected(ctx, [
+          %{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()},
+          %{id: Paths.person_id(suspended), access_level: Binding.comment_access()}
+        ])
+
+        refute direct_binding(ctx.goal, ctx.member)
+        refute direct_binding(ctx.goal, suspended)
+      end
+    end
+
+    test "rejects the foreign person record of a shared account", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      foreign = same_account_foreign_person(ctx.member)
+
+      assert ctx.member.account_id == foreign.account_id
+      assert_members_rejected(ctx, [%{id: Paths.person_id(foreign), access_level: Binding.edit_access()}])
+      refute direct_binding(ctx.goal, foreign)
+    end
+
+    test "accepts the local person record of a shared account", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      _foreign = same_account_foreign_person(ctx.member)
+
+      assert {200, %{success: true}} = mutation(ctx.conn, [:goals, :create_access_members], member_input(ctx, ctx.member, Binding.edit_access()))
+      assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
+    end
+
+    test "rejects a goal from another company even when the caller has a binding", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      other = Factory.setup(%{}) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+      context = Access.get_context!(goal_id: other.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.creator.id, Binding.full_access())
+
+      before = access_snapshot(ctx.goal)
+      other_before = access_snapshot(other.goal)
+
+      assert {404, res} =
+               mutation(ctx.conn, [:goals, :create_access_members], %{
+                 goal_id: Paths.goal_id(other.goal),
+                 members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
+               })
+
+      assert res.message == "Goal not found"
+      assert access_snapshot(ctx.goal) == before
+      assert access_snapshot(other.goal) == other_before
+      refute direct_binding(other.goal, ctx.member)
+    end
+
+    test "adds an active guest who is not a space member", ctx do
+      ctx = ctx |> Factory.add_company_member(:guest) |> convert_to_guest(:guest) |> Factory.log_in_person(:creator)
+      refute space_member?(ctx.marketing, ctx.guest)
+
+      assert {200, %{success: true}} = mutation(ctx.conn, [:goals, :create_access_members], member_input(ctx, ctx.guest, Binding.full_access()))
+      assert_binding_access(ctx.goal, ctx.guest, Binding.full_access())
+      refute space_member?(ctx.marketing, ctx.guest)
+    end
+
+    test "lets an active guest with full access add a member outside caller-scoped visibility", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:guest)
+        |> Factory.add_company_member(:member)
+        |> convert_to_guest(:guest)
+
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.guest.id, Binding.full_access())
+      ctx = Factory.log_in_person(ctx, :guest)
+
+      assert {:error, :not_found} = Operately.People.Person.get(ctx.guest, id: ctx.member.id)
+      refute space_member?(ctx.marketing, ctx.member)
+
+      assert {200, %{success: true}} = mutation(ctx.conn, [:goals, :create_access_members], member_input(ctx, ctx.member, Binding.edit_access()))
+      assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
+      refute space_member?(ctx.marketing, ctx.member)
+    end
+
+    test "accepts duplicate members and keeps the last access level", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:goals, :create_access_members], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 members: [
+                   %{id: Paths.person_id(ctx.member), access_level: Binding.view_access()},
+                   %{id: Paths.person_id(ctx.member), access_level: Binding.full_access()}
+                 ]
+               })
+
+      assert_binding_access(ctx.goal, ctx.member, Binding.full_access())
+    end
+
+    test "accepts an empty members list without changing access", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      before = access_snapshot(ctx.goal)
+
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:goals, :create_access_members], %{goal_id: Paths.goal_id(ctx.goal), members: []})
+
+      assert access_snapshot(ctx.goal) == before
+    end
+
+    test "rejects a null member id without granting the rest of the batch", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+      before = access_snapshot(ctx.goal)
+
+      assert {400, _} =
+               mutation(ctx.conn, [:goals, :create_access_members], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 members: [
+                   %{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()},
+                   %{id: nil, access_level: Binding.view_access()}
+                 ]
+               })
+
+      assert access_snapshot(ctx.goal) == before
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+
+    test "rejects a read-only company without granting access", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
+
+      %{company_id: ctx.company.id, access_state: :read_only}
+      |> Operately.Billing.CompanyBillingAccount.changeset()
+      |> Repo.insert!()
+
+      assert_members_rejected(ctx, [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}], 403)
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+
+    test "external write token cannot add a foreign person", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.add_api_token(:token, :creator, read_only: false)
+      foreign = foreign_person()
+      before = access_snapshot(ctx.goal)
+
+      assert {400, res} =
+               external_mutation(ctx.conn, ctx.token, "goals/create_access_members", %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 members: [
+                   %{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()},
+                   %{id: Paths.person_id(foreign), access_level: Binding.view_access()}
+                 ]
+               })
+
+      assert res.message == "The request was malformed"
+      refute res.message =~ Paths.person_id(foreign)
+      assert access_snapshot(ctx.goal) == before
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+
+    test "read-only API token cannot add members", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.add_api_token(:token, :creator, read_only: true)
+      before = access_snapshot(ctx.goal)
+
+      assert {403, response} =
+               external_mutation(ctx.conn, ctx.token, "goals/create_access_members", member_input(ctx, ctx.member, Binding.edit_access()))
+
+      assert response == "Read-only API tokens cannot execute mutations"
+      assert access_snapshot(ctx.goal) == before
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+
+    test "internal API rejects an API token", ctx do
+      ctx = ctx |> Factory.add_company_member(:member) |> Factory.add_api_token(:token, :creator, read_only: false)
+      conn = Plug.Conn.put_req_header(ctx.conn, "authorization", "Bearer #{ctx.token}")
+      before = access_snapshot(ctx.goal)
+
+      assert {401, _} = mutation(conn, [:goals, :create_access_members], member_input(ctx, ctx.member, Binding.edit_access()))
+      assert access_snapshot(ctx.goal) == before
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+  end
+
   describe "create access members - permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
@@ -1568,6 +1788,83 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
     assert binding
     assert binding.access_level == access_level
+  end
+
+  defp member_input(ctx, person, access_level) do
+    %{
+      goal_id: Paths.goal_id(ctx.goal),
+      members: [%{id: Paths.person_id(person), access_level: access_level}]
+    }
+  end
+
+  defp assert_members_rejected(ctx, members, status \\ 400) do
+    before = access_snapshot(ctx.goal)
+
+    assert {^status, res} =
+             mutation(ctx.conn, [:goals, :create_access_members], %{
+               goal_id: Paths.goal_id(ctx.goal),
+               members: members
+             })
+
+    if status == 400 do
+      assert res.message == "The request was malformed"
+      refute Enum.any?(members, fn member -> is_binary(member.id) && res.message =~ member.id end)
+    end
+
+    assert access_snapshot(ctx.goal) == before
+  end
+
+  defp access_snapshot(goal) do
+    goal = Repo.get!(Operately.Goals.Goal, goal.id)
+
+    %{
+      counts: Enum.map(unchanged_schemas(), &Repo.aggregate(&1, :count)),
+      champion_id: goal.champion_id,
+      reviewer_id: goal.reviewer_id
+    }
+  end
+
+  defp unchanged_schemas do
+    [
+      Operately.Goals.Goal,
+      Operately.Projects.Contributor,
+      Operately.Access.Binding,
+      Operately.Access.GroupMembership,
+      Operately.Groups.Member,
+      Operately.Notifications.Subscription,
+      Operately.Notifications.SubscriptionList,
+      Operately.Activities.Activity
+    ]
+  end
+
+  defp foreign_person(attrs \\ %{}) do
+    other = Factory.setup(%{})
+
+    Operately.PeopleFixtures.person_fixture(Map.merge(%{company_id: other.company.id, full_name: "Foreign Person", email: Operately.PeopleFixtures.unique_account_email()}, attrs))
+  end
+
+  defp same_account_foreign_person(person) do
+    account = Repo.get!(Operately.People.Account, person.account_id)
+    foreign_person(%{account_id: account.id, email: account.email, full_name: person.full_name})
+  end
+
+  defp suspend_person(person, :suspended) do
+    person |> Ecto.Changeset.change(suspended: true) |> Repo.update!()
+  end
+
+  defp suspend_person(person, :suspended_at) do
+    person
+    |> Ecto.Changeset.change(suspended_at: DateTime.utc_now() |> DateTime.truncate(:second))
+    |> Repo.update!()
+  end
+
+  defp convert_to_guest(ctx, key) do
+    {:ok, guest} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.creator, Map.fetch!(ctx, key))
+    Map.put(ctx, key, guest)
+  end
+
+  defp space_member?(space, person) do
+    Repo.exists?(from m in Operately.Groups.Member, where: m.group_id == ^space.id and m.person_id == ^person.id)
   end
 
   #
