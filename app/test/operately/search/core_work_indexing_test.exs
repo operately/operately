@@ -207,7 +207,7 @@ defmodule Operately.Search.CoreWorkIndexingTest do
       run_refresh_jobs()
       assert_entry(:person, person.id, body: "Strategy lead")
 
-      assert {:ok, _person} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, person.id)
+      assert {:ok, _person} = Operately.Operations.CompanyMemberRemoving.run(ctx.creator, person)
       refute_entry(:person, person.id)
     end)
   end
