@@ -897,13 +897,13 @@ msgstr "%{author}: изменён ответственный за проект �
 #: lib/operately_email/templates/milestone_due_date_updating.html.eex:2
 #: lib/operately_email/templates/task_due_date_updating.html.eex:2
 msgid "%{author} changed the due date for %{name}"
-msgstr "%{author}: изменён срок выполнения задачи «%{name}»"
+msgstr "%{author}: изменён срок выполнения «%{name}»"
 
 #.elixir
 #: lib/operately_email/templates/milestone_due_date_updating.text.eex:1
 #: lib/operately_email/templates/task_due_date_updating.text.eex:1
 msgid "%{author} changed the due date for %{name}."
-msgstr "%{author}: изменён срок выполнения задачи «%{name}»."
+msgstr "%{author}: изменён срок выполнения «%{name}»."
 
 #.elixir
 #: lib/operately_email/templates/project_due_date_updating.html.eex:3
@@ -2146,7 +2146,7 @@ msgstr "%{author}: отменено назначение ответственн�
 #: lib/operately_email/templates/milestone_due_date_updating.html.eex:4
 #: lib/operately_email/templates/task_due_date_updating.html.eex:4
 msgid "%{author} removed the due date for %{name}"
-msgstr "%{author}: удалён срок выполнения задачи «%{name}»"
+msgstr "%{author}: удалён срок выполнения «%{name}»"
 
 #.elixir
 #: lib/operately_email/templates/project_due_date_updating.html.eex:8
@@ -3488,12 +3488,12 @@ msgstr "(%{where}) %{author}: изменён срок выполнения за�
 #.elixir
 #: lib/operately_email/emails/milestone_description_updating_email.ex:36
 msgid "(%{where}) %{author} mentioned you in the description for \"%{milestone_title}\""
-msgstr "(%{where}) %{author}: вы упомянуты в описании задачи «%{milestone_title}»"
+msgstr "(%{where}) %{author}: вы упомянуты в описании вехи «%{milestone_title}»"
 
 #.elixir
 #: lib/operately_email/emails/project_description_changed_email.ex:31
 msgid "(%{where}) %{author} mentioned you in the description for \"%{project_name}\""
-msgstr "(%{where}) %{author}: вы упомянуты в описании задачи «%{project_name}»"
+msgstr "(%{where}) %{author}: вы упомянуты в описании проекта «%{project_name}»"
 
 #.elixir
 #: lib/operately_email/emails/task_description_change_email.ex:33
@@ -3528,12 +3528,12 @@ msgstr "(%{where}) %{author}: срок выполнения установлен
 #.elixir
 #: lib/operately_email/emails/milestone_description_updating_email.ex:38
 msgid "(%{where}) %{author} updated the description for \"%{milestone_title}\""
-msgstr "(%{where}) %{author}: обновлено описание задачи «%{milestone_title}»"
+msgstr "(%{where}) %{author}: обновлено описание вехи «%{milestone_title}»"
 
 #.elixir
 #: lib/operately_email/emails/project_description_changed_email.ex:33
 msgid "(%{where}) %{author} updated the description for \"%{project_name}\""
-msgstr "(%{where}) %{author}: обновлено описание задачи «%{project_name}»"
+msgstr "(%{where}) %{author}: обновлено описание проекта «%{project_name}»"
 
 #.elixir
 #: lib/operately_email/emails/task_description_change_email.ex:35

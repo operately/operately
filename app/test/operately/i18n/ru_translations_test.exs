@@ -40,6 +40,33 @@ defmodule Operately.I18n.RuTranslationsTest do
     end)
   end
 
+  test "description email subjects identify projects and milestones correctly" do
+    Gettext.with_locale(@backend, "ru", fn ->
+      bindings = [where: "Marketing", author: "Alex", project_name: "Launch", milestone_title: "Launch"]
+
+      for {source, translation} <- [
+            {"(%{where}) %{author} mentioned you in the description for \"%{project_name}\"", "(Marketing) Alex: вы упомянуты в описании проекта «Launch»"},
+            {"(%{where}) %{author} updated the description for \"%{project_name}\"", "(Marketing) Alex: обновлено описание проекта «Launch»"},
+            {"(%{where}) %{author} mentioned you in the description for \"%{milestone_title}\"", "(Marketing) Alex: вы упомянуты в описании вехи «Launch»"},
+            {"(%{where}) %{author} updated the description for \"%{milestone_title}\"", "(Marketing) Alex: обновлено описание вехи «Launch»"}
+          ] do
+        assert Gettext.dgettext(@backend, "messages", source, bindings) == translation
+      end
+    end)
+  end
+
+  test "shared due-date email messages do not assume a task" do
+    Gettext.with_locale(@backend, "ru", fn ->
+      for {source, translation} <- [
+            {"%{author} changed the due date for %{name}", "Alex: изменён срок выполнения «Launch»"},
+            {"%{author} changed the due date for %{name}.", "Alex: изменён срок выполнения «Launch»."},
+            {"%{author} removed the due date for %{name}", "Alex: удалён срок выполнения «Launch»"}
+          ] do
+        assert Gettext.dgettext(@backend, "messages", source, author: "Alex", name: "Launch") == translation
+      end
+    end)
+  end
+
   test "every Russian translation preserves interpolation bindings and rich-text tags" do
     messages = Po.parse_file!(Path.expand("../../../priv/gettext/ru/LC_MESSAGES/messages.po", __DIR__))
 
