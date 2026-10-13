@@ -12,6 +12,8 @@ import { Page } from "./index";
 setupTestCatalog();
 
 jest.mock("axios");
+jest.mock("../../../../../../turboui/node_modules/react", () => jest.requireActual("react"));
+jest.mock("../../../../../../turboui/node_modules/react-i18next", () => jest.requireActual("react-i18next"));
 jest.mock("@/api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/ee/admin_api/staleClient", () => ({ handleStaleClientError: jest.fn() }));
 jest.mock("@/hooks/useFormattedTimePreferences", () => ({ useFormattedTimePreferences: () => ({}) }));
@@ -25,6 +27,8 @@ jest.mock("@/components/PaperContainer/PageOptions", () => ({ Root: () => null, 
 jest.mock("turboui", () => {
   const React = jest.requireActual("react");
   return {
+    SaasAdminAccountActionsMenu: jest.requireActual("../../../../../../turboui/src/SaasAdminAccountActionsMenu")
+      .SaasAdminAccountActionsMenu,
     i18nOptions: jest.requireActual("../../../../../../turboui/src/i18nOptions").i18nOptions,
     ...Object.fromEntries(
       [
@@ -79,6 +83,12 @@ jest.mock("turboui", () => {
     showSuccessToast: jest.fn(),
   };
 });
+
+jest.mock("../../../../../../turboui/src/Menu", () => ({
+  Menu: (props: React.PropsWithChildren) => jest.requireMock("turboui").Menu(props),
+  MenuActionItem: (props: React.ComponentProps<typeof import("turboui").MenuActionItem>) =>
+    jest.requireMock("turboui").MenuActionItem(props),
+}));
 
 let client: QueryClient;
 let root: Root;
