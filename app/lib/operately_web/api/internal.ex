@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Internal do
       {:query, "documents/get_public"},
       {:query, "curated_templates/list"},
       {:query, "curated_templates/get"},
+      {:query, "curated_templates/get_by_id"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
       {:mutation, "cli_auth/auth_password"},

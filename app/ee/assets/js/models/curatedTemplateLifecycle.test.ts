@@ -22,6 +22,7 @@ it("invalidates template lists and details while preserving unrelated queries", 
 
 const input = {
   title: "Template",
+  slug: "template",
   type: "kpi" as const,
   summary: "",
   category: "",

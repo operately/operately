@@ -42,6 +42,7 @@ export interface CuratedTemplate {
   type: TemplateType;
   state: "draft" | "published";
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
@@ -53,6 +54,7 @@ export interface CuratedTemplate {
 
 export interface TemplateInput {
   title: string;
+  slug: string;
   type: TemplateType;
   summary: string;
   category: string;

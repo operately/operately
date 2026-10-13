@@ -4,7 +4,8 @@ defmodule OperatelyWeb.Api.CuratedTemplates.Get do
   alias OperatelyWeb.Api.Serializer
 
   inputs do
-    field :id, :id, null: false
+    field :slug, :string, null: false
+    field :language, :string, null: false
   end
 
   outputs do
@@ -12,11 +13,11 @@ defmodule OperatelyWeb.Api.CuratedTemplates.Get do
   end
 
   def call(_conn, inputs) do
-    case CuratedTemplates.get_published(inputs.id) do
+    case CuratedTemplates.get_published_by_slug(inputs.slug, inputs.language) do
       nil -> {:error, :not_found}
       template ->
         serialized = Serializer.serialize(template, level: :full)
-        public_fields = [:__typename, :id, :type, :title, :summary, :category, :content_language, :updated_at, :definition]
+        public_fields = [:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :definition]
         {:ok, %{template: Map.take(serialized, public_fields)}}
     end
   end

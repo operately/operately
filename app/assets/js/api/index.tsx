@@ -1562,6 +1562,7 @@ export interface CuratedTemplate {
   id: Id;
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
@@ -3503,10 +3504,19 @@ export interface CompanyTransfersListImportRunsResult {
 }
 
 export interface CuratedTemplatesGetInput {
-  id: Id;
+  slug: string;
+  language: string;
 }
 
 export interface CuratedTemplatesGetResult {
+  template: CuratedTemplate;
+}
+
+export interface CuratedTemplatesGetByIdInput {
+  id: Id;
+}
+
+export interface CuratedTemplatesGetByIdResult {
   template: CuratedTemplate;
 }
 
@@ -12341,6 +12351,25 @@ export default {
         ...buildApiQueryOptions<CuratedTemplatesGetInput, CuratedTemplatesGetResult>(
           defaultApiClient,
           "/curated_templates/get",
+          input,
+        ),
+        staleTime: Infinity,
+      }),
+
+    getByIdQueryKeyPrefix: () => buildApiQueryKeyPrefix(defaultApiClient, "/curated_templates/get_by_id"),
+    getByIdQueryKey: (input: CuratedTemplatesGetByIdInput) =>
+      buildApiQueryKey(defaultApiClient, "/curated_templates/get_by_id", input),
+    getByIdQueryOptions: (input: CuratedTemplatesGetByIdInput) =>
+      buildApiQueryOptions<CuratedTemplatesGetByIdInput, CuratedTemplatesGetByIdResult>(
+        defaultApiClient,
+        "/curated_templates/get_by_id",
+        input,
+      ),
+    getByIdQuery: (input: CuratedTemplatesGetByIdInput) =>
+      queryClient.query({
+        ...buildApiQueryOptions<CuratedTemplatesGetByIdInput, CuratedTemplatesGetByIdResult>(
+          defaultApiClient,
+          "/curated_templates/get_by_id",
           input,
         ),
         staleTime: Infinity,

@@ -4,7 +4,7 @@ defmodule Operately.Support.Factory.CuratedTemplates do
 
   def add_curated_template(ctx, key, opts \\ []) do
     type = Keyword.get(opts, :type, :kpi)
-    attrs = %{title: "Example template", type: type, content_language: "en", definition: definition(type)}
+    attrs = %{title: "Example template", slug: "example-#{System.unique_integer([:positive])}", type: type, content_language: "en", definition: definition(type)}
     attrs = Map.merge(attrs, opts |> Keyword.drop([:published]) |> Map.new())
     {:ok, template} = CuratedTemplates.create(ctx.account, attrs)
     template = if opts[:published], do: publish(template, ctx.account), else: template

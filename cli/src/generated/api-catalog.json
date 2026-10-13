@@ -23658,6 +23658,17 @@
           },
           {
             "default": null,
+            "name": "slug",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "nullable": false,
+            "has_default": false
+          },
+          {
+            "default": null,
             "name": "summary",
             "type": {
               "name": "string",

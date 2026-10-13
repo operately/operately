@@ -4,6 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CuratedTemplates.Template 
       id: OperatelyWeb.Paths.curated_template_id(template),
       type: template.type,
       title: template.title,
+      slug: template.slug,
       summary: template.summary,
       category: template.category,
       content_language: template.content_language,

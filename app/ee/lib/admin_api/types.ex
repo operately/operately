@@ -157,6 +157,7 @@ defmodule OperatelyEE.AdminApi.Types do
     field :type, :curated_template_type
     field :state, :curated_template_state
     field :title, :string
+    field :slug, :string
     field? :summary, :string, null: true
     field? :category, :string, null: true
     field :content_language, :string

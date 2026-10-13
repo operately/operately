@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Plugs.PublicCuratedTemplateHeaders do
 
   import Plug.Conn
 
-  @paths ["/api/v2/curated_templates/list", "/api/v2/curated_templates/get"]
+  @paths ["/api/v2/curated_templates/list", "/api/v2/curated_templates/get", "/api/v2/curated_templates/get_by_id"]
 
   def init(opts), do: opts
 
