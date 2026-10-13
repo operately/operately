@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Projects.Create do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:space, fn ctx -> authorize_destination(ctx.me, inputs.space_id) end)
+    |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id, company_id: ctx.me.company_id) end)
     |> run(:check_permissions, fn ctx ->
       Permissions.check(ctx.space.request_info.access_level, :can_edit, company_read_only: company_read_only(conn))
     end)
@@ -53,16 +53,6 @@ defmodule OperatelyWeb.Api.Projects.Create do
       _ -> {:error, :internal_server_error}
     end
   end
-
-  defp authorize_destination(person, space_id) do
-    with {:ok, space} <- Group.get(person, id: space_id, company_id: person.company_id),
-         :ok <- ensure_destination_company(space, person) do
-      {:ok, space}
-    end
-  end
-
-  defp ensure_destination_company(%{company_id: company_id}, %{company_id: company_id}), do: :ok
-  defp ensure_destination_company(_space, _person), do: {:error, :not_found}
 
   defp validate_owners(space, inputs) do
     case People.validate_active_company_members(space.company_id, [inputs[:champion_id], inputs[:reviewer_id]]) do
