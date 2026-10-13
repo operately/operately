@@ -614,6 +614,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_access_members(inputs.members)
       |> Steps.add_access_members(inputs.members)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -735,6 +736,17 @@ defmodule OperatelyWeb.Api.Goals do
       end)
     end
 
+    def validate_access_members(multi, members) do
+      Ecto.Multi.run(multi, :validated_access_members, fn _repo, %{me: me} ->
+        person_ids = members |> List.wrap() |> Enum.map(&member_id/1)
+
+        case Operately.People.validate_active_company_members(me.company_id, person_ids) do
+          :ok -> {:ok, :valid}
+          {:error, :invalid_company_member} -> {:error, :bad_request}
+        end
+      end)
+    end
+
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal, company_read_only: company_read_only} ->
         Operately.Goals.Permissions.check(goal.request_info.access_level, permission, company_read_only: company_read_only)
@@ -777,22 +789,23 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def add_access_members(multi, members) do
-      members = List.wrap(members)
+      members = members |> List.wrap() |> Enum.reject(&is_nil(member_id(&1)))
 
       Ecto.Multi.run(multi, :added_access_members, fn _repo, %{goal: goal} ->
         context = goal.access_context
 
         bindings =
-          members
-          |> Enum.reject(fn member -> is_nil(member.id) end)
-          |> Enum.map(fn member ->
-            {:ok, binding} = Access.bind_person(context, member.id, member.access_level)
+          Enum.map(members, fn member ->
+            {:ok, binding} = Access.bind_person(context, member_id(member), member.access_level)
             binding
           end)
 
         {:ok, bindings}
       end)
     end
+
+    defp member_id(%{id: id}), do: id
+    defp member_id(member) when is_map(member), do: Map.get(member, :id)
 
     def update_access_member(multi, person_id, access_level) do
       Ecto.Multi.run(multi, :updated_access_member, fn _repo, %{goal: goal} ->
@@ -1062,6 +1075,9 @@ defmodule OperatelyWeb.Api.Goals do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
