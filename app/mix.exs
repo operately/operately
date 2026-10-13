@@ -65,7 +65,7 @@ defmodule Operately.MixProject do
       {:tesla, "~> 1.18"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
       {:sentry, "~> 10.0"},
-      {:swoosh, "~> 1.26.3"},
+      {:swoosh, "~> 1.29.0"},
       {:gen_smtp, "~> 1.1"},
       {:gettext, "~> 0.26"},
       {:earmark_parser, "~> 1.4"},
