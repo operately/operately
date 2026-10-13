@@ -6,6 +6,7 @@ import { i18nOptions } from "turboui";
 import de from "./generated/locales/de.json";
 import en from "./generated/locales/en.json";
 import ptBR from "./generated/locales/pt-BR.json";
+import ru from "./generated/locales/ru.json";
 import { DEFAULT_LANGUAGE, isSupportedLanguage, SUPPORTED_LANGUAGES } from "./i18n/languages";
 
 // The app and TurboUI install separate package types but share this runtime setting.
@@ -35,10 +36,16 @@ const portugueseResources = {
   ...FORMAT_MESSAGES,
 };
 
+const russianResources = {
+  ...ru,
+  ...FORMAT_MESSAGES,
+};
+
 const initOptions = {
   ...i18nOptions,
   supportedLngs: [...SUPPORTED_LANGUAGES],
   resources: {
+    ru: { translation: russianResources },
     de: {
       translation: germanResources,
     },
@@ -56,6 +63,7 @@ i18n.use(initReactI18next);
 if (!i18n.isInitialized) {
   i18n.init(initOptions);
 } else {
+  i18n.addResourceBundle("ru", "translation", russianResources, true, true);
   i18n.addResourceBundle("de", "translation", germanResources, true, true);
   i18n.addResourceBundle("en", "translation", englishResources, true, true);
   i18n.addResourceBundle("pt-BR", "translation", portugueseResources, true, true);
@@ -75,7 +83,7 @@ export function applyLanguage(language: string) {
 export function tn(singular: string, plural: string, count: number, options: TOptions = {}) {
   return i18n.t(singular, {
     count,
-    defaultValue: singular,
+    defaultValue: count === 1 ? singular : plural,
     defaultValue_other: plural,
     ...options,
   });

@@ -23,7 +23,7 @@ if (!i18n.isInitialized) {
 export function tn(singular: string, plural: string, count: number, options: TOptions = {}) {
   return i18n.t(singular, {
     count,
-    defaultValue: singular,
+    defaultValue: count === 1 ? singular : plural,
     defaultValue_other: plural,
     ...options,
   });

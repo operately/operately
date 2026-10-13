@@ -22,6 +22,21 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_language_feature_disabled()
   end
 
+  feature "Russian selection persists and translations stay behind the company flag", ctx do
+    ctx
+    |> Factory.enable_feature("i18n")
+    |> Steps.use_narrow_window()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.select_russian()
+    |> Steps.submit_profile_changes()
+    |> Steps.assert_russian_account()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_russian_preference()
+    |> Factory.disable_feature("i18n")
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_language_feature_disabled("ru")
+  end
+
   feature "view recent activity", ctx do
     ctx
     |> Steps.given_projects_exist_for_person()
