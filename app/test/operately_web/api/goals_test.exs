@@ -371,7 +371,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
     end
 
-    test "rejects a person outside the caller's company even when the caller can access the goal", ctx do
+    test "rejects a goal from another company even when the caller has a binding and every person is local", ctx do
       ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
       other = Factory.setup(%{}) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
       context = Access.get_context!(goal_id: other.goal.id)
@@ -380,17 +380,13 @@ defmodule OperatelyWeb.Api.GoalsTest do
       before = access_snapshot(ctx.goal)
       other_bindings = goal_bindings(other.goal)
 
-      assert {400, res} =
+      assert {404, res} =
                mutation(ctx.conn, [:goals, :create_access_members], %{
                  goal_id: Paths.goal_id(other.goal),
-                 members: [
-                   %{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()},
-                   %{id: Paths.person_id(other.creator), access_level: Binding.full_access()}
-                 ]
+                 members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
                })
 
-      assert res.message == "The request was malformed"
-      refute res.message =~ Paths.person_id(other.creator)
+      assert res.message == "Goal not found"
       assert access_snapshot(ctx.goal) == before
       assert goal_bindings(other.goal) == other_bindings
       unchanged = direct_binding(other.goal, ctx.creator)
