@@ -52,6 +52,67 @@ describe("i18n", () => {
     expect(i18n.t(key)).toEqual(key);
   });
 
+  describe("Russian", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses glossary terms and context-specific labels", async () => {
+      await applyLanguage("ru");
+      expect(i18n.t("My Account")).toBe("Моя учётная запись");
+      expect(i18n.t("Champion")).toBe("Ответственный");
+      expect(i18n.t("Reviewer")).toBe("Куратор");
+      expect(i18n.t("Start")).toBe("Начальное значение");
+      expect(i18n.t("Target")).toBe("Целевое значение");
+      expect(i18n.t("Edit access")).toBe("Изменить доступ");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Не начато");
+      expect(i18n.t("Title", { context: "person" })).toBe("Должность");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Название");
+    });
+
+    it("selects all four Russian plural forms including fractions and integer boundaries", async () => {
+      await applyLanguage("ru");
+      const cases = [
+        [0, "задач"],
+        [1, "задача"],
+        [2, "задачи"],
+        [5, "задач"],
+        [11, "задач"],
+        [21, "задача"],
+        [22, "задачи"],
+        [25, "задач"],
+        [101, "задача"],
+        [111, "задач"],
+        [0.5, "задачи"],
+        [1.5, "задачи"],
+        [1_000_000, "задач"],
+      ] as const;
+      for (const [count, noun] of cases) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(`${count} ${noun}`);
+      }
+    });
+
+    it("preserves user content and falls back for missing messages", async () => {
+      await applyLanguage("ru");
+      expect(i18n.t("<resource>{{name}}</resource>: <date/>", { name: "Launch <QA>" })).toBe(
+        "<resource>Launch <QA></resource>: <date/>",
+      );
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      for (const count of [0, 1, 2, 5, 11, 21, 22, 1.5]) {
+        expect(tn("1 missing plural", "{{count}} missing plurals", count)).toBe(
+          count === 1 ? "1 missing plural" : `${count} missing plurals`,
+        );
+      }
+    });
+
+    it("returns to English when the company disables translations", async () => {
+      await applyLanguage(resolveEffectiveLanguage("ru", true));
+      expect(i18n.t("My Account")).toBe("Моя учётная запись");
+      await applyLanguage(resolveEffectiveLanguage("ru", false));
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
+  });
+
   describe("German", () => {
     afterEach(async () => {
       await applyLanguage("en");
@@ -221,6 +282,7 @@ describe.each([true, false])("initialization with TurboUI first: %s", (turboFirs
       expect(runtime.t("Close", { context: "button" })).toBe("Close dialog");
       expect(runtime.language).toBe("en");
       expect(runtime.t("My Account", { lng: "de" })).toBe("Mein Konto");
+      expect(runtime.t("My Account", { lng: "ru" })).toBe("Моя учётная запись");
       expect(runtime.t("intlDateTime", { val: new Date("2026-01-01T12:00:00Z") })).not.toBe("intlDateTime");
     });
   });

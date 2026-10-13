@@ -218,16 +218,19 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
   end
 
   test "daily summaries localize each recipient and preserve preferences on flag rollback", ctx do
+    ctx = Factory.add_company_member(ctx, :russian, name: "Russian Reader", preferences: %{notifications: %{send_daily_summary: true}})
+    {:ok, _} = Operately.People.update_person(ctx.russian, %{language: "ru"})
     ctx = Factory.add_company_member(ctx, :portuguese, name: "Portuguese Reader", preferences: %{notifications: %{send_daily_summary: true}})
     {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
     {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
-    for person <- [ctx.creator, ctx.portuguese], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
+    for person <- [ctx.creator, ctx.portuguese, ctx.russian], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     for {person, subject, headline} <- [
           {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"},
           {ctx.creator, "You have 1 new update", "created the project"},
+          {ctx.russian, "У вас 1 новое обновление", "проект создан"},
           {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"}
         ] do
       assert_daily_language(person, subject, headline)
@@ -236,6 +239,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
 
     {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
     assert_daily_language(ctx.portuguese, "You have 1 new update", "created the project")
+    assert_daily_language(ctx.russian, "You have 1 new update", "created the project")
+    assert Operately.People.get_person!(ctx.russian.id).language == "ru"
     assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
   end
 

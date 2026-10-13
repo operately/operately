@@ -7039,7 +7039,7 @@ msgid "Change password"
 msgstr "Passwort ändern"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:335
+#: ../turboui/src/ProfileEditPage/index.tsx:336
 msgid "Change photo"
 msgstr "Foto ändern"
 
@@ -9654,7 +9654,7 @@ msgstr "Frühere Version"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:329
+#: ../turboui/src/ProfileEditPage/index.tsx:330
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -12362,7 +12362,7 @@ msgid "LINKS"
 msgstr "LINKS"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:226
+#: ../turboui/src/ProfileEditPage/index.tsx:227
 msgid "Language"
 msgstr "Sprache"
 
@@ -16334,7 +16334,7 @@ msgstr "Personen entfernen"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:343
+#: ../turboui/src/ProfileEditPage/index.tsx:344
 msgid "Remove photo"
 msgstr "Foto entfernen"
 
@@ -17155,7 +17155,7 @@ msgid "Save selection"
 msgstr "Auswahl speichern"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:355
+#: ../turboui/src/ProfileEditPage/index.tsx:356
 msgid "Saving..."
 msgstr "Wird gespeichert …"
 
@@ -17824,7 +17824,7 @@ msgid "Share a link"
 msgstr "Link teilen"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:259
+#: ../turboui/src/ProfileEditPage/index.tsx:260
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Erzähle kurz etwas über dich, deine Arbeit oder etwas anderes, das andere wissen sollen."
 
@@ -21219,7 +21219,7 @@ msgid "Uploading %{name}..."
 msgstr "%{name} wird hochgeladen …"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:354
+#: ../turboui/src/ProfileEditPage/index.tsx:355
 msgid "Uploading %{progress}%"
 msgstr "Upload: %{progress} %"
 

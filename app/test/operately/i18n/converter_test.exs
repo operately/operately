@@ -165,13 +165,14 @@ defmodule Operately.I18n.ConverterTest do
     msgstr[0] "%{count} яблоко"
     msgstr[1] "%{count} яблока"
     msgstr[2] "%{count} яблок"
+    msgstr[3] "%{count} яблока"
     """
 
     assert Converter.from_po(po, "ru") == %{
              "1 apple_one" => "{{count}} яблоко",
              "1 apple_few" => "{{count}} яблока",
              "1 apple_many" => "{{count}} яблок",
-             "1 apple_other" => "{{count}} яблок"
+             "1 apple_other" => "{{count}} яблока"
            }
   end
 
@@ -182,6 +183,7 @@ defmodule Operately.I18n.ConverterTest do
     msgstr[0] "%{count} яблоко"
     msgstr[1] "%{count} яблока"
     msgstr[2] "%{count} яблок"
+    msgstr[3] "%{count} яблока"
     """
 
     translations = Converter.from_po(po, "ru")
@@ -192,12 +194,12 @@ defmodule Operately.I18n.ConverterTest do
       ru: {translation: JSON.parse(process.argv[1])},
       en: {translation: {'1 apple_other': '{{count}} apples'}}
     }});
-    process.stdout.write(JSON.stringify([1, 2, 5, 1.5].map(count => i18next.t('1 apple', {count}))));
+    process.stdout.write(JSON.stringify([0, 1, 2, 5, 11, 21, 22, 25, 101, 111, 1.5].map(count => i18next.t('1 apple', {count}))));
     """
 
     {output, 0} = System.cmd("node", ["-e", script, Jason.encode!(translations)], cd: Path.expand("../../..", __DIR__))
 
-    assert Jason.decode!(output) == ["1 яблоко", "2 яблока", "5 яблок", "1.5 яблок"]
+    assert Jason.decode!(output) == ["0 яблок", "1 яблоко", "2 яблока", "5 яблок", "11 яблок", "21 яблоко", "22 яблока", "25 яблок", "101 яблоко", "111 яблок", "1.5 яблока"]
   end
 
   defp render_task_counts(po, locale, counts) do
