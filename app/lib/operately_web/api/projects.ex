@@ -288,7 +288,7 @@ defmodule OperatelyWeb.Api.Projects do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_company_project(inputs.project_id)
+      |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
       |> Steps.validate_selected_company_members([inputs.champion_id])
       |> Steps.update_project_champion(inputs.champion_id)
@@ -584,18 +584,6 @@ defmodule OperatelyWeb.Api.Projects do
       |> Ecto.Multi.put(:company_read_only, OperatelyWeb.Api.Helpers.company_read_only(conn))
       |> Ecto.Multi.run(:me, fn _repo, %{conn: conn} ->
         {:ok, conn.assigns.current_person}
-      end)
-    end
-
-    def find_company_project(multi, project_id) do
-      Ecto.Multi.run(multi, :project, fn _repo, %{me: me} ->
-        case Operately.Projects.Project.get(me, id: project_id, company_id: me.company_id, opts: [preload: [:access_context]]) do
-          {:ok, %{company_id: company_id} = project} when company_id == me.company_id ->
-            {:ok, project}
-
-          _ ->
-            {:error, {:not_found, gettext("Project not found")}}
-        end
       end)
     end
 
