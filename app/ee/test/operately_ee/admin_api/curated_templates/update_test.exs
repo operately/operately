@@ -24,6 +24,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.UpdateTest do
       inputs = Map.merge(payload(:kpi), %{id: Paths.curated_template_id(ctx.template), expected_updated_at: DateTime.to_iso8601(ctx.template.updated_at), title: "Edited"})
       assert {200, %{template: template, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :update], inputs)
       assert template.title == "Edited"
+      assert template.slug == inputs.slug
       assert {400, %{details: %{reason: "template_conflict"}}} = admin_mutation(ctx.conn, [:curated_templates, :update], inputs)
     end
 
@@ -40,6 +41,6 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.UpdateTest do
   end
 
   defp payload(type) do
-    %{title: "Example", type: Atom.to_string(type), content_language: "en", definition: Jason.encode!(Operately.Support.Factory.CuratedTemplates.definition(type))}
+    %{title: "Example", slug: "example-#{type}", type: Atom.to_string(type), content_language: "en", definition: Jason.encode!(Operately.Support.Factory.CuratedTemplates.definition(type))}
   end
 end

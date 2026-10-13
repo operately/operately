@@ -36,7 +36,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.ValidateTest do
 
   defp payload(type) do
     %{
-      title: "Example",
+      title: "Example", slug: "example-#{type}",
       type: Atom.to_string(type),
       content_language: "en",
       definition: Jason.encode!(Map.put(Operately.Support.Factory.CuratedTemplates.definition(type), "description", Operately.Support.RichText.curated_template_content()))

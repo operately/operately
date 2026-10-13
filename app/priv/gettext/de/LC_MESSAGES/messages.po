@@ -6799,7 +6799,7 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
 #: ../turboui/src/ConfirmDialog/index.tsx:59
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:176
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:131
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:148
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:91
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
@@ -8122,7 +8122,7 @@ msgid "Content is required"
 msgstr "Inhalt ist erforderlich"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:93
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:110
 msgid "Content language"
 msgstr "Inhaltssprache"
 
@@ -11383,7 +11383,7 @@ msgstr "Zur Startseite"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:11
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:86
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:103
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
@@ -12226,7 +12226,7 @@ msgid "Join this Space"
 msgstr "Diesem Arbeitsbereich beitreten"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:85
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:102
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 msgid "KPI"
 msgstr "KPI"
@@ -15630,7 +15630,7 @@ msgstr "Planmäßiger Fortschritt. Keine Hindernisse."
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:12
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:87
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:104
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
@@ -15856,7 +15856,7 @@ msgid "Public sharing is off. Enable it to create a link."
 msgstr "Die öffentliche Freigabe ist deaktiviert. Aktiviere sie, um einen Link zu erstellen."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:116
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:133
 msgid "Publish"
 msgstr "Veröffentlichen"
 
@@ -15886,7 +15886,7 @@ msgid "Published"
 msgstr "Veröffentlicht"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:79
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:96
 msgid "Published changes take effect immediately."
 msgstr "Veröffentlichte Änderungen werden sofort wirksam."
 
@@ -17141,7 +17141,7 @@ msgid "Save contributor"
 msgstr "Mitwirkende Person speichern"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:127
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:144
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
@@ -18077,6 +18077,11 @@ msgstr "Übersprungen"
 #: ../turboui/src/LinkNewPage/index.tsx:100
 msgid "Slide"
 msgstr "Folie"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:94
+msgid "Slug"
+msgstr "URL-Kürzel"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:195
@@ -19682,7 +19687,7 @@ msgid "The template could not be duplicated. Try again."
 msgstr "Die Vorlage konnte nicht dupliziert werden. Versuche es erneut."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:45
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:60
 msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
 msgstr "Die Vorlage konnte nicht gespeichert werden. Deine Änderungen wurden beibehalten. Lade die Seite neu, falls ein anderer Admin sie geändert hat."
 
@@ -20682,7 +20687,7 @@ msgstr "Aktiviere oder deaktiviere experimentelle Funktionen für dieses Unterne
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:83
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:100
 #: lib/operately/md/space.ex:20
 #: lib/operately/md/task.ex:18
 msgid "Type"
@@ -20993,7 +20998,7 @@ msgid "Untitled milestone"
 msgstr "Meilenstein ohne Titel"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:116
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:133
 #: ../turboui/src/GoalTargetList/UpdateButton.tsx:17
 msgid "Update"
 msgstr "Aktualisieren"
@@ -24834,7 +24839,7 @@ msgstr "Position"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:93
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
 msgid "Title"
