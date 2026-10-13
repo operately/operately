@@ -2326,6 +2326,7 @@
   "People who have access to the project based on their company or space membership but are not directly assigned to the project.": "Люди, имеющие доступ к проекту как участники компании или пространства, но не назначенные на него напрямую.",
   "People who have access to the space via their company membeship.": "Люди, имеющие доступ к пространству как участники компании.",
   "People with Direct Access": "Люди с прямым доступом",
+  "People|navigation": "Люди",
   "Permanently delete the company and all its resources. This action cannot be undone.": "Навсегда удалить компанию и все её материалы. Это действие нельзя отменить.",
   "Permission": "Право доступа",
   "Permission Breakdown": "Разбор прав доступа",

@@ -14,7 +14,7 @@ defmodule Operately.ResourceHubs.PublicDocumentTest do
     end)
 
     assert unnamed["attrs"]["label"] == nil
-    assert Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> PublicDocument.public_content(unnamed, "token")["text"] end) == "Mentioned person"
+    assert Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn -> PublicDocument.public_content(unnamed, "token")["text"] end) == "Mentioned person"
   end
 
   setup ctx do

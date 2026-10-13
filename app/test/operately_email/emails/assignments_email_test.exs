@@ -314,7 +314,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     end)
 
     with_mock Operately.Assignments.Loader, [:passthrough], load: fn _, _ -> assignments end do
-      for locale <- ["en", "pt_BR", "fr"] do
+      for locale <- ["en", "pt_BR", "nl"] do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> AssignmentsEmail.send(ctx.first_assignee) end)
         assert_email_sent(fn email ->
@@ -344,7 +344,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
         ] do
       due_date = if days, do: Date.utc_today() |> Date.add(days) |> ContextualDate.create_day_date() |> Map.from_struct()
       {:ok, _} = Operately.Tasks.update_task(Repo.reload!(ctx.task), %{due_date: due_date, reminders: [%{type: :on_date, date: Date.utc_today()}]})
-      for {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+      for {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"nl", english}] do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> AssignmentsEmail.send(ctx.first_assignee) end)
         assert_email_sent(fn email ->

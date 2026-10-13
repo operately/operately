@@ -10,7 +10,7 @@ defmodule Operately.I18n.AccessLabelsTest do
       assert AccessLabels.label(nil) == AccessLabels.label(Binding.no_access())
     end)
 
-    Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn ->
+    Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn ->
       assert AccessLabels.label(Binding.view_access()) == "View Access"
     end)
   end

@@ -20,7 +20,7 @@ defmodule OperatelyEmail.TemplatesTest do
       portuguese = render(@template, assigns, "pt_BR")
       assert elem(english, 0) != elem(portuguese, 0)
       assert elem(english, 1) != elem(portuguese, 1)
-      assert render(@template, assigns, "fr") == english
+      assert render(@template, assigns, "nl") == english
       for {html, text} <- [english, portuguese] do
         refute html =~ "<literal>"
         refute html =~ "<Ana>"
@@ -67,7 +67,7 @@ defmodule OperatelyEmail.TemplatesTest do
 
       assert english_html != portuguese_html
       assert english_text != portuguese_text
-      assert render(@template, assigns, "fr") == {english_html, english_text}
+      assert render(@template, assigns, "nl") == {english_html, english_text}
 
       for body <- [english_html, portuguese_html] do
         assert body =~ "&lt;Ana&gt; S."
@@ -111,7 +111,7 @@ defmodule OperatelyEmail.TemplatesTest do
 
   test "falls back to complete English sentences when a locale has no translations" do
     for template <- @work_emails do
-      assert render(template, assigns(), "en") == render(template, assigns(), "fr")
+      assert render(template, assigns(), "en") == render(template, assigns(), "nl")
     end
   end
 
@@ -157,7 +157,7 @@ defmodule OperatelyEmail.TemplatesTest do
       assigns = %{assigns | files: List.duplicate(assigns.file, count), file_url: "https://example.com/file"}
       {html, text} = render("resource_hub_file_created", assigns, "pt_BR")
       {english_html, english_text} = render("resource_hub_file_created", assigns, "en")
-      assert render("resource_hub_file_created", assigns, "fr") == {english_html, english_text}
+      assert render("resource_hub_file_created", assigns, "nl") == {english_html, english_text}
 
       if count == 1 do
         assert html =~ "enviou o arquivo &quot;Launch &lt;script&gt;&quot;"
@@ -186,7 +186,7 @@ defmodule OperatelyEmail.TemplatesTest do
       assigns = if action == "none", do: assigns, else: %{assigns | content: nil}
       {html, text} = render("project_milestone_commented", assigns, "pt_BR")
       {english_html, english_text} = render("project_milestone_commented", assigns, "en")
-      assert render("project_milestone_commented", assigns, "fr") == {english_html, english_text}
+      assert render("project_milestone_commented", assigns, "nl") == {english_html, english_text}
       assert html =~ portuguese
       assert text =~ portuguese
       assert english_text =~ english
