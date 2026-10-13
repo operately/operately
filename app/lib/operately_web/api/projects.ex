@@ -290,6 +290,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
+      |> Steps.validate_selected_company_members([inputs.champion_id])
       |> Steps.update_project_champion(inputs.champion_id)
       |> Steps.save_activity(:project_champion_updating, fn changes ->
         %{
@@ -575,6 +576,7 @@ defmodule OperatelyWeb.Api.Projects do
     alias Operately.Projects.{Contributor, OrderingState}
     alias Operately.Notifications.{Subscription, SubscriptionList}
     alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
+    alias Operately.People
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -664,6 +666,21 @@ defmodule OperatelyWeb.Api.Projects do
         end
 
         {:ok, Repo.all(query)}
+      end)
+    end
+
+    def validate_selected_company_members(multi, person_ids) do
+      Ecto.Multi.run(multi, :company_members, fn _repo, %{me: me, project: project} ->
+        cond do
+          project.company_id != me.company_id ->
+            {:error, {:not_found, gettext("Project not found")}}
+
+          true ->
+            case People.validate_active_company_members(me.company_id, person_ids) do
+              :ok -> {:ok, :valid}
+              {:error, :invalid_company_member} -> {:error, :bad_request}
+            end
+        end
       end)
     end
 
@@ -1211,6 +1228,9 @@ defmodule OperatelyWeb.Api.Projects do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
 
         {:error, :validate_milestone, message, _changes} ->
           {:error, :bad_request, message}
