@@ -2785,17 +2785,17 @@ msgid "%{fullName} acknowledged this %{label}<icon/>"
 msgstr "%{fullName} hat dies als gelesen bestätigt: %{label}<icon/>"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:160
 msgid "%{fullName} has been deleted."
 msgstr "%{fullName} wurde gelöscht."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:167
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:156
 msgid "%{fullName} is now a site admin."
 msgstr "%{fullName} hat jetzt Instanz-Adminrechte."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:169
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:158
 msgid "%{fullName} no longer has site admin access."
 msgstr "%{fullName} hat keinen Instanz-Adminzugriff mehr."
 
@@ -5090,23 +5090,28 @@ msgid "Account"
 msgstr "Konto"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:16
+msgid "Account ID copied to clipboard"
+msgstr "Konto-ID in die Zwischenablage kopiert"
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:85
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:50
 msgid "Account Owners"
 msgstr "Inhaber"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:160
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:149
 msgid "Account deleted"
 msgstr "Konto gelöscht"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:182
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
 msgid "Account deletion blocked"
 msgstr "Kontolöschung blockiert"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:193
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:182
 msgid "Account deletion failed"
 msgstr "Kontolöschung fehlgeschlagen"
 
@@ -6277,7 +6282,7 @@ msgstr "Mindestens 12 Zeichen"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:764
+#: lib/operately_web/api/projects.ex:781
 #: lib/operately_web/api/spaces.ex:363
 msgid "At least one task status is required"
 msgstr "Mindestens ein Aufgabenstatus ist erforderlich"
@@ -8217,6 +8222,7 @@ msgstr "Dein Konto in das einer externen Person umgewandelt"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:75
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:16
 msgid "Copied"
 msgstr "Kopiert"
 
@@ -8248,12 +8254,18 @@ msgid "Copy URL"
 msgstr "URL kopieren"
 
 #.frontend
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:25
+msgid "Copy account ID"
+msgstr "Konto-ID kopieren"
+
+#.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:38
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:330
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:277
 #: ../turboui/src/TaskPage/Sidebar.tsx:415
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:18
 msgid "Copy failed"
 msgstr "Kopieren fehlgeschlagen"
 
@@ -8846,7 +8858,7 @@ msgid "Delete"
 msgstr "Löschen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:142
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:131
 msgid "Delete %{fullName}? This will suspend all linked people, anonymize personal data, and revoke access permanently."
 msgstr "%{fullName} löschen? Dadurch werden alle verknüpften Personen gesperrt, personenbezogene Daten anonymisiert und der Zugriff dauerhaft entzogen."
 
@@ -8910,9 +8922,9 @@ msgid "Delete Task"
 msgstr "Aufgabe löschen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:30
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:141
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:146
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:38
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:130
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:135
 msgid "Delete account"
 msgstr "Konto löschen"
 
@@ -10646,7 +10658,7 @@ msgid "Failed to create the project."
 msgstr "Das Projekt konnte nicht erstellt werden."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:204
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:193
 msgid "Failed to delete account."
 msgstr "Konto konnte nicht gelöscht werden."
 
@@ -10711,7 +10723,7 @@ msgid "Failed to edit comment."
 msgstr "Kommentar konnte nicht bearbeitet werden."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:200
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:189
 msgid "Failed to grant site admin access."
 msgstr "Instanz-Adminzugriff konnte nicht gewährt werden."
 
@@ -10740,7 +10752,7 @@ msgid "Failed to remove reaction."
 msgstr "Reaktion konnte nicht entfernt werden."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:202
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:191
 msgid "Failed to remove site admin access."
 msgstr "Instanz-Adminzugriff konnte nicht entzogen werden."
 
@@ -11496,7 +11508,7 @@ msgid "Good morning, %{name}!"
 msgstr "Guten Morgen, %{name}!"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:120
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:109
 msgid "Grant %{fullName} access to the site admin dashboard? Site admins can manage instance-wide settings and other privileged admin actions. Only grant this access to someone who should administer the whole site."
 msgstr "%{fullName} Zugriff auf die Instanzverwaltung gewähren? Instanz-Admins können instanzweite Einstellungen verwalten und andere privilegierte Verwaltungsaktionen ausführen. Gewähre diesen Zugriff nur Personen, die die gesamte Instanz verwalten sollen."
 
@@ -11506,12 +11518,12 @@ msgid "Grant Access"
 msgstr "Zugriff gewähren"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:124
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:113
 msgid "Grant access"
 msgstr "Zugriff gewähren"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:119
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:108
 msgid "Grant site admin access"
 msgstr "Instanz-Adminzugriff gewähren"
 
@@ -13082,8 +13094,8 @@ msgstr "Meilenstein nicht gelöscht"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:633
-#: lib/operately_web/api/projects.ex:648
+#: lib/operately_web/api/projects.ex:635
+#: lib/operately_web/api/projects.ex:650
 #: lib/operately_web/api/projects/milestones.ex:285
 #: lib/operately_web/api/tasks.ex:671
 msgid "Milestone not found"
@@ -15727,9 +15739,10 @@ msgid "Project name cannot be empty"
 msgstr "Projektname darf nicht leer sein"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:594
-#: lib/operately_web/api/projects.ex:609
-#: lib/operately_web/api/projects.ex:639
+#: lib/operately_web/api/projects.ex:596
+#: lib/operately_web/api/projects.ex:611
+#: lib/operately_web/api/projects.ex:641
+#: lib/operately_web/api/projects.ex:676
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:276
 #: lib/operately_web/api/tasks.ex:623
@@ -15802,7 +15815,7 @@ msgid "Promote to manager"
 msgstr "Zur Arbeitsbereichsverwaltung hinzufügen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:21
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:29
 msgid "Promote to site admin"
 msgstr "Instanz-Adminrechte erteilen"
 
@@ -16293,7 +16306,7 @@ msgid "Remove Highlight"
 msgstr "Hervorhebung entfernen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:135
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:124
 msgid "Remove access"
 msgstr "Zugriff entziehen"
 
@@ -16349,13 +16362,13 @@ msgid "Remove reminder"
 msgstr "Erinnerung entfernen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:26
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:130
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:34
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:119
 msgid "Remove site admin access"
 msgstr "Instanz-Adminzugriff entziehen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:131
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:120
 msgid "Remove site admin access from %{fullName}? This will revoke access to the site admin dashboard and other privileged admin actions. Use this carefully."
 msgstr "%{fullName} den Instanz-Adminzugriff entziehen? Dadurch wird der Zugriff auf die Instanzverwaltung und andere privilegierte Verwaltungsaktionen widerrufen. Gehe dabei sorgfältig vor."
 
@@ -16517,7 +16530,7 @@ msgid "Replacement"
 msgstr "Ersatz"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:792
+#: lib/operately_web/api/projects.ex:809
 #: lib/operately_web/api/spaces.ex:397
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Ersatzstatus müssen vorhandene Statusoptionen sein, die nicht gelöscht werden"
@@ -18004,32 +18017,32 @@ msgid "Site Messages"
 msgstr "Systemmitteilungen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:156
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:145
 msgid "Site admin access granted"
 msgstr "Instanz-Adminzugriff gewährt"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:158
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:147
 msgid "Site admin access removed"
 msgstr "Instanz-Adminzugriff entzogen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:180
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:169
 msgid "Site admin demotion blocked"
 msgstr "Entzug der Instanz-Adminrechte blockiert"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:191
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:180
 msgid "Site admin demotion failed"
 msgstr "Entzug der Instanz-Adminrechte fehlgeschlagen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:189
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:178
 msgid "Site admin promotion failed"
 msgstr "Erteilung der Instanz-Adminrechte fehlgeschlagen"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:178
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:167
 msgid "Site admin update blocked"
 msgstr "Aktualisierung der Instanz-Adminrechte blockiert"
 
@@ -18860,8 +18873,8 @@ msgid "Task not deleted"
 msgstr "Aufgabe nicht gelöscht"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:603
-#: lib/operately_web/api/projects.ex:618
+#: lib/operately_web/api/projects.ex:605
+#: lib/operately_web/api/projects.ex:620
 #: lib/operately_web/api/projects/milestones.ex:297
 #: lib/operately_web/api/spaces.ex:313
 #: lib/operately_web/api/tasks.ex:644
@@ -20723,6 +20736,7 @@ msgstr "URL konnte nicht in die Zwischenablage kopiert werden"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:38
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:18
 msgid "Unable to copy to clipboard"
 msgstr "Konnte nicht in die Zwischenablage kopiert werden"
 
