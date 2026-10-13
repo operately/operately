@@ -2807,17 +2807,17 @@ msgid "%{fullName} acknowledged this %{label}<icon/>"
 msgstr "%{fullName}: прочтение подтверждено — %{label}<icon/>"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:160
 msgid "%{fullName} has been deleted."
 msgstr "Учётная запись %{fullName} удалена."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:167
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:156
 msgid "%{fullName} is now a site admin."
 msgstr "%{fullName} теперь администратор системы."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:169
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:158
 msgid "%{fullName} no longer has site admin access."
 msgstr "У %{fullName} больше нет прав администратора системы."
 
@@ -5250,23 +5250,28 @@ msgid "Account"
 msgstr "Учётная запись"
 
 #.frontend
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:16
+msgid "Account ID copied to clipboard"
+msgstr "ID учётной записи скопирован в буфер обмена"
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:85
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:50
 msgid "Account Owners"
 msgstr "Владельцы компании"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:160
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:149
 msgid "Account deleted"
 msgstr "Учётная запись удалена"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:182
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:171
 msgid "Account deletion blocked"
 msgstr "Удаление учётной записи заблокировано"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:193
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:182
 msgid "Account deletion failed"
 msgstr "Не удалось удалить учётную запись"
 
@@ -6439,7 +6444,7 @@ msgstr "Не менее 12 символов"
 #.elixir
 #: lib/operately_web/api/project_templates/helpers.ex:13
 #: lib/operately_web/api/project_templates/helpers.ex:25
-#: lib/operately_web/api/projects.ex:764
+#: lib/operately_web/api/projects.ex:781
 #: lib/operately_web/api/spaces.ex:363
 msgid "At least one task status is required"
 msgstr "Требуется хотя бы один статус задачи"
@@ -8383,6 +8388,7 @@ msgstr "Вы переведены во внешние участники"
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:75
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:16
 msgid "Copied"
 msgstr "Скопировано"
 
@@ -8414,12 +8420,18 @@ msgid "Copy URL"
 msgstr "Копировать URL"
 
 #.frontend
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:25
+msgid "Copy account ID"
+msgstr "Скопировать ID учётной записи"
+
+#.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:38
 #: ../turboui/src/InvitePeoplePage/InviteLinkSection.tsx:56
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:215
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:330
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:277
 #: ../turboui/src/TaskPage/Sidebar.tsx:415
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:18
 msgid "Copy failed"
 msgstr "Не удалось скопировать"
 
@@ -9012,7 +9024,7 @@ msgid "Delete"
 msgstr "Удалить"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:142
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:131
 msgid "Delete %{fullName}? This will suspend all linked people, anonymize personal data, and revoke access permanently."
 msgstr "Удалить учётную запись %{fullName}? Доступ всех связанных участников будет приостановлен, персональные данные обезличены, а доступ отозван навсегда."
 
@@ -9076,9 +9088,9 @@ msgid "Delete Task"
 msgstr "Удалить задачу"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:30
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:141
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:146
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:38
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:130
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:135
 msgid "Delete account"
 msgstr "Удалить учётную запись"
 
@@ -10818,7 +10830,7 @@ msgid "Failed to create the project."
 msgstr "Не удалось создать проект."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:204
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:193
 msgid "Failed to delete account."
 msgstr "Не удалось удалить учётную запись."
 
@@ -10883,7 +10895,7 @@ msgid "Failed to edit comment."
 msgstr "Не удалось отредактировать комментарий."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:200
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:189
 msgid "Failed to grant site admin access."
 msgstr "Не удалось предоставить права администратора системы."
 
@@ -10912,7 +10924,7 @@ msgid "Failed to remove reaction."
 msgstr "Не удалось удалить реакцию."
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:202
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:191
 msgid "Failed to remove site admin access."
 msgstr "Не удалось отозвать права администратора системы."
 
@@ -11668,7 +11680,7 @@ msgid "Good morning, %{name}!"
 msgstr "Доброе утро, %{name}!"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:120
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:109
 msgid "Grant %{fullName} access to the site admin dashboard? Site admins can manage instance-wide settings and other privileged admin actions. Only grant this access to someone who should administer the whole site."
 msgstr "Предоставить участнику %{fullName} доступ к панели администратора системы? Администраторы системы управляют общими настройками сервера и выполняют другие привилегированные действия. Предоставляйте этот доступ только тем, кто должен администрировать всю систему."
 
@@ -11678,12 +11690,12 @@ msgid "Grant Access"
 msgstr "Предоставить доступ"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:124
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:113
 msgid "Grant access"
 msgstr "Предоставить доступ"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:119
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:108
 msgid "Grant site admin access"
 msgstr "Предоставить права администратора системы"
 
@@ -13254,8 +13266,8 @@ msgstr "Веха не удалена"
 
 #.elixir
 #: lib/operately/operations/milestone_ordering_state_updating.ex:49
-#: lib/operately_web/api/projects.ex:633
-#: lib/operately_web/api/projects.ex:648
+#: lib/operately_web/api/projects.ex:635
+#: lib/operately_web/api/projects.ex:650
 #: lib/operately_web/api/projects/milestones.ex:285
 #: lib/operately_web/api/tasks.ex:671
 msgid "Milestone not found"
@@ -15903,9 +15915,10 @@ msgid "Project name cannot be empty"
 msgstr "Название проекта не может быть пустым"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:594
-#: lib/operately_web/api/projects.ex:609
-#: lib/operately_web/api/projects.ex:639
+#: lib/operately_web/api/projects.ex:596
+#: lib/operately_web/api/projects.ex:611
+#: lib/operately_web/api/projects.ex:641
+#: lib/operately_web/api/projects.ex:676
 #: lib/operately_web/api/projects/discussions.ex:205
 #: lib/operately_web/api/projects/milestones.ex:276
 #: lib/operately_web/api/tasks.ex:623
@@ -15978,7 +15991,7 @@ msgid "Promote to manager"
 msgstr "Назначить администратором пространства"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:21
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:29
 msgid "Promote to site admin"
 msgstr "Предоставить права администратора системы"
 
@@ -16469,7 +16482,7 @@ msgid "Remove Highlight"
 msgstr "Убрать выделение"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:135
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:124
 msgid "Remove access"
 msgstr "Отозвать доступ"
 
@@ -16525,13 +16538,13 @@ msgid "Remove reminder"
 msgstr "Удалить напоминание"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:26
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:130
+#: ../turboui/src/SaasAdminAccountActionsMenu/index.tsx:34
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:119
 msgid "Remove site admin access"
 msgstr "Отозвать права администратора системы"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:131
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:120
 msgid "Remove site admin access from %{fullName}? This will revoke access to the site admin dashboard and other privileged admin actions. Use this carefully."
 msgstr "Отозвать права администратора системы у %{fullName}? Доступ к панели администратора системы и другим привилегированным действиям будет отозван. Используйте осторожно."
 
@@ -16693,7 +16706,7 @@ msgid "Replacement"
 msgstr "Замена"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:792
+#: lib/operately_web/api/projects.ex:809
 #: lib/operately_web/api/spaces.ex:397
 msgid "Replacement statuses must be existing statuses that are not being deleted"
 msgstr "Статусы замены должны быть существующими статусами, которые не удаляются."
@@ -18184,32 +18197,32 @@ msgid "Site Messages"
 msgstr "Системные сообщения"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:156
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:145
 msgid "Site admin access granted"
 msgstr "Права администратора системы предоставлены"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:158
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:147
 msgid "Site admin access removed"
 msgstr "Права администратора системы отозваны"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:180
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:169
 msgid "Site admin demotion blocked"
 msgstr "Отзыв прав администратора системы заблокирован"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:191
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:180
 msgid "Site admin demotion failed"
 msgstr "Не удалось отозвать права администратора системы"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:189
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:178
 msgid "Site admin promotion failed"
 msgstr "Не удалось предоставить права администратора системы"
 
 #.frontend
-#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:178
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:167
 msgid "Site admin update blocked"
 msgstr "Изменение прав администратора системы заблокировано"
 
@@ -19040,8 +19053,8 @@ msgid "Task not deleted"
 msgstr "Задача не удалена"
 
 #.elixir
-#: lib/operately_web/api/projects.ex:603
-#: lib/operately_web/api/projects.ex:618
+#: lib/operately_web/api/projects.ex:605
+#: lib/operately_web/api/projects.ex:620
 #: lib/operately_web/api/projects/milestones.ex:297
 #: lib/operately_web/api/spaces.ex:313
 #: lib/operately_web/api/tasks.ex:644
@@ -20931,6 +20944,7 @@ msgstr "Невозможно скопировать URL в буфер обмен
 
 #.frontend
 #: ../turboui/src/CopyToClipboard/index.tsx:38
+#: ee/assets/js/pages/SaasAdminPage/AccountActionsMenu.tsx:18
 msgid "Unable to copy to clipboard"
 msgstr "Невозможно скопировать в буфер обмена"
 
