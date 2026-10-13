@@ -8,7 +8,7 @@ afterEach(async () => {
 test.each([
   ["en", "org name", "org id"],
   ["pt-BR", "nome da empresa", "id da empresa"],
-  ["fr", "org name", "org id"],
+  ["fr", "nom de l’entreprise ", "identifiant de l’entreprise "],
 ])("localizes the support draft in %s and preserves literal company details", async (locale, nameLabel, idLabel) => {
   await i18n.changeLanguage(locale);
   const link = new URL(contactUsLink("R&D <company> + %", "abc-123"));

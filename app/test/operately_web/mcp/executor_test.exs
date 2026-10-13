@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
       assert {:ok, result} = Executor.execute(conn, definition, %{})
       assert result == %{"isError" => true, "content" => [%{"type" => "text", "text" => "A ferramenta literal_tool ainda não foi implementada."}]}
     end)
-    Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn ->
+    Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn ->
       assert {:ok, result} = Executor.execute(conn, definition, %{})
       assert hd(result["content"])["text"] == "The literal_tool tool is not implemented yet."
     end)
