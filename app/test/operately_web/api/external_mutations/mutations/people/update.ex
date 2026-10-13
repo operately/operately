@@ -19,14 +19,14 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.People.Update do
       full_name: "External Member",
       title: "Updated Title",
       timezone: "Etc/UTC",
-      language: "de"
+      language: "ru"
     }
   end
 
   @impl true
   def assert(response, ctx) do
     assert response.person.id
-    assert Operately.Repo.reload!(ctx.creator).language == "de"
+    assert Operately.Repo.reload!(ctx.creator).language == "ru"
     refute Map.has_key?(response, :error)
   end
 end

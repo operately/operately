@@ -87,3 +87,21 @@ test("hides the language picker when editing someone else", () => {
 
   expect(screen.queryByTestId("language")).not.toBeInTheDocument();
 });
+
+test("lets the user select Russian", () => {
+  const onLanguageChange = jest.fn();
+  renderPage({ onLanguageChange });
+  fireEvent.click(screen.getByTestId("language"));
+  fireEvent.click(screen.getByTestId("language-option-ru"));
+  expect(onLanguageChange).toHaveBeenCalledWith("ru");
+});
+
+test("displays a saved Russian preference", () => {
+  renderPage({ language: "ru" });
+  expect(screen.getByTestId("language")).toHaveTextContent("Русский");
+});
+
+test("hides the language picker with a saved Russian preference when disabled", () => {
+  renderPage({ language: "ru", showLanguageSelector: false });
+  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+});
