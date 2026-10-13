@@ -7,6 +7,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.Update do
     field :expected_updated_at, :datetime
     field :type, :curated_template_type
     field :title, :string
+    field :slug, :string
     field? :summary, :string, null: true
     field? :category, :string, null: true
     field :content_language, :string

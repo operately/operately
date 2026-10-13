@@ -10,6 +10,7 @@ const template: CuratedTemplate = {
   id: "example",
   type: "goal",
   title: "Example",
+  slug: "example",
   contentLanguage: "en",
   updatedAt: "2026-10-12T00:00:00Z",
 };
@@ -21,7 +22,7 @@ test.each([
   { companies: [], location: "/new?redirect_to=%2Ftemplates%2Fexample%2Fuse" },
   { companies: [company("company")], location: "/company/templates/example/use" },
 ])("routes companies without creating resources: $location", async ({ companies, location }) => {
-  jest.spyOn(Api.curated_templates, "getQuery").mockResolvedValue({ template });
+  jest.spyOn(Api.curated_templates, "getByIdQuery").mockResolvedValue({ template });
   jest.spyOn(Api.companies, "listQuery").mockResolvedValue({ companies });
   const instantiate = jest.spyOn(Api.curated_templates, "instantiateMutationOptions");
   expect(await loader({ params: { templateId: "example" } })).toEqual({ location });
@@ -29,7 +30,7 @@ test.each([
 });
 
 test("multiple companies stay on the picker", async () => {
-  jest.spyOn(Api.curated_templates, "getQuery").mockResolvedValue({ template });
+  jest.spyOn(Api.curated_templates, "getByIdQuery").mockResolvedValue({ template });
   jest.spyOn(Api.companies, "listQuery").mockResolvedValue({ companies: [company("one"), company("two")] });
   expect(await loader({ params: { templateId: "example" } })).toEqual({
     templateInput: { id: "example" },

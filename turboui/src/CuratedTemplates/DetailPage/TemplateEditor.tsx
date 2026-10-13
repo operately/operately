@@ -19,6 +19,7 @@ export function TemplateEditor(props: TemplateEditorProps) {
   const initial = React.useMemo(
     () => ({
       title: props.template?.title ?? "",
+      slug: props.template?.slug ?? "",
       type: props.template?.type ?? ("kpi" as TemplateType),
       summary: props.template?.summary ?? "",
       category: props.template?.category ?? "",
@@ -27,6 +28,7 @@ export function TemplateEditor(props: TemplateEditorProps) {
     }),
     [props.template],
   );
+  const slugEdited = React.useRef(false);
   const published = props.template?.state === "published";
   const [saveIntent, setSaveIntent] = React.useState<"draft" | "publish">("publish");
   const form = Forms.useForm({
@@ -54,10 +56,26 @@ export function TemplateEditor(props: TemplateEditorProps) {
       showErrors(props.validationErrors);
     }
   }, [props.validationErrors]);
+
+  function generateSlug() {
+    if (props.template || slugEdited.current) return;
+
+    const slug = form.values.title
+      .normalize("NFKD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 200)
+      .replace(/-$/, "");
+    form.actions.setValue("slug", slug);
+  }
+
   function input(): TemplateInput {
-    const { title, type, summary, category, content_language, definition } = form.values;
+    const { title, slug, type, summary, category, content_language, definition } = form.values;
     return {
       title,
+      slug,
       type,
       summary,
       category,
@@ -74,7 +92,22 @@ export function TemplateEditor(props: TemplateEditorProps) {
   return (
     <Forms.Form form={form} testId="curated-template-form">
       <Forms.FieldGroup>
-        <Forms.TextInput field="title" label={t("Title", { context: "resource" })} required autoFocus />
+        <Forms.TextInput
+          field="title"
+          label={t("Title", { context: "resource" })}
+          required
+          autoFocus
+          onBlur={generateSlug}
+        />
+        <Forms.TextInput
+          field="slug"
+          label={t("Slug")}
+          required
+          maxLength={200}
+          onChange={() => {
+            slugEdited.current = true;
+          }}
+        />
         {props.template?.state === "published" ? (
           <p>{t("Published changes take effect immediately.")}</p>
         ) : (

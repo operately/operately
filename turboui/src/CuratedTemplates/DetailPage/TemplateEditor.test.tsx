@@ -92,6 +92,7 @@ test("new templates can be published directly", async () => {
   const onSave = jest.fn().mockResolvedValue({ errors: [] });
   render(<TemplateEditor onSave={onSave} onCancel={jest.fn()} />);
   fireEvent.change(screen.getByTestId("title"), { target: { value: "New template" } });
+  fireEvent.blur(screen.getByTestId("title"));
   fireEvent.click(screen.getByTestId("publish-template"));
   await waitFor(() =>
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ title: "New template" }), "publish"),
@@ -203,4 +204,32 @@ test.each(["draft", "published"] as const)("submits decimal targets from a %s te
   await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
   expect(onSave.mock.calls[0][1]).toBe("publish");
   expect(JSON.parse(onSave.mock.calls[0][0].definition).targets[0]).toMatchObject({ from: 1.5, to: 2.75 });
+});
+
+test("generates a slug on title blur until it is edited manually", () => {
+  render(<TemplateEditor onSave={jest.fn()} onCancel={jest.fn()} />);
+  fireEvent.change(screen.getByTestId("title"), { target: { value: "Monthly Website Visitors" } });
+  expect(screen.getByTestId("slug")).toHaveValue("");
+  fireEvent.blur(screen.getByTestId("title"));
+  expect(screen.getByTestId("slug")).toHaveValue("monthly-website-visitors");
+  fireEvent.change(screen.getByTestId("title"), { target: { value: "Inscrições mensais!" } });
+  expect(screen.getByTestId("slug")).toHaveValue("monthly-website-visitors");
+  fireEvent.blur(screen.getByTestId("title"));
+  expect(screen.getByTestId("slug")).toHaveValue("inscricoes-mensais");
+  fireEvent.change(screen.getByTestId("slug"), { target: { value: "website-signups" } });
+  fireEvent.change(screen.getByTestId("title"), { target: { value: "Another title" } });
+  fireEvent.blur(screen.getByTestId("title"));
+  expect(screen.getByTestId("slug")).toHaveValue("website-signups");
+});
+
+test("preserves an existing slug when renaming and saves an edited slug", async () => {
+  const { onSave } = setup();
+  const slug = screen.getByTestId("slug");
+  const original = (slug as HTMLInputElement).value;
+  fireEvent.change(screen.getByTestId("title"), { target: { value: "New title" } });
+  fireEvent.blur(screen.getByTestId("title"));
+  expect(slug).toHaveValue(original);
+  fireEvent.change(slug, { target: { value: "custom-slug" } });
+  fireEvent.click(screen.getByTestId("save-template-draft"));
+  await waitFor(() => expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ slug: "custom-slug" }), "draft"));
 });

@@ -7,14 +7,14 @@ import { assertPresent } from "@/utils/assertions";
 export async function loader({ params }: { params: { templateId: string } }) {
   const templateInput = { id: params.templateId };
   const spacesInput = { query: "", accessLevel: "edit_access" as const };
-  await Promise.all([Api.curated_templates.getQuery(templateInput), Api.spaces.searchQuery(spacesInput)]);
+  await Promise.all([Api.curated_templates.getByIdQuery(templateInput), Api.spaces.searchQuery(spacesInput)]);
 
   return { templateInput, spacesInput };
 }
 
 export function useLoadedData() {
   const { templateInput, spacesInput } = Pages.useLoadedData<Awaited<ReturnType<typeof loader>>>();
-  const templateOptions = useMemo(() => Api.curated_templates.getQueryOptions(templateInput), [templateInput]);
+  const templateOptions = useMemo(() => Api.curated_templates.getByIdQueryOptions(templateInput), [templateInput]);
   const spacesOptions = useMemo(() => Api.spaces.searchQueryOptions(spacesInput), [spacesInput]);
   const { data: templateData } = useLoadedQuery(templateOptions);
   const { data: spacesData } = useLoadedQuery(spacesOptions);

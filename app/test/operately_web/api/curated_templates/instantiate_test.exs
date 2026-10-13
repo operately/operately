@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
   test "loads the latest published definition on every submission", ctx do
     ctx = Factory.add_curated_template(ctx, :template, type: :goal, published: true)
     inputs = inputs(ctx)
-    assert {200, _} = query(ctx.conn, [:curated_templates, :get], %{id: ctx.template.id})
+    assert {200, _} = query(ctx.conn, [:curated_templates, :get_by_id], %{id: ctx.template.id})
     definition = Map.merge(ctx.template.definition, %{"name" => "Latest name", "duration_days" => 20})
     {:ok, updated} = Operately.Operations.CuratedTemplateUpdating.run(ctx.template, ctx.account, ctx.template.updated_at, {:update, %{definition: definition}})
     assert {200, first} = mutation(ctx.conn, [:curated_templates, :instantiate], inputs)
@@ -228,7 +228,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
   test "anonymous requests and catalog visits cannot create resources", ctx do
     ctx = Factory.add_curated_template(ctx, :template, published: true)
     assert {401, _} = mutation(Phoenix.ConnTest.build_conn(), [:curated_templates, :instantiate], inputs(ctx))
-    assert {200, _} = query(ctx.conn, [:curated_templates, :get], %{id: ctx.template.id})
+    assert {200, _} = query(ctx.conn, [:curated_templates, :get_by_id], %{id: ctx.template.id})
     assert Repo.aggregate(Operately.Kpis.Kpi, :count) == 0
   end
 

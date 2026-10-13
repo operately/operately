@@ -1466,6 +1466,7 @@ export interface CuratedTemplate {
   id: Id;
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;

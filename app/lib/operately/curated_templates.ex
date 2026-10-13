@@ -6,6 +6,8 @@ defmodule Operately.CuratedTemplates do
   def get(id), do: Repo.get(Template, id)
   def get_published(id), do: Repo.one(from t in Template, where: t.id == ^id and t.state == :published)
 
+  def get_published_by_slug(slug, language), do: Repo.one(from t in Template, where: t.slug == ^slug and t.content_language == ^language and t.state == :published)
+
   def create(account, attrs) do
     %Template{creator_account_id: account.id, updater_account_id: account.id}
     |> Template.changeset(attrs)
@@ -61,7 +63,7 @@ defmodule Operately.CuratedTemplates do
       query
       |> order_by([t], asc: t.title, asc: t.id)
       |> offset(^offset)
-      |> select([t], struct(t, [:id, :title, :summary, :state, :type, :category, :content_language, :published_at, :inserted_at, :updated_at]))
+      |> select([t], struct(t, [:id, :title, :slug, :summary, :state, :type, :category, :content_language, :published_at, :inserted_at, :updated_at]))
       |> Repo.all()
 
     %{templates: templates, total: total}

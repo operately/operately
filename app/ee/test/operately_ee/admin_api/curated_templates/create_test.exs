@@ -24,6 +24,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
         inputs = payload(type)
         assert {200, %{template: returned, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], inputs)
         assert returned.state == "draft"
+        assert returned.slug == inputs.slug
         {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(returned.id)
         {:ok, record} = OperatelyEE.AdminApi.CuratedTemplates.Shared.load(id)
         assert record.definition["description"] == Operately.Support.RichText.curated_template_content()
@@ -31,6 +32,13 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
         assert record.updater_account_id == ctx.account.id
         assert record.definition["name"] == Operately.Support.Factory.CuratedTemplates.definition(type)["name"]
       end
+    end
+
+    test "reports duplicate slugs for the same language on the slug field", ctx do
+      assert {200, %{errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], payload(:kpi))
+      assert {200, %{template: nil, errors: errors}} = admin_mutation(ctx.conn, [:curated_templates, :create], payload(:kpi))
+      assert Enum.any?(errors, &(&1.path == "slug"))
+      assert {200, %{errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], %{payload(:kpi) | content_language: "pt-BR"})
     end
 
     test "allows incomplete drafts and reports invalid fields", ctx do
@@ -44,7 +52,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
 
   defp payload(type) do
     %{
-      title: "Example",
+      title: "Example", slug: "example-#{type}",
       type: Atom.to_string(type),
       content_language: "en",
       definition: Jason.encode!(Map.put(Operately.Support.Factory.CuratedTemplates.definition(type), "description", Operately.Support.RichText.curated_template_content()))
