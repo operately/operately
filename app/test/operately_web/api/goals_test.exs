@@ -371,24 +371,32 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
     end
 
-    test "rejects a goal from another company even when the caller has a binding", ctx do
+    test "rejects a person outside the caller's company even when the caller can access the goal", ctx do
       ctx = ctx |> Factory.add_company_member(:member) |> Factory.log_in_person(:creator)
       other = Factory.setup(%{}) |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
       context = Access.get_context!(goal_id: other.goal.id)
-      {:ok, _} = Access.bind_person(context, ctx.creator.id, Binding.full_access())
+      {:ok, caller_binding} = Access.bind_person(context, ctx.creator.id, Binding.full_access())
 
       before = access_snapshot(ctx.goal)
-      other_before = access_snapshot(other.goal)
+      other_bindings = goal_bindings(other.goal)
 
-      assert {404, res} =
+      assert {400, res} =
                mutation(ctx.conn, [:goals, :create_access_members], %{
                  goal_id: Paths.goal_id(other.goal),
-                 members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
+                 members: [
+                   %{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()},
+                   %{id: Paths.person_id(other.creator), access_level: Binding.full_access()}
+                 ]
                })
 
-      assert res.message == "Goal not found"
+      assert res.message == "The request was malformed"
+      refute res.message =~ Paths.person_id(other.creator)
       assert access_snapshot(ctx.goal) == before
-      assert access_snapshot(other.goal) == other_before
+      assert goal_bindings(other.goal) == other_bindings
+      unchanged = direct_binding(other.goal, ctx.creator)
+      assert unchanged.id == caller_binding.id
+      assert unchanged.access_level == Binding.full_access()
+      assert unchanged.updated_at == caller_binding.updated_at
       refute direct_binding(other.goal, ctx.member)
     end
 
@@ -1812,6 +1820,14 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
 
     assert access_snapshot(ctx.goal) == before
+  end
+
+  defp goal_bindings(goal) do
+    context = Access.get_context!(goal_id: goal.id)
+
+    from(b in Operately.Access.Binding, where: b.context_id == ^context.id, order_by: b.id)
+    |> Repo.all()
+    |> Enum.map(&{&1.id, &1.group_id, &1.access_level, &1.updated_at})
   end
 
   defp access_snapshot(goal) do

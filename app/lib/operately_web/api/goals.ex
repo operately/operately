@@ -612,7 +612,7 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_company_goal(inputs.goal_id)
+      |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:has_full_access)
       |> Steps.validate_access_members(inputs.members)
       |> Steps.add_access_members(inputs.members)
@@ -732,17 +732,6 @@ defmodule OperatelyWeb.Api.Goals do
         case Operately.Goals.Goal.get(me, id: goal_id, opts: [preload: [:access_context]]) do
           {:ok, goal} -> {:ok, goal}
           {:error, _} -> {:error, {:not_found, gettext("Goal not found")}}
-        end
-      end)
-    end
-
-    def find_company_goal(multi, goal_id) do
-      Ecto.Multi.run(multi, :goal, fn _repo, %{me: me} ->
-        with {:ok, goal} <- Operately.Goals.Goal.get(me, id: goal_id, company_id: me.company_id, opts: [preload: [:access_context]]),
-             true <- goal.company_id == me.company_id do
-          {:ok, goal}
-        else
-          _ -> {:error, {:not_found, gettext("Goal not found")}}
         end
       end)
     end
