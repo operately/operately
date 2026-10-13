@@ -375,6 +375,7 @@ defmodule OperatelyWeb.Api do
       namespace :curated_templates do
         query :list, OperatelyWeb.Api.CuratedTemplates.List
         query :get, OperatelyWeb.Api.CuratedTemplates.Get
+        query :get_by_id, OperatelyWeb.Api.CuratedTemplates.GetById
         mutation :instantiate, OperatelyWeb.Api.CuratedTemplates.Instantiate
       end
 

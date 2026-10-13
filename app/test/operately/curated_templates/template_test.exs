@@ -3,7 +3,15 @@ defmodule Operately.CuratedTemplates.TemplateTest do
   alias Operately.CuratedTemplates.Template
 
   defp changeset(type, definition, state \\ :draft) do
-    Template.changeset(%Template{state: state}, %{title: "Example", type: type, definition: definition})
+    Template.changeset(%Template{state: state}, %{title: "Example", slug: "example", type: type, definition: definition})
+  end
+
+  test "requires a URL-friendly slug" do
+    for slug <- [nil, "", "two words", "a/b", "-leading", "trailing-"] do
+      refute Template.changeset(%Template{}, %{title: "Example", slug: slug, type: :kpi, definition: %{}}).valid?
+    end
+    assert Template.changeset(%Template{}, %{title: "Example", slug: "ежемесячные-посетители", type: :kpi, definition: %{}}).valid?
+    refute Template.changeset(%Template{title: "Example", slug: "example", type: :kpi}, %{slug: ""}).valid?
   end
 
   test "drafts can omit content, but published templates require it" do

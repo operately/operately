@@ -172,6 +172,7 @@ export interface CuratedTemplate {
   type: CuratedTemplateType;
   state: CuratedTemplateState;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
@@ -427,6 +428,7 @@ export interface CreateSiteMessageResult {
 export interface CuratedTemplatesCreateInput {
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
@@ -463,6 +465,7 @@ export interface CuratedTemplatesUpdateInput {
   expectedUpdatedAt: string;
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;
@@ -488,6 +491,7 @@ export interface CuratedTemplatesUpdateMetadataResult {
 export interface CuratedTemplatesValidateInput {
   type: CuratedTemplateType;
   title: string;
+  slug: string;
   summary?: string | null;
   category?: string | null;
   contentLanguage: string;

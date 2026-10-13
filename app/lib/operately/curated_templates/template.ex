@@ -12,6 +12,7 @@ defmodule Operately.CuratedTemplates.Template do
     field :state, Ecto.Enum, values: [:draft, :published], default: :draft
     field :category, :string
     field :title, :string
+    field :slug, :string
     field :summary, :string
     field :content_language, :string, default: "en"
     field :definition, :map, default: %{}
@@ -26,9 +27,13 @@ defmodule Operately.CuratedTemplates.Template do
 
   def changeset(template, attrs) do
     template
-    |> cast(attrs, [:type, :title, :summary, :category, :content_language, :definition])
-    |> validate_required([:title, :type, :content_language, :definition])
+    |> cast(attrs, [:type, :title, :slug, :summary, :category, :content_language, :definition])
+    |> validate_required([:title, :slug, :type, :content_language, :definition])
     |> validate_length(:title, max: 200)
+    |> validate_length(:slug, max: 200)
+    |> validate_format(:slug, ~r/^[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*$/u)
+    |> update_change(:slug, fn slug -> slug && String.downcase(slug) end)
+    |> unique_constraint(:slug, name: :curated_templates_slug_content_language_index)
     |> validate_length(:summary, max: 2000)
     |> validate_length(:category, max: 100)
     |> validate_inclusion(:content_language, Operately.I18n.Languages.supported())

@@ -93,6 +93,8 @@ export interface TextInputProps {
   minLength?: number;
   maxLength?: number;
   placeholder?: string;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onEnter?: (event: React.KeyboardEvent) => void;
   okSign?: boolean;
 }

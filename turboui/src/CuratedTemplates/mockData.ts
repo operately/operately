@@ -16,6 +16,7 @@ export function templateFixture(type: TemplateType = "project"): CuratedTemplate
     },
   };
   return {
+    slug: `example-${type}`,
     id: `template-${type}`,
     title: definitions[type].name,
     type,

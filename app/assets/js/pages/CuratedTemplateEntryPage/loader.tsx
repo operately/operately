@@ -10,7 +10,7 @@ export async function loader({ params }: { params: { templateId: string } }) {
   const templateInput = { id: params.templateId };
   const companiesInput = {};
   const [, { companies }] = await Promise.all([
-    Api.curated_templates.getQuery(templateInput),
+    Api.curated_templates.getByIdQuery(templateInput),
     Api.companies.listQuery(companiesInput),
   ]);
   const entryPath = Paths.curatedTemplateEntryPath(params.templateId);
@@ -28,7 +28,7 @@ type LoaderResult = Exclude<Awaited<ReturnType<typeof loader>>, Response>;
 
 export function useLoadedData() {
   const { templateInput, companiesInput } = Pages.useLoadedData<LoaderResult>();
-  const templateOptions = useMemo(() => Api.curated_templates.getQueryOptions(templateInput), [templateInput]);
+  const templateOptions = useMemo(() => Api.curated_templates.getByIdQueryOptions(templateInput), [templateInput]);
   const companyOptions = useMemo(() => Api.companies.listQueryOptions(companiesInput), [companiesInput]);
   const { data: templateData } = useLoadedQuery(templateOptions);
   const { data: companyData } = useLoadedQuery(companyOptions);
