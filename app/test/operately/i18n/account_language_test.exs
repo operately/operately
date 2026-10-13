@@ -4,7 +4,7 @@ defmodule Operately.I18n.AccountLanguageTest do
   alias Operately.I18n.AccountLanguage
   alias Operately.Support.Factory
 
-  for language <- ["pt-BR", "de"] do
+  for language <- ["pt-BR", "de", "ru"] do
     describe language do
       test "account emails use a shared effective language and fall back when memberships disagree" do
         ctx = Factory.setup(%{}) |> Factory.enable_feature("i18n")

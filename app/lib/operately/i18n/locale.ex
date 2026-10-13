@@ -4,13 +4,14 @@ defmodule Operately.I18n.Locale do
   # i18next uses CLDR categories, which do not map one-to-one to Gettext indexes.
   # Portuguese `many` (whole millions) and `other` both use msgstr[1].
   # Explicit `zero` uses the plural text instead of CLDR's `one` category.
-  # Russian `other` (fractional counts) uses msgstr[2] (`many`).
+  # Russian reserves msgstr[3] for fractional counts (CLDR `other`).
+  # Gettext integer counts use the standard Russian indexes 0, 1, and 2.
   @plural_forms %{
     "en" => [one: 0, other: 1],
     "de" => [one: 0, other: 1],
     "pt-BR" => [zero: 1, one: 0, many: 1, other: 1],
-    "ru" => [one: 0, few: 1, many: 2, other: 2],
-    "ru-RU" => [one: 0, few: 1, many: 2, other: 2]
+    "ru" => [one: 0, few: 1, many: 2, other: 3],
+    "ru-RU" => [one: 0, few: 1, many: 2, other: 3]
   }
 
   def to_bcp47(locale) when is_binary(locale) do

@@ -83,8 +83,30 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.take_screenshot()
   end
 
-  step :assert_language_feature_disabled, ctx do
-    assert Operately.Repo.reload!(ctx.person).language == "de"
+  step :select_russian, ctx do
+    ctx
+    |> UI.click(testid: "language")
+    |> UI.click(testid: "language-option-ru")
+  end
+
+  step :assert_russian_account, ctx do
+    assert Operately.Repo.reload!(ctx.person).language == "ru"
+
+    ctx
+    |> UI.assert_text("Моя учётная запись")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_russian_preference, ctx do
+    ctx
+    |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Русский"))
+    |> UI.assert_text("Язык")
+    |> UI.assert_has(css: "[data-test-id='about-me'] [data-placeholder^='Расскажите немного о себе']")
+    |> UI.take_screenshot()
+  end
+
+  step :assert_language_feature_disabled, ctx, language \\ "de" do
+    assert Operately.Repo.reload!(ctx.person).language == language
 
     ctx
     |> UI.refute_has(testid: "language")

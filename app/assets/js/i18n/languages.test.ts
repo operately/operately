@@ -4,12 +4,14 @@ describe("resolveEffectiveLanguage", () => {
   it("uses English when the i18n flag is off even if a translated language is saved", () => {
     expect(resolveEffectiveLanguage("pt-BR", false)).toBe(DEFAULT_LANGUAGE);
     expect(resolveEffectiveLanguage("de", false)).toBe(DEFAULT_LANGUAGE);
+    expect(resolveEffectiveLanguage("ru", false)).toBe(DEFAULT_LANGUAGE);
   });
 
   it("uses an explicit supported language when the flag is on", () => {
     expect(resolveEffectiveLanguage("pt-BR", true)).toBe("pt-BR");
     expect(resolveEffectiveLanguage("en", true)).toBe("en");
     expect(resolveEffectiveLanguage("de", true)).toBe("de");
+    expect(resolveEffectiveLanguage("ru", true)).toBe("ru");
   });
 
   it("uses English for missing or unsupported preferences", () => {
