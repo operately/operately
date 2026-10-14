@@ -34,6 +34,8 @@ test.each([
   ["pt-BR", false, "People"],
   ["fr", true, "Annuaire"],
   ["fr", false, "People"],
+  ["es", true, "Personas"],
+  ["es", false, "People"],
 ] as const)("page title follows the company language gate: %s %s", async (language, enabled, title) => {
   await applyLanguage(resolveEffectiveLanguage(language, enabled));
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;

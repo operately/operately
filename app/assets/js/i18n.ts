@@ -5,6 +5,7 @@ import { i18nOptions } from "turboui";
 
 import de from "./generated/locales/de.json";
 import en from "./generated/locales/en.json";
+import es from "./generated/locales/es.json";
 import fr from "./generated/locales/fr.json";
 import ptBR from "./generated/locales/pt-BR.json";
 import ru from "./generated/locales/ru.json";
@@ -24,6 +25,11 @@ const FORMAT_MESSAGES = {
 
 const englishResources = {
   ...en,
+  ...FORMAT_MESSAGES,
+};
+
+const spanishResources = {
+  ...es,
   ...FORMAT_MESSAGES,
 };
 
@@ -51,6 +57,7 @@ const initOptions = {
   ...i18nOptions,
   supportedLngs: [...SUPPORTED_LANGUAGES],
   resources: {
+    es: { translation: spanishResources },
     fr: { translation: frenchResources },
     ru: { translation: russianResources },
     de: {
@@ -70,6 +77,7 @@ i18n.use(initReactI18next);
 if (!i18n.isInitialized) {
   i18n.init(initOptions);
 } else {
+  i18n.addResourceBundle("es", "translation", spanishResources, true, true);
   i18n.addResourceBundle("fr", "translation", frenchResources, true, true);
   i18n.addResourceBundle("ru", "translation", russianResources, true, true);
   i18n.addResourceBundle("de", "translation", germanResources, true, true);

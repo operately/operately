@@ -172,6 +172,8 @@ it.each([
   [500, "pt-BR", "Carregando..."],
   [404, "fr", "Chargement…"],
   [500, "fr", "Chargement…"],
+  [404, "es", "Cargando..."],
+  [500, "es", "Cargando..."],
 ] as const)(
   "resolves the route company’s language when its loader fails with %s (%s)",
   async (status, locale, loading) => {

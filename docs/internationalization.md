@@ -2,7 +2,7 @@
 
 Operately uses one Gettext catalog for Elixir, React, and TurboUI. English source text is the message identifier; context distinguishes ambiguous wording. Elixir and email rendering use Gettext, while the frontend uses i18next resources generated from the same catalog.
 
-So far supported languages are English (`en`), Brazilian Portuguese (`pt-BR`), German (`de`), Russian (`ru`), and French (`fr`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
+So far supported languages are English (`en`), Brazilian Portuguese (`pt-BR`), German (`de`), Russian (`ru`), French (`fr`), and Spanish (`es`). Supported-language registries live in [Elixir](../app/lib/operately/i18n/languages.ex) and [TypeScript](../app/assets/js/i18n/languages.ts).
 
 To add another language, follow the [internationalization skill](../.agents/skills/internationalization/SKILL.md) and its [new-language reference](../.agents/skills/internationalization/references/adding-a-language.md), starting with glossary preparation.
 
@@ -139,3 +139,5 @@ Runtime English fallback remains a safeguard, not permission to ship missing tra
 Russian uses `msgstr[0]` for `one`, `[1]` for `few`, `[2]` for `many`, and `[3]` for fractional counts (`other`). Its PO header declares four forms; Gettext integer counts select indexes 0–2, while the frontend also uses index 3. Keep `%{count}` in the singular translation: the `one` category includes 21 and 101, not just 1.
 
 French maps `one` to `msgstr[0]` and both `many` and `other` to `msgstr[1]`. Zero and fractions below two use the singular form in the frontend; whole millions use the plural. Keep `%{count}` in both forms so zero and fractional values render correctly.
+
+Spanish maps `one` to `msgstr[0]` and both `many` and `other` to `msgstr[1]`. Only one uses the singular; zero, fractions, and whole millions use the plural. Its PO rule is `nplurals=2; plural=(n != 1);`.
