@@ -33,7 +33,7 @@ Keep terminology in these files rather than duplicating it in guides or skills. 
 
 ## Language resolution
 
-A person selects a language explicitly in Account → Profile. English is the default for absent or unsupported preferences; browser language never selects or persists a preference. Language is stored separately from timezone and time-format preferences.
+All supported languages are available to every user and company. A person selects a language explicitly in Account → Profile. English is the default for absent or unsupported preferences; browser language never selects or persists a preference. Language is stored separately from timezone and time-format preferences.
 
 Web requests and emails use the same effective-language rules. Background workers must scope the locale while constructing and rendering each recipient's content, including buffered notifications and digests, and restore the previous locale afterward. Never rely on request state in a worker. Billing emails group recipients by effective language within the billing company.
 
@@ -118,7 +118,7 @@ Use Operately's shared `Trans` adapter rather than importing `Trans` directly fr
 3. Fill every active translation and required plural form in each supported non-English PO file. Preserve named placeholders, context, and rich-text tags. Review translations against the glossary.
 4. Run `make gen.i18n` again and include the source, PO, POT, and generated-resource changes in the same PR. Inspect the diff for unintended translation changes.
 5. Run `make test.i18n`. It checks that every wrapped source message has a translation in every supported non-English language, without changing your working tree.
-6. Run the affected surface's tests and check English, translated output, user-content escaping, links, and zero/one/many counts where relevant. Check language switching and flag rollback when changing locale handling; email changes also verify recipient isolation and both body formats.
+6. Run the affected surface's tests and check English, translated output, user-content escaping, links, and zero/one/many counts where relevant. Check language switching and English fallback when changing locale handling; email changes also verify recipient isolation and both body formats.
 
 Existing focused catalog checks can be run from the repository root:
 

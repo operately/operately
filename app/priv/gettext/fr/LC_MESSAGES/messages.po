@@ -4641,7 +4641,7 @@ msgid "10 minutes"
 msgstr "10 minutes"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:168
+#: ../turboui/src/ProfileEditPage/index.tsx:167
 msgid "12-hour clock"
 msgstr "Format 12 heures"
 
@@ -4668,7 +4668,7 @@ msgid "2. What's new since the last check-in?"
 msgstr "2. Quoi de neuf depuis le dernier point d’avancement ?"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:169
+#: ../turboui/src/ProfileEditPage/index.tsx:168
 msgid "24-hour clock"
 msgstr "Format 24 heures"
 
@@ -5043,7 +5043,7 @@ msgid "About"
 msgstr "À propos"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:132
+#: ../turboui/src/ProfileEditPage/index.tsx:131
 #: ../turboui/src/ProfilePage/components/AboutMe.tsx:22
 msgid "About me"
 msgstr "À propos de moi"
@@ -6383,7 +6383,7 @@ msgid "Authors cannot acknowledge their own retrospectives"
 msgstr "Les auteurs ne peuvent pas confirmer la lecture de leurs propres bilans"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:167
+#: ../turboui/src/ProfileEditPage/index.tsx:166
 msgid "Automatic"
 msgstr "Automatique"
 
@@ -6820,7 +6820,7 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/Modal/MoveModal.tsx:73
 #: ../turboui/src/PageDescription/index.tsx:198
 #: ../turboui/src/PrivacyField/index.tsx:115
-#: ../turboui/src/ProfileEditPage/index.tsx:200
+#: ../turboui/src/ProfileEditPage/index.tsx:199
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:50
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:89
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:432
@@ -7043,7 +7043,7 @@ msgid "Change password"
 msgstr "Changer le mot de passe"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:338
+#: ../turboui/src/ProfileEditPage/index.tsx:337
 msgid "Change photo"
 msgstr "Changer la photo"
 
@@ -7747,7 +7747,7 @@ msgstr "Administration de l’entreprise"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:63
-#: ../turboui/src/ProfileEditPage/index.tsx:94
+#: ../turboui/src/ProfileEditPage/index.tsx:93
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:39
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:29
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:90
@@ -9665,7 +9665,7 @@ msgstr "Version précédente"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:332
+#: ../turboui/src/ProfileEditPage/index.tsx:331
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -9741,7 +9741,7 @@ msgstr "Modifier le lien"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:49
-#: ../turboui/src/ProfileEditPage/index.tsx:108
+#: ../turboui/src/ProfileEditPage/index.tsx:107
 #: ../turboui/src/ProfilePage/components/index.tsx:27
 msgid "Edit Profile"
 msgstr "Modifier le profil"
@@ -10868,7 +10868,7 @@ msgid "Failed to update assignees."
 msgstr "Impossible de modifier les personnes assignées."
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:242
+#: assets/js/pages/ProfileEditPage/index.tsx:233
 msgid "Failed to update avatar. Please try again."
 msgstr "Impossible de mettre à jour la photo de profil. Réessayez."
 
@@ -11034,7 +11034,7 @@ msgid "Failed to upload %{name}. Please try again."
 msgstr "Impossible d’ajouter %{name}. Réessayez."
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:215
+#: assets/js/pages/ProfileEditPage/index.tsx:206
 msgid "Failed to upload avatar. Please try again."
 msgstr "Impossible d’ajouter la photo de profil. Réessayez."
 
@@ -11630,7 +11630,7 @@ msgstr "Ce lien semble incorrect. Vérifiez-le ou demandez un nouveau lien à la
 #: ../turboui/src/CompanyNavigation/index.tsx:85
 #: ../turboui/src/CompanyNavigation/index.tsx:185
 #: ../turboui/src/HomePage/index.tsx:20
-#: ../turboui/src/ProfileEditPage/index.tsx:98
+#: ../turboui/src/ProfileEditPage/index.tsx:97
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
 #: assets/js/pages/AccountAppearancePage/index.tsx:27
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:53
@@ -12373,7 +12373,7 @@ msgid "LINKS"
 msgstr "LIENS"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:229
+#: ../turboui/src/ProfileEditPage/index.tsx:228
 msgid "Language"
 msgstr "Langue"
 
@@ -12825,7 +12825,7 @@ msgstr "Rendre le projet visible dans les listes de projets actifs"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:36
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:148
-#: ../turboui/src/ProfileEditPage/index.tsx:95
+#: ../turboui/src/ProfileEditPage/index.tsx:94
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:40
 #: assets/js/pages/InviteTeamPage/index.tsx:28
 #: assets/js/pages/MemberTypeSelectionPage/index.tsx:18
@@ -13382,7 +13382,7 @@ msgstr "Score NPS"
 #: ../turboui/src/GoalTargetList/index.tsx:180
 #: ../turboui/src/GoalTargetList/index.tsx:244
 #: ../turboui/src/GoalTargetList/index.tsx:370
-#: ../turboui/src/ProfileEditPage/index.tsx:116
+#: ../turboui/src/ProfileEditPage/index.tsx:115
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
 #: ../turboui/src/SortControl/index.tsx:18
@@ -15215,7 +15215,7 @@ msgid "Please choose an image file."
 msgstr "Choisissez un fichier image."
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:192
+#: assets/js/pages/ProfileEditPage/index.tsx:183
 msgid "Please choose an image smaller than 12 MB."
 msgstr "Choisissez une image de moins de 12 Mo."
 
@@ -16343,7 +16343,7 @@ msgstr "Retirer des personnes"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:346
+#: ../turboui/src/ProfileEditPage/index.tsx:345
 msgid "Remove photo"
 msgstr "Retirer la photo"
 
@@ -17081,7 +17081,7 @@ msgstr "Enregistrer"
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
 #: ../turboui/src/CommentSection/CommentItem.tsx:313
 #: ../turboui/src/DocumentEditPage/index.tsx:83
-#: ../turboui/src/ProfileEditPage/index.tsx:195
+#: ../turboui/src/ProfileEditPage/index.tsx:194
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:453
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
@@ -17164,7 +17164,7 @@ msgid "Save selection"
 msgstr "Enregistrer la sélection"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:358
+#: ../turboui/src/ProfileEditPage/index.tsx:357
 msgid "Saving..."
 msgstr "Enregistrement…"
 
@@ -17528,7 +17528,7 @@ msgid "Select goal..."
 msgstr "Sélectionner un objectif…"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:187
+#: ../turboui/src/ProfileEditPage/index.tsx:186
 msgid "Select manager"
 msgstr "Sélectionner le responsable hiérarchique"
 
@@ -17833,7 +17833,7 @@ msgid "Share a link"
 msgstr "Partager un lien"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:262
+#: ../turboui/src/ProfileEditPage/index.tsx:261
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Présentez-vous brièvement, décrivez votre travail ou partagez ce que vous souhaitez faire savoir aux autres."
 
@@ -20390,7 +20390,7 @@ msgid "Time"
 msgstr "Heure"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:160
+#: ../turboui/src/ProfileEditPage/index.tsx:159
 msgid "Time format"
 msgstr "Format de l’heure"
 
@@ -20441,7 +20441,7 @@ msgid "Timeline data not available"
 msgstr "Données de la chronologie indisponibles"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:143
+#: ../turboui/src/ProfileEditPage/index.tsx:142
 msgid "Timezone"
 msgstr "Fuseau horaire"
 
@@ -20466,7 +20466,7 @@ msgid "Title cannot be empty"
 msgstr "Le titre ne peut pas être vide"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:124
+#: ../turboui/src/ProfileEditPage/index.tsx:123
 msgid "Title in Company"
 msgstr "Poste dans l’entreprise"
 
@@ -21228,7 +21228,7 @@ msgid "Uploading %{name}..."
 msgstr "Ajout de %{name}…"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:357
+#: ../turboui/src/ProfileEditPage/index.tsx:356
 msgid "Uploading %{progress}%"
 msgstr "Ajout en cours : %{progress} %"
 
@@ -22031,12 +22031,12 @@ msgid "Who is listed as a contributor?"
 msgstr "Qui figure parmi les contributeurs ?"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:89
+#: ../turboui/src/ProfileEditPage/index.tsx:88
 msgid "Who is their manager?"
 msgstr "Qui est son responsable hiérarchique ?"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:89
+#: ../turboui/src/ProfileEditPage/index.tsx:88
 msgid "Who is your manager?"
 msgstr "Qui est votre responsable hiérarchique ?"
 

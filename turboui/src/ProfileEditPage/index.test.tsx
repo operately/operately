@@ -36,7 +36,6 @@ function renderPage(overrides: Partial<ProfileEditPage.Props> = {}) {
     richTextHandlers: createMockRichEditorHandlers(),
     timezones: [{ value: "America/New_York", label: "Eastern Time (ET)" }],
     isCurrentUser: true,
-    showLanguageSelector: true,
     fromLocation: null,
     companyAdminPath: "/admin",
     managePeoplePath: "/admin/people",
@@ -60,12 +59,6 @@ test("associates the language label with the language dropdown", () => {
   expect(trigger).toHaveTextContent("English");
 });
 
-test("hides the language picker when the parent does not request it", () => {
-  renderPage({ showLanguageSelector: false, language: "de" });
-
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
-});
-
 test("lets the user select German", () => {
   const onLanguageChange = jest.fn();
   renderPage({ onLanguageChange });
@@ -83,7 +76,7 @@ test("displays a saved German preference", () => {
 });
 
 test("hides the language picker when editing someone else", () => {
-  renderPage({ isCurrentUser: false, showLanguageSelector: true });
+  renderPage({ isCurrentUser: false });
 
   expect(screen.queryByTestId("language")).not.toBeInTheDocument();
 });
@@ -101,11 +94,6 @@ test("displays a saved Russian preference", () => {
   expect(screen.getByTestId("language")).toHaveTextContent("Русский");
 });
 
-test("hides the language picker with a saved Russian preference when disabled", () => {
-  renderPage({ language: "ru", showLanguageSelector: false });
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
-});
-
 test("lets the user select French", () => {
   const onLanguageChange = jest.fn();
   renderPage({ onLanguageChange });
@@ -119,11 +107,6 @@ test("displays a saved French preference", () => {
   expect(screen.getByTestId("language")).toHaveTextContent("Français");
 });
 
-test("hides the language picker with a saved French preference when disabled", () => {
-  renderPage({ language: "fr", showLanguageSelector: false });
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
-});
-
 test("lets the user select Spanish", () => {
   const onLanguageChange = jest.fn();
   renderPage({ onLanguageChange });
@@ -135,9 +118,4 @@ test("lets the user select Spanish", () => {
 test("displays a saved Spanish preference", () => {
   renderPage({ language: "es" });
   expect(screen.getByTestId("language")).toHaveTextContent("Español");
-});
-
-test("hides the language picker with a saved Spanish preference when disabled", () => {
-  renderPage({ language: "es", showLanguageSelector: false });
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
 });

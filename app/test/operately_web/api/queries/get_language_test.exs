@@ -6,8 +6,8 @@ defmodule OperatelyWeb.Api.Queries.GetLanguageTest do
   end
 
   for language <- ["pt-BR", "de", "ru", "fr", "es"] do
-    test "#{language} account and company resolution respect membership and flag rollback", ctx do
-      ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
+    test "#{language} account and company resolution respect membership and language changes", ctx do
+      ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
       {:ok, person} = Operately.People.update_person(ctx.creator, %{language: unquote(language)})
       conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
       company_id = OperatelyWeb.Paths.company_id(ctx.company)
@@ -20,13 +20,13 @@ defmodule OperatelyWeb.Api.Queries.GetLanguageTest do
       assert {200, %{language: "en"}} = query(conn, :get_language, %{})
       assert {200, %{language: unquote(language)}} = query(conn, :get_language, %{company_id: company_id})
 
-      Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+      {:ok, _} = Operately.People.update_person(person, %{language: "en"})
       assert {200, %{language: "en"}} = query(conn, :get_language, %{company_id: company_id})
     end
   end
 
   test "missing, inaccessible and suspended company contexts use English", ctx do
-    ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
+    ctx = ctx |> Factory.setup() |> Factory.log_in_person(:creator)
     {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     conn = Plug.Conn.delete_req_header(ctx.conn, "x-company-id")
     other = Operately.CompaniesFixtures.company_fixture()

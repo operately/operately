@@ -3,7 +3,6 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { BillingDangerBanner } from "./BillingDangerBanner";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
@@ -53,10 +52,10 @@ function renderBanner(canManageBilling: boolean, pathname = "/home") {
 }
 
 test.each([
-  [true, "Problema no pagamento requer atenção"],
-  [false, "Payment issue requires attention"],
-])("saved Portuguese preference respects flag: %s", async (enabled, title) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", "Problema no pagamento requer atenção"],
+  ["en", "Payment issue requires attention"],
+])("selected language: %s", async (language, title) => {
+  await applyLanguage(language);
 
   const view = renderBanner(true);
 

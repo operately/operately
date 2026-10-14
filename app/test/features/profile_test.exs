@@ -7,9 +7,8 @@ defmodule Operately.Features.ProfileTest do
     Operately.Support.Features.UI.login_as(ctx, ctx.person)
   end
 
-  feature "German selection persists and translations stay behind the company flag", ctx do
+  feature "German selection persists after saving and reloading", ctx do
     ctx
-    |> Factory.enable_feature("i18n")
     |> Steps.use_narrow_window()
     |> Steps.visit_profile_edit_page()
     |> Steps.select_german()
@@ -17,14 +16,10 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_german_account()
     |> Steps.visit_profile_edit_page()
     |> Steps.assert_german_preference()
-    |> Factory.disable_feature("i18n")
-    |> Steps.visit_profile_edit_page()
-    |> Steps.assert_language_feature_disabled()
   end
 
-  feature "Russian selection persists and translations stay behind the company flag", ctx do
+  feature "Russian selection persists after saving and reloading", ctx do
     ctx
-    |> Factory.enable_feature("i18n")
     |> Steps.use_narrow_window()
     |> Steps.visit_profile_edit_page()
     |> Steps.select_russian()
@@ -32,14 +27,10 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_russian_account()
     |> Steps.visit_profile_edit_page()
     |> Steps.assert_russian_preference()
-    |> Factory.disable_feature("i18n")
-    |> Steps.visit_profile_edit_page()
-    |> Steps.assert_language_feature_disabled("ru")
   end
 
-  feature "Spanish selection persists and translations stay behind the company flag", ctx do
+  feature "Spanish selection persists after saving and reloading", ctx do
     ctx
-    |> Factory.enable_feature("i18n")
     |> Steps.use_narrow_window()
     |> Steps.visit_profile_edit_page()
     |> Steps.select_spanish()
@@ -47,14 +38,10 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_spanish_account()
     |> Steps.visit_profile_edit_page()
     |> Steps.assert_spanish_preference()
-    |> Factory.disable_feature("i18n")
-    |> Steps.visit_profile_edit_page()
-    |> Steps.assert_language_feature_disabled("es")
   end
 
-  feature "French selection persists and translations stay behind the company flag", ctx do
+  feature "French selection persists after saving and reloading", ctx do
     ctx
-    |> Factory.enable_feature("i18n")
     |> Steps.use_narrow_window()
     |> Steps.visit_profile_edit_page()
     |> Steps.select_french()
@@ -62,9 +49,6 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_french_account()
     |> Steps.visit_profile_edit_page()
     |> Steps.assert_french_preference()
-    |> Factory.disable_feature("i18n")
-    |> Steps.visit_profile_edit_page()
-    |> Steps.assert_language_feature_disabled("fr")
   end
 
   feature "view recent activity", ctx do

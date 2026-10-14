@@ -256,8 +256,8 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert email.text_body =~ "Goal 1 (1 update)"
   end
 
-  test "keeps English digest copy when i18n is disabled for a pt-BR recipient", ctx do
-    {:ok, person} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
+  test "keeps English digest copy for an English recipient", ctx do
+    {:ok, person} = Operately.People.update_person(ctx.person, %{language: "en"})
     person = %{person | company: ctx.company}
 
     digest_items = [
@@ -297,8 +297,8 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
     assert email.text_body =~ "Goal 1 (2 updates)"
   end
 
-  test "renders Portuguese digest copy when i18n is enabled for a pt-BR recipient", ctx do
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+  test "renders Portuguese digest copy for a pt-BR recipient", ctx do
+    company = ctx.company
     {:ok, person} = Operately.People.update_person(ctx.person, %{language: "pt-BR"})
     person = %{person | company: company}
 

@@ -3,7 +3,6 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter, useRouteLoaderData } from "react-router";
 import { applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import NotFoundPage from ".";
 
 jest.mock("react-router", () => ({ ...jest.requireActual("react-router"), useRouteLoaderData: jest.fn() }));
@@ -19,27 +18,30 @@ jest.mock("turboui", () => ({
 
 setupTestCatalog();
 
-test.each([true, false])("not-found rendering respects the language flag and loader context: %s", async (enabled) => {
-  (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
-  const container = document.createElement("div");
-  const root = createRoot(container);
+test.each(["pt-BR", "en"])(
+  "not-found rendering respects the selected language and loader context: %s",
+  async (language) => {
+    (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    await applyLanguage(language);
+    const container = document.createElement("div");
+    const root = createRoot(container);
 
-  try {
-    for (const companyId of ["company", undefined]) {
-      jest.mocked(useRouteLoaderData).mockReturnValue(companyId ? { companyId } : undefined);
-      act(() =>
-        root.render(
-          <MemoryRouter>
-            <NotFoundPage.Page />
-          </MemoryRouter>,
-        ),
-      );
+    try {
+      for (const companyId of ["company", undefined]) {
+        jest.mocked(useRouteLoaderData).mockReturnValue(companyId ? { companyId } : undefined);
+        act(() =>
+          root.render(
+            <MemoryRouter>
+              <NotFoundPage.Page />
+            </MemoryRouter>,
+          ),
+        );
 
-      expect(container.textContent).toContain(enabled ? "Página não encontrada" : "Page Not Found");
-      expect(container.querySelector("a")?.getAttribute("href")).toBe(companyId ? "/company" : "/");
+        expect(container.textContent).toContain(language === "pt-BR" ? "Página não encontrada" : "Page Not Found");
+        expect(container.querySelector("a")?.getAttribute("href")).toBe(companyId ? "/company" : "/");
+      }
+    } finally {
+      act(() => root.unmount());
     }
-  } finally {
-    act(() => root.unmount());
-  }
-});
+  },
+);

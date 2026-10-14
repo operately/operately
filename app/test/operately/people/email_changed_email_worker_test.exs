@@ -23,7 +23,7 @@ defmodule Operately.People.EmailChangedEmailWorkerTest do
     end
   end
   test "uses the account identity for language even after its address changes again" do
-    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    ctx = Operately.Support.Factory.setup(%{})
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     args = %{account_id: person.account_id, old_email: "old@example.com", new_email: "previous@example.com"}
     assert {:ok, _} = perform_job(EmailChangedEmailWorker, args)
@@ -33,13 +33,13 @@ defmodule Operately.People.EmailChangedEmailWorkerTest do
       assert email.text_body =~ "previous@example.com"
       true
     end)
-    Operately.Companies.disable_experimental_feature(ctx.company, "i18n")
+    {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "en"})
     assert {:ok, _} = perform_job(EmailChangedEmailWorker, args)
     assert_email_sent(subject: "Your Operately email has changed")
   end
 
   test "legacy jobs do not infer account ownership from a potentially reused address" do
-    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    ctx = Operately.Support.Factory.setup(%{})
     Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     assert {:ok, _} = perform_job(EmailChangedEmailWorker, %{old_email: "old@example.com", new_email: ctx.creator.email})
     assert_email_sent(subject: "Your Operately email has changed")

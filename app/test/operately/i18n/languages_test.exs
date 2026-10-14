@@ -6,7 +6,6 @@ defmodule Operately.I18n.LanguagesTest do
   test "defaults to English and lists supported languages" do
     assert Languages.default() == "en"
     assert Languages.supported() == ["en", "pt-BR", "de", "ru", "fr", "es"]
-    assert Languages.feature_flag() == "i18n"
   end
 
   test "accepts only supported language tags" do

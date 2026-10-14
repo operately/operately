@@ -2,7 +2,6 @@
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { Page } from "./page";
 
 jest.mock("./loader", () => ({ useLoadedData: () => ({ company: { name: "Literal company" }, people: [] }) }));
@@ -29,10 +28,10 @@ afterEach(async () => {
 });
 
 test.each([
-  [true, "Organograma"],
-  [false, "Org Chart"],
-])("page title follows the company language gate: %s", async (enabled, title) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", "Organograma"],
+  ["en", "Org Chart"],
+])("page title follows the saved language preference: %s", async (language, title) => {
+  await applyLanguage(language);
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   const container = document.createElement("div");
   const root = createRoot(container);

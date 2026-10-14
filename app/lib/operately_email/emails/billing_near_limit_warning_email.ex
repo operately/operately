@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmail do
   def send([], _company, _status, _job), do: {:ok, :no_recipients}
 
   def send(recipients, company, %LimitStatus{} = status, job) do
-    OperatelyEmail.Mailers.BillingMailer.deliver(recipients, company, &build(&1, company, status), job)
+    OperatelyEmail.Mailers.BillingMailer.deliver(recipients, &build(&1, company, status), job)
   end
 
   def build(recipients, company, %LimitStatus{} = status) do

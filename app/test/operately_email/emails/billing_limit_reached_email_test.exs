@@ -49,8 +49,8 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmailTest do
       recommended_upgrade: nil
     }
   end
-  test "mixed-language recipients receive localized billing messages and flag rollback uses English", ctx do
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+  test "mixed-language recipients receive localized billing messages and selecting English changes the message", ctx do
+    company = ctx.company
     {:ok, portuguese} = Operately.People.update_person(ctx.admin, %{language: "pt-BR"})
     previous = Gettext.get_locale(OperatelyWeb.Gettext)
     status = Operately.Billing.LimitBreachAlerting.snapshot(:member_count, 20, 20)
@@ -67,14 +67,14 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmailTest do
     assert english.subject =~ "Free plan"
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
 
-    {:ok, company} = Operately.Companies.disable_experimental_feature(company, "i18n")
+    {:ok, portuguese} = Operately.People.update_person(portuguese, %{language: "en"})
     assert {:ok, _} = BillingLimitReachedEmail.send([portuguese, ctx.owner], company, status)
     assert_email_sent(fn email ->
       assert length(email.to) == 2
       assert email.subject =~ "Free plan"
       true
     end)
-    assert Operately.Repo.reload!(portuguese).language == "pt-BR"
+    assert Operately.Repo.reload!(portuguese).language == "en"
   end
 
   test "billing renders Portuguese and missing-locale fallback with escaped names", ctx do
