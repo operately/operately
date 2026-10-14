@@ -54,7 +54,7 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmailTest do
     assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_073_741_824) == "1.0 GB"
     assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_125_899_906_842_624) == "1.0 PB"
   end
-  for {language, subject, action} <- [{"pt-BR", "plano Gratuito", "Revisar faturamento"}, {"de", "kostenlosen Tarifs", "Abrechnung prüfen"}, {"ru", "бесплатного тарифа", "Проверить оплату"}, {"fr", "forfait gratuit", "Consulter la facturation"}] do
+  for {language, subject, action} <- [{"pt-BR", "plano Gratuito", "Revisar faturamento"}, {"de", "kostenlosen Tarifs", "Abrechnung prüfen"}, {"ru", "бесплатного тарифа", "Проверить оплату"}, {"fr", "forfait gratuit", "Consulter la facturation"}, {"es", "plan gratuito", "Revisar facturación"}] do
     test "#{language} billing recipients get translations and flag rollback uses English", ctx do
       {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
       {:ok, recipient} = Operately.People.update_person(ctx.admin, %{language: unquote(language)})
@@ -86,7 +86,7 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmailTest do
 
   test "billing renders translations and missing-locale fallback with escaped names", ctx do
     company = %{ctx.company | name: "Company <literal> & name"}
-    for locale <- ["pt_BR", "de", "ru", "fr"], key <- [:member_count, :storage_bytes], usage <- [0, 1, 20] do
+    for locale <- ["pt_BR", "de", "ru", "fr", "es"], key <- [:member_count, :storage_bytes], usage <- [0, 1, 20] do
       status = NearLimitAlerting.snapshot(key, usage, 20)
       english = Gettext.with_locale(OperatelyWeb.Gettext, "en", fn -> BillingNearLimitWarningEmail.build([ctx.admin], company, status) end)
       fallback = Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn -> BillingNearLimitWarningEmail.build([ctx.admin], company, status) end)

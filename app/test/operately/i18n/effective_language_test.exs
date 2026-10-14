@@ -15,7 +15,7 @@ defmodule Operately.I18n.EffectiveLanguageTest do
     :ok
   end
 
-  for {language, locale} <- [{"pt-BR", "pt_BR"}, {"de", "de"}, {"ru", "ru"}, {"fr", "fr"}] do
+  for {language, locale} <- [{"pt-BR", "pt_BR"}, {"de", "de"}, {"ru", "ru"}, {"fr", "fr"}, {"es", "es"}] do
     describe "#{language} resolve/2" do
       test "uses English when no preference is saved" do
         person = %Person{language: nil}

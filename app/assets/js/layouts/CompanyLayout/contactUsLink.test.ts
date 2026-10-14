@@ -7,6 +7,7 @@ afterEach(async () => {
 
 test.each([
   ["en", "org name", "org id"],
+  ["es", "nombre de la empresa", "ID de la empresa"],
   ["pt-BR", "nome da empresa", "id da empresa"],
   ["fr", "nom de l’entreprise ", "identifiant de l’entreprise "],
 ])("localizes the support draft in %s and preserves literal company details", async (locale, nameLabel, idLabel) => {

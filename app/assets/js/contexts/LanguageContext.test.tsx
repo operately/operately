@@ -39,7 +39,7 @@ function renderProvider() {
   renderHook(() => null, { initialProps: undefined, wrapper });
 }
 
-it.each(["pt-BR", "de", "fr"])("applies English with the flag off and %s saved", (language) => {
+it.each(["pt-BR", "de", "fr", "es"])("applies English with the flag off and %s saved", (language) => {
   jest.mocked(useMe).mockReturnValue({ language } as ReturnType<typeof useMe>);
   mockCompanyLoader([]);
 
@@ -48,7 +48,7 @@ it.each(["pt-BR", "de", "fr"])("applies English with the flag off and %s saved",
   expect(applyLanguage).toHaveBeenCalledWith("en");
 });
 
-it.each(["pt-BR", "de", "fr"])("applies saved %s when the flag is on", (language) => {
+it.each(["pt-BR", "de", "fr", "es"])("applies saved %s when the flag is on", (language) => {
   jest.mocked(useMe).mockReturnValue({ language } as ReturnType<typeof useMe>);
   mockCompanyLoader(["i18n"]);
 

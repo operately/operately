@@ -6,6 +6,7 @@ describe("resolveEffectiveLanguage", () => {
     expect(resolveEffectiveLanguage("de", false)).toBe(DEFAULT_LANGUAGE);
     expect(resolveEffectiveLanguage("ru", false)).toBe(DEFAULT_LANGUAGE);
     expect(resolveEffectiveLanguage("fr", false)).toBe(DEFAULT_LANGUAGE);
+    expect(resolveEffectiveLanguage("es", false)).toBe(DEFAULT_LANGUAGE);
   });
 
   it("uses an explicit supported language when the flag is on", () => {
@@ -14,6 +15,7 @@ describe("resolveEffectiveLanguage", () => {
     expect(resolveEffectiveLanguage("de", true)).toBe("de");
     expect(resolveEffectiveLanguage("ru", true)).toBe("ru");
     expect(resolveEffectiveLanguage("fr", true)).toBe("fr");
+    expect(resolveEffectiveLanguage("es", true)).toBe("es");
   });
 
   it("uses English for missing or unsupported preferences", () => {

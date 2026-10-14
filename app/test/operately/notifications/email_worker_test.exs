@@ -132,6 +132,7 @@ defmodule Operately.Notifications.EmailWorkerTest do
       |> Factory.add_company_member(:german, name: "German Reader")
       |> Factory.add_company_member(:russian, name: "Russian Reader")
       |> Factory.add_company_member(:french, name: "French Reader")
+      |> Factory.add_company_member(:spanish, name: "Spanish Reader")
       |> Factory.add_space(:space, name: "Space <literal>")
       |> Factory.add_messages_board(:board, :space)
       |> Factory.add_message(:discussion, :board, title: "Discussion <literal>")
@@ -144,18 +145,19 @@ defmodule Operately.Notifications.EmailWorkerTest do
     {:ok, _} = Operately.People.update_person(ctx.german, %{language: "de"})
     {:ok, _} = Operately.People.update_person(ctx.russian, %{language: "ru"})
     {:ok, _} = Operately.People.update_person(ctx.french, %{language: "fr"})
+    {:ok, _} = Operately.People.update_person(ctx.spanish, %{language: "es"})
     {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     scenarios = [
-      {"discussion_posting", %{"discussion_id" => ctx.discussion.id}, "publicou:", "posted:", "hat veröffentlicht:", "опубликовано", "a publié", "Discussion <literal>"},
-      {"resource_hub_document_commented", %{"document_id" => ctx.document.id, "comment_id" => ctx.comment.id}, "comentou em:", "commented on:", "hat kommentiert:", "комментарий к", "a ajouté un commentaire sur", "Document <literal>"}
+      {"discussion_posting", %{"discussion_id" => ctx.discussion.id}, "publicou:", "posted:", "hat veröffentlicht:", "опубликовано", "a publié", "publicó:", "Discussion <literal>"},
+      {"resource_hub_document_commented", %{"document_id" => ctx.document.id, "comment_id" => ctx.comment.id}, "comentou em:", "commented on:", "hat kommentiert:", "комментарий к", "a ajouté un commentaire sur", "comentó sobre:", "Document <literal>"}
     ]
 
-    for {action, content, portuguese, english, german, russian, french, name} <- scenarios do
+    for {action, content, portuguese, english, german, russian, french, spanish, name} <- scenarios do
       activity = activity_fixture(author_id: ctx.creator.id, action: action, content: content)
 
-      for {person, expected} <- [{ctx.french, french}, {ctx.russian, russian}, {ctx.portuguese, portuguese}, {ctx.german, german}, {ctx.english, english}, {ctx.german, german}] do
+      for {person, expected} <- [{ctx.spanish, spanish}, {ctx.french, french}, {ctx.russian, russian}, {ctx.portuguese, portuguese}, {ctx.german, german}, {ctx.english, english}, {ctx.german, german}] do
         assert_localized_delivery(activity, person, expected, name)
         assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
       end
@@ -163,12 +165,13 @@ defmodule Operately.Notifications.EmailWorkerTest do
 
     {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
 
-    for {action, content, _portuguese, english, _german, _russian, _french, name} <- scenarios do
+    for {action, content, _portuguese, english, _german, _russian, _french, _spanish, name} <- scenarios do
       activity = activity_fixture(author_id: ctx.creator.id, action: action, content: content)
       assert_localized_delivery(activity, ctx.portuguese, english, name)
       assert_localized_delivery(activity, ctx.german, english, name)
       assert_localized_delivery(activity, ctx.russian, english, name)
       assert_localized_delivery(activity, ctx.french, english, name)
+      assert_localized_delivery(activity, ctx.spanish, english, name)
       assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
     end
 
@@ -176,6 +179,7 @@ defmodule Operately.Notifications.EmailWorkerTest do
     assert Operately.People.get_person!(ctx.german.id).language == "de"
     assert Operately.People.get_person!(ctx.russian.id).language == "ru"
     assert Operately.People.get_person!(ctx.french.id).language == "fr"
+    assert Operately.People.get_person!(ctx.spanish.id).language == "es"
   end
 
   defp assert_localized_delivery(activity, person, expected, name) do
