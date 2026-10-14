@@ -25,7 +25,7 @@ defmodule OperatelyEmail.Emails.CompanyMembersPermissionsEditedEmailTest do
           content: %{"members" => [%{"person_id" => ctx.creator.id, "previous_access_level" => level, "updated_access_level" => level}]}
         )
 
-      for {locale, label} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+      for {locale, label} <- [{"en", english}, {"pt_BR", portuguese}, {"nl", english}] do
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> CompanyMembersPermissionsEditedEmail.send(ctx.creator, activity) end)
 
         assert_email_sent(fn email ->

@@ -18,6 +18,20 @@ defmodule Operately.I18n.ConverterTest do
              ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "1000000 tasks"]
   end
 
+  test "French maps zero and fractions below two to singular and millions to plural" do
+    po = """
+    msgctxt "inbox"
+    msgid "1 task"
+    msgid_plural "%{count} tasks"
+    msgstr[0] "%{count} tâche"
+    msgstr[1] "%{count} tâches"
+    """
+
+    counts = [0, 0.5, 1, 1.5, 2, 2.5, 1_000_000]
+    assert render_task_counts(po, "fr", counts) == ["0 tâche", "0.5 tâche", "1 tâche", "1.5 tâche", "2 tâches", "2.5 tâches", "1000000 tâches"]
+    assert render_task_counts(@untranslated_tasks, "fr", counts) == ["0 tasks", "0.5 tasks", "1 task", "1.5 tasks", "2 tasks", "2.5 tasks", "1000000 tasks"]
+  end
+
   test "German uses singular only for one and plural for zero, fractions, and millions" do
     po = """
     msgctxt "inbox"

@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetLanguageTest do
     assert {200, %{language: "en"}} = query(ctx.conn, :get_language, %{})
   end
 
-  for language <- ["pt-BR", "de", "ru"] do
+  for language <- ["pt-BR", "de", "ru", "fr"] do
     test "#{language} account and company resolution respect membership and flag rollback", ctx do
       ctx = ctx |> Factory.setup() |> Factory.enable_feature("i18n") |> Factory.log_in_person(:creator)
       {:ok, person} = Operately.People.update_person(ctx.creator, %{language: unquote(language)})

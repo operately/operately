@@ -98,7 +98,7 @@ function MobileNavigation({ companyName, links, onLogOut }: CompanyNavigation.Pr
           </MobileSectionLink>
 
           <MobileSectionLink to={links.people} icon={IconUserCircle}>
-            {t("People")}
+            {t("People", { context: "navigation" })}
           </MobileSectionLink>
 
           <MobileSectionLink to={links.notifications} icon={IconBell}>

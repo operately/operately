@@ -140,7 +140,7 @@ defmodule OperatelyEmail.Emails.CompanyMemberAddedEmailTest do
     activity = Repo.one(from a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
     url = Paths.join_path(changes.invite_link.token) |> Paths.to_url()
 
-    for {locale, action} <- [{"pt_BR", "convidou você para participar de"}, {"fr", "invited you to join"}] do
+    for {locale, action} <- [{"pt_BR", "convidou você para participar de"}, {"nl", "invited you to join"}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> CompanyMemberAddedEmail.send(person, activity) end)
       assert_email_sent(fn email ->
         assert email.subject =~ action

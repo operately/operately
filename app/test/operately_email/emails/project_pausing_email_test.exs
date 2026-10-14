@@ -45,7 +45,7 @@ defmodule OperatelyEmail.Emails.ProjectPausingEmailTest do
     assert item.excerpt_text =~ "Pausing for budget review"
     assert item.item_url == Paths.project_path(ctx.company, ctx.project) |> Paths.to_url()
 
-    for {locale, expected} <- [{"pt_BR", "pausou o projeto"}, {"fr", "paused the project"}] do
+    for {locale, expected} <- [{"pt_BR", "pausou o projeto"}, {"nl", "paused the project"}] do
       translated = Gettext.with_locale(OperatelyWeb.Gettext, locale, fn -> ProjectPausingEmail.buffered_item(ctx.creator, activity) end)
       assert translated == %{item | headline: expected}
     end
