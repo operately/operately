@@ -4670,7 +4670,7 @@ msgstr "2. ¿Qué novedades hay desde el último check-in?"
 #.frontend
 #: ../turboui/src/ProfileEditPage/index.tsx:169
 msgid "24-hour clock"
-msgstr "Reloj las 24 horas"
+msgstr "Reloj de 24 horas"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:58
@@ -17414,7 +17414,7 @@ msgstr "Seleccionar"
 #.frontend
 #: ../turboui/src/CompanyPickerPage/index.tsx:31
 msgid "Select Company"
-msgstr "Seleccionar Empresa"
+msgstr "Seleccionar empresa"
 
 #.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:383
@@ -21455,7 +21455,7 @@ msgstr "Solo lectura"
 #.elixir
 #: lib/operately_email/templates/goal_archived.html.eex:6
 msgid "View Archived Goal"
-msgstr "Ver Objetivo archivado"
+msgstr "Ver objetivo archivado"
 
 #.elixir
 #: lib/operately_email/templates/project_archived.html.eex:6
@@ -21537,23 +21537,23 @@ msgstr "Ver archivos"
 #: lib/operately_email/templates/goal_reparent.html.eex:18
 #: lib/operately_email/templates/goal_reviewer_updating.html.eex:6
 msgid "View Goal"
-msgstr "Ver Objetivo"
+msgstr "Ver objetivo"
 
 #.elixir
 #: lib/operately_email/templates/goal_description_changed.text.eex:9
 msgid "View Goal: %{url}"
-msgstr "Ver Objetivo: %{url}"
+msgstr "Ver objetivo: %{url}"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:102
 msgid "View Invitation Link"
-msgstr "Ver Enlace de invitación"
+msgstr "Ver enlace de invitación"
 
 #.elixir
 #: lib/operately_email/templates/resource_hub_link_created.html.eex:16
 #: lib/operately_email/templates/resource_hub_link_edited.html.eex:16
 msgid "View Link"
-msgstr "Ver Enlace"
+msgstr "Ver enlace"
 
 #.elixir
 #: lib/operately_email/emails/project_milestone_commented_email.ex:81
