@@ -6961,7 +6961,7 @@ msgstr "Куратор и ответственный не могут быть о
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
 #: ../turboui/src/ConfirmDialog/index.tsx:59
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:176
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:148
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:164
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:91
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
@@ -8286,7 +8286,7 @@ msgid "Content is required"
 msgstr "Требуется содержимое"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:110
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:126
 msgid "Content language"
 msgstr "Язык содержимого"
 
@@ -11555,7 +11555,7 @@ msgstr "Перейти на главную"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:11
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:103
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:119
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
@@ -12398,7 +12398,7 @@ msgid "Join this Space"
 msgstr "Присоединиться к этому пространству"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:102
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:118
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 msgid "KPI"
 msgstr "KPI"
@@ -15803,7 +15803,7 @@ msgstr "Всё идёт по плану. Препятствий нет."
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:12
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:104
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:120
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
@@ -16029,7 +16029,7 @@ msgid "Public sharing is off. Enable it to create a link."
 msgstr "Публичный доступ отключён. Включите его, чтобы создать ссылку."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:133
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:149
 msgid "Publish"
 msgstr "Опубликовать"
 
@@ -16059,7 +16059,7 @@ msgid "Published"
 msgstr "Опубликовано"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:96
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:112
 msgid "Published changes take effect immediately."
 msgstr "Опубликованные изменения вступают в силу немедленно."
 
@@ -17314,7 +17314,7 @@ msgid "Save contributor"
 msgstr "Сохранить участника проекта"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:144
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:160
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
@@ -18256,7 +18256,7 @@ msgid "Slide"
 msgstr "Слайд"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:94
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:104
 msgid "Slug"
 msgstr "Слаг"
 
@@ -19870,7 +19870,7 @@ msgid "The template could not be duplicated. Try again."
 msgstr "Не удалось создать копию шаблона. Попробуйте снова."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:60
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:47
 msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
 msgstr "Ваши изменения сохранены."
 
@@ -20892,7 +20892,7 @@ msgstr "Включите или выключите эксперименталь�
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:100
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:116
 #: lib/operately/md/space.ex:20
 #: lib/operately/md/task.ex:18
 msgid "Type"
@@ -21203,7 +21203,7 @@ msgid "Untitled milestone"
 msgstr "Безымянная веха"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:133
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:149
 #: ../turboui/src/GoalTargetList/UpdateButton.tsx:17
 msgid "Update"
 msgstr "Обновить"
@@ -25072,7 +25072,7 @@ msgstr "Должность"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:93
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:97
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
 msgid "Title"
