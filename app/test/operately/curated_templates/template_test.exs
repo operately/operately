@@ -20,6 +20,17 @@ defmodule Operately.CuratedTemplates.TemplateTest do
     assert changeset(:kpi, %{"name" => "Revenue", "unit" => "USD", "cadence" => "monthly"}, :published).valid?
   end
 
+  test "definition edits revalidate existing preview data" do
+    definition = %{"name" => "Revenue", "unit" => "USD", "cadence" => "weekly"}
+    preview = %{"entries" => [%{"date" => "2026-09-01", "value" => 10}, %{"date" => "2026-09-30", "value" => 20}]}
+    template = %Template{title: "Revenue", slug: "revenue", type: :kpi, state: :published, definition: definition, preview_data: preview}
+    assert Template.changeset(template, %{title: "Renamed"}).valid?
+    cs = Template.changeset(template, %{definition: %{definition | "cadence" => "monthly"}})
+    refute cs.valid?
+    assert Enum.any?(Operately.CuratedTemplates.Definitions.errors(cs), fn {path, _} -> path == "preview_data.entries" end)
+    assert Template.changeset(template, %{definition: %{definition | "cadence" => "monthly"}, preview_data: %{}}).valid?
+  end
+
   test "rejects unsupported fields and invalid types even in drafts" do
     refute changeset(:kpi, %{"entries" => []}).valid?
     refute changeset(:kpi, %{"cadence" => "daily"}).valid?

@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.Get do
       nil -> {:error, :not_found}
       template ->
         serialized = Serializer.serialize(template, level: :full)
-        public_fields = [:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :definition]
+        public_fields = [:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :definition, :preview_data]
         {:ok, %{template: Map.take(serialized, public_fields)}}
     end
   end

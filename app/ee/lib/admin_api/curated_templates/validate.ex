@@ -11,6 +11,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.Validate do
     field? :category, :string, null: true
     field :content_language, :string
     field :definition, :json
+    field? :preview_data, :json
   end
 
   outputs do

@@ -32,6 +32,13 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.ValidateTest do
       assert {200, %{valid: false, errors: errors}} = admin_mutation(ctx.conn, [:curated_templates, :validate], inputs)
       assert Enum.any?(errors, &(&1.path == "definition.targets.0.unit"))
     end
+
+    test "validates preview data without saving it", ctx do
+      inputs = Map.put(payload(:kpi), :preview_data, Jason.encode!(%{entries: [%{date: "invalid", value: 10}]}))
+      assert {200, %{valid: false, errors: errors}} = admin_mutation(ctx.conn, [:curated_templates, :validate], inputs)
+      assert Enum.any?(errors, &(&1.path == "preview_data.entries.0.date"))
+      assert Repo.aggregate(Operately.CuratedTemplates.Template, :count) == 0
+    end
   end
 
   defp payload(type) do

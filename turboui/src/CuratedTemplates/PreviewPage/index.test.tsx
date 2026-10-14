@@ -33,6 +33,20 @@ test.each(["kpi", "goal", "project"] as const)("renders a read-only %s preview",
   expect(screen.queryByTestId("chart-log-update")).not.toBeInTheDocument();
 });
 
+test("populated KPI previews show the chart and history without editing controls", () => {
+  const { container } = setup("kpi", {
+    previewData: JSON.stringify({
+      entries: [{ date: "2026-08-31", value: 345 }, { date: "2026-09-30", value: 416 }],
+      annotations: [{ date: "2026-09-01", title: "Campaign" }],
+    }),
+  });
+  expect(screen.getByTestId("kpi-line-chart")).toBeInTheDocument();
+  expect(container.querySelectorAll('[data-test-id^="entry-row-"]')).toHaveLength(2);
+  expect(container.querySelector('[data-test-id^="kpi-chart-annotation-hit-"]')).not.toBeNull();
+  expect(container.querySelector('[data-test-id^="entry-menu-"]')).toBeNull();
+  expect(screen.queryByTestId("chart-log-update")).not.toBeInTheDocument();
+});
+
 test.each(["kpi", "goal", "project"] as const)("renders incomplete %s drafts without crashing", (type) => {
   setup(type, { definition: "{}" });
   expect(screen.getByTestId("template-preview")).toBeInTheDocument();

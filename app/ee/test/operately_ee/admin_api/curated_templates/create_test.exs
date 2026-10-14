@@ -41,6 +41,14 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
       assert {200, %{errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], %{payload(:kpi) | content_language: "pt-BR"})
     end
 
+    test "creates a template with separately persisted preview data", ctx do
+      preview = %{"entries" => [%{"date" => "2026-09-30", "value" => 416}], "annotations" => []}
+      inputs = Map.put(payload(:kpi), :preview_data, Jason.encode!(preview))
+      assert {200, %{template: returned, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], inputs)
+      assert Jason.decode!(returned.preview_data) == preview
+      assert Jason.decode!(returned.definition) == Jason.decode!(inputs.definition)
+    end
+
     test "allows incomplete drafts and reports invalid fields", ctx do
       assert {200, %{template: template, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], %{payload(:kpi) | definition: "{}"})
       assert template.state == "draft"

@@ -64,6 +64,29 @@ it("saves drafts without publishing", async () => {
   expect(publish).not.toHaveBeenCalled();
 });
 
+it("saves example data with the saved definition and refreshes the edit timestamp without publishing", async () => {
+  const { result, update, publish, draft } = setupSave();
+  await act(async () => {
+    await result.current.save(input, "draft");
+  });
+  const previewData = JSON.stringify({ entries: [{ date: "2026-09-30", value: 416 }] });
+  await act(async () => {
+    await result.current.savePreviewData(previewData);
+  });
+  expect(update).toHaveBeenCalledWith(
+    expect.objectContaining({
+      id: draft.id,
+      expectedUpdatedAt: draft.updatedAt,
+      title: draft.title,
+      definition: draft.definition,
+      previewData,
+    }),
+    expect.anything(),
+  );
+  expect(publish).not.toHaveBeenCalled();
+  expect(result.current.getIdentity().expectedUpdatedAt).toBe("2026-10-10T12:00:00Z");
+});
+
 it("retries failed publication by updating the saved draft", async () => {
   const { result, create, update, publish, draft } = setupSave();
   const errors = [{ path: "definition.unit", message: "Required" }];

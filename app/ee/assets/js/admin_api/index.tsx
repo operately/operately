@@ -177,6 +177,7 @@ export interface CuratedTemplate {
   category?: string | null;
   contentLanguage: string;
   definition?: Json;
+  previewData?: Json;
   publishedAt?: string | null;
   insertedAt: string;
   updatedAt: string;
@@ -433,6 +434,7 @@ export interface CuratedTemplatesCreateInput {
   category?: string | null;
   contentLanguage: string;
   definition: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplatesCreateResult {
@@ -470,6 +472,7 @@ export interface CuratedTemplatesUpdateInput {
   category?: string | null;
   contentLanguage: string;
   definition: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplatesUpdateResult {
@@ -496,6 +499,7 @@ export interface CuratedTemplatesValidateInput {
   category?: string | null;
   contentLanguage: string;
   definition: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplatesValidateResult {

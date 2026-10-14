@@ -73,5 +73,25 @@ export function useSaveCuratedTemplate(initialTemplate?: CuratedTemplate) {
     return { id: persisted.current.id, expectedUpdatedAt: persisted.current.updatedAt };
   };
 
-  return { save, getIdentity };
+  const savePreviewData = async (previewData: string) => {
+    const current = persisted.current;
+    assertPresent(current, "Save the template before editing its example data");
+    assertPresent(current.definition, "The saved template definition is required");
+    const result = await update.mutateAsync({
+      id: current.id,
+      expectedUpdatedAt: current.updatedAt,
+      type: current.type,
+      title: current.title,
+      slug: current.slug,
+      summary: current.summary,
+      category: current.category,
+      contentLanguage: current.contentLanguage,
+      definition: current.definition,
+      previewData,
+    });
+    if (result.template) persisted.current = result.template;
+    return result;
+  };
+
+  return { save, savePreviewData, getIdentity };
 }

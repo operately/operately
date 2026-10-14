@@ -25,7 +25,7 @@ function TemplatePage({ initialTemplate }: { initialTemplate?: CuratedTemplate }
   // Background refetches must not discard edits or replace the expected timestamp.
   const [template, setTemplate] = React.useState(initialTemplate);
   const navigate = useNavigate();
-  const { save: saveTemplate, getIdentity } = useSaveCuratedTemplate(template);
+  const { save: saveTemplate, savePreviewData, getIdentity } = useSaveCuratedTemplate(template);
   const remove = useDeleteCuratedTemplate();
 
   async function save(input: TemplateInput, intent: TemplateSaveIntent) {
@@ -45,6 +45,11 @@ function TemplatePage({ initialTemplate }: { initialTemplate?: CuratedTemplate }
         previewPath={template ? curatedTemplatePreviewPath(template.id) : undefined}
         onCancel={() => navigate(curatedTemplatesPath)}
         onSave={save}
+        onSavePreviewData={async (previewData) => {
+          const result = await savePreviewData(previewData);
+          if (result.template) setTemplate(result.template);
+          return result;
+        }}
         onDelete={async () => {
           await remove.mutateAsync(getIdentity());
           navigate(curatedTemplatesPath);

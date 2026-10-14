@@ -12,6 +12,24 @@ Object.defineProperty(globalThis.crypto, "randomUUID", { value: randomUUID, conf
 
 configure({ testIdAttribute: "data-test-id" });
 
+test("changing a saved draft's type clears its incompatible example data", async () => {
+  const onSave = jest.fn().mockResolvedValue({ errors: [] });
+  render(
+    <TemplateEditor
+      template={{
+        ...templateFixture("kpi"),
+        previewData: JSON.stringify({ entries: [{ date: "2026-09-30", value: 10 }] }),
+      }}
+      onSave={onSave}
+      onCancel={jest.fn()}
+    />,
+  );
+  selectType("goal");
+  fireEvent.click(screen.getByTestId("save-template-draft"));
+  await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+  expect(onSave.mock.calls[0][0].previewData).toBe("{}");
+});
+
 function setup(fail = false) {
   const onSave = jest
     .fn()

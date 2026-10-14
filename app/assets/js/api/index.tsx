@@ -1568,6 +1568,7 @@ export interface CuratedTemplate {
   contentLanguage: string;
   updatedAt: string;
   definition?: Json;
+  previewData?: Json;
 }
 
 export interface CuratedTemplateInstantiation {
