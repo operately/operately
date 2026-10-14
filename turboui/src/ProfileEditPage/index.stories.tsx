@@ -128,7 +128,6 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       richTextHandlers={mockRichTextHandlers}
       timezones={timezones}
       isCurrentUser={args.isCurrentUser ?? true}
-      showLanguageSelector={args.showLanguageSelector ?? false}
       fromLocation={args.fromLocation ?? null}
       companyAdminPath="/admin"
       managePeoplePath="/admin/people"
@@ -140,10 +139,6 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
 
 export const UserEditingOwnProfile: Story = {
   render: () => <DefaultStory isCurrentUser={true} />,
-};
-
-export const LanguageSelectorEnabled: Story = {
-  render: () => <DefaultStory isCurrentUser={true} showLanguageSelector={true} />,
 };
 
 export const AdminEditingOtherUser: Story = {

@@ -9,8 +9,8 @@ defmodule OperatelyWeb.Plugs.SetLocale do
     Plug.Conn.assign(conn, :locale, language)
   end
 
-  defp resolve(%{assigns: %{current_person: person, current_company: company}}) when not is_nil(person) do
-    EffectiveLanguage.resolve(person, company)
+  defp resolve(%{assigns: %{current_person: person}}) when not is_nil(person) do
+    EffectiveLanguage.resolve(person)
   end
 
   defp resolve(conn), do: AccountLanguage.resolve(conn.assigns[:current_account])

@@ -22,13 +22,12 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmailTest do
     {:ok, ctx}
   end
 
-  test "renders Portuguese for enabled recipients and English when the flag is disabled", ctx do
+  test "renders Portuguese and English according to recipient preferences", ctx do
     {:ok, person} = Operately.People.update_person(ctx.assignee, %{language: "pt-BR"})
-    {:ok, enabled_company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
-    for {company, portuguese?} <- [{enabled_company, true}, {ctx.company, false}] do
-      person = %{person | company: company}
+    for {language, portuguese?} <- [{"pt-BR", true}, {"en", false}] do
+      person = %{person | language: language}
 
       Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
         flush_emails()

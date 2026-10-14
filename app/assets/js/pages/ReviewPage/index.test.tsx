@@ -3,7 +3,6 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import ReviewPageModule from ".";
 
 // Match the single React/i18n runtime used by the app bundle.
@@ -29,10 +28,10 @@ afterEach(async () => {
   await applyLanguage("en");
 });
 test.each([
-  [true, "Você está em dia", "Revisão"],
-  [false, "You're all caught up", "Review"],
-])("saved Portuguese preference respects flag %s", async (enabled, emptyLabel, title) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", "Você está em dia", "Revisão"],
+  ["en", "You're all caught up", "Review"],
+])("selected language %s", async (language, emptyLabel, title) => {
+  await applyLanguage(language);
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   const container = document.createElement("div");
   const root = createRoot(container);

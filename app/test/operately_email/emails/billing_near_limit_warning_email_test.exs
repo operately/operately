@@ -55,8 +55,8 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmailTest do
     assert BillingNearLimitWarningEmail.format_usage(:storage_bytes, 1_125_899_906_842_624) == "1.0 PB"
   end
   for {language, subject, action} <- [{"pt-BR", "plano Gratuito", "Revisar faturamento"}, {"de", "kostenlosen Tarifs", "Abrechnung prüfen"}, {"ru", "бесплатного тарифа", "Проверить оплату"}, {"fr", "forfait gratuit", "Consulter la facturation"}, {"es", "plan gratuito", "Revisar facturación"}] do
-    test "#{language} billing recipients get translations and flag rollback uses English", ctx do
-      {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    test "#{language} billing recipients get translations and selecting English changes the message", ctx do
+      company = ctx.company
       {:ok, recipient} = Operately.People.update_person(ctx.admin, %{language: unquote(language)})
       previous = Gettext.get_locale(OperatelyWeb.Gettext)
       status = NearLimitAlerting.snapshot(:member_count, 20, 20)
@@ -73,14 +73,14 @@ defmodule OperatelyEmail.Emails.BillingNearLimitWarningEmailTest do
       assert english.subject =~ "Free plan"
       assert Gettext.get_locale(OperatelyWeb.Gettext) == previous
 
-      {:ok, company} = Operately.Companies.disable_experimental_feature(company, "i18n")
+      {:ok, recipient} = Operately.People.update_person(recipient, %{language: "en"})
       assert {:ok, _} = BillingNearLimitWarningEmail.send([recipient, ctx.owner], company, status)
       assert_email_sent(fn email ->
         assert length(email.to) == 2
         assert email.subject =~ "Free plan"
         true
       end)
-      assert Operately.Repo.reload!(recipient).language == unquote(language)
+      assert Operately.Repo.reload!(recipient).language == "en"
     end
   end
 

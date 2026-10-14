@@ -101,25 +101,13 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     ctx
   end
 
-  step :enable_i18n, ctx do
-    ctx
-    |> Factory.enable_feature("i18n")
-    |> UI.visit(Paths.home_path(ctx.company))
-  end
-
-  step :disable_i18n, ctx do
-    ctx
-    |> Factory.disable_feature("i18n")
-    |> UI.visit(Paths.home_path(ctx.company))
-  end
-
   step :reload_home, ctx do
     UI.visit(ctx, Paths.home_path(ctx.company))
   end
 
-  step :assert_language_selector_hidden, ctx do
+  step :assert_language_selector_visible, ctx do
     ctx
-    |> UI.refute_has(testid: "language")
+    |> UI.assert_has(testid: "language")
   end
 
   step :change_language, ctx, option do

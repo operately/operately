@@ -27,13 +27,12 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmailTest do
         {"pt-BR", "enviou um check-in", "Confirmar leitura"},
         {"de", "hat einen Check-in veröffentlicht", "Als gelesen bestätigen"}
       ] do
-    test "renders #{language} for enabled recipients and English when the flag is disabled", ctx do
+    test "renders #{language} and English according to recipient preferences", ctx do
       {:ok, person} = Operately.People.update_person(ctx.reviewer, %{language: unquote(language)})
-      {:ok, enabled_company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
       previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
-      for {company, translated?} <- [{enabled_company, true}, {ctx.company, false}] do
-        person = %{person | company: company}
+      for {language, translated?} <- [{unquote(language), true}, {"en", false}] do
+        person = %{person | language: language}
 
         Operately.I18n.EffectiveLanguage.with_locale(person, fn ->
           send_check_in_email(ctx, person)

@@ -33,7 +33,7 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
   end
 
   test "consent uses the selected company's language and preserves protocol fields", %{conn: conn, client: client} do
-    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    ctx = Operately.Support.Factory.setup(%{})
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     account = Repo.preload(person, :account).account
     conn = log_in_account(conn, account)
@@ -48,14 +48,14 @@ defmodule OperatelyWeb.McpOAuthControllerTest do
     assert body =~ client.client_name
     assert body =~ ctx.company.name
 
-    Operately.Companies.update_company(ctx.company, %{enabled_experimental_features: []})
+    Operately.People.update_person(ctx.creator, %{language: "en"})
     body = conn |> get("/oauth/authorize", params) |> html_response(200)
     assert body =~ "Authorize MCP Client"
     assert body =~ ~s(lang="en")
   end
 
   test "company selection overrides conflicting account languages", %{conn: conn, client: client} do
-    ctx = Operately.Support.Factory.setup(%{}) |> Operately.Support.Factory.enable_feature("i18n")
+    ctx = Operately.Support.Factory.setup(%{})
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     account = Repo.preload(person, :account).account
     company_fixture(%{company_name: "English Company"}, account)

@@ -7,10 +7,8 @@ import { getTimezones } from "./timezones";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { applyLanguage } from "@/i18n";
 import { useTranslation } from "react-i18next";
-import { I18N_FEATURE_FLAG, isSupportedLanguage } from "@/i18n/languages";
-import { hasFeature } from "@/models/companies";
+import { isSupportedLanguage } from "@/i18n/languages";
 import { PageModule } from "@/routes/types";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 import { usePaths } from "@/routes/paths";
 import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
@@ -28,11 +26,9 @@ function Page() {
   const me = useMe();
   const navigate = useNavigate();
   const { person, from } = useLoadedData();
-  const { company } = useCompanyLoaderData();
   const { mutateAsync: updateProfile } = People.useUpdateProfile();
 
   const isCurrentUser = me?.id === person.id;
-  const showLanguageSelector = isCurrentUser && hasFeature(company, I18N_FEATURE_FLAG);
 
   // Form state
   const [fullName, setFullName] = React.useState(person.fullName || "");
@@ -87,15 +83,12 @@ function Page() {
       if (isCurrentUser) {
         updateParams.description = JSON.stringify(aboutMe);
         updateParams.timeFormat = timeFormat;
-      }
-
-      if (showLanguageSelector) {
         updateParams.language = language;
       }
 
       await updateProfile(updateParams);
 
-      if (showLanguageSelector) {
+      if (isCurrentUser) {
         try {
           await applyLanguage(language);
         } catch (err) {
@@ -123,7 +116,6 @@ function Page() {
     manager,
     person.id,
     isCurrentUser,
-    showLanguageSelector,
     navigate,
     paths,
     updateProfile,
@@ -166,7 +158,6 @@ function Page() {
       localDraftKeyBase={`profile:${person.id}`}
       timezones={getTimezones()}
       isCurrentUser={isCurrentUser}
-      showLanguageSelector={showLanguageSelector}
       fromLocation={from}
       companyAdminPath={paths.companyAdminPath()}
       managePeoplePath={paths.companyManagePeoplePath()}

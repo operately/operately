@@ -1,27 +1,15 @@
-import { DEFAULT_LANGUAGE, isSupportedLanguage, resolveEffectiveLanguage } from "./languages";
+import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, isSupportedLanguage, resolveEffectiveLanguage } from "./languages";
 
 describe("resolveEffectiveLanguage", () => {
-  it("uses English when the i18n flag is off even if a translated language is saved", () => {
-    expect(resolveEffectiveLanguage("pt-BR", false)).toBe(DEFAULT_LANGUAGE);
-    expect(resolveEffectiveLanguage("de", false)).toBe(DEFAULT_LANGUAGE);
-    expect(resolveEffectiveLanguage("ru", false)).toBe(DEFAULT_LANGUAGE);
-    expect(resolveEffectiveLanguage("fr", false)).toBe(DEFAULT_LANGUAGE);
-    expect(resolveEffectiveLanguage("es", false)).toBe(DEFAULT_LANGUAGE);
+  it.each(SUPPORTED_LANGUAGES)("uses the saved %s preference", (language) => {
+    expect(resolveEffectiveLanguage(language)).toBe(language);
   });
 
-  it("uses an explicit supported language when the flag is on", () => {
-    expect(resolveEffectiveLanguage("pt-BR", true)).toBe("pt-BR");
-    expect(resolveEffectiveLanguage("en", true)).toBe("en");
-    expect(resolveEffectiveLanguage("de", true)).toBe("de");
-    expect(resolveEffectiveLanguage("ru", true)).toBe("ru");
-    expect(resolveEffectiveLanguage("fr", true)).toBe("fr");
-    expect(resolveEffectiveLanguage("es", true)).toBe("es");
+  it.each([null, undefined, "nl"])("uses English for missing or unsupported preference %s", (preference) => {
+    expect(resolveEffectiveLanguage(preference)).toBe(DEFAULT_LANGUAGE);
   });
 
-  it("uses English for missing or unsupported preferences", () => {
-    expect(resolveEffectiveLanguage(null, true)).toBe("en");
-    expect(resolveEffectiveLanguage(undefined, true)).toBe("en");
-    expect(resolveEffectiveLanguage("nl", true)).toBe("en");
+  it("rejects unsupported language variants", () => {
     expect(isSupportedLanguage("pt")).toBe(false);
   });
 });

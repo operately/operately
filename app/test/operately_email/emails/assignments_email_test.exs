@@ -265,7 +265,6 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
 
   test "work-summary subjects, badges and bodies use the recipient language", ctx do
     {:ok, _} = Operately.People.update_person(ctx.first_assignee, %{language: "pt-BR"})
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     flush_emails()
@@ -283,7 +282,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
     end)
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
 
-    {:ok, _} = Operately.Companies.disable_experimental_feature(company, "i18n")
+    {:ok, _} = Operately.People.update_person(ctx.first_assignee, %{language: "en"})
     flush_emails()
     OperatelyEmail.Cron.Assignments.send_assignments()
     emails = collect_emails()
@@ -291,7 +290,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmailTest do
       email.to == [{"", ctx.first_assignee.email}] and email.subject == "#{ctx.company.name}: Your work for today" and
         email.text_body =~ "Due tomorrow"
     end)
-    assert Operately.People.get_person!(ctx.first_assignee.id).language == "pt-BR"
+    assert Operately.People.get_person!(ctx.first_assignee.id).language == "en"
     assert Gettext.get_locale(OperatelyWeb.Gettext) == previous_locale
   end
 

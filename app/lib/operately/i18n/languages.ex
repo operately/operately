@@ -3,11 +3,9 @@ defmodule Operately.I18n.Languages do
 
   @default "en"
   @supported ~w(en pt-BR de ru fr es)
-  @feature_flag "i18n"
 
   def default, do: @default
   def supported, do: @supported
-  def feature_flag, do: @feature_flag
 
   def supported?(language) when is_binary(language), do: language in @supported
   def supported?(_), do: false

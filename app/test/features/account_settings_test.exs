@@ -47,15 +47,14 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.assert_person_time_format_changed(:hour_24)
   end
 
-  feature "language selector is hidden when i18n is off", ctx do
+  feature "language selector is available to every user", ctx do
     ctx
     |> Steps.open_account_settings()
-    |> Steps.assert_language_selector_hidden()
+    |> Steps.assert_language_selector_visible()
   end
 
   feature "selecting a language translates the interface and survives reload", ctx do
     ctx
-    |> Steps.enable_i18n()
     |> Steps.open_account_settings()
     |> Steps.change_language("Português (Brasil)")
     |> Steps.assert_interface_in_portuguese()
@@ -68,13 +67,7 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.open_account_settings()
     |> Steps.change_language("Português (Brasil)")
     |> Steps.assert_interface_in_portuguese()
-    |> Steps.disable_i18n()
-    |> Steps.assert_interface_in_english()
     |> Steps.assert_saved_language("pt-BR")
-    |> Steps.open_account_settings()
-    |> Steps.assert_language_selector_hidden()
-    |> Steps.enable_i18n()
-    |> Steps.assert_interface_in_portuguese()
   end
 
   feature "setting my manager in account settings", ctx do

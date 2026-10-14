@@ -57,8 +57,8 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     end)
   end
 
-  test "keeps English copy when i18n is disabled for a pt-BR recipient", ctx do
-    {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
+  test "keeps English copy for an English recipient", ctx do
+    {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "en"})
     person = %{person | company: ctx.company}
     activity = task_adding_activity(ctx)
 
@@ -75,8 +75,8 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     end)
   end
 
-  test "renders Portuguese copy when i18n is enabled for a pt-BR recipient", ctx do
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+  test "renders Portuguese copy for a pt-BR recipient", ctx do
+    company = ctx.company
     {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
     person = %{person | company: company}
     activity = task_adding_activity(ctx)
@@ -103,7 +103,7 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
     Gettext.put_locale(OperatelyWeb.Gettext, "en")
     on_exit(fn -> Gettext.put_locale(OperatelyWeb.Gettext, previous) end)
 
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    company = ctx.company
     {:ok, portuguese} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
     portuguese = %{portuguese | company: company}
     english = %{ctx.author | company: company}
@@ -146,7 +146,7 @@ defmodule OperatelyEmail.Emails.TaskAddingEmailTest do
   end
 
   test "translates the digest headline into Portuguese at render time", ctx do
-    {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
+    company = ctx.company
     {:ok, person} = Operately.People.update_person(ctx.recipient, %{language: "pt-BR"})
     person = %{person | company: company}
     activity = task_adding_activity(ctx)

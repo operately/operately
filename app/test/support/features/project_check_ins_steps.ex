@@ -51,7 +51,6 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :given_champion_uses_portuguese, ctx do
-    ctx = Factory.enable_feature(ctx, "i18n")
     {:ok, person} = Operately.People.update_person(ctx.creator, %{language: "pt-BR"})
     Map.put(ctx, :creator, person)
   end
@@ -65,9 +64,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text(description)
   end
 
-  step :disable_language_flag_and_reload_check_in, ctx do
-    ctx = Factory.disable_feature(ctx, "i18n")
-    assert Operately.People.get_person!(ctx.creator.id).language == "pt-BR"
+  step :select_english_and_reload_check_in, ctx do
+    {:ok, _} = Operately.People.update_person(ctx.creator, %{language: "en"})
     UI.visit(ctx, Paths.project_check_in_path(ctx.company, ctx.check_in))
   end
 

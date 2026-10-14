@@ -147,14 +147,6 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.take_screenshot()
   end
 
-  step :assert_language_feature_disabled, ctx, language \\ "de" do
-    assert Operately.Repo.reload!(ctx.person).language == language
-
-    ctx
-    |> UI.refute_has(testid: "language")
-    |> UI.assert_text("Title in Company")
-  end
-
   step :visit_notification_settings_page, ctx do
     UI.visit(ctx, Paths.account_notification_settings_path(ctx.company))
   end
