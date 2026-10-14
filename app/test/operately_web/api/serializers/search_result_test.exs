@@ -9,12 +9,14 @@ defmodule OperatelyWeb.Api.Serializers.SearchResultTest do
       result = result(type, "Check-in on 2026-10-05")
       assert localized(result, "pt_BR").title == "Check-in em 2026-10-05"
       assert localized(result, "en").title == result.title
-      assert localized(result, "fr").title == result.title
+      assert localized(result, "nl").title == result.title
+      assert localized(result, "fr").title == "Point d’avancement du 2026-10-05"
       assert result.title == "Check-in on 2026-10-05"
       assert localized(result, "pt_BR").type == type
     end
 
     assert localized(result(:project_retrospective, "Project retrospective"), "pt_BR").title == "Retrospectiva de projeto"
+    assert localized(result(:project_retrospective, "Project retrospective"), "fr").title == "Bilan du projet"
   end
 
   test "preserves user titles and content even when they match system copy" do

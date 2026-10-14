@@ -27,7 +27,7 @@ defmodule Operately.Billing.EnforceLimitsTest do
       assert message =~ "20 de 20 membros ativos"
       assert details.code == "member_count_limit_exceeded"
     end)
-    assert Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> EnforceLimits.public_message(error) end) == english
+    assert Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn -> EnforceLimits.public_message(error) end) == english
   end
 
   describe "status/3 and check/3" do

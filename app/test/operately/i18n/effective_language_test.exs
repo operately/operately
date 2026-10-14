@@ -15,7 +15,7 @@ defmodule Operately.I18n.EffectiveLanguageTest do
     :ok
   end
 
-  for {language, locale} <- [{"pt-BR", "pt_BR"}, {"de", "de"}, {"ru", "ru"}] do
+  for {language, locale} <- [{"pt-BR", "pt_BR"}, {"de", "de"}, {"ru", "ru"}, {"fr", "fr"}] do
     describe "#{language} resolve/2" do
       test "uses English when no preference is saved" do
         person = %Person{language: nil}
@@ -27,7 +27,7 @@ defmodule Operately.I18n.EffectiveLanguageTest do
       end
 
       test "uses English for unsupported preferences even when the flag is on" do
-        person = %Person{language: "fr"}
+        person = %Person{language: "nl"}
         company = enabled_company()
 
         assert EffectiveLanguage.resolve(person, company) == "en"

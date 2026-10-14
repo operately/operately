@@ -385,7 +385,7 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
           {"en", "You have 0 new updates", "No new updates."},
           {"pt_BR", "Você tem 0 novas atualizações", "Nenhuma atualização nova."},
           {"de", "Du hast 0 neue Updates", "Keine neuen Updates."},
-          {"fr", "You have 0 new updates", "No new updates."}
+          {"nl", "You have 0 new updates", "No new updates."}
         ] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         for email <- [DigestMailer.build_digest_email(ctx.person, ctx.batch, []), DigestMailer.build_daily_summary_email(ctx.person, [])] do

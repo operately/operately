@@ -13,7 +13,7 @@ defmodule Operately.CompanyTransfers.PublicErrorMessageTest do
     assert portuguese =~ "endereços de e-mail duplicados"
     assert portuguese =~ "Este arquivo ZIP"
     refute portuguese =~ "private diagnostic"
-    assert Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> PublicErrorMessage.translate(english) end) == english
+    assert Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn -> PublicErrorMessage.translate(english) end) == english
   end
 
   test "maps import validation errors to public messages and deduplicates them" do
