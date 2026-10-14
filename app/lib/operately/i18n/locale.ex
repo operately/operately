@@ -11,6 +11,7 @@ defmodule Operately.I18n.Locale do
     "en" => [one: 0, other: 1],
     "de" => [one: 0, other: 1],
     "fr" => [one: 0, many: 1, other: 1],
+    "es" => [one: 0, many: 1, other: 1],
     "pt-BR" => [zero: 1, one: 0, many: 1, other: 1],
     "ru" => [one: 0, few: 1, many: 2, other: 3],
     "ru-RU" => [one: 0, few: 1, many: 2, other: 3]

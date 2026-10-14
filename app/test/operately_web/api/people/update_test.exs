@@ -186,7 +186,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert Operately.People.Person.time_format(person) == :hour_24
     end
 
-    for language <- ["pt-BR", "de", "ru", "fr"] do
+    for language <- ["pt-BR", "de", "ru", "fr", "es"] do
       test "it persists #{language} independently of timezone and time format", ctx do
         assert {200, %{person: %{}}} =
                  mutation(ctx.conn, [:people, :update], %{

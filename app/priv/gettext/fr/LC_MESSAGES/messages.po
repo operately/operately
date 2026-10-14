@@ -7043,7 +7043,7 @@ msgid "Change password"
 msgstr "Changer le mot de passe"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:337
+#: ../turboui/src/ProfileEditPage/index.tsx:338
 msgid "Change photo"
 msgstr "Changer la photo"
 
@@ -9665,7 +9665,7 @@ msgstr "Version précédente"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:331
+#: ../turboui/src/ProfileEditPage/index.tsx:332
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -12373,7 +12373,7 @@ msgid "LINKS"
 msgstr "LIENS"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:228
+#: ../turboui/src/ProfileEditPage/index.tsx:229
 msgid "Language"
 msgstr "Langue"
 
@@ -16343,7 +16343,7 @@ msgstr "Retirer des personnes"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:345
+#: ../turboui/src/ProfileEditPage/index.tsx:346
 msgid "Remove photo"
 msgstr "Retirer la photo"
 
@@ -17164,7 +17164,7 @@ msgid "Save selection"
 msgstr "Enregistrer la sélection"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:357
+#: ../turboui/src/ProfileEditPage/index.tsx:358
 msgid "Saving..."
 msgstr "Enregistrement…"
 
@@ -17833,7 +17833,7 @@ msgid "Share a link"
 msgstr "Partager un lien"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:261
+#: ../turboui/src/ProfileEditPage/index.tsx:262
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Présentez-vous brièvement, décrivez votre travail ou partagez ce que vous souhaitez faire savoir aux autres."
 
@@ -21228,7 +21228,7 @@ msgid "Uploading %{name}..."
 msgstr "Ajout de %{name}…"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:356
+#: ../turboui/src/ProfileEditPage/index.tsx:357
 msgid "Uploading %{progress}%"
 msgstr "Ajout en cours : %{progress} %"
 
