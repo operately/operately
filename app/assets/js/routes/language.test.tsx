@@ -167,17 +167,26 @@ it("refreshes account language on navigation and clears inherited Portuguese for
   expect(i18n.language).toBe("en");
 });
 
-it.each([404, 500])("resolves the route company's language when its loader fails with %s", async (status) => {
-  companyStatus = status;
-  await visit("/company");
-  await waitFor(() => expect(container.textContent).toBe("Carregando..."));
-  expect(
-    container.querySelector(status === 404 ? '[data-test-id="not-found"]' : '[data-test-id="server-error"]'),
-  ).not.toBeNull();
-  const request = jest.mocked(axios.get).mock.calls.find(([url]) => url.endsWith("/get_language"));
-  expect(request?.[1]?.params).toEqual({ company_id: "company" });
-  expect(request?.[1]?.headers).not.toHaveProperty("x-company-id");
-});
+it.each([
+  [404, "pt-BR", "Carregando..."],
+  [500, "pt-BR", "Carregando..."],
+  [404, "fr", "Chargement…"],
+  [500, "fr", "Chargement…"],
+] as const)(
+  "resolves the route company’s language when its loader fails with %s (%s)",
+  async (status, locale, loading) => {
+    language = locale;
+    companyStatus = status;
+    await visit("/company");
+    await waitFor(() => expect(container.textContent).toBe(loading));
+    expect(
+      container.querySelector(status === 404 ? '[data-test-id="not-found"]' : '[data-test-id="server-error"]'),
+    ).not.toBeNull();
+    const request = jest.mocked(axios.get).mock.calls.find(([url]) => url.endsWith("/get_language"));
+    expect(request?.[1]?.params).toEqual({ company_id: "company" });
+    expect(request?.[1]?.headers).not.toHaveProperty("x-company-id");
+  },
+);
 
 it.each([false, true])(
   "falls back to English when the company is unavailable or language lookup fails (%s)",

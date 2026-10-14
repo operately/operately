@@ -2328,6 +2328,7 @@
   "People who have access to the project based on their company or space membership but are not directly assigned to the project.": "Pessoas que têm acesso ao projeto por fazerem parte da empresa ou do espaço, mas não estão diretamente atribuídas ao projeto.",
   "People who have access to the space via their company membeship.": "Pessoas que têm acesso ao espaço por serem membros da empresa.",
   "People with Direct Access": "Pessoas com acesso direto",
+  "People|navigation": "Pessoas",
   "Permanently delete the company and all its resources. This action cannot be undone.": "Exclua permanentemente a empresa e todos os seus recursos. Esta ação não pode ser desfeita.",
   "Permission": "Permissão",
   "Permission Breakdown": "Detalhamento das permissões",

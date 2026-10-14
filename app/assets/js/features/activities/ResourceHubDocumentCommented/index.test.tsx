@@ -80,6 +80,16 @@ describe("ResourceHubDocumentCommented", () => {
     expect(ResourceHubDocumentCommented.NotificationTitle({ activity })).toBe("REPLY: Research & <planning>");
   });
 
+  it("renders French sentences with escaped names and unchanged link destinations", async () => {
+    await applyLanguage("fr");
+    const html = title("feed");
+    expect(html).toContain('href="/documents/doc-1#comment-1">a commenté</a>');
+    expect(html).toContain('href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>');
+    expect(html).toContain('href="/spaces/space-1">General</a>');
+    expect(html).toContain("dans l’espace");
+    expect(html).not.toContain("<planning>");
+  });
+
   it("links the comment verb to the specific comment", () => {
     const activity: any = {
       author: { fullName: "Jo Smith" },
