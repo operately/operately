@@ -25090,7 +25090,7 @@ msgstr "Компания"
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"
-msgstr ""
+msgstr "Люди"
 
 #.frontend
 #: ../turboui/src/ProfilePage/components/Colleagues.tsx:80

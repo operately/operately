@@ -5475,7 +5475,7 @@ msgstr "Ajouter un lien"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:44
 msgid "Add measurement"
-msgstr ""
+msgstr "Ajouter une valeur"
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:76
@@ -5968,7 +5968,7 @@ msgstr "A ajouté une annotation au KPI : %{title}"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:46
 msgid "Annotations"
-msgstr ""
+msgstr "Annotations"
 
 #.frontend
 #: ../turboui/src/PrivacyIndicator/index.tsx:48
@@ -10478,7 +10478,7 @@ msgstr "Tous les membres de l’espace pourront consulter ce projet."
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:15
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:95
 msgid "Example data"
-msgstr ""
+msgstr "Données d’exemple"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:108
@@ -17167,7 +17167,7 @@ msgstr "Enregistrer le brouillon"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:54
 msgid "Save example data"
-msgstr ""
+msgstr "Enregistrer les données d’exemple"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:105

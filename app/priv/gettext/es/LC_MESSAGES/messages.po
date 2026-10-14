@@ -5475,7 +5475,7 @@ msgstr "Agregar enlace"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:44
 msgid "Add measurement"
-msgstr ""
+msgstr "Añadir un valor"
 
 #.frontend
 #: assets/js/pages/SpaceAddMembersPage/index.tsx:76
@@ -5968,7 +5968,7 @@ msgstr "KPI anotado: %{title}"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:46
 msgid "Annotations"
-msgstr ""
+msgstr "Anotaciones"
 
 #.frontend
 #: ../turboui/src/PrivacyIndicator/index.tsx:48
@@ -10478,7 +10478,7 @@ msgstr "Todos en el espacio podrán ver este proyecto."
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:15
 #: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:95
 msgid "Example data"
-msgstr ""
+msgstr "Datos de ejemplo"
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:108
@@ -17167,7 +17167,7 @@ msgstr "Guardar borrador"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:54
 msgid "Save example data"
-msgstr ""
+msgstr "Guardar datos de ejemplo"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:105

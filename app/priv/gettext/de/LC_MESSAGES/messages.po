@@ -24862,7 +24862,7 @@ msgstr "Unternehmen"
 #: assets/js/pages/PeoplePage/page.tsx:14
 msgctxt "navigation"
 msgid "People"
-msgstr ""
+msgstr "Personen"
 
 #.frontend
 #: ../turboui/src/ProfilePage/components/Colleagues.tsx:80
