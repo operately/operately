@@ -14797,7 +14797,7 @@ msgstr "Vue d’ensemble"
 #.frontend
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:314
 msgid "Owned Companies"
-msgstr "Entreprises dont vous êtes propriétaire"
+msgstr "Entreprises possédées"
 
 #.frontend
 #: assets/js/pages/CompanyPermissionsPage/index.tsx:50
