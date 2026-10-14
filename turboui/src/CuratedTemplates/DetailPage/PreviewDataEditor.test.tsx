@@ -52,12 +52,12 @@ test("adds a measurement through the calendar and submits it as preview data", a
   render(<PreviewDataEditor template={templateFixture("kpi")} onSave={onSave} />);
   fireEvent.click(screen.getByTestId("add-preview-entry"));
   fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "416" } });
-  fireEvent.click(screen.getByLabelText("Date"));
+  fireEvent.click(screen.getByTestId("preview-data-entries-0-date"));
   const day = document.querySelector<HTMLElement>('[data-date]:not([aria-disabled="true"])');
   if (!day) throw new Error("Expected a selectable calendar day");
   const date = day.dataset.date;
   fireEvent.click(day);
-  fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+  fireEvent.click(screen.getByTestId("date-field-confirm"));
   fireEvent.click(screen.getByTestId("save-preview-data"));
   await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
   expect(JSON.parse(onSave.mock.calls[0][0]).entries).toEqual([{ date, value: 416 }]);
