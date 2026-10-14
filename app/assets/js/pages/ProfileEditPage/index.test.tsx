@@ -135,7 +135,7 @@ it("hides the language selector and does not persist language when editing someo
   expect(applyLanguage).not.toHaveBeenCalled();
 });
 
-it.each(["en", "pt-BR", "de", "ru", "fr"] as const)(
+it.each(["en", "pt-BR", "de", "ru", "fr", "es"] as const)(
   "shows the language selector and persists %s when i18n is on",
   async (language) => {
     mockCompanyLoader(["i18n"]);

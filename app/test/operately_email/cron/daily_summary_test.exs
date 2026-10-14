@@ -218,6 +218,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
   end
 
   test "daily summaries localize each recipient and preserve preferences on flag rollback", ctx do
+    ctx = Factory.add_company_member(ctx, :spanish, name: "Spanish Reader", preferences: %{notifications: %{send_daily_summary: true}})
+    {:ok, _} = Operately.People.update_person(ctx.spanish, %{language: "es"})
     ctx = Factory.add_company_member(ctx, :french, name: "French Reader", preferences: %{notifications: %{send_daily_summary: true}})
     {:ok, _} = Operately.People.update_person(ctx.french, %{language: "fr"})
     ctx = Factory.add_company_member(ctx, :russian, name: "Russian Reader", preferences: %{notifications: %{send_daily_summary: true}})
@@ -226,7 +228,7 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
     {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     activity = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
-    for person <- [ctx.creator, ctx.portuguese, ctx.russian, ctx.french], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
+    for person <- [ctx.creator, ctx.portuguese, ctx.russian, ctx.french, ctx.spanish], do: notification_at(person.id, activity.id, ~N[2026-04-08 17:00:00])
     previous_locale = Gettext.get_locale(OperatelyWeb.Gettext)
 
     for {person, subject, headline} <- [
@@ -234,6 +236,7 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
           {ctx.creator, "You have 1 new update", "created the project"},
           {ctx.russian, "У вас 1 новое обновление", "проект создан"},
           {ctx.french, "Vous avez 1 nouvelle mise à jour", "a créé le projet"},
+          {ctx.spanish, "Tienes 1 nueva actualización", "creó el proyecto"},
           {ctx.portuguese, "Você tem 1 nova atualização", "criou o projeto"}
         ] do
       assert_daily_language(person, subject, headline)
@@ -244,7 +247,9 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     assert_daily_language(ctx.portuguese, "You have 1 new update", "created the project")
     assert_daily_language(ctx.russian, "You have 1 new update", "created the project")
     assert_daily_language(ctx.french, "You have 1 new update", "created the project")
+    assert_daily_language(ctx.spanish, "You have 1 new update", "created the project")
     assert Operately.People.get_person!(ctx.french.id).language == "fr"
+    assert Operately.People.get_person!(ctx.spanish.id).language == "es"
     assert Operately.People.get_person!(ctx.russian.id).language == "ru"
     assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"
   end

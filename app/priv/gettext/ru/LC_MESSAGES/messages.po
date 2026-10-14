@@ -7206,7 +7206,7 @@ msgid "Change password"
 msgstr "Изменить пароль"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:337
+#: ../turboui/src/ProfileEditPage/index.tsx:338
 msgid "Change photo"
 msgstr "Изменить фото"
 
@@ -9834,7 +9834,7 @@ msgstr "Более ранняя версия"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:331
+#: ../turboui/src/ProfileEditPage/index.tsx:332
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -12546,7 +12546,7 @@ msgid "LINKS"
 msgstr "ССЫЛКИ"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:228
+#: ../turboui/src/ProfileEditPage/index.tsx:229
 msgid "Language"
 msgstr "Язык"
 
@@ -16520,7 +16520,7 @@ msgstr "Удалить людей"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:345
+#: ../turboui/src/ProfileEditPage/index.tsx:346
 msgid "Remove photo"
 msgstr "Удалить фото"
 
@@ -17341,7 +17341,7 @@ msgid "Save selection"
 msgstr "Сохранить выбор"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:357
+#: ../turboui/src/ProfileEditPage/index.tsx:358
 msgid "Saving..."
 msgstr "Сохранение..."
 
@@ -18010,7 +18010,7 @@ msgid "Share a link"
 msgstr "Поделиться ссылкой"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:261
+#: ../turboui/src/ProfileEditPage/index.tsx:262
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Расскажите немного о себе, своей работе или о том, что должны знать другие."
 
@@ -21445,7 +21445,7 @@ msgid "Uploading %{name}..."
 msgstr "Загрузка %{name}..."
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:356
+#: ../turboui/src/ProfileEditPage/index.tsx:357
 msgid "Uploading %{progress}%"
 msgstr "Загрузка %{progress}%"
 

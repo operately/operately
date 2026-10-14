@@ -37,6 +37,21 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_language_feature_disabled("ru")
   end
 
+  feature "Spanish selection persists and translations stay behind the company flag", ctx do
+    ctx
+    |> Factory.enable_feature("i18n")
+    |> Steps.use_narrow_window()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.select_spanish()
+    |> Steps.submit_profile_changes()
+    |> Steps.assert_spanish_account()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_spanish_preference()
+    |> Factory.disable_feature("i18n")
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_language_feature_disabled("es")
+  end
+
   feature "French selection persists and translations stay behind the company flag", ctx do
     ctx
     |> Factory.enable_feature("i18n")

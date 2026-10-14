@@ -34,10 +34,12 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
       |> Factory.add_company_member(:german)
       |> Factory.add_company_member(:russian)
       |> Factory.add_company_member(:french)
+      |> Factory.add_company_member(:spanish)
     {:ok, _} = Operately.People.update_person(ctx.portuguese, %{language: "pt-BR"})
     {:ok, _} = Operately.People.update_person(ctx.german, %{language: "de"})
     {:ok, _} = Operately.People.update_person(ctx.russian, %{language: "ru"})
     {:ok, _} = Operately.People.update_person(ctx.french, %{language: "fr"})
+    {:ok, _} = Operately.People.update_person(ctx.spanish, %{language: "es"})
     {:ok, company} = Operately.Companies.enable_experimental_feature(ctx.company, "i18n")
     activities = for action <- ["project_created", "project_archived"] do
       activity_fixture(author_id: ctx.creator.id, action: action, content: %{"project_id" => ctx.project.id})
@@ -49,6 +51,7 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
           {ctx.german, "Du hast 2 neue Updates", "hat das Projekt archiviert"},
           {ctx.russian, "У вас 2 новых обновления", "проект архивирован"},
           {ctx.french, "Vous avez 2 nouvelles mises à jour", "a archivé le projet"},
+          {ctx.spanish, "Tienes 2 nuevas actualizaciones", "archivó el proyecto"},
           {ctx.creator, "You have 2 new updates", "archived the project"},
           {ctx.portuguese, "Você tem 2 novas atualizações", "arquivou o projeto"}
         ] do
@@ -61,7 +64,9 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     deliver_localized_batch(ctx.german, activities, "You have 2 new updates", "archived the project")
     deliver_localized_batch(ctx.russian, activities, "You have 2 new updates", "archived the project")
     deliver_localized_batch(ctx.french, activities, "You have 2 new updates", "archived the project")
+    deliver_localized_batch(ctx.spanish, activities, "You have 2 new updates", "archived the project")
     assert Operately.People.get_person!(ctx.french.id).language == "fr"
+    assert Operately.People.get_person!(ctx.spanish.id).language == "es"
     assert Operately.People.get_person!(ctx.russian.id).language == "ru"
     assert Operately.People.get_person!(ctx.german.id).language == "de"
     assert Operately.People.get_person!(ctx.portuguese.id).language == "pt-BR"

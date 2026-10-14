@@ -123,3 +123,21 @@ test("hides the language picker with a saved French preference when disabled", (
   renderPage({ language: "fr", showLanguageSelector: false });
   expect(screen.queryByTestId("language")).not.toBeInTheDocument();
 });
+
+test("lets the user select Spanish", () => {
+  const onLanguageChange = jest.fn();
+  renderPage({ onLanguageChange });
+  fireEvent.click(screen.getByTestId("language"));
+  fireEvent.click(screen.getByTestId("language-option-es"));
+  expect(onLanguageChange).toHaveBeenCalledWith("es");
+});
+
+test("displays a saved Spanish preference", () => {
+  renderPage({ language: "es" });
+  expect(screen.getByTestId("language")).toHaveTextContent("Español");
+});
+
+test("hides the language picker with a saved Spanish preference when disabled", () => {
+  renderPage({ language: "es", showLanguageSelector: false });
+  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
+});
