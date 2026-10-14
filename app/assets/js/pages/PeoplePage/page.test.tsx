@@ -17,6 +17,7 @@ jest.mock("@/routes/paths", () => ({
   compareIds: (a: string, b: string) => a === b,
 }));
 jest.mock("turboui", () => ({
+  ...jest.requireActual("turboui"),
   PeoplePage: ({ profileHref }) => (
     <a data-testid="page-content" href={profileHref("person")}>
       Person
@@ -29,10 +30,12 @@ afterEach(async () => {
 });
 
 test.each([
-  [true, "Pessoas"],
-  [false, "People"],
-])("page title follows the company language gate: %s", async (enabled, title) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+  ["pt-BR", true, "Pessoas"],
+  ["pt-BR", false, "People"],
+  ["fr", true, "Annuaire"],
+  ["fr", false, "People"],
+] as const)("page title follows the company language gate: %s %s", async (language, enabled, title) => {
+  await applyLanguage(resolveEffectiveLanguage(language, enabled));
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
   const container = document.createElement("div");
   const root = createRoot(container);
@@ -46,8 +49,8 @@ test.each([
 });
 
 test("page title looks up substituted wording", async () => {
-  const original = i18n.getResource("en", "translation", "People");
-  i18n.addResource("en", "translation", "People", "Translated page title");
+  const original = i18n.getResource("en", "translation", "People|navigation");
+  i18n.addResource("en", "translation", "People|navigation", "Translated page title");
   const container = document.createElement("div");
   const root = createRoot(container);
   try {
@@ -55,6 +58,6 @@ test("page title looks up substituted wording", async () => {
     expect(container.querySelector("main")?.getAttribute("data-title")).toBe("Translated page title");
   } finally {
     act(() => root.unmount());
-    i18n.addResource("en", "translation", "People", original);
+    i18n.addResource("en", "translation", "People|navigation", original);
   }
 });

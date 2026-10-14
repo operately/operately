@@ -52,6 +52,55 @@ describe("i18n", () => {
     expect(i18n.t(key)).toEqual(key);
   });
 
+  describe("French", () => {
+    afterEach(async () => {
+      await applyLanguage("en");
+    });
+
+    it("uses the glossary and distinguishes labels by meaning", async () => {
+      await applyLanguage("fr");
+      expect(i18n.t("My Account")).toBe("Mon compte");
+      expect(i18n.t("Champion")).toBe("Responsable");
+      expect(i18n.t("Reviewer")).toBe("Référent");
+      expect(i18n.t("Start")).toBe("Valeur initiale");
+      expect(i18n.t("Target")).toBe("Valeur cible");
+      expect(i18n.t("People", { context: "navigation" })).toBe("Annuaire");
+      expect(i18n.t("People")).toBe("Personnes");
+      expect(i18n.t("Edit Access")).toBe("Peut modifier");
+      expect(i18n.t("Edit access")).toBe("Modifier l’accès");
+      expect(i18n.t("Pending", { context: "work status" })).toBe("Non commencé");
+      expect(i18n.t("Pending")).toBe("En attente");
+      expect(i18n.t("Title", { context: "person" })).toBe("Poste");
+      expect(i18n.t("Title", { context: "resource" })).toBe("Titre");
+      expect(i18n.t("Return")).toBe("Entrée");
+    });
+
+    it("handles zero, fractions, and the million plural category", async () => {
+      await applyLanguage("fr");
+      for (const count of [0, 0.5, 1, 1.5, 2, 2.5, 1_000_000]) {
+        expect(tn("1 task", "{{count}} tasks", count)).toBe(`${count} ${count < 2 ? "tâche" : "tâches"}`);
+      }
+    });
+
+    it("preserves user content and falls back to English for missing messages", async () => {
+      await applyLanguage("fr");
+      expect(i18n.t("Archive “{{name}}”?", { name: "Launch <QA>" })).toBe("Archiver « Launch <QA> » ?");
+      expect(i18n.t("Not yet translated")).toBe("Not yet translated");
+      for (const count of [0, 0.5, 1, 1.5, 2, 1_000_000]) {
+        expect(tn("1 missing plural", "{{count}} missing plurals", count)).toBe(
+          count === 1 ? "1 missing plural" : `${count} missing plurals`,
+        );
+      }
+    });
+
+    it("returns to English when the company disables translations", async () => {
+      await applyLanguage(resolveEffectiveLanguage("fr", true));
+      expect(i18n.t("My Account")).toBe("Mon compte");
+      await applyLanguage(resolveEffectiveLanguage("fr", false));
+      expect(i18n.t("My Account")).toBe("My Account");
+    });
+  });
+
   describe("Russian", () => {
     afterEach(async () => {
       await applyLanguage("en");
@@ -248,7 +297,7 @@ describe("i18n", () => {
     });
 
     it("ignores unsupported languages and keeps English", async () => {
-      await applyLanguage("fr");
+      await applyLanguage("nl");
 
       expect(i18n.language).toBe("en");
       expect(i18n.t("Home")).toBe("Home");
@@ -283,6 +332,7 @@ describe.each([true, false])("initialization with TurboUI first: %s", (turboFirs
       expect(runtime.language).toBe("en");
       expect(runtime.t("My Account", { lng: "de" })).toBe("Mein Konto");
       expect(runtime.t("My Account", { lng: "ru" })).toBe("Моя учётная запись");
+      expect(runtime.t("My Account", { lng: "fr" })).toBe("Mon compte");
       expect(runtime.t("intlDateTime", { val: new Date("2026-01-01T12:00:00Z") })).not.toBe("intlDateTime");
     });
   });

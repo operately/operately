@@ -14,7 +14,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmailTest do
           {{:project_resuming, nil}, "commented on the project resumption", "comentou na retomada do projeto"},
           {{:project_pausing, nil}, "commented on the project pausing", "comentou na pausa do projeto"},
           {{:discussion, "Title <literal>"}, "commented on: Title <literal>", "comentou em: Title <literal>"}
-        ], {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"fr", english}] do
+        ], {locale, expected} <- [{"en", english}, {"pt_BR", portuguese}, {"nl", english}] do
       Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
         assert CommentAddedEmail.subject_text(author, "Space <literal>", context) == "(Space <literal>) Ana S. #{expected}"
         assert CommentAddedEmail.heading(author, context) == "Ana S. #{expected}"
@@ -38,7 +38,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmailTest do
       title = Map.fetch!(ctx, discussion).title
       link = CommentAddedEmail.get_link(ctx.company, activity, ctx.comment)
 
-      for {locale, expected} <- [{"en", "commented on:"}, {"pt_BR", "comentou em:"}, {"fr", "commented on:"}] do
+      for {locale, expected} <- [{"en", "commented on:"}, {"pt_BR", "comentou em:"}, {"nl", "commented on:"}] do
         flush_emails()
         Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
           CommentAddedEmail.send(ctx.creator, activity)

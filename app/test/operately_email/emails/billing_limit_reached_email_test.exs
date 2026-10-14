@@ -82,7 +82,7 @@ defmodule OperatelyEmail.Emails.BillingLimitReachedEmailTest do
     for key <- [:member_count], usage <- [0, 1, 20] do
       status = Operately.Billing.LimitBreachAlerting.snapshot(key, usage, 20)
       english = Gettext.with_locale(OperatelyWeb.Gettext, "en", fn -> BillingLimitReachedEmail.build([ctx.admin], company, status) end)
-      fallback = Gettext.with_locale(OperatelyWeb.Gettext, "fr", fn -> BillingLimitReachedEmail.build([ctx.admin], company, status) end)
+      fallback = Gettext.with_locale(OperatelyWeb.Gettext, "nl", fn -> BillingLimitReachedEmail.build([ctx.admin], company, status) end)
       portuguese = Gettext.with_locale(OperatelyWeb.Gettext, "pt_BR", fn -> BillingLimitReachedEmail.build([ctx.admin], company, status) end)
       assert english == fallback
       assert portuguese.subject != english.subject

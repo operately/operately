@@ -7044,7 +7044,7 @@ msgid "Change password"
 msgstr "Passwort ändern"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:336
+#: ../turboui/src/ProfileEditPage/index.tsx:337
 msgid "Change photo"
 msgstr "Foto ändern"
 
@@ -9666,7 +9666,7 @@ msgstr "Frühere Version"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:330
+#: ../turboui/src/ProfileEditPage/index.tsx:331
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -12374,7 +12374,7 @@ msgid "LINKS"
 msgstr "LINKS"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:227
+#: ../turboui/src/ProfileEditPage/index.tsx:228
 msgid "Language"
 msgstr "Sprache"
 
@@ -15047,11 +15047,8 @@ msgstr "Ausstehend"
 
 #.elixir
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
-#: ../turboui/src/CompanyNavigation/index.tsx:101
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:262
 #: ../turboui/src/SearchPage/filterOptions.ts:14
-#: assets/js/pages/PeoplePage/page.tsx:14
 #: ee/assets/js/pages/SaasAdminCompanyPage/index.tsx:93
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:256
 #: lib/operately/md/task.ex:56
@@ -16347,7 +16344,7 @@ msgstr "Personen entfernen"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:344
+#: ../turboui/src/ProfileEditPage/index.tsx:345
 msgid "Remove photo"
 msgstr "Foto entfernen"
 
@@ -17168,7 +17165,7 @@ msgid "Save selection"
 msgstr "Auswahl speichern"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:356
+#: ../turboui/src/ProfileEditPage/index.tsx:357
 msgid "Saving..."
 msgstr "Wird gespeichert …"
 
@@ -17837,7 +17834,7 @@ msgid "Share a link"
 msgstr "Link teilen"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:260
+#: ../turboui/src/ProfileEditPage/index.tsx:261
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Erzähle kurz etwas über dich, deine Arbeit oder etwas anderes, das andere wissen sollen."
 
@@ -18693,7 +18690,7 @@ msgid "Suspended accounts can't be converted to outside collaborator"
 msgstr "Gesperrte Konten können nicht in externe Personen umgewandelt werden"
 
 #.frontend
-#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:53
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:56
 #: ../turboui/src/CompanyNavigation/index.tsx:117
 msgid "Switch Company"
 msgstr "Unternehmen wechseln"
@@ -21238,7 +21235,7 @@ msgid "Uploading %{name}..."
 msgstr "%{name} wird hochgeladen …"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:355
+#: ../turboui/src/ProfileEditPage/index.tsx:356
 msgid "Uploading %{progress}%"
 msgstr "Upload: %{progress} %"
 
@@ -24824,6 +24821,14 @@ msgstr "Titel"
 msgctxt "navigation"
 msgid "Company"
 msgstr "Unternehmen"
+
+#.frontend
+#: ../turboui/src/CompanyNavigation/CompanyDropdown.tsx:33
+#: ../turboui/src/CompanyNavigation/index.tsx:101
+#: assets/js/pages/PeoplePage/page.tsx:14
+msgctxt "navigation"
+msgid "People"
+msgstr "Personen"
 
 #.frontend
 #: ../turboui/src/ProfilePage/components/Colleagues.tsx:80
