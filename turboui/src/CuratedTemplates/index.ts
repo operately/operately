@@ -7,9 +7,11 @@ export type {
   TemplateMutationResult,
   TemplateDefinition,
   TemplateType,
+  TemplatePreviewData,
 } from "./types";
 
 export { CuratedTemplatePreviewPage } from "./PreviewPage";
-export { getTemplatePreviewReferenceDate } from "./PreviewPage/adapters";
+export { getTemplatePreviewReferenceDate, buildPreview as buildCuratedTemplatePreview } from "./PreviewPage/adapters";
+export type { PreviewOptions as CuratedTemplatePreviewOptions } from "./PreviewPage/adapters";
 export { CuratedTemplateUsePage, CuratedTemplateCompanyPicker } from "./UsePage";
 export type { TemplateSettings } from "./UsePage";

@@ -16,6 +16,7 @@ defmodule Operately.CuratedTemplates.Template do
     field :summary, :string
     field :content_language, :string, default: "en"
     field :definition, :map, default: %{}
+    field :preview_data, :map, default: %{}
 
     field :published_at, :utc_datetime_usec
 
@@ -27,7 +28,7 @@ defmodule Operately.CuratedTemplates.Template do
 
   def changeset(template, attrs) do
     template
-    |> cast(attrs, [:type, :title, :slug, :summary, :category, :content_language, :definition])
+    |> cast(attrs, [:type, :title, :slug, :summary, :category, :content_language, :definition, :preview_data])
     |> validate_required([:title, :slug, :type, :content_language, :definition])
     |> validate_length(:title, max: 200)
     |> validate_length(:slug, max: 200)
@@ -39,6 +40,7 @@ defmodule Operately.CuratedTemplates.Template do
     |> validate_inclusion(:content_language, Operately.I18n.Languages.supported())
     |> validate_type_change()
     |> validate_definition()
+    |> validate_preview_data()
   end
 
   defp validate_type_change(%{data: %{state: :published, type: type}} = cs) when not is_nil(type) do
@@ -46,6 +48,20 @@ defmodule Operately.CuratedTemplates.Template do
   end
 
   defp validate_type_change(cs), do: cs
+
+  defp validate_preview_data(cs) do
+    if cs.valid? do
+      case Operately.CuratedTemplates.PreviewData.validate(get_field(cs, :type), get_field(cs, :preview_data), get_field(cs, :definition)) do
+        {:ok, normalized} -> put_change(cs, :preview_data, normalized)
+        {:error, errors} ->
+          Enum.reduce(errors, cs, fn {path, {message, opts}}, acc ->
+            add_error(acc, :preview_data, message, Keyword.put(opts, :path, if(path == "", do: "preview_data", else: "preview_data." <> path)))
+          end)
+      end
+    else
+      cs
+    end
+  end
 
   defp validate_definition(cs) do
     type = get_field(cs, :type)

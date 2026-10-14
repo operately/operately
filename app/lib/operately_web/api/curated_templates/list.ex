@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.List do
 
     if limit in 1..100 and offset in 0..1_000_000 and (is_nil(category) or byte_size(category) <= 400) do
       result = CuratedTemplates.list(Map.merge(inputs, %{limit: limit, offset: offset}), :public)
-      public_fields = [:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at]
+      public_fields = [:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :preview_data]
       templates = result.templates |> Serializer.serialize(level: :essential) |> Enum.map(&Map.take(&1, public_fields))
       {:ok, %{templates: templates, total: result.total}}
     else

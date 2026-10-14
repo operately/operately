@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Types do
     field :content_language, :string
     field :updated_at, :datetime
     field? :definition, :json
+    field? :preview_data, :json
   end
 
   object :curated_template_instantiation, for: Operately.Operations.CuratedTemplateInstantiation.Result do
