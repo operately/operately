@@ -16,8 +16,17 @@ defmodule OperatelyWeb.Api.CuratedTemplates.GetTest do
       assert returned.slug == template.slug
       assert returned.content_language == template.content_language
       assert Jason.decode!(returned.definition) == template.definition
-      assert Enum.sort(Map.keys(returned)) == Enum.sort([:__typename, :id, :slug, :type, :title, :summary, :category, :content_language, :updated_at, :definition])
+      assert Jason.decode!(returned.preview_data) == %{}
+      assert Enum.sort(Map.keys(returned)) == Enum.sort([:__typename, :id, :slug, :type, :title, :summary, :category, :content_language, :updated_at, :definition, :preview_data])
     end
+  end
+
+  test "returns saved example measurements without changing the definition", ctx do
+    preview = %{"entries" => [%{"date" => "2026-09-30", "value" => 416}], "annotations" => [%{"date" => "2026-09-01", "title" => "Launch"}]}
+    ctx = Factory.add_curated_template(ctx, :example, preview_data: preview, published: true)
+    assert {200, %{template: returned}} = query(ctx.conn, [:curated_templates, :get], %{slug: ctx.example.slug, language: "en"})
+    assert Jason.decode!(returned.preview_data) == preview
+    assert Jason.decode!(returned.definition) == ctx.example.definition
   end
 
   test "drafts, unknown slugs, and missing translations are unavailable", ctx do

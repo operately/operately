@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.ListTest do
     ctx
     |> Factory.setup()
     |> Factory.add_curated_template(:draft)
-    |> Factory.add_curated_template(:published, published: true, title: "A", category: "Sales")
+    |> Factory.add_curated_template(:published, published: true, title: "A", category: "Sales", preview_data: %{"entries" => [%{"date" => "2026-09-30", "value" => 416}]})
     |> Factory.add_curated_template(:goal, published: true, type: :goal, title: "B")
   end
 
@@ -13,7 +13,8 @@ defmodule OperatelyWeb.Api.CuratedTemplates.ListTest do
     assert {200, %{templates: [template], total: 2}} = query(ctx.conn, [:curated_templates, :list], %{limit: 1})
     assert template.id == Paths.curated_template_id(ctx.published)
     assert template.updated_at != nil
-    assert Enum.sort(Map.keys(template)) == Enum.sort([:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at])
+    assert Jason.decode!(template.preview_data) == ctx.published.preview_data
+    assert Enum.sort(Map.keys(template)) == Enum.sort([:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :preview_data])
     assert {200, %{templates: [template]}} = query(ctx.conn, [:curated_templates, :list], %{type: "goal", offset: 0})
     assert template.type == "goal"
     assert {200, %{total: 1}} = query(ctx.conn, [:curated_templates, :list], %{category: "Sales"})

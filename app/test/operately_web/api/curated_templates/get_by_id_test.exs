@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.GetByIdTest do
   test "anonymous readers receive published content", ctx do
     assert {200, %{template: returned}} = query(ctx.conn, [:curated_templates, :get_by_id], %{id: Paths.curated_template_id(ctx.published)})
     assert Jason.decode!(returned.definition) == ctx.published.definition
-    assert Enum.sort(Map.keys(returned)) == Enum.sort([:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :definition])
+    assert Enum.sort(Map.keys(returned)) == Enum.sort([:__typename, :id, :type, :slug, :title, :summary, :category, :content_language, :updated_at, :definition, :preview_data])
   end
 
   test "signed-in readers can read published templates", ctx do

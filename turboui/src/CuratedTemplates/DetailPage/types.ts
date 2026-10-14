@@ -13,6 +13,7 @@ export interface TemplateEditorProps {
   onCancel: () => void;
 }
 export interface TemplateDetailProps extends TemplateEditorProps {
+  onSavePreviewData?: (previewData: string) => Promise<TemplateMutationResult>;
   catalogPath: string;
   previewPath?: string;
   onDelete: () => Promise<void>;

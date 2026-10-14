@@ -5,14 +5,9 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DimmedActionLink } from "../../Link";
 import { readDefinition, serializeDefinition } from "./definition";
 import { DefinitionFields } from "./DefinitionFields";
+import { ValidationFailure } from "./ValidationFailure";
 import type { TemplateDefinition, TemplateInput, TemplateType, TemplateValidationError } from "../types";
 import type { TemplateEditorProps } from "./types";
-
-class ValidationFailure extends Error {
-  constructor(public errors: TemplateValidationError[]) {
-    super("Template validation failed");
-  }
-}
 
 export function TemplateEditor(props: TemplateEditorProps) {
   const { t } = useTranslation();
@@ -81,6 +76,8 @@ export function TemplateEditor(props: TemplateEditorProps) {
       category,
       contentLanguage: content_language,
       definition: serializeDefinition(type, { ...definition, name: title }),
+      // Changing a draft's resource type also discards incompatible example data.
+      ...(props.template && type !== props.template.type ? { previewData: "{}" } : {}),
     };
   }
   function showErrors(errors: TemplateValidationError[]) {

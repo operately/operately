@@ -23723,6 +23723,17 @@
             "optional": true,
             "nullable": false,
             "has_default": false
+          },
+          {
+            "default": null,
+            "name": "preview_data",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": true,
+            "nullable": false,
+            "has_default": false
           }
         ]
       },

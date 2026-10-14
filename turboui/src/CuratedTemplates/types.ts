@@ -37,6 +37,12 @@ export interface TemplateDefinition {
   tasks?: TaskDefinition[];
 }
 
+export interface TemplatePreviewData {
+  // Calendar dates (YYYY-MM-DD), shared by the admin and public previews.
+  entries?: { date: string; value: EditableNumber }[];
+  annotations?: { date: string; title: string }[];
+}
+
 export interface CuratedTemplate {
   id: string;
   type: TemplateType;
@@ -47,6 +53,7 @@ export interface CuratedTemplate {
   category?: string | null;
   contentLanguage: string;
   definition?: string;
+  previewData?: string;
   publishedAt?: string | null;
   insertedAt: string;
   updatedAt: string;
@@ -60,6 +67,7 @@ export interface TemplateInput {
   category: string;
   contentLanguage: string;
   definition: string;
+  previewData?: string;
 }
 
 export interface TemplateValidationError {
