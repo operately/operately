@@ -210,7 +210,6 @@ Health, completion, and deadlines are separate dimensions. Use the source meanin
 | package / ZIP file | Import/export artifact | Archive de données / Archive ZIP | Not a pricing forfait. |
 | site admin / SaaS admin panel | Instance-wide operator role/screen | Administrateur de l’instance / Administration de l’instance | Distinct from company or space administration. |
 | support session / support mode | Operator access for customer assistance | Session d’assistance / Mode assistance | Does not make the operator the company owner. |
-| feature flag | Experimental-feature control | Activation de fonctionnalité | Group **Fonctionnalités expérimentales**; preserve machine keys such as `i18n`. |
 | site message / update badge | Operator banner / new-version indicator | Message système / Indicateur de nouvelle version | Neither is a point d’avancement. |
 
 ## Context and sentence patterns

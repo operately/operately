@@ -156,7 +156,7 @@ it.each(["/billing/pick-company", "/public/documents/token"])(
   },
 );
 
-it("refreshes account language on navigation and clears inherited Portuguese for anonymous/flag-off pages", async () => {
+it("refreshes account language on navigation and clears inherited Portuguese for anonymous pages", async () => {
   await visit("/billing/pick-company");
   await waitFor(() => expect(container.textContent).toBe("Carregando..."));
   language = "en";

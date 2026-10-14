@@ -209,7 +209,6 @@ Translate system statuses according to their meaning; keep user-authored statuse
 | package / ZIP file | Import/export artifact | Пакет данных / ZIP-архив | Not a pricing tariff. |
 | site admin / SaaS admin panel | Instance-wide operator role/screen | Администратор системы / Управление системой | Distinct from company or space administration. |
 | support session / support mode | Operator access for customer assistance | Сеанс поддержки / Режим поддержки | Does not make the operator the account owner. |
-| feature flag | Experimental-feature control | Переключатель функции | Group **Экспериментальные функции**; preserve keys such as `i18n`. |
 | site message / update badge | Operator banner / new-version indicator | Системное сообщение / Уведомление о новой версии | Neither is a progress report. |
 
 ## Context and sentence patterns

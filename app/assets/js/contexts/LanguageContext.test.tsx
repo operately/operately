@@ -4,53 +4,21 @@ import { renderHook } from "@/__tests__/renderHook";
 import { applyLanguage } from "@/i18n";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { LanguageProvider } from "./LanguageContext";
-import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 jest.mock("@/i18n", () => ({ applyLanguage: jest.fn(() => Promise.resolve("en")) }));
 jest.mock("@/contexts/CurrentCompanyContext", () => ({ useMe: jest.fn() }));
-jest.mock("@/routes/useCompanyLoaderData", () => ({ useCompanyLoaderData: jest.fn() }));
-jest.mock("@/models/companies", () => ({
-  hasFeature: (company: { enabledExperimentalFeatures?: string[] | null }, feature: string) =>
-    (company.enabledExperimentalFeatures ?? []).includes(feature),
-}));
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
-
-function mockCompanyLoader(features: string[]) {
-  jest.mocked(useCompanyLoaderData).mockReturnValue({
-    company: {
-      __typename: "company",
-      id: "company1",
-      name: "Company",
-      setupCompleted: true,
-      enabledExperimentalFeatures: features,
-    },
-    canAddProject: false,
-    canAddGoal: false,
-    siteMessages: [],
-    billingAccessState: null,
-  });
-}
 
 function renderProvider() {
   const wrapper = ({ children }: React.PropsWithChildren) => <LanguageProvider>{children}</LanguageProvider>;
   renderHook(() => null, { initialProps: undefined, wrapper });
 }
 
-it.each(["pt-BR", "de", "fr", "es"])("applies English with the flag off and %s saved", (language) => {
+it.each(["en", "pt-BR", "de", "ru", "fr", "es"])("applies the saved %s preference", (language) => {
   jest.mocked(useMe).mockReturnValue({ language } as ReturnType<typeof useMe>);
-  mockCompanyLoader([]);
-
-  renderProvider();
-
-  expect(applyLanguage).toHaveBeenCalledWith("en");
-});
-
-it.each(["pt-BR", "de", "fr", "es"])("applies saved %s when the flag is on", (language) => {
-  jest.mocked(useMe).mockReturnValue({ language } as ReturnType<typeof useMe>);
-  mockCompanyLoader(["i18n"]);
 
   renderProvider();
 
@@ -59,7 +27,6 @@ it.each(["pt-BR", "de", "fr", "es"])("applies saved %s when the flag is on", (la
 
 it("applies English when no language preference is saved", () => {
   jest.mocked(useMe).mockReturnValue({ language: null } as ReturnType<typeof useMe>);
-  mockCompanyLoader(["i18n"]);
 
   renderProvider();
 
@@ -68,7 +35,6 @@ it("applies English when no language preference is saved", () => {
 
 it("applies English for an unsupported saved preference", () => {
   jest.mocked(useMe).mockReturnValue({ language: "nl" } as unknown as ReturnType<typeof useMe>);
-  mockCompanyLoader(["i18n"]);
 
   renderProvider();
 
@@ -77,7 +43,6 @@ it("applies English for an unsupported saved preference", () => {
 
 it("applies language again after the saved preference changes", () => {
   jest.mocked(useMe).mockReturnValue({ language: "en" } as ReturnType<typeof useMe>);
-  mockCompanyLoader(["i18n"]);
 
   const wrapper = ({ children }: React.PropsWithChildren) => <LanguageProvider>{children}</LanguageProvider>;
   const { rerender } = renderHook(() => null, { initialProps: undefined, wrapper });

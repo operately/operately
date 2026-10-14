@@ -2,7 +2,6 @@ import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import type { Activity } from "@/models/activities";
 
 import ResourceHubDocumentCommented from ".";
@@ -43,18 +42,15 @@ describe("ResourceHubDocumentCommented", () => {
     await applyLanguage("en");
   });
 
-  it.each([false, true])(
-    "preserves English and names with a saved Portuguese preference (flag: %s)",
-    async (enabled) => {
-      i18n.removeResourceBundle("pt-BR", "translation");
-      await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
-      const local =
-        'Jo <a href="/documents/doc-1#comment-1">commented</a> on <a href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>';
-      expect(title("space")).toBe(local);
-      expect(title("feed")).toBe(`${local} in the <a href="/spaces/space-1">General</a> space`);
-      expect(ResourceHubDocumentCommented.NotificationTitle({ activity })).toBe("Re: Research & <planning>");
-    },
-  );
+  it.each(["en", "pt-BR"])("preserves English and names with a selected language: %s", async (language) => {
+    i18n.removeResourceBundle("pt-BR", "translation");
+    await applyLanguage(language);
+    const local =
+      'Jo <a href="/documents/doc-1#comment-1">commented</a> on <a href="/documents/doc-1">Research &amp; &lt;planning&gt;</a>';
+    expect(title("space")).toBe(local);
+    expect(title("feed")).toBe(`${local} in the <a href="/spaces/space-1">General</a> space`);
+    expect(ResourceHubDocumentCommented.NotificationTitle({ activity })).toBe("Re: Research & <planning>");
+  });
 
   it("looks up complete page-context sentences and keeps translated link text at its destination", async () => {
     i18n.addResourceBundle(

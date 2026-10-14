@@ -203,7 +203,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
         assert Operately.People.Person.time_format(person) == :hour_24
       end
 
-      test "it keeps saved #{language} when the i18n flag is off", ctx do
+      test "it keeps saved #{language} for every company", ctx do
         assert {200, %{person: %{}}} =
                  mutation(ctx.conn, [:people, :update], %{
                    id: Paths.person_id(ctx.person),
@@ -213,7 +213,6 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
         person = Operately.People.get_person!(ctx.person.id)
 
         assert person.language == unquote(language)
-        refute Operately.Companies.has_experimental_feature?(ctx.company, "i18n")
       end
     end
 

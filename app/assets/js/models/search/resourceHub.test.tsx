@@ -4,7 +4,6 @@ import axios from "axios";
 import Api from "@/api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { act, renderHook } from "@/__tests__/renderHook";
 import { useResourceHubSearchProps } from "./resourceHub";
 
@@ -55,12 +54,12 @@ it("searches the selected hub and does not offer search without one", async () =
   expect(axios.get).toHaveBeenCalledTimes(1);
 });
 
-it("updates the search placeholder on language changes and restores English with the flag off", async () => {
+it("updates the search placeholder on language changes and switches back to English when selected", async () => {
   await applyLanguage("pt-BR");
   const hook = mount(() => useResourceHubSearchProps("hub1"), undefined);
   expect(hook.result.current?.placeholder).toBe("Buscar documentos e arquivos…");
   await act(async () => {
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+    await applyLanguage("en");
   });
   expect(hook.result.current?.placeholder).toBe("Search documents and files…");
 });

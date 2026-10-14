@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Queries.GetLanguage do
          {:ok, company} <- Company.get(:system, short_id: short_id),
          {:ok, person} <- Person.get(:system, account_id: account.id, company_id: company.id, suspended: false),
          nil <- person.suspended_at do
-      EffectiveLanguage.resolve(person, company)
+      EffectiveLanguage.resolve(person)
     else
       _ -> Languages.default()
     end

@@ -1,7 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import type { Activity } from "@/models/activities";
 import Handler from ".";
 
@@ -26,7 +25,7 @@ afterEach(async () => {
 });
 
 it.each([0, 1, 3, -1, -3])("preserves existing English detail-page count wording (%i days)", async (change) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+  await applyLanguage("en");
   expect(title(change)).toBe(`Timeframe ${change > 0 ? "extended" : "shortened"} by ${Math.abs(change)} days`);
 });
 

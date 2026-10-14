@@ -2,7 +2,6 @@ import { usePaths } from "@/routes/paths";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import i18n, { applyLanguage } from "@/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 
 import ActivityHandler, { DISPLAYED_IN_FEED } from "..";
 
@@ -63,9 +62,9 @@ describe("kpi_created activities", () => {
     expect(ActivityHandler.pagePath(paths, activity)).toBe("/spaces/space-1/kpis/kpi-1");
   });
 
-  it.each([false, true])("keeps English body and notification fallback (flag: %s)", async (enabled) => {
+  it.each(["en", "pt-BR"])("keeps English body and notification fallback (language: %s)", async (language) => {
     i18n.removeResourceBundle("pt-BR", "translation");
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+    await applyLanguage(language);
     expect(
       renderToStaticMarkup(<>{ActivityHandler.FeedItemContent({ paths: usePaths(), activity, page: "feed" })}</>),
     ).toBe("KPI: Weekly active users");

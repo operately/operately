@@ -217,7 +217,6 @@ Keep goal health, task workflow, completion, and publication states distinct. Tr
 | package / ZIP file | Transfer artifact | Datenpaket / ZIP-Datei | **das Datenpaket / die Datenpakete**. Import/export artifact, not a pricing tier. |
 | site admin / SaaS admin panel | Instance-wide operator role/screen | Instanz-Admin / Instanzverwaltung | Plural **Instanz-Admins**. Distinct from company Admin and Unternehmensverwaltung. |
 | support session / support mode | Operator access for customer assistance | Support-Sitzung / Supportmodus | State the access context accurately; do not imply the operator is the account owner. |
-| feature flag | Operator control of an experimental feature | Funktionsschalter | Group heading **Experimentelle Funktionen**. Preserve flag keys such as `i18n`. |
 | site message / update badge | Operator banner / new-version indicator | Systemmitteilung / Hinweis auf neue Version | Neither is a project Update or Check-in. |
 | provider / provider managed | External billing service and controlled plans | Zahlungsanbieter / Vom Zahlungsanbieter verwaltet | Context is billing; not an outside collaborator. |
 

@@ -5,7 +5,6 @@ import { act } from "@/__tests__/renderHook";
 import { MemoryRouter, useRouteError, useRouteLoaderData } from "react-router";
 import ErrorPage from "./ErrorPage";
 import { applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { captureException } from "@sentry/react";
 
 setupTestCatalog();
@@ -78,18 +77,16 @@ it("preserves not-found rendering without company loader data", async () => {
 });
 
 it.each([
-  ["prod", true, "pt-BR", "Ops! Algo deu errado."],
-  ["prod", false, "pt-BR", "Oops! Something went wrong."],
-  ["dev", true, "pt-BR", "Ops! Algo deu errado."],
-  ["test", true, "pt-BR", "Ops! Algo deu errado."],
-  ["prod", true, "ru", "Что-то пошло не так."],
-  ["prod", false, "ru", "Oops! Something went wrong."],
-  ["dev", true, "ru", "Что-то пошло не так."],
-  ["prod", true, "de", "Etwas ist schiefgelaufen."],
-  ["prod", false, "de", "Oops! Something went wrong."],
-  ["dev", true, "de", "Etwas ist schiefgelaufen."],
-] as const)("diagnostics and flag rollback: %s, %s, %s", async (environment, enabled, language, expected) => {
-  await applyLanguage(resolveEffectiveLanguage(language, enabled));
+  ["prod", "pt-BR", "Ops! Algo deu errado."],
+  ["prod", "en", "Oops! Something went wrong."],
+  ["dev", "pt-BR", "Ops! Algo deu errado."],
+  ["test", "pt-BR", "Ops! Algo deu errado."],
+  ["prod", "ru", "Что-то пошло не так."],
+  ["dev", "ru", "Что-то пошло не так."],
+  ["prod", "de", "Etwas ist schiefgelaufen."],
+  ["dev", "de", "Etwas ist schiefgelaufen."],
+] as const)("diagnostics and selected language: %s, %s", async (environment, language, expected) => {
+  await applyLanguage(language);
   window.appConfig = { environment } as typeof window.appConfig;
   jest.mocked(useRouteLoaderData).mockReturnValue({ companyId: "company" });
   const error = new Error("Literal diagnostic");

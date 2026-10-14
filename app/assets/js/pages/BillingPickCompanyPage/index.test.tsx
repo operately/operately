@@ -3,7 +3,6 @@ import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import { applyLanguage, setupTestCatalog } from "@/__tests__/i18n";
-import { resolveEffectiveLanguage } from "@/i18n/languages";
 import { useLoadedData } from "./loader";
 import BillingPickCompanyPageModule from ".";
 
@@ -43,13 +42,13 @@ function renderPage() {
   );
 }
 
-test.each([true, false])("empty state respects the effective language: %s", async (enabled) => {
-  await applyLanguage(resolveEffectiveLanguage("pt-BR", enabled));
+test.each(["pt-BR", "en"])("empty state respects the effective language: %s", async (language) => {
+  await applyLanguage(language);
 
   renderPage();
 
   expect(container.textContent).toContain(
-    enabled
+    language === "pt-BR"
       ? "Você ainda não tem acesso para gerenciar o faturamento de nenhuma empresa."
       : "You don't have access to manage billing for any companies yet.",
   );

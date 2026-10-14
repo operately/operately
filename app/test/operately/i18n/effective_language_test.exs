@@ -16,67 +16,32 @@ defmodule Operately.I18n.EffectiveLanguageTest do
   end
 
   for {language, locale} <- [{"pt-BR", "pt_BR"}, {"de", "de"}, {"ru", "ru"}, {"fr", "fr"}, {"es", "es"}] do
-    describe "#{language} resolve/2" do
-      test "uses English when no preference is saved" do
-        person = %Person{language: nil}
-        company = enabled_company()
-
-        assert EffectiveLanguage.resolve(person, company) == "en"
-        assert EffectiveLanguage.resolve(nil, company) == "en"
-        assert EffectiveLanguage.resolve(person, nil) == "en"
-      end
-
-      test "uses English for unsupported preferences even when the flag is on" do
-        person = %Person{language: "nl"}
-        company = enabled_company()
-
-        assert EffectiveLanguage.resolve(person, company) == "en"
-      end
-
-      test "uses an explicit supported preference when the flag is on" do
-        person = %Person{language: unquote(language)}
-        company = enabled_company()
-
-        assert EffectiveLanguage.resolve(person, company) == unquote(language)
-      end
-
-      test "forces English when the flag is off without dropping the saved preference" do
-        person = %Person{language: unquote(language)}
-        company = %Company{enabled_experimental_features: []}
-
-        assert person.language == unquote(language)
-        assert EffectiveLanguage.resolve(person, company) == "en"
-      end
-    end
-
     describe "#{language} resolve/1" do
-      test "loads the company from the person when it is not passed in" do
-        ctx =
-          Factory.setup(%{})
-          |> Factory.enable_feature("i18n")
+      test "uses English when no preference is saved" do
+        assert EffectiveLanguage.resolve(%Person{language: nil}) == "en"
+        assert EffectiveLanguage.resolve(nil) == "en"
+      end
 
+      test "uses English for unsupported preferences" do
+        assert EffectiveLanguage.resolve(%Person{language: "nl"}) == "en"
+      end
+
+      test "uses the saved preference without loading a company" do
+        assert EffectiveLanguage.resolve(%Person{language: unquote(language)}) == unquote(language)
+      end
+
+      test "uses the saved preference for companies with no experimental features" do
+        ctx = Factory.setup(%{})
         {:ok, person} = Operately.People.update_person(ctx.creator, %{language: unquote(language)})
+        person = %{person | company: %Company{enabled_experimental_features: []}}
 
         assert EffectiveLanguage.resolve(person) == unquote(language)
-      end
-
-      test "keeps a saved preference after the flag is disabled" do
-        ctx =
-          Factory.setup(%{})
-          |> Factory.enable_feature("i18n")
-
-        {:ok, person} = Operately.People.update_person(ctx.creator, %{language: unquote(language)})
-        ctx = Factory.disable_feature(ctx, "i18n")
-        person = Operately.Repo.reload(person)
-
-        assert person.language == unquote(language)
-        assert EffectiveLanguage.resolve(person, ctx.company) == "en"
       end
     end
 
     describe "#{language} with_locale/2" do
       test "scopes Gettext to the recipient language and restores the previous locale" do
-        person = %Person{language: unquote(language), company: enabled_company()}
+        person = %Person{language: unquote(language)}
 
         result =
           EffectiveLanguage.with_locale(person, fn ->
@@ -89,7 +54,7 @@ defmodule Operately.I18n.EffectiveLanguageTest do
       end
 
       test "restores the previous locale when rendering fails" do
-        person = %Person{language: unquote(language), company: enabled_company()}
+        person = %Person{language: unquote(language)}
 
         assert_raise RuntimeError, "boom", fn ->
           EffectiveLanguage.with_locale(person, fn ->
@@ -102,8 +67,8 @@ defmodule Operately.I18n.EffectiveLanguageTest do
       end
 
       test "does not use a previous recipient's locale for the next render" do
-        first = %Person{language: unquote(language), company: enabled_company()}
-        second = %Person{language: nil, company: enabled_company()}
+        first = %Person{language: unquote(language)}
+        second = %Person{language: nil}
 
         EffectiveLanguage.with_locale(first, fn ->
           assert Gettext.get_locale(@backend) == unquote(locale)
@@ -117,17 +82,13 @@ defmodule Operately.I18n.EffectiveLanguageTest do
       end
     end
 
-    describe "#{language} put_request_locale/2" do
-      test "ignores browser language headers by using only the saved preference and flag" do
-        person = %Person{language: nil, company: enabled_company()}
+    describe "#{language} put_request_locale/1" do
+      test "ignores browser language headers by using only the saved preference" do
+        person = %Person{language: nil}
 
-        assert EffectiveLanguage.put_request_locale(person, enabled_company()) == "en"
+        assert EffectiveLanguage.put_request_locale(person) == "en"
         assert Gettext.get_locale(@backend) == "en"
       end
     end
-  end
-
-  defp enabled_company do
-    %Company{enabled_experimental_features: ["i18n"]}
   end
 end

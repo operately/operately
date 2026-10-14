@@ -71,7 +71,6 @@ export namespace ProfileEditPage {
     // Options
     timezones: Timezone[];
     isCurrentUser: boolean;
-    showLanguageSelector?: boolean;
 
     // Navigation paths
     fromLocation: string | null;
@@ -171,7 +170,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
               </div>
             )}
 
-            {props.isCurrentUser && props.showLanguageSelector && (
+            {props.isCurrentUser && (
               <LanguageField language={props.language ?? "en"} onLanguageChange={props.onLanguageChange} />
             )}
 

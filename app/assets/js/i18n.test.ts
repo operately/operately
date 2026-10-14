@@ -1,9 +1,8 @@
 import i18n, { applyLanguage, tn } from "./i18n";
-import { resolveEffectiveLanguage } from "./i18n/languages";
 
 describe("i18n", () => {
-  it("keeps work-management copy English with the flag off and a saved Portuguese preference", async () => {
-    await applyLanguage(resolveEffectiveLanguage("pt-BR", false));
+  it("renders work-management copy in English when English is selected", async () => {
+    await applyLanguage("en");
     expect(i18n.t("Create milestone")).toBe("Create milestone");
     expect(i18n.t("Failed to update task due date")).toBe("Failed to update task due date");
     expect(i18n.t("No discussions yet")).toBe("No discussions yet");
@@ -93,10 +92,10 @@ describe("i18n", () => {
       }
     });
 
-    it("returns to English when the company disables translations", async () => {
-      await applyLanguage(resolveEffectiveLanguage("es", true));
+    it("switches back to English when selected", async () => {
+      await applyLanguage("es");
       expect(i18n.t("My Account")).toBe("Mi cuenta");
-      await applyLanguage(resolveEffectiveLanguage("es", false));
+      await applyLanguage("en");
       expect(i18n.t("My Account")).toBe("My Account");
     });
   });
@@ -142,10 +141,10 @@ describe("i18n", () => {
       }
     });
 
-    it("returns to English when the company disables translations", async () => {
-      await applyLanguage(resolveEffectiveLanguage("fr", true));
+    it("switches back to English when selected", async () => {
+      await applyLanguage("fr");
       expect(i18n.t("My Account")).toBe("Mon compte");
-      await applyLanguage(resolveEffectiveLanguage("fr", false));
+      await applyLanguage("en");
       expect(i18n.t("My Account")).toBe("My Account");
     });
   });
@@ -203,10 +202,10 @@ describe("i18n", () => {
       }
     });
 
-    it("returns to English when the company disables translations", async () => {
-      await applyLanguage(resolveEffectiveLanguage("ru", true));
+    it("switches back to English when selected", async () => {
+      await applyLanguage("ru");
       expect(i18n.t("My Account")).toBe("Моя учётная запись");
-      await applyLanguage(resolveEffectiveLanguage("ru", false));
+      await applyLanguage("en");
       expect(i18n.t("My Account")).toBe("My Account");
     });
   });
@@ -251,11 +250,11 @@ describe("i18n", () => {
       expect(tn("1 missing plural", "{{count}} missing plurals", 3)).toBe("3 missing plurals");
     });
 
-    it("returns to English when the company disables translations", async () => {
-      await applyLanguage(resolveEffectiveLanguage("de", true));
+    it("switches back to English when selected", async () => {
+      await applyLanguage("de");
       expect(i18n.t("My Account")).toBe("Mein Konto");
 
-      await applyLanguage(resolveEffectiveLanguage("de", false));
+      await applyLanguage("en");
       expect(i18n.t("My Account")).toBe("My Account");
     });
   });
