@@ -63,7 +63,7 @@ defmodule Operately.CuratedTemplates do
       query
       |> order_by([t], asc: t.title, asc: t.id)
       |> offset(^offset)
-      |> select([t], struct(t, [:id, :title, :slug, :summary, :state, :type, :category, :content_language, :published_at, :inserted_at, :updated_at]))
+      |> select([t], struct(t, [:id, :title, :slug, :summary, :state, :type, :category, :content_language, :published_at, :inserted_at, :updated_at, :preview_data]))
       |> Repo.all()
 
     %{templates: templates, total: total}

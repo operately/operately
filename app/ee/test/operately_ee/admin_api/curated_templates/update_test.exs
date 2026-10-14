@@ -19,6 +19,28 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.UpdateTest do
       ctx |> Map.put(:account, account) |> Factory.log_in_account(:account)
     end
 
+    test "saves preview data independently, preserves it when omitted, and rejects invalid edits", ctx do
+      ctx = Factory.add_curated_template(ctx, :template, published: true)
+
+      preview = %{"entries" => [%{"date" => "2026-09-30", "value" => 416}], "annotations" => []}
+      inputs = Map.merge(payload(:kpi), %{id: Paths.curated_template_id(ctx.template), expected_updated_at: DateTime.to_iso8601(ctx.template.updated_at), preview_data: Jason.encode!(preview)})
+
+      assert {200, %{template: saved, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :update], inputs)
+      assert Jason.decode!(saved.preview_data) == preview
+      assert Jason.decode!(saved.definition) == ctx.template.definition
+
+      inputs = inputs |> Map.delete(:preview_data) |> Map.merge(%{id: saved.id, expected_updated_at: saved.updated_at, title: "Renamed"})
+
+      assert {200, %{template: renamed, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :update], inputs)
+      assert renamed.preview_data == saved.preview_data
+
+      inputs = %{inputs | expected_updated_at: renamed.updated_at} |> Map.put(:preview_data, Jason.encode!(%{entries: [%{date: "invalid", value: 5}]}))
+
+      assert {200, %{template: nil, errors: errors}} = admin_mutation(ctx.conn, [:curated_templates, :update], inputs)
+      assert Enum.any?(errors, &(&1.path == "preview_data.entries.0.date"))
+      assert Operately.CuratedTemplates.get(ctx.template.id).preview_data == preview
+    end
+
     test "updates a draft and rejects stale editors", ctx do
       ctx = Factory.add_curated_template(ctx, :template)
       inputs = Map.merge(payload(:kpi), %{id: Paths.curated_template_id(ctx.template), expected_updated_at: DateTime.to_iso8601(ctx.template.updated_at), title: "Edited"})

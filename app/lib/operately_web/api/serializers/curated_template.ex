@@ -11,7 +11,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CuratedTemplates.Template 
       state: template.state,
       published_at: template.published_at,
       inserted_at: template.inserted_at,
-      updated_at: template.updated_at
+      updated_at: template.updated_at,
+      preview_data: Jason.encode!(template.preview_data)
     }
   end
 

@@ -81,14 +81,16 @@ defmodule OperatelyWeb.Api.CuratedTemplates.InstantiateTest do
   end
 
   test "KPI keeps template configuration and ownership without entries", ctx do
-    ctx = ctx |> Factory.add_curated_template(:template, published: true) |> Factory.add_space_member(:champion, :space)
+    preview = %{"entries" => [%{"date" => "2026-09-30", "value" => 416}], "annotations" => [%{"date" => "2026-09-01", "title" => "Launch"}]}
+    ctx = ctx |> Factory.add_curated_template(:template, published: true, preview_data: preview) |> Factory.add_space_member(:champion, :space)
     assert {200, result} = mutation(ctx.conn, [:curated_templates, :instantiate], Map.put(inputs(ctx), :champion_id, ctx.champion.id))
-    kpi = Repo.get!(Operately.Kpis.Kpi, Operately.ShortUuid.decode!(result.resource_id)) |> Repo.preload(:entries)
+    kpi = Repo.get!(Operately.Kpis.Kpi, Operately.ShortUuid.decode!(result.resource_id)) |> Repo.preload([:entries, :annotations])
     assert kpi.champion_id == ctx.champion.id
     assert kpi.name == "Revenue"
     assert kpi.unit == "USD"
     assert kpi.cadence == :monthly
     assert kpi.entries == []
+    assert kpi.annotations == []
   end
 
   for {permission, status} <- [no_access: 404, view_access: 403, comment_access: 403, edit_access: 200] do

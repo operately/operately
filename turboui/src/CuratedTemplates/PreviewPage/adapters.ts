@@ -7,7 +7,7 @@ import type { ProjectPage } from "../../ProjectPage";
 import type { RichTextHandlers } from "../../RichContent/types";
 import type { SpaceKpisPage } from "../../SpaceKpisPage/types";
 import type { TaskPage } from "../../TaskPage";
-import type { CuratedTemplate, TemplateDefinition } from "../types";
+import type { CuratedTemplate, TemplateDefinition, TemplatePreviewData } from "../types";
 
 export interface PreviewOptions {
   referenceDate: string;
@@ -60,6 +60,17 @@ export function buildPreview(template: CuratedTemplate, options: PreviewOptions)
 }
 
 function kpiPreview(template: CuratedTemplate, definition: TemplateDefinition, options: PreviewOptions) {
+  const preview: TemplatePreviewData = JSON.parse(template.previewData ?? "{}");
+  const entries: SpaceKpisPage.KpiEntry[] = (preview.entries ?? [])
+    .map((entry) => ({
+      id: `${template.id}-entry-${entry.date}`,
+      value: Number(entry.value),
+      recordedAt: parseISO(entry.date),
+      recordedBy: null,
+      commentsCount: 0,
+      edits: [],
+    }))
+    .sort((left, right) => left.recordedAt.getTime() - right.recordedAt.getTime());
   const kpi: SpaceKpisPage.Kpi = {
     id: template.id,
     name: template.title,
@@ -69,9 +80,14 @@ function kpiPreview(template: CuratedTemplate, definition: TemplateDefinition, o
     champion: null,
     insertedAt: parseISO(template.insertedAt),
     link: "",
-    latestEntry: null,
-    entries: [],
-    annotations: [],
+    latestEntry: entries.at(-1) ?? null,
+    entries,
+    annotations: (preview.annotations ?? []).map((annotation, index) => ({
+      id: `${template.id}-annotation-${index}`,
+      date: parseISO(annotation.date),
+      title: annotation.title,
+      createdBy: null,
+    })),
   };
   return {
     type: "kpi" as const,

@@ -7,6 +7,27 @@ import { compareIds } from "../../utils/ids";
 const labels = { missing: "Not set", pending: "Pending" };
 const options = { referenceDate: "2026-10-12", formattedTimePreferences: defaultFormattedTimePreferences, labels };
 
+test("KPI previews use saved example data in chronological order without mutating the template", () => {
+  const template = {
+    ...templateFixture("kpi"),
+    previewData: JSON.stringify({
+      entries: [
+        { date: "2026-09-30", value: 416 },
+        { date: "2026-08-31", value: 345 },
+      ],
+      annotations: [{ date: "2026-09-01", title: "Campaign" }],
+    }),
+  };
+  const original = JSON.stringify(template);
+  const preview = buildPreview(template, options);
+  if (preview.type !== "kpi") throw new Error("Expected KPI");
+  expect(preview.kpi.entries.map((entry) => entry.value)).toEqual([345, 416]);
+  expect(preview.kpi.latestEntry).toEqual(preview.kpi.entries[1]);
+  expect(preview.kpi.entries[0]?.recordedAt.getDate()).toBe(31);
+  expect(preview.kpi.annotations[0]?.title).toBe("Campaign");
+  expect(JSON.stringify(template)).toBe(original);
+});
+
 test("project preview keys with shared suffixes retain distinct tasks and milestones", () => {
   const template = templateFixture("project");
   template.definition = JSON.stringify({
