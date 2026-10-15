@@ -12,10 +12,10 @@ test("KPI previews use saved example data in chronological order without mutatin
     ...templateFixture("kpi"),
     previewData: JSON.stringify({
       entries: [
-        { date: "2026-09-30", value: 416 },
-        { date: "2026-08-31", value: 345 },
+        { period_offset: -1, value: 416 },
+        { period_offset: -2, value: 345 },
       ],
-      annotations: [{ date: "2026-09-01", title: "Campaign" }],
+      annotations: [{ period_offset: -1, title: "Campaign" }],
     }),
   };
   const original = JSON.stringify(template);
@@ -23,7 +23,7 @@ test("KPI previews use saved example data in chronological order without mutatin
   if (preview.type !== "kpi") throw new Error("Expected KPI");
   expect(preview.kpi.entries.map((entry) => entry.value)).toEqual([345, 416]);
   expect(preview.kpi.latestEntry).toEqual(preview.kpi.entries[1]);
-  expect(preview.kpi.entries[0]?.recordedAt.getDate()).toBe(31);
+  expect(preview.kpi.entries[0]?.recordedAt.getDate()).toBe(1);
   expect(preview.kpi.annotations[0]?.title).toBe("Campaign");
   expect(JSON.stringify(template)).toBe(original);
 });
@@ -99,4 +99,34 @@ test("incomplete target values are omitted without inventing progress", () => {
 
 test("the example start date follows the viewer's timezone", () => {
   expect(getTemplatePreviewReferenceDate(new Date("2026-10-12T01:00:00Z"), "America/Sao_Paulo")).toBe("2026-10-11");
+});
+
+test.each([
+  ["monthly", "2032-03-31", "2032-02-01", "2031-12-01"],
+  ["monthly", "2031-01-01", "2030-12-01", "2030-10-01"],
+  ["weekly", "2031-01-05", "2030-12-23", "2030-12-09"],
+])("resolves %s examples against %s", (cadence, referenceDate, latest, annotation) => {
+  const template = {
+    ...templateFixture("kpi"),
+    definition: JSON.stringify({ unit: "%", cadence }),
+    previewData: JSON.stringify({
+      entries: [
+        { period_offset: -1, value: 12 },
+        { period_offset: -2, value: 10 },
+      ],
+      annotations: [{ period_offset: -3, title: "Campaign" }],
+    }),
+  };
+  const preview = buildPreview(template, { ...options, referenceDate });
+  if (preview.type !== "kpi") throw new Error("Expected KPI");
+  const calendarDate = (date: Date) =>
+    [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join(
+      "-",
+    );
+  const latestEntry = preview.kpi.latestEntry;
+  const firstAnnotation = preview.kpi.annotations[0];
+  if (!latestEntry || !firstAnnotation) throw new Error("Expected example history and annotation");
+  expect(calendarDate(latestEntry.recordedAt)).toBe(latest);
+  expect(calendarDate(firstAnnotation.date)).toBe(annotation);
+  expect(preview.kpi.entries.map(({ value }) => value)).toEqual([10, 12]);
 });

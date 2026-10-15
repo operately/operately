@@ -20,11 +20,11 @@ export const KpiWithExampleData: Story = {
       ...templateFixture("kpi"),
       previewData: JSON.stringify({
         entries: [
-          { date: "2026-07-31", value: 300 },
-          { date: "2026-08-31", value: 345 },
-          { date: "2026-09-30", value: 416 },
+          { period_offset: -3, value: 300 },
+          { period_offset: -2, value: 345 },
+          { period_offset: -1, value: 416 },
         ],
-        annotations: [{ date: "2026-08-01", title: "Campaign launch" }],
+        annotations: [{ period_offset: -2, title: "Campaign launch" }],
       }),
     },
   },

@@ -38,9 +38,9 @@ export interface TemplateDefinition {
 }
 
 export interface TemplatePreviewData {
-  // Calendar dates (YYYY-MM-DD), shared by the admin and public previews.
-  entries?: { date: string; value: EditableNumber }[];
-  annotations?: { date: string; title: string }[];
+  // Reporting periods relative to the display date: 0 is current, -1 is previous.
+  entries?: { period_offset: EditableNumber; value: EditableNumber }[];
+  annotations?: { period_offset: EditableNumber; title: string }[];
 }
 
 export interface CuratedTemplate {

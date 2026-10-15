@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.GetTest do
   end
 
   test "returns saved example measurements without changing the definition", ctx do
-    preview = %{"entries" => [%{"date" => "2026-09-30", "value" => 416}], "annotations" => [%{"date" => "2026-09-01", "title" => "Launch"}]}
+    preview = %{"entries" => [%{"period_offset" => -1, "value" => 416}], "annotations" => [%{"period_offset" => -1, "title" => "Launch"}]}
     ctx = Factory.add_curated_template(ctx, :example, preview_data: preview, published: true)
     assert {200, %{template: returned}} = query(ctx.conn, [:curated_templates, :get], %{slug: ctx.example.slug, language: "en"})
     assert Jason.decode!(returned.preview_data) == preview

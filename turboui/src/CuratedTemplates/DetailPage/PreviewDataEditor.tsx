@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import * as Forms from "../../Forms";
+import { showSuccessToast } from "../../Toasts";
 import { translationText } from "../../i18n";
 import type { CuratedTemplate, TemplateMutationResult, TemplatePreviewData } from "../types";
 import { PreviewDataFields } from "./PreviewDataFields";
@@ -20,11 +21,18 @@ export function PreviewDataEditor({ template, onSave }: Props) {
       const preview = form.values.preview_data;
       const result = await onSave(
         JSON.stringify({
-          entries: (preview.entries ?? []).map(({ date, value }) => ({ date, value: numeric(value) })),
-          annotations: preview.annotations ?? [],
+          entries: (preview.entries ?? []).map(({ period_offset, value }) => ({
+            period_offset: numeric(period_offset),
+            value: numeric(value),
+          })),
+          annotations: (preview.annotations ?? []).map(({ period_offset, title }) => ({
+            period_offset: numeric(period_offset),
+            title,
+          })),
         }),
       );
       if (result.errors.length) throw new ValidationFailure(result.errors);
+      showSuccessToast(t("Success"), t("The example data has been saved."));
     },
     onError: (error: unknown) => {
       form.actions.addErrors(

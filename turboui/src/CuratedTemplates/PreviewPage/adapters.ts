@@ -9,6 +9,8 @@ import type { SpaceKpisPage } from "../../SpaceKpisPage/types";
 import type { TaskPage } from "../../TaskPage";
 import type { CuratedTemplate, TemplateDefinition, TemplatePreviewData } from "../types";
 
+import { resolveTemplatePreviewDate } from "../previewData";
+
 export interface PreviewOptions {
   referenceDate: string;
   formattedTimePreferences: FormattedTimePreferences;
@@ -63,9 +65,9 @@ function kpiPreview(template: CuratedTemplate, definition: TemplateDefinition, o
   const preview: TemplatePreviewData = JSON.parse(template.previewData ?? "{}");
   const entries: SpaceKpisPage.KpiEntry[] = (preview.entries ?? [])
     .map((entry) => ({
-      id: `${template.id}-entry-${entry.date}`,
+      id: `${template.id}-entry-${entry.period_offset}`,
       value: Number(entry.value),
-      recordedAt: parseISO(entry.date),
+      recordedAt: resolveTemplatePreviewDate(options.referenceDate, definition.cadence, entry.period_offset),
       recordedBy: null,
       commentsCount: 0,
       edits: [],
@@ -84,7 +86,7 @@ function kpiPreview(template: CuratedTemplate, definition: TemplateDefinition, o
     entries,
     annotations: (preview.annotations ?? []).map((annotation, index) => ({
       id: `${template.id}-annotation-${index}`,
-      date: parseISO(annotation.date),
+      date: resolveTemplatePreviewDate(options.referenceDate, definition.cadence, annotation.period_offset),
       title: annotation.title,
       createdBy: null,
     })),

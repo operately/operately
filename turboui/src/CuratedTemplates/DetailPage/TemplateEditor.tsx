@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import * as Forms from "../../Forms";
+import { showSuccessToast } from "../../Toasts";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DimmedActionLink } from "../../Link";
 import { readDefinition, serializeDefinition } from "./definition";
@@ -34,6 +35,7 @@ export function TemplateEditor(props: TemplateEditorProps) {
       setSaveIntent(action);
       const result = await props.onSave(input(), action);
       if (result.errors.length) throw new ValidationFailure(result.errors);
+      showSuccessToast(t("Success"), t("The template has been saved."));
     },
     onError: (error: unknown) => {
       if (error instanceof ValidationFailure) showErrors(error.errors);
