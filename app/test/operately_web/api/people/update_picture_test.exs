@@ -18,6 +18,62 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
     end
   end
 
+  describe "blob authorization" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:other)
+      |> Factory.add_blob(:blob)
+      |> Factory.log_in_person(:creator)
+    end
+
+    for kind <- [:foreign, :another_author, :deleted, :import_artifact, :missing] do
+      @invalid_kind kind
+
+      test "rejects #{@invalid_kind} blobs without changing the avatar or blob", ctx do
+        blob_id = invalid_blob_id(ctx, @invalid_kind)
+        blobs = Repo.all(Operately.Blobs.Blob)
+        person = Repo.reload(ctx.creator)
+
+        assert {404, _} =
+                 mutation(ctx.conn, [:people, :update_picture], %{
+                   person_id: Paths.person_id(ctx.creator),
+                   avatar_blob_id: blob_id,
+                   avatar_url: "/blobs/#{blob_id}"
+                 })
+
+        assert Repo.reload(person) == person
+        Enum.each(blobs, fn blob -> assert Repo.reload(blob) == blob end)
+      end
+    end
+
+    test "external API enforces blob ownership and read-only tokens", ctx do
+      ctx = ctx |> Factory.add_api_token(:token, :creator, read_only: false) |> Factory.add_api_token(:read_token, :creator)
+      blob_id = invalid_blob_id(ctx, :foreign)
+      inputs = %{person_id: Paths.person_id(ctx.creator), avatar_blob_id: blob_id, avatar_url: "/blobs/#{blob_id}"}
+
+      assert {404, _} = external_mutation(ctx.conn, ctx.token, "people/update_picture", inputs)
+      assert Repo.reload(ctx.creator).avatar_blob_id == nil
+      assert Operately.Blobs.get_blob!(blob_id).status == :pending
+
+      inputs = %{inputs | avatar_blob_id: ctx.blob.id, avatar_url: Operately.Blobs.Blob.url(ctx.blob)}
+      assert {403, _} = external_mutation(ctx.conn, ctx.read_token, "people/update_picture", inputs)
+      assert Repo.reload(ctx.blob).status == :pending
+      assert {200, _} = external_mutation(ctx.conn, ctx.token, "people/update_picture", inputs)
+    end
+
+    test "accepts the caller's already uploaded blob", ctx do
+      {:ok, _} = Operately.Blobs.update_blob(ctx.blob, %{status: :uploaded})
+
+      assert {200, _} =
+               mutation(ctx.conn, [:people, :update_picture], %{
+                 person_id: Paths.person_id(ctx.creator),
+                 avatar_blob_id: ctx.blob.id,
+                 avatar_url: Operately.Blobs.Blob.url(ctx.blob)
+               })
+    end
+  end
+
   describe "updating another person's picture" do
     setup :register_and_log_in_account
 
@@ -145,5 +201,25 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
   defp enable_billing do
     Application.put_env(:operately, :billing_enabled, true)
     on_exit(fn -> Application.delete_env(:operately, :billing_enabled) end)
+  end
+
+  defp invalid_blob_id(ctx, kind) do
+    case kind do
+      :foreign ->
+        foreign = %{} |> Factory.setup() |> Factory.add_blob(:blob)
+        foreign.blob.id
+
+      :another_author ->
+        Factory.add_blob(ctx, :other_blob, :other).other_blob.id
+
+      :deleted ->
+        blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id, status: :deleted}).id
+
+      :import_artifact ->
+        blob_fixture(%{purpose: :company_transfer_import_artifact, account_id: ctx.account.id}).id
+
+      :missing ->
+        Ecto.UUID.generate()
+    end
   end
 end

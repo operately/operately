@@ -38,6 +38,7 @@ defmodule OperatelyWeb.Api.Files.Create do
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :resource_hub, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
+      {:error, :operation, %{error: :not_found}} -> {:error, :not_found}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
