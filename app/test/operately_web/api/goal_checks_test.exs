@@ -3,6 +3,9 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
   import Ecto.Query, only: [from: 2]
 
+  alias Operately.Activities.Activity
+  alias Operately.Goals.Check
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -122,6 +125,34 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       assert res.message == "Check not found"
     end
 
+    test "it rejects a check from another company without changes", ctx do
+      ctx =
+        ctx
+        |> Factory.add_api_token(:token, :creator, read_only: false)
+        |> Factory.log_in_person(:creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space)
+        |> Factory.add_goal_check(:check, :goal)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      checks_query = from(c in Check, where: c.goal_id in ^goal_ids, order_by: c.id)
+      checks_before = Repo.all(checks_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(other.check)}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :delete_check], inputs)
+      assert {404, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/delete_check", inputs)
+      assert Repo.all(checks_query) == checks_before
+      assert Repo.aggregate(Activity, :count) == activities_before
+    end
+
     test "it deletes the check", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -190,6 +221,34 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       assert {404, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
       assert res.message == "Check not found"
+    end
+
+    test "it rejects a check from another company without changes", ctx do
+      ctx =
+        ctx
+        |> Factory.add_api_token(:token, :creator, read_only: false)
+        |> Factory.log_in_person(:creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space)
+        |> Factory.add_goal_check(:check, :goal)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      checks_query = from(c in Check, where: c.goal_id in ^goal_ids, order_by: c.id)
+      checks_before = Repo.all(checks_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(other.check), name: "Unauthorized rename"}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :update_check], inputs)
+      assert {404, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_check", inputs)
+      assert Repo.all(checks_query) == checks_before
+      assert Repo.aggregate(Activity, :count) == activities_before
     end
 
     test "it updates the check name", ctx do
@@ -274,6 +333,34 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       assert res.message == "Check not found"
     end
 
+    test "it rejects a check from another company without changes", ctx do
+      ctx =
+        ctx
+        |> Factory.add_api_token(:token, :creator, read_only: false)
+        |> Factory.log_in_person(:creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space)
+        |> Factory.add_goal_check(:check, :goal)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      checks_query = from(c in Check, where: c.goal_id in ^goal_ids, order_by: c.id)
+      checks_before = Repo.all(checks_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(other.check), index: 0}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :update_check_index], inputs)
+      assert {404, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/update_check_index", inputs)
+      assert Repo.all(checks_query) == checks_before
+      assert Repo.aggregate(Activity, :count) == activities_before
+    end
+
     test "it updates the check index", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -355,6 +442,34 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       assert {404, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
       assert res.message == "Check not found"
+    end
+
+    test "it rejects a check from another company without changes", ctx do
+      ctx =
+        ctx
+        |> Factory.add_api_token(:token, :creator, read_only: false)
+        |> Factory.log_in_person(:creator)
+
+      other =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space)
+        |> Factory.add_goal_check(:check, :goal)
+
+      assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.creator, id: other.goal.id)
+
+      goal_ids = [ctx.goal.id, other.goal.id]
+      checks_query = from(c in Check, where: c.goal_id in ^goal_ids, order_by: c.id)
+      checks_before = Repo.all(checks_query)
+      activities_before = Repo.aggregate(Activity, :count)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(other.check)}
+
+      assert {404, _} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
+      assert {404, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "goals/toggle_check", inputs)
+      assert Repo.all(checks_query) == checks_before
+      assert Repo.aggregate(Activity, :count) == activities_before
     end
 
     test "it toggles check from false to true", ctx do
