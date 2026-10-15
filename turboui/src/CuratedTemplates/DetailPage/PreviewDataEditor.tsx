@@ -20,8 +20,14 @@ export function PreviewDataEditor({ template, onSave }: Props) {
       const preview = form.values.preview_data;
       const result = await onSave(
         JSON.stringify({
-          entries: (preview.entries ?? []).map(({ date, value }) => ({ date, value: numeric(value) })),
-          annotations: preview.annotations ?? [],
+          entries: (preview.entries ?? []).map(({ period_offset, value }) => ({
+            period_offset: numeric(period_offset),
+            value: numeric(value),
+          })),
+          annotations: (preview.annotations ?? []).map(({ period_offset, title }) => ({
+            period_offset: numeric(period_offset),
+            title,
+          })),
         }),
       );
       if (result.errors.length) throw new ValidationFailure(result.errors);

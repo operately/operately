@@ -42,7 +42,7 @@ defmodule OperatelyEE.AdminApi.CuratedTemplates.CreateTest do
     end
 
     test "creates a template with separately persisted preview data", ctx do
-      preview = %{"entries" => [%{"date" => "2026-09-30", "value" => 416}], "annotations" => []}
+      preview = %{"entries" => [%{"period_offset" => -1, "value" => 416}], "annotations" => []}
       inputs = Map.put(payload(:kpi), :preview_data, Jason.encode!(preview))
       assert {200, %{template: returned, errors: []}} = admin_mutation(ctx.conn, [:curated_templates, :create], inputs)
       assert Jason.decode!(returned.preview_data) == preview

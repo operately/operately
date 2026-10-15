@@ -36,8 +36,8 @@ test.each(["kpi", "goal", "project"] as const)("renders a read-only %s preview",
 test("populated KPI previews show the chart and history without editing controls", () => {
   const { container } = setup("kpi", {
     previewData: JSON.stringify({
-      entries: [{ date: "2026-08-31", value: 345 }, { date: "2026-09-30", value: 416 }],
-      annotations: [{ date: "2026-09-01", title: "Campaign" }],
+      entries: [{ period_offset: -2, value: 345 }, { period_offset: -1, value: 416 }],
+      annotations: [{ period_offset: -1, title: "Campaign" }],
     }),
   });
   expect(screen.getByTestId("kpi-line-chart")).toBeInTheDocument();

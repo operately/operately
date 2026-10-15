@@ -20,14 +20,14 @@ defmodule Operately.CuratedTemplates.TemplateTest do
     assert changeset(:kpi, %{"name" => "Revenue", "unit" => "USD", "cadence" => "monthly"}, :published).valid?
   end
 
-  test "definition edits revalidate existing preview data" do
+  test "cadence edits preserve relative preview periods" do
     definition = %{"name" => "Revenue", "unit" => "USD", "cadence" => "weekly"}
-    preview = %{"entries" => [%{"date" => "2026-09-01", "value" => 10}, %{"date" => "2026-09-30", "value" => 20}]}
+    preview = %{"entries" => [%{"period_offset" => -2, "value" => 10}, %{"period_offset" => -1, "value" => 20}]}
     template = %Template{title: "Revenue", slug: "revenue", type: :kpi, state: :published, definition: definition, preview_data: preview}
     assert Template.changeset(template, %{title: "Renamed"}).valid?
     cs = Template.changeset(template, %{definition: %{definition | "cadence" => "monthly"}})
-    refute cs.valid?
-    assert Enum.any?(Operately.CuratedTemplates.Definitions.errors(cs), fn {path, _} -> path == "preview_data.entries" end)
+    assert cs.valid?
+    assert Ecto.Changeset.get_field(cs, :preview_data)["entries"] == preview["entries"]
     assert Template.changeset(template, %{definition: %{definition | "cadence" => "monthly"}, preview_data: %{}}).valid?
   end
 

@@ -5472,7 +5472,7 @@ msgid "Add an Image or File"
 msgstr "Adicionar uma imagem ou arquivo"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:94
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:96
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:112
@@ -5545,7 +5545,7 @@ msgid "Add link"
 msgstr "Adicionar link"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:44
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:54
 msgid "Add measurement"
 msgstr "Adicionar medição"
 
@@ -6063,7 +6063,7 @@ msgid "Annotated KPI: %{title}"
 msgstr "Anotou o KPI: %{title}"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:46
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:56
 msgid "Annotations"
 msgstr "Anotações"
 
@@ -8946,8 +8946,6 @@ msgid "Database ID"
 msgstr "ID do banco de dados"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:19
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:49
 #: ../turboui/src/DateField/DateDisplay.tsx:20
 #: ../turboui/src/DateField/index.tsx:109
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:108
@@ -12207,7 +12205,7 @@ msgid "Invalid float: %{value}"
 msgstr "Número decimal inválido: %{value}"
 
 #.elixir
-#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:67
+#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:69
 msgid "Invalid folder move"
 msgstr "Movimentação de pasta inválida"
 
@@ -15522,6 +15520,12 @@ msgid "People with Direct Access"
 msgstr "Pessoas com acesso direto"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:26
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:61
+msgid "Period offset"
+msgstr "Deslocamento do período"
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:214
 msgid "Permanently delete the company and all its resources. This action cannot be undone."
 msgstr "Exclua permanentemente a empresa e todos os seus recursos. Esta ação não pode ser desfeita."
@@ -16752,8 +16756,8 @@ msgstr "Lembretes"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:187
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:33
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:66
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:43
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:81
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:130
 msgid "Remove"
 msgstr "Remover"
@@ -17631,7 +17635,7 @@ msgid "Save draft"
 msgstr "Salvar rascunho"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:54
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:62
 msgid "Save example data"
 msgstr "Salvar dados de exemplo"
 
@@ -19257,7 +19261,7 @@ msgid "Target"
 msgstr "Meta"
 
 #.elixir
-#: lib/operately_web/api/goals.ex:973
+#: lib/operately_web/api/goals.ex:986
 msgid "Target not found"
 msgstr "Meta não encontrada"
 
@@ -19643,7 +19647,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "A data de conclusão do marco \"%{title}\" foi atualizada"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:74
+#: lib/operately_web/mcp/executor.ex:75
 msgid "The %{name} tool is not implemented yet."
 msgstr "A ferramenta %{name} ainda não foi implementada."
 
@@ -20097,7 +20101,7 @@ msgid "The requested resource was not found"
 msgstr "O recurso solicitado não foi encontrado"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:81
+#: lib/operately_web/mcp/executor.ex:82
 msgid "The requested resource was not found or is not accessible."
 msgstr "O recurso solicitado não foi encontrado ou não está acessível."
 
@@ -20112,12 +20116,12 @@ msgid "The reviewer was changed to %{personName}."
 msgstr "O reviewer foi alterado para %{personName}."
 
 #.elixir
-#: lib/operately_web/api/goals/create.ex:50
+#: lib/operately_web/api/goals/create.ex:51
 msgid "The selected champion doesn't have access to the selected space"
 msgstr "O champion selecionado não tem acesso ao espaço selecionado"
 
 #.elixir
-#: lib/operately_web/api/goals/create.ex:51
+#: lib/operately_web/api/goals/create.ex:52
 msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "O reviewer selecionado não tem acesso ao espaço selecionado"
 
@@ -20206,7 +20210,7 @@ msgid "The template could not be duplicated. Try again."
 msgstr "Não foi possível duplicar o template. Tente novamente."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:34
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:42
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:42
 msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
 msgstr "Não foi possível salvar o template. Suas alterações foram mantidas. Recarregue a página se outro administrador o tiver alterado."
@@ -20250,12 +20254,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "A solicitação de token não contém parâmetros obrigatórios ou contém valores inválidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:95
+#: lib/operately_web/mcp/executor.ex:96
 msgid "The tool could not complete the request with the provided data."
 msgstr "A ferramenta não conseguiu concluir a solicitação com os dados fornecidos."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:102
+#: lib/operately_web/mcp/executor.ex:103
 msgid "The tool could not complete the request."
 msgstr "A ferramenta não conseguiu concluir a solicitação."
 
@@ -21898,6 +21902,11 @@ msgid "Usage and limits"
 msgstr "Uso e limites"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:17
+msgid "Use 0 for the current period, -1 for the previous period, and -2 for two periods ago. Periods follow the KPI cadence: months or weeks starting on Monday."
+msgstr "Use 0 para o período atual, -1 para o período anterior e -2 para dois períodos atrás. Os períodos seguem a frequência do KPI: meses ou semanas que começam na segunda-feira."
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:84
 msgid "Use API tokens to access Operately programmatically from scripts, integrations, and automation tools."
 msgstr "Use tokens de API para acessar Operately por meio de scripts, integrações e ferramentas de automação."
@@ -21973,7 +21982,7 @@ msgstr "Validando pacote"
 #~ msgstr "Falha na validação. Tente novamente."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:20
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:30
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:424
 msgid "Value"
 msgstr "Valor"
@@ -22911,7 +22920,7 @@ msgid "You cannot delete the general space"
 msgstr "Você não pode excluir o espaço geral"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:88
+#: lib/operately_web/mcp/executor.ex:89
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "Você não tem permissão para realizar esta operação ou a empresa está no modo somente leitura."
 
@@ -25593,7 +25602,7 @@ msgstr "Cargo"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:52
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:67
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:94
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"

@@ -5561,7 +5561,7 @@ msgid "Add an Image or File"
 msgstr "Добавить изображение или файл"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:94
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:96
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:125
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:112
@@ -5634,7 +5634,7 @@ msgid "Add link"
 msgstr "Добавить ссылку"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:44
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:54
 msgid "Add measurement"
 msgstr "Добавить измерение"
 
@@ -6129,7 +6129,7 @@ msgid "Annotated KPI: %{title}"
 msgstr "Добавлено примечание к KPI: %{title}"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:46
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:56
 msgid "Annotations"
 msgstr "Примечания"
 
@@ -8941,8 +8941,6 @@ msgid "Database ID"
 msgstr "ID базы данных"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:19
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:49
 #: ../turboui/src/DateField/DateDisplay.tsx:20
 #: ../turboui/src/DateField/index.tsx:109
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:108
@@ -12071,7 +12069,7 @@ msgid "Invalid float: %{value}"
 msgstr "Некорректное число с плавающей точкой: %{value}"
 
 #.elixir
-#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:67
+#: lib/operately_web/api/resource_hubs/update_parent_folder.ex:69
 msgid "Invalid folder move"
 msgstr "Недопустимое перемещение папки"
 
@@ -15279,6 +15277,12 @@ msgid "People with Direct Access"
 msgstr "Люди с прямым доступом"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:26
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:61
+msgid "Period offset"
+msgstr "Смещение периода"
+
+#.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:214
 msgid "Permanently delete the company and all its resources. This action cannot be undone."
 msgstr "Навсегда удалить компанию и все её материалы. Это действие нельзя отменить."
@@ -16483,8 +16487,8 @@ msgstr "Напоминания"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:187
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:33
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:66
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:43
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:81
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:130
 msgid "Remove"
 msgstr "Удалить"
@@ -17342,7 +17346,7 @@ msgid "Save draft"
 msgstr "Сохранить черновик"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:54
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:62
 msgid "Save example data"
 msgstr "Сохранить пример данных"
 
@@ -18962,7 +18966,7 @@ msgid "Target"
 msgstr "Целевое значение"
 
 #.elixir
-#: lib/operately_web/api/goals.ex:973
+#: lib/operately_web/api/goals.ex:986
 msgid "Target not found"
 msgstr "Показатель не найден"
 
@@ -19343,7 +19347,7 @@ msgid "The \"%{title}\" milestone due date was updated"
 msgstr "Срок выполнения вехи «%{title}» обновлён"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:74
+#: lib/operately_web/mcp/executor.ex:75
 msgid "The %{name} tool is not implemented yet."
 msgstr "Инструмент %{name} пока не реализован."
 
@@ -19793,7 +19797,7 @@ msgid "The requested resource was not found"
 msgstr "Запрошенный ресурс не найден"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:81
+#: lib/operately_web/mcp/executor.ex:82
 msgid "The requested resource was not found or is not accessible."
 msgstr "Запрошенный ресурс не был найден или недоступен."
 
@@ -19808,12 +19812,12 @@ msgid "The reviewer was changed to %{personName}."
 msgstr "Роль «Куратор» назначена участнику %{personName}."
 
 #.elixir
-#: lib/operately_web/api/goals/create.ex:50
+#: lib/operately_web/api/goals/create.ex:51
 msgid "The selected champion doesn't have access to the selected space"
 msgstr "Выбранный ответственный не имеет доступа к выбранному пространству"
 
 #.elixir
-#: lib/operately_web/api/goals/create.ex:51
+#: lib/operately_web/api/goals/create.ex:52
 msgid "The selected reviewer doesn't have access to the selected space"
 msgstr "Выбранный куратор не имеет доступа к выбранному пространству"
 
@@ -19902,7 +19906,7 @@ msgid "The template could not be duplicated. Try again."
 msgstr "Не удалось создать копию шаблона. Попробуйте снова."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:34
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:42
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:42
 msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
 msgstr "Ваши изменения сохранены."
@@ -19941,12 +19945,12 @@ msgid "The token request is missing required parameters or contains invalid valu
 msgstr "В запросе токена отсутствуют требуемые параметры или содержатся недействительные значения."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:95
+#: lib/operately_web/mcp/executor.ex:96
 msgid "The tool could not complete the request with the provided data."
 msgstr "Инструмент не смог выполнить запрос с предоставленными данными."
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:102
+#: lib/operately_web/mcp/executor.ex:103
 msgid "The tool could not complete the request."
 msgstr "Инструмент не смог выполнить запрос."
 
@@ -21548,6 +21552,11 @@ msgid "Usage and limits"
 msgstr "Использование и ограничения"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:17
+msgid "Use 0 for the current period, -1 for the previous period, and -2 for two periods ago. Periods follow the KPI cadence: months or weeks starting on Monday."
+msgstr "Укажите 0 для текущего периода, -1 для предыдущего и -2 для периода перед ним. Периоды соответствуют частоте KPI: месяцы или недели, начинающиеся в понедельник."
+
+#.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:84
 msgid "Use API tokens to access Operately programmatically from scripts, integrations, and automation tools."
 msgstr "Используйте API-токены для программного доступа к Operately из скриптов, интеграций и инструментов автоматизации."
@@ -21613,7 +21622,7 @@ msgid "Validating Package"
 msgstr "Проверка пакета данных"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:20
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:30
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:424
 msgid "Value"
 msgstr "Значение"
@@ -22543,7 +22552,7 @@ msgid "You cannot delete the general space"
 msgstr "Вы не можете удалить общее пространство"
 
 #.elixir
-#: lib/operately_web/mcp/executor.ex:88
+#: lib/operately_web/mcp/executor.ex:89
 msgid "You do not have permission to perform this operation, or the company is read-only."
 msgstr "У вас нет прав на эту операцию или компания доступна только для чтения."
 
@@ -25106,7 +25115,7 @@ msgstr "Должность"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:52
+#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:67
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:94
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
