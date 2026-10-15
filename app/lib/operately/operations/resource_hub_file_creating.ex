@@ -3,6 +3,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Billing
+  alias Operately.Blobs
   alias Operately.Companies
   alias Operately.ResourceHubs.Parent
   alias Operately.ResourceHubs.{File, Node}
@@ -12,7 +13,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
   def run(author, hub, attrs) do
     company = Companies.get_company!(author.company_id)
     previous_storage_usage = Billing.company_storage_bytes(company)
-    multi = Multi.new()
+    multi = Multi.new() |> validate_blobs(author, attrs.files)
 
     attrs.files
     |> Enum.with_index()
@@ -29,9 +30,18 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     |> ResourceHubIndex.enqueue_resource(:search_files, :file, fn changes -> Enum.map(changes.result, & &1.id) end)
     |> insert_activity(author, hub)
     |> Repo.transaction()
-    |> Repo.extract_result(:result)
+    |> extract_result()
     |> maybe_enqueue_near_limit_warning(company, previous_storage_usage)
   end
+
+  defp validate_blobs(multi, author, files) do
+    blob_ids = Enum.flat_map(files, fn file -> [file.blob_id, file[:preview_blob_id]] end) |> Enum.reject(&is_nil/1)
+
+    Multi.run(multi, :blobs, fn _, _ -> Blobs.lock_for_attachment(author, blob_ids) end)
+  end
+
+  defp extract_result({:error, :blobs, :not_found, _}), do: {:error, :not_found}
+  defp extract_result(result), do: Repo.extract_result(result, :result)
 
   defp insert_subscriptions_list(multi, index, attrs) do
     multi
@@ -96,14 +106,12 @@ defmodule Operately.Operations.ResourceHubFileCreating do
 
   defp update_blobs(multi, file, index) do
     multi
-    |> Multi.run(blob_name(index), fn _, _ ->
-      blob = Operately.Blobs.get_blob!(file.blob_id)
-      Operately.Blobs.update_blob(blob, %{status: :uploaded})
+    |> Multi.run(blob_name(index), fn _, changes ->
+      Blobs.update_blob(Map.fetch!(changes.blobs, file.blob_id), %{status: :uploaded})
     end)
-    |> Multi.run(blob_preview_name(index), fn _, _ ->
+    |> Multi.run(blob_preview_name(index), fn _, changes ->
       if file[:preview_blob_id] do
-        blob = Operately.Blobs.get_blob!(file.preview_blob_id)
-        Operately.Blobs.update_blob(blob, %{status: :uploaded})
+        Blobs.update_blob(Map.fetch!(changes.blobs, file.preview_blob_id), %{status: :uploaded})
       else
         {:ok, nil}
       end
