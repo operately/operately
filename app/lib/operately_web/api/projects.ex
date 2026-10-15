@@ -644,8 +644,8 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def find_milestone(multi, milestone_id) do
-      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
-        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me, project: project} ->
+        case Operately.Projects.Milestone.get(me, id: milestone_id, project_id: project.id, opts: [preload: [:project]]) do
           {:ok, milestone} -> {:ok, milestone}
           {:error, _} -> {:error, {:not_found, gettext("Milestone not found")}}
         end
