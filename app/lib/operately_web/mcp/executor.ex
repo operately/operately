@@ -44,6 +44,7 @@ defmodule OperatelyWeb.Mcp.Executor do
       {:error, :invalid_arguments} = error -> error
       {:error, :not_implemented} -> {:ok, not_implemented_result(definition.name)}
       {:error, :not_found} -> {:ok, not_found_result()}
+      {:error, :not_found, _message} -> {:ok, not_found_result()}
       {:error, :forbidden} -> {:ok, forbidden_result()}
       {:error, :bad_request} -> {:ok, bad_request_result()}
       {:error, :internal_server_error} -> {:ok, internal_error_result()}
