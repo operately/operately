@@ -135,6 +135,19 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert docs_catalog["endpoint_count"] == result.endpoint_count
   end
 
+  test "legacy goal parent endpoint remains routable but is omitted from catalog and docs", %{out_dir: out_dir} do
+    mutations = OperatelyWeb.Api.External.__mutations__()
+    assert mutations["goals/change_parent"].handler == OperatelyWeb.Api.Goals.UpdateParentGoal
+
+    catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
+    refute Enum.any?(catalog.endpoints, &(&1.full_name == "goals/change_parent"))
+    assert Enum.any?(catalog.endpoints, &(&1.full_name == "goals/update_parent_goal"))
+
+    Generator.generate(out_dir: out_dir)
+    refute File.exists?(Path.join(out_dir, "help/api/goals/change_parent.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/goals/update_parent_goal.mdx"))
+  end
+
   test "build_catalog uses the effective default for the selected api module" do
     external_catalog = Generator.build_catalog(OperatelyWeb.Api.External, "/api/external/v1")
     internal_catalog = Generator.build_catalog(OperatelyWeb.Api.Internal, "/api/v2")

@@ -5006,7 +5006,7 @@ export interface GoalsChangeParentInput {
 }
 
 export interface GoalsChangeParentResult {
-  goal?: Goal | null;
+  success: boolean;
 }
 
 export interface GoalsCloseInput {
