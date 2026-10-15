@@ -374,6 +374,70 @@ defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
       |> Factory.enable_space_tool(:space, :kpis)
     end
 
+    test "omits another company's KPIs for browser and external API callers", ctx do
+      foreign =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.enable_space_tool(:space, :kpis)
+
+      kpi = kpi_fixture(foreign.creator, space_id: foreign.space.id, name: "Confidential revenue")
+      kpi_entry_fixture(foreign.creator, kpi, value: 123456.0)
+      ctx = Factory.add_api_token(ctx, :token, :creator)
+      inputs = %{space_id: Paths.space_id(foreign.space)}
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], inputs)
+      assert res.tools.kpis == []
+
+      assert {200, res} = external_query(ctx.conn, ctx.token, "spaces/list_tools", inputs)
+      assert res.tools.kpis == []
+    end
+
+    test "omits inaccessible space KPIs while preserving independently accessible projects and goals", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:viewer)
+        |> Factory.add_space(:private_space, company_permissions: Binding.no_access())
+        |> Factory.enable_space_tool(:private_space, :kpis)
+        |> Factory.add_project(:project, :private_space, company_access_level: Binding.no_access(), space_access_level: Binding.no_access())
+        |> Factory.add_goal(:goal, :private_space, company_access: Binding.no_access(), space_access: Binding.no_access())
+        |> Factory.log_in_person(:viewer)
+
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.private_space.id)
+      kpi_entry_fixture(ctx.creator, kpi)
+
+      project_context = Operately.Access.get_context!(project_id: ctx.project.id)
+      goal_context = Operately.Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, _} = Operately.Access.bind_person(project_context, ctx.viewer.id, Binding.view_access())
+      {:ok, _} = Operately.Access.bind_person(goal_context, ctx.viewer.id, Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.private_space)})
+      assert res.tools.kpis == []
+      assert Enum.map(res.tools.projects, & &1.id) == [Paths.project_id(ctx.project)]
+      assert Enum.map(res.tools.goals, & &1.id) == [Paths.goal_id(ctx.goal)]
+    end
+
+    test "space viewers receive KPIs in name order with champions and entries", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:viewer)
+        |> Factory.add_space(:private_space, company_permissions: Binding.no_access())
+        |> Factory.enable_space_tool(:private_space, :kpis)
+        |> Factory.log_in_person(:viewer)
+
+      context = Operately.Access.get_context!(group_id: ctx.private_space.id)
+      {:ok, _} = Operately.Access.bind_person(context, ctx.viewer.id, Binding.view_access())
+      kpi_fixture(ctx.creator, space_id: ctx.private_space.id, name: "Zeta")
+      kpi = kpi_fixture(ctx.creator, space_id: ctx.private_space.id, name: "Alpha")
+      kpi_entry_fixture(ctx.creator, kpi, value: 42.0)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.private_space)})
+      assert Enum.map(res.tools.kpis, & &1.name) == ["Alpha", "Zeta"]
+      assert hd(res.tools.kpis).champion.id == Paths.person_id(ctx.creator)
+      assert hd(res.tools.kpis).latest_entry.value == 42.0
+      assert Enum.map(hd(res.tools.kpis).entries, & &1.value) == [42.0]
+    end
+
     test "each KPI carries its latest entry and the same recent history window as the KPIs tool", ctx do
       kpi = kpi_fixture(ctx.creator, space_id: ctx.space.id, name: "Sign-ups")
 
