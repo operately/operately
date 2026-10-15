@@ -946,9 +946,14 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def update_parent_goal(multi, goal_id) do
-      Ecto.Multi.run(multi, :updated_project, fn _repo, %{project: project} ->
-        {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal_id})
-        {:ok, Repo.preload(project, :goal)}
+      multi
+      |> Ecto.Multi.run(:parent_goal, fn _repo, %{project: project, me: me} ->
+        if goal_id, do: Operately.Goals.Goal.get(me, id: goal_id, company_id: project.company_id), else: {:ok, nil}
+      end)
+      |> Ecto.Multi.run(:updated_project, fn _repo, %{project: project, parent_goal: parent_goal} ->
+        with {:ok, project} <- Operately.Projects.update_project(project, %{goal_id: parent_goal && parent_goal.id}) do
+          {:ok, %{project | goal: parent_goal}}
+        end
       end)
     end
 

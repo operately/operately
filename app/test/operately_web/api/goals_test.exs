@@ -50,6 +50,71 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "goals/update_parent_goal destination authorization" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space, company_permissions: Binding.edit_access())
+      |> Factory.add_goal(:source_goal, :source_space, champion: :actor, reviewer: :actor)
+      |> Factory.add_project(:source_project, :source_space)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :foreign_accessible, :inaccessible, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} parent before writes", ctx do
+        destination_id =
+          case @destination do
+            scope when scope in [:foreign, :foreign_accessible] ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+
+              if scope == :foreign_accessible do
+                context = Operately.Access.get_context!(goal_id: foreign.goal.id)
+                {:ok, _} = Operately.Access.bind_person(context, ctx.actor.id, Binding.view_access())
+              end
+
+              foreign.goal.id
+
+            :inaccessible ->
+              other = ctx |> Factory.add_goal(:private_goal, :source_space, company_access: Binding.no_access(), space_access: Binding.no_access())
+              other.private_goal.id
+
+            :missing ->
+              Ecto.UUID.generate()
+          end
+
+        counts = Enum.map([Operately.Goals.Goal, Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList], &Repo.aggregate(&1, :count))
+
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {404, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{goal_id: ctx.source_goal.id, parent_goal_id: destination_id})
+        assert {404, _} = external_mutation(ctx.conn, ctx.destination_token, "goals/update_parent_goal", %{goal_id: ctx.source_goal.id, parent_goal_id: destination_id})
+
+        assert Repo.reload(ctx.source_goal).parent_goal_id == nil
+        assert Repo.reload(ctx.source_project).goal_id == nil
+        assert Enum.map([Operately.Goals.Goal, Operately.Projects.Project, Operately.Activities.Activity, Operately.Notifications.SubscriptionList], &Repo.aggregate(&1, :count)) == counts
+      end
+    end
+
+    test "rejects self-parenting and descendant parents", ctx do
+      ctx = ctx |> Factory.add_goal(:child, :source_space, parent_goal: :source_goal) |> Factory.add_goal(:grandchild, :source_space, parent_goal: :child)
+      activities = Repo.aggregate(Operately.Activities.Activity, :count)
+
+      for parent <- [ctx.source_goal, ctx.child, ctx.grandchild] do
+        assert {400, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{goal_id: ctx.source_goal.id, parent_goal_id: parent.id})
+        assert Repo.reload(ctx.source_goal).parent_goal_id == nil
+        assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+      end
+    end
+
+    test "accepts a visible parent in the same company", ctx do
+      ctx = Factory.add_goal(ctx, :visible_parent, :source_space, company_access: Binding.view_access(), space_access: Binding.no_access())
+      destination_id = ctx.visible_parent.id
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{goal_id: ctx.source_goal.id, parent_goal_id: destination_id})
+    end
+  end
+
   describe "count children" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:goals, :count_children], %{})
@@ -489,6 +554,50 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "destination space authorization" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space)
+      |> Factory.add_goal(:source_goal, :source_space, champion: :actor, reviewer: :actor)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :inaccessible, :view_only, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} space before writes", ctx do
+        destination_id =
+          case @destination do
+            :foreign ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space)
+              foreign.space.id
+
+            :missing ->
+              Ecto.UUID.generate()
+
+            scope ->
+              access = if scope == :view_only, do: Binding.view_access(), else: Binding.no_access()
+              Factory.add_space(ctx, :destination, company_permissions: access).destination.id
+          end
+
+        activities = Repo.aggregate(Activity, :count)
+        expected = if @destination == :view_only, do: 403, else: 404
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {^expected, _} = mutation(ctx.conn, [:goals, :update_space], %{goal_id: ctx.source_goal.id, space_id: destination_id})
+        assert {^expected, _} = external_mutation(ctx.conn, ctx.destination_token, "goals/update_space", %{goal_id: ctx.source_goal.id, space_id: destination_id})
+        assert Repo.reload(ctx.source_goal).group_id == ctx.source_space.id
+        assert Repo.aggregate(Activity, :count) == activities
+      end
+    end
+
+    test "accepts a destination with edit access", ctx do
+      ctx = Factory.add_space(ctx, :destination, company_permissions: Binding.edit_access())
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_space], %{goal_id: ctx.source_goal.id, space_id: ctx.destination.id})
+      assert Repo.reload(ctx.source_goal).group_id == ctx.destination.id
+    end
+  end
+
   describe "update space" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_space], %{})
@@ -542,7 +651,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
-        new_space = create_space(ctx)
+        new_space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.edit_access()})
 
         assert {code, res} = mutation(ctx.conn, [:goals, :update_space], %{
           goal_id: Paths.goal_id(goal),

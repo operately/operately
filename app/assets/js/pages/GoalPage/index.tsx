@@ -154,7 +154,7 @@ function Page() {
   });
 
   const parentGoalSearch = useParentGoalSearch({ type: "goal", id: goal.id });
-  const spaceSearch = useSpaceSearch();
+  const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
 
   const richTextHandlers = useRichTextHandlers({
     taskList: {

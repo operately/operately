@@ -6,6 +6,16 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.MoveToSpaceTest do
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
 
+  test "rejects a foreign destination" do
+    ctx = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.add_goal(:goal, :space)
+    foreign = %{} |> Factory.setup() |> Factory.add_space(:space)
+    activities = Repo.aggregate(Operately.Activities.Activity, :count)
+
+    assert {:error, :not_found} = MoveToSpace.call(ToolConnHelper.conn(ctx), %{"goal_id" => Paths.goal_id(ctx.goal), "space_id" => Paths.space_id(foreign.space)})
+    assert ToolConnHelper.reload(ctx.goal).group_id == ctx.space.id
+    assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+  end
+
   test "call/2 moves a goal to another space" do
     ctx =
       %{}

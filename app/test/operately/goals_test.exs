@@ -79,6 +79,58 @@ defmodule Operately.GoalsTest do
     end
   end
 
+  describe "validate_parent_goal/2" do
+    setup ctx do
+      {:ok, creator: ctx.person}
+    end
+
+    test "allows removing the parent", ctx do
+      ctx = Factory.add_goal(ctx, :child, :group, parent_goal: :goal)
+
+      assert Goals.validate_parent_goal(ctx.child, nil) == {:ok, nil}
+    end
+
+    test "allows an unrelated goal as the parent", ctx do
+      ctx = Factory.add_goal(ctx, :other_goal, :group)
+
+      assert Goals.validate_parent_goal(ctx.goal, ctx.other_goal) == {:ok, ctx.other_goal}
+    end
+
+    test "allows keeping the current parent", ctx do
+      ctx = Factory.add_goal(ctx, :child, :group, parent_goal: :goal)
+
+      assert Goals.validate_parent_goal(ctx.child, ctx.goal) == {:ok, ctx.goal}
+    end
+
+    test "allows an ancestor as the parent", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :group, parent_goal: :goal)
+        |> Factory.add_goal(:grandchild, :group, parent_goal: :child)
+
+      assert Goals.validate_parent_goal(ctx.grandchild, ctx.goal) == {:ok, ctx.goal}
+    end
+
+    test "rejects the goal itself as the parent", ctx do
+      assert Goals.validate_parent_goal(ctx.goal, ctx.goal) == {:error, :bad_request}
+    end
+
+    test "rejects a direct child as the parent", ctx do
+      ctx = Factory.add_goal(ctx, :child, :group, parent_goal: :goal)
+
+      assert Goals.validate_parent_goal(ctx.goal, ctx.child) == {:error, :bad_request}
+    end
+
+    test "rejects an indirect descendant as the parent", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :group, parent_goal: :goal)
+        |> Factory.add_goal(:grandchild, :group, parent_goal: :child)
+
+      assert Goals.validate_parent_goal(ctx.goal, ctx.grandchild) == {:error, :bad_request}
+    end
+  end
+
   describe "goal deletion" do
     setup ctx do
       ctx

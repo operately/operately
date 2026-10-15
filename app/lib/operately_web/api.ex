@@ -18,7 +18,8 @@ defmodule OperatelyWeb.Api do
         query(:count_children, OperatelyWeb.Api.Goals.CountChildren)
 
         mutation(:create, OperatelyWeb.Api.Goals.Create)
-        mutation(:change_parent, OperatelyWeb.Api.Goals.ChangeParent)
+        # Keep the legacy route available, but expose only update_parent_goal in the CLI catalog and API docs.
+        mutation(:change_parent, OperatelyWeb.Api.Goals.UpdateParentGoal, catalog: :omit)
         mutation(:close, OperatelyWeb.Api.Goals.Close)
         mutation(:delete, OperatelyWeb.Api.Goals.Delete)
         mutation(:create_access_members, OperatelyWeb.Api.Goals.CreateAccessMembers)

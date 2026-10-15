@@ -23805,7 +23805,7 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "endpoint_count": 255,
+  "endpoint_count": 254,
   "endpoints": [
     {
       "name": "create",
@@ -27652,53 +27652,6 @@
       "method": "POST",
       "namespace": "goals",
       "docstring": "Acknowledges a goal retrospective by goal ID."
-    },
-    {
-      "name": "change_parent",
-      "type": "mutation",
-      "path": "/api/external/v1/goals/change_parent",
-      "handler": "OperatelyWeb.Api.Goals.ChangeParent",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "nullable": true,
-          "has_default": false
-        }
-      ],
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "nullable": false,
-          "has_default": false
-        },
-        {
-          "default": null,
-          "name": "parent_goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "nullable": true,
-          "has_default": false
-        }
-      ],
-      "full_name": "goals/change_parent",
-      "method": "POST",
-      "namespace": "goals",
-      "docstring": "Changes the parent goal of a goal."
     },
     {
       "name": "close",
@@ -40949,6 +40902,6 @@
     }
   ],
   "query_count": 76,
-  "mutation_count": 179,
+  "mutation_count": 178,
   "schema_version": 1
 }

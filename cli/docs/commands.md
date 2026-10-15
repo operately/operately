@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 244
+- Endpoints: 243
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -59,7 +59,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents update_parent_folder` | `op documents update_parent_folder` | `POST` | `/api/external/v1/documents/update_parent_folder` |
 | `goals acknowledge_check_in` | `op goals acknowledge_check_in` | `POST` | `/api/external/v1/goals/acknowledge_check_in` |
 | `goals acknowledge_retrospective` | `op goals acknowledge_retrospective` | `POST` | `/api/external/v1/goals/acknowledge_retrospective` |
-| `goals change_parent` | `op goals change_parent` | `POST` | `/api/external/v1/goals/change_parent` |
 | `goals close` | `op goals close` | `POST` | `/api/external/v1/goals/close` |
 | `goals count_children` | `op goals count_children` | `GET` | `/api/external/v1/goals/count_children` |
 | `goals create` | `op goals create` | `POST` | `/api/external/v1/goals/create` |

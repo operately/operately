@@ -24,7 +24,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.ChangeParent do
 
   @impl true
   def assert(response, ctx) do
-    assert response.goal.id == Paths.goal_id(ctx.goal)
+    assert response.success
+    assert Operately.Repo.reload(ctx.goal).parent_goal_id == ctx.parent_goal.id
     refute Map.has_key?(response, :error)
   end
 end

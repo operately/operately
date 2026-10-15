@@ -209,7 +209,7 @@ defmodule OperatelyWeb.Api.Goals do
           space_id: changes.goal.group_id,
           goal_id: changes.goal.id,
           old_parent_goal_id: changes.goal.parent_goal_id,
-          new_parent_goal_id: inputs.parent_goal_id
+          new_parent_goal_id: changes.updated_goal.parent_goal_id
         }
       end)
       |> Steps.commit()
@@ -901,13 +901,26 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_parent_goal(multi, parent_goal_id) do
-      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
-        Operately.Goals.Goal.changeset(goal, %{parent_goal_id: parent_goal_id})
+      multi
+      |> Ecto.Multi.run(:parent_goal, fn _repo, %{goal: goal, me: me} ->
+        if parent_goal_id, do: Goal.get(me, id: parent_goal_id, company_id: goal.company_id), else: {:ok, nil}
+      end)
+      |> Ecto.Multi.run(:validate_parent_goal, fn _repo, %{goal: goal, parent_goal: parent_goal} ->
+        Operately.Goals.validate_parent_goal(goal, parent_goal)
+      end)
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal, parent_goal: parent_goal} ->
+        Goal.changeset(goal, %{parent_goal_id: parent_goal && parent_goal.id})
       end)
     end
 
     def update_space(multi, space_id) do
       multi
+      |> Ecto.Multi.run(:destination_space, fn _repo, %{goal: goal, me: me} ->
+        Operately.Groups.Group.get(me, id: space_id, company_id: goal.company_id)
+      end)
+      |> Ecto.Multi.run(:destination_permissions, fn _repo, %{destination_space: space, company_read_only: read_only} ->
+        Operately.Groups.Permissions.check(space.request_info.access_level, :can_edit, company_read_only: read_only)
+      end)
       |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
       end)
@@ -1062,6 +1075,9 @@ defmodule OperatelyWeb.Api.Goals do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, :bad_request, _changes} ->
+          {:error, :bad_request}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
