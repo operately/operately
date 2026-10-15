@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateTargetTest do
   alias Operately.Goals.Target
   alias Operately.People
   alias Operately.Support.Factory
+  alias OperatelyWeb.Mcp.Executor
   alias OperatelyWeb.Mcp.Tools.Goals.CreateTarget
   alias OperatelyWeb.Mcp.ToolConnHelper
   alias OperatelyWeb.Paths
@@ -72,5 +73,20 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.CreateTargetTest do
                "target_value" => 50,
                "unit" => "USD"
              })
+  end
+
+  test "returns a tool error when the goal is missing" do
+    ctx = Factory.setup(%{})
+
+    arguments = %{
+      "goal_id" => Paths.goal_id(Ecto.UUID.generate()),
+      "name" => "Revenue",
+      "start_value" => 0,
+      "target_value" => 100,
+      "unit" => "USD"
+    }
+
+    assert {:ok, definition} = Executor.fetch_definition("create_goal_target")
+    assert {:ok, %{"isError" => true}} = Executor.execute(ToolConnHelper.conn(ctx), definition, arguments)
   end
 end
