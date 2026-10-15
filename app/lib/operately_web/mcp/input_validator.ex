@@ -97,6 +97,14 @@ defmodule OperatelyWeb.Mcp.InputValidator do
     end
   end
 
+  defp validate_value(value, %{"type" => "number"} = schema, path) do
+    cond do
+      not is_number(value) -> invalid_type(path, "number")
+      is_number(schema["minimum"]) and value < schema["minimum"] -> {:error, {:invalid_minimum, path, schema["minimum"]}}
+      true -> :ok
+    end
+  end
+
   defp validate_value(value, %{"type" => "object"} = schema, path), do: validate_object(value, schema, path)
 
   defp validate_value(value, %{"type" => "array", "items" => items_schema}, path) when is_list(value) do
