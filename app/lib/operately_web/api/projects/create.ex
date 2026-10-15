@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Api.Projects.Create do
     |> run(:owners, fn ctx -> validate_owners(ctx.space, inputs) end)
     |> run(:attrs, fn ctx -> decode_inputs(ctx.me, ctx.space, inputs) end)
     |> run(:enforced_attrs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, ctx.attrs)} end)
+    |> run(:parent_goal, fn ctx -> load_parent_goal(ctx.me, ctx.space.company_id, inputs[:goal_id]) end)
     |> run(:operation, fn ctx -> ProjectCreation.run(%{ctx.enforced_attrs | analytics_context: OperatelyWeb.Analytics.context(conn)}) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -49,10 +50,14 @@ defmodule OperatelyWeb.Api.Projects.Create do
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :owners, _} -> {:error, :bad_request}
       {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :parent_goal, _} -> {:error, :not_found}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
   end
+
+  defp load_parent_goal(_me, _company_id, nil), do: {:ok, nil}
+  defp load_parent_goal(me, company_id, id), do: Operately.Goals.Goal.get(me, id: id, company_id: company_id)
 
   defp validate_owners(space, inputs) do
     case People.validate_active_company_members(space.company_id, [inputs[:champion_id], inputs[:reviewer_id]]) do
