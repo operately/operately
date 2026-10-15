@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import * as Forms from "../../Forms";
+import { showSuccessToast } from "../../Toasts";
 import { translationText } from "../../i18n";
 import type { CuratedTemplate, TemplateMutationResult, TemplatePreviewData } from "../types";
 import { PreviewDataFields } from "./PreviewDataFields";
@@ -31,6 +32,7 @@ export function PreviewDataEditor({ template, onSave }: Props) {
         }),
       );
       if (result.errors.length) throw new ValidationFailure(result.errors);
+      showSuccessToast(t("Success"), t("The example data has been saved."));
     },
     onError: (error: unknown) => {
       form.actions.addErrors(

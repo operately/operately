@@ -3,8 +3,12 @@ import { randomUUID } from "crypto";
 import { render, fireEvent, screen, waitFor, within, configure } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { TemplateEditor } from "./TemplateEditor";
+import { showSuccessToast } from "../../Toasts";
 import { templateFixture } from "../mockData";
 import { i18n, setupTestCatalog } from "../../../test/i18n";
+
+jest.mock("../../Toasts", () => ({ showSuccessToast: jest.fn() }));
+beforeEach(() => jest.clearAllMocks());
 
 setupTestCatalog();
 
@@ -28,6 +32,7 @@ test("changing a saved draft's type clears its incompatible example data", async
   fireEvent.click(screen.getByTestId("save-template-draft"));
   await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
   expect(onSave.mock.calls[0][0].previewData).toBe("{}");
+  expect(showSuccessToast).toHaveBeenCalledWith("Success", "The template has been saved.");
 });
 
 function setup(fail = false) {
@@ -85,6 +90,7 @@ test("failed validation retains edits and presents field errors", async () => {
     await waitFor(() => expect(screen.getByTestId("template-errors")).toBeInTheDocument());
     expect(field).toHaveValue("Keep this change");
     expect(field).toHaveAttribute("aria-invalid", "true");
+    expect(showSuccessToast).not.toHaveBeenCalled();
   } finally {
     log.mockRestore();
   }
@@ -97,6 +103,7 @@ test("publish submits the current unsaved content", async () => {
   await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
   expect(onSave.mock.calls[0][1]).toBe("publish");
   expect(JSON.parse(onSave.mock.calls[0][0].definition).name).toBe("New content");
+  expect(showSuccessToast).toHaveBeenCalledWith("Success", "The template has been saved.");
 });
 
 test("saving a draft does not publish it", async () => {
@@ -127,6 +134,7 @@ test("published templates update live content without offering a draft action", 
   fireEvent.click(screen.getByTestId("update-template"));
   await waitFor(() => expect(onSave).toHaveBeenCalledWith(expect.anything(), "publish"));
   await waitFor(() => expect(screen.getByTestId("cancel-template")).toBeEnabled());
+  expect(showSuccessToast).toHaveBeenCalledWith("Success", "The template has been saved.");
   fireEvent.click(screen.getByTestId("cancel-template"));
   expect(onCancel).toHaveBeenCalledTimes(1);
 });
