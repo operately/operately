@@ -10,6 +10,30 @@ defmodule Operately.Blobs do
 
   def get_blob!(id), do: Repo.get!(Blob, id)
 
+  @doc """
+  Locks the caller's company-file uploads for attachment inside a transaction.
+  Uploaded blobs remain usable for retries; deleted blobs and import artifacts do not.
+  """
+  def lock_for_attachment(person, blob_ids) do
+    blob_ids = blob_ids |> Enum.map(&Ecto.UUID.cast!/1) |> Enum.uniq()
+
+    blobs =
+      from(b in Blob,
+        where: b.id in ^blob_ids,
+        where: b.company_id == ^person.company_id and b.author_id == ^person.id,
+        where: b.purpose == :company_file and b.status in [:pending, :uploaded],
+        order_by: b.id,
+        lock: "FOR UPDATE"
+      )
+      |> Repo.all()
+
+    if length(blobs) == length(blob_ids) do
+      {:ok, Map.new(blobs, &{&1.id, &1})}
+    else
+      {:error, :not_found}
+    end
+  end
+
   def create_blob(attrs \\ %{}) do
     %Blob{}
     |> Blob.changeset(attrs)

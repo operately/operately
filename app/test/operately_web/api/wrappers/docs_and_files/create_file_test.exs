@@ -7,9 +7,9 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
   setup ctx do
     ctx
     |> Factory.setup()
-    |> Factory.add_api_token(:api_token, :creator, read_only: false)
     |> Factory.add_space(:space)
     |> Factory.add_space_member(:creator, :space)
+    |> Factory.add_api_token(:api_token, :creator, read_only: false)
     |> Factory.fetch_default_resource_hub(:hub, :space)
     |> Factory.add_blob(:blob)
   end
@@ -30,6 +30,20 @@ defmodule OperatelyWeb.Api.Wrappers.DocsAndFiles.CreateFileTest do
     files = ResourceHubs.list_files(ctx.hub)
     assert length(files) == 1
     assert hd(res.files).id == Paths.file_id(hd(files))
+  end
+
+  test "rejects another company's preview blob", ctx do
+    foreign = %{} |> Factory.setup() |> Factory.add_blob(:blob)
+
+    assert {404, _} =
+             external_mutation(ctx.conn, ctx.api_token, "documents/create_file", %{
+               space_id: Paths.space_id(ctx.space),
+               files: [%{blob_id: ctx.blob.id, preview_blob_id: foreign.blob.id, name: "File", description: RichText.rich_text("description", :as_string)}]
+             })
+
+    assert ResourceHubs.list_files(ctx.hub) == []
+    assert Repo.reload(ctx.blob).status == :pending
+    assert Repo.reload(foreign.blob).status == :pending
   end
 
   test "creates file by project_id", ctx do
