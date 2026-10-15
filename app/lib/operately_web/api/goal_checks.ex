@@ -208,8 +208,8 @@ defmodule OperatelyWeb.Api.GoalChecks do
     end
 
     def find_check(multi, check_id) do
-      Ecto.Multi.run(multi, :check, fn _repo, _ ->
-        case Operately.Repo.get(Operately.Goals.Check, check_id) do
+      Ecto.Multi.run(multi, :check, fn _repo, %{goal: goal} ->
+        case Operately.Repo.get_by(Operately.Goals.Check, id: check_id, goal_id: goal.id) do
           nil -> {:error, {:not_found, gettext("Check not found")}}
           check -> {:ok, check}
         end
