@@ -22,6 +22,14 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
     def call(_conn, _arguments), do: {:error, :bad_request}
   end
 
+  defmodule NotFoundTool do
+    def call(_conn, _arguments), do: {:error, :not_found}
+  end
+
+  defmodule DetailedNotFoundTool do
+    def call(_conn, _arguments), do: {:error, :not_found, "Private resource details"}
+  end
+
   defmodule RichTextTool do
     def call(_conn, %{"content" => content}) do
       send(self(), {:tool_source, content})
@@ -125,6 +133,19 @@ defmodule OperatelyWeb.Mcp.ExecutorTest do
 
   test "returns unknown tool for missing wrappers" do
     assert {:error, :unknown_tool} == Executor.fetch_definition("missing_tool")
+  end
+
+  test "normalizes detailed not-found errors to the same localized generic response", %{conn: conn} do
+    definition = Definition.new!(name: "not_found_tool", implementation: NotFoundTool, input_schema: %{"type" => "object", "properties" => %{}})
+    detailed_definition = %{definition | implementation: DetailedNotFoundTool}
+
+    for locale <- ["en", "pt_BR"] do
+      Gettext.with_locale(OperatelyWeb.Gettext, locale, fn ->
+        assert {:ok, %{"isError" => true} = result} = Executor.execute(conn, definition, %{})
+        assert Executor.execute(conn, detailed_definition, %{}) == {:ok, result}
+        refute Jason.encode!(result) =~ "Private resource details"
+      end)
+    end
   end
 
   test "requires an authenticated conn" do
