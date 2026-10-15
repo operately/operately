@@ -7,7 +7,9 @@ defmodule OperatelyWeb.Api.Companies.GrantResourceAccess do
   use OperatelyWeb.Api.Helpers
 
   require Logger
-  alias Operately.Access.Filters
+  alias Operately.Access.Binding
+  alias Operately.Companies.{Company, Permissions}
+  alias Operately.{Goals, Groups, People, Projects}
 
   inputs do
     field :person_id, :id, null: false
@@ -19,20 +21,63 @@ defmodule OperatelyWeb.Api.Companies.GrantResourceAccess do
   end
 
   def call(conn, inputs) do
-    {:ok, me} = find_me(conn)
-
-    if admin_has_edit_access?(me) do
+    with {:ok, me} <- find_me(conn),
+         :ok <- authorize_company(me, company_read_only(conn)),
+         :ok <- People.validate_active_company_members(me.company_id, [inputs.person_id]),
+         :ok <- authorize_resources(me, inputs) do
       process_grant(inputs)
     else
-      {:error, :forbidden}
+      {:error, :invalid_company_member} -> {:error, :bad_request}
+      {:error, _} = error -> error
     end
   end
 
-  defp admin_has_edit_access?(me) do
-    from(c in Operately.Companies.Company, where: c.id == ^me.company_id)
-    |> Filters.filter_by_admin_access(me.id)
-    |> Repo.exists?()
+  defp authorize_company(me, read_only) do
+    with {:ok, company} <- Company.get(me, id: me.company_id),
+         {:ok, :allowed} <- Permissions.check(company.request_info.access_level, :can_edit_members_access_levels, company_read_only: read_only) do
+      :ok
+    else
+      {:error, _} -> {:error, :forbidden}
+    end
   end
+
+  defp authorize_resources(me, inputs) do
+    Enum.reduce_while(inputs.resources, :ok, fn grant, :ok ->
+      case authorize_resource(me, inputs.person_id, grant) do
+        :ok -> {:cont, :ok}
+        error -> {:halt, error}
+      end
+    end)
+  end
+
+  defp authorize_resource(me, person_id, grant) do
+    {schema, permissions, permission} = resource_policy(grant.resource_type)
+
+    with {:ok, resource} <- schema.get(me, id: grant.resource_id, company_id: me.company_id),
+         {:ok, :allowed} <- permissions.check(resource.request_info.access_level, permission, company_read_only: false),
+         :ok <- validate_access_level(resource.request_info.access_level, Binding.from_atom(grant.access_level)),
+         :ok <- validate_existing_project_access(resource, person_id) do
+      :ok
+    end
+  end
+
+  defp resource_policy(:space), do: {Groups.Group, Groups.Permissions, :has_full_access}
+  defp resource_policy(:goal), do: {Goals.Goal, Goals.Permissions, :has_full_access}
+  defp resource_policy(:project), do: {Projects.Project, Projects.Permissions, :can_edit}
+
+  defp validate_access_level(caller_access, selected_access) do
+    # Callers cannot grant or modify access above their own level.
+    if selected_access <= caller_access, do: :ok, else: {:error, :forbidden}
+  end
+
+  defp validate_existing_project_access(%Projects.Project{} = project, person_id) do
+    case Projects.Project.get(person_id, id: project.id) do
+      {:ok, target_project} -> validate_access_level(project.request_info.access_level, target_project.request_info.access_level)
+      {:error, :not_found} -> :ok
+    end
+  end
+
+  defp validate_existing_project_access(_resource, _person_id), do: :ok
 
   defp process_grant(inputs) do
     case Operately.Operations.ResourceAccessGranting.run(inputs.person_id, inputs.resources) do
