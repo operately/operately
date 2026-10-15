@@ -10,7 +10,8 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Create do
     Definition.new!(
       name: "create_goal",
       title: "Create Goal",
-      description: "Creates a new goal in one space using the standard Operately access defaults for that space.",
+      description:
+        "Creates a new goal in one space using the standard Operately access defaults for that space. Add success criteria with create_goal_check after the goal exists. Completed checklist items count toward goal completion. Keep success criteria out of the description.",
       company_mode: :resource_derived,
       required_scopes: ["mcp:write"],
       safety_classification: :write,
@@ -36,7 +37,10 @@ defmodule OperatelyWeb.Mcp.Tools.Goals.Create do
             "champion_id" => JsonSchema.string("An optional champion person identifier."),
             "reviewer_id" => JsonSchema.string("An optional reviewer person identifier."),
             "parent_goal_id" => JsonSchema.string("An optional parent goal identifier."),
-            "description" => JsonSchema.string("An optional plain text or markdown goal description."),
+            "description" =>
+              JsonSchema.string(
+                "An optional plain text or markdown goal description. Use it for context. Add success criteria with create_goal_check instead of listing them here."
+              ),
             "start_date" => JsonSchema.string("An optional ISO start date, for example 2026-07-01."),
             "due_date" => JsonSchema.string("An optional ISO due date, for example 2026-09-30.")
           },
