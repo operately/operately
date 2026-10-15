@@ -51,7 +51,7 @@ defmodule Operately.CuratedTemplates.Template do
 
   defp validate_preview_data(cs) do
     if cs.valid? do
-      case Operately.CuratedTemplates.PreviewData.validate(get_field(cs, :type), get_field(cs, :preview_data), get_field(cs, :definition)) do
+      case Operately.CuratedTemplates.PreviewData.validate(get_field(cs, :type), get_field(cs, :preview_data)) do
         {:ok, normalized} -> put_change(cs, :preview_data, normalized)
         {:error, errors} ->
           Enum.reduce(errors, cs, fn {path, {message, opts}}, acc ->

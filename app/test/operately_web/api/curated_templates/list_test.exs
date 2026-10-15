@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.CuratedTemplates.ListTest do
     ctx
     |> Factory.setup()
     |> Factory.add_curated_template(:draft)
-    |> Factory.add_curated_template(:published, published: true, title: "A", category: "Sales", preview_data: %{"entries" => [%{"date" => "2026-09-30", "value" => 416}]})
+    |> Factory.add_curated_template(:published, published: true, title: "A", category: "Sales", preview_data: %{"entries" => [%{"period_offset" => -1, "value" => 416}]})
     |> Factory.add_curated_template(:goal, published: true, type: :goal, title: "B")
   end
 
