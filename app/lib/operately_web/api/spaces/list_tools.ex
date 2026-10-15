@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
     kpis_task =
       Task.async(fn ->
         if space.tools.kpis_enabled do
-          load_kpis(space.id)
+          load_kpis(space.id, me)
         else
           {:ok, []}
         end
@@ -197,8 +197,12 @@ defmodule OperatelyWeb.Api.Spaces.ListTools do
     {:ok, hubs}
   end
 
-  defp load_kpis(space_id) do
-    {:ok, Kpis.list_kpis_with_recent_entries(space_id)}
+  defp load_kpis(space_id, me) do
+    kpis =
+      Kpis.Kpi.list(me, space_id: space_id, opts: [preload: [:champion], order_by: [asc: :name]])
+      |> Kpis.load_recent_entries()
+
+    {:ok, kpis}
   end
 
   defp load_templates(space, me) do
