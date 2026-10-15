@@ -14,6 +14,61 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
     ctx |> Factory.setup()
   end
 
+  describe "destination folder authorization" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:actor)
+      |> Factory.add_space(:source_space, company_permissions: Binding.edit_access())
+      |> Factory.fetch_default_resource_hub(:hub, :source_space)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_blob(:blob, :actor)
+      |> Factory.log_in_person(:actor)
+    end
+
+    for destination <- [:foreign, :inaccessible, :accessible_other_hub, :missing] do
+      @destination destination
+
+      test "rejects #{@destination} destination before writes", ctx do
+        destination_id =
+          case @destination do
+            :foreign ->
+              foreign = %{} |> Factory.setup() |> Factory.add_space(:space) |> Factory.fetch_default_resource_hub(:hub, :space) |> Factory.add_folder(:folder, :hub)
+              foreign.folder.id
+
+            :missing ->
+              Ecto.UUID.generate()
+
+            scope ->
+              access = if scope == :inaccessible, do: Binding.no_access(), else: Binding.edit_access()
+
+              other =
+                ctx |> Factory.add_space(:other_space, company_permissions: access) |> Factory.fetch_default_resource_hub(:other_hub, :other_space) |> Factory.add_folder(:other_folder, :other_hub)
+
+              other.other_folder.id
+          end
+
+        nodes = Repo.all(Operately.ResourceHubs.Node)
+        activities = Repo.aggregate(Operately.Activities.Activity, :count)
+        subscriptions = Repo.aggregate(Operately.Notifications.SubscriptionList, :count)
+
+        ctx = Factory.add_api_token(ctx, :destination_token, :actor, read_only: false)
+        assert {404, _} = mutation(ctx.conn, [:files, :create], %{resource_hub_id: ctx.hub.id, folder_id: destination_id, files: [%{blob_id: ctx.blob.id, name: "File", description: "{}"}]})
+
+        assert {404, _} =
+                 external_mutation(ctx.conn, ctx.destination_token, "files/create", %{
+                   resource_hub_id: ctx.hub.id,
+                   folder_id: destination_id,
+                   files: [%{blob_id: ctx.blob.id, name: "File", description: "{}"}]
+                 })
+
+        assert Repo.all(Operately.ResourceHubs.Node) == nodes
+        assert Repo.aggregate(Operately.Activities.Activity, :count) == activities
+        assert Repo.aggregate(Operately.Notifications.SubscriptionList, :count) == subscriptions
+        assert Repo.reload(ctx.blob).status == :pending
+      end
+    end
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:files, :create], %{})

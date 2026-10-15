@@ -25,6 +25,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:resource, fn ctx -> find_resource(ctx.me, inputs.resource_id, inputs.resource_type) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit_parent_folder, company_read_only: company_read_only(conn)) end)
+    |> run(:parent_folder, fn ctx -> Operately.ResourceHubs.validate_parent_folder(ctx.me, ctx.resource.node.resource_hub_id, inputs[:new_folder_id]) end)
     |> run(:operation, fn ctx -> ResourceHubParentFolderEditing.run(ctx.me, ctx.resource, inputs.new_folder_id) end)
     |> run(:result, fn -> {:ok, %{success: true}} end)
     |> respond()
@@ -34,6 +35,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
     case result do
       {:ok, ctx} -> {:ok, ctx.result}
       {:error, :resource, _} -> {:error, :not_found}
+      {:error, :parent_folder, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, %{error: %Ecto.Changeset{} = changeset}} ->
         {:error, :bad_request, changeset_error_message(changeset)}
