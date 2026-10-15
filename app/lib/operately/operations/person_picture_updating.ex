@@ -9,7 +9,7 @@ defmodule Operately.Operations.PersonPictureUpdating do
 
     Multi.new()
     |> Multi.run(:blobs, fn _, _ -> Blobs.lock_for_attachment(author, blob_ids) end)
-    |> Multi.run(:blob, fn _, changes -> maybe_mark_blob_uploaded(changes.blobs[attrs.avatar_blob_id]) end)
+    |> Multi.run(:blob, fn _, changes -> maybe_mark_blob_uploaded(changes.blobs, attrs.avatar_blob_id) end)
     |> Multi.run(:person, fn _, _ -> People.update_person(person, Map.take(attrs, [:avatar_blob_id, :avatar_url])) end)
     |> Repo.transaction()
     |> case do
@@ -22,6 +22,9 @@ defmodule Operately.Operations.PersonPictureUpdating do
     end
   end
 
-  defp maybe_mark_blob_uploaded(nil), do: {:ok, nil}
-  defp maybe_mark_blob_uploaded(blob), do: Blobs.update_blob(blob, %{status: :uploaded})
+  defp maybe_mark_blob_uploaded(_blobs, nil), do: {:ok, nil}
+  defp maybe_mark_blob_uploaded(blobs, blob_id) do
+    blob = Map.fetch!(blobs, Ecto.UUID.cast!(blob_id))
+    Blobs.update_blob(blob, %{status: :uploaded})
+  end
 end

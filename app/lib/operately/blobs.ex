@@ -15,7 +15,7 @@ defmodule Operately.Blobs do
   Uploaded blobs remain usable for retries; deleted blobs and import artifacts do not.
   """
   def lock_for_attachment(person, blob_ids) do
-    blob_ids = Enum.uniq(blob_ids)
+    blob_ids = blob_ids |> Enum.map(&Ecto.UUID.cast!/1) |> Enum.uniq()
 
     blobs =
       from(b in Blob,

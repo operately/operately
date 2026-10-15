@@ -62,6 +62,18 @@ defmodule OperatelyWeb.Api.People.UpdatePictureTest do
       assert {200, _} = external_mutation(ctx.conn, ctx.token, "people/update_picture", inputs)
     end
 
+    test "marks an uppercase avatar UUID as uploaded", ctx do
+      assert {200, _} =
+               mutation(ctx.conn, [:people, :update_picture], %{
+                 person_id: Paths.person_id(ctx.creator),
+                 avatar_blob_id: String.upcase(ctx.blob.id),
+                 avatar_url: Operately.Blobs.Blob.url(ctx.blob)
+               })
+
+      assert Repo.reload(ctx.creator).avatar_blob_id == ctx.blob.id
+      assert Repo.reload(ctx.blob).status == :uploaded
+    end
+
     test "accepts the caller's already uploaded blob", ctx do
       {:ok, _} = Operately.Blobs.update_blob(ctx.blob, %{status: :uploaded})
 

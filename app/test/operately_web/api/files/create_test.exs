@@ -72,6 +72,40 @@ defmodule OperatelyWeb.Api.Files.CreateTest do
       assert {200, _} = external_mutation(ctx.conn, ctx.token, "files/create", inputs)
     end
 
+    test "accepts uppercase file and preview UUIDs", ctx do
+      assert {200, _} =
+               mutation(ctx.conn, [:files, :create], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 files: [
+                   %{
+                     blob_id: String.upcase(ctx.blob.id),
+                     preview_blob_id: String.upcase(ctx.preview.id),
+                     name: "File",
+                     description: RichText.rich_text("description", :as_string)
+                   }
+                 ]
+               })
+
+      assert [file] = ResourceHubs.list_files(ctx.hub)
+      assert file.blob_id == ctx.blob.id
+      assert file.preview_blob_id == ctx.preview.id
+      assert Repo.reload(ctx.blob).status == :uploaded
+      assert Repo.reload(ctx.preview).status == :uploaded
+    end
+
+    test "accepts mixed-case references to the same blob in one batch", ctx do
+      file = %{blob_id: ctx.blob.id, name: "File", description: RichText.rich_text("description", :as_string)}
+
+      assert {200, _} =
+               mutation(ctx.conn, [:files, :create], %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 files: [file, %{file | blob_id: String.upcase(ctx.blob.id)}]
+               })
+
+      assert length(ResourceHubs.list_files(ctx.hub)) == 2
+      assert Repo.reload(ctx.blob).status == :uploaded
+    end
+
     test "accepts owned uploaded files and pending previews", ctx do
       {:ok, _} = Operately.Blobs.update_blob(ctx.blob, %{status: :uploaded})
 

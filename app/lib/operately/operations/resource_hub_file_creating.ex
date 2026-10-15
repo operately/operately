@@ -107,11 +107,11 @@ defmodule Operately.Operations.ResourceHubFileCreating do
   defp update_blobs(multi, file, index) do
     multi
     |> Multi.run(blob_name(index), fn _, changes ->
-      Blobs.update_blob(Map.fetch!(changes.blobs, file.blob_id), %{status: :uploaded})
+      Blobs.update_blob(Map.fetch!(changes.blobs, Ecto.UUID.cast!(file.blob_id)), %{status: :uploaded})
     end)
     |> Multi.run(blob_preview_name(index), fn _, changes ->
       if file[:preview_blob_id] do
-        Blobs.update_blob(Map.fetch!(changes.blobs, file.preview_blob_id), %{status: :uploaded})
+        Blobs.update_blob(Map.fetch!(changes.blobs, Ecto.UUID.cast!(file.preview_blob_id)), %{status: :uploaded})
       else
         {:ok, nil}
       end
