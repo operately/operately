@@ -1804,6 +1804,33 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.message == "Missing required fields: milestone_id"
     end
 
+    test "it rejects a milestone from another project when the caller only has view access", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:view_project, :engineering, company_access_level: Binding.view_access(), space_access_level: Binding.view_access())
+        |> Factory.add_project_milestone(:view_milestone, :view_project)
+        |> Factory.add_api_token(:token, :new_champion, read_only: false)
+        |> Factory.log_in_person(:new_champion)
+
+      assert {:ok, milestone} = Operately.Projects.Milestone.get(ctx.new_champion, id: ctx.view_milestone.id)
+      assert {:error, :forbidden} = Operately.Projects.Permissions.check(milestone.request_info.access_level, :can_edit, company_read_only: false)
+
+      original_milestone = Repo.reload!(ctx.view_milestone)
+      activities_before = Repo.aggregate(Operately.Activities.Activity, :count)
+
+      inputs = %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.view_milestone),
+        name: "Unauthorized rename",
+        due_date: %{date: "2026-03-15", date_type: "day", value: "Mar 15, 2026"}
+      }
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_milestone], inputs)
+      assert {404, _} = external_mutation(Phoenix.ConnTest.build_conn(), ctx.token, "projects/update_milestone", inputs)
+      assert Repo.reload!(ctx.view_milestone) == original_milestone
+      assert Repo.aggregate(Operately.Activities.Activity, :count) == activities_before
+    end
+
     test "it updates a milestone's name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
