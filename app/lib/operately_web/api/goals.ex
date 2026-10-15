@@ -968,8 +968,8 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def find_target(multi, target_id) do
-      Ecto.Multi.run(multi, :target, fn _, _ ->
-        case Operately.Repo.get(Target, target_id) do
+      Ecto.Multi.run(multi, :target, fn _, %{goal: goal} ->
+        case Operately.Repo.get_by(Target, id: target_id, goal_id: goal.id) do
           nil -> {:error, {:not_found, gettext("Target not found")}}
           target -> {:ok, target}
         end

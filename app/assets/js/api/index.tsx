@@ -3193,25 +3193,25 @@ export type RichTextResourceType =
   | "task"
   | "project"
   | "goal"
-  | "goal_check_in"
-  | "kpi"
   | "milestone"
   | "document"
+  | "kpi"
   | "project_check_in"
   | "project_retrospective"
   | "project_discussion"
   | "goal_discussion"
+  | "goal_check_in"
   | "space_discussion"
   | "comment"
   | "person"
   | "project_template"
-  | "template_task"
-  | "template_milestone"
   | "template_discussion"
-  | "template_comment"
   | "template_document"
   | "template_file"
-  | "template_link";
+  | "template_link"
+  | "template_comment"
+  | "template_milestone"
+  | "template_task";
 
 export type SearchMatchedField = "title" | "name" | "content" | "description" | "message";
 
