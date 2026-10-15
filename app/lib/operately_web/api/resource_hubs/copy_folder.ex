@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolder do
     |> run(:resource_hub, fn ctx -> load_resource_hub(ctx.me, ctx.folder) end)
     |> run(:folder_permissions, fn ctx -> Permissions.check(ctx.folder.request_info.access_level, :can_copy_folder, company_read_only: company_read_only(conn)) end)
     |> run(:resource_hub_permissions, fn ctx -> Permissions.check(ctx.resource_hub.request_info.access_level, :can_copy_folder, company_read_only: company_read_only(conn)) end)
+    |> run(:parent_folder, fn ctx -> Operately.ResourceHubs.validate_parent_folder(ctx.me, ctx.resource_hub.id, inputs[:dest_parent_folder_id]) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{folder_id: Paths.folder_id(ctx.operation)}} end)
     |> respond()
@@ -37,6 +38,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.CopyFolder do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :folder, _} -> {:error, :not_found}
       {:error, :resource_hub, _} -> {:error, :not_found}
+      {:error, :parent_folder, _} -> {:error, :not_found}
       {:error, :folder_permissions, _} -> {:error, :forbidden}
       {:error, :resource_hub_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
