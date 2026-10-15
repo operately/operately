@@ -18,7 +18,7 @@ test("changing a saved draft's type clears its incompatible example data", async
     <TemplateEditor
       template={{
         ...templateFixture("kpi"),
-        previewData: JSON.stringify({ entries: [{ date: "2026-09-30", value: 10 }] }),
+        previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 10 }] }),
       }}
       onSave={onSave}
       onCancel={jest.fn()}

@@ -47,7 +47,7 @@ test("unsaved edits can be published", () => {
 test("example data has a separate save action and both tabs preserve unsaved edits", async () => {
   const template = {
     ...templateFixture("kpi"),
-    previewData: JSON.stringify({ entries: [{ date: "2026-09-30", value: 10 }] }),
+    previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 10 }] }),
   };
   const onSave = jest.fn().mockResolvedValue({ errors: [] });
   const onSavePreviewData = jest.fn().mockResolvedValue({ errors: [] });
@@ -76,7 +76,7 @@ test("example data has a separate save action and both tabs preserve unsaved edi
   fireEvent.click(screen.getByTestId("save-preview-data"));
   await waitFor(() => expect(onSavePreviewData).toHaveBeenCalledTimes(1));
   expect(JSON.parse(onSavePreviewData.mock.calls[0][0])).toEqual({
-    entries: [{ date: "2026-09-30", value: 25 }],
+    entries: [{ period_offset: -1, value: 25 }],
     annotations: [],
   });
   expect(onSave).not.toHaveBeenCalled();
