@@ -28,6 +28,17 @@ defmodule Operately.ResourceHubs do
   # Folders
   #
 
+  def validate_parent_folder(_person, _hub_id, nil), do: {:ok, nil}
+
+  def validate_parent_folder(person, hub_id, folder_id) do
+    with {:ok, folder} <- Folder.get(person, id: folder_id, opts: [preload: :node]),
+         true <- folder.node.resource_hub_id == hub_id do
+      {:ok, folder}
+    else
+      _ -> {:error, :not_found}
+    end
+  end
+
   def list_folders(resource_hub = %ResourceHub{}) do
     from(f in Folder,
       join: n in assoc(f, :node),
