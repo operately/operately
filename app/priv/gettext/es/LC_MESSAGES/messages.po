@@ -6817,8 +6817,8 @@ msgstr "No puede ser la misma persona que el responsable"
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
 #: ../turboui/src/ConfirmDialog/index.tsx:59
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:176
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:163
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:156
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:219
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:114
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
 #: ../turboui/src/DocumentEditPage/index.tsx:96
@@ -8146,7 +8146,7 @@ msgstr "Se requiere contenido"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:32
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:125
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:172
 msgid "Content language"
 msgstr "Idioma del contenido"
 
@@ -8573,8 +8573,8 @@ msgstr "Crear tarea"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:41
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:48
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:57
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:42
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:51
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:435
 #: ee/assets/js/pages/SaasAdminCuratedTemplatePage/index.tsx:46
 msgid "Create template"
@@ -8694,8 +8694,8 @@ msgstr "Ctrl"
 #.frontend
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:32
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:39
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:50
-#: ee/assets/js/pages/SaasAdminCuratedTemplatesPage/index.tsx:24
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:44
+#: ee/assets/js/pages/SaasAdminCuratedTemplatesPage/index.tsx:25
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:412
 msgid "Curated templates"
 msgstr "Plantillas seleccionadas"
@@ -8851,8 +8851,8 @@ msgstr "Desactivar cuenta"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:516
 #: ../turboui/src/CommentSection/CommentItem.tsx:225
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:83
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:155
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
 #: ../turboui/src/GoalTargetList/DeleteButton.tsx:17
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:227
@@ -9014,7 +9014,7 @@ msgid "Delete table"
 msgstr "Eliminar tabla"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:153
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:111
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:182
 msgid "Delete template"
 msgstr "Eliminar plantilla"
@@ -9516,7 +9516,7 @@ msgstr "Descargar archivo"
 #: ../turboui/src/CheckInCard/index.tsx:72
 #: ../turboui/src/CheckInHeader/index.tsx:38
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:77
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:66
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:60
 #: ../turboui/src/DiscussionCard/index.tsx:58
 msgid "Draft"
 msgstr "Borrador"
@@ -9692,7 +9692,7 @@ msgstr "Versión anterior"
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:506
 #: ../turboui/src/CommentSection/CommentItem.tsx:216
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:74
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -10495,7 +10495,7 @@ msgstr "Todos en el espacio podrán ver este proyecto."
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:18
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:140
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:102
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:129
 msgid "Example data"
 msgstr "Datos de ejemplo"
 
@@ -11421,7 +11421,7 @@ msgstr "Ir al inicio"
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:11
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:118
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:165
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
@@ -12265,7 +12265,7 @@ msgstr "Unirse a este espacio"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:117
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:164
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 msgid "KPI"
 msgstr "KPI"
@@ -15456,7 +15456,7 @@ msgid "Press Tab to select the option and exit the menu."
 msgstr "Pulsa Tab para seleccionar la opción y salir del menú."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:79
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:73
 msgid "Preview"
 msgstr "Vista previa"
 
@@ -15692,7 +15692,7 @@ msgstr "Avanza según lo previsto. Sin impedimentos."
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:12
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:119
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:166
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
@@ -15919,7 +15919,7 @@ msgid "Public sharing is off. Enable it to create a link."
 msgstr "El acceso mediante enlace público está desactivado. Actívalo para crear un enlace."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:148
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:204
 msgid "Publish"
 msgstr "Publicar"
 
@@ -15945,12 +15945,12 @@ msgstr "Publica el documento antes de compartirlo públicamente"
 #.frontend
 #: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:77
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:121
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:66
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:60
 msgid "Published"
 msgstr "Publicado"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:111
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:158
 msgid "Published changes take effect immediately."
 msgstr "Los cambios publicados entran en vigor inmediatamente."
 
@@ -17207,16 +17207,16 @@ msgid "Save contributor"
 msgstr "Guardar colaborador"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:159
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:215
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
 msgstr "Guardar borrador"
 
-#.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:62
-msgid "Save example data"
-msgstr "Guardar datos de ejemplo"
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:62
+#~ msgid "Save example data"
+#~ msgstr "Guardar datos de ejemplo"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:105
@@ -18151,7 +18151,7 @@ msgstr "Diapositiva"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:31
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:103
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:150
 msgid "Slug"
 msgstr "Identificador de URL"
 
@@ -18732,8 +18732,7 @@ msgstr "Suscripción terminada"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:192
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:35
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:38
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:275
@@ -19070,7 +19069,7 @@ msgid "Team member not found."
 msgstr "No se encontró al miembro del equipo."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:101
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:128
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:124
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:130
@@ -19253,7 +19252,7 @@ msgid "The OAuth client is not registered for this Operately MCP server."
 msgstr "El cliente OAuth no está registrado para este servidor Operately MCP."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:37
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:31
 msgid "The action could not be completed. Reload if another admin has changed the template."
 msgstr "No se pudo completar la acción. Recarga si otro administrador ha cambiado la plantilla."
 
@@ -19438,10 +19437,10 @@ msgstr "La duración es ahora %{new_duration}."
 msgid "The duration was changed from %{old_duration} to %{new_duration}."
 msgstr "La duración se cambió de %{old_duration} a %{new_duration}."
 
-#.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:35
-msgid "The example data has been saved."
-msgstr "Los datos de ejemplo se han guardado."
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:35
+#~ msgid "The example data has been saved."
+#~ msgstr "Los datos de ejemplo se han guardado."
 
 #.frontend
 #: assets/js/pages/CompanyExportPage/index.tsx:54
@@ -19770,13 +19769,12 @@ msgid "The template could not be duplicated. Try again."
 msgstr "No se pudo duplicar la plantilla. Inténtalo de nuevo."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:42
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:44
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:54
 msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
 msgstr "No se pudo guardar la plantilla. Se conservaron tus cambios. Recarga si otro administrador la ha modificado."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:38
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 msgid "The template has been saved."
 msgstr "La plantilla se ha guardado."
 
@@ -19936,7 +19934,7 @@ msgstr "Esta acción no puede deshacerse"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:223
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:154
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:112
 #: assets/js/pages/SpacePage/page.tsx:255
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
@@ -20771,7 +20769,7 @@ msgstr "Activar o apagar funciones experimentales para esta empresa."
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
 #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:30
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:115
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:162
 #: lib/operately/md/space.ex:20
 #: lib/operately/md/task.ex:18
 msgid "Type"
@@ -21086,7 +21084,7 @@ msgid "Untitled milestone"
 msgstr "Hito sin título"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:148
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:204
 #: ../turboui/src/GoalTargetList/UpdateButton.tsx:17
 msgid "Update"
 msgstr "Actualizar"
@@ -24944,7 +24942,7 @@ msgstr "Cargo"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:77
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:96
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:143
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
 msgid "Title"

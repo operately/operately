@@ -17,7 +17,6 @@ export interface TemplateDetailProps extends TemplateEditorProps {
   editing?: boolean;
   editPath?: string;
   formattedTimePreferences: FormattedTimePreferences;
-  onSavePreviewData?: (previewData: string) => Promise<TemplateMutationResult>;
   catalogPath: string;
   previewPath?: string;
   onDelete: () => Promise<void>;

@@ -51,13 +51,12 @@ test("unsaved edits can be published", () => {
   expect(screen.getByTestId("publish-template")).toBeEnabled();
 });
 
-test("example data has a separate save action and both tabs preserve unsaved edits", async () => {
+test.each(["template", "example-data"])("saving from %s includes edits from both tabs", async (tab) => {
   const template = {
     ...templateFixture("kpi"),
     previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 10 }] }),
   };
   const onSave = jest.fn().mockResolvedValue({ errors: [] });
-  const onSavePreviewData = jest.fn().mockResolvedValue({ errors: [] });
   render(
     <MemoryRouter>
       <CuratedTemplateDetailPage
@@ -66,34 +65,24 @@ test("example data has a separate save action and both tabs preserve unsaved edi
         template={template}
         catalogPath="/"
         onSave={onSave}
-        onSavePreviewData={onSavePreviewData}
         onCancel={jest.fn()}
         onDelete={jest.fn()}
       />
     </MemoryRouter>,
   );
-  expect(screen.getByTestId("curated-template-form")).toBeVisible();
   fireEvent.change(screen.getByTestId("title"), { target: { value: "Unsaved title" } });
   fireEvent.click(screen.getByTestId("tab-example-data"));
-  expect(screen.getByTestId("curated-template-form")).not.toBeVisible();
-  expect(screen.getByTestId("template-preview-data-form")).toBeVisible();
-  fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "25" } });
-  fireEvent.click(screen.getByTestId("tab-template"));
-  expect(screen.getByTestId("title")).toHaveValue("Unsaved title");
-  fireEvent.click(screen.getByTestId("tab-example-data"));
-  expect(screen.getByTestId("preview-data-entries-0-value")).toHaveValue(25);
-  fireEvent.click(screen.getByTestId("save-preview-data"));
-  await waitFor(() => expect(onSavePreviewData).toHaveBeenCalledTimes(1));
-  expect(JSON.parse(onSavePreviewData.mock.calls[0][0])).toEqual({
-    entries: [{ period_offset: -1, value: 25 }],
-    annotations: [],
-  });
-  expect(onSave).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByTestId("add-preview-entry"));
-  fireEvent.click(screen.getByTestId("tab-template"));
+  fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "25.5" } });
+  fireEvent.click(screen.getByTestId(`tab-${tab}`));
+  expect(screen.getByTestId("save-template-draft")).toBeVisible();
   fireEvent.click(screen.getByTestId("save-template-draft"));
   await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
-  expect(onSave.mock.calls[0][0]).not.toHaveProperty("previewData");
+  expect(onSave.mock.calls[0][0].title).toBe("Unsaved title");
+  expect(JSON.parse(onSave.mock.calls[0][0].definition).name).toBe("Unsaved title");
+  expect(JSON.parse(onSave.mock.calls[0][0].previewData)).toEqual({
+    entries: [{ period_offset: -1, value: 25.5 }],
+    annotations: [],
+  });
 });
 
 test.each(["draft", "published"] as const)("deletes a %s template after confirmation", async (state) => {

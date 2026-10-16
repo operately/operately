@@ -30,7 +30,7 @@ function TemplatePage({ initialTemplate, editing }: { initialTemplate?: CuratedT
   const [editingTemplate, setTemplate] = React.useState(initialTemplate);
   const template = editing ? editingTemplate : initialTemplate;
   const navigate = useNavigate();
-  const { save: saveTemplate, savePreviewData, getIdentity } = useSaveCuratedTemplate(template);
+  const { save: saveTemplate, getIdentity } = useSaveCuratedTemplate(template);
   const remove = useDeleteCuratedTemplate();
 
   async function save(input: TemplateInput, intent: TemplateSaveIntent) {
@@ -53,14 +53,6 @@ function TemplatePage({ initialTemplate, editing }: { initialTemplate?: CuratedT
         previewPath={template ? curatedTemplatePreviewPath(template.id) : undefined}
         onCancel={() => navigate(template ? curatedTemplatePath(template.id) : curatedTemplatesPath)}
         onSave={save}
-        onSavePreviewData={async (previewData) => {
-          const result = await savePreviewData(previewData);
-          if (result.template && result.errors.length === 0) {
-            setTemplate(result.template);
-            navigate(curatedTemplatePath(result.template.id), { replace: true });
-          }
-          return result;
-        }}
         onDelete={async () => {
           await remove.mutateAsync(getIdentity());
           navigate(curatedTemplatesPath);

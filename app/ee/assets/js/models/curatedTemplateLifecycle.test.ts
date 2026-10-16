@@ -28,6 +28,7 @@ const input = {
   category: "",
   contentLanguage: "en",
   definition: "{}",
+  previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 25 }] }),
 };
 
 function setupSave() {
@@ -64,22 +65,24 @@ it("saves drafts without publishing", async () => {
   expect(publish).not.toHaveBeenCalled();
 });
 
-it("saves example data with the saved definition and refreshes the edit timestamp without publishing", async () => {
+it("updates template fields and example data together with the latest timestamp", async () => {
   const { result, update, publish, draft } = setupSave();
   await act(async () => {
     await result.current.save(input, "draft");
   });
-  const previewData = JSON.stringify({ entries: [{ date: "2026-09-30", value: 416 }] });
+  const edited = {
+    ...input,
+    title: "Edited KPI",
+    previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 416 }] }),
+  };
   await act(async () => {
-    await result.current.savePreviewData(previewData);
+    await result.current.save(edited, "draft");
   });
   expect(update).toHaveBeenCalledWith(
     expect.objectContaining({
       id: draft.id,
       expectedUpdatedAt: draft.updatedAt,
-      title: draft.title,
-      definition: draft.definition,
-      previewData,
+      ...edited,
     }),
     expect.anything(),
   );

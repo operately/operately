@@ -26,7 +26,6 @@ function EditorStory({ type = "project", failure = false }: { type?: TemplateTyp
         ? { errors: [{ path: "definition.name", message: "Example validation error" }] }
         : update({ ...input, state: intent === "publish" ? "published" : "draft" }),
     onCancel: () => {},
-    onSavePreviewData: async (previewData) => update({ previewData }),
     onDelete: async () => {},
   };
   return <CuratedTemplateDetailPage {...props} />;

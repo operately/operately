@@ -3,10 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
 import { ConfirmDialog } from "../../ConfirmDialog";
 import { Page } from "../../Page";
-import { Tabs } from "../../Tabs";
 import { ErrorMessage } from "../../Forms";
 import { TemplateEditor } from "./TemplateEditor";
-import { PreviewDataEditor } from "./PreviewDataEditor";
 import { TemplateDetails } from "./TemplateDetails";
 import type { TemplateValidationError } from "../types";
 import type { TemplateDetailProps } from "./types";
@@ -18,10 +16,6 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
   const [errors, setErrors] = React.useState<TemplateValidationError[]>([]);
   const template = props.template;
   const editing = !template || props.editing;
-  const onSavePreviewData = props.onSavePreviewData;
-  const [tab, setTab] = React.useState("template");
-  const hasPreviewEditor = editing && template?.type === "kpi" && !!props.onSavePreviewData;
-  const activeTab = hasPreviewEditor ? tab : "template";
 
   async function run(callback: () => Promise<{ errors?: TemplateValidationError[] } | void>) {
     setBusy(true);
@@ -92,58 +86,22 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
             ))}
           </div>
         )}
-        {hasPreviewEditor && (
-          <div className="mb-6">
-            <Tabs
-              tabs={{
-                active: activeTab,
-                tabs: [
-                  { id: "template", label: t("Template"), icon: null, testId: "template" },
-                  { id: "example-data", label: t("Example data"), icon: null, testId: "example-data" },
-                ],
-              }}
-              onChange={(next) => {
-                if (!busy) setTab(next);
-              }}
-            />
-          </div>
-        )}
         <div className="max-w-3xl">
           {!editing && template ? (
             <TemplateDetails template={template} formattedTimePreferences={props.formattedTimePreferences} />
           ) : (
-            <>
-              <div hidden={activeTab !== "template"}>
-                <TemplateEditor
-                  {...props}
-                  onSave={async (input, intent) => {
-                    setErrors([]);
-                    setBusy(true);
-                    try {
-                      return await props.onSave(input, intent);
-                    } finally {
-                      setBusy(false);
-                    }
-                  }}
-                />
-              </div>
-              {template?.type === "kpi" && onSavePreviewData && (
-                <div hidden={activeTab !== "example-data"}>
-                  <PreviewDataEditor
-                    template={template}
-                    onSave={async (previewData) => {
-                      setErrors([]);
-                      setBusy(true);
-                      try {
-                        return await onSavePreviewData(previewData);
-                      } finally {
-                        setBusy(false);
-                      }
-                    }}
-                  />
-                </div>
-              )}
-            </>
+            <TemplateEditor
+              {...props}
+              onSave={async (input, intent) => {
+                setErrors([]);
+                setBusy(true);
+                try {
+                  return await props.onSave(input, intent);
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            />
           )}
         </div>
         <ConfirmDialog

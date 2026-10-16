@@ -9,7 +9,6 @@ import { Page } from "./index";
 
 let mockTemplate: CuratedTemplate | undefined;
 const mockSave = jest.fn();
-const mockSavePreviewData = jest.fn();
 
 jest.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock("turboui", () => ({ CuratedTemplateDetailPage: jest.fn(() => null) }));
@@ -21,7 +20,7 @@ jest.mock("@/ee/models/curatedTemplateLifecycle", () => ({
   curatedTemplatePath: (id: string) => `/admin/curated-templates/${id}`,
   curatedTemplateEditPath: (id: string) => `/admin/curated-templates/${id}/edit`,
   curatedTemplatePreviewPath: (id: string) => `/admin/curated-templates/${id}/preview`,
-  useSaveCuratedTemplate: () => ({ save: mockSave, savePreviewData: mockSavePreviewData, getIdentity: jest.fn() }),
+  useSaveCuratedTemplate: () => ({ save: mockSave, getIdentity: jest.fn() }),
   useDeleteCuratedTemplate: () => ({ mutateAsync: jest.fn() }),
 }));
 
@@ -55,6 +54,7 @@ const input: TemplateInput = {
   category: "",
   contentLanguage: "en",
   definition: JSON.stringify({ name: "Updated KPI", unit: "%", cadence: "monthly" }),
+  previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 25 }] }),
 };
 
 it("opens saved templates in read mode and enters edit mode through its URL", () => {
@@ -87,7 +87,9 @@ it.each([
   });
   expect(result.current.location.pathname).toBe("/admin/curated-templates/template-kpi");
   expect(detailProps().editing).toBe(false);
+  expect(mockSave).toHaveBeenCalledWith(input, intent);
   expect(detailProps().template?.title).toBe(input.title);
+  expect(detailProps().template?.previewData).toBe(input.previewData);
 });
 
 it("keeps validation failures in edit mode, including partially saved drafts", async () => {
@@ -98,16 +100,6 @@ it("keeps validation failures in edit mode, including partially saved drafts", a
   });
   expect(result.current.location.pathname).toBe("/admin/curated-templates/template-kpi/edit");
   expect(detailProps().editing).toBe(true);
-});
-
-it("returns to the read view after saving example data", async () => {
-  const { result } = mount("/admin/curated-templates/template-kpi/edit");
-  mockSavePreviewData.mockResolvedValue({ template: mockTemplate, errors: [] });
-  await act(async () => {
-    await detailProps().onSavePreviewData?.("{}");
-  });
-  expect(result.current.location.pathname).toBe("/admin/curated-templates/template-kpi");
-  expect(detailProps().editing).toBe(false);
 });
 
 it("returns to the catalog when canceling creation", () => {
