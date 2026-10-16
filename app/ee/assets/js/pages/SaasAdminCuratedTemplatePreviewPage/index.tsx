@@ -16,7 +16,7 @@ export function Page() {
   return (
     <CuratedTemplatePreviewPage
       template={template}
-      editorPath={curatedTemplatePath(template.id)}
+      templatePath={curatedTemplatePath(template.id)}
       referenceDate={referenceDate}
       formattedTimePreferences={preferences}
     />

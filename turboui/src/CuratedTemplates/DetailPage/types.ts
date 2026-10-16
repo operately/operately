@@ -5,6 +5,7 @@ import type {
   TemplateMutationResult,
   TemplateValidationError,
 } from "../types";
+import type { FormattedTimePreferences } from "../../FormattedTime";
 
 export interface TemplateEditorProps {
   validationErrors?: TemplateValidationError[];
@@ -13,6 +14,9 @@ export interface TemplateEditorProps {
   onCancel: () => void;
 }
 export interface TemplateDetailProps extends TemplateEditorProps {
+  editing?: boolean;
+  editPath?: string;
+  formattedTimePreferences: FormattedTimePreferences;
   onSavePreviewData?: (previewData: string) => Promise<TemplateMutationResult>;
   catalogPath: string;
   previewPath?: string;

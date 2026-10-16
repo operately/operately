@@ -30,6 +30,7 @@ export function saasAdminRoutes() {
           pageRoute("billing-catalog", adminpages.SaasAdminBillingCatalogPage),
           pageRoute("curated-templates", adminpages.SaasAdminCuratedTemplatesPage),
           pageRoute("curated-templates/new", adminpages.SaasAdminCuratedTemplatePage),
+          pageRoute("curated-templates/:templateId/edit", adminpages.SaasAdminCuratedTemplatePage),
           pageRoute("curated-templates/:templateId", adminpages.SaasAdminCuratedTemplatePage),
           pageRoute("site-messages", adminpages.SaasAdminSiteMessagesPage),
           pageRoute("search-index", adminpages.SaasAdminSearchIndexPage),

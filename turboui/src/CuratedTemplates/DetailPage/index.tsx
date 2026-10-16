@@ -7,6 +7,7 @@ import { Tabs } from "../../Tabs";
 import { ErrorMessage } from "../../Forms";
 import { TemplateEditor } from "./TemplateEditor";
 import { PreviewDataEditor } from "./PreviewDataEditor";
+import { TemplateDetails } from "./TemplateDetails";
 import type { TemplateValidationError } from "../types";
 import type { TemplateDetailProps } from "./types";
 
@@ -16,9 +17,10 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
   const [busy, setBusy] = React.useState(false);
   const [errors, setErrors] = React.useState<TemplateValidationError[]>([]);
   const template = props.template;
+  const editing = !template || props.editing;
   const onSavePreviewData = props.onSavePreviewData;
   const [tab, setTab] = React.useState("template");
-  const hasPreviewEditor = template?.type === "kpi" && !!props.onSavePreviewData;
+  const hasPreviewEditor = editing && template?.type === "kpi" && !!props.onSavePreviewData;
   const activeTab = hasPreviewEditor ? tab : "template";
 
   async function run(callback: () => Promise<{ errors?: TemplateValidationError[] } | void>) {
@@ -67,6 +69,11 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
           </div>
           {template && (
             <Menu testId="template-actions" align="end" readonly={busy}>
+              {!editing && props.editPath && (
+                <MenuLinkItem to={props.editPath} testId="edit-template">
+                  {t("Edit")}
+                </MenuLinkItem>
+              )}
               {props.previewPath && (
                 <MenuLinkItem to={props.previewPath} target="_blank" testId="preview-template">
                   {t("Preview")}
@@ -102,35 +109,41 @@ export function CuratedTemplateDetailPage(props: TemplateDetailProps) {
           </div>
         )}
         <div className="max-w-3xl">
-          <div hidden={activeTab !== "template"}>
-            <TemplateEditor
-              {...props}
-              onSave={async (input, intent) => {
-                setErrors([]);
-                setBusy(true);
-                try {
-                  return await props.onSave(input, intent);
-                } finally {
-                  setBusy(false);
-                }
-              }}
-            />
-          </div>
-          {template?.type === "kpi" && onSavePreviewData && (
-            <div hidden={activeTab !== "example-data"}>
-              <PreviewDataEditor
-                template={template}
-                onSave={async (previewData) => {
-                  setErrors([]);
-                  setBusy(true);
-                  try {
-                    return await onSavePreviewData(previewData);
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
-              />
-            </div>
+          {!editing && template ? (
+            <TemplateDetails template={template} formattedTimePreferences={props.formattedTimePreferences} />
+          ) : (
+            <>
+              <div hidden={activeTab !== "template"}>
+                <TemplateEditor
+                  {...props}
+                  onSave={async (input, intent) => {
+                    setErrors([]);
+                    setBusy(true);
+                    try {
+                      return await props.onSave(input, intent);
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                />
+              </div>
+              {template?.type === "kpi" && onSavePreviewData && (
+                <div hidden={activeTab !== "example-data"}>
+                  <PreviewDataEditor
+                    template={template}
+                    onSave={async (previewData) => {
+                      setErrors([]);
+                      setBusy(true);
+                      try {
+                        return await onSavePreviewData(previewData);
+                      } finally {
+                        setBusy(false);
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
         <ConfirmDialog
