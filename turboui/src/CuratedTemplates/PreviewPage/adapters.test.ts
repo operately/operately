@@ -7,6 +7,32 @@ import { compareIds } from "../../utils/ids";
 const labels = { missing: "Not set", pending: "Pending" };
 const options = { referenceDate: "2026-10-12", formattedTimePreferences: defaultFormattedTimePreferences, labels };
 
+test.each(["goal", "project", "kpi"] as const)("%s previews show consistent example owners", (type) => {
+  const template = templateFixture(type);
+  const original = JSON.stringify(template);
+  const preview = buildPreview(template, options);
+  const personFields = preview.type === "kpi" ? preview.kpi : preview.props;
+  const examplePerson = {
+    id: expect.stringMatching(/\S/),
+    fullName: expect.stringMatching(/\S/),
+    avatarUrl: expect.stringMatching(/^https:\/\//),
+  };
+
+  expect(personFields.champion).toMatchObject(examplePerson);
+  if (preview.type !== "kpi") {
+    expect(preview.props.reviewer).toMatchObject(examplePerson);
+    expect(preview.props.reviewer?.id).not.toBe(preview.props.champion?.id);
+  }
+
+  const rebuilt = buildPreview(template, options);
+  const rebuiltPersonFields = rebuilt.type === "kpi" ? rebuilt.kpi : rebuilt.props;
+  expect(rebuiltPersonFields.champion).toEqual(personFields.champion);
+  if (preview.type !== "kpi" && rebuilt.type !== "kpi") {
+    expect(rebuilt.props.reviewer).toEqual(preview.props.reviewer);
+  }
+  expect(JSON.stringify(template)).toBe(original);
+});
+
 test("KPI previews use saved example data in chronological order without mutating the template", () => {
   const template = {
     ...templateFixture("kpi"),
