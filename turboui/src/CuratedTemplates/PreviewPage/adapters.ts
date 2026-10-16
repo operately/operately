@@ -1,4 +1,5 @@
 import { addDays, format, parseISO } from "date-fns";
+import { genPeople } from "../../demos/people";
 import { dateInTimezone } from "../../utils/timezone";
 import type { DateField } from "../../DateField";
 import type { FormattedTimePreferences } from "../../FormattedTime";
@@ -34,6 +35,7 @@ export const richTextHandlers: RichTextHandlers = {
 };
 
 const permissions = { canView: true, canEdit: false, canComment: false, hasFullAccess: false };
+const [previewChampion = null, previewReviewer = null] = genPeople(2);
 const peopleSearch = { people: [], onSearch: async () => {} };
 const accessLevels = { company: "view", space: "view", public: "no_access" } as const;
 const subscriptions = { hidden: true, isSubscribed: false, entityType: "project" as const, onToggle: unavailable };
@@ -79,7 +81,7 @@ function kpiPreview(template: CuratedTemplate, definition: TemplateDefinition, o
     description: definition.description ?? null,
     unit: definition.unit || options.labels.missing,
     cadence: definition.cadence ?? "monthly",
-    champion: null,
+    champion: previewChampion,
     insertedAt: parseISO(template.insertedAt),
     link: "",
     latestEntry: entries.at(-1) ?? null,
@@ -107,8 +109,8 @@ function sharedProps(definition: TemplateDefinition, options: PreviewOptions) {
     reopenLink: "",
     newCheckInLink: "",
     newDiscussionLink: "",
-    champion: null,
-    reviewer: null,
+    champion: previewChampion,
+    reviewer: previewReviewer,
     parentGoal: null,
     setParentGoal: unavailable,
     parentGoalSearch: async () => [],
