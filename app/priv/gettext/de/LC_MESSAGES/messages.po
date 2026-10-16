@@ -5783,7 +5783,7 @@ msgstr "Verwaltung"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:57
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:31
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:34
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/index.tsx:18
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:58
 #: ee/assets/js/pages/SaasAdminSiteMessagesPage/index.tsx:55
@@ -5968,6 +5968,7 @@ msgstr "KPI mit Anmerkung versehen: %{title}"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:66
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:167
 msgid "Annotations"
 msgstr "Anmerkungen"
 
@@ -6446,15 +6447,20 @@ msgstr "Zurück zur Anmeldung"
 msgid "Back to Team & Access"
 msgstr "Zurück zu Team & Zugriff"
 
-#.frontend
-#: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:39
-msgid "Back to editor"
-msgstr "Zurück zum Editor"
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:39
+#~ msgid "Back to editor"
+#~ msgstr "Zurück zum Editor"
 
 #.frontend
 #: assets/js/pages/InviteLinkFullPage/index.tsx:48
 msgid "Back to home"
 msgstr "Zurück zur Startseite"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:39
+msgid "Back to template"
+msgstr "Zurück zur Vorlage"
 
 #.frontend
 #: ../turboui/src/CompanyImportPage/index.tsx:54
@@ -6499,6 +6505,7 @@ msgstr "Basispfad"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:66
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:58
 msgid "Baseline"
 msgstr "Ausgangswert"
 
@@ -6722,6 +6729,7 @@ msgstr "MITWIRKENDE PERSON"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:42
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:38
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:242
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:80
 msgid "Cadence"
@@ -6810,8 +6818,8 @@ msgstr "Darf nicht dieselbe Person wie der Champion sein"
 #: ../turboui/src/ConfirmByTypingModal/index.tsx:100
 #: ../turboui/src/ConfirmDialog/index.tsx:59
 #: ../turboui/src/ContributorsSection/ContributorModal.tsx:176
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:163
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:143
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:219
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:114
 #: ../turboui/src/DateField/components/ActionButtons.tsx:23
 #: ../turboui/src/DiscardDiscussionDraftModal/index.tsx:36
 #: ../turboui/src/DocumentEditPage/index.tsx:96
@@ -6960,6 +6968,11 @@ msgstr "Du findest deinen Code nicht? Schau im Spamordner nach."
 #: ../turboui/src/ReviewPage/index.tsx:136
 msgid "Catch up on work that's due soon or waiting for your review."
 msgstr "Kümmere dich um Arbeit, die bald fällig ist oder auf deine Durchsicht wartet."
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:33
+msgid "Category"
+msgstr "Kategorie"
 
 #.frontend
 #: ../turboui/src/SmallStatusIndicator/constants.ts:16
@@ -8133,7 +8146,8 @@ msgid "Content is required"
 msgstr "Inhalt ist erforderlich"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:125
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:32
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:172
 msgid "Content language"
 msgstr "Inhaltssprache"
 
@@ -8475,7 +8489,7 @@ msgid "Create a project template"
 msgstr "Projektvorlage erstellen"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:60
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:66
 msgid "Create a reusable template for a KPI, goal, or project."
 msgstr "Erstelle eine wiederverwendbare Vorlage für eine KPI, ein Ziel oder ein Projekt."
 
@@ -8559,11 +8573,11 @@ msgid "Create task"
 msgstr "Aufgabe erstellen"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:38
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:46
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:55
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:41
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:42
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:51
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:435
-#: ee/assets/js/pages/SaasAdminCuratedTemplatePage/index.tsx:41
+#: ee/assets/js/pages/SaasAdminCuratedTemplatePage/index.tsx:46
 msgid "Create template"
 msgstr "Vorlage erstellen"
 
@@ -8580,6 +8594,7 @@ msgstr "Inhalte im Arbeitsbereich erstellen, aktualisieren, löschen und archivi
 #.elixir
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:252
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:114
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:196
 #: ../turboui/src/TaskPage/Sidebar.tsx:388
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:257
@@ -8678,10 +8693,10 @@ msgid "Ctrl"
 msgstr "Strg"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:29
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:36
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:48
-#: ee/assets/js/pages/SaasAdminCuratedTemplatesPage/index.tsx:16
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:32
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:39
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:44
+#: ee/assets/js/pages/SaasAdminCuratedTemplatesPage/index.tsx:25
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:412
 msgid "Curated templates"
 msgstr "Kuratierte Vorlagen"
@@ -8812,6 +8827,8 @@ msgstr "Tag"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:97
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:137
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:78
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:100
 msgid "Days after start"
 msgstr "Tage nach Beginn"
 
@@ -8835,8 +8852,8 @@ msgstr "Konto deaktivieren"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:524
 #: ../turboui/src/Checklist/index.tsx:516
 #: ../turboui/src/CommentSection/CommentItem.tsx:225
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:76
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:142
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:113
 #: ../turboui/src/GoalPage/Sidebar.tsx:406
 #: ../turboui/src/GoalTargetList/DeleteButton.tsx:17
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:227
@@ -8998,7 +9015,7 @@ msgid "Delete table"
 msgstr "Tabelle löschen"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:140
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:111
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:182
 msgid "Delete template"
 msgstr "Vorlage löschen"
@@ -9177,6 +9194,7 @@ msgstr "Beschreiben …"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:36
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:123
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:46
 #: ../turboui/src/ProjectPage/Overview.tsx:52
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:112
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:90
@@ -9498,8 +9516,8 @@ msgstr "Datei herunterladen"
 #.frontend
 #: ../turboui/src/CheckInCard/index.tsx:72
 #: ../turboui/src/CheckInHeader/index.tsx:38
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:71
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:64
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:60
 #: ../turboui/src/DiscussionCard/index.tsx:58
 msgid "Draft"
 msgstr "Entwurf"
@@ -9663,6 +9681,7 @@ msgstr "Vorlage duplizieren"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:50
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:43
 msgid "Duration in days"
 msgstr "Dauer in Tagen"
 
@@ -9674,6 +9693,7 @@ msgstr "Frühere Version"
 #.frontend
 #: ../turboui/src/Checklist/index.tsx:506
 #: ../turboui/src/CommentSection/CommentItem.tsx:216
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:68
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
@@ -10475,7 +10495,8 @@ msgstr "Alle im Arbeitsbereich werden dieses Projekt ansehen können."
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:18
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:95
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:140
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:129
 msgid "Example data"
 msgstr "Beispieldaten"
 
@@ -11400,7 +11421,8 @@ msgstr "Zur Startseite"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:11
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:118
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:165
 #: ../turboui/src/SearchPage/index.tsx:317
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:96
 #: assets/js/pages/GoalAccessAddPage/index.tsx:38
@@ -11493,7 +11515,7 @@ msgid "Goal timeframe change"
 msgstr "Änderung des Zielzeitraums"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:23
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:25
 #: ../turboui/src/GoalPage/PageHeader.tsx:17
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:259
 #: ../turboui/src/SearchPage/filterOptions.ts:11
@@ -12243,7 +12265,8 @@ msgid "Join this Space"
 msgstr "Diesem Arbeitsbereich beitreten"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:117
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:164
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:35
 msgid "KPI"
 msgstr "KPI"
@@ -12279,7 +12302,7 @@ msgid "KPI: %{value}"
 msgstr "KPI: %{value}"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:23
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:25
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:70
 #: ../turboui/src/SpaceKpisPage/KpiSummaryCard.tsx:116
 #: ../turboui/src/SpaceKpisPage/index.tsx:75
@@ -12462,10 +12485,16 @@ msgid "Last saved <date/>"
 msgstr "Zuletzt am <date/> gespeichert"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:117
 #: ../turboui/src/GoalPage/Sidebar.tsx:255
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:80
 msgid "Last update"
 msgstr "Letztes Update"
+
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:117
+#~ msgid "Last updated"
+#~ msgstr "Zuletzt aktualisiert"
 
 #.frontend
 #: ../turboui/src/DocumentVersionComparisonPage/ComparisonPanel.tsx:91
@@ -13039,6 +13068,7 @@ msgstr "Erwähnte Person"
 #.elixir
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:128
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:94
 #: ../turboui/src/SearchPage/index.tsx:319
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:89
 #: ../turboui/src/TaskCreationModal/index.tsx:161
@@ -13148,6 +13178,7 @@ msgstr "Der Meilenstein wurde in „%{newTitle}“ umbenannt"
 #.elixir
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:79
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:71
 #: ../turboui/src/MilestoneList/index.tsx:119
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:260
 #: ../turboui/src/SearchPage/filterOptions.ts:12
@@ -13222,6 +13253,7 @@ msgstr "Monat"
 #: ../turboui/src/CompanyBilling/formatting.ts:15
 #: ../turboui/src/CompanyBillingPlanSelectionPage/index.tsx:95
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:45
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:39
 #: ../turboui/src/SpaceKpisPage/utils.ts:10
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:103
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/ProductModal.tsx:137
@@ -13396,6 +13428,7 @@ msgstr "NPS-Wert"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:63
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:120
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:34
 #: ../turboui/src/GoalAddForm/index.tsx:93
 #: ../turboui/src/GoalTargetList/index.tsx:180
 #: ../turboui/src/GoalTargetList/index.tsx:244
@@ -14204,7 +14237,7 @@ msgid "No template"
 msgstr "Keine Vorlage"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:58
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:64
 msgid "No templates in this tab yet."
 msgstr "Noch keine Vorlagen in diesem Tab."
 
@@ -14224,6 +14257,8 @@ msgid "No work to show."
 msgstr "Keine Arbeit anzuzeigen."
 
 #.elixir
+#.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:218
 #: lib/operately/md/milestone.ex:105
 #: lib/operately/md/milestone.ex:108
 #: lib/operately/md/space.ex:89
@@ -14266,6 +14301,11 @@ msgstr "Nicht verfügbar"
 
 #.elixir
 #.frontend
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:23
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:55
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:92
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:193
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:212
 #: ../turboui/src/CuratedTemplates/PreviewPage/index.tsx:26
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:344
 #: assets/js/utils/timeframes.tsx:14
@@ -15105,6 +15145,8 @@ msgstr "Personen mit direktem Zugriff"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:36
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:71
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:147
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:174
 msgid "Period offset"
 msgstr "Periodenversatz"
 
@@ -15415,13 +15457,13 @@ msgid "Press Tab to select the option and exit the menu."
 msgstr "Drücke die Tabulatortaste, um die Option auszuwählen und das Menü zu verlassen."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:72
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:73
 msgid "Preview"
 msgstr "Vorschau"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:76
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:80
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:82
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:86
 msgid "Preview saved template"
 msgstr "Gespeicherte Vorlage ansehen"
 
@@ -15650,7 +15692,8 @@ msgstr "Planmäßiger Fortschritt. Keine Hindernisse."
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:12
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:119
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:18
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:166
 #: ../turboui/src/SearchPage/index.tsx:315
 #: ../turboui/src/TaskPage/MoveModal.tsx:66
 #: ../turboui/src/WorkMap/components/AddItemModal.tsx:101
@@ -15743,6 +15786,7 @@ msgstr "Projektdauer"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:130
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:98
 msgid "Project level"
 msgstr "Projektebene"
 
@@ -15819,7 +15863,7 @@ msgid "Project: %{projectName}"
 msgstr "Projekt: %{projectName}"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:23
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:25
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:20
 #: ../turboui/src/SearchIndexAdminPage/index.tsx:258
 #: ../turboui/src/SearchPage/filterOptions.ts:10
@@ -15876,7 +15920,7 @@ msgid "Public sharing is off. Enable it to create a link."
 msgstr "Die öffentliche Freigabe ist deaktiviert. Aktiviere sie, um einen Link zu erstellen."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:148
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:204
 msgid "Publish"
 msgstr "Veröffentlichen"
 
@@ -15900,13 +15944,14 @@ msgid "Publish the document before sharing it publicly"
 msgstr "Veröffentliche das Dokument, bevor du es öffentlich freigibst"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:71
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:64
+#: ../turboui/src/CuratedTemplates/CatalogPage/index.tsx:77
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:121
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:60
 msgid "Published"
 msgstr "Veröffentlicht"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:111
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:158
 msgid "Published changes take effect immediately."
 msgstr "Veröffentlichte Änderungen werden sofort wirksam."
 
@@ -17163,16 +17208,16 @@ msgid "Save contributor"
 msgstr "Mitwirkende Person speichern"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:159
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:215
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:463
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:156
 msgid "Save draft"
 msgstr "Entwurf speichern"
 
-#.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:62
-msgid "Save example data"
-msgstr "Beispieldaten speichern"
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:62
+#~ msgid "Save example data"
+#~ msgstr "Beispieldaten speichern"
 
 #.frontend
 #: ../turboui/src/SaveProjectAsTemplateModal/index.tsx:105
@@ -18111,7 +18156,8 @@ msgid "Slide"
 msgstr "Folie"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:103
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:31
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:150
 msgid "Slug"
 msgstr "URL-Kürzel"
 
@@ -18692,8 +18738,7 @@ msgstr "Abonnement beendet"
 
 #.frontend
 #: ../turboui/src/CommentSection/CommentItem.tsx:192
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:35
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:38
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 #: ../turboui/src/MilestonePage/components/Sidebar.tsx:213
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:328
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:275
@@ -18794,12 +18839,14 @@ msgstr "Messgröße nicht gefunden"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:67
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:59
 msgid "Target value"
 msgstr "Zielwert"
 
 #.elixir
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:54
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:50
 #: ../turboui/src/GoalPage/Targets.tsx:16
 #: ../turboui/src/WorkMap/components/TableRow/GoalProgressSummary.tsx:45
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:492
@@ -18970,6 +19017,7 @@ msgstr "Die Aufgabe wurde aus dem Meilenstein „%{title}“ entfernt"
 #.elixir
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:111
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:87
 #: ../turboui/src/MilestonePage/components/TaskSectionLayout.tsx:34
 #: ../turboui/src/MilestonePage/index.tsx:209
 #: ../turboui/src/ProfilePage/index.tsx:123
@@ -19027,7 +19075,7 @@ msgid "Team member not found."
 msgstr "Teammitglied nicht gefunden."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:94
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:128
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:56
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:124
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:130
@@ -19210,7 +19258,7 @@ msgid "The OAuth client is not registered for this Operately MCP server."
 msgstr "Der OAuth-Client ist für diesen Operately-MCP-Server nicht registriert."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:35
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:31
 msgid "The action could not be completed. Reload if another admin has changed the template."
 msgstr "Die Aktion konnte nicht abgeschlossen werden. Lade die Seite neu, falls ein anderer Admin die Vorlage geändert hat."
 
@@ -19395,10 +19443,10 @@ msgstr "Die Dauer beträgt jetzt %{new_duration}."
 msgid "The duration was changed from %{old_duration} to %{new_duration}."
 msgstr "Die Dauer wurde von %{old_duration} auf %{new_duration} geändert."
 
-#.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:35
-msgid "The example data has been saved."
-msgstr "Die Beispieldaten wurden gespeichert."
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:35
+#~ msgid "The example data has been saved."
+#~ msgstr "Die Beispieldaten wurden gespeichert."
 
 #.frontend
 #: assets/js/pages/CompanyExportPage/index.tsx:54
@@ -19727,13 +19775,12 @@ msgid "The template could not be duplicated. Try again."
 msgstr "Die Vorlage konnte nicht dupliziert werden. Versuche es erneut."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataEditor.tsx:42
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:44
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:54
 msgid "The template could not be saved. Your edits have been kept. Reload if another admin has changed it."
 msgstr "Die Vorlage konnte nicht gespeichert werden. Deine Änderungen wurden beibehalten. Lade die Seite neu, falls ein anderer Admin sie geändert hat."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:38
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:48
 msgid "The template has been saved."
 msgstr "Die Vorlage wurde gespeichert."
 
@@ -19893,7 +19940,7 @@ msgstr "Diese Aktion kann nicht rückgängig gemacht werden"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:223
-#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:141
+#: ../turboui/src/CuratedTemplates/DetailPage/index.tsx:112
 #: assets/js/pages/SpacePage/page.tsx:255
 msgid "This action cannot be undone."
 msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
@@ -20733,7 +20780,8 @@ msgstr "Aktiviere oder deaktiviere experimentelle Funktionen für dieses Unterne
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:116
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:115
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:30
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:162
 #: lib/operately/md/space.ex:20
 #: lib/operately/md/task.ex:18
 msgid "Type"
@@ -20900,6 +20948,8 @@ msgstr "Unerwarteter Fehler"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:39
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:65
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:37
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:57
 #: ../turboui/src/GoalTargetList/index.tsx:273
 #: ../turboui/src/GoalTargetList/index.tsx:394
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:250
@@ -21040,11 +21090,13 @@ msgstr "Ohne Titel"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:133
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:76
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:97
 msgid "Untitled milestone"
 msgstr "Meilenstein ohne Titel"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:148
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:204
 #: ../turboui/src/GoalTargetList/UpdateButton.tsx:17
 msgid "Update"
 msgstr "Aktualisieren"
@@ -21423,6 +21475,7 @@ msgstr "Datenpaket wird überprüft"
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:40
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:150
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:424
 msgid "Value"
 msgstr "Wert"
@@ -21946,6 +21999,7 @@ msgstr "Wir haben dir einen 6-stelligen Code an <email>%{email}</email> gesendet
 
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:44
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateDetails.tsx:39
 #: ../turboui/src/SpaceKpisPage/utils.ts:8
 msgid "Weekly"
 msgstr "Wöchentlich"
@@ -24900,7 +24954,7 @@ msgstr "Position"
 #.frontend
 #: ../turboui/src/CuratedTemplates/DetailPage/DefinitionFields.tsx:93
 #: ../turboui/src/CuratedTemplates/DetailPage/PreviewDataFields.tsx:77
-#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:96
+#: ../turboui/src/CuratedTemplates/DetailPage/TemplateEditor.tsx:143
 #: ../turboui/src/SpaceKpisPage/AnnotationForm.tsx:111
 msgctxt "resource"
 msgid "Title"

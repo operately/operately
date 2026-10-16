@@ -81,6 +81,21 @@ test("all templates in the selected tab are shown without pagination", () => {
   expect(screen.getByTestId("location").textContent).toBe("/");
 });
 
+test("uses the parent's selected tab and reports tab changes", () => {
+  const onSelectedTypeChange = jest.fn();
+  setup({
+    templates: [templateFixture("project"), templateFixture("goal"), templateFixture("kpi")],
+    selectedType: "goal",
+    onSelectedTypeChange,
+  });
+  expect(screen.getByTestId("tab-goal")).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByText(templateFixture("goal").title)).toBeInTheDocument();
+  expect(screen.queryByText(templateFixture("project").title)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByTestId("tab-kpi"));
+  expect(onSelectedTypeChange).toHaveBeenCalledWith("kpi");
+  expect(screen.getByTestId("tab-goal")).toHaveAttribute("aria-pressed", "true");
+});
+
 test("catalog preview links open in a new tab and explain the icon on hover", async () => {
   const user = userEvent.setup();
   const template = templateFixture("project");
