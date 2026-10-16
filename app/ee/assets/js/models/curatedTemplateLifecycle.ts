@@ -6,6 +6,7 @@ import AdminApi from "@/ee/admin_api";
 
 export const curatedTemplatesPath = "/admin/curated-templates";
 export const curatedTemplatePath = (id: string) => `${curatedTemplatesPath}/${id}`;
+export const curatedTemplateEditPath = (id: string) => `${curatedTemplatePath(id)}/edit`;
 export const curatedTemplatePreviewPath = (id: string) => `${curatedTemplatePath(id)}/preview`;
 
 export async function invalidateCuratedTemplates(client: QueryClient) {
@@ -73,25 +74,5 @@ export function useSaveCuratedTemplate(initialTemplate?: CuratedTemplate) {
     return { id: persisted.current.id, expectedUpdatedAt: persisted.current.updatedAt };
   };
 
-  const savePreviewData = async (previewData: string) => {
-    const current = persisted.current;
-    assertPresent(current, "Save the template before editing its example data");
-    assertPresent(current.definition, "The saved template definition is required");
-    const result = await update.mutateAsync({
-      id: current.id,
-      expectedUpdatedAt: current.updatedAt,
-      type: current.type,
-      title: current.title,
-      slug: current.slug,
-      summary: current.summary,
-      category: current.category,
-      contentLanguage: current.contentLanguage,
-      definition: current.definition,
-      previewData,
-    });
-    if (result.template) persisted.current = result.template;
-    return result;
-  };
-
-  return { save, savePreviewData, getIdentity };
+  return { save, getIdentity };
 }

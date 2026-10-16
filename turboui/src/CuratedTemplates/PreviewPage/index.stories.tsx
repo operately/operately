@@ -7,7 +7,7 @@ export default {
   title: "Pages/CuratedTemplates/Preview",
   component: CuratedTemplatePreviewPage,
   parameters: { layout: "fullscreen" },
-  args: { editorPath: "/", referenceDate: "2026-10-12", formattedTimePreferences: defaultFormattedTimePreferences },
+  args: { templatePath: "/", referenceDate: "2026-10-12", formattedTimePreferences: defaultFormattedTimePreferences },
 } satisfies Meta<typeof CuratedTemplatePreviewPage>;
 type Story = StoryObj<typeof CuratedTemplatePreviewPage>;
 

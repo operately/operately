@@ -1,6 +1,7 @@
 import React from "react";
 import { randomUUID } from "crypto";
-import { render, fireEvent, screen, waitFor, within, configure } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
+import { render as renderComponent, fireEvent, screen, waitFor, within, configure } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { TemplateEditor } from "./TemplateEditor";
 import { showSuccessToast } from "../../Toasts";
@@ -15,6 +16,10 @@ setupTestCatalog();
 Object.defineProperty(globalThis.crypto, "randomUUID", { value: randomUUID, configurable: true });
 
 configure({ testIdAttribute: "data-test-id" });
+
+function render(ui: React.ReactElement) {
+  return renderComponent(ui, { wrapper: MemoryRouter });
+}
 
 test("changing a saved draft's type clears its incompatible example data", async () => {
   const onSave = jest.fn().mockResolvedValue({ errors: [] });
@@ -258,4 +263,127 @@ test("preserves an existing slug when renaming and saves an edited slug", async 
   fireEvent.change(slug, { target: { value: "custom-slug" } });
   fireEvent.click(screen.getByTestId("save-template-draft"));
   await waitFor(() => expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ slug: "custom-slug" }), "draft"));
+});
+
+test("failed saves retain example edits and show the returned field error", async () => {
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    const onSave = jest
+      .fn()
+      .mockResolvedValue({ errors: [{ path: "preview_data.entries.0.value", message: "Invalid measurement" }] });
+    const template = {
+      ...templateFixture("kpi"),
+      previewData: JSON.stringify({ entries: [{ period_offset: -1, value: 10 }] }),
+    };
+    render(<TemplateEditor template={template} onSave={onSave} onCancel={jest.fn()} />);
+    fireEvent.change(screen.getByTestId("title"), { target: { value: "Keep this title" } });
+    fireEvent.click(screen.getByTestId("tab-example-data"));
+    fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "25" } });
+    fireEvent.click(screen.getByTestId("tab-template"));
+    fireEvent.click(screen.getByTestId("save-template-draft"));
+    expect(await screen.findByTestId("template-errors")).toBeVisible();
+    expect(screen.getByTestId("preview-data-entries-0-value")).toHaveValue(25);
+    expect(screen.getByTestId("template-errors")).toHaveTextContent("Invalid measurement");
+    expect(screen.getByTestId("preview-data-entries-0-value")).toBeVisible();
+    fireEvent.click(screen.getByTestId("tab-template"));
+    expect(screen.getByTestId("title")).toHaveValue("Keep this title");
+    expect(showSuccessToast).not.toHaveBeenCalled();
+  } finally {
+    log.mockRestore();
+  }
+});
+
+test("updates a published KPI with edited measurements and removed annotations", async () => {
+  const onSave = jest.fn().mockResolvedValue({ errors: [] });
+  const template = {
+    ...templateFixture("kpi"),
+    state: "published" as const,
+    previewData: JSON.stringify({
+      entries: [{ period_offset: -1, value: 12 }],
+      annotations: [{ period_offset: -1, title: "Campaign" }],
+    }),
+  };
+  render(<TemplateEditor template={template} onSave={onSave} onCancel={jest.fn()} />);
+  fireEvent.click(screen.getByTestId("tab-example-data"));
+  fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "15.5" } });
+  fireEvent.click(screen.getByTestId("remove-preview-annotation-0"));
+  fireEvent.click(screen.getByTestId("update-template"));
+  await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+  expect(showSuccessToast).toHaveBeenCalledWith("Success", "The template has been saved.");
+  const saved = onSave.mock.calls[0][0].previewData;
+  expect(JSON.parse(saved)).toEqual({ entries: [{ period_offset: -1, value: 15.5 }], annotations: [] });
+});
+
+test("creates a template together with example data", async () => {
+  const onSave = jest.fn().mockResolvedValue({ errors: [] });
+  render(<TemplateEditor onSave={onSave} onCancel={jest.fn()} />);
+  fireEvent.change(screen.getByTestId("title"), { target: { value: "New KPI" } });
+  fireEvent.blur(screen.getByTestId("title"));
+  fireEvent.click(screen.getByTestId("tab-example-data"));
+  fireEvent.click(screen.getByTestId("add-preview-entry"));
+  fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "416" } });
+  fireEvent.change(screen.getByTestId("preview-data-entries-0-period-offset"), { target: { value: "-3" } });
+  fireEvent.click(screen.getByTestId("publish-template"));
+  await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+  expect(JSON.parse(onSave.mock.calls[0][0].previewData).entries).toEqual([{ period_offset: -3, value: 416 }]);
+});
+
+test.each(["client", "native", "server"])(
+  "%s validation reveals errors in the hidden template tab",
+  async (validation) => {
+    const log = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const onSave = jest.fn().mockResolvedValue({ errors: [{ path: "title", message: "Invalid title" }] });
+      render(<TemplateEditor template={templateFixture("kpi")} onSave={onSave} onCancel={jest.fn()} />);
+      fireEvent.change(screen.getByTestId("title"), {
+        target: { value: validation === "server" ? "Edited title" : "" },
+      });
+      fireEvent.click(screen.getByTestId("tab-example-data"));
+      fireEvent.click(screen.getByTestId("add-preview-entry"));
+      fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "25" } });
+      fireEvent.click(screen.getByTestId(validation === "native" ? "publish-template" : "save-template-draft"));
+      await waitFor(() => expect(screen.getByTestId("title")).toBeVisible());
+      expect(screen.getByTestId("template-errors")).toBeVisible();
+      expect(onSave).toHaveBeenCalledTimes(validation === "server" ? 1 : 0);
+      fireEvent.click(screen.getByTestId("tab-example-data"));
+      expect(screen.getByTestId("preview-data-entries-0-value")).toHaveValue(25);
+    } finally {
+      log.mockRestore();
+    }
+  },
+);
+
+test("native validation reveals an invalid annotation in the hidden example data tab", async () => {
+  const onSave = jest.fn();
+  render(<TemplateEditor template={templateFixture("kpi")} onSave={onSave} onCancel={jest.fn()} />);
+  fireEvent.click(screen.getByTestId("tab-example-data"));
+  fireEvent.click(screen.getByTestId("add-preview-annotation"));
+  fireEvent.click(screen.getByTestId("tab-template"));
+  fireEvent.click(screen.getByTestId("publish-template"));
+  expect(screen.getByTestId("preview-data-annotations-0-title")).toBeVisible();
+  expect(screen.getByTestId("template-errors")).toBeVisible();
+  expect(onSave).not.toHaveBeenCalled();
+});
+
+test("network failures retain both tabs' edits for retry", async () => {
+  const log = jest.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    const onSave = jest.fn().mockRejectedValueOnce(new Error("Network unavailable")).mockResolvedValue({ errors: [] });
+    render(<TemplateEditor template={templateFixture("kpi")} onSave={onSave} onCancel={jest.fn()} />);
+    fireEvent.change(screen.getByTestId("title"), { target: { value: "Keep this title" } });
+    fireEvent.click(screen.getByTestId("tab-example-data"));
+    fireEvent.click(screen.getByTestId("add-preview-entry"));
+    fireEvent.change(screen.getByTestId("preview-data-entries-0-value"), { target: { value: "25" } });
+    fireEvent.click(screen.getByTestId("save-template-draft"));
+    expect(await screen.findByTestId("template-errors")).toBeVisible();
+    expect(showSuccessToast).not.toHaveBeenCalled();
+    expect(screen.getByTestId("preview-data-entries-0-value")).toHaveValue(25);
+    fireEvent.click(screen.getByTestId("tab-template"));
+    expect(screen.getByTestId("title")).toHaveValue("Keep this title");
+    fireEvent.click(screen.getByTestId("save-template-draft"));
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(2));
+    expect(onSave.mock.calls[1]).toEqual(onSave.mock.calls[0]);
+  } finally {
+    log.mockRestore();
+  }
 });
