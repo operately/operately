@@ -16,7 +16,7 @@ function setup(type: TemplateType, overrides: Partial<CuratedTemplate> = {}, tab
     <MemoryRouter initialEntries={[`/preview?tab=${tab}`]}>
       <CuratedTemplatePreviewPage
         template={{ ...templateFixture(type), ...overrides }}
-        editorPath="/editor"
+        templatePath="/template"
         referenceDate="2026-10-12"
         formattedTimePreferences={defaultFormattedTimePreferences}
       />
@@ -26,7 +26,7 @@ function setup(type: TemplateType, overrides: Partial<CuratedTemplate> = {}, tab
 
 test.each(["kpi", "goal", "project"] as const)("renders a read-only %s preview", (type) => {
   const { container } = setup(type);
-  expect(screen.getByTestId("back-to-template-editor")).toHaveAttribute("href", "/editor");
+  expect(screen.getByTestId("back-to-template")).toHaveAttribute("href", "/template");
   expect(screen.getAllByText(templateFixture(type).title).length).toBeGreaterThan(0);
   expect(container.querySelector('input, textarea, [contenteditable="true"], [draggable="true"]')).toBeNull();
   expect(screen.queryByTestId("project-subscribe-button")).not.toBeInTheDocument();
@@ -36,7 +36,10 @@ test.each(["kpi", "goal", "project"] as const)("renders a read-only %s preview",
 test("populated KPI previews show the chart and history without editing controls", () => {
   const { container } = setup("kpi", {
     previewData: JSON.stringify({
-      entries: [{ period_offset: -2, value: 345 }, { period_offset: -1, value: 416 }],
+      entries: [
+        { period_offset: -2, value: 345 },
+        { period_offset: -1, value: 416 },
+      ],
       annotations: [{ period_offset: -1, title: "Campaign" }],
     }),
   });

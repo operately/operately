@@ -12,6 +12,9 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     |> UI.click(testid: "definition-cadence-option-monthly")
     |> UI.click(testid: "save-template-draft")
     |> UI.assert_has(css: "[data-test-id='template-state'][data-state='draft']")
+    |> UI.assert_has(testid: "template-details")
+    |> UI.refute_has(testid: "curated-template-form")
+    |> UI.take_screenshot()
     |> then(fn ctx ->
       template = Repo.get_by!(Template, title: "Retention KPI template")
       assert template.definition["unit"] == "%"
@@ -25,7 +28,10 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     resource_test_id = %{kpi: "kpi-detail", goal: "goal-page", project: "project-page"}[ctx.template.type]
 
     ctx
-    |> UI.visit(path)
+    |> UI.visit("/admin/curated-templates?tab=#{ctx.template.type}")
+    |> UI.click_link(ctx.template.title)
+    |> UI.assert_has(testid: "template-details")
+    |> UI.refute_has(testid: "curated-template-form")
     |> UI.click(testid: "template-actions")
     |> UI.assert_has(css: "[data-test-id='preview-template'][target='_blank']")
     |> UI.visit(path <> "/preview")
@@ -34,8 +40,10 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     |> UI.refute_has(css: "input, textarea, [contenteditable='true'], [draggable='true']")
     |> UI.refute_has(testid: "chart-log-update")
     |> UI.take_screenshot()
-    |> UI.click(testid: "back-to-template-editor")
-    |> UI.assert_has(testid: "title", value: ctx.template.title)
+    |> UI.click(testid: "back-to-template")
+    |> UI.assert_has(testid: "template-details")
+    |> UI.refute_has(testid: "curated-template-form")
+    |> UI.take_screenshot()
     |> then(fn ctx ->
       assert Repo.get!(Template, ctx.template.id).updated_at == ctx.template.updated_at
       ctx
@@ -62,8 +70,13 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
 
   step :publish_template, ctx do
     ctx
+    |> UI.click(testid: "template-actions")
+    |> UI.click(testid: "edit-template")
     |> UI.click(testid: "publish-template")
     |> UI.assert_has(css: "[data-test-id='template-state'][data-state='published']")
+    |> UI.assert_has(testid: "template-details")
+    |> UI.refute_has(testid: "curated-template-form")
+    |> UI.take_screenshot()
     |> then(fn ctx ->
       assert Repo.get!(Template, ctx.template.id).state == :published
       ctx
@@ -74,10 +87,18 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     previous_update = Repo.get!(Template, ctx.template.id).updated_at |> DateTime.to_iso8601()
 
     ctx
+    |> UI.click(testid: "template-actions")
+    |> UI.click(testid: "edit-template")
     |> UI.fill(testid: "title", with: "Updated retention")
     |> UI.click(testid: "update-template")
     |> UI.refute_has(css: "[data-test-id='template-state'][data-updated-at='#{previous_update}']")
+    |> UI.assert_has(testid: "template-details")
+    |> UI.refute_has(testid: "curated-template-form")
     |> UI.visit("/admin/curated-templates/" <> Paths.curated_template_id(ctx.template))
+    |> UI.assert_has(testid: "template-details")
+    |> UI.refute_has(testid: "curated-template-form")
+    |> UI.click(testid: "template-actions")
+    |> UI.click(testid: "edit-template")
     |> UI.assert_has(testid: "title", value: "Updated retention")
     |> then(fn ctx ->
       assert Repo.get!(Template, ctx.template.id).definition["name"] == "Updated retention"

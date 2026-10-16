@@ -11,7 +11,7 @@ import { buildPreview, richTextHandlers, unavailable } from "./adapters";
 
 export interface CuratedTemplatePreviewProps {
   template: CuratedTemplate;
-  editorPath: string;
+  templatePath: string;
   referenceDate: string;
   formattedTimePreferences: FormattedTimePreferences;
 }
@@ -35,8 +35,8 @@ export function CuratedTemplatePreviewPage(props: CuratedTemplatePreviewProps) {
           <div className="font-semibold">{t("Template preview")}</div>
           <div className="text-content-subtle">{t("Read-only preview of the last saved content.")}</div>
         </div>
-        <BlackLink to={props.editorPath} testId="back-to-template-editor">
-          {t("Back to editor")}
+        <BlackLink to={props.templatePath} testId="back-to-template">
+          {t("Back to template")}
         </BlackLink>
       </header>
       {preview.incomplete && (

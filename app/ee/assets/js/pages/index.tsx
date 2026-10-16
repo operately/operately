@@ -18,6 +18,7 @@ export default {
   SaasAdminCuratedTemplatesPage: {
     name: "SaasAdminCuratedTemplatesPage",
     loader: SaasAdminCuratedTemplatesPage.loader,
+    shouldRevalidate: SaasAdminCuratedTemplatesPage.shouldRevalidate,
     Page: SaasAdminCuratedTemplatesPage.Page,
   },
   SaasAdminCuratedTemplatePage: {

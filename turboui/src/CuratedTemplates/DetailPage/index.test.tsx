@@ -1,11 +1,16 @@
 import React from "react";
 import { render, fireEvent, screen, waitFor, configure } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 import { CuratedTemplateDetailPage } from "./index";
 import { templateFixture } from "../mockData";
+import { defaultFormattedTimePreferences } from "../../FormattedTime";
 
 configure({ testIdAttribute: "data-test-id" });
+
+function Location() {
+  return <span data-test-id="location">{useLocation().pathname}</span>;
+}
 
 function setup(state: "draft" | "published" = "draft") {
   const onDelete = jest.fn().mockResolvedValue(undefined);
@@ -13,6 +18,8 @@ function setup(state: "draft" | "published" = "draft") {
   render(
     <MemoryRouter>
       <CuratedTemplateDetailPage
+        editing
+        formattedTimePreferences={defaultFormattedTimePreferences}
         template={{
           ...templateFixture("kpi"),
           definition: "{}",
@@ -54,6 +61,8 @@ test("example data has a separate save action and both tabs preserve unsaved edi
   render(
     <MemoryRouter>
       <CuratedTemplateDetailPage
+        editing
+        formattedTimePreferences={defaultFormattedTimePreferences}
         template={template}
         catalogPath="/"
         onSave={onSave}
@@ -104,4 +113,35 @@ test("preview opens saved content from the menu without saving editor changes", 
   expect(await screen.findByTestId("preview-template")).toHaveAttribute("href", "/preview");
   expect(screen.getByTestId("preview-template")).toHaveAttribute("target", "_blank");
   expect(onPublish).not.toHaveBeenCalled();
+});
+
+test.each(["kpi", "goal", "project"] as const)("opens a saved %s template in read mode", async (type) => {
+  const template = templateFixture(type);
+  const { container } = render(
+    <MemoryRouter>
+      <Location />
+      <CuratedTemplateDetailPage
+        template={template}
+        catalogPath="/"
+        editPath="/template/edit"
+        previewPath="/template/preview"
+        formattedTimePreferences={defaultFormattedTimePreferences}
+        onSave={jest.fn()}
+        onCancel={jest.fn()}
+        onDelete={jest.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(screen.getByTestId("template-details")).toBeInTheDocument();
+  expect(screen.queryByTestId("curated-template-form")).not.toBeInTheDocument();
+  expect(container.querySelector("input, textarea, [contenteditable='true']")).toBeNull();
+  expect(screen.getByText(template.slug)).toBeInTheDocument();
+  const detail = { kpi: "USD", goal: "Reduce churn", project: "Write the welcome guide" }[type];
+  expect(screen.getByText(detail)).toBeInTheDocument();
+  fireEvent.keyDown(screen.getByTestId("template-actions"), { key: "ArrowDown" });
+  expect(await screen.findByTestId("edit-template")).toBeInTheDocument();
+  expect(screen.getByTestId("preview-template")).toHaveAttribute("href", "/template/preview");
+  expect(screen.getByTestId("delete-template")).toBeInTheDocument();
+  fireEvent.click(screen.getByTestId("edit-template"));
+  expect(screen.getByTestId("location")).toHaveTextContent("/template/edit");
 });

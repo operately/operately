@@ -11,6 +11,8 @@ import type { CuratedTemplate, TemplateType } from "../types";
 
 export interface CuratedTemplatesCatalogProps {
   templates: CuratedTemplate[];
+  selectedType?: TemplateType;
+  onSelectedTypeChange?: (type: TemplateType) => void;
   createPath: string;
   administrationPath: string;
   templatePath: (template: CuratedTemplate) => string;
@@ -21,7 +23,8 @@ export interface CuratedTemplatesCatalogProps {
 export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps) {
   const { t } = useTranslation();
   const typeLabel = { project: t("Projects"), goal: t("Goals"), kpi: t("KPIs") };
-  const [selectedType, setSelectedType] = React.useState<TemplateType>("project");
+  const [localSelectedType, setLocalSelectedType] = React.useState<TemplateType>("project");
+  const selectedType = props.selectedType ?? localSelectedType;
   const templates = props.templates.filter((template) => template.type === selectedType);
 
   return (
@@ -40,7 +43,10 @@ export function CuratedTemplatesCatalogPage(props: CuratedTemplatesCatalogProps)
         </div>
         <Tabs
           onChange={(type) => {
-            if (type === "project" || type === "goal" || type === "kpi") setSelectedType(type);
+            if (type === "project" || type === "goal" || type === "kpi") {
+              setLocalSelectedType(type);
+              props.onSelectedTypeChange?.(type);
+            }
           }}
           tabs={{
             active: selectedType,
