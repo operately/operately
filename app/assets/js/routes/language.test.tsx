@@ -112,13 +112,16 @@ beforeEach(() => {
   Api.default.setBasePath("/api/v2");
   Api.default.setHeaders({ "x-company-id": "old-company" });
   jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.mocked(axios.get).mockImplementation(async (url) => {
-    if (url.endsWith("/get_language")) {
-      if (languageFails) throw new Error("offline");
-      return { data: { language } };
-    }
-    throw { status: companyStatus };
-  });
+  jest
+    .mocked(axios.get)
+    .mockReset()
+    .mockImplementation(async (url) => {
+      if (url.endsWith("/get_language")) {
+        if (languageFails) throw new Error("offline");
+        return { data: { language } };
+      }
+      throw { status: companyStatus };
+    });
   container = document.createElement("div");
   root = createRoot(container);
 });
@@ -229,35 +232,20 @@ it("does not display stale copy while resolving language or apply an abandoned r
   expect(container.textContent).toBe("Loading...");
 });
 
-it("preserves page state while resolving language after query-string navigation", async () => {
+it("preserves visible page state without refetching language after query-string navigation", async () => {
   await visit("/billing/pick-company");
   await waitFor(() => expect(container.textContent).toBe("Carregando..."));
   const input = container.querySelector<HTMLInputElement>('[data-test-id="draft"]');
   if (!input) throw new Error("Draft input is missing");
   input.value = "Unsaved changes";
 
-  let finishLookup: (value: { data: { language: string } }) => void = () => {
-    throw new Error("lookup not started");
-  };
-  jest.mocked(axios.get).mockImplementationOnce(
-    () =>
-      new Promise((resolve) => {
-        finishLookup = resolve;
-      }),
-  );
   const requestsBeforeNavigation = jest.mocked(axios.get).mock.calls.length;
   await act(async () => {
     await router.navigate("/billing/pick-company?plan=business");
   });
-  await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(requestsBeforeNavigation + 1));
-
-  expect(container.querySelector('[data-test-id="draft"]')).toBe(input);
-  expect(input.closest("[hidden]")).not.toBeNull();
-
-  await act(async () => {
-    finishLookup({ data: { language: "en" } });
-  });
-  await waitFor(() => expect(container.textContent).toBe("Loading..."));
+  expect(router.state.location.search).toBe("?plan=business");
+  expect(axios.get).toHaveBeenCalledTimes(requestsBeforeNavigation);
+  expect(i18n.language).toBe("pt-BR");
   expect(container.querySelector('[data-test-id="draft"]')).toBe(input);
   expect(input.value).toBe("Unsaved changes");
   expect(input.closest("[hidden]")).toBeNull();

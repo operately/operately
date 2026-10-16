@@ -74,6 +74,7 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
 
   step :publish_template, ctx do
     ctx
+    |> UI.visit("/admin/curated-templates/" <> Paths.curated_template_id(ctx.template))
     |> UI.click(testid: "template-actions")
     |> UI.click(testid: "edit-template")
     |> UI.click(testid: "publish-template")
@@ -91,6 +92,7 @@ defmodule Operately.Support.Features.CuratedTemplatesSteps do
     previous_update = Repo.get!(Template, ctx.template.id).updated_at |> DateTime.to_iso8601()
 
     ctx
+    |> UI.visit("/admin/curated-templates/" <> Paths.curated_template_id(ctx.template))
     |> UI.click(testid: "template-actions")
     |> UI.click(testid: "edit-template")
     |> UI.fill(testid: "title", with: "Updated retention")
