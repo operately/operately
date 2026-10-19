@@ -28,7 +28,7 @@ function Page() {
   const preferences: AccountSettingsPage.Preferences = {
     theme,
     language: isSupportedLanguage(me.language) ? me.language : "en",
-    timezone: me.timezone || "Etc/UTC",
+    timezone: me.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
     timeFormat: me.timeFormat ?? "automatic",
   };
 
@@ -45,7 +45,7 @@ function Page() {
     await updateProfile({
       id: me.id,
       language: values.language,
-      timezone: values.timezone,
+      ...(values.timezone !== preferences.timezone ? { timezone: values.timezone } : {}),
       timeFormat: values.timeFormat,
     });
     await applyLanguage(values.language);

@@ -67,6 +67,45 @@ it("loads the saved preferences", async () => {
   });
 });
 
+it.each([null, ""])("preserves an unset timezone (%p) when saving other preferences", async (timezone) => {
+  const browserOptions = Intl.DateTimeFormat().resolvedOptions();
+  const resolvedOptions = jest.spyOn(Intl.DateTimeFormat.prototype, "resolvedOptions").mockReturnValue({
+    ...browserOptions,
+    timeZone: "America/Sao_Paulo",
+  });
+  jest.mocked(useMe).mockReturnValue({ ...person, timezone } as ReturnType<typeof useMe>);
+
+  try {
+    await mountPage();
+    expect(props().preferences.timezone).toBe("America/Sao_Paulo");
+    expect(props().timezones).toContainEqual(expect.objectContaining({ value: "America/Sao_Paulo" }));
+
+    await act(() => props().onSave({ ...props().preferences, theme: "dark", language: "fr" }));
+
+    expect(axios.post).toHaveBeenCalledWith(
+      "/api/v2/people/update",
+      { id: person.id, language: "fr", time_format: "hour_24" },
+      expect.anything(),
+    );
+  } finally {
+    resolvedOptions.mockRestore();
+  }
+});
+
+it("saves an explicitly changed timezone when none was saved", async () => {
+  jest.mocked(useMe).mockReturnValue({ ...person, timezone: null } as ReturnType<typeof useMe>);
+  await mountPage();
+  const timezone = props().preferences.timezone === "Europe/Berlin" ? "Asia/Tokyo" : "Europe/Berlin";
+
+  await act(() => props().onSave({ ...props().preferences, timezone }));
+
+  expect(axios.post).toHaveBeenCalledWith(
+    "/api/v2/people/update",
+    { id: person.id, language: "de", timezone, time_format: "hour_24" },
+    expect.anything(),
+  );
+});
+
 it("saves all preferences and applies the selected language and theme", async () => {
   await mountPage();
   await act(() => props().onSave(preferences));
