@@ -47,7 +47,7 @@ defmodule Operately.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.1"},
       {:jason, "~> 1.4"},
-      {:plug, "~> 1.18.5"},
+      {:plug, "~> 1.20.3"},
       {:plug_cowboy, "~> 2.8"},
       {:ueberauth, "~> 0.10"},
       {:ueberauth_google, "~> 0.12"},
