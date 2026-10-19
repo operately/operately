@@ -37,6 +37,8 @@ function Page() {
     ],
   );
 
+  const { mutateAsync: updateProfile } = People.useUpdateProfile();
+
   const [notifyOnMention, setNotifyOnMention] = React.useState(initialState.notifyOnMention);
   const [emailWindowMinutes, setEmailWindowMinutes] = React.useState(initialState.emailWindowMinutes);
   const [sendDailySummary, setSendDailySummary] = React.useState(initialState.sendDailySummary);
@@ -56,7 +58,7 @@ function Page() {
     setIsSubmitting(true);
 
     try {
-      await People.updateProfile(
+      await updateProfile(
         buildNotificationSettingsUpdateInput(me.id, {
           notifyOnMention,
           emailWindowMinutes,
@@ -66,7 +68,7 @@ function Page() {
         }),
       );
 
-      navigate(paths.accountSettingsPath());
+      navigate(paths.accountPath());
     } catch {
       showErrorToast(t("Error"), t("Failed to update notification settings"));
     } finally {
@@ -82,6 +84,7 @@ function Page() {
     dailySummaryDeliveryTime,
     notifyAboutAssignments,
     t,
+    updateProfile,
   ]);
 
   return (
@@ -97,10 +100,10 @@ function Page() {
       notifyAboutAssignments={notifyAboutAssignments}
       onNotifyAboutAssignmentsChange={setNotifyAboutAssignments}
       onSubmit={handleSubmit}
-      onCancel={() => navigate(paths.accountSettingsPath())}
+      onCancel={() => navigate(paths.accountPath())}
       isSubmitting={isSubmitting}
       homePath={paths.homePath()}
-      settingsPath={paths.accountSettingsPath()}
+      accountPath={paths.accountPath()}
     />
   );
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Page } from "../Page";
 import { Avatar } from "../Avatar";
-import { IconUserCircle, IconSettings, IconLockPassword, IconDoorExit } from "../icons";
+import { IconUserCircle, IconSettings, IconBell, IconLockPassword, IconDoorExit } from "../icons";
 import { translationText } from "../i18n";
 import classNames from "../utils/classnames";
 import { BlackLink } from "../Link";
@@ -33,6 +33,7 @@ export namespace AccountPage {
     person: Person;
     profilePath: string;
     settingsPath: string;
+    notificationSettingsPath: string;
     securityPath: string;
     homePath: string;
     onLogOut: () => void;
@@ -54,6 +55,12 @@ export function AccountPage(props: AccountPage.Props) {
       label: t("Settings"),
       to: props.settingsPath,
       testId: "settings-link",
+    },
+    {
+      icon: IconBell,
+      label: t("Notifications"),
+      to: props.notificationSettingsPath,
+      testId: "notifications-link",
     },
     {
       icon: IconLockPassword,

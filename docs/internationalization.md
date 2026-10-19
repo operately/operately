@@ -33,7 +33,7 @@ Keep terminology in these files rather than duplicating it in guides or skills. 
 
 ## Language resolution
 
-All supported languages are available to every user and company. A person selects a language explicitly in Account → Profile. English is the default for absent or unsupported preferences; browser language never selects or persists a preference. Language is stored separately from timezone and time-format preferences.
+All supported languages are available to every user and company. A person selects a language explicitly in My Account → Settings. English is the default for absent or unsupported preferences; browser language never selects or persists a preference. Language is stored separately from timezone and time-format preferences.
 
 Web requests and emails use the same effective-language rules. Background workers must scope the locale while constructing and rendering each recipient's content, including buffered notifications and digests, and restore the previous locale afterward. Never rely on request state in a worker. Billing emails group recipients by effective language within the billing company.
 
