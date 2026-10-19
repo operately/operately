@@ -5,7 +5,6 @@
 
 import AccountApiTokensPage from "./AccountApiTokensPage";
 import AccountApiTokensUsagePage from "./AccountApiTokensUsagePage";
-import AccountAppearancePage from "./AccountAppearancePage";
 import AccountChangeEmailPage from "./AccountChangeEmailPage";
 import AccountChangePasswordPage from "./AccountChangePasswordPage";
 import AccountMcpConnectionsPage from "./AccountMcpConnectionsPage";
@@ -133,7 +132,6 @@ import TaskPage from "./TaskPage";
 export default {
   AccountApiTokensPage,
   AccountApiTokensUsagePage,
-  AccountAppearancePage,
   AccountChangeEmailPage,
   AccountChangePasswordPage,
   AccountMcpConnectionsPage,

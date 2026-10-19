@@ -24,6 +24,7 @@ function Page() {
       person={me}
       profilePath={paths.profileEditPath(me.id!)}
       settingsPath={paths.accountSettingsPath()}
+      notificationSettingsPath={paths.accountNotificationSettingsPath()}
       securityPath={paths.accountSecurityPath()}
       homePath={paths.homePath()}
       onLogOut={handleLogOut}

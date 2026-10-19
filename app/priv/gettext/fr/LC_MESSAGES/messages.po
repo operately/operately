@@ -3512,617 +3512,617 @@ msgid "(%{where}) %{who} mentioned you in the description for \"%{task_name}\""
 msgstr "(%{where}) %{who} vous a mentionné dans la description de la tâche « %{task_name} »"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:44
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:44
 msgid "(UTC) Dublin, Edinburgh, Lisbon, London"
 msgstr "(UTC) Dublin, Édimbourg, Lisbonne, Londres"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:45
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:45
 msgid "(UTC) Monrovia, Reykjavik"
 msgstr "(UTC) Monrovia, Reykjavik"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:46
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:46
 msgid "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"
 msgstr "(UTC+01:00) Amsterdam, Berlin, Berne, Rome, Stockholm, Vienne"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:47
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:47
 msgid "(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague"
 msgstr "(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:48
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:48
 msgid "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris"
 msgstr "(UTC+01:00) Bruxelles, Copenhague, Madrid, Paris"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:51
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:51
 msgid "(UTC+01:00) Casablanca"
 msgstr "(UTC+01:00) Casablanca"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:49
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:49
 msgid "(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb"
 msgstr "(UTC+01:00) Sarajevo, Skopje, Varsovie, Zagreb"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:50
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:50
 msgid "(UTC+01:00) West Central Africa"
 msgstr "(UTC+01:00) Afrique centrale de l’Ouest"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:52
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:52
 msgid "(UTC+01:00) Windhoek"
 msgstr "(UTC+01:00) Windhoek"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:53
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:53
 msgid "(UTC+02:00) Athens, Bucharest"
 msgstr "(UTC+02:00) Athènes, Bucarest"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:54
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:54
 msgid "(UTC+02:00) Beirut"
 msgstr "(UTC+02:00) Beyrouth"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:55
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:55
 msgid "(UTC+02:00) Cairo"
 msgstr "(UTC+02:00) Le Caire"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:56
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:56
 msgid "(UTC+02:00) Damascus"
 msgstr "(UTC+02:00) Damas"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:57
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:57
 msgid "(UTC+02:00) Gaza, Hebron"
 msgstr "(UTC+02:00) Gaza, Hébron"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:58
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:58
 msgid "(UTC+02:00) Harare, Pretoria"
 msgstr "(UTC+02:00) Harare, Pretoria"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:59
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:59
 msgid "(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius"
 msgstr "(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:60
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:60
 msgid "(UTC+02:00) Jerusalem"
 msgstr "(UTC+02:00) Jérusalem"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:61
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:61
 msgid "(UTC+02:00) Kaliningrad"
 msgstr "(UTC+02:00) Kaliningrad"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:62
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:62
 msgid "(UTC+02:00) Tripoli"
 msgstr "(UTC+02:00) Tripoli"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:63
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:63
 msgid "(UTC+03:00) Amman"
 msgstr "(UTC+03:00) Amman"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:64
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:64
 msgid "(UTC+03:00) Baghdad"
 msgstr "(UTC+03:00) Bagdad"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:65
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:65
 msgid "(UTC+03:00) Istanbul"
 msgstr "(UTC+03:00) Istanbul"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:66
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:66
 msgid "(UTC+03:00) Kuwait, Riyadh"
 msgstr "(UTC+03:00) Koweït, Riyad"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:67
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:67
 msgid "(UTC+03:00) Minsk"
 msgstr "(UTC+03:00) Minsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:68
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:68
 msgid "(UTC+03:00) Moscow, St. Petersburg"
 msgstr "(UTC+03:00) Moscou, Saint-Pétersbourg"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:69
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:69
 msgid "(UTC+03:00) Nairobi"
 msgstr "(UTC+03:00) Nairobi"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:70
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:70
 msgid "(UTC+03:30) Tehran"
 msgstr "(UTC+03:30) Téhéran"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:71
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:71
 msgid "(UTC+04:00) Abu Dhabi, Muscat"
 msgstr "(UTC+04:00) Abou Dabi, Mascate"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:72
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:72
 msgid "(UTC+04:00) Astrakhan, Ulyanovsk, Volgograd"
 msgstr "(UTC+04:00) Astrakhan, Oulianovsk, Volgograd"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:73
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:73
 msgid "(UTC+04:00) Baku"
 msgstr "(UTC+04:00) Bakou"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:74
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:74
 msgid "(UTC+04:00) Izhevsk, Samara"
 msgstr "(UTC+04:00) Ijevsk, Samara"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:75
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:75
 msgid "(UTC+04:00) Port Louis"
 msgstr "(UTC+04:00) Port-Louis"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:76
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:76
 msgid "(UTC+04:00) Tbilisi"
 msgstr "(UTC+04:00) Tbilisi"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:77
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:77
 msgid "(UTC+04:00) Yerevan"
 msgstr "(UTC+04:00) Erevan"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:78
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:78
 msgid "(UTC+04:30) Kabul"
 msgstr "(UTC+04:30) Kaboul"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:82
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:82
 msgid "(UTC+05:00) Astana"
 msgstr "(UTC+05:00) Astana"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:80
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:80
 msgid "(UTC+05:00) Ekaterinburg"
 msgstr "(UTC+05:00) Iekaterinbourg"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:81
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:81
 msgid "(UTC+05:00) Islamabad, Karachi"
 msgstr "(UTC+05:00) Islamabad, Karachi"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:79
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:79
 msgid "(UTC+05:00) Tashkent, Ashgabat"
 msgstr "(UTC+05:00) Tachkent, Achgabat"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:83
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:83
 msgid "(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi"
 msgstr "(UTC+05:30) Chennai, Calcutta, Bombay, New Delhi"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:84
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:84
 msgid "(UTC+05:30) Sri Jayawardenepura"
 msgstr "(UTC+05:30) Sri Jayawardenepura"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:85
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:85
 msgid "(UTC+05:45) Kathmandu"
 msgstr "(UTC+05:45) Katmandou"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:86
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:86
 msgid "(UTC+06:00) Dhaka"
 msgstr "(UTC+06:00) Dacca"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:87
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:87
 msgid "(UTC+06:30) Yangon (Rangoon)"
 msgstr "(UTC+06:30) Yangon (Rangoun)"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:89
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:89
 msgid "(UTC+07:00) Bangkok, Hanoi, Jakarta"
 msgstr "(UTC+07:00) Bangkok, Hanoï, Jakarta"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:90
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:90
 msgid "(UTC+07:00) Barnaul, Gorno-Altaysk"
 msgstr "(UTC+07:00) Barnaoul, Gorno-Altaïsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:91
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:91
 msgid "(UTC+07:00) Hovd"
 msgstr "(UTC+07:00) Hovd"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:92
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:92
 msgid "(UTC+07:00) Krasnoyarsk"
 msgstr "(UTC+07:00) Krasnoïarsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:88
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:88
 msgid "(UTC+07:00) Novosibirsk"
 msgstr "(UTC+07:00) Novossibirsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:93
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:93
 msgid "(UTC+07:00) Tomsk"
 msgstr "(UTC+07:00) Tomsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:94
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:94
 msgid "(UTC+08:00) Beijing, Chongqing, Hong Kong SAR, Urumqi"
 msgstr "(UTC+08:00) Pékin, Chongqing, RAS de Hong Kong, Ürümqi"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:95
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:95
 msgid "(UTC+08:00) Irkutsk"
 msgstr "(UTC+08:00) Irkoutsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:96
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:96
 msgid "(UTC+08:00) Kuala Lumpur, Singapore"
 msgstr "(UTC+08:00) Kuala Lumpur, Singapour"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:97
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:97
 msgid "(UTC+08:00) Perth"
 msgstr "(UTC+08:00) Perth"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:98
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:98
 msgid "(UTC+08:00) Taipei"
 msgstr "(UTC+08:00) Taipei"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:99
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:99
 msgid "(UTC+08:00) Ulaanbaatar"
 msgstr "(UTC+08:00) Oulan-Bator"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:100
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:100
 msgid "(UTC+08:30) Pyongyang"
 msgstr "(UTC+08:30) Pyongyang"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:101
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:101
 msgid "(UTC+08:45) Eucla"
 msgstr "(UTC+08:45) Eucla"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:102
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:102
 msgid "(UTC+09:00) Chita"
 msgstr "(UTC+09:00) Tchita"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:103
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:103
 msgid "(UTC+09:00) Osaka, Sapporo, Tokyo"
 msgstr "(UTC+09:00) Osaka, Sapporo, Tokyo"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:104
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:104
 msgid "(UTC+09:00) Seoul"
 msgstr "(UTC+09:00) Séoul"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:105
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:105
 msgid "(UTC+09:00) Yakutsk"
 msgstr "(UTC+09:00) Iakoutsk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:106
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:106
 msgid "(UTC+09:30) Adelaide"
 msgstr "(UTC+09:30) Adélaïde"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:107
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:107
 msgid "(UTC+09:30) Darwin"
 msgstr "(UTC+09:30) Darwin"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:108
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:108
 msgid "(UTC+10:00) Brisbane"
 msgstr "(UTC+10:00) Brisbane"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:109
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:109
 msgid "(UTC+10:00) Canberra, Melbourne, Sydney"
 msgstr "(UTC+10:00) Canberra, Melbourne, Sydney"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:110
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:110
 msgid "(UTC+10:00) Guam, Port Moresby"
 msgstr "(UTC+10:00) Guam, Port Moresby"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:111
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:111
 msgid "(UTC+10:00) Hobart"
 msgstr "(UTC+10:00) Hobart"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:112
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:112
 msgid "(UTC+10:00) Vladivostok"
 msgstr "(UTC+10:00) Vladivostok"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:113
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:113
 msgid "(UTC+10:30) Lord Howe Island"
 msgstr "(UTC+10:30) Île Lord Howe"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:114
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:114
 msgid "(UTC+11:00) Bougainville Island"
 msgstr "(UTC+11:00) Île Bougainville"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:115
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:115
 msgid "(UTC+11:00) Chokurdakh"
 msgstr "(UTC+11:00) Tchokourdakh"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:116
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:116
 msgid "(UTC+11:00) Magadan"
 msgstr "(UTC+11:00) Magadan"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:117
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:117
 msgid "(UTC+11:00) Norfolk Island"
 msgstr "(UTC+11:00) Île Norfolk"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:118
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:118
 msgid "(UTC+11:00) Sakhalin"
 msgstr "(UTC+11:00) Sakhaline"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:119
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:119
 msgid "(UTC+11:00) Solomon Islands, New Caledonia"
 msgstr "(UTC+11:00) Îles Salomon, Nouvelle-Calédonie"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:120
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:120
 msgid "(UTC+12:00) Anadyr, Petropavlovsk-Kamchatsky"
 msgstr "(UTC+12:00) Anadyr, Petropavlovsk-Kamtchatski"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:121
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:121
 msgid "(UTC+12:00) Auckland, Wellington"
 msgstr "(UTC+12:00) Auckland, Wellington"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:122
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:122
 msgid "(UTC+12:00) Fiji Islands"
 msgstr "(UTC+12:00) Îles Fidji"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:123
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:123
 msgid "(UTC+12:45) Chatham Islands"
 msgstr "(UTC+12:45) Îles Chatham"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:124
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:124
 msgid "(UTC+13:00) Nuku'alofa"
 msgstr "(UTC+13:00) Nuku'alofa"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:125
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:125
 msgid "(UTC+13:00) Samoa"
 msgstr "(UTC+13:00) Samoa"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:126
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:126
 msgid "(UTC+14:00) Kiritimati Island"
 msgstr "(UTC+14:00) Île Kiritimati"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:42
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:42
 msgid "(UTC-01:00) Azores"
 msgstr "(UTC-01:00) Açores"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:43
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:43
 msgid "(UTC-01:00) Cabo Verde Islands"
 msgstr "(UTC-01:00) Îles du Cap-Vert"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:41
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:41
 msgid "(UTC-02:00) Fernando de Noronha"
 msgstr "(UTC-02:00) Fernando de Noronha"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:33
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:33
 msgid "(UTC-03:00) Araguaina"
 msgstr "(UTC-03:00) Araguaína"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:34
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:34
 msgid "(UTC-03:00) Brasilia"
 msgstr "(UTC-03:00) Brasília"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:35
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:35
 msgid "(UTC-03:00) Cayenne, Fortaleza"
 msgstr "(UTC-03:00) Cayenne, Fortaleza"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:36
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:36
 msgid "(UTC-03:00) City of Buenos Aires"
 msgstr "(UTC-03:00) Buenos Aires"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:37
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:37
 msgid "(UTC-03:00) Greenland"
 msgstr "(UTC-03:00) Groenland"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:38
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:38
 msgid "(UTC-03:00) Montevideo"
 msgstr "(UTC-03:00) Montevideo"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:39
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:39
 msgid "(UTC-03:00) Saint Pierre and Miquelon"
 msgstr "(UTC-03:00) Saint-Pierre-et-Miquelon"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:40
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:40
 msgid "(UTC-03:00) Salvador"
 msgstr "(UTC-03:00) Salvador"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:32
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:32
 msgid "(UTC-03:30) Newfoundland"
 msgstr "(UTC-03:30) Terre-Neuve"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:25
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:25
 msgid "(UTC-04:00) Asuncion"
 msgstr "(UTC-04:00) Asunción"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:26
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:26
 msgid "(UTC-04:00) Atlantic Time (Canada)"
 msgstr "(UTC-04:00) Heure de l’Atlantique (Canada)"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:27
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:27
 msgid "(UTC-04:00) Caracas"
 msgstr "(UTC-04:00) Caracas"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:28
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:28
 msgid "(UTC-04:00) Cuiaba"
 msgstr "(UTC-04:00) Cuiabá"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:29
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:29
 msgid "(UTC-04:00) Georgetown, La Paz, Manaus, San Juan"
 msgstr "(UTC-04:00) Georgetown, La Paz, Manaus, San Juan"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:30
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:30
 msgid "(UTC-04:00) Santiago"
 msgstr "(UTC-04:00) Santiago"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:31
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:31
 msgid "(UTC-04:00) Turks and Caicos"
 msgstr "(UTC-04:00) Îles Turques-et-Caïques"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:19
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:19
 msgid "(UTC-05:00) Bogota, Lima, Quito"
 msgstr "(UTC-05:00) Bogotá, Lima, Quito"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:20
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:20
 msgid "(UTC-05:00) Chetumal"
 msgstr "(UTC-05:00) Chetumal"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:21
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:21
 msgid "(UTC-05:00) Eastern Time (US and Canada)"
 msgstr "(UTC-05:00) Heure de l’Est (États-Unis et Canada)"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:22
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:22
 msgid "(UTC-05:00) Haiti"
 msgstr "(UTC-05:00) Haïti"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:23
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:23
 msgid "(UTC-05:00) Havana"
 msgstr "(UTC-05:00) La Havane"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:24
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:24
 msgid "(UTC-05:00) Indiana (East)"
 msgstr "(UTC-05:00) Indiana (Est)"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:13
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:13
 msgid "(UTC-06:00) Central America"
 msgstr "(UTC-06:00) Amérique centrale"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:14
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:14
 msgid "(UTC-06:00) Central Time (US and Canada)"
 msgstr "(UTC-06:00) Heure du Centre (États-Unis et Canada)"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:15
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:15
 msgid "(UTC-06:00) Chihuahua, La Paz, Mazatlan"
 msgstr "(UTC-06:00) Chihuahua, La Paz, Mazatlán"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:16
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:16
 msgid "(UTC-06:00) Easter Island"
 msgstr "(UTC-06:00) Île de Pâques"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:17
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:17
 msgid "(UTC-06:00) Guadalajara, Mexico City, Monterrey"
 msgstr "(UTC-06:00) Guadalajara, Mexico, Monterrey"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:18
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:18
 msgid "(UTC-06:00) Saskatchewan"
 msgstr "(UTC-06:00) Saskatchewan"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:11
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:11
 msgid "(UTC-07:00) Arizona"
 msgstr "(UTC-07:00) Arizona"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:12
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:12
 msgid "(UTC-07:00) Mountain Time (US and Canada), Navajo Nation"
 msgstr "(UTC-07:00) Heure des Rocheuses (États-Unis et Canada), Nation navajo"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:9
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:9
 msgid "(UTC-08:00) Baja California"
 msgstr "(UTC-08:00) Basse-Californie"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:10
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:10
 msgid "(UTC-08:00) Pacific Time (US and Canada)"
 msgstr "(UTC-08:00) Heure du Pacifique (États-Unis et Canada)"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:8
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:8
 msgid "(UTC-09:00) Alaska"
 msgstr "(UTC-09:00) Alaska"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:7
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:7
 msgid "(UTC-09:30) Marquesas Islands"
 msgstr "(UTC-09:30) Îles Marquises"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:5
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:5
 msgid "(UTC-10:00) Aleutian Islands"
 msgstr "(UTC-10:00) Îles Aléoutiennes"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:6
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:6
 msgid "(UTC-10:00) Hawaii"
 msgstr "(UTC-10:00) Hawaï"
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/timezones.tsx:4
+#: assets/js/pages/AccountSettingsPage/timezones.tsx:4
 msgid "(UTC-11:00) Midway Island, American Samoa"
 msgstr "(UTC-11:00) Îles Midway, Samoa américaines"
 
@@ -4641,7 +4641,7 @@ msgid "10 minutes"
 msgstr "10 minutes"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:167
+#: ../turboui/src/AccountSettingsPage/index.tsx:82
 msgid "12-hour clock"
 msgstr "Format 12 heures"
 
@@ -4668,7 +4668,7 @@ msgid "2. What's new since the last check-in?"
 msgstr "2. Quoi de neuf depuis le dernier point d’avancement ?"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:168
+#: ../turboui/src/AccountSettingsPage/index.tsx:83
 msgid "24-hour clock"
 msgstr "Format 24 heures"
 
@@ -5027,7 +5027,7 @@ msgstr "Jeton API créé"
 #: ../turboui/src/AccountApiTokensPage/index.tsx:75
 #: ../turboui/src/AccountApiTokensPage/index.tsx:82
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:24
-#: ../turboui/src/CompanyNavigation/User.tsx:49
+#: ../turboui/src/CompanyNavigation/User.tsx:60
 msgid "API Tokens"
 msgstr "Jetons API"
 
@@ -5048,7 +5048,7 @@ msgid "About"
 msgstr "À propos"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:131
+#: ../turboui/src/ProfileEditPage/index.tsx:115
 #: ../turboui/src/ProfilePage/components/AboutMe.tsx:22
 msgid "About me"
 msgstr "À propos de moi"
@@ -5088,7 +5088,6 @@ msgstr "Mode d’accès du nouveau jeton"
 
 #.frontend
 #: ../turboui/src/CompanyNavigation/index.tsx:109
-#: assets/js/pages/AccountAppearancePage/index.tsx:24
 #: ee/assets/js/pages/SaasAdminPage/index.tsx:311
 msgid "Account"
 msgstr "Compte"
@@ -5768,10 +5767,10 @@ msgstr "L’ajout ou la réactivation de personnes seront bloqués lorsque la li
 msgid "Adding under <goal>%{goalName}</goal>"
 msgstr "Ajout sous l’objectif <goal>%{goalName}</goal>"
 
-#.frontend
-#: ../turboui/src/AccountSettingsPage/index.tsx:31
-msgid "Adjust how Operately looks for you"
-msgstr "Personnalisez l’apparence d’Operately"
+#~ #.frontend
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:31
+#~ msgid "Adjust how Operately looks for you"
+#~ msgstr "Personnalisez l’apparence d’Operately"
 
 #.elixir
 #.frontend
@@ -5918,12 +5917,12 @@ msgid "Already have an account? <actionLink>Sign in</actionLink>"
 msgstr "Vous avez déjà un compte ? <actionLink>Se connecter</actionLink>"
 
 #.frontend
-#: assets/js/pages/AccountAppearancePage/index.tsx:70
+#: ../turboui/src/AccountSettingsPage/index.tsx:62
 msgid "Always Dark"
 msgstr "Toujours sombre"
 
 #.frontend
-#: assets/js/pages/AccountAppearancePage/index.tsx:69
+#: ../turboui/src/AccountSettingsPage/index.tsx:61
 msgid "Always Light"
 msgstr "Toujours clair"
 
@@ -6027,12 +6026,10 @@ msgstr "Toute personne disposant du lien peut lire la dernière version de ce do
 msgid "App updated"
 msgstr "Application mise à jour"
 
-#.frontend
-#: ../turboui/src/AccountSettingsPage/index.tsx:30
-#: assets/js/pages/AccountAppearancePage/index.tsx:24
-#: assets/js/pages/AccountAppearancePage/index.tsx:61
-msgid "Appearance"
-msgstr "Apparence"
+#~ #.frontend
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:54
+#~ msgid "Appearance"
+#~ msgstr "Apparence"
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:599
@@ -6400,7 +6397,7 @@ msgid "Authors cannot acknowledge their own retrospectives"
 msgstr "Les auteurs ne peuvent pas confirmer la lecture de leurs propres bilans"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:166
+#: ../turboui/src/AccountSettingsPage/index.tsx:81
 msgid "Automatic"
 msgstr "Automatique"
 
@@ -6844,7 +6841,7 @@ msgstr "Cette personne ne peut pas être aussi responsable"
 #: ../turboui/src/Modal/MoveModal.tsx:73
 #: ../turboui/src/PageDescription/index.tsx:198
 #: ../turboui/src/PrivacyField/index.tsx:115
-#: ../turboui/src/ProfileEditPage/index.tsx:199
+#: ../turboui/src/ProfileEditPage/index.tsx:147
 #: ../turboui/src/ProjectPage/DeleteModal.tsx:50
 #: ../turboui/src/ProjectTemplateLifecycle/index.tsx:89
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:432
@@ -7072,7 +7069,7 @@ msgid "Change password"
 msgstr "Changer le mot de passe"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:337
+#: ../turboui/src/ProfileEditPage/index.tsx:247
 msgid "Change photo"
 msgstr "Changer la photo"
 
@@ -7413,10 +7410,10 @@ msgstr "Choisissez le mode d’envoi des mentions directes."
 msgid "Choose how long Operately should wait before sending batched activity emails. When direct mentions are instant, this still applies to all other activity emails."
 msgstr "Choisissez combien de temps Operately doit attendre avant d’envoyer les e-mails d’activité groupés. Si les mentions directes sont envoyées immédiatement, ce délai s’applique tout de même aux autres e-mails d’activité."
 
-#.frontend
-#: assets/js/pages/AccountAppearancePage/index.tsx:65
-msgid "Choose if appearance should be light, or dark, or follow your computer's settings."
-msgstr "Choisissez une apparence claire ou sombre, ou suivez les paramètres de votre ordinateur."
+#~ #.frontend
+#~ #: assets/js/pages/AccountAppearancePage/index.tsx:65
+#~ msgid "Choose if appearance should be light, or dark, or follow your computer's settings."
+#~ msgstr "Choisissez une apparence claire ou sombre, ou suivez les paramètres de votre ordinateur."
 
 #.frontend
 #: ../turboui/src/PersonField/index.tsx:370
@@ -7660,7 +7657,7 @@ msgid "Collecting Rows"
 msgstr "Collecte des lignes"
 
 #.frontend
-#: assets/js/pages/AccountAppearancePage/index.tsx:63
+#: ../turboui/src/AccountSettingsPage/index.tsx:59
 msgid "Color Mode"
 msgstr "Mode de couleur"
 
@@ -7776,7 +7773,7 @@ msgstr "Administration de l’entreprise"
 
 #.frontend
 #: ../turboui/src/CompanyAdminPage/index.tsx:63
-#: ../turboui/src/ProfileEditPage/index.tsx:93
+#: ../turboui/src/ProfileEditPage/index.tsx:77
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:39
 #: assets/js/pages/CompanyAdminManageAdminsPage/page.tsx:29
 #: assets/js/pages/CompanyAdminManagePeoplePage/index.tsx:90
@@ -8013,10 +8010,10 @@ msgstr "Terminé :"
 msgid "Concrete steps and tasks with specific deliverables. Get things done."
 msgstr "Des étapes concrètes et des tâches avec des livrables précis. Passez à l’action."
 
-#.frontend
-#: ../turboui/src/AccountSettingsPage/index.tsx:37
-msgid "Configure how activity and summary emails are delivered"
-msgstr "Configurez l’envoi des e-mails d’activité et de récapitulatif"
+#~ #.frontend
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:37
+#~ msgid "Configure how activity and summary emails are delivered"
+#~ msgstr "Configurez l’envoi des e-mails d’activité et de récapitulatif"
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminEmailSettingsPage/EmailSettingsSection.tsx:22
@@ -8339,6 +8336,12 @@ msgstr "Corrigez la valeur enregistrée le <date/>. La valeur précédente reste
 #: assets/js/pages/HomePage/index.tsx:69
 msgid "Could not delete feed item"
 msgstr "Impossible de supprimer l’élément du fil d’activité"
+
+#.frontend
+#: ../turboui/src/AccountSettingsPage/index.tsx:42
+#: ../turboui/src/AccountSettingsPage/index.tsx:88
+msgid "Could not save all preferences. Please try again."
+msgstr "Impossible d’enregistrer toutes les préférences. Veuillez réessayer."
 
 #.frontend
 #: assets/js/pages/SpaceToolsConfigurationPage/index.tsx:46
@@ -9716,7 +9719,7 @@ msgstr "Version précédente"
 #: ../turboui/src/GoalTargetList/EditButton.tsx:18
 #: ../turboui/src/MilestoneList/MilestoneItem.tsx:176
 #: ../turboui/src/PageDescription/index.tsx:100
-#: ../turboui/src/ProfileEditPage/index.tsx:331
+#: ../turboui/src/ProfileEditPage/index.tsx:241
 #: ../turboui/src/ResourceHub/nodeMenus/DocumentMenu.tsx:70
 #: ../turboui/src/ResourceHub/nodeMenus/FileMenu.tsx:81
 #: ../turboui/src/ResourceHub/nodeMenus/LinkMenu.tsx:56
@@ -9792,7 +9795,7 @@ msgstr "Modifier le lien"
 
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/components/PersonOptions.tsx:49
-#: ../turboui/src/ProfileEditPage/index.tsx:107
+#: ../turboui/src/ProfileEditPage/index.tsx:91
 #: ../turboui/src/ProfilePage/components/index.tsx:27
 msgid "Edit Profile"
 msgstr "Modifier le profil"
@@ -10253,8 +10256,7 @@ msgstr "Saisissez zéro ou un nombre positif de jours."
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:260
 #: assets/js/models/tasks/useSpaceTasksForTurboUi.tsx:285
 #: assets/js/models/tasks/useTaskSlideInProps.tsx:217
-#: assets/js/pages/AccountAppearancePage/index.tsx:54
-#: assets/js/pages/AccountNotificationSettingsPage/index.tsx:71
+#: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 #: assets/js/pages/CompanyAdminPage/page.tsx:27
 #: assets/js/pages/HomePage/index.tsx:74
 #: assets/js/pages/MilestonePage/index.tsx:74
@@ -10926,7 +10928,7 @@ msgid "Failed to update assignees."
 msgstr "Impossible de modifier les personnes assignées."
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:233
+#: assets/js/pages/ProfileEditPage/index.tsx:193
 msgid "Failed to update avatar. Please try again."
 msgstr "Impossible de mettre à jour la photo de profil. Réessayez."
 
@@ -10976,7 +10978,7 @@ msgid "Failed to update milestone."
 msgstr "Impossible de mettre à jour le jalon."
 
 #.frontend
-#: assets/js/pages/AccountNotificationSettingsPage/index.tsx:71
+#: assets/js/pages/AccountNotificationSettingsPage/index.tsx:73
 msgid "Failed to update notification settings"
 msgstr "Impossible de modifier les paramètres des notifications"
 
@@ -11075,10 +11077,10 @@ msgstr "Impossible de modifier les statuts de tâche"
 msgid "Failed to update tasks view"
 msgstr "Impossible de modifier la vue des tâches"
 
-#.frontend
-#: assets/js/pages/AccountAppearancePage/index.tsx:54
-msgid "Failed to update theme"
-msgstr "Impossible de modifier le thème"
+#~ #.frontend
+#~ #: assets/js/pages/AccountAppearancePage/index.tsx:54
+#~ msgid "Failed to update theme"
+#~ msgstr "Impossible de modifier le thème"
 
 #.frontend
 #: assets/js/pages/InviteTeamPage/index.tsx:63
@@ -11092,7 +11094,7 @@ msgid "Failed to upload %{name}. Please try again."
 msgstr "Impossible d’ajouter %{name}. Réessayez."
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:206
+#: assets/js/pages/ProfileEditPage/index.tsx:166
 msgid "Failed to upload avatar. Please try again."
 msgstr "Impossible d’ajouter la photo de profil. Réessayez."
 
@@ -11687,16 +11689,15 @@ msgstr "Ce lien semble incorrect. Vérifiez-le ou demandez un nouveau lien à la
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:71
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:44
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:48
-#: ../turboui/src/AccountPage/index.tsx:78
+#: ../turboui/src/AccountPage/index.tsx:85
 #: ../turboui/src/AccountSecurityPage/index.tsx:21
-#: ../turboui/src/AccountSettingsPage/index.tsx:19
+#: ../turboui/src/AccountSettingsPage/index.tsx:45
 #: ../turboui/src/CompanyAdminPage/index.tsx:53
 #: ../turboui/src/CompanyNavigation/index.tsx:85
 #: ../turboui/src/CompanyNavigation/index.tsx:185
 #: ../turboui/src/HomePage/index.tsx:20
-#: ../turboui/src/ProfileEditPage/index.tsx:97
+#: ../turboui/src/ProfileEditPage/index.tsx:81
 #: ../turboui/src/ProjectPageLayout/PageHeader.tsx:23
-#: assets/js/pages/AccountAppearancePage/index.tsx:27
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:53
 #: assets/js/pages/ProjectTemplatesPage/index.tsx:74
 msgid "Home"
@@ -12448,9 +12449,14 @@ msgid "LINKS"
 msgstr "LIENS"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:228
+#: ../turboui/src/AccountSettingsPage/index.tsx:70
 msgid "Language"
 msgstr "Langue"
+
+#~ #.frontend
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:68
+#~ msgid "Language & time"
+#~ msgstr "Langue et heure"
 
 #.frontend
 #: ../turboui/src/SearchPage/filterOptions.ts:31
@@ -12880,7 +12886,7 @@ msgstr "Les résultats à long terme que vous visez. Suivez l’avancement globa
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:52
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:59
-#: ../turboui/src/CompanyNavigation/User.tsx:52
+#: ../turboui/src/CompanyNavigation/User.tsx:63
 msgid "MCP Connections"
 msgstr "Connexions MCP"
 
@@ -12912,7 +12918,7 @@ msgstr "Rendre le projet visible dans les listes de projets actifs"
 #.frontend
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:36
 #: ../turboui/src/CompanyAdminManagePeoplePage/index.tsx:148
-#: ../turboui/src/ProfileEditPage/index.tsx:94
+#: ../turboui/src/ProfileEditPage/index.tsx:78
 #: assets/js/pages/CompanyAdminAddPeoplePage/index.tsx:40
 #: assets/js/pages/InviteTeamPage/index.tsx:28
 #: assets/js/pages/MemberTypeSelectionPage/index.tsx:18
@@ -12976,10 +12982,10 @@ msgstr "Gérer les statuts"
 msgid "Manage team members"
 msgstr "Gérer les membres de l’équipe"
 
-#.frontend
-#: ../turboui/src/AccountSettingsPage/index.tsx:25
-msgid "Manage the account settings available to you."
-msgstr "Gérez les paramètres du compte auxquels vous avez accès."
+#~ #.frontend
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:25
+#~ msgid "Manage the account settings available to you."
+#~ msgstr "Gérez les paramètres du compte auxquels vous avez accès."
 
 #.frontend
 #: assets/js/pages/GoalAccessManagementPage/page.tsx:83
@@ -13433,8 +13439,10 @@ msgid "Mutation Example (POST)"
 msgstr "Exemple de mutation (POST)"
 
 #.frontend
-#: ../turboui/src/AccountPage/index.tsx:83
-#: ../turboui/src/AccountPage/index.tsx:103
+#: ../turboui/src/AccountNotificationSettingsPage/index.tsx:49
+#: ../turboui/src/AccountPage/index.tsx:90
+#: ../turboui/src/AccountPage/index.tsx:110
+#: ../turboui/src/AccountSettingsPage/index.tsx:46
 msgid "My Account"
 msgstr "Mon compte"
 
@@ -13473,7 +13481,7 @@ msgstr "Score NPS"
 #: ../turboui/src/GoalTargetList/index.tsx:180
 #: ../turboui/src/GoalTargetList/index.tsx:244
 #: ../turboui/src/GoalTargetList/index.tsx:370
-#: ../turboui/src/ProfileEditPage/index.tsx:115
+#: ../turboui/src/ProfileEditPage/index.tsx:99
 #: ../turboui/src/ResourceHub/AddFolderModal.tsx:46
 #: ../turboui/src/ResourceHub/nodeMenus/FolderMenu.tsx:176
 #: ../turboui/src/SortControl/index.tsx:18
@@ -14446,12 +14454,13 @@ msgstr "L’adresse e-mail de notification n’est pas configurée"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:79
-#: ../turboui/src/AccountSettingsPage/index.tsx:36
 msgid "Notification settings"
 msgstr "Paramètres des notifications"
 
 #.frontend
+#: ../turboui/src/AccountPage/index.tsx:61
 #: ../turboui/src/CompanyNavigation/Bell.tsx:26
+#: ../turboui/src/CompanyNavigation/User.tsx:54
 #: ../turboui/src/CompanyNavigation/index.tsx:105
 #: ../turboui/src/SidebarSection/index.tsx:34
 #: assets/js/pages/NotificationsPage/index.tsx:38
@@ -14992,10 +15001,10 @@ msgstr "Mot de passe"
 #: ../turboui/src/AccountApiTokensUsagePage/index.tsx:23
 #: ../turboui/src/AccountChangeEmailPage/index.tsx:72
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:45
-#: ../turboui/src/AccountPage/index.tsx:60
+#: ../turboui/src/AccountPage/index.tsx:67
 #: ../turboui/src/AccountSecurityPage/index.tsx:24
 #: ../turboui/src/AccountSecurityPage/index.tsx:26
-#: ../turboui/src/CompanyNavigation/User.tsx:46
+#: ../turboui/src/CompanyNavigation/User.tsx:57
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:54
 msgid "Password & Security"
 msgstr "Mot de passe et sécurité"
@@ -15326,7 +15335,7 @@ msgid "Please choose an image file."
 msgstr "Choisissez un fichier image."
 
 #.frontend
-#: assets/js/pages/ProfileEditPage/index.tsx:183
+#: assets/js/pages/ProfileEditPage/index.tsx:143
 msgid "Please choose an image smaller than 12 MB."
 msgstr "Choisissez une image de moins de 12 Mo."
 
@@ -15484,6 +15493,19 @@ msgstr "Publié le"
 #: assets/js/features/activities/ProjectDiscussionSubmitted/index.tsx:89
 msgid "Posted: %{title}"
 msgstr "A publié : %{title}"
+
+#~ #.frontend
+#~ #: ../turboui/src/AccountPage/index.tsx:55
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:50
+#~ #: ../turboui/src/AccountSettingsPage/index.tsx:52
+#~ #: ../turboui/src/CompanyNavigation/User.tsx:51
+#~ msgid "Preferences"
+#~ msgstr "Préférences"
+
+#.frontend
+#: assets/js/pages/AccountSettingsPage/index.tsx:52
+msgid "Preferences saved"
+msgstr "Préférences enregistrées"
 
 #.frontend
 #: ../turboui/src/CompanyExportPage/index.tsx:236
@@ -15705,8 +15727,8 @@ msgid "Products"
 msgstr "Produits"
 
 #.frontend
-#: ../turboui/src/AccountPage/index.tsx:48
-#: ../turboui/src/CompanyNavigation/User.tsx:40
+#: ../turboui/src/AccountPage/index.tsx:49
+#: ../turboui/src/CompanyNavigation/User.tsx:48
 #: assets/js/pages/ProfilePage/index.tsx:43
 msgid "Profile"
 msgstr "Profil"
@@ -16464,7 +16486,7 @@ msgstr "Retirer des personnes"
 
 #.frontend
 #: ../turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx:205
-#: ../turboui/src/ProfileEditPage/index.tsx:345
+#: ../turboui/src/ProfileEditPage/index.tsx:255
 msgid "Remove photo"
 msgstr "Retirer la photo"
 
@@ -17176,7 +17198,7 @@ msgid "Saas Admin Panel"
 msgstr "Administration de l’instance"
 
 #.frontend
-#: assets/js/pages/AccountAppearancePage/index.tsx:71
+#: ../turboui/src/AccountSettingsPage/index.tsx:65
 msgid "Same as System"
 msgstr "Suivre le système"
 
@@ -17205,14 +17227,14 @@ msgstr "Enregistrer"
 
 #.frontend
 #: ../turboui/src/AccountNotificationSettingsPage/index.tsx:155
+#: ../turboui/src/AccountSettingsPage/index.tsx:89
 #: ../turboui/src/CommentSection/CommentItem.tsx:313
 #: ../turboui/src/DocumentEditPage/index.tsx:83
-#: ../turboui/src/ProfileEditPage/index.tsx:194
+#: ../turboui/src/ProfileEditPage/index.tsx:142
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:443
 #: ../turboui/src/ProjectCheckInFormPage/index.tsx:453
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:133
 #: assets/js/features/goals/GoalCheckIn/Form.tsx:146
-#: assets/js/pages/AccountAppearancePage/index.tsx:74
 #: assets/js/pages/DiscussionEditPage/index.tsx:68
 #: assets/js/pages/DiscussionEditPage/index.tsx:76
 #: assets/js/pages/DiscussionEditPage/index.tsx:81
@@ -17295,7 +17317,7 @@ msgid "Save selection"
 msgstr "Enregistrer la sélection"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:357
+#: ../turboui/src/ProfileEditPage/index.tsx:267
 msgid "Saving..."
 msgstr "Enregistrement…"
 
@@ -17659,7 +17681,7 @@ msgid "Select goal..."
 msgstr "Sélectionner un objectif…"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:186
+#: ../turboui/src/ProfileEditPage/index.tsx:134
 msgid "Select manager"
 msgstr "Sélectionner le responsable hiérarchique"
 
@@ -17948,13 +17970,11 @@ msgid "Set when due"
 msgstr "Définir l’échéance"
 
 #.frontend
-#: ../turboui/src/AccountNotificationSettingsPage/index.tsx:49
-#: ../turboui/src/AccountPage/index.tsx:54
-#: ../turboui/src/AccountSettingsPage/index.tsx:22
-#: ../turboui/src/AccountSettingsPage/index.tsx:24
-#: ../turboui/src/CompanyNavigation/User.tsx:43
+#: ../turboui/src/AccountPage/index.tsx:55
+#: ../turboui/src/AccountSettingsPage/index.tsx:50
+#: ../turboui/src/AccountSettingsPage/index.tsx:52
+#: ../turboui/src/CompanyNavigation/User.tsx:51
 #: ../turboui/src/TaskBoard/components/TasksMenu.tsx:45
-#: assets/js/pages/AccountAppearancePage/index.tsx:28
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -17964,7 +17984,7 @@ msgid "Share a link"
 msgstr "Partager un lien"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:261
+#: ../turboui/src/ProfileEditPage/index.tsx:171
 msgid "Share a short bio, what you work on, or anything you'd like others to know."
 msgstr "Présentez-vous brièvement, décrivez votre travail ou partagez ce que vous souhaitez faire savoir aux autres."
 
@@ -18068,8 +18088,8 @@ msgid "Sign In"
 msgstr "Se connecter"
 
 #.frontend
-#: ../turboui/src/AccountPage/index.tsx:69
-#: ../turboui/src/CompanyNavigation/User.tsx:55
+#: ../turboui/src/AccountPage/index.tsx:76
+#: ../turboui/src/CompanyNavigation/User.tsx:66
 msgid "Sign Out"
 msgstr "Se déconnecter"
 
@@ -20542,7 +20562,7 @@ msgid "Time"
 msgstr "Heure"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:159
+#: ../turboui/src/AccountSettingsPage/index.tsx:79
 msgid "Time format"
 msgstr "Format de l’heure"
 
@@ -20593,7 +20613,7 @@ msgid "Timeline data not available"
 msgstr "Données de la chronologie indisponibles"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:142
+#: ../turboui/src/AccountSettingsPage/index.tsx:73
 msgid "Timezone"
 msgstr "Fuseau horaire"
 
@@ -20618,7 +20638,7 @@ msgid "Title cannot be empty"
 msgstr "Le titre ne peut pas être vide"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:123
+#: ../turboui/src/ProfileEditPage/index.tsx:107
 msgid "Title in Company"
 msgstr "Poste dans l’entreprise"
 
@@ -21385,7 +21405,7 @@ msgid "Uploading %{name}..."
 msgstr "Ajout de %{name}…"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:356
+#: ../turboui/src/ProfileEditPage/index.tsx:266
 msgid "Uploading %{progress}%"
 msgstr "Ajout en cours : %{progress} %"
 
@@ -22196,12 +22216,12 @@ msgid "Who is listed as a contributor?"
 msgstr "Qui figure parmi les contributeurs ?"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:88
+#: ../turboui/src/ProfileEditPage/index.tsx:72
 msgid "Who is their manager?"
 msgstr "Qui est son responsable hiérarchique ?"
 
 #.frontend
-#: ../turboui/src/ProfileEditPage/index.tsx:88
+#: ../turboui/src/ProfileEditPage/index.tsx:72
 msgid "Who is your manager?"
 msgstr "Qui est votre responsable hiérarchique ?"
 
@@ -22816,6 +22836,11 @@ msgstr "Votre dernier modèle confirmé est toujours affiché. Réessayez."
 #: assets/js/pages/AccountChangePasswordPage/index.tsx:38
 msgid "Your password has been updated successfully."
 msgstr "Votre mot de passe a été mis à jour."
+
+#.frontend
+#: assets/js/pages/AccountSettingsPage/index.tsx:52
+msgid "Your preferences have been updated."
+msgstr "Vos préférences ont été mises à jour."
 
 #.elixir
 #: lib/operately_email/templates/project_contributors_addition.html.eex:5

@@ -23,6 +23,7 @@ const defaultArgs = {
   person: mockPerson,
   profilePath: "#",
   settingsPath: "#",
+  notificationSettingsPath: "#",
   securityPath: "#",
   homePath: "#",
   onLogOut: () => console.log("Sign out clicked"),
@@ -58,8 +59,8 @@ export const Mobile: Story = {
   globals: {
     viewport: {
       value: "mobile1",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
 
@@ -68,7 +69,7 @@ export const Tablet: Story = {
   globals: {
     viewport: {
       value: "tablet",
-      isRotated: false
-    }
+      isRotated: false,
+    },
   },
 };
