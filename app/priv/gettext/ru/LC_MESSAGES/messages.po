@@ -5143,6 +5143,11 @@ msgstr "Место для документов с форматированием
 msgid "A second update is needed to plot a trend line."
 msgstr "Для построения линии тренда нужна вторая запись."
 
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:106
+#~ msgid "A space keeps your team's work together."
+#~ msgstr "Пространство объединяет работу вашей команды."
+
 #.frontend
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:234
 #: assets/js/features/activities/TaskAssigneeUpdating/index.tsx:251
@@ -7155,7 +7160,7 @@ msgstr "Действия с ячейкой"
 
 #.elixir
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:92
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:103
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:168
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:222
@@ -7174,7 +7179,7 @@ msgid "Champion"
 msgstr "Ответственный"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:43
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:44
 msgid "Champion and reviewer must be different people"
 msgstr "Ответственным и куратором должны быть разные люди"
 
@@ -8524,7 +8529,7 @@ msgid "Could not update setting"
 msgstr "Не удалось изменить настройку"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:131
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:152
 msgid "Couldn't create this resource. Your settings are saved. Please try again."
 msgstr "Не удалось создать этот элемент. Ваши настройки сохранены. Попробуйте ещё раз."
 
@@ -8591,12 +8596,12 @@ msgid "Create Copy"
 msgstr "Создать копию"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
 msgid "Create Goal"
 msgstr "Создать цель"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
 msgid "Create KPI"
 msgstr "Создать KPI"
@@ -8608,7 +8613,7 @@ msgid "Create Milestone"
 msgstr "Создать веху"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
 msgid "Create Project"
 msgstr "Создать проект"
 
@@ -8748,9 +8753,24 @@ msgid "Create template"
 msgstr "Создать шаблон"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:67
+msgid "Create your KPI"
+msgstr "Создайте свой KPI"
+
+#.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:463
 msgid "Create your first project template"
 msgstr "Создайте свой первый шаблон проекта"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:67
+msgid "Create your goal"
+msgstr "Создайте свою цель"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:67
+msgid "Create your project"
+msgstr "Создайте свой проект"
 
 #.elixir
 #: lib/operately/mcp/resources.ex:11
@@ -11586,7 +11606,7 @@ msgid "Go back to Lobby"
 msgstr "Вернуться к выбору компании"
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:77
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:80
 msgid "Go to Home"
 msgstr "Перейти на главную"
 
@@ -11680,6 +11700,11 @@ msgstr "Цель не найдена"
 #: assets/js/features/activities/GoalReopening/index.tsx:23
 msgid "Goal reopened"
 msgstr "Цель вновь открыта"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
+msgid "Goal template"
+msgstr "Шаблон цели"
 
 #.frontend
 #: assets/js/features/activities/GoalTimeframeEditing/index.tsx:20
@@ -12454,6 +12479,11 @@ msgid "KPI history line chart"
 msgstr "Линейный график истории KPI"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
+msgid "KPI template"
+msgstr "Шаблон KPI"
+
+#.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
 msgid "KPI: %{kpiName}"
 msgstr "KPI: %{kpiName}"
@@ -12556,6 +12586,11 @@ msgstr "Сохранить шаблон"
 #: ../turboui/src/SpaceKpisPage/DeleteEntryDialog.tsx:54
 msgid "Keep update"
 msgstr "Сохранить запись"
+
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:126
+#~ msgid "Keeps this metric up to date."
+#~ msgstr "Поддерживает актуальность этой метрики."
 
 #.frontend
 #: ee/assets/js/pages/SaasAdminBillingCatalogPage/index.tsx:282
@@ -12692,6 +12727,11 @@ msgstr "Последнее значение"
 #: ../turboui/src/TaskBoard/components/TaskDisplayMenu.tsx:44
 msgid "Layout"
 msgstr "Расположение"
+
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:126
+#~ msgid "Leads the work and shares progress."
+#~ msgstr "Отвечает за работу и сообщает о прогрессе."
 
 #.frontend
 #: ../turboui/src/AccountApiTokensPage/index.tsx:469
@@ -12935,6 +12975,7 @@ msgid "Loading tasks"
 msgstr "Загрузка задач"
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:129
 #: ../turboui/src/SelectLocalization/index.ts:56
 #: assets/js/pages/GoalPage/index.tsx:451
 #: assets/js/pages/ProfilePage/index.tsx:71
@@ -15286,6 +15327,11 @@ msgstr "В ожидании"
 msgid "People"
 msgstr "Люди"
 
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:110
+#~ msgid "People (optional)"
+#~ msgstr "Участники (необязательно)"
+
 #.elixir
 #: lib/operately/md/goal.ex:125
 msgid "People Involved"
@@ -16031,6 +16077,11 @@ msgstr "Дата начала проекта"
 #: ../turboui/src/ProjectTemplateSelection/index.tsx:213
 msgid "Project start date <text>*</text>"
 msgstr "Дата начала проекта <text>*</text>"
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
+msgid "Project template"
+msgstr "Шаблон проекта"
 
 #.frontend
 #: assets/js/features/activities/MilestoneDeleting/index.tsx:76
@@ -16991,7 +17042,7 @@ msgstr "Заметки к итогам:"
 
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:125
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
 msgid "Retry"
 msgstr "Повторить"
@@ -17152,7 +17203,7 @@ msgstr "Проверить еженедельный отчёт"
 
 #.elixir
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:104
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:116
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:215
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:165
@@ -17175,6 +17226,11 @@ msgstr "Куратор: не назначен"
 #: ../turboui/src/ProfilePage/index.tsx:134
 msgid "Reviewing"
 msgstr "На проверке"
+
+#~ #.frontend
+#~ #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:141
+#~ msgid "Reviews progress and gives feedback."
+#~ msgstr "Следит за прогрессом и даёт обратную связь."
 
 #.frontend
 #: ../turboui/src/AccountMcpConnectionsPage/index.tsx:238
@@ -17721,7 +17777,7 @@ msgid "Select a replacement status for each deleted status. Tasks using deleted 
 msgstr "Выберите замену для каждого удаляемого статуса. Задачи с удаляемыми статусами будут переведены в выбранные статусы."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:41
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:42
 msgid "Select a space"
 msgstr "Выберите пространство"
 
@@ -18427,7 +18483,7 @@ msgstr "Сканирование источника"
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:10
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:84
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:89
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
@@ -18622,7 +18678,7 @@ msgid "Start checkout again for %{plan}."
 msgstr "Снова начать оформление оплаты тарифа «%{plan}»."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:112
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:94
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:135
 msgid "Start date"
 msgstr "Дата начала"
@@ -18658,6 +18714,11 @@ msgstr "Запустить обслуживание поискового инд�
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:156
 msgid "Start with something already in motion. You can add tasks, milestones, and teammates next."
 msgstr "Начните с проекта, над которым уже работаете. Задачи, вехи и участников можно добавить позже."
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:73
+msgid "Start with this template and customize it for your team."
+msgstr "Начните с этого шаблона и адаптируйте его для своей команды."
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:120
@@ -21073,7 +21134,7 @@ msgid "Unable to load docs and files."
 msgstr "Невозможно загрузить документы и файлы."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:116
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:137
 msgid "Unable to load people. Retry to continue creating this resource."
 msgstr "Не удалось загрузить список участников. Повторите попытку, чтобы продолжить создание элемента."
 
@@ -21104,8 +21165,8 @@ msgstr "Вернуть из архива"
 
 #.elixir
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:95
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:107
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:106
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:119
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:72
 #: lib/operately/md/milestone.ex:81
 #: lib/operately/md/task.ex:139
@@ -22687,7 +22748,7 @@ msgid "You have been removed as a company owner by %{author}."
 msgstr "%{author}: ваши права владельца компании отозваны."
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:75
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:78
 msgid "You need edit access to a space to use this template. Ask a company admin for access."
 msgstr "Для использования этого шаблона нужен доступ на редактирование пространства. Попросите администратора компании предоставить доступ."
 
