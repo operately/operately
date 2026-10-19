@@ -11830,7 +11830,7 @@ msgstr "Objetivo reaberto"
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
 msgid "Goal template"
-msgstr "Modelo de objetivo"
+msgstr "Template de objetivo"
 
 #.frontend
 #: assets/js/features/activities/GoalTimeframeEditing/index.tsx:20
@@ -12612,7 +12612,7 @@ msgstr "Gráfico de linha do histórico do KPI"
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
 msgid "KPI template"
-msgstr "Modelo de KPI"
+msgstr "Template de KPI"
 
 #.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
@@ -16330,7 +16330,7 @@ msgstr "Data de início do projeto <text>*</text>"
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
 msgid "Project template"
-msgstr "Modelo de projeto"
+msgstr "Template de projeto"
 
 #.frontend
 #: assets/js/features/activities/MilestoneDeleting/index.tsx:76
@@ -19003,7 +19003,7 @@ msgstr "Comece com algo que já está em andamento. Depois você pode adicionar 
 #.frontend
 #: ../turboui/src/CuratedTemplates/UsePage/index.tsx:73
 msgid "Start with this template and customize it for your team."
-msgstr "Comece com este modelo e adapte-o à sua equipe."
+msgstr "Comece com este template e adapte-o à sua equipe."
 
 #.frontend
 #: ../turboui/src/TaskBoard/components/TaskFilter.tsx:120
