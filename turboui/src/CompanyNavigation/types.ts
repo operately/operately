@@ -31,6 +31,7 @@ export interface CompanyNavigationLinks {
   invitePeople: string;
   profileEdit: string;
   accountSettings: string;
+  accountNotifications: string;
   accountSecurity: string;
   accountApiTokens: string;
   accountMcpConnections: string;

@@ -57,6 +57,27 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person) <> "/profile/edit")
   end
 
+  step :visit_preferences_page, ctx do
+    UI.visit(ctx, Paths.account_path(ctx.company) <> "/settings")
+  end
+
+  step :submit_preferences, ctx do
+    ctx =
+      if Wallaby.Browser.has?(ctx.session, UI.query(testid: "product-release-toast-dismiss")) do
+        ctx
+        |> UI.click(testid: "product-release-toast-dismiss")
+        |> UI.refute_has(testid: "product-release-toast")
+      else
+        ctx
+      end
+
+    ctx
+    |> UI.scroll_to(testid: "submit")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(css: "[role='status'] .text-callout-success-content")
+    |> UI.assert_has(css: "button[data-test-id='submit']:not([disabled])")
+  end
+
   step :use_narrow_window, ctx do
     Map.update!(ctx, :session, &Wallaby.Browser.resize_window(&1, 390, 844))
   end
@@ -79,7 +100,6 @@ defmodule Operately.Support.Features.ProfileSteps do
     ctx
     |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Deutsch"))
     |> UI.assert_text("Sprache")
-    |> UI.assert_has(css: "[data-test-id='about-me'] [data-placeholder^='Erzähle kurz etwas über dich']")
     |> UI.take_screenshot()
   end
 
@@ -101,7 +121,6 @@ defmodule Operately.Support.Features.ProfileSteps do
     ctx
     |> UI.assert_has(Wallaby.Query.css("[data-test-id='language']", text: "Русский"))
     |> UI.assert_text("Язык")
-    |> UI.assert_has(css: "[data-test-id='about-me'] [data-placeholder^='Расскажите немного о себе']")
     |> UI.take_screenshot()
   end
 
@@ -395,7 +414,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.click(testid: "disable-assignments-email-toggle")
     |> UI.sleep(100)
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :enable_assignments_email, ctx do
@@ -403,7 +422,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.click(testid: "enable-assignments-email-toggle")
     |> UI.sleep(100)
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :assert_person_not_in_assignments_cron, ctx do

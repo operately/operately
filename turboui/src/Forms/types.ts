@@ -255,8 +255,9 @@ export interface RadioButtonsProps {
   field: string;
   label?: string;
   hidden?: boolean;
-  options: FormOption[];
+  options: (FormOption & { icon?: React.ReactNode })[];
   containerClass?: string;
+  variant?: "default" | "cards";
 }
 
 export interface TitleInputProps {
