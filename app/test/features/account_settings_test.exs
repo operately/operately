@@ -35,36 +35,36 @@ defmodule Operately.Features.AccountSettingsTest do
     }
 
     ctx
-    |> Steps.open_account_settings()
+    |> Steps.open_preferences()
     |> Steps.change_timezone(props)
     |> Steps.assert_person_timezone_changed(props)
   end
 
   feature "changing the time format in account settings", ctx do
     ctx
-    |> Steps.open_account_settings()
+    |> Steps.open_preferences()
     |> Steps.change_time_format("24-hour clock")
     |> Steps.assert_person_time_format_changed(:hour_24)
   end
 
   feature "language selector is available to every user", ctx do
     ctx
-    |> Steps.open_account_settings()
+    |> Steps.open_preferences()
     |> Steps.assert_language_selector_visible()
   end
 
   feature "selecting a language translates the interface and survives reload", ctx do
     ctx
-    |> Steps.open_account_settings()
+    |> Steps.open_preferences()
     |> Steps.change_language("Português (Brasil)")
     |> Steps.assert_interface_in_portuguese()
     |> Steps.reload_home()
     |> Steps.assert_interface_in_portuguese()
-    |> Steps.open_account_settings()
+    |> Steps.open_preferences()
     |> Steps.change_language("English")
     |> Steps.assert_interface_in_english()
     |> Steps.assert_saved_language("en")
-    |> Steps.open_account_settings()
+    |> Steps.open_preferences()
     |> Steps.change_language("Português (Brasil)")
     |> Steps.assert_interface_in_portuguese()
     |> Steps.assert_saved_language("pt-BR")

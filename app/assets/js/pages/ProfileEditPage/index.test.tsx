@@ -81,7 +81,6 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   act(() => {
     props().onFullNameChange(" Updated ");
     props().onManagerChange({ id: "manager2", fullName: "Manager", avatarUrl: null });
-    props().onTimeFormatChange("hour_24");
   });
   await act(() => props().onSubmit());
   const payload = jest.mocked(axios.post).mock.calls[0]?.[1];
@@ -89,7 +88,6 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   if (self) {
     expect(payload).toMatchObject({
       description: JSON.stringify({ type: "doc", content: [] }),
-      time_format: "hour_24",
     });
   } else {
     expect(payload).not.toHaveProperty("description");
@@ -99,40 +97,15 @@ it.each([true, false])("saves the profile and returns to the correct page (self:
   expect(props().isSubmitting).toBe(false);
 });
 
-it("hides the language selector and does not persist language when editing someone else", async () => {
-  jest.mocked(useMe).mockReturnValue({ ...person, id: "admin1" } as ReturnType<typeof useMe>);
-
+it.each([true, false])("does not overwrite preferences when saving a profile (self: %s)", async (self) => {
+  if (!self) jest.mocked(useMe).mockReturnValue({ ...person, id: "admin1" } as ReturnType<typeof useMe>);
   await mountPage();
-  expect(props().isCurrentUser).toBe(false);
   await act(() => props().onSubmit());
-  expect(jest.mocked(axios.post).mock.calls[0]?.[1]).not.toHaveProperty("language");
-  expect(applyLanguage).not.toHaveBeenCalled();
-});
-
-it.each(["en", "pt-BR", "de", "ru", "fr", "es"] as const)(
-  "shows the language selector and persists %s for the current user",
-  async (language) => {
-    await mountPage();
-    expect(props().isCurrentUser).toBe(true);
-    act(() => props().onLanguageChange?.(language));
-    await act(() => props().onSubmit());
-    expect(jest.mocked(axios.post).mock.calls[0]?.[1]).toMatchObject({ language });
-    expect(applyLanguage).toHaveBeenCalledWith(language);
-  },
-);
-
-it("navigates after a successful save even if applying language fails", async () => {
-  jest.mocked(applyLanguage).mockRejectedValue(new Error("Failed to apply language"));
-  await mountPage();
-  const log = jest.spyOn(console, "error").mockImplementation(() => {});
-  try {
-    await act(() => props().onSubmit());
-    expect(applyLanguage).toHaveBeenCalledWith("en");
-    expect(mockNavigate).toHaveBeenCalledWith("/account");
-    expect(props().isSubmitting).toBe(false);
-  } finally {
-    log.mockRestore();
+  const payload = jest.mocked(axios.post).mock.calls[0]?.[1];
+  for (const field of ["language", "timezone", "time_format", "theme"]) {
+    expect(payload).not.toHaveProperty(field);
   }
+  expect(applyLanguage).not.toHaveBeenCalled();
 });
 
 it("keeps the draft and stays on the form after a failed save", async () => {

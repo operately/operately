@@ -1,5 +1,5 @@
 import React from "react";
-import { configure, fireEvent, render, screen } from "@testing-library/react";
+import { configure, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import "@testing-library/jest-dom";
 import "../i18n";
@@ -20,21 +20,14 @@ function renderPage(overrides: Partial<ProfileEditPage.Props> = {}) {
     fullName: "Ada Lovelace",
     title: "Engineer",
     aboutMe: null,
-    timezone: "America/New_York",
-    timeFormat: "automatic",
-    language: "en",
     manager: null,
     onFullNameChange: jest.fn(),
     onTitleChange: jest.fn(),
     onAboutMeChange: jest.fn(),
-    onTimezoneChange: jest.fn(),
-    onTimeFormatChange: jest.fn(),
-    onLanguageChange: jest.fn(),
     onManagerChange: jest.fn(),
     onSubmit: jest.fn().mockResolvedValue(undefined),
     managerSearch: { people: [], onSearch: jest.fn().mockResolvedValue(undefined) },
     richTextHandlers: createMockRichEditorHandlers(),
-    timezones: [{ value: "America/New_York", label: "Eastern Time (ET)" }],
     isCurrentUser: true,
     fromLocation: null,
     companyAdminPath: "/admin",
@@ -50,72 +43,12 @@ function renderPage(overrides: Partial<ProfileEditPage.Props> = {}) {
   );
 }
 
-test("associates the language label with the language dropdown", () => {
-  renderPage();
-
-  const trigger = screen.getByTestId("language");
-
-  expect(trigger).toHaveAccessibleName("Language");
-  expect(trigger).toHaveTextContent("English");
-});
-
-test("lets the user select German", () => {
-  const onLanguageChange = jest.fn();
-  renderPage({ onLanguageChange });
-
-  fireEvent.click(screen.getByTestId("language"));
-  fireEvent.click(screen.getByTestId("language-option-de"));
-
-  expect(onLanguageChange).toHaveBeenCalledWith("de");
-});
-
-test("displays a saved German preference", () => {
-  renderPage({ language: "de" });
-
-  expect(screen.getByTestId("language")).toHaveTextContent("Deutsch");
-});
-
-test("hides the language picker when editing someone else", () => {
-  renderPage({ isCurrentUser: false });
-
-  expect(screen.queryByTestId("language")).not.toBeInTheDocument();
-});
-
-test("lets the user select Russian", () => {
-  const onLanguageChange = jest.fn();
-  renderPage({ onLanguageChange });
-  fireEvent.click(screen.getByTestId("language"));
-  fireEvent.click(screen.getByTestId("language-option-ru"));
-  expect(onLanguageChange).toHaveBeenCalledWith("ru");
-});
-
-test("displays a saved Russian preference", () => {
-  renderPage({ language: "ru" });
-  expect(screen.getByTestId("language")).toHaveTextContent("Русский");
-});
-
-test("lets the user select French", () => {
-  const onLanguageChange = jest.fn();
-  renderPage({ onLanguageChange });
-  fireEvent.click(screen.getByTestId("language"));
-  fireEvent.click(screen.getByTestId("language-option-fr"));
-  expect(onLanguageChange).toHaveBeenCalledWith("fr");
-});
-
-test("displays a saved French preference", () => {
-  renderPage({ language: "fr" });
-  expect(screen.getByTestId("language")).toHaveTextContent("Français");
-});
-
-test("lets the user select Spanish", () => {
-  const onLanguageChange = jest.fn();
-  renderPage({ onLanguageChange });
-  fireEvent.click(screen.getByTestId("language"));
-  fireEvent.click(screen.getByTestId("language-option-es"));
-  expect(onLanguageChange).toHaveBeenCalledWith("es");
-});
-
-test("displays a saved Spanish preference", () => {
-  renderPage({ language: "es" });
-  expect(screen.getByTestId("language")).toHaveTextContent("Español");
+test.each([true, false])("keeps personal preferences out of profile editing (self: %s)", (isCurrentUser) => {
+  renderPage({ isCurrentUser });
+  expect(screen.getByTestId("name")).toBeInTheDocument();
+  expect(screen.getByTestId("title")).toBeInTheDocument();
+  expect(screen.getByTestId("manager")).toBeInTheDocument();
+  for (const field of ["language", "timezone", "time-format"]) {
+    expect(screen.queryByTestId(field)).not.toBeInTheDocument();
+  }
 });
