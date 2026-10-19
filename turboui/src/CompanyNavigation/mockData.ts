@@ -24,6 +24,7 @@ export const mockLinks: CompanyNavigationLinks = {
   invitePeople: "/people/invite",
   profileEdit: "/people/person-1/edit",
   accountSettings: "/account/settings",
+  accountNotifications: "/account/settings/notifications",
   accountSecurity: "/account/security",
   accountApiTokens: "/account/api-tokens",
   accountMcpConnections: "/account/mcp",

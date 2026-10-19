@@ -9,25 +9,24 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :change_theme, ctx, theme do
-    ctx =
-      try do
-        # If we're already on the account page, use the settings entry there.
-        UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
-          UI.click(el, testid: "settings-link")
-        end)
-      rescue
-        _ ->
-          # Otherwise open the account menu and navigate through Settings.
-          ctx
-          |> UI.click(testid: "account-menu")
-          |> UI.click(testid: "settings-link")
-      end
-
     ctx
-    |> UI.click(testid: "appearance")
-    |> UI.click(testid: "color-mode-#{theme}")
+    |> open_preferences()
+    |> UI.click(testid: "theme-#{theme}")
+    |> save_preferences()
+  end
+
+  step :open_preferences, ctx do
+    ctx
+    |> UI.click(testid: "account-menu")
+    |> UI.click(testid: "settings-link")
+    |> UI.assert_has(testid: "account-settings-page")
+  end
+
+  step :save_preferences, ctx do
+    ctx
     |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "my-account-page")
+    |> UI.assert_has(css: "[role='status'] .text-callout-success-content")
+    |> UI.assert_has(css: "button[data-test-id='submit']:not([disabled])")
   end
 
   step :assert_person_has_theme, ctx, theme do
@@ -74,25 +73,21 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :change_timezone, ctx, props do
     ctx
     |> UI.select(testid: "timezone", option: props[:label])
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "my-account-page")
+    |> save_preferences()
   end
 
   step :assert_person_timezone_changed, ctx, props do
     assert Operately.People.get_person!(ctx.person.id).timezone == props[:value]
 
     ctx
-    |> UI.find(UI.query(testid: "my-account-page"), fn el ->
-      UI.click(el, testid: "profile-link")
-    end)
+    |> UI.visit(Paths.account_path(ctx.company) <> "/settings")
     |> UI.assert_text(props[:label])
   end
 
   step :change_time_format, ctx, option do
     ctx
     |> UI.select(testid: "time-format", option: option)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "my-account-page")
+    |> save_preferences()
   end
 
   step :assert_person_time_format_changed, ctx, time_format do
@@ -113,8 +108,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :change_language, ctx, option do
     ctx
     |> UI.select(testid: "language", option: option)
-    |> UI.click(testid: "submit")
-    |> UI.assert_has(testid: "my-account-page")
+    |> save_preferences()
   end
 
   step :assert_saved_language, ctx, language do
@@ -242,8 +236,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :navigate_to_notification_settings_page, ctx do
     ctx
     |> UI.click(testid: "account-menu")
-    |> UI.click(testid: "settings-link")
-    |> UI.click(testid: "notification-settings")
+    |> UI.click(testid: "notifications-link")
     |> UI.assert_has(testid: "account-notification-settings-page")
   end
 
@@ -288,7 +281,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :save_notification_settings, ctx do
     ctx
     |> UI.click(testid: "save-notification-settings")
-    |> UI.assert_has(testid: "account-settings-page")
+    |> UI.assert_has(testid: "my-account-page")
   end
 
   step :assert_notification_preferences_saved, ctx, attrs do
