@@ -96,10 +96,6 @@ export class Paths {
     return this.createCompanyPath(["account"]);
   }
 
-  accountAppearancePath() {
-    return this.createCompanyPath(["account", "appearance"]);
-  }
-
   accountSettingsPath() {
     return this.createCompanyPath(["account", "settings"]);
   }

@@ -17,18 +17,6 @@ const meta: Meta<typeof ProfileEditPage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Mock timezones
-const timezones: ProfileEditPage.Timezone[] = [
-  { value: "America/New_York", label: "Eastern Time (ET)" },
-  { value: "America/Chicago", label: "Central Time (CT)" },
-  { value: "America/Denver", label: "Mountain Time (MT)" },
-  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
-  { value: "Europe/London", label: "London (GMT)" },
-  { value: "Europe/Paris", label: "Paris (CET)" },
-  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
-  { value: "Australia/Sydney", label: "Sydney (AEDT)" },
-];
-
 // Generate mock people for manager search
 const potentialManagers = genPeople(15);
 const mockRichTextHandlers = createMockRichEditorHandlers();
@@ -40,9 +28,6 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
   const [aboutMe, setAboutMe] = useState(
     asRichText("I like setting teams up for success and pairing on tricky problems."),
   );
-  const [timezone, setTimezone] = useState("America/New_York");
-  const [timeFormat, setTimeFormat] = useState<ProfileEditPage.TimeFormat>("automatic");
-  const [language, setLanguage] = useState<ProfileEditPage.Language>("en");
 
   const [manager, setManager] = useState<ProfileEditPage.Person | null>(() => {
     if ("manager" in args) {
@@ -63,7 +48,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    console.log("Submitting profile:", { fullName, title, timezone, timeFormat, manager });
+    console.log("Submitting profile:", { fullName, title, manager });
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     alert("Profile updated successfully!");
@@ -106,16 +91,10 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       fullName={fullName}
       title={title}
       aboutMe={aboutMe}
-      timezone={timezone}
-      timeFormat={timeFormat}
-      language={language}
       manager={manager}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
       onAboutMeChange={setAboutMe}
-      onTimezoneChange={setTimezone}
-      onTimeFormatChange={setTimeFormat}
-      onLanguageChange={setLanguage}
       onManagerChange={setManager}
       onSubmit={handleSubmit}
       onAvatarUpload={args.canChangeAvatar !== false ? handleAvatarUpload : undefined}
@@ -126,7 +105,6 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       canChangeAvatar={args.canChangeAvatar !== false}
       managerSearch={managerSearch}
       richTextHandlers={mockRichTextHandlers}
-      timezones={timezones}
       isCurrentUser={args.isCurrentUser ?? true}
       fromLocation={args.fromLocation ?? null}
       companyAdminPath="/admin"

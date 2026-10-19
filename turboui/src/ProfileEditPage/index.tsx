@@ -4,7 +4,6 @@ import { Page } from "../Page";
 import { Avatar } from "../Avatar";
 import { SecondaryButton, PrimaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
-import { Dropdown } from "../FormElements/Dropdown";
 import { Textfield } from "../FormElements/Textfield";
 import { PersonField } from "../PersonField";
 import { IconPencil } from "../icons";
@@ -21,14 +20,6 @@ export namespace ProfileEditPage {
     profileLink?: string;
   }
 
-  export interface Timezone {
-    value: string;
-    label: string;
-  }
-
-  export type TimeFormat = "automatic" | "hour_12" | "hour_24";
-  export type Language = "en" | "pt-BR" | "de" | "ru" | "fr" | "es";
-
   export interface Props {
     // Person data
     person: Person;
@@ -37,18 +28,12 @@ export namespace ProfileEditPage {
     fullName: string;
     title: string;
     aboutMe: any;
-    timezone: string;
-    timeFormat: TimeFormat;
-    language?: Language;
     manager: Person | null;
 
     // Form handlers
     onFullNameChange: (value: string) => void;
     onTitleChange: (value: string) => void;
     onAboutMeChange: (value: any) => void;
-    onTimezoneChange: (value: string) => void;
-    onTimeFormatChange: (value: TimeFormat) => void;
-    onLanguageChange?: (value: Language) => void;
     onManagerChange: (person: Person | null) => void;
     onSubmit: () => Promise<void>;
     onCancel?: () => void;
@@ -69,7 +54,6 @@ export namespace ProfileEditPage {
     localDraftKeyBase?: string;
 
     // Options
-    timezones: Timezone[];
     isCurrentUser: boolean;
 
     // Navigation paths
@@ -138,42 +122,6 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
               </div>
             )}
 
-            <div>
-              <label className="font-bold text-sm mb-1 block">{t("Timezone")}</label>
-              <select
-                value={props.timezone}
-                onChange={(e) => props.onTimezoneChange(e.target.value)}
-                className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
-                data-test-id="timezone"
-              >
-                {props.timezones.map((tz) => (
-                  <option key={tz.value} value={tz.value}>
-                    {tz.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {props.isCurrentUser && (
-              <div>
-                <label className="font-bold text-sm mb-1 block">{t("Time format")}</label>
-                <select
-                  value={props.timeFormat}
-                  onChange={(e) => props.onTimeFormatChange(e.target.value as ProfileEditPage.TimeFormat)}
-                  className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
-                  data-test-id="time-format"
-                >
-                  <option value="automatic">{t("Automatic")}</option>
-                  <option value="hour_12">{t("12-hour clock")}</option>
-                  <option value="hour_24">{t("24-hour clock")}</option>
-                </select>
-              </div>
-            )}
-
-            {props.isCurrentUser && (
-              <LanguageField language={props.language ?? "en"} onLanguageChange={props.onLanguageChange} />
-            )}
-
             {/* Manager Section */}
             <div>
               <label className="font-bold text-sm mb-1 block">{managerLabel}</label>
@@ -203,44 +151,6 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
         </form>
       </div>
     </Page>
-  );
-}
-
-const LANGUAGE_OPTIONS: (Dropdown.Item & { id: ProfileEditPage.Language })[] = [
-  { id: "en", name: "English", testId: "language-option-en" },
-  { id: "de", name: "Deutsch", testId: "language-option-de" },
-  { id: "fr", name: "Français", testId: "language-option-fr" },
-  { id: "es", name: "Español", testId: "language-option-es" },
-  { id: "ru", name: "Русский", testId: "language-option-ru" },
-  { id: "pt-BR", name: "Português (Brasil)", testId: "language-option-pt-BR" },
-];
-
-function LanguageField({
-  language,
-  onLanguageChange,
-}: {
-  language: ProfileEditPage.Language;
-  onLanguageChange?: (value: ProfileEditPage.Language) => void;
-}) {
-  const { t } = useTranslation();
-  const languageFieldId = "profile-language";
-  const languageLabelId = "profile-language-label";
-  const languageLabel = translationText(t("Language"));
-
-  return (
-    <div>
-      <label id={languageLabelId} htmlFor={languageFieldId} className="font-bold text-sm mb-1 block">
-        {languageLabel}
-      </label>
-      <Dropdown
-        items={LANGUAGE_OPTIONS}
-        value={language}
-        onSelect={(item) => onLanguageChange?.(item.id)}
-        testId="language"
-        id={languageFieldId}
-        ariaLabelledBy={languageLabelId}
-      />
-    </div>
   );
 }
 

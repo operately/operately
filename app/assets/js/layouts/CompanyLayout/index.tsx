@@ -102,6 +102,7 @@ function Navigation({
       invitePeople: paths.invitePeoplePath(),
       profileEdit: paths.profileEditPath(me.id),
       accountSettings: paths.accountSettingsPath(),
+      accountNotifications: paths.accountNotificationSettingsPath(),
       accountSecurity: paths.accountSecurityPath(),
       accountApiTokens: paths.accountApiTokensPath(),
       accountMcpConnections: paths.accountMcpConnectionsPath(),
