@@ -23,8 +23,28 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Project: Story = {};
-export const Goal: Story = { args: { template: { title: "Improve retention", type: "goal" } } };
-export const Kpi: Story = { args: { template: { title: "Monthly revenue", type: "kpi" } } };
+export const Goal: Story = {
+  args: {
+    template: {
+      title: "Improve retention",
+      summary: "Set targets and track your progress toward keeping more customers.",
+      type: "goal",
+    },
+  },
+};
+export const Kpi: Story = {
+  args: {
+    template: {
+      title: "Monthly revenue",
+      summary: "Track revenue over time to understand how your business is growing.",
+      type: "kpi",
+    },
+  },
+};
+export const Mobile: Story = {
+  globals: { viewport: { value: "mobile1", isRotated: false } },
+  parameters: { viewport: { options: { mobile1: { name: "Mobile", styles: { width: "375px", height: "812px" } } } } },
+};
 export const NoWritableSpaces: Story = { args: { spaces: [] } };
 export const LoadingPeople: Story = { args: { peopleSpaceId: null, peopleLoading: true } };
 export const FailedPeopleRequest: Story = { args: { peopleSpaceId: null, peopleError: true } };
