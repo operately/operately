@@ -6987,7 +6987,7 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:92
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:103
 #: ../turboui/src/GoalPage/Sidebar.tsx:145
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:168
 #: ../turboui/src/SpaceKpisPage/KpiDetail.tsx:222
@@ -7006,7 +7006,7 @@ msgid "Champion"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:43
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:44
 msgid "Champion and reviewer must be different people"
 msgstr ""
 
@@ -8352,7 +8352,7 @@ msgid "Could not update setting"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:131
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:152
 msgid "Couldn't create this resource. Your settings are saved. Please try again."
 msgstr ""
 
@@ -8419,12 +8419,12 @@ msgid "Create Copy"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
 msgid "Create Goal"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
 #: ../turboui/src/SpaceKpisPage/NewKpiModal.tsx:104
 msgid "Create KPI"
 msgstr ""
@@ -8436,7 +8436,7 @@ msgid "Create Milestone"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:65
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:66
 msgid "Create Project"
 msgstr ""
 
@@ -8576,8 +8576,23 @@ msgid "Create template"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:67
+msgid "Create your KPI"
+msgstr ""
+
+#.frontend
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:463
 msgid "Create your first project template"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:67
+msgid "Create your goal"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:67
+msgid "Create your project"
 msgstr ""
 
 #.elixir
@@ -11408,7 +11423,7 @@ msgid "Go back to Lobby"
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:77
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:80
 msgid "Go to Home"
 msgstr ""
 
@@ -11501,6 +11516,11 @@ msgstr ""
 #: assets/js/features/activities/GoalReopening/index.tsx:15
 #: assets/js/features/activities/GoalReopening/index.tsx:23
 msgid "Goal reopened"
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
+msgid "Goal template"
 msgstr ""
 
 #.frontend
@@ -12276,6 +12296,11 @@ msgid "KPI history line chart"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
+msgid "KPI template"
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/KpiCreated/index.tsx:56
 msgid "KPI: %{kpiName}"
 msgstr ""
@@ -12752,6 +12777,7 @@ msgid "Loading tasks"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:129
 #: ../turboui/src/SelectLocalization/index.ts:56
 #: assets/js/pages/GoalPage/index.tsx:451
 #: assets/js/pages/ProfilePage/index.tsx:71
@@ -15846,6 +15872,11 @@ msgid "Project start date <text>*</text>"
 msgstr ""
 
 #.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:165
+msgid "Project template"
+msgstr ""
+
+#.frontend
 #: assets/js/features/activities/MilestoneDeleting/index.tsx:76
 #: assets/js/features/activities/TaskDeleting/index.tsx:82
 msgid "Project: %{projectName}"
@@ -16804,7 +16835,7 @@ msgstr ""
 
 #.frontend
 #: ../turboui/src/ContentListState/index.tsx:33
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:125
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:146
 #: ../turboui/src/DocumentVersionComparisonPage/states.tsx:68
 msgid "Retry"
 msgstr ""
@@ -16965,7 +16996,7 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:104
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:116
 #: ../turboui/src/GoalPage/Sidebar.tsx:193
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:215
 #: ../turboui/src/Subscriptions/components/SubscribersSelectorModal.tsx:165
@@ -17529,7 +17560,7 @@ msgid "Select a replacement status for each deleted status. Tasks using deleted 
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:41
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:42
 msgid "Select a space"
 msgstr ""
 
@@ -18226,7 +18257,7 @@ msgstr ""
 #.elixir
 #.frontend
 #: ../turboui/src/CompanyAdminAddPeoplePage/components/ResourceAccessContent.tsx:10
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:84
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:89
 #: ../turboui/src/GoalAddForm/index.tsx:103
 #: ../turboui/src/ProjectTemplatesPage/index.tsx:424
 #: ../turboui/src/TaskPage/MoveModal.tsx:67
@@ -18421,7 +18452,7 @@ msgid "Start checkout again for %{plan}."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:112
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:94
 #: ../turboui/src/ProjectPage/OverviewSidebar.tsx:135
 msgid "Start date"
 msgstr ""
@@ -18456,6 +18487,11 @@ msgstr ""
 #.frontend
 #: ../turboui/src/WorkMap/components/ZeroState.tsx:156
 msgid "Start with something already in motion. You can add tasks, milestones, and teammates next."
+msgstr ""
+
+#.frontend
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:73
+msgid "Start with this template and customize it for your team."
 msgstr ""
 
 #.frontend
@@ -20833,7 +20869,7 @@ msgid "Unable to load docs and files."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:116
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:137
 msgid "Unable to load people. Retry to continue creating this resource."
 msgstr ""
 
@@ -20864,8 +20900,8 @@ msgstr ""
 
 #.elixir
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:95
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:107
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:106
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:119
 #: ../turboui/src/SpaceKpisPage/KpiList.tsx:72
 #: lib/operately/md/milestone.ex:81
 #: lib/operately/md/task.ex:139
@@ -22439,7 +22475,7 @@ msgid "You have been removed as a company owner by %{author}."
 msgstr ""
 
 #.frontend
-#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:75
+#: ../turboui/src/CuratedTemplates/UsePage/index.tsx:78
 msgid "You need edit access to a space to use this template. Ask a company admin for access."
 msgstr ""
 

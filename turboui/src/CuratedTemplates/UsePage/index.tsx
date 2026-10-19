@@ -6,6 +6,7 @@ import { Link } from "../../Link";
 import { CompanyPickerPage } from "../../CompanyPickerPage";
 import { SecondaryButton } from "../../Button";
 import { ErrorCallout } from "../../Callouts";
+import { IconChartColumn, IconGoalPlain, IconProjectPlain } from "../../icons";
 import type { Company, CuratedTemplate, Space } from "../../ApiTypes";
 
 export type TemplateSettings = {
@@ -63,12 +64,14 @@ export function CuratedTemplateUsePage(props: CuratedTemplateUsePageProps) {
   const searchPeople = async (query: string) =>
     props.people.filter((person) => person.fullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
   const createLabel = isKpi ? t("Create KPI") : props.template.type === "goal" ? t("Create Goal") : t("Create Project");
+  const heading = { project: t("Create your project"), goal: t("Create your goal"), kpi: t("Create your KPI") };
 
   return (
     <Page title={props.template.title} size="small" testId="curated-template-use-page">
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-2">{props.template.title}</h1>
-        <p className="text-content-dimmed mb-8">{props.template.summary}</p>
+      <div className="px-5 py-6 sm:p-8">
+        <h1 className="text-2xl font-bold text-content-accent">{heading[props.template.type]}</h1>
+        <p className="mt-2 text-content-subtle">{t("Start with this template and customize it for your team.")}</p>
+        <TemplateCard template={props.template} />
         {props.spaces.length === 0 ? (
           <div data-test-id="no-writable-spaces">
             <p className="mb-4">
@@ -79,37 +82,55 @@ export function CuratedTemplateUsePage(props: CuratedTemplateUsePageProps) {
         ) : (
           <Forms.Form form={form}>
             <Forms.FieldGroup>
-              <Forms.SelectBox
-                field="spaceId"
-                label={t("Space")}
-                required
-                options={props.spaces.map((space) => ({ value: space.id, label: space.name }))}
-              />
-              {peopleReady && (
-                <Forms.SelectPerson
-                  key={`champion-${spaceId}-${championId}`}
-                  field="championId"
-                  label={t("Champion")}
-                  required={false}
-                  allowEmpty
-                  emptyLabel={t("Unassigned")}
-                  searchFn={searchPeople}
-                  default={props.people.find((p) => p.id === championId)}
-                />
-              )}
-              {!isKpi && peopleReady && (
-                <Forms.SelectPerson
-                  key={`reviewer-${spaceId}-${reviewerId}`}
-                  field="reviewerId"
-                  label={t("Reviewer")}
-                  required={false}
-                  allowEmpty
-                  emptyLabel={t("Unassigned")}
-                  searchFn={searchPeople}
-                  default={props.people.find((p) => p.id === reviewerId)}
-                />
-              )}
-              {!isKpi && <Forms.DateInput field="startDate" label={t("Start date")} required />}
+              <div className={`grid gap-4 ${isKpi ? "" : "sm:grid-cols-2"}`}>
+                <div>
+                  <Forms.SelectBox
+                    field="spaceId"
+                    label={t("Space")}
+                    required
+                    options={props.spaces.map((space) => ({ value: space.id, label: space.name }))}
+                  />
+                </div>
+                {!isKpi && <Forms.DateInput field="startDate" label={t("Start date")} required />}
+              </div>
+              <fieldset className="mt-2">
+                {peopleReady ? (
+                  <div className={`grid gap-4 ${isKpi ? "" : "sm:grid-cols-2"}`}>
+                    <div>
+                      <Forms.SelectPerson
+                        key={`champion-${spaceId}-${championId}`}
+                        field="championId"
+                        label={t("Champion")}
+                        required={false}
+                        allowEmpty
+                        emptyLabel={t("Unassigned")}
+                        searchFn={searchPeople}
+                        default={props.people.find((p) => p.id === championId)}
+                      />
+                    </div>
+                    {!isKpi && (
+                      <div>
+                        <Forms.SelectPerson
+                          key={`reviewer-${spaceId}-${reviewerId}`}
+                          field="reviewerId"
+                          label={t("Reviewer")}
+                          required={false}
+                          allowEmpty
+                          emptyLabel={t("Unassigned")}
+                          searchFn={searchPeople}
+                          default={props.people.find((p) => p.id === reviewerId)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  !props.peopleError && (
+                    <p role="status" className="text-sm text-content-subtle">
+                      {t("Loading...")}
+                    </p>
+                  )
+                )}
+              </fieldset>
             </Forms.FieldGroup>
             {props.peopleError && (
               <div role="alert" className="mt-4" data-test-id="people-error">
@@ -136,6 +157,28 @@ export function CuratedTemplateUsePage(props: CuratedTemplateUsePageProps) {
         )}
       </div>
     </Page>
+  );
+}
+
+function TemplateCard({ template }: Pick<CuratedTemplateUsePageProps, "template">) {
+  const { t } = useTranslation();
+  const templateLabel = { project: t("Project template"), goal: t("Goal template"), kpi: t("KPI template") };
+  const TemplateIcon = { project: IconProjectPlain, goal: IconGoalPlain, kpi: IconChartColumn }[template.type];
+
+  return (
+    <div className="my-6 flex items-start gap-4 rounded-xl border border-surface-outline bg-surface-dimmed p-5">
+      <div
+        className="shrink-0 rounded-lg border border-surface-outline bg-surface-base p-3 text-content-accent"
+        aria-hidden="true"
+      >
+        <TemplateIcon size={24} className="w-6" />
+      </div>
+      <div className="min-w-0">
+        <div className="text-xs font-semibold text-content-subtle">{templateLabel[template.type]}</div>
+        <h2 className="mt-1 break-words text-lg font-bold leading-snug text-content-accent">{template.title}</h2>
+        <p className="mt-1 break-words text-sm text-content-subtle">{template.summary}</p>
+      </div>
+    </div>
   );
 }
 
