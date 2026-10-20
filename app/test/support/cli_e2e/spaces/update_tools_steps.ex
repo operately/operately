@@ -43,7 +43,7 @@ defmodule Operately.Support.CliE2E.Spaces.UpdateToolsSteps do
     assert space.tools.tasks_enabled == false
     assert space.tools.discussions_enabled == true
     assert space.tools.resource_hub_enabled == true
-    assert space.tools.kpis_enabled == false
+    assert space.tools.kpis_enabled == true
 
     Map.put(ctx, :engineering, space)
   end
@@ -74,7 +74,7 @@ defmodule Operately.Support.CliE2E.Spaces.UpdateToolsSteps do
     assert space.tools.tasks_enabled == false
     assert space.tools.discussions_enabled == true
     assert space.tools.resource_hub_enabled == true
-    assert space.tools.kpis_enabled == false
+    assert space.tools.kpis_enabled == true
 
     ctx
   end

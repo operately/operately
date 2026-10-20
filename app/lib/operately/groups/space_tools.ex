@@ -8,7 +8,7 @@ defmodule Operately.Groups.SpaceTools do
     field :tasks_enabled, :boolean, default: false
     field :discussions_enabled, :boolean, default: true
     field :resource_hub_enabled, :boolean, default: true
-    field :kpis_enabled, :boolean, default: false
+    field :kpis_enabled, :boolean, default: true
     field :templates_enabled, :boolean, default: true
 
     field :projects, {:array, :map}, virtual: true
@@ -34,7 +34,7 @@ defmodule Operately.Groups.SpaceTools do
       tasks_enabled: false,
       discussions_enabled: true,
       resource_hub_enabled: true,
-      kpis_enabled: false,
+      kpis_enabled: true,
       templates_enabled: true
     }
   end

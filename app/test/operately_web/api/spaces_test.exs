@@ -1043,7 +1043,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert ctx.space.tools.tasks_enabled == false
       assert ctx.space.tools.discussions_enabled == true
       assert ctx.space.tools.resource_hub_enabled == true
-      assert ctx.space.tools.kpis_enabled == false
+      assert ctx.space.tools.kpis_enabled == true
       assert ctx.space.tools.templates_enabled == true
 
       assert {200, res} = mutation(ctx.conn, [:spaces, :update_tools], %{
@@ -1052,7 +1052,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
           tasks_enabled: true,
           discussions_enabled: false,
           resource_hub_enabled: false,
-          kpis_enabled: true,
+          kpis_enabled: false,
           templates_enabled: false
         }
       })
@@ -1064,7 +1064,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert space.tools.tasks_enabled == true
       assert space.tools.discussions_enabled == false
       assert space.tools.resource_hub_enabled == false
-      assert space.tools.kpis_enabled == true
+      assert space.tools.kpis_enabled == false
       assert space.tools.templates_enabled == false
     end
 
@@ -1083,7 +1083,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert space.tools.tasks_enabled == false
       assert space.tools.discussions_enabled == true
       assert space.tools.resource_hub_enabled == true
-      assert space.tools.kpis_enabled == false
+      assert space.tools.kpis_enabled == true
       assert space.tools.templates_enabled == false
     end
   end
