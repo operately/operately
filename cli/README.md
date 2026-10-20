@@ -268,8 +268,7 @@ an input error. Alignment markers are accepted but not stored. Exporting a heade
 table adds an empty header row, which remains when imported. Mentions retain their `@label`
 text; Markdown does not carry person IDs. Images in cells become links with their labels.
 
-Table input requires the CLI release containing this feature; **1.9.0 and earlier do not
-support it**. Publish the compatible CLI only after the server's table support is deployed.
+Table input requires **CLI 1.10.0 or later**.
 
 Contextual dates let you pass either an exact day or a broader period.
 For `year`, `quarter`, and `month` values, the CLI resolves the value to a real date:
