@@ -61,7 +61,7 @@ defmodule Operately.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:mint, "~> 1.10"},
       {:hpax, "~> 1.0.4"},
-      {:req, "~> 0.6.1"},
+      {:req, "~> 0.7.5"},
       {:tesla, "~> 1.18"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
       {:sentry, "~> 14.0"},
