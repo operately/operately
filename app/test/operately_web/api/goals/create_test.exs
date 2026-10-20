@@ -6,6 +6,52 @@ defmodule OperatelyWeb.Api.Goals.CreateTest do
   alias Operately.Access.Binding
   alias Operately.ContextualDates.Timeframe
 
+  describe "company member boundaries" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_api_token(:write_token, :creator, read_only: false)
+    end
+
+    for owner_field <- [:champion_id, :reviewer_id] do
+      @owner_field owner_field
+
+      test "rejects a foreign #{@owner_field} with existing space access before creating anything", ctx do
+        foreign_person = Factory.setup(%{}).creator
+        assert {:error, :not_found} = Operately.Groups.Group.get(foreign_person, id: ctx.space.id)
+
+        context = Operately.Access.get_context!(group_id: ctx.space.id)
+        {:ok, _} = Operately.Access.bind_person(context, foreign_person.id, Binding.view_access())
+        assert {:ok, _} = Operately.Groups.Group.get(foreign_person, id: ctx.space.id)
+
+        schemas = [
+          Operately.Goals.Goal, Operately.Goals.Target, Operately.ResourceHubs.ResourceHub,
+          Operately.Access.Context, Binding, Operately.Access.GroupMembership,
+          Operately.Notifications.SubscriptionList, Operately.Notifications.Subscription, Operately.Activities.Activity
+        ]
+
+        before = Enum.map(schemas, &Repo.aggregate(&1, :count))
+
+        inputs = Map.put(%{
+          space_id: ctx.space.id,
+          name: "New goal",
+          champion_id: ctx.creator.id,
+          reviewer_id: ctx.creator.id,
+          anonymous_access_level: Binding.no_access(),
+          company_access_level: Binding.view_access(),
+          space_access_level: Binding.edit_access()
+        }, @owner_field, foreign_person.id)
+
+        assert {400, _} = mutation(ctx.conn, [:goals, :create], inputs)
+        assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == before
+        assert {400, _} = external_mutation(ctx.conn, ctx.write_token, "goals/create", inputs)
+        assert Enum.map(schemas, &Repo.aggregate(&1, :count)) == before
+      end
+    end
+  end
+
   describe "goals/create destination authorization" do
     setup ctx do
       ctx
