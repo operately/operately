@@ -6,5 +6,5 @@ defmodule OperatelyWeb.Gettext do
   backend's POT/PO files; do not edit `assets/js/generated/locales/*.json` by hand.
   """
 
-  use Gettext.Backend, otp_app: :operately, default_domain: "messages"
+  use Gettext.Backend, otp_app: :operately, default_domain: "messages", split_module_by: [:locale, :domain]
 end
