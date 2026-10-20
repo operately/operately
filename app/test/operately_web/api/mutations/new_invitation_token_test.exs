@@ -4,6 +4,36 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationTokenTest do
   import Operately.InviteLinksFixtures
   import Operately.PeopleFixtures
 
+  describe "company boundaries" do
+    setup ctx do
+      ctx |> Factory.setup() |> Factory.log_in_person(:creator)
+    end
+
+    test "rejects foreign and missing people without issuing or refreshing invitations", ctx do
+      foreign = Factory.setup(%{})
+      person = person_fixture_with_account(%{company_id: foreign.company.id, has_open_invitation: true})
+      link = personal_invite_link_fixture(%{company_id: foreign.company.id, author_id: foreign.creator.id, person_id: person.id})
+      before = Repo.aggregate(Operately.InviteLinks.InviteLink, :count)
+
+      for person_id <- [person.id, Ecto.UUID.generate()] do
+        assert {404, _} = mutation(ctx.conn, [:invitations, :new_invitation_token], %{person_id: person_id})
+        assert Repo.reload(link) == link
+        assert Repo.aggregate(Operately.InviteLinks.InviteLink, :count) == before
+      end
+    end
+
+    test "rejects an existing invitation belonging to another company", ctx do
+      foreign = Factory.setup(%{})
+      person = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: true})
+      link = personal_invite_link_fixture(%{company_id: foreign.company.id, author_id: foreign.creator.id, person_id: person.id})
+      before = Repo.aggregate(Operately.InviteLinks.InviteLink, :count)
+
+      assert {404, _} = mutation(ctx.conn, [:invitations, :new_invitation_token], %{person_id: Paths.person_id(person)})
+      assert Repo.reload(link) == link
+      assert Repo.aggregate(Operately.InviteLinks.InviteLink, :count) == before
+    end
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:invitations, :new_invitation_token], %{})
